@@ -72,8 +72,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configLocation>/src/main/resources/cfg/checkstyle.xml</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <configLocation>checkstyle/greenCity_checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
         </plugins>
