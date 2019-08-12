@@ -5,8 +5,6 @@ import java.util.List;
 
 /**
  * The class provides an interface for mapping entity objects to dto objects and vice versa.
- *
- * @author Roman Zahorui
  */
 public interface ModelMapperUtil {
 
