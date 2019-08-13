@@ -1,12 +1,11 @@
 package greencity.entities;
 
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-
 
 @Entity
 @Data
@@ -18,12 +17,9 @@ public class UserSecurity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private User user;
+    @OneToOne private User user;
 
-    @OneToOne
-    private UserGoogleSecurityDetail userGoogleSecurityDetail;
+    @OneToOne private UserGoogleSecurityDetail userGoogleSecurityDetail;
 
-    @OneToOne
-    private UserOwnSecurityDetail userOwnSecurityDetail;
+    @OneToOne private UserOwnSecurityDetail userOwnSecurityDetail;
 }
