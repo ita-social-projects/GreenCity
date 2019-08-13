@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder    
 public class WebPage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
