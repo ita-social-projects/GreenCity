@@ -1,11 +1,10 @@
 package greencity.entities;
 
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Data
@@ -23,6 +22,5 @@ public class Location {
     @Column(nullable = false)
     private Double lng;
 
-    @OneToOne
-    private Place place;
+    @OneToOne private Place place;
 }
