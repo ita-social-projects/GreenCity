@@ -13,11 +13,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @AllArgsConstructor
-public class ModelMapperImpl implements ModelMapperUtil {
+public class ModelMapperUtilsImpl implements ModelMapperUtil {
 
     private ModelMapper modelMapper;
-
-
+    
     /**
      * {@inheritDoc}
      */

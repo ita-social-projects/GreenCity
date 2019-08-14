@@ -1,7 +1,7 @@
 package greencity.config;
 
-import greencity.utils.ModelMapperImpl;
 import greencity.utils.ModelMapperUtil;
+import greencity.utils.ModelMapperUtilsImpl;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 import org.modelmapper.convention.MatchingStrategies;
@@ -12,17 +12,17 @@ import org.springframework.context.annotation.Configuration;
 public class MapperConfig {
 
     /**
-     * Provides a new ModelMapper object. Provides configuration for the object.
-     * Sets source properties to be strictly matched to destination properties.
-     * Sets matching fields to be enabled. Skips when the property value is {@code null}.
-     * Sets {@code AccessLevel} to private.
+     * Provides a new ModelMapper object. Provides configuration for the object. Sets source
+     * properties to be strictly matched to destination properties. Sets matching fields to be
+     * enabled. Skips when the property value is {@code null}. Sets {@code AccessLevel} to private.
      *
      * @return the configured instance of {@code ModelMapper}.
      */
     @Bean
     public ModelMapper getModelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration()
+        modelMapper
+                .getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT)
                 .setFieldMatchingEnabled(true)
                 .setSkipNullEnabled(true)
@@ -37,6 +37,6 @@ public class MapperConfig {
      */
     @Bean
     public ModelMapperUtil getModelMapperUtils() {
-        return new ModelMapperImpl(getModelMapper());
+        return new ModelMapperUtilsImpl(getModelMapper());
     }
 }
