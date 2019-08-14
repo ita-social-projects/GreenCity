@@ -13,17 +13,17 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserSecurity {
+public class UserOwnSecurity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String password;
+
+    private Boolean isCheckedEmail = false;
+
     @OneToOne
     private User user;
 
-    @OneToOne
-    private UserGoogleSecurityDetail userGoogleSecurityDetail;
-
-    @OneToOne
-    private UserOwnSecurityDetail userOwnSecurityDetail;
 }

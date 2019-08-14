@@ -46,7 +46,7 @@ public class User {
     private List<FavoritePlace> favoritePlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
-    private UserSecurity userSecurity;
+    private UserOwnSecurity userSecurity;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
