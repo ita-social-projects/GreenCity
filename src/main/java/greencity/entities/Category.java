@@ -29,7 +29,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<Category> categories = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "category")
     private List<Place> places = new ArrayList<>();
 
