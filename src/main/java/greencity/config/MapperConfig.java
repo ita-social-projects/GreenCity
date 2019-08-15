@@ -1,7 +1,5 @@
 package greencity.config;
 
-import greencity.utils.ModelMapperUtil;
-import greencity.utils.ModelMapperUtilsImpl;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 import org.modelmapper.convention.MatchingStrategies;
@@ -28,15 +26,5 @@ public class MapperConfig {
                 .setSkipNullEnabled(true)
                 .setFieldAccessLevel(AccessLevel.PRIVATE);
         return modelMapper;
-    }
-
-    /**
-     * Creates an object of ModelMapperImpl class.
-     *
-     * @return the implementation of {@code ModelMapperUtil}
-     */
-    @Bean
-    public ModelMapperUtil getModelMapperUtils() {
-        return new ModelMapperUtilsImpl(getModelMapper());
     }
 }
