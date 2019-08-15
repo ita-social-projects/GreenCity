@@ -25,6 +25,6 @@ public class UserRegisterDto {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^$")
+    /*@Pattern(regexp = "^[A-Za-z0-9~`!@#$%^&*()+=_-{}\\]\\[|:;”’?/<>,.]$")*/
     private String password;
 }
