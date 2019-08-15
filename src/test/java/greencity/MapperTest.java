@@ -16,11 +16,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class MapperTest {
 
-    @Autowired
-    private PlaceRepository repository;
+    @Autowired private PlaceRepository repository;
 
-    @Autowired
-    private PlaceMapper mapper;
+    @Autowired private PlaceMapper mapper;
 
     @Test
     public void mapToTest() {
@@ -32,8 +30,6 @@ public class MapperTest {
         Assert.assertEquals(place.getId(), dto.getId());
         Assert.assertEquals(place.getTitle(), dto.getTitle());
         Assert.assertEquals(2, dto.getVisitorIds().size());
-
-        System.out.println(dto.toString());
 
         Place entity = mapper.convertToEntity(dto);
         Assert.assertEquals(place.getId(), entity.getId());
