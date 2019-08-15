@@ -16,4 +16,8 @@ public interface UserService {
     void deleteById(Long id);
 
     User findByEmail(String email);
+
+    void makeUserToModerator(Long id);
+
+    void makeUserToAdmin(Long id);
 }

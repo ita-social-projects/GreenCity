@@ -1,14 +1,15 @@
 package greencity.services.impl;
 
+import greencity.constants.ErrorMessage;
 import greencity.entities.User;
+import greencity.entities.enums.ROLE;
 import greencity.exceptions.BadIdException;
 import greencity.exceptions.BadUserException;
 import greencity.repositories.UserRepo;
 import greencity.services.UserService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -49,5 +50,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return repo.findByEmail(email);
+    }
+
+    @Override
+    public void makeUserToModerator(Long id) {
+        User user =
+                repo.findById(id)
+                        .orElseThrow(
+                                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        user.setRole(ROLE.MODERATOR_ROLE);
+        repo.save(user);
+    }
+
+    @Override
+    public void makeUserToAdmin(Long id) {
+        User user =
+                repo.findById(id)
+                        .orElseThrow(
+                                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        user.setRole(ROLE.ADMIN_ROLE);
+        repo.save(user);
     }
 }
