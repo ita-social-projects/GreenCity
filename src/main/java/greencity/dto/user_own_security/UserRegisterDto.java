@@ -20,11 +20,9 @@ public class UserRegisterDto {
     @Length(max = 20)
     private String lastName;
 
-    @NotBlank
-    @Email
-    private String email;
+    @NotBlank @Email private String email;
 
     @NotBlank
-    @Pattern(regexp = "^$")
+    @Pattern(regexp = "^[A-z0-9~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]{8,}$")
     private String password;
 }
