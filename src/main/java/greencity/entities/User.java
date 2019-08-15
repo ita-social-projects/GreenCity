@@ -35,12 +35,15 @@ public class User {
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)
-    private ROLE role;
+    private ROLE role = ROLE.USER_ROLE;
 
     private Boolean isBanned = false;
 
     @Column(nullable = false)
     private LocalDateTime lastVisit;
+
+    @Column(nullable = false)
+    private LocalDateTime dateOfRegistration = LocalDateTime.now();
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
@@ -53,5 +56,4 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
-
 }
