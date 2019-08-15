@@ -1,4 +1,4 @@
-package greencity.exception;
+package greencity.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
