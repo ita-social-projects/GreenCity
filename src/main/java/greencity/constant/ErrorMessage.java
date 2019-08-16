@@ -1,4 +1,4 @@
-package greencity.constants;
+package greencity.constant;
 
 public class ErrorMessage {
 
