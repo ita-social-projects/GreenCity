@@ -1,6 +1,6 @@
 package greencity.services.impl;
 
-import greencity.constants.ErrorMessage;
+import greencity.constant.ErrorMessage;
 import greencity.entities.User;
 import greencity.entities.enums.ROLE;
 import greencity.exceptions.BadIdException;
@@ -53,22 +53,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void makeUserToModerator(Long id) {
+    public void updateRole(Long id, ROLE role) {
         User user =
                 repo.findById(id)
                         .orElseThrow(
                                 () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
-        user.setRole(ROLE.MODERATOR_ROLE);
+        user.setRole(role);
         repo.save(user);
     }
 
     @Override
-    public void makeUserToAdmin(Long id) {
+    public void blockIUser(Long id) {
         User user =
                 repo.findById(id)
                         .orElseThrow(
                                 () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
-        user.setRole(ROLE.ADMIN_ROLE);
+        user.setIsBanned(true);
         repo.save(user);
     }
 }

@@ -2,6 +2,7 @@ package greencity.services;
 
 import greencity.entities.User;
 
+import greencity.entities.enums.ROLE;
 import java.util.List;
 
 public interface UserService {
@@ -17,7 +18,7 @@ public interface UserService {
 
     User findByEmail(String email);
 
-    void makeUserToModerator(Long id);
+    void updateRole(Long id, ROLE role);
 
-    void makeUserToAdmin(Long id);
+    void blockIUser(Long id)
 }
