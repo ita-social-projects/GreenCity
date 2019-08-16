@@ -15,6 +15,8 @@
     Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
 
     The only difference from google_checks is a identity size, here it's 4.
+    Length of abbreviation - 100.
+    AvoidStarImport disabled.
  -->
 
 <module name="Checker">
@@ -52,7 +54,7 @@
             <property name="max" value="100"/>
             <property name="ignorePattern" value="^package.*|a href|href|http://|https://|ftp://"/>
         </module>
-        <module name="AvoidStarImport"/>
+        <!--        <module name="AvoidStarImport"/>-->
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap"/>
         <module name="EmptyBlock">
