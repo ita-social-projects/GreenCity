@@ -8,6 +8,7 @@ import greencity.exception.BadEmailException;
 import greencity.repository.UserOwnSecurityRepo;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.UserService;
+import greencity.service.VerifyEmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
 
     private UserOwnSecurityRepo repo;
     private UserService userService;
+    private VerifyEmailService verifyEmailService;
 
     @Override
     public void register(UserRegisterDto dto) {
@@ -32,6 +34,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                                 .password(dto.getPassword())
                                 .user(byEmail)
                                 .build());
+                verifyEmailService.save(byEmail);
             } else {
                 throw new BadEmailException("User with this email are already registered");
             }
@@ -48,6 +51,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
             User savedUser = userService.save(user);
             repo.save(
                     UserOwnSecurity.builder().password(dto.getPassword()).user(savedUser).build());
+            verifyEmailService.save(savedUser);
         }
     }
 }

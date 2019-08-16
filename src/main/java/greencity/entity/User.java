@@ -38,8 +38,6 @@ public class User {
     @Column(nullable = false)
     private ROLE role;
 
-    private Boolean isBanned = false;
-
     @Column(nullable = false)
     private LocalDateTime lastVisit;
 
@@ -54,6 +52,9 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;
+
+    @OneToOne(mappedBy = "user")
+    private VerifyEmail verifyEmail;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
