@@ -1,22 +1,18 @@
 package greencity.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.persistence.*;
+import lombok.*;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"categories", "places"})
+@Table(name = "category")
 public class Category {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,13 +20,11 @@ public class Category {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    @ManyToOne
-    private Category category;
+    @ManyToOne private Category parentCategory;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "parentCategory")
     private List<Category> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "category")
     private List<Place> places = new ArrayList<>();
-
 }
