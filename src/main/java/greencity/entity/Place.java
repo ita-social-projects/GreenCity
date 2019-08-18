@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.entity.enums.PlaceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,14 +23,17 @@ public class Place {
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false, unique = true, length = 15)
+    @Column(unique = true, length = 15)
     private String phone;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(unique = true, length = 50)
     private String email;
+
+    @Column(nullable = false)
+    private String address;
 
     @OneToMany(mappedBy = "place")
     private List<Comment> comments = new ArrayList<>();
@@ -58,5 +62,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHours = new ArrayList<>();
 
-    private Boolean isApproved = false;
+    @Enumerated(value = EnumType.ORDINAL)
+    @Column(nullable = false)
+    private PlaceStatus status = PlaceStatus.PROPOSED;
 }

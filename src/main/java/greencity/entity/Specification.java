@@ -22,7 +22,7 @@ public class Specification {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    @OneToMany(mappedBy = "specification")
+    @OneToMany(mappedBy = "specificationValue")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
 
 }
