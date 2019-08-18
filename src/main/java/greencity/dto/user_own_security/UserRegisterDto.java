@@ -1,12 +1,11 @@
 package greencity.dto.user_own_security;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.Length;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @RequiredArgsConstructor

@@ -1,10 +1,10 @@
 package greencity.entities;
 
-import javax.persistence.*;
+import greencity.entities.enums.ROLE;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import greencity.entities.enums.ROLE;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
