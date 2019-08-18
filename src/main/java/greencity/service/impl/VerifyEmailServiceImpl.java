@@ -39,8 +39,8 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     }
 
     @Override
-    public void save(User user) {
-        log.info("VerifyEmailServiceImpl save()");
+    public void save(User user) throws MailException {
+        log.info("VerifyEmailServiceImpl save() begin");
         VerifyEmail verifyEmail =
                 VerifyEmail.builder()
                         .user(user)
@@ -49,10 +49,13 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
                         .build();
         repo.save(verifyEmail);
         sentEmail(user.getEmail(), verifyEmail.getToken());
+        log.info("VerifyEmailServiceImpl save() end");
     }
 
     @Override
     public void verify(String token) {
+        log.info("VerifyEmailServiceImpl verify() begin");
+
         VerifyEmail verifyEmail =
                 repo.findByToken(token)
                         .orElseThrow(
@@ -61,6 +64,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
                                                 "No eny email to verify by this token"));
 
         delete(verifyEmail);
+        log.info("VerifyEmailServiceImpl verify() begin");
     }
 
     private Date calculateExpiryDate(Integer expiryTimeInMillisecond) {
@@ -72,18 +76,22 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     }
 
     private void sentEmail(String email, String token) throws MailException {
-        log.info("VerifyEmailServiceImpl sentEmail()");
+        log.info("VerifyEmailServiceImpl sentEmail() begin");
         String subject = "Registration Confirmation";
         String message = "Confirm your registration ";
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(email);
         simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(message + serverAddress + "?token=" + token);
+        simpleMailMessage.setText(message + serverAddress + "/verifyEmail?token=" + token);
         javaMailSender.send(simpleMailMessage);
+        log.info("VerifyEmailServiceImpl sentEmail() begin");
     }
 
+    @Override
     public void delete(VerifyEmail verifyEmail) {
+        log.info("VerifyEmailServiceImpl delete() begin");
         repo.delete(verifyEmail);
+        log.info("VerifyEmailServiceImpl end() begin");
     }
 }

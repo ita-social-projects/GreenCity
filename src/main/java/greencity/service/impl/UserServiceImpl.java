@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
     private UserRepo repo;
 
     @Override
-    public User save(User user) {
+    public User save(User user) throws BadUserException {
         if (findByEmail(user.getEmail()) != null) {
             throw new BadUserException("We have user with this email " + user.getEmail());
         }

@@ -27,8 +27,9 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         User byEmail = userService.findByEmail(dto.getEmail());
 
         if (byEmail != null) {
-            // He has already registered by else method of registration
+            // He has already registered
             if (byEmail.getUserOwnSecurity() == null) {
+                // He has already registered by else method of registration
                 repo.save(
                         UserOwnSecurity.builder()
                                 .password(dto.getPassword())
