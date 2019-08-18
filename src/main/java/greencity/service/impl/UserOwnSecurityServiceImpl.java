@@ -1,5 +1,7 @@
 package greencity.service.impl;
 
+import java.time.LocalDateTime;
+
 import greencity.dto.user_own_security.UserRegisterDto;
 import greencity.entity.User;
 import greencity.entity.UserOwnSecurity;
@@ -11,8 +13,6 @@ import greencity.service.UserService;
 import greencity.service.VerifyEmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
