@@ -11,6 +11,8 @@ import greencity.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,9 +41,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserForListDto> findAll() {
-        List<User> users = repo.findAll();
-        return null;
+    public List<UserForListDto> findAll(Pageable pageable) {
+        Page<User> users = repo.findAllByOrderByEmail(pageable);
+        return users.getContent().stream().map(UserForListDto::new).collect(Collectors.toList());
     }
 
     @Override
@@ -66,7 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void blockIUser(Long id) {
+    public void blockUser(Long id) {
         User user =
                 repo.findById(id)
                         .orElseThrow(

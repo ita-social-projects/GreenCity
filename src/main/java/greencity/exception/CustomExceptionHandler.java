@@ -1,4 +1,4 @@
-package greencity.exceptions;
+package greencity.exception;
 
 import java.util.HashMap;
 import java.util.List;
