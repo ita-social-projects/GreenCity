@@ -13,7 +13,6 @@ import greencity.service.VerifyEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     }
 
     @Override
-    public void save(User user) throws MailException {
+    public void save(User user) {
         log.info("VerifyEmailServiceImpl save() begin");
         VerifyEmail verifyEmail =
                 VerifyEmail.builder()
@@ -75,7 +74,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         return new Date(cal.getTime().getTime());
     }
 
-    private void sentEmail(String email, String token) throws MailException {
+    private void sentEmail(String email, String token) {
         log.info("VerifyEmailServiceImpl sentEmail() begin");
         String subject = "Registration Confirmation";
         String message = "Confirm your registration ";
