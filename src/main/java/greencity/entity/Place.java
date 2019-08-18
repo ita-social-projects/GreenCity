@@ -1,13 +1,13 @@
 package greencity.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -49,8 +49,7 @@ public class Place {
     @ManyToMany(mappedBy = "places")
     private List<WebPage> webPages = new ArrayList<>();
 
-    @ManyToOne
-    private Category category;
+    @ManyToOne private Category category;
 
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();

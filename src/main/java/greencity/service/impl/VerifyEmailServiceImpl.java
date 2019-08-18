@@ -1,5 +1,10 @@
 package greencity.service.impl;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.UUID;
+
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.exception.BadTokenException;
@@ -12,11 +17,6 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
 
 @Service
 @Slf4j
