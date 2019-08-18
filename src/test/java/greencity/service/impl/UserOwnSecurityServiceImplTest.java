@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.dto.user_own_security.UserRegisterDto;
+import greencity.exception.BadEmailException;
 import greencity.service.UserOwnSecurityService;
 import lombok.AllArgsConstructor;
 import org.junit.Test;
@@ -25,5 +26,11 @@ public class UserOwnSecurityServiceImplTest {
                         .password("123123")
                         .build();
         service.register(dto);
+    }
+
+    @Test(expected = BadEmailException.class)
+    public void registerSameUser() {
+       register();
+       register();
     }
 }
