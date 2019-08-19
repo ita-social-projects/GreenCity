@@ -30,6 +30,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<Location> findAll() {
         log.info("in findAll()");
+
         return locationRepo.findAll();
     }
 
@@ -42,7 +43,8 @@ public class LocationServiceImpl implements LocationService {
      */
     @Override
     public Location findById(Long id) {
-        log.info("in findById()");
+        log.info("in findById(Long id), id - {}", id);
+
         return locationRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Location not found with id " + id));
@@ -57,7 +59,8 @@ public class LocationServiceImpl implements LocationService {
      */
     @Override
     public Location save(Location location) {
-        log.info("in save()");
+        log.info("in save(Location location), {}", location);
+
         return locationRepo.saveAndFlush(location);
     }
 
@@ -71,7 +74,6 @@ public class LocationServiceImpl implements LocationService {
      */
     @Override
     public Location update(Long id, Location location) {
-        log.info("in update() start");
         Location updatable = findById(id);
 
         updatable.setLat(location.getLat());
@@ -79,7 +81,8 @@ public class LocationServiceImpl implements LocationService {
         updatable.setAddress(location.getAddress());
         updatable.setPlace(location.getPlace());
 
-        log.info("in update() save updatable value");
+        log.info("in update(), {}", location);
+
         return locationRepo.saveAndFlush(updatable);
     }
 
@@ -91,7 +94,8 @@ public class LocationServiceImpl implements LocationService {
      */
     @Override
     public void delete(Location location) {
-        log.info("in delete()");
+        log.info("in delete(Location location), {}", location);
+
         locationRepo.delete(location);
     }
 }

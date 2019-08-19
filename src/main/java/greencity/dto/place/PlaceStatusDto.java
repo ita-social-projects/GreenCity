@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class PlaceStatusDto {
     @NotNull Long id;
     @NotNull PlaceStatus status;

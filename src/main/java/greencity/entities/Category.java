@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(exclude = {"id", "categories", "places"})
+@ToString(exclude = {"categories", "places"})
 @Table(name = "category")
 public class Category {
     @Id

@@ -85,7 +85,7 @@ public class OpeningHoursServiceImplTest {
         assertEquals(genericEntity, foundEntity);
     }
 
-     @Test(expected = NotFoundException.class)
+    @Test(expected = NotFoundException.class)
     public void deleteTest() {
         OpeningHours genericEntity =
                 OpeningHours.builder()
@@ -99,28 +99,26 @@ public class OpeningHoursServiceImplTest {
         openingHoursService.findById(1L);
     }
 
-//    @Test
-//    public void updateTest() throws InterruptedException {
-//        OpeningHours genericEntity =
-//                OpeningHours.builder()
-//                        .openTime(LocalTime.of(9, 0))
-//                        .closeTime(LocalTime.of(18, 0))
-//                        .weekDay(WeekDay.MONDAY)
-//                        .build();
-//        openingHoursService.save(genericEntity);
-//
-//        OpeningHours updated =
-//                OpeningHours.builder()
-//                        .id(1L)
-//                        .openTime(LocalTime.of(9, 0))
-//                        .closeTime(LocalTime.of(19, 0))
-//                        .weekDay(WeekDay.MONDAY)
-//                        .build();
-//        openingHoursService.update(1L, updated);
-//        Thread.sleep(1000);
-//
-//        OpeningHours foundEntity = openingHoursService.findById(1L);
-//
-//        assertEquals(updated, foundEntity);
-//    }
+    @Test
+    public void updateTest() {
+        OpeningHours genericEntity =
+                OpeningHours.builder()
+                        .openTime(LocalTime.of(9, 0))
+                        .closeTime(LocalTime.of(18, 0))
+                        .weekDay(WeekDay.MONDAY)
+                        .build();
+        openingHoursService.save(genericEntity);
+
+        OpeningHours updated =
+                OpeningHours.builder()
+                        .openTime(LocalTime.of(9, 0))
+                        .closeTime(LocalTime.of(19, 0))
+                        .weekDay(WeekDay.MONDAY)
+                        .build();
+        openingHoursService.update(1L, updated);
+
+        OpeningHours foundEntity = openingHoursService.findById(1L);
+
+        assertEquals(updated.getCloseTime(), foundEntity.getCloseTime());
+    }
 }

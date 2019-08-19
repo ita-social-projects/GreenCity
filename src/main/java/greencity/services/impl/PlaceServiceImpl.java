@@ -5,16 +5,28 @@ import greencity.entities.enums.PlaceStatus;
 import greencity.exceptions.NotFoundException;
 import greencity.repositories.PlaceRepo;
 import greencity.services.PlaceService;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepo placeRepo;
+
+    /**
+     * Get current date and time in zone.
+     *
+     * @param zoneId - zone id.
+     * @return LocalDateTime object.
+     */
+    public static LocalDateTime getDateTime(String zoneId) {
+        log.info("in getDateTime(String zoneId), get time in timezone - {}", zoneId);
+        return LocalDateTime.now(ZoneId.of(zoneId)).withSecond(0).withNano(0);
+    }
 
     /**
      * Update status for the Place and set the time of modification.
@@ -29,7 +41,12 @@ public class PlaceServiceImpl implements PlaceService {
         Place updatable = findById(placeId);
 
         updatable.setStatus(placeStatus);
-        updatable.setModifiedDate(LocalDate.now(ZoneId.of("Europe/Kiev")));
+        updatable.setModifiedDate(PlaceServiceImpl.getDateTime("Europe/Kiev"));
+
+        log.info(
+                "in updateStatus(Long placeId, PlaceStatus placeStatus) update place with id - {} and status - {}",
+                placeId,
+                placeStatus.toString());
 
         return placeRepo.saveAndFlush(updatable);
     }
@@ -43,6 +60,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public Place findById(Long id) {
+        log.info("in findById(Long id), find place with id - {}", id);
         return placeRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Place not found with id " + id));
@@ -57,6 +75,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public Place save(Place place) {
+        log.info("in save(Place place), save place {}", place.getName());
         return placeRepo.saveAndFlush(place);
     }
 }

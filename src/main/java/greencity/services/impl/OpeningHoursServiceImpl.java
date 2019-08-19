@@ -42,10 +42,11 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      */
     @Override
     public OpeningHours findById(Long id) {
-        log.info("in findById()");
+        log.info("in findById(Long id), with id - {} ", id);
+
         return openingHoursRepo
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id " + id));
+                .orElseThrow(() -> new NotFoundException("OpeningHours not found with id " + id));
     }
 
     /**
@@ -57,7 +58,8 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      */
     @Override
     public OpeningHours save(OpeningHours hours) {
-        log.info("in save()");
+        log.info("in save(OpeningHours hours), {}", hours);
+
         return openingHoursRepo.saveAndFlush(hours);
     }
 
@@ -71,15 +73,15 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      */
     @Override
     public OpeningHours update(Long id, OpeningHours updatedHours) {
-        log.info("in update() start");
         OpeningHours updatable = findById(id);
 
         updatable.setOpenTime(updatedHours.getOpenTime());
-        updatable.setCloseTime(updatable.getCloseTime());
-        updatable.setWeekDay(updatable.getWeekDay());
-        updatable.setPlace(updatable.getPlace());
+        updatable.setCloseTime(updatedHours.getCloseTime());
+        updatable.setWeekDay(updatedHours.getWeekDay());
+        updatable.setPlace(updatedHours.getPlace());
 
-        log.info("in update() save updatable value");
+        log.info("in update(Long id, OpeningHours updatedHours), {}", updatedHours);
+
         return openingHoursRepo.saveAndFlush(updatable);
     }
 
@@ -91,7 +93,8 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      */
     @Override
     public void delete(OpeningHours hours) {
-        log.info("in delete()");
+        log.info("in delete(OpeningHours hours), delete {}", hours);
+
         openingHoursRepo.delete(hours);
     }
 }
