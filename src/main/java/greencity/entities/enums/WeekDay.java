@@ -1,5 +1,5 @@
 package greencity.entities.enums;
 
-public enum WeekDays {
+public enum WeekDay {
     MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 }
