@@ -25,9 +25,11 @@ public class CategoryServiceImpl implements CategoryService {
      * Find all categories from DB.
      *
      * @return List of categories.
+     * @author Nazar Vladyka
      */
     @Override
     public List<Category> findAll() {
+        log.info("in findAll()");
         return categoryRepo.findAll();
     }
 
@@ -36,9 +38,11 @@ public class CategoryServiceImpl implements CategoryService {
      *
      * @param id - Category id.
      * @return Category entity.
+     * @author Nazar Vladyka
      */
     @Override
     public Category findById(Long id) {
+        log.info("in findById()");
         return categoryRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Category not found with id " + id));
@@ -49,9 +53,11 @@ public class CategoryServiceImpl implements CategoryService {
      *
      * @param category - entity of Category.
      * @return saved Category.
+     * @author Nazar Vladyka
      */
     @Override
     public Category save(Category category) {
+        log.info("in save()");
         return categoryRepo.saveAndFlush(category);
     }
 
@@ -61,9 +67,11 @@ public class CategoryServiceImpl implements CategoryService {
      * @param id - Category id.
      * @param category - Category entity.
      * @return Category updated entity.
+     * @author Nazar Vladyka
      */
     @Override
     public Category update(Long id, Category category) {
+        log.info("in update() start");
         Category updatable = findById(id);
 
         updatable.setName(category.getName());
@@ -71,6 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
         updatable.setCategories(category.getCategories());
         updatable.setPlaces(category.getPlaces());
 
+        log.info("in update() save updatable value");
         return categoryRepo.saveAndFlush(updatable);
     }
 
@@ -78,9 +87,11 @@ public class CategoryServiceImpl implements CategoryService {
      * Delete entity from DB.
      *
      * @param category - Category entity.
+     * @author Nazar Vladyka
      */
     @Override
     public void delete(Category category) {
+        log.info("in delete()");
         categoryRepo.delete(category);
     }
 }

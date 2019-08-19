@@ -6,6 +6,7 @@ import greencity.repositories.OpeningHoursRepo;
 import greencity.services.OpeningHoursService;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OpeningHoursServiceImpl implements OpeningHoursService {
     private final OpeningHoursRepo openingHoursRepo;
 
@@ -23,9 +25,11 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      * Find all opening hours from DB.
      *
      * @return List of opening hours.
+     * @author Nazar Vladyka
      */
     @Override
     public List<OpeningHours> findAll() {
+        log.info("in findAll()");
         return openingHoursRepo.findAll();
     }
 
@@ -34,9 +38,11 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      *
      * @param id - OpeningHours id.
      * @return OpeningHours entity.
+     * @author Nazar Vladyka
      */
     @Override
     public OpeningHours findById(Long id) {
+        log.info("in findById()");
         return openingHoursRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id " + id));
@@ -47,9 +53,11 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      *
      * @param hours - entity of OpeningHours.
      * @return saved OpeningHours.
+     * @author Nazar Vladyka
      */
     @Override
     public OpeningHours save(OpeningHours hours) {
+        log.info("in save()");
         return openingHoursRepo.saveAndFlush(hours);
     }
 
@@ -59,9 +67,11 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      * @param id - OpeningHours id.
      * @param updatedHours - OpeningHours entity.
      * @return OpeningHours updated entity.
+     * @author Nazar Vladyka
      */
     @Override
     public OpeningHours update(Long id, OpeningHours updatedHours) {
+        log.info("in update() start");
         OpeningHours updatable = findById(id);
 
         updatable.setOpenTime(updatedHours.getOpenTime());
@@ -69,6 +79,7 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
         updatable.setWeekDay(updatable.getWeekDay());
         updatable.setPlace(updatable.getPlace());
 
+        log.info("in update() save updatable value");
         return openingHoursRepo.saveAndFlush(updatable);
     }
 
@@ -76,9 +87,11 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
      * Delete entity from DB.
      *
      * @param hours - OpeningHours entity.
+     * @author Nazar Vladyka
      */
     @Override
     public void delete(OpeningHours hours) {
+        log.info("in delete()");
         openingHoursRepo.delete(hours);
     }
 }
