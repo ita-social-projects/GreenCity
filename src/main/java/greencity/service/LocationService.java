@@ -15,6 +15,4 @@ public interface LocationService {
     List<Location> findAll();
 
     void deleteById(Long id);
-
-
 }

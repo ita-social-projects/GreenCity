@@ -1,14 +1,15 @@
 package greencity.entity;
 
 import greencity.entity.enums.PlaceStatus;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
+
+import greencity.entity.enums.PlaceType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -23,7 +24,9 @@ public class Place {
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
+    private String address;
+
     private String description;
 
     @Column(unique = true, length = 15)
@@ -31,9 +34,6 @@ public class Place {
 
     @Column(unique = true, length = 50)
     private String email;
-
-    @Column(nullable = false)
-    private String address;
 
     @OneToMany(mappedBy = "place")
     private List<Comment> comments = new ArrayList<>();
@@ -53,14 +53,17 @@ public class Place {
     @ManyToMany(mappedBy = "places")
     private List<WebPage> webPages = new ArrayList<>();
 
-    @ManyToOne
-    private Category category;
+    @ManyToOne private Category category;
 
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
 
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHours = new ArrayList<>();
+
+    @Enumerated(value = EnumType.ORDINAL)
+    @Column(nullable = false)
+    private PlaceType placeType;
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PlaceService {
 
-    Place save(PlaceAddDto place);
+    Place save(PlaceAddDto dto);
 
     Place update(Place place);
 
