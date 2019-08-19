@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -8,6 +7,7 @@ import java.util.UUID;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.exception.BadTokenException;
+import greencity.exception.UserActivationEmailTokenExpiredException;
 import greencity.repository.VerifyEmailRepo;
 import greencity.service.VerifyEmailService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class VerifyEmailServiceImpl implements VerifyEmailService {
 
-    @Value("${verifyEmailTime}")
+    @Value("${verifyEmailTimeHour}")
     private String expireTime;
 
     @Value("${address}")
@@ -54,24 +54,28 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     @Override
     public void verify(String token) {
         log.info("VerifyEmailServiceImpl verify() begin");
-
         VerifyEmail verifyEmail =
                 repo.findByToken(token)
                         .orElseThrow(
                                 () ->
                                         new BadTokenException(
                                                 "No eny email to verify by this token"));
-
-        delete(verifyEmail);
+        if (isDateValidate(verifyEmail.getExpiryDate())) {
+            log.info("VerifyEmailServiceImpl verify(). Date of user email is valid.");
+            delete(verifyEmail);
+        } else {
+            log.info("VerifyEmailServiceImpl verify(). User late with verify. Token is invalid.");
+            throw new UserActivationEmailTokenExpiredException(
+                    "User late with verify. Token is invalid.");
+        }
         log.info("VerifyEmailServiceImpl verify() begin");
     }
 
-    private Date calculateExpiryDate(Integer expiryTimeInMillisecond) {
+    private Date calculateExpiryDate(Integer expiryTimeInHour) {
         log.info("VerifyEmailServiceImpl calculateExpiryDate()");
         Calendar cal = Calendar.getInstance();
-        cal.setTime(new Timestamp(cal.getTime().getTime()));
-        cal.add(Calendar.MILLISECOND, expiryTimeInMillisecond);
-        return new Date(cal.getTime().getTime());
+        cal.add(Calendar.HOUR, expiryTimeInHour);
+        return cal.getTime();
     }
 
     private void sentEmail(String email, String token) {
@@ -84,13 +88,17 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(message + serverAddress + "/verifyEmail?token=" + token);
         javaMailSender.send(simpleMailMessage);
-        log.info("VerifyEmailServiceImpl sentEmail() begin");
+        log.info("VerifyEmailServiceImpl sentEmail() end");
+    }
+
+    private boolean isDateValidate(Date emailExpiredDate) {
+        return new Date().before(emailExpiredDate);
     }
 
     @Override
     public void delete(VerifyEmail verifyEmail) {
         log.info("VerifyEmailServiceImpl delete() begin");
         repo.delete(verifyEmail);
-        log.info("VerifyEmailServiceImpl end() begin");
+        log.info("VerifyEmailServiceImpl delete() end");
     }
 }
