@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"categories", "places"})
+@EqualsAndHashCode(exclude = {"id", "categories", "places"})
 @Table(name = "category")
 public class Category {
     @Id

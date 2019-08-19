@@ -2,6 +2,7 @@ package greencity.entities;
 
 import greencity.entities.enums.PlaceStatus;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -61,7 +62,7 @@ public class Place {
     @ManyToOne private User author;
 
     @Column(name = "modified_date")
-    private LocalDate modifiedDate = LocalDate.now();
+    private LocalDate modifiedDate = LocalDate.now(ZoneId.of("Europe/Kiev"));
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(name = "status")
