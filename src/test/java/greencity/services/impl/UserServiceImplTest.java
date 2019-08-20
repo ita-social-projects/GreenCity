@@ -47,14 +47,14 @@ public class UserServiceImplTest {
                 .lastName("test")
                 .email("test@gmail.com")
                 .role(ROLE.USER_ROLE)
-                .isBlocked(false)
+                .isBanned(false)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
         userService.save(user);
-        userService.blockUser(user.getId());
+        userService.banUser(user.getId());
         User expectedUser = userService.findById(user.getId());
-        assertEquals(true, expectedUser.getIsBlocked());
+        assertEquals(true, expectedUser.getIsBanned());
     }
 
     @Test
