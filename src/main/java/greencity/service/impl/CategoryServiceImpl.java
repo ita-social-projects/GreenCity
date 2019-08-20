@@ -21,12 +21,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category save(CategoryDto dto) {
-        log.info("In save method");
+        log.info("In save category method");
         Boolean byName = categoryRepo.existsByName(dto.getName());
         if (byName) {
             throw new BadCategoryRequestException("Category by this name already exist.");
         }
-        log.info("Ready for creating new Category");
         return categoryRepo.save(Category.builder().name(dto.getName()).build());
     }
 
@@ -40,6 +39,10 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepo
                 .findById(id)
                 .orElseThrow(() -> new BadIdException("No category with this id:" + id));
+
+//        return categoryRepo
+//            .findById(id)
+//            .orElse(new Category(categoryRepo.save(Category.builder().name(dto.getName()).build())));
     }
 
     @Override

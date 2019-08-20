@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
-import greencity.entity.enums.PlaceType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,14 +25,6 @@ public class Place {
 
     @Column(nullable = false)
     private String address;
-
-    private String description;
-
-    @Column(unique = true, length = 15)
-    private String phone;
-
-    @Column(unique = true, length = 50)
-    private String email;
 
     @OneToMany(mappedBy = "place")
     private List<Comment> comments = new ArrayList<>();
@@ -58,12 +49,11 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
 
+    @ManyToOne
+    private User author;
+
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHours = new ArrayList<>();
-
-    @Enumerated(value = EnumType.ORDINAL)
-    @Column(nullable = false)
-    private PlaceType placeType;
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)

@@ -1,9 +1,12 @@
 package greencity.dto.openingHours;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.entity.OpeningHours;
 import greencity.entity.enums.WeekDays;
 import java.time.LocalTime;
 import javax.validation.constraints.NotNull;
+
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -11,12 +14,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OpeningHoursDto {
 
-    @NotNull private LocalTime openTime;
-
-    @NotNull private LocalTime closeTime;
+    @NotNull
+    @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
+    @ApiModelProperty(dataType = "java.lang.String")
+    private LocalTime openTime;
 
     @NotNull
-    private WeekDays weekDays;
+    @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
+    @ApiModelProperty(dataType = "java.lang.String")
+    private LocalTime closeTime;
+
+    @NotNull private WeekDays weekDays;
 
     public OpeningHoursDto(OpeningHours openingHours) {
         this.openTime = openingHours.getOpenTime();

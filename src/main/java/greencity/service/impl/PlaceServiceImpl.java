@@ -4,14 +4,10 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Location;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
-import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadIdException;
 import greencity.exception.BadPlaceRequestException;
 import greencity.repository.PlaceRepo;
-import greencity.service.CategoryService;
-import greencity.service.LocationService;
-import greencity.service.OpeningHoursService;
-import greencity.service.PlaceService;
+import greencity.service.*;
 
 import java.util.List;
 
@@ -26,39 +22,32 @@ public class PlaceServiceImpl implements PlaceService {
 
     private PlaceRepo placeRepo;
 
-    private PlaceService placeService;
-
     private CategoryService categoryService;
 
     private LocationService locationService;
 
     private OpeningHoursService openingHoursService;
 
+    private UserService userService;
+
     @Override
     public Place save(PlaceAddDto dto) {
-        log.info("In save method");
-        Place byAddress = placeService.findByAddress(dto.getAddress());
+        log.info("In save place method");
+        Place byAddress = placeRepo.findByAddress(dto.getAddress());
         if (byAddress != null) {
-            log.info("Place exists be address.");
             throw new BadPlaceRequestException("Place by this address already exist.");
         }
-        log.info("Place ready for saving");
-        Location location =
-                locationService.save(
-                        Location.builder()
-                                .lat(dto.getLocationDto().getLat())
-                                .lng(dto.getLocationDto().getLng())
-                                .build());
+
         Place place =
                 placeRepo.save(
                         Place.builder()
                                 .name(dto.getName())
                                 .address(dto.getAddress())
                                 .category(categoryService.findById(dto.getCategoryId()))
-                                .location(location)
-                                .placeType(dto.getPlaceType())
-                                .status(PlaceStatus.PROPOSED)
+                                .author(userService.findById(dto.getAuthorId()))
+                                .status(dto.getPlaceStatus())
                                 .build());
+
         dto.getOpeningHoursDtoList()
                 .forEach(
                         openingHoursDto -> {
@@ -70,6 +59,14 @@ public class PlaceServiceImpl implements PlaceService {
                             openingHoursService.save(openingHours);
                         });
 
+        Location location =
+                locationService.save(
+                        Location.builder()
+                                .lat(dto.getLocationDto().getLat())
+                                .lng(dto.getLocationDto().getLng())
+                                .place(place)
+                                .build());
+
         return place;
     }
 
@@ -80,13 +77,13 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Override
     public Place findByAddress(String address) {
-        log.info("In findByAddress() method.");
+        log.info("In findByAddress() place method.");
         return placeRepo.findByAddress(address);
     }
 
     @Override
     public void deleteById(Long id) {
-        log.info("In deleteById() method.");
+        log.info("In deleteById() place method.");
         Place place = findById(id);
         placeRepo.delete(place);
         log.info("This place was deleted.");
@@ -102,7 +99,7 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Override
     public List<Place> findAll() {
-        log.info("In findAll() method.");
+        log.info("In findAll() place method.");
         return placeRepo.findAll();
     }
 }

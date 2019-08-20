@@ -4,7 +4,6 @@ import greencity.dto.location.LocationDto;
 import greencity.dto.openingHours.OpeningHoursDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.entity.enums.PlaceType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,9 +31,9 @@ public class PlaceAddDto {
 
     @NotNull private Long categoryId;
 
-    @NotNull private List<OpeningHoursDto> openingHoursDtoList;
+    @NotNull private Long authorId;
 
-    @NotNull private PlaceType placeType;
+    @NotNull private List<OpeningHoursDto> openingHoursDtoList;
 
     @NotNull private PlaceStatus placeStatus = PlaceStatus.PROPOSED;
 
@@ -43,11 +42,11 @@ public class PlaceAddDto {
         this.address = place.getAddress();
         this.locationDto = new LocationDto(place.getLocation());
         this.categoryId = place.getCategory().getId();
+        this.authorId = place.getAuthor().getId();
         this.openingHoursDtoList =
                 place.getOpeningHours().stream()
                         .map(OpeningHoursDto::new)
                         .collect(Collectors.toList());
-        this.placeType = place.getPlaceType();
         this.placeStatus = place.getStatus();
     }
 }
