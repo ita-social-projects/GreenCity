@@ -31,6 +31,7 @@ public class UserServiceImplTest {
                         .role(ROLE.USER_ROLE)
                         .isBlocked(false)
                         .lastVisit(LocalDateTime.now())
+                        .dateOfRegistration(LocalDateTime.now())
                         .build();
         userService.save(user);
         userService.blockUser(user.getId());
@@ -46,13 +47,13 @@ public class UserServiceImplTest {
                 .lastName("test")
                 .email("test@gmail.com")
                 .role(ROLE.USER_ROLE)
-                .isBanned(false)
+                .isBlocked(false)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
         userService.save(user);
-        userService.banUser(user.getId());
+        userService.blockUser(user.getId());
         User expectedUser = userService.findById(user.getId());
-        assertEquals(true, expectedUser.getIsBanned());
+        assertEquals(true, expectedUser.getIsBlocked());
     }
 }
