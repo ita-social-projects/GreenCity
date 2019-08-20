@@ -56,4 +56,21 @@ public class UserServiceImplTest {
         User expectedUser = userService.findById(user.getId());
         assertEquals(true, expectedUser.getIsBlocked());
     }
+
+    @Test
+    public void updateRoleTest() {
+        User user =
+            User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@gmail.com")
+                .role(ROLE.USER_ROLE)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
+        userService.save(user);
+        userService.updateRole(user.getId(), ROLE.MODERATOR_ROLE);
+        User expectedUser = userService.findById(user.getId());
+        assertEquals(ROLE.MODERATOR_ROLE, expectedUser.getRole());
+    }
 }
