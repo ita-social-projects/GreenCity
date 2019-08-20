@@ -1,7 +1,7 @@
 package greencity.entities;
 
 import greencity.entities.enums.PlaceStatus;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data
@@ -61,7 +62,8 @@ public class Place {
     @ManyToOne private User author;
 
     @Column(name = "modified_date")
-    private LocalDate modifiedDate = LocalDate.now();
+    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
+    private LocalDateTime modifiedDate = LocalDateTime.now();
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(name = "status")
