@@ -7,7 +7,6 @@ import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +37,23 @@ public class UserServiceImplTest {
         userService.blockUser(user.getId());
         User expectedUser = userService.findById(user.getId());
         assertEquals(true, expectedUser.getIsBlocked());
+    }
+
+    @Test
+    public void banUserTest() {
+        User user =
+            User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@gmail.com")
+                .role(ROLE.USER_ROLE)
+                .isBanned(false)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
+        userService.save(user);
+        userService.banUser(user.getId());
+        User expectedUser = userService.findById(user.getId());
+        assertEquals(true, expectedUser.getIsBanned());
     }
 }
