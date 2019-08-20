@@ -23,5 +23,7 @@ public interface UserService {
 
     void blockUser(Long id);
 
+    void banUser(Long id);
+
     List<UserForListDto> findAll(Pageable pageable);
 }

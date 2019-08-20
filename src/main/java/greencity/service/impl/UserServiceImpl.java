@@ -73,6 +73,16 @@ public class UserServiceImpl implements UserService {
                 repo.findById(id)
                         .orElseThrow(
                                 () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        user.setIsBlocked(true);
+        repo.save(user);
+    }
+
+    @Override
+    public void banUser(Long id) {
+        User user =
+            repo.findById(id)
+                .orElseThrow(
+                    () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         user.setIsBanned(true);
         repo.save(user);
     }
