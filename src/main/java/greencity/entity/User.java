@@ -4,6 +4,7 @@ import greencity.entity.enums.ROLE;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -16,6 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"firstName", "lastName", "email", "photo", "role",
+    "isBanned", "isBlocked", "lastVisit", "comments", "favoritePlaces", "rates"})
 @Table(name = "_user")
 public class User {
     @Id
