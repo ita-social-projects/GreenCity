@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import greencity.entity.User;
@@ -11,7 +12,6 @@ import greencity.exception.UserActivationEmailTokenExpiredException;
 import greencity.repository.VerifyEmailRepo;
 import greencity.service.VerifyEmailService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -31,7 +31,6 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
 
     private JavaMailSender javaMailSender;
 
-    @Autowired
     public VerifyEmailServiceImpl(VerifyEmailRepo repo, JavaMailSender javaMailSender) {
         this.repo = repo;
         this.javaMailSender = javaMailSender;
@@ -39,7 +38,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
 
     @Override
     public void save(User user) {
-        log.info("VerifyEmailServiceImpl save() begin");
+        log.info("begin");
         VerifyEmail verifyEmail =
                 VerifyEmail.builder()
                         .user(user)
@@ -48,12 +47,12 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
                         .build();
         repo.save(verifyEmail);
         sentEmail(user.getEmail(), verifyEmail.getToken());
-        log.info("VerifyEmailServiceImpl save() end");
+        log.info("end");
     }
 
     @Override
     public void verify(String token) {
-        log.info("VerifyEmailServiceImpl verify() begin");
+        log.info("begin");
         VerifyEmail verifyEmail =
                 repo.findByToken(token)
                         .orElseThrow(
@@ -61,44 +60,50 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
                                         new BadTokenException(
                                                 "No eny email to verify by this token"));
         if (isDateValidate(verifyEmail.getExpiryDate())) {
-            log.info("VerifyEmailServiceImpl verify(). Date of user email is valid.");
+            log.info("Date of user email is valid.");
             delete(verifyEmail);
         } else {
-            log.info("VerifyEmailServiceImpl verify(). User late with verify. Token is invalid.");
+            log.info("User late with verify. Token is invalid.");
             throw new UserActivationEmailTokenExpiredException(
                     "User late with verify. Token is invalid.");
         }
-        log.info("VerifyEmailServiceImpl verify() begin");
+        log.info("end");
+    }
+
+    @Override
+    public List<VerifyEmail> findAll() {
+        return repo.findAll();
     }
 
     private Date calculateExpiryDate(Integer expiryTimeInHour) {
-        log.info("VerifyEmailServiceImpl calculateExpiryDate()");
+        log.info("begin");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.HOUR, expiryTimeInHour);
+        log.info("end");
         return cal.getTime();
     }
 
     private void sentEmail(String email, String token) {
-        log.info("VerifyEmailServiceImpl sentEmail() begin");
+        log.info("begin");
         String subject = "Registration Confirmation";
         String message = "Confirm your registration ";
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(email);
         simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(message + serverAddress + "/verifyEmail?token=" + token);
+        simpleMailMessage.setText(message + serverAddress + "/ownSecurity/verifyEmail?token=" + token);
         javaMailSender.send(simpleMailMessage);
-        log.info("VerifyEmailServiceImpl sentEmail() end");
+        log.info("end");
     }
 
-    private boolean isDateValidate(Date emailExpiredDate) {
+    public boolean isDateValidate(Date emailExpiredDate) {
         return new Date().before(emailExpiredDate);
     }
 
     @Override
     public void delete(VerifyEmail verifyEmail) {
-        log.info("VerifyEmailServiceImpl delete() begin");
+        log.info("begin");
         repo.delete(verifyEmail);
-        log.info("VerifyEmailServiceImpl delete() end");
+        log.info("end");
     }
 }

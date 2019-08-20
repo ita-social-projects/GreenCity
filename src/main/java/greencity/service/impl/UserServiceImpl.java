@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
     private UserRepo repo;
 
     @Override
-    public User save(User user) throws BadUserException {
+    public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
             throw new BadUserException("We have user with this email " + user.getEmail());
         }
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(Long id) {
         User user = findById(id);
-        repo.delete(user);
+         repo.delete(user);
     }
 
     @Override

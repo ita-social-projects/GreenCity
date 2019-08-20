@@ -12,16 +12,21 @@ import greencity.service.UserOwnSecurityService;
 import greencity.service.UserService;
 import greencity.service.VerifyEmailService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
 
     private UserOwnSecurityRepo repo;
     private UserService userService;
     private VerifyEmailService verifyEmailService;
 
+    @Transactional
     @Override
     public void register(UserRegisterDto dto) {
         User byEmail = userService.findByEmail(dto.getEmail());
@@ -54,5 +59,28 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                     UserOwnSecurity.builder().password(dto.getPassword()).user(savedUser).build());
             verifyEmailService.save(savedUser);
         }
+    }
+
+    @Override
+    public void delete(UserOwnSecurity userOwnSecurity) {
+        repo.delete(userOwnSecurity);
+    }
+
+    @Scheduled(fixedRate = 86400000)
+    @Override
+    public void deleteNotActiveEmailUsers() {
+        // 86400000 - доба
+        log.info("begin");
+        verifyEmailService
+                .findAll()
+                .forEach(
+                        verifyEmail -> {
+                            if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
+                                delete(verifyEmail.getUser().getUserOwnSecurity());
+                                verifyEmailService.delete(verifyEmail);
+                                userService.deleteById(verifyEmail.getUser().getId());
+                            }
+                        });
+        log.info("end");
     }
 }
