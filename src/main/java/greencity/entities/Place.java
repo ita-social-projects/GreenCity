@@ -2,9 +2,7 @@ package greencity.entities;
 
 import greencity.entities.enums.PlaceStatus;
 import greencity.services.impl.PlaceServiceImpl;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -12,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data

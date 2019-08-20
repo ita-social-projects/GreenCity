@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "_user")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,12 +51,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<FavoritePlace> favoritePlaces = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author")
+    private List<Place> addedPlaces = new ArrayList<>();
+
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userSecurity;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
-
-    @OneToMany(mappedBy = "author")
-    private List<Place> addedPlaces = new ArrayList<>();
 }
