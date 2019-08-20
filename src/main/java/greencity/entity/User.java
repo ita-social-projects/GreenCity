@@ -40,6 +40,8 @@ public class User {
 
     private Boolean isBanned = false;
 
+    private Boolean isBlocked = false;
+
     @Column(nullable = false)
     private LocalDateTime lastVisit;
 
