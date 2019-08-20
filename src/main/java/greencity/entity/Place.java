@@ -1,13 +1,14 @@
 package greencity.entity;
 
+import greencity.entities.enums.PlaceStatus;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -49,8 +50,7 @@ public class Place {
     @ManyToMany(mappedBy = "places")
     private List<WebPage> webPages = new ArrayList<>();
 
-    @ManyToOne
-    private Category category;
+    @ManyToOne private Category category;
 
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
@@ -58,5 +58,12 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHours = new ArrayList<>();
 
-    private Boolean isApproved = false;
+    @ManyToOne private User author;
+
+    @Column(name = "modified_date")
+    private LocalDate modifiedDate = LocalDate.now();
+
+    @Enumerated(value = EnumType.ORDINAL)
+    @Column(name = "status")
+    private PlaceStatus status = PlaceStatus.PROPOSED;
 }
