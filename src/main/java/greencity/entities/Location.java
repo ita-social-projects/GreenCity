@@ -22,5 +22,8 @@ public class Location {
     @Column(nullable = false)
     private Double lng;
 
+    @Column(name = "address", nullable = false)
+    private String address;
+
     @OneToOne private Place place;
 }

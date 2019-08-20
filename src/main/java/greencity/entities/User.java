@@ -15,13 +15,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String name;
+    @Column(nullable = false, length = 20)
+    private String firstName;
+
+    @Column(nullable = false, length = 20)
+    private String lastName;
 
     @Column(unique = true, nullable = false, length = 50)
     private String email;
@@ -31,12 +35,15 @@ public class User {
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)
-    private ROLE role;
+    private ROLE role = ROLE.USER_ROLE;
 
     private Boolean isBanned = false;
 
     @Column(nullable = false)
     private LocalDateTime lastVisit;
+
+    @Column(nullable = false)
+    private LocalDateTime dateOfRegistration = LocalDateTime.now();
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
@@ -44,8 +51,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<FavoritePlace> favoritePlaces = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author")
+    private List<Place> addedPlaces = new ArrayList<>();
+
     @OneToOne(mappedBy = "user")
-    private UserSecurity userSecurity;
+    private UserOwnSecurity userSecurity;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();

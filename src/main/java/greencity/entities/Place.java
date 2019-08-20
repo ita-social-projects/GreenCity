@@ -1,5 +1,7 @@
 package greencity.entities;
 
+import greencity.entities.enums.PlaceStatus;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -56,5 +58,12 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHours = new ArrayList<>();
 
-    private Boolean isApproved = false;
+    @ManyToOne private User author;
+
+    @Column(name = "modified_date")
+    private LocalDate modifiedDate = LocalDate.now();
+
+    @Enumerated(value = EnumType.ORDINAL)
+    @Column(name = "status")
+    private PlaceStatus status = PlaceStatus.PROPOSED;
 }

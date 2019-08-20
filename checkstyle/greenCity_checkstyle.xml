@@ -16,6 +16,7 @@
 
     The only difference from google_checks is a identity size, here it's 4.
     Length of abbreviation - 100.
+    AvoidStarImport disabled.
  -->
 
 <module name="Checker">
@@ -51,7 +52,7 @@
         </module>
         <module name="LineLength">
             <property name="max" value="100"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+            <property name="ignorePattern" value="^package.*|a href|href|http://|https://|ftp://"/>
         </module>
         <!--        <module name="AvoidStarImport"/>-->
         <module name="OneTopLevelClass"/>
