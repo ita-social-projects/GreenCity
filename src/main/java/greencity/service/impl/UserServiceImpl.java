@@ -11,7 +11,6 @@ import greencity.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -81,9 +80,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void banUser(Long id) {
         User user =
-            repo.findById(id)
-                .orElseThrow(
-                    () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+                repo.findById(id)
+                        .orElseThrow(
+                                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         user.setIsBanned(true);
         repo.save(user);
     }
