@@ -3,7 +3,7 @@ package greencity.entity;
 import java.time.LocalTime;
 import javax.persistence.*;
 
-import greencity.entity.enums.WeekDays;
+import greencity.entity.enums.WeekDay;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +29,7 @@ public class OpeningHours {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime closeTime;
 
-    @Enumerated private WeekDays weekDays;
+    @Enumerated private WeekDay weekDay;
 
     @ManyToOne private Place place;
 }

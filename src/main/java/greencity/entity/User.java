@@ -1,15 +1,15 @@
 package greencity.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
-
 import greencity.entity.enums.ROLE;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -42,13 +42,16 @@ public class User {
     private LocalDateTime lastVisit;
 
     @Column(nullable = false)
-    private LocalDateTime dateOfRegistration;
+    private LocalDateTime dateOfRegistration = LocalDateTime.now();
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<FavoritePlace> favoritePlaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author")
+    private List<Place> addedPlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;

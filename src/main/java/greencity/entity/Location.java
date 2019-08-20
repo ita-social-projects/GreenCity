@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import javax.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +21,9 @@ public class Location {
 
     @Column(nullable = false)
     private Double lng;
+
+    @Column(name = "address", nullable = false)
+    private String address;
 
     @OneToOne private Place place;
 }
