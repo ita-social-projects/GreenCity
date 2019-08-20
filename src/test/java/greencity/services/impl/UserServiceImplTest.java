@@ -31,7 +31,6 @@ public class UserServiceImplTest {
                         .role(ROLE.USER_ROLE)
                         .isBlocked(false)
                         .lastVisit(LocalDateTime.now())
-                        .dateOfRegistration(LocalDateTime.now())
                         .build();
         userService.save(user);
         userService.blockUser(user.getId());

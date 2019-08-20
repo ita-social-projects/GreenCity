@@ -49,7 +49,7 @@ public class User {
     private LocalDateTime lastVisit;
 
     @Column(nullable = false)
-    private LocalDateTime dateOfRegistration;
+    private LocalDateTime dateOfRegistration = LocalDateTime.now();
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
