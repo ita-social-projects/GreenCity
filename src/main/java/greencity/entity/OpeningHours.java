@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.entities.enums.WeekDay;
+import greencity.entity.enums.WeekDay;
 import java.time.LocalTime;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.entities.enums.PlaceStatus;
+import greencity.entity.enums.PlaceStatus;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
