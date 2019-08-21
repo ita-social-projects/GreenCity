@@ -4,11 +4,13 @@ import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.repository.PlaceRepo;
+import greencity.service.DateTimeService;
 import greencity.service.PlaceService;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,19 +18,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepo placeRepo;
-
-    /**
-     * Get current date and time in zone.
-     *
-     * @param zoneId - zone id.
-     * @return LocalDateTime object.
-     * @author Nazar Vladyka.
-     */
-    public static LocalDateTime getDateTime(String zoneId) {
-        log.info("in getDateTime(String zoneId), get time in timezone - {}", zoneId);
-
-        return LocalDateTime.now(ZoneId.of(zoneId)).withSecond(0).withNano(0);
-    }
 
     /**
      * Update status for the Place and set the time of modification.
@@ -47,7 +36,7 @@ public class PlaceServiceImpl implements PlaceService {
                                 () -> new NotFoundException("Place not found with id " + placeId));
 
         updatable.setStatus(placeStatus);
-        updatable.setModifiedDate(PlaceServiceImpl.getDateTime("Europe/Kiev"));
+        updatable.setModifiedDate(DateTimeService.getDateTime("Europe/Kiev"));
 
         log.info(
                 "in updateStatus(Long placeId, PlaceStatus placeStatus) update place with id - {} and status - {}",
