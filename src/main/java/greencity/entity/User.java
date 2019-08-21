@@ -1,15 +1,14 @@
 package greencity.entity;
 
 import greencity.entity.enums.ROLE;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -38,11 +37,15 @@ public class User {
     @Column(nullable = false)
     private ROLE role;
 
+    private Boolean isBanned = false;
+
+    private Boolean isBlocked = false;
+
     @Column(nullable = false)
     private LocalDateTime lastVisit;
 
     @Column(nullable = false)
-    private LocalDateTime dateOfRegistration = LocalDateTime.now();
+    private LocalDateTime dateOfRegistration;
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
@@ -55,9 +58,6 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;
-
-    @OneToOne(mappedBy = "user")
-    private VerifyEmail verifyEmail;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
