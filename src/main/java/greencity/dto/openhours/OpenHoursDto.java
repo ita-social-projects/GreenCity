@@ -1,6 +1,6 @@
 package greencity.dto.openhours;
 
-import greencity.entities.enums.WeekDay;
+import greencity.entity.enums.WeekDay;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;

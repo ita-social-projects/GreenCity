@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.place.AdminPlaceDto;
-import greencity.entities.Place;
+import greencity.entity.Place;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

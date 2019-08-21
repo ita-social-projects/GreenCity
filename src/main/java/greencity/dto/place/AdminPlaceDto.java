@@ -3,7 +3,7 @@ package greencity.dto.place;
 import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.user.PlaceAuthorDto;
-import greencity.entities.enums.PlaceStatus;
+import greencity.entity.enums.PlaceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
