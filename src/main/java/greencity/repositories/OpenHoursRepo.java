@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Provides an interface to manage {@link OpeningHours} entity.
- * */
+ */
 @Repository
 public interface OpenHoursRepo extends JpaRepository<OpeningHours, Long> {
+
     /**
      * Finds all {@code OpeningHours} records related to the specified {@code Place}.
      *

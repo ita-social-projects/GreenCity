@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Provides an interface to manage {@link Place} entity.
- * */
+ */
 @Repository
 public interface PlaceRepo extends JpaRepository<Place, Long> {
+
     /**
      * Finds all places related to the given {@code PlaceStatus}.
      *
