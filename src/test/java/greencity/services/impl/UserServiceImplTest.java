@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import greencity.GreenCityApplication;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
+import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import greencity.service.impl.UserServiceImpl;
@@ -85,5 +86,24 @@ public class UserServiceImplTest {
         when(userRepo.save(any())).thenReturn(user);
         userService.updateRole(user.getId(), ROLE.MODERATOR_ROLE);
         assertEquals(ROLE.MODERATOR_ROLE, user.getRole());
+    }
+
+    @Test
+    public void findByIdTest() {
+        Long id = 1l;
+
+        User user = new User();
+        user.setId(1l);
+
+        when(userRepo.findById(id)).thenReturn(Optional.of(user));
+
+        User expectedUser = userService.findById(id);
+        assertEquals(user, expectedUser);
+    }
+
+    @Test(expected = BadIdException.class)
+    public void findByIdBadIdTest() {
+        when(userRepo.findById(any())).thenThrow(BadIdException.class);
+        userService.findById(1l);
     }
 }
