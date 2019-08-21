@@ -40,11 +40,11 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     public void save(User user) {
         log.info("begin");
         VerifyEmail verifyEmail =
-                VerifyEmail.builder()
-                        .user(user)
-                        .token(UUID.randomUUID().toString())
-                        .expiryDate(calculateExpiryDate(Integer.valueOf(expireTime)))
-                        .build();
+            VerifyEmail.builder()
+                .user(user)
+                .token(UUID.randomUUID().toString())
+                .expiryDate(calculateExpiryDate(Integer.valueOf(expireTime)))
+                .build();
         repo.save(verifyEmail);
         sentEmail(user.getEmail(), verifyEmail.getToken());
         log.info("end");
@@ -54,18 +54,18 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     public void verify(String token) {
         log.info("begin");
         VerifyEmail verifyEmail =
-                repo.findByToken(token)
-                        .orElseThrow(
-                                () ->
-                                        new BadTokenException(
-                                                "No eny email to verify by this token"));
+            repo.findByToken(token)
+                .orElseThrow(
+                    () ->
+                        new BadTokenException(
+                            "No eny email to verify by this token"));
         if (isDateValidate(verifyEmail.getExpiryDate())) {
             log.info("Date of user email is valid.");
             delete(verifyEmail);
         } else {
             log.info("User late with verify. Token is invalid.");
             throw new UserActivationEmailTokenExpiredException(
-                    "User late with verify. Token is invalid.");
+                "User late with verify. Token is invalid.");
         }
         log.info("end");
     }
