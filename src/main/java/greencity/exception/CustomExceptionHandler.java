@@ -1,5 +1,6 @@
 package greencity.exception;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadEmailException.class)
     public final ResponseEntity<?> handle(BadEmailException e, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        ValidationExceptionDto validationExceptionDto =
+                new ValidationExceptionDto("email", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonList(validationExceptionDto));
     }
 
     @Override

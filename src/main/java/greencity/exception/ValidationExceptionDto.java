@@ -14,4 +14,9 @@ public class ValidationExceptionDto implements Serializable {
         this.name = error.getField();
         this.message = error.getDefaultMessage();
     }
+
+    public ValidationExceptionDto(String name, String message) {
+        this.name = name;
+        this.message = message;
+    }
 }
