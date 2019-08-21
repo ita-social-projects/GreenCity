@@ -1,8 +1,9 @@
 package greencity.entity;
 
-import greencity.entity.enums.WeekDay;
 import java.time.LocalTime;
 import javax.persistence.*;
+
+import greencity.entity.enums.WeekDay;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

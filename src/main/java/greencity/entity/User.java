@@ -1,25 +1,25 @@
-package greencity.entity;
+package greencity.entities;
 
-import greencity.entity.enums.ROLE;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
+import greencity.entities.enums.ROLE;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"firstName", "lastName", "email", "photo", "role",
-    "isBanned", "isBlocked", "lastVisit", "comments", "favoritePlaces", "rates"})
+<<<<<<<<< Temporary merge branch 1
 @Table(name = "_user")
+=========
+@Table(name = "user")
+>>>>>>>>> Temporary merge branch 2
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,19 +43,20 @@ public class User {
 
     private Boolean isBanned = false;
 
-    private Boolean isBlocked = false;
-
     @Column(nullable = false)
     private LocalDateTime lastVisit;
 
     @Column(nullable = false)
-    private LocalDateTime dateOfRegistration = LocalDateTime.now();
+    private LocalDateTime dateOfRegistration;
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<FavoritePlace> favoritePlaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author")
+    private List<Place> addedPlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;
