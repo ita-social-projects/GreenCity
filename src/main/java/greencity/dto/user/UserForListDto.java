@@ -2,6 +2,7 @@ package greencity.dto.user;
 
 import greencity.constant.ValidationConstants;
 import greencity.entity.User;
+import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -35,11 +36,14 @@ public class UserForListDto {
     @NotBlank(message = ValidationConstants.EMPTY_EMAIL)
     private String email;
 
+    private UserStatus userStatus;
+
     public UserForListDto(User user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.dateOfRegistration = user.getDateOfRegistration();
         this.email = user.getEmail();
+        this.userStatus = user.getUserStatus();
     }
 }

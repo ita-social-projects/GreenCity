@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
@@ -32,8 +33,8 @@ public class UserController {
 
     @PostMapping("update/status")
     public ResponseEntity<?> updateUserStatus(
-            @RequestParam("id") Long id, @RequestParam UserStatus userStatus) {
-        userService.updateUserStatus(id, userStatus);
+            @RequestParam("id") Long id, @RequestParam UserStatus status) {
+        userService.updateUserStatus(id, status);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
