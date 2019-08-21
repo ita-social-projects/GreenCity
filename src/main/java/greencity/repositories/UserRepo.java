@@ -10,13 +10,6 @@ import org.springframework.stereotype.Repository;
  * */
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
-    /**
-     * Find a {@code User} by it's email.
-     *
-     * @param email of a user.
-     * @return the {@code User} with the given email.
-     */
-    User findByEmail(String email);
 
     /**
      * Find a {@code User} by a place which he added.

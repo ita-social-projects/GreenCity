@@ -14,12 +14,12 @@ public interface UserService {
      * @param id of the user to find for.
      * @return the {@link User} object with given {@code id}.
      */
-    User findById(Long id);
+    User getById(Long id);
 
     /**
      * Finds a user who added the given {@code place}.
      * @param place added by the requested user.
      * @return the {@link User} object or null.
      */
-    User findByAddedPlacesContains(Place place);
+    User getByAddedPlace(Place place);
 }

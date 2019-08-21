@@ -2,6 +2,7 @@ package greencity.services;
 
 import greencity.entities.Place;
 import greencity.entities.User;
+import greencity.exceptions.BadIdException;
 import greencity.repositories.UserRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,21 +15,22 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     /** Autowired repository.*/
-    private UserRepo userRepo;
+    private UserRepo repo;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public User findById(Long id) {
-        return userRepo.findById(id).orElse(null);
+    public User getById(Long id) {
+        return repo.findById(id)
+            .orElseThrow(() -> new BadIdException("No user with this id: " + id));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public User findByAddedPlacesContains(Place place) {
-        return userRepo.findByAddedPlacesContains(place);
+    public User getByAddedPlace(Place place) {
+        return repo.findByAddedPlacesContains(place);
     }
 }

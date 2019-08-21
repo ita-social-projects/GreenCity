@@ -1,6 +1,7 @@
 package greencity.services;
 
 import greencity.entities.OpeningHours;
+import greencity.entities.Place;
 import greencity.repositories.OpenHoursRepo;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     /**
      * {@inheritDoc}
      */
-    public List<OpeningHours> getOpenHours(Long placeId) {
-        return hoursRepo.findAllByPlaceId(placeId);
+    public List<OpeningHours> getOpenHoursByPlace(Place place) {
+        return hoursRepo.findAllByPlace(place);
     }
 }

@@ -29,8 +29,8 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<Place> getPlacesByStatus(PlaceStatus placeStatus) {
         List<Place> places = placeRepo.findPlacesByStatus(placeStatus);
-        places.forEach(place -> place.setOpeningHours(hoursService.getOpenHours(place.getId())));
-        places.forEach(place -> place.setAuthor(userService.findByAddedPlacesContains(place)));
+        places.forEach(place -> place.setOpeningHours(hoursService.getOpenHoursByPlace(place)));
+        places.forEach(place -> place.setAuthor(userService.getByAddedPlace(place)));
         return places;
     }
 }
