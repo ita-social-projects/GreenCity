@@ -1,16 +1,22 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
+import greencity.repository.PlaceRepo;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.PlaceService;
+import java.util.Optional;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -20,17 +26,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(classes = GreenCityApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PlaceServiceImplTest {
-    @Autowired private PlaceService placeService;
-    @Autowired private CategoryService categoryService;
-    @Autowired private LocationService locationService;
+    @Mock PlaceRepo placeRepo;
+    private PlaceService placeService;
+    @Autowired CategoryService categoryService;
+
+    @Before
+    public void init() {
+        placeService = new PlaceServiceImpl(placeRepo);
+    }
 
     @Test
     public void updateStatusTest() {
         Category category = Category.builder().name("categoryName").build();
-        categoryService.save(category);
 
         Place genericEntity =
                 Place.builder()
+                        .id(1L)
                         .name("placeName")
                         .description("placeDescription")
                         .email("placeEmail@gmail.com")
@@ -38,11 +49,12 @@ public class PlaceServiceImplTest {
                         .status(PlaceStatus.PROPOSED)
                         .category(category)
                         .build();
-        placeService.save(genericEntity);
 
-        placeService.updateStatus(1L, PlaceStatus.DECLINED);
-        Place foundEntity = placeService.findById(1L);
+        when(placeRepo.findById(any())).thenReturn(Optional.of(genericEntity));
+        when(placeRepo.saveAndFlush(any())).thenReturn(genericEntity);
 
-        assertEquals(PlaceStatus.DECLINED, foundEntity.getStatus());
+        placeService.updateStatus(genericEntity.getId(), PlaceStatus.DECLINED);
+
+        assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
 }

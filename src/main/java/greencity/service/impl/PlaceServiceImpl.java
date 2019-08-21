@@ -40,7 +40,11 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public Place updateStatus(Long placeId, PlaceStatus placeStatus) {
-        Place updatable = findById(placeId);
+        Place updatable =
+                placeRepo
+                        .findById(placeId)
+                        .orElseThrow(
+                                () -> new NotFoundException("Place not found with id " + placeId));
 
         updatable.setStatus(placeStatus);
         updatable.setModifiedDate(PlaceServiceImpl.getDateTime("Europe/Kiev"));
