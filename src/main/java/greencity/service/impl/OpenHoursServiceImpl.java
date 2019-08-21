@@ -1,8 +1,9 @@
-package greencity.service;
+package greencity.service.impl;
 
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.repository.OpenHoursRepo;
+import greencity.service.OpenHoursService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

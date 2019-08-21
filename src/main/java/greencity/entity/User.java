@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,9 +37,7 @@ public class User {
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)
-    private ROLE role = ROLE.USER_ROLE;
-
-    private Boolean isBanned = false;
+    private ROLE role;
 
     @Column(nullable = false)
     @DateTimeFormat(pattern = "HH:mm")
@@ -58,7 +57,10 @@ public class User {
     private List<Place> addedPlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
-    private UserOwnSecurity userSecurity;
+    private UserOwnSecurity userOwnSecurity;
+
+    @OneToOne(mappedBy = "user")
+    private VerifyEmail verifyEmail;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
