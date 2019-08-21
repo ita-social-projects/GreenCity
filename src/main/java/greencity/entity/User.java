@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "user")
+@Table(name = "_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +35,7 @@ public class User {
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)
-    private ROLE role = ROLE.USER_ROLE;
-
-    private Boolean isBanned = false;
+    private ROLE role;
 
     @Column(nullable = false)
     private LocalDateTime lastVisit;
@@ -55,7 +53,10 @@ public class User {
     private List<Place> addedPlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
-    private UserOwnSecurity userSecurity;
+    private UserOwnSecurity userOwnSecurity;
+
+    @OneToOne(mappedBy = "user")
+    private VerifyEmail verifyEmail;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();

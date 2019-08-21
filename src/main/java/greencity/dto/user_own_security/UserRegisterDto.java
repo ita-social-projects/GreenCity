@@ -3,12 +3,13 @@ package greencity.dto.user_own_security;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserRegisterDto {
 
     @NotBlank
@@ -19,11 +20,9 @@ public class UserRegisterDto {
     @Length(max = 20)
     private String lastName;
 
-    @NotBlank
-    @Email
-    private String email;
+    @NotBlank @Email private String email;
 
     @NotBlank
-    @Pattern(regexp = "^[A-Za-z0-9]$")
+    @Pattern(regexp = "^[A-z0-9~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]{8,}$")
     private String password;
 }
