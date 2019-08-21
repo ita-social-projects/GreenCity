@@ -22,9 +22,7 @@ public class OpenHoursMapper implements Mapper<OpeningHours, OpenHoursDto> {
     }
 
     @Override
-    public OpenHoursDto convertToDto(OpeningHours entity) throws IllegalArgumentException {
-        OpenHoursDto dto = modelMapper.map(entity, OpenHoursDto.class);
-        dto.setPlaceId(entity.getPlace().getId());
-        return dto;
+    public OpenHoursDto convertToDto(OpeningHours entity) {
+        return modelMapper.map(entity, OpenHoursDto.class);
     }
 }

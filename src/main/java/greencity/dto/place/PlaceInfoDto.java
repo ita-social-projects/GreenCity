@@ -17,8 +17,8 @@ public class PlaceInfoDto {
 
     private Long id;
     private String name;
-    private LocationDto address;
-    private List<OpenHoursDto> openHours;
+    private LocationDto location;
+    private List<OpenHoursDto> openingHours;
     private PlaceAuthorDto author;
     private LocalDateTime modifiedDate;
     private PlaceStatus status;

@@ -22,9 +22,7 @@ public class LocationMapper implements Mapper<Location, LocationDto> {
     }
 
     @Override
-    public LocationDto convertToDto(Location entity) throws IllegalArgumentException {
-        LocationDto dto = modelMapper.map(entity, LocationDto.class);
-        dto.setPlaceId(entity.getPlace().getId());
-        return dto;
+    public LocationDto convertToDto(Location entity) {
+        return modelMapper.map(entity, LocationDto.class);
     }
 }

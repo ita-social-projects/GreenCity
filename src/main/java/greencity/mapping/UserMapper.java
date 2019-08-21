@@ -22,7 +22,7 @@ public class UserMapper implements Mapper<User, PlaceAuthorDto> {
     }
 
     @Override
-    public PlaceAuthorDto convertToDto(User entity) throws IllegalArgumentException {
+    public PlaceAuthorDto convertToDto(User entity) {
         return mapper.map(entity, PlaceAuthorDto.class);
     }
 }
