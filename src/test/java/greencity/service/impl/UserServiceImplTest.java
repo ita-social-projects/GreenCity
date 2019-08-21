@@ -1,4 +1,4 @@
-package greencity.services.impl;
+package greencity.service.impl;
 
 import static org.junit.Assert.*;
 
