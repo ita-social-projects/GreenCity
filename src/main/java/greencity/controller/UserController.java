@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.dto.user.UserForListDto;
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,9 +30,10 @@ public class UserController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @PostMapping("block")
-    public ResponseEntity<?> blockUser(@RequestParam("id") Long id) {
-        userService.blockUser(id);
+    @PostMapping("update/status")
+    public ResponseEntity<?> updateUserStatus(
+            @RequestParam("id") Long id, @RequestParam UserStatus userStatus) {
+        userService.updateUserStatus(id, userStatus);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
@@ -39,11 +41,5 @@ public class UserController {
     public ResponseEntity<?> getAllUsers(Pageable pageable) {
         return new ResponseEntity<List<UserForListDto>>(
                 userService.findAll(pageable), HttpStatus.OK);
-    }
-
-    @PostMapping("ban")
-    public ResponseEntity<?> banUser(@RequestParam("id") Long id) {
-        userService.banUser(id);
-        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

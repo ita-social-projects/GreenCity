@@ -4,6 +4,7 @@ import greencity.dto.user.UserForListDto;
 import greencity.entity.User;
 
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
@@ -21,9 +22,7 @@ public interface UserService {
 
     void updateRole(Long id, ROLE role);
 
-    void blockUser(Long id);
-
-    void banUser(Long id);
+    void updateUserStatus(Long id, UserStatus userStatus);
 
     List<UserForListDto> findAll(Pageable pageable);
 }

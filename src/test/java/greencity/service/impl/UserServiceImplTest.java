@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import greencity.GreenCityApplication;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
@@ -36,39 +37,39 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void blockUserTest() {
+    public void updateUserStatusBlockedTest() {
         User user =
                 User.builder()
                         .firstName("test")
                         .lastName("test")
                         .email("test@gmail.com")
                         .role(ROLE.USER_ROLE)
-                        .isBlocked(false)
+                        .userStatus(UserStatus.BLOCKED)
                         .lastVisit(LocalDateTime.now())
                         .dateOfRegistration(LocalDateTime.now())
                         .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.blockUser(user.getId());
-        assertEquals(true, user.getIsBlocked());
+        userService.updateUserStatus(user.getId(), UserStatus.BLOCKED);
+        assertEquals(UserStatus.BLOCKED, user.getUserStatus());
     }
 
     @Test
-    public void banUserTest() {
+    public void updateUserStatusDeactivatedTest() {
         User user =
-                User.builder()
-                        .firstName("test")
-                        .lastName("test")
-                        .email("test@gmail.com")
-                        .role(ROLE.USER_ROLE)
-                        .isBanned(false)
-                        .lastVisit(LocalDateTime.now())
-                        .dateOfRegistration(LocalDateTime.now())
-                        .build();
+            User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@gmail.com")
+                .role(ROLE.USER_ROLE)
+                .userStatus(UserStatus.DEACTIVATED)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.banUser(user.getId());
-        assertEquals(true, user.getIsBanned());
+        userService.updateUserStatus(user.getId(), UserStatus.DEACTIVATED);
+        assertEquals(UserStatus.DEACTIVATED, user.getUserStatus());
     }
 
     @Test
