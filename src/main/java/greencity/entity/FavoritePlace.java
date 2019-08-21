@@ -17,10 +17,12 @@ public class FavoritePlace {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)  
-	private String name;
+    @Column(nullable = false, length = 30)
+    private String name;
 
-    @ManyToOne private User user;
+    @ManyToOne
+    private User user;
 
-    @ManyToOne private Place place;
+    @ManyToOne
+    private Place place;
 }

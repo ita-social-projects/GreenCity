@@ -1,7 +1,10 @@
-package greencity.repositories;
+package greencity.repository;
 
-import greencity.entities.FavoritePlace;
+import greencity.entity.FavoritePlace;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace,Long> {
+import java.util.List;
+
+public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
+    List<FavoritePlace> findAllByUserId (Long id);
 }
