@@ -1,29 +1,34 @@
 package greencity.mapping;
 
-import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.AdminPlaceDto;
 import greencity.entities.Place;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * The class uses other {@code Autowired} mappers to convert {@link Place} entity objects to {@link
- * PlaceInfoDto} dto objects and vise versa.
+ * AdminPlaceDto} dto objects and vise versa.
  */
 @AllArgsConstructor
 @Component
-public class PlaceInfoMapper implements Mapper<Place, PlaceInfoDto> {
+public class AdminPlaceMapper implements Mapper<Place, AdminPlaceDto> {
 
     /** Autowired mappers.*/
     private ModelMapper modelMapper;
 
     @Override
-    public Place convertToEntity(PlaceInfoDto dto) {
-        return null;
+    public Place convertToEntity(AdminPlaceDto dto) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public PlaceInfoDto convertToDto(Place entity) {
-        return modelMapper.map(entity, PlaceInfoDto.class);
+    public AdminPlaceDto convertToDto(Place entity) {
+        AdminPlaceDto dto = modelMapper.map(entity, AdminPlaceDto.class);
+        dto.getAuthor().setPlaceId(dto.getId());
+        dto.getLocation().setPlaceId(dto.getId());
+        dto.getOpeningHours().forEach(hours -> hours.setPlaceId(dto.getId()));
+        return dto;
     }
 }
