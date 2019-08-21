@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlaceInfoDto {
+public class AdminPlaceDto {
 
     private Long id;
     private String name;
