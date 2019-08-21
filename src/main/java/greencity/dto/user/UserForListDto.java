@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public class UserForListDto {
 
+    private Long id;
+
     @NotBlank(message = ValidationConstants.EMPTY_FIRSTNAME)
     @Size(
             min = ValidationConstants.FIRSTNAME_MIN_LENGTH,
@@ -35,6 +37,7 @@ public class UserForListDto {
     private String email;
 
     public UserForListDto(User user) {
+        this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.dateOfRegistration = user.getDateOfRegistration();
