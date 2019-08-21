@@ -16,11 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlaceServiceImpl implements PlaceService {
 
-    /** Autowired variables.*/
-    private OpenHoursService hoursService;
-    private UserService userService;
-
-    /** Autowired repository.*/
+    /** Autowired repository. */
     private PlaceRepo placeRepo;
 
     /**
@@ -28,9 +24,6 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<Place> getPlacesByStatus(PlaceStatus placeStatus) {
-        List<Place> places = placeRepo.findPlacesByStatus(placeStatus);
-        places.forEach(place -> place.setOpeningHours(hoursService.getOpenHoursByPlace(place)));
-        places.forEach(place -> place.setAuthor(userService.getByAddedPlace(place)));
-        return places;
+        return placeRepo.findPlacesByStatus(placeStatus);
     }
 }
