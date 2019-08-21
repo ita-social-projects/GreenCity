@@ -5,21 +5,34 @@ import static org.junit.Assert.*;
 import greencity.GreenCityApplication;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
+import greencity.repository.UserRepo;
 import greencity.service.UserService;
+import greencity.service.impl.UserServiceImpl;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserServiceImplTest {
 
-    @Autowired private UserService userService;
+    @Mock UserRepo userRepo;
+
+    private UserService userService;
+
+    @Before
+    public void init() {
+        userService = new UserServiceImpl(userRepo);
+    }
 
     @Test
     public void blockUserTest() {
@@ -33,44 +46,44 @@ public class UserServiceImplTest {
                         .lastVisit(LocalDateTime.now())
                         .dateOfRegistration(LocalDateTime.now())
                         .build();
-        userService.save(user);
+        when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userRepo.save(any())).thenReturn(user);
         userService.blockUser(user.getId());
-        User expectedUser = userService.findById(user.getId());
-        assertEquals(true, expectedUser.getIsBlocked());
+        assertEquals(true, user.getIsBlocked());
     }
 
     @Test
     public void banUserTest() {
         User user =
-            User.builder()
-                .firstName("test")
-                .lastName("test")
-                .email("test@gmail.com")
-                .role(ROLE.USER_ROLE)
-                .isBanned(false)
-                .lastVisit(LocalDateTime.now())
-                .dateOfRegistration(LocalDateTime.now())
-                .build();
-        userService.save(user);
+                User.builder()
+                        .firstName("test")
+                        .lastName("test")
+                        .email("test@gmail.com")
+                        .role(ROLE.USER_ROLE)
+                        .isBanned(false)
+                        .lastVisit(LocalDateTime.now())
+                        .dateOfRegistration(LocalDateTime.now())
+                        .build();
+        when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userRepo.save(any())).thenReturn(user);
         userService.banUser(user.getId());
-        User expectedUser = userService.findById(user.getId());
-        assertEquals(true, expectedUser.getIsBanned());
+        assertEquals(true, user.getIsBanned());
     }
 
     @Test
     public void updateRoleTest() {
         User user =
-            User.builder()
-                .firstName("test")
-                .lastName("test")
-                .email("test@gmail.com")
-                .role(ROLE.USER_ROLE)
-                .lastVisit(LocalDateTime.now())
-                .dateOfRegistration(LocalDateTime.now())
-                .build();
-        userService.save(user);
+                User.builder()
+                        .firstName("test")
+                        .lastName("test")
+                        .email("test@gmail.com")
+                        .role(ROLE.USER_ROLE)
+                        .lastVisit(LocalDateTime.now())
+                        .dateOfRegistration(LocalDateTime.now())
+                        .build();
+        when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userRepo.save(any())).thenReturn(user);
         userService.updateRole(user.getId(), ROLE.MODERATOR_ROLE);
-        User expectedUser = userService.findById(user.getId());
-        assertEquals(ROLE.MODERATOR_ROLE, expectedUser.getRole());
+        assertEquals(ROLE.MODERATOR_ROLE, user.getRole());
     }
 }
