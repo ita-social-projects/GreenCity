@@ -23,6 +23,6 @@ public class Location {
     @Column(nullable = false)
     private Double lng;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Place place;
 }

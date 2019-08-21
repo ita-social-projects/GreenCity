@@ -35,7 +35,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
 
-    @OneToOne(mappedBy = "place")
+    @OneToOne(mappedBy = "place",fetch = FetchType.LAZY)
     private Location location;
 
     @OneToMany(mappedBy = "place")
