@@ -96,6 +96,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteById(Long id) {
         log.info("in delete(Category category), category with id - {}", id);
 
-        categoryRepo.deleteById(id);
+        try {
+            categoryRepo.deleteById(id);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException("Id can't be NULL");
+        }
     }
 }

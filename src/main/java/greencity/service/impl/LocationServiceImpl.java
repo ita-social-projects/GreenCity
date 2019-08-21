@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 /**
  * Service implementation for Location entity.
@@ -96,6 +97,10 @@ public class LocationServiceImpl implements LocationService {
     public void deleteById(Long id) {
         log.info("in delete(Category category), category with id - {}", id);
 
-        locationRepo.deleteById(id);
+        try {
+            locationRepo.deleteById(id);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException("Id can't be NULL");
+        }
     }
 }

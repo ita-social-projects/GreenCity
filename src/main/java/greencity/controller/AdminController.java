@@ -16,7 +16,6 @@ public class AdminController {
     private final PlaceService placeService;
 
     @PostMapping(value = "/proposed")
-    @ResponseBody
     public ResponseEntity changePlaceStatus(@Validated @RequestBody PlaceStatusDto placeStatusDto) {
         placeService.updateStatus(placeStatusDto.getId(), placeStatusDto.getStatus());
 

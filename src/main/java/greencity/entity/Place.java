@@ -63,7 +63,8 @@ public class Place {
     @ManyToOne private User author;
 
     @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
-    private LocalDateTime modifiedDate = PlaceServiceImpl.getDateTime("Europe/Kiev");
+    @Column(name = "modified_date")
+    private LocalDateTime modifiedDate = LocalDateTime.now();
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(name = "status")

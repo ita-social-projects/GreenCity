@@ -95,6 +95,10 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
     public void deleteById(Long id) {
         log.info("in delete(Category category), category with id - {}", id);
 
-        openingHoursRepo.deleteById(id);
+        try {
+            openingHoursRepo.deleteById(id);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException("Id can't be NULL");
+        }
     }
 }
