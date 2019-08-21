@@ -1,6 +1,6 @@
-package greencity.entities;
+package greencity.entity;
 
-import greencity.entities.enums.ROLE;
+import greencity.entity.enums.ROLE;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-<<<<<<<<< Temporary merge branch 1
 @Table(name = "_user")
-=========
-@Table(name = "user")
->>>>>>>>> Temporary merge branch 2
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +38,8 @@ public class User {
     private ROLE role;
 
     private Boolean isBanned = false;
+
+    private Boolean isBlocked = false;
 
     @Column(nullable = false)
     private LocalDateTime lastVisit;

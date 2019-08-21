@@ -1,5 +1,7 @@
 package greencity.repository;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import greencity.entity.User;
@@ -12,5 +14,4 @@ public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
     Optional<VerifyEmail> findByToken(String token);
 
     VerifyEmail findByUser(User user);
-
 }
