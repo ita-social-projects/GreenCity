@@ -7,6 +7,7 @@ import greencity.entity.User;
 import greencity.entity.UserOwnSecurity;
 import greencity.entity.enums.ROLE;
 import greencity.exception.BadEmailException;
+import greencity.exception.BadIdException;
 import greencity.repository.UserOwnSecurityRepo;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.UserService;
@@ -29,6 +30,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     @Transactional
     @Override
     public void register(UserRegisterDto dto) {
+        log.info("begin");
         User byEmail = userService.findByEmail(dto.getEmail());
 
         if (byEmail != null) {
@@ -59,11 +61,18 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                     UserOwnSecurity.builder().password(dto.getPassword()).user(savedUser).build());
             verifyEmailService.save(savedUser);
         }
+        log.info("end");
     }
 
     @Override
     public void delete(UserOwnSecurity userOwnSecurity) {
+        log.info("begin");
+        if (!repo.existsById(userOwnSecurity.getId())) {
+            throw new BadIdException(
+                    "No any userOwnSecurity to delete with this id: " + userOwnSecurity.getId());
+        }
         repo.delete(userOwnSecurity);
+        log.info("end");
     }
 
     @Scheduled(fixedRate = 86400000)

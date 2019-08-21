@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
+import greencity.exception.BadIdException;
 import greencity.exception.BadTokenException;
 import greencity.exception.UserActivationEmailTokenExpiredException;
 import greencity.repository.VerifyEmailRepo;
@@ -91,7 +92,8 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(email);
         simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(message + serverAddress + "/ownSecurity/verifyEmail?token=" + token);
+        simpleMailMessage.setText(
+                message + serverAddress + "/ownSecurity/verifyEmail?token=" + token);
         javaMailSender.send(simpleMailMessage);
         log.info("end");
     }
@@ -103,6 +105,10 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     @Override
     public void delete(VerifyEmail verifyEmail) {
         log.info("begin");
+        if (!repo.existsById(verifyEmail.getId())) {
+            throw new BadIdException(
+                    "No any VerifyEmail to delete with this id: " + verifyEmail.getId());
+        }
         repo.delete(verifyEmail);
         log.info("end");
     }
