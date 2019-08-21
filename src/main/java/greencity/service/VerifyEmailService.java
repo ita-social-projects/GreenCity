@@ -1,6 +1,6 @@
 package greencity.service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import greencity.entity.User;
@@ -15,5 +15,5 @@ public interface VerifyEmailService {
 
     List<VerifyEmail> findAll();
 
-    boolean isDateValidate(Date emailExpiredDate);
+    boolean isDateValidate(LocalDateTime emailExpiredDate);
 }

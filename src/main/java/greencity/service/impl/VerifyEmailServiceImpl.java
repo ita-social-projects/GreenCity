@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,12 +75,12 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         return repo.findAll();
     }
 
-    private Date calculateExpiryDate(Integer expiryTimeInHour) {
+    private LocalDateTime calculateExpiryDate(Integer expiryTimeInHour) {
         log.info("begin");
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.HOUR, expiryTimeInHour);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime localDateTime = now.plusHours(expiryTimeInHour);
         log.info("end");
-        return cal.getTime();
+        return localDateTime;
     }
 
     private void sentEmail(String email, String token) {
@@ -98,8 +97,8 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         log.info("end");
     }
 
-    public boolean isDateValidate(Date emailExpiredDate) {
-        return new Date().before(emailExpiredDate);
+    public boolean isDateValidate(LocalDateTime emailExpiredDate) {
+        return LocalDateTime.now().isBefore(emailExpiredDate);
     }
 
     @Override
