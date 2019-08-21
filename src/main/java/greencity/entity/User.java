@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +38,8 @@ public class User {
     @Column(nullable = false)
     private ROLE role;
 
-    private Boolean isBanned = false;
-
-    private Boolean isBlocked = false;
+    @Enumerated(value = EnumType.ORDINAL)
+    private UserStatus userStatus;
 
     @Column(nullable = false)
     private LocalDateTime lastVisit;
