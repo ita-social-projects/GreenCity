@@ -6,11 +6,13 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor public class UserForListDto {
+@AllArgsConstructor
+public class UserForListDto {
 
     @NotBlank(message = ValidationConstants.EMPTY_FIRSTNAME)
     @Size(
