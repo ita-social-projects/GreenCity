@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+/**
+ * The class converts {@link Location} entity objects to {@link LocationDto} dto objects and vise
+ * versa.
+ */
 @AllArgsConstructor
 @Component
 public class LocationMapper implements Mapper<Location, LocationDto> {
@@ -18,7 +22,7 @@ public class LocationMapper implements Mapper<Location, LocationDto> {
     }
 
     @Override
-    public LocationDto convertToDto(Location entity) {
+    public LocationDto convertToDto(Location entity) throws IllegalArgumentException {
         LocationDto dto = modelMapper.map(entity, LocationDto.class);
         dto.setPlaceId(entity.getPlace().getId());
         return dto;

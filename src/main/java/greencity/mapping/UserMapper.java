@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+/**
+ * The class converts {@link User} entity objects to {@link PlaceAuthorDto} dto objects and vise
+ * versa.
+ */
 @AllArgsConstructor
 @Component
 public class UserMapper implements Mapper<User, PlaceAuthorDto> {
@@ -18,7 +22,7 @@ public class UserMapper implements Mapper<User, PlaceAuthorDto> {
     }
 
     @Override
-    public PlaceAuthorDto convertToDto(User entity) {
+    public PlaceAuthorDto convertToDto(User entity) throws IllegalArgumentException {
         return mapper.map(entity, PlaceAuthorDto.class);
     }
 }
