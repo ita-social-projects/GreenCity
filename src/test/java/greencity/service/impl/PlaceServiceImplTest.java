@@ -4,19 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+
 import greencity.GreenCityApplication;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.repository.PlaceRepo;
-import greencity.service.CategoryService;
-import greencity.service.LocationService;
 import greencity.service.PlaceService;
 import java.util.Optional;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
