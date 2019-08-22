@@ -1,22 +1,23 @@
 package greencity.entity;
 
 import greencity.entity.enums.ROLE;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "_user")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +41,10 @@ public class User {
 
     private Boolean isBanned = false;
 
+    private Boolean isBlocked = false;
+
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalDateTime lastVisit;
 
     @Column(nullable = false)
@@ -54,6 +58,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<FavoritePlace> favoritePlaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author")
+    private List<Place> addedPlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;

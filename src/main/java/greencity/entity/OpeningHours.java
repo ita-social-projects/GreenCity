@@ -1,14 +1,14 @@
 package greencity.entity;
 
-import greencity.entity.enums.WeekDays;
+import greencity.entity.enums.WeekDay;
+import java.time.LocalTime;
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
-import java.time.LocalTime;
 
 @Entity
 @Data
@@ -29,9 +29,7 @@ public class OpeningHours {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime closeTime;
 
-    @Enumerated
-    private WeekDays weekDays;
+    @Enumerated private WeekDay weekDay;
 
-    @ManyToOne
-    private Place place;
+    @ManyToOne private Place place;
 }

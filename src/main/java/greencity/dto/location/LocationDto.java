@@ -1,19 +1,17 @@
 package greencity.dto.location;
 
-import lombok.*;
-
-import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 public class LocationDto {
 
-    @NotNull
+    private Long id;
     private Double lat;
-
-    @NotNull
     private Double lng;
-
+    private String address;
+    private Long placeId;
 }

@@ -1,8 +1,8 @@
 package greencity.entity;
 
 import javax.persistence.*;
+import java.util.Date;
 
-import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,15 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SpecificationValue {
+public class VerifyEmail {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String value;
+    @OneToOne private User user;
 
-    @ManyToOne private Place place;
+    private String token;
 
-    @ManyToOne private Specification specification;
+    private Date expiryDate;
 }
