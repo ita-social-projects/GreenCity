@@ -3,6 +3,8 @@ package greencity.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -13,8 +15,8 @@ import greencity.repository.VerifyEmailRepo;
 import greencity.service.VerifyEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -46,7 +48,16 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
                         .expiryDate(calculateExpiryDate(Integer.valueOf(expireTime)))
                         .build();
         repo.save(verifyEmail);
-        sentEmail(user.getEmail(), verifyEmail.getToken());
+
+        new Thread(
+                        () -> {
+                            try {
+                                sentEmail(user, verifyEmail.getToken());
+                            } catch (MessagingException e) {
+                                log.error(e.getMessage());
+                            }
+                        })
+                .start();
         log.info("end");
     }
 
@@ -83,17 +94,26 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         return localDateTime;
     }
 
-    private void sentEmail(String email, String token) {
+    private void sentEmail(User user, String token) throws MessagingException {
         log.info("begin");
-        String subject = "Registration Confirmation";
-        String message = "Confirm your registration ";
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
 
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setTo(email);
-        simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(
-                message + serverAddress + "/ownSecurity/verifyEmail?token=" + token);
-        javaMailSender.send(simpleMailMessage);
+        String subject = "Verify your email address";
+        String message =
+                "<b>Verify your email address to complete registration.</b><br>"
+                        + "Hi "
+                        + user.getFirstName()
+                        + "!\n"
+                        + "Thanks for your interest in joining Green City! To complete your registration, we need you to verify your email address. ";
+
+        mimeMessageHelper.setTo(user.getEmail());
+        mimeMessageHelper.setSubject(subject);
+        mimeMessage.setContent(
+                message + serverAddress + "/ownSecurity/verifyEmail?token=" + token,
+                "text/html; charset=utf-8");
+
+        javaMailSender.send(mimeMessage);
         log.info("end");
     }
 
