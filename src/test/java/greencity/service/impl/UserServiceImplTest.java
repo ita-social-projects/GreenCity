@@ -16,7 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,14 +29,9 @@ import static org.mockito.Mockito.when;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserServiceImplTest {
 
-    @Mock UserRepo userRepo;
+    @MockBean UserRepo userRepo;
 
-    private UserService userService;
-
-    @Before
-    public void init() {
-        userService = new UserServiceImpl(userRepo);
-    }
+    @Autowired private UserService userService;
 
     @Test
     public void updateUserStatusBlockedTest() {
@@ -57,15 +54,15 @@ public class UserServiceImplTest {
     @Test
     public void updateUserStatusDeactivatedTest() {
         User user =
-            User.builder()
-                .firstName("test")
-                .lastName("test")
-                .email("test@gmail.com")
-                .role(ROLE.USER_ROLE)
-                .userStatus(UserStatus.DEACTIVATED)
-                .lastVisit(LocalDateTime.now())
-                .dateOfRegistration(LocalDateTime.now())
-                .build();
+                User.builder()
+                        .firstName("test")
+                        .lastName("test")
+                        .email("test@gmail.com")
+                        .role(ROLE.USER_ROLE)
+                        .userStatus(UserStatus.DEACTIVATED)
+                        .lastVisit(LocalDateTime.now())
+                        .dateOfRegistration(LocalDateTime.now())
+                        .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         userService.updateUserStatus(user.getId(), UserStatus.DEACTIVATED);
@@ -97,7 +94,6 @@ public class UserServiceImplTest {
         user.setId(1l);
 
         when(userRepo.findById(id)).thenReturn(Optional.of(user));
-
         User expectedUser = userService.findById(id);
         assertEquals(user, expectedUser);
     }
