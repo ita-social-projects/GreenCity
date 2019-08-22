@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private UserRepo repo;
+
+    private ModelMapper modelMapper;
 
     @Override
     public User save(User user) {
@@ -48,7 +51,9 @@ public class UserServiceImpl implements UserService {
     public PageableDto<UserForListDto> findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
         List<UserForListDto> userForListDtos =
-                users.getContent().stream().map(UserForListDto::new).collect(Collectors.toList());
+                users.getContent().stream()
+                        .map(user -> modelMapper.map(user, UserForListDto.class))
+                        .collect(Collectors.toList());
         PageableDto<UserForListDto> page =
                 new PageableDto<>(userForListDtos, users.getTotalPages());
         return page;

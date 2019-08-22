@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class UserForListDto {
 
     private Long id;
@@ -37,13 +36,4 @@ public class UserForListDto {
     private String email;
 
     private UserStatus userStatus;
-
-    public UserForListDto(User user) {
-        this.id = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.dateOfRegistration = user.getDateOfRegistration();
-        this.email = user.getEmail();
-        this.userStatus = user.getUserStatus();
-    }
 }
