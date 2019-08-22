@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -26,14 +27,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(classes = GreenCityApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class PlaceServiceImplTest {
-    @Mock PlaceRepo placeRepo;
-    private PlaceService placeService;
-    @Autowired CategoryService categoryService;
-
-    @Before
-    public void init() {
-        placeService = new PlaceServiceImpl(placeRepo);
-    }
+    @MockBean PlaceRepo placeRepo;
+    @Autowired private PlaceService placeService;
 
     @Test
     public void updateStatusTest() {

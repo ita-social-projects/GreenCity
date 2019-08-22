@@ -6,7 +6,7 @@ import greencity.GreenCityApplication;
 import greencity.entity.OpeningHours;
 import greencity.entity.enums.WeekDay;
 import greencity.exception.NotFoundException;
-import greencity.service.OpeningHoursService;
+import greencity.service.OpenHoursService;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(classes = GreenCityApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class OpeningHoursServiceImplTest {
-    @Autowired private OpeningHoursService openingHoursService;
+    @Autowired private OpenHoursService openHoursService;
 
     @Test
     public void findAllTest() {
@@ -45,10 +45,10 @@ public class OpeningHoursServiceImplTest {
         genericEntities.add(openingHours1);
         genericEntities.add(openingHours2);
 
-        openingHoursService.save(openingHours1);
-        openingHoursService.save(openingHours2);
+        openHoursService.save(openingHours1);
+        openHoursService.save(openingHours2);
 
-        foundEntities = openingHoursService.findAll();
+        foundEntities = openHoursService.findAll();
 
         assertNotNull(foundEntities);
         assertEquals(genericEntities, foundEntities);
@@ -62,9 +62,9 @@ public class OpeningHoursServiceImplTest {
                         .closeTime(LocalTime.of(18, 0))
                         .weekDay(WeekDay.MONDAY)
                         .build();
-        openingHoursService.save(genericEntity);
+        openHoursService.save(genericEntity);
 
-        OpeningHours foundEntity = openingHoursService.findById(genericEntity.getId());
+        OpeningHours foundEntity = openHoursService.findById(genericEntity.getId());
 
         assertNotNull(foundEntity);
         assertEquals(genericEntity, foundEntity);
@@ -78,9 +78,9 @@ public class OpeningHoursServiceImplTest {
                         .closeTime(LocalTime.of(18, 0))
                         .weekDay(WeekDay.MONDAY)
                         .build();
-        openingHoursService.save(genericEntity);
+        openHoursService.save(genericEntity);
 
-        OpeningHours foundEntity = openingHoursService.findById(1L);
+        OpeningHours foundEntity = openHoursService.findById(1L);
 
         assertEquals(genericEntity, foundEntity);
     }
@@ -93,10 +93,10 @@ public class OpeningHoursServiceImplTest {
                         .closeTime(LocalTime.of(18, 0))
                         .weekDay(WeekDay.MONDAY)
                         .build();
-        openingHoursService.save(genericEntity);
-        openingHoursService.deleteById(1L);
+        openHoursService.save(genericEntity);
+        openHoursService.deleteById(1L);
 
-        openingHoursService.findById(1L);
+        openHoursService.findById(1L);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class OpeningHoursServiceImplTest {
                         .closeTime(LocalTime.of(18, 0))
                         .weekDay(WeekDay.MONDAY)
                         .build();
-        openingHoursService.save(genericEntity);
+        openHoursService.save(genericEntity);
 
         OpeningHours updated =
                 OpeningHours.builder()
@@ -115,9 +115,9 @@ public class OpeningHoursServiceImplTest {
                         .closeTime(LocalTime.of(19, 0))
                         .weekDay(WeekDay.MONDAY)
                         .build();
-        openingHoursService.update(1L, updated);
+        openHoursService.update(1L, updated);
 
-        OpeningHours foundEntity = openingHoursService.findById(1L);
+        OpeningHours foundEntity = openHoursService.findById(1L);
 
         assertEquals(updated.getCloseTime(), foundEntity.getCloseTime());
     }

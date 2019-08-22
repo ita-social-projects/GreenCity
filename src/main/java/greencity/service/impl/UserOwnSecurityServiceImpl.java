@@ -36,27 +36,27 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
             if (byEmail.getUserOwnSecurity() == null) {
                 // He has already registered by else method of registration
                 repo.save(
-                        UserOwnSecurity.builder()
-                                .password(dto.getPassword())
-                                .user(byEmail)
-                                .build());
+                    UserOwnSecurity.builder()
+                        .password(dto.getPassword())
+                        .user(byEmail)
+                        .build());
                 verifyEmailService.save(byEmail);
             } else {
                 throw new BadEmailException("User with this email are already registered");
             }
         } else {
             User user =
-                    User.builder()
-                            .firstName(dto.getFirstName())
-                            .lastName(dto.getLastName())
-                            .email(dto.getEmail())
-                            .dateOfRegistration(LocalDateTime.now())
-                            .role(ROLE.USER_ROLE)
-                            .lastVisit(LocalDateTime.now())
-                            .build();
+                User.builder()
+                    .firstName(dto.getFirstName())
+                    .lastName(dto.getLastName())
+                    .email(dto.getEmail())
+                    .dateOfRegistration(LocalDateTime.now())
+                    .role(ROLE.USER_ROLE)
+                    .lastVisit(LocalDateTime.now())
+                    .build();
             User savedUser = userService.save(user);
             repo.save(
-                    UserOwnSecurity.builder().password(dto.getPassword()).user(savedUser).build());
+                UserOwnSecurity.builder().password(dto.getPassword()).user(savedUser).build());
             verifyEmailService.save(savedUser);
         }
     }
@@ -72,15 +72,15 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         // 86400000 - доба
         log.info("begin");
         verifyEmailService
-                .findAll()
-                .forEach(
-                        verifyEmail -> {
-                            if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
-                                delete(verifyEmail.getUser().getUserOwnSecurity());
-                                verifyEmailService.delete(verifyEmail);
-                                userService.deleteById(verifyEmail.getUser().getId());
-                            }
-                        });
+            .findAll()
+            .forEach(
+                verifyEmail -> {
+                    if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
+                        delete(verifyEmail.getUser().getUserOwnSecurity());
+                        verifyEmailService.delete(verifyEmail);
+                        userService.deleteById(verifyEmail.getUser().getId());
+                    }
+                });
         log.info("end");
     }
 }

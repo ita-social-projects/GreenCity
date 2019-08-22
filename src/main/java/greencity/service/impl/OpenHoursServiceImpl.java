@@ -1,25 +1,32 @@
 package greencity.service.impl;
 
 import greencity.entity.OpeningHours;
+import greencity.entity.Place;
 import greencity.exception.NotFoundException;
-import greencity.repository.OpeningHoursRepo;
-import greencity.service.OpeningHoursService;
+import greencity.repository.OpenHoursRepo;
+import greencity.service.OpenHoursService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * Service implementation for OpeningHours entity.
- *
- * @author Nazar Vladyka
- * @version 1.0
- */
-@Service
-@AllArgsConstructor
+ * The class provides implementation of the {@code OpenHoursService}.
+ * */
 @Slf4j
-public class OpeningHoursServiceImpl implements OpeningHoursService {
-    private final OpeningHoursRepo openingHoursRepo;
+@AllArgsConstructor
+@Service
+public class OpenHoursServiceImpl implements OpenHoursService {
+
+    /** Autowired repository.*/
+    private OpenHoursRepo hoursRepo;
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<OpeningHours> getOpenHoursByPlace(Place place) {
+        return hoursRepo.findAllByPlace(place);
+    }
 
     /**
      * Find all opening hours from DB.
@@ -30,7 +37,7 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
     @Override
     public List<OpeningHours> findAll() {
         log.info("in findAll()");
-        return openingHoursRepo.findAll();
+        return hoursRepo.findAll();
     }
 
     /**
@@ -44,7 +51,7 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
     public OpeningHours findById(Long id) {
         log.info("in findById(Long id), with id - {} ", id);
 
-        return openingHoursRepo
+        return hoursRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("OpeningHours not found with id " + id));
     }
@@ -60,7 +67,7 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
     public OpeningHours save(OpeningHours hours) {
         log.info("in save(OpeningHours hours), {}", hours);
 
-        return openingHoursRepo.saveAndFlush(hours);
+        return hoursRepo.saveAndFlush(hours);
     }
 
     /**
@@ -82,7 +89,7 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
 
         log.info("in update(Long id, OpeningHours updatedHours), {}", updatedHours);
 
-        return openingHoursRepo.saveAndFlush(updatable);
+        return hoursRepo.saveAndFlush(updatable);
     }
 
     /**
@@ -96,7 +103,7 @@ public class OpeningHoursServiceImpl implements OpeningHoursService {
         log.info("in delete(Category category), category with id - {}", id);
 
         try {
-            openingHoursRepo.deleteById(id);
+            hoursRepo.deleteById(id);
         } catch (IllegalArgumentException e) {
             throw new NotFoundException("Id can't be NULL");
         }

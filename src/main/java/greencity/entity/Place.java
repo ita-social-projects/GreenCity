@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import greencity.entity.enums.PlaceStatus;
-import greencity.service.impl.PlaceServiceImpl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +61,8 @@ public class Place {
 
     @ManyToOne private User author;
 
-    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
     @Column(name = "modified_date")
+    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
     private LocalDateTime modifiedDate = LocalDateTime.now();
 
     @Enumerated(value = EnumType.ORDINAL)
