@@ -1,7 +1,7 @@
 package greencity.controller;
 
-import greencity.dto.place.PlaceAddDto;
-import greencity.service.PlaceService;
+import greencity.dto.category.CategoryDto;
+import greencity.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,16 +11,15 @@ import javax.validation.Valid;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/place")
+@RequestMapping("/category")
 @AllArgsConstructor
-public class PlaceController {
+public class CategoryController {
 
-    private PlaceService placeService;
+    private CategoryService categoryService;
 
-    @PostMapping("/propose")
-    public ResponseEntity<?> proposePlace(@Valid @RequestBody PlaceAddDto dto) {
-        placeService.save(dto);
+    @PostMapping("/save")
+    public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryDto dto) {
+        categoryService.save(dto);
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
-
 }

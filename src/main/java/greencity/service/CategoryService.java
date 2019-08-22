@@ -8,6 +8,8 @@ import java.util.List;
 public interface CategoryService {
     Category save(CategoryDto dto);
 
+    Category save(Category category);
+
     Category update(Category category);
 
     Category findById(Long id);

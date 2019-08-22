@@ -1,5 +1,6 @@
 package greencity.service;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Place;
 
@@ -15,7 +16,6 @@ public interface PlaceService {
 
     List<Place> findAll();
 
-    void deleteById(Long id);
-
-    Place findByAddress(String address);
+    Boolean deleteById(Long id);
 }
+

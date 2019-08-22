@@ -23,6 +23,9 @@ public class Location {
     @Column(nullable = false)
     private Double lng;
 
+    @Column(nullable = false, length = 30)
+    private String address;
+
     @OneToOne
     private Place place;
 }

@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlaceRepo extends JpaRepository<Place, Long> {
 
-    Place findByAddress(String address);
 }

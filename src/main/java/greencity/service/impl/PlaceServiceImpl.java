@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.dto.place.PlaceAddDto;
+import greencity.entity.Category;
 import greencity.entity.Location;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
@@ -14,6 +15,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -30,63 +32,75 @@ public class PlaceServiceImpl implements PlaceService {
 
     private UserService userService;
 
+    @Transactional
     @Override
     public Place save(PlaceAddDto dto) {
         log.info("In save place method");
-        Place byAddress = placeRepo.findByAddress(dto.getAddress());
-        if (byAddress != null) {
-            throw new BadPlaceRequestException("Place by this address already exist.");
-        }
+
+        Category category = createCategoryByName(dto);
 
         Place place =
                 placeRepo.save(
                         Place.builder()
                                 .name(dto.getName())
-                                .address(dto.getAddress())
-                                .category(categoryService.findById(dto.getCategoryId()))
+                                .category(
+                                        categoryService.findById(
+                                                dto.getCategoryId() == null
+                                                        ? category.getId()
+                                                        : dto.getCategoryId()))
                                 .author(userService.findById(dto.getAuthorId()))
                                 .status(dto.getPlaceStatus())
                                 .build());
 
-        dto.getOpeningHoursDtoList()
-                .forEach(
-                        openingHoursDto -> {
-                            OpeningHours openingHours = new OpeningHours();
-                            openingHours.setOpenTime(openingHoursDto.getOpenTime());
-                            openingHours.setCloseTime(openingHoursDto.getCloseTime());
-                            openingHours.setWeekDays(openingHoursDto.getWeekDays());
-                            openingHours.setPlace(place);
-                            openingHoursService.save(openingHours);
-                        });
+        saveOpeningHoursWithPlace(dto, place);
 
-        Location location =
-                locationService.save(
-                        Location.builder()
-                                .lat(dto.getLocationDto().getLat())
-                                .lng(dto.getLocationDto().getLng())
-                                .place(place)
-                                .build());
+        saveLocationWithPlace(dto, place);
 
         return place;
     }
 
-    @Override
-    public Place update(Place place) {
-        return null;
+    private void saveLocationWithPlace(PlaceAddDto dto, Place place) {
+        Location location =
+                locationService.save(
+                        Location.builder()
+                                .lat(dto.getLocation().getLat())
+                                .lng(dto.getLocation().getLng())
+                                .address(dto.getAddress())
+                                .place(place)
+                                .build());
+    }
+
+    private void saveOpeningHoursWithPlace(PlaceAddDto dto, Place place) {
+        dto.getOpeningHoursDtoList()
+                .forEach(
+                        openingHoursDto -> {
+                            OpeningHours openingHours =
+                                    OpeningHours.builder()
+                                            .openTime(openingHoursDto.getOpenTime())
+                                            .closeTime(openingHoursDto.getCloseTime())
+                                            .weekDays(openingHoursDto.getWeekDays())
+                                            .place(place)
+                                            .build();
+                            openingHoursService.save(openingHours);
+                        });
+    }
+
+    private Category createCategoryByName(PlaceAddDto dto) {
+        Category category = new Category();
+
+        if (dto.getCategoryId() == null) {
+            category = categoryService.save(Category.builder().name(dto.getCategoryName()).build());
+        }
+        return category;
     }
 
     @Override
-    public Place findByAddress(String address) {
-        log.info("In findByAddress() place method.");
-        return placeRepo.findByAddress(address);
-    }
-
-    @Override
-    public void deleteById(Long id) {
+    public Boolean deleteById(Long id) {
         log.info("In deleteById() place method.");
         Place place = findById(id);
         placeRepo.delete(place);
         log.info("This place was deleted.");
+        return true;
     }
 
     @Override
@@ -101,5 +115,10 @@ public class PlaceServiceImpl implements PlaceService {
     public List<Place> findAll() {
         log.info("In findAll() place method.");
         return placeRepo.findAll();
+    }
+
+    @Override
+    public Place update(Place place) {
+        return null;
     }
 }
