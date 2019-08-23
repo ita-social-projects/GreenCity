@@ -3,10 +3,13 @@ package greencity.service.impl;
 import java.time.LocalDateTime;
 
 import greencity.dto.user_own_security.UserRegisterDto;
+import greencity.dto.user_own_security.UserSignInDto;
+import greencity.dto.user_own_security.UserSuccessSignInDto;
 import greencity.entity.User;
 import greencity.entity.UserOwnSecurity;
 import greencity.entity.enums.ROLE;
 import greencity.exception.BadEmailException;
+import greencity.exception.BadEmailOrPasswordException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserOwnSecurityRepo;
 import greencity.service.UserOwnSecurityService;
@@ -91,5 +94,23 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                             }
                         });
         log.info("end");
+    }
+
+    @Override
+    public UserSuccessSignInDto signIn(UserSignInDto dto) {
+        // This method will be change when we will add security
+        User byEmail = userService.findByEmail(dto.getEmail());
+
+        if (byEmail != null
+                && byEmail.getUserOwnSecurity().getPassword().equals(dto.getPassword())
+                && byEmail.getVerifyEmail() == null) {
+            return UserSuccessSignInDto.builder()
+                    .email(dto.getEmail())
+                    .accessToken("Access token")
+                    .refreshToken("Refresh token")
+                    .build();
+        } else {
+            throw new BadEmailOrPasswordException("Bad email or password!");
+        }
     }
 }

@@ -29,6 +29,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
+    @ExceptionHandler(BadEmailOrPasswordException.class)
+    public final ResponseEntity<?> handle(BadEmailOrPasswordException e, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
     @ExceptionHandler(BadEmailException.class)
     public final ResponseEntity<?> handle(BadEmailException e, WebRequest request) {
         ValidationExceptionDto validationExceptionDto =

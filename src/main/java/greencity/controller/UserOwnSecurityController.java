@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import greencity.dto.user_own_security.UserRegisterDto;
+import greencity.dto.user_own_security.UserSignInDto;
+import greencity.dto.user_own_security.UserSuccessSignInDto;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.VerifyEmailService;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +30,15 @@ public class UserOwnSecurityController {
         this.verifyEmailService = verifyEmailService;
     }
 
-    @PostMapping
-    public ResponseEntity<String> register(@Valid @RequestBody UserRegisterDto dto) {
+    @PostMapping("/signUp")
+    public ResponseEntity<String> singUp(@Valid @RequestBody UserRegisterDto dto) {
         service.register(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/signIn")
+    public UserSuccessSignInDto singIn(@Valid @RequestBody UserSignInDto dto) {
+        return service.signIn(dto);
     }
 
     @GetMapping("/verifyEmail")
