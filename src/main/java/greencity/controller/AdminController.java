@@ -33,7 +33,7 @@ public class AdminController {
         return new ResponseEntity<>(placeService.getPlacesByStatus(placeStatus), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/proposed")
+    @PostMapping("/proposed")
     public ResponseEntity changePlaceStatus(@Validated @RequestBody PlaceStatusDto placeStatusDto) {
         placeService.updateStatus(placeStatusDto.getId(), placeStatusDto.getStatus());
         return new ResponseEntity(HttpStatus.OK);
