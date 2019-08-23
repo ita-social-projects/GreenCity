@@ -6,9 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/**
- * Provides an interface to manage {@link Place} entity.
- */
+/** Provides an interface to manage {@link Place} entity. */
 @Repository
 public interface PlaceRepo extends JpaRepository<Place, Long> {
 

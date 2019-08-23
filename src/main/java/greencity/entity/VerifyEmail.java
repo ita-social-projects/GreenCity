@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class VerifyEmail {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
