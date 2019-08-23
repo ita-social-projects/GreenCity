@@ -13,5 +13,4 @@ public class LocationDto {
     private Double lat;
     private Double lng;
     private String address;
-    private Long placeId;
 }
