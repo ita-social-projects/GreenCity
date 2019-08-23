@@ -40,31 +40,33 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
             // He has already registered
             if (byEmail.getUserOwnSecurity() == null) {
                 // He has already registered by else method of registration
-                repo.save(
-                        UserOwnSecurity.builder()
-                                .password(dto.getPassword())
-                                .user(byEmail)
-                                .build());
+                repo.save(createUserOwnSecurityToUser(dto, byEmail));
                 verifyEmailService.save(byEmail);
             } else {
                 throw new BadEmailException("User with this email are already registered");
             }
         } else {
-            User user =
-                    User.builder()
-                            .firstName(dto.getFirstName())
-                            .lastName(dto.getLastName())
-                            .email(dto.getEmail())
-                            .dateOfRegistration(LocalDateTime.now())
-                            .role(ROLE.USER_ROLE)
-                            .lastVisit(LocalDateTime.now())
-                            .build();
+            User user = createNewRegisteredUser(dto);
             User savedUser = userService.save(user);
-            repo.save(
-                    UserOwnSecurity.builder().password(dto.getPassword()).user(savedUser).build());
+            repo.save(createUserOwnSecurityToUser(dto, savedUser));
             verifyEmailService.save(savedUser);
         }
         log.info("end");
+    }
+
+    private UserOwnSecurity createUserOwnSecurityToUser(UserRegisterDto dto, User user) {
+        return UserOwnSecurity.builder().password(dto.getPassword()).user(user).build();
+    }
+
+    private User createNewRegisteredUser(UserRegisterDto dto) {
+        return User.builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .email(dto.getEmail())
+                .dateOfRegistration(LocalDateTime.now())
+                .role(ROLE.USER_ROLE)
+                .lastVisit(LocalDateTime.now())
+                .build();
     }
 
     @Override
