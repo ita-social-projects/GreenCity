@@ -1,9 +1,8 @@
 package greencity.controller;
 
-import greencity.dto.user.UserForListDto;
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
@@ -29,21 +29,15 @@ public class UserController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @PostMapping("block")
-    public ResponseEntity<?> blockUser(@RequestParam("id") Long id) {
-        userService.blockUser(id);
+    @PostMapping("update/status")
+    public ResponseEntity<?> updateUserStatus(
+            @RequestParam("id") Long id, @RequestParam UserStatus status) {
+        userService.updateUserStatus(id, status);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<?> getAllUsers(Pageable pageable) {
-        return new ResponseEntity<List<UserForListDto>>(
-                userService.findAll(pageable), HttpStatus.OK);
-    }
-
-    @PostMapping("ban")
-    public ResponseEntity<?> banUser(@RequestParam("id") Long id) {
-        userService.banUser(id);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(userService.findByPage(pageable), HttpStatus.OK);
     }
 }
