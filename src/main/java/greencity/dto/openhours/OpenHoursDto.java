@@ -15,5 +15,4 @@ public class OpenHoursDto {
     private LocalTime openTime;
     private LocalTime closeTime;
     private WeekDay weekDay;
-    private Long placeId;
 }

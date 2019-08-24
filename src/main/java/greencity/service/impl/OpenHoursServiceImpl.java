@@ -23,6 +23,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
 
     /**
      * {@inheritDoc}
+     * @author Roman Zahorui
      */
     public List<OpeningHours> getOpenHoursByPlace(Place place) {
         return hoursRepo.findAllByPlace(place);
