@@ -10,5 +10,7 @@ public class PageableDto<T> {
 
     private List<T> page;
 
-    private int pageSize;
+    private long totalElements;
+
+    private int currentPage;
 }

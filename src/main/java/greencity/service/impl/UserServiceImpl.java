@@ -55,7 +55,8 @@ public class UserServiceImpl implements UserService {
                         .map(user -> modelMapper.map(user, UserForListDto.class))
                         .collect(Collectors.toList());
         PageableDto<UserForListDto> page =
-                new PageableDto<>(userForListDtos, users.getTotalPages());
+                new PageableDto<>(
+                        userForListDtos, users.getTotalElements(), pageable.getPageNumber());
         return page;
     }
 
