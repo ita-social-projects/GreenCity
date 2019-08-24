@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;

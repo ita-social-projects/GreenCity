@@ -2,7 +2,7 @@ package greencity.dto.openingHours;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.entity.OpeningHours;
-import greencity.entity.enums.WeekDays;
+import greencity.entity.enums.WeekDay;
 import java.time.LocalTime;
 import javax.validation.constraints.NotNull;
 
@@ -24,11 +24,11 @@ public class OpeningHoursDto {
     @ApiModelProperty(dataType = "java.lang.String")
     private LocalTime closeTime;
 
-    @NotNull private WeekDays weekDays;
+    @NotNull private WeekDay weekDay;
 
     public OpeningHoursDto(OpeningHours openingHours) {
         this.openTime = openingHours.getOpenTime();
         this.closeTime = openingHours.getCloseTime();
-        this.weekDays = openingHours.getWeekDays();
+        this.weekDay = openingHours.getWeekDay();
     }
 }

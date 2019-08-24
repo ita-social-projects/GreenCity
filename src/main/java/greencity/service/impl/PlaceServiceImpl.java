@@ -1,18 +1,8 @@
 package greencity.service.impl;
 
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.entity.Place;
-import greencity.exception.BadIdException;
-import greencity.repository.PlaceRepo;
-import greencity.service.*;
-
-import java.util.List;
-
-import java.util.stream.Collectors;
-import javax.validation.Valid;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
@@ -21,6 +11,7 @@ import greencity.service.DateTimeService;
 import greencity.service.PlaceService;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -116,6 +107,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
      *     state of map
      * @return list of dto
+     * @author Marian Milian.
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
@@ -130,7 +122,7 @@ public class PlaceServiceImpl implements PlaceService {
                 mapBoundsDto.getSouthWestLat(),
                 mapBoundsDto.getSouthWestLng());
         return list.stream()
-            .map(place -> mapper.map(place, PlaceByBoundsDto.class))
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
     }
 }

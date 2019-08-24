@@ -5,25 +5,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
-import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.entity.Place;
-import greencity.repository.PlaceRepo;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.Before;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-
-import greencity.GreenCityApplication;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.repository.PlaceRepo;
 import greencity.service.PlaceService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,6 +50,7 @@ public class PlaceServiceImplTest {
         placeService.updateStatus(genericEntity.getId(), PlaceStatus.DECLINED);
 
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
+    }
 
     @Test
     public void findPlacesByMapsBoundsTest() {
