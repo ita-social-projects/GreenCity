@@ -39,7 +39,6 @@ public class PlaceAddDto {
 
     public PlaceAddDto(Place place) {
         this.name = place.getName();
-        this.address = place.getAddress();
         this.locationDto = new LocationDto(place.getLocation());
         this.categoryId = place.getCategory().getId();
         this.authorId = place.getAuthor().getId();

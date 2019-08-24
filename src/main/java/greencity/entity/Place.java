@@ -23,9 +23,6 @@ public class Place {
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    @Column(nullable = false)
-    private String address;
-
     @OneToMany(mappedBy = "place")
     private List<Comment> comments = new ArrayList<>();
 
@@ -35,7 +32,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
 
-    @OneToOne(mappedBy = "place",fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "place", fetch = FetchType.LAZY)
     private Location location;
 
     @OneToMany(mappedBy = "place")
@@ -49,8 +46,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
 
-    @ManyToOne
-    private User author;
+    @ManyToOne private User author;
 
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHours = new ArrayList<>();

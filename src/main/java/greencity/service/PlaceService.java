@@ -1,6 +1,8 @@
 package greencity.service;
 
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.Place;
 
 import java.util.List;
@@ -18,4 +20,6 @@ public interface PlaceService {
     void deleteById(Long id);
 
     Place findByAddress(String address);
+
+    List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
 }
