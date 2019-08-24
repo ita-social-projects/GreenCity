@@ -1,15 +1,7 @@
 package greencity.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.persistence.*;
+import lombok.*;
 
 @Entity
 @Data
@@ -27,7 +19,7 @@ public class Location {
     @Column(nullable = false)
     private Double lng;
 
-    @Column(nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
     @OneToOne private Place place;

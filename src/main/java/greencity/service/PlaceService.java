@@ -1,25 +1,22 @@
 package greencity.service;
 
-import greencity.dto.location.MapBoundsDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Place;
-
+import greencity.entity.enums.PlaceStatus;
 import java.util.List;
+import greencity.dto.location.MapBoundsDto;
 
+/** Provides the interface to manage {@code Place} entity. */
 public interface PlaceService {
 
-    Place save(PlaceAddDto dto);
+    List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus);
 
-    Place update(Place place);
+    Place updateStatus(Long placeId, PlaceStatus placeStatus);
 
     Place findById(Long id);
 
-    List<Place> findAll();
-
-    void deleteById(Long id);
-
-    Place findByAddress(String address);
+    Place save(Place place);
 
     List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
+
 }

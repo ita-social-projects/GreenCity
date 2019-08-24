@@ -1,11 +1,10 @@
 package greencity.entity;
 
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Data
@@ -20,9 +19,7 @@ public class Photo {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToOne
-    private User user;
+    @OneToOne private User user;
 
-    @ManyToOne
-    private Place place;
+    @ManyToOne private Place place;
 }

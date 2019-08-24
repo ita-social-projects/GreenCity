@@ -1,15 +1,16 @@
 package greencity.entity;
 
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data
@@ -38,9 +39,11 @@ public class User {
     @Column(nullable = false)
     private ROLE role;
 
-    private Boolean isBanned = false;
+    @Enumerated(value = EnumType.ORDINAL)
+    private UserStatus userStatus;
 
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalDateTime lastVisit;
 
     @Column(nullable = false)
@@ -54,6 +57,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<FavoritePlace> favoritePlaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author")
+    private List<Place> addedPlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;

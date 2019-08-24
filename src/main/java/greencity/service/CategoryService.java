@@ -1,21 +1,16 @@
 package greencity.service;
 
-import greencity.dto.category.CategoryDto;
 import greencity.entity.Category;
-
 import java.util.List;
 
 public interface CategoryService {
-    Category save(CategoryDto dto);
-
-    Category update(Category category);
+    List<Category> findAll();
 
     Category findById(Long id);
 
-    List<Category> findAll();
+    Category save(Category category);
+
+    Category update(Long id, Category category);
 
     void deleteById(Long id);
-
-    Boolean existsByName(String name);
-
 }

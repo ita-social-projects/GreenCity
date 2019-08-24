@@ -12,99 +12,101 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.entity.Place;
+import greencity.entity.enums.PlaceStatus;
+import greencity.exception.NotFoundException;
+import greencity.repository.PlaceRepo;
+import greencity.service.DateTimeService;
+import greencity.service.PlaceService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-@Service
-@AllArgsConstructor
+/** The class provides implementation of {@code PlaceService} interface. */
 @Slf4j
+@AllArgsConstructor
+@Service
 public class PlaceServiceImpl implements PlaceService {
 
+    /** Autowired repository. */
     private PlaceRepo placeRepo;
+    /** Autowired mapper. */
+    private ModelMapper modelMapper;
 
-    private CategoryService categoryService;
-
-    private LocationService locationService;
-
-    private OpeningHoursService openingHoursService;
-
-    private UserService userService;
-    private ModelMapper mapper;
-
+    /**
+     * Finds all {@code Place} with status {@code PlaceStatus}.
+     *
+     * @param placeStatus a value of {@link PlaceStatus} enum.
+     * @return a list of {@code Place} with the given {@code placeStatus}
+     * @author Roman Zahorui
+     */
     @Override
-    public Place save(PlaceAddDto dto) {
-        //        log.info("In save place method");
-        //        Place byAddress = placeRepo.findByAddress(dto.getAddress());
-        //        if (byAddress != null) {
-        //            throw new BadPlaceRequestException("Place by this address already exist.");
-        //        }
-        //
-        //        Place place =
-        //                placeRepo.save(
-        //                        Place.builder()
-        //                                .name(dto.getName())
-        ////                                .address(dto.getAddress())
-        //                                .category(categoryService.findById(dto.getCategoryId()))
-        //                                .author(userService.findById(dto.getAuthorId()))
-        //                                .status(dto.getPlaceStatus())
-        //                                .build());
-        //
-        //        dto.getOpeningHoursDtoList()
-        //                .forEach(
-        //                        openingHoursDto -> {
-        //                            OpeningHours openingHours = new OpeningHours();
-        //                            openingHours.setOpenTime(openingHoursDto.getOpenTime());
-        //                            openingHours.setCloseTime(openingHoursDto.getCloseTime());
-        //                            openingHours.setWeekDays(openingHoursDto.getWeekDays());
-        //                            openingHours.setPlace(place);
-        //                            openingHoursService.save(openingHours);
-        //                        });
-        //
-        //        Location location =
-        //                locationService.save(
-        //                        Location.builder()
-        //                                .lat(dto.getLocationDto().getLat())
-        //                                .lng(dto.getLocationDto().getLng())
-        ////                                .place(place)
-        //                                .build());
-
-        return null;
+    public List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus) {
+        List<Place> places = placeRepo.getPlacesByStatus(placeStatus);
+        return places.stream()
+                .map(place -> modelMapper.map(place, AdminPlaceDto.class))
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Update status for the Place and set the time of modification.
+     *
+     * @param placeId - place id.
+     * @param placeStatus - enum of Place status value.
+     * @return saved Place entity.
+     * @author Nazar Vladyka.
+     */
     @Override
-    public Place update(Place place) {
-        return null;
+    public Place updateStatus(Long placeId, PlaceStatus placeStatus) {
+        Place updatable =
+                placeRepo
+                        .findById(placeId)
+                        .orElseThrow(
+                                () -> new NotFoundException("Place not found with id " + placeId));
+
+        updatable.setStatus(placeStatus);
+        updatable.setModifiedDate(DateTimeService.getDateTime("Europe/Kiev"));
+
+        log.info(
+                "in updateStatus(Long placeId, PlaceStatus placeStatus) update place with id - {} and status - {}",
+                placeId,
+                placeStatus.toString());
+
+        return placeRepo.saveAndFlush(updatable);
     }
 
-    @Override
-    public Place findByAddress(String address) {
-        log.info("In findByAddress() place method.");
-        //        return placeRepo.findByAddress(address);
-        return null;
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        log.info("In deleteById() place method.");
-        Place place = findById(id);
-        placeRepo.delete(place);
-        log.info("This place was deleted.");
-    }
-
+    /**
+     * Find place by it's id.
+     *
+     * @param id - place id.
+     * @return Place entity.
+     * @author Nazar Vladyka.
+     */
     @Override
     public Place findById(Long id) {
-        log.info("In findById() method.");
+        log.info("in findById(Long id), find place with id - {}", id);
+
         return placeRepo
                 .findById(id)
-                .orElseThrow(() -> new BadIdException("No place with this id:" + id));
+                .orElseThrow(() -> new NotFoundException("Place not found with id " + id));
     }
 
+    /**
+     * Save place to database.
+     *
+     * @param place - Place entity.
+     * @return saved Place entity.
+     * @author Nazar Vladyka.
+     */
     @Override
-    public List<Place> findAll() {
-        log.info("In findAll() place method.");
-        return placeRepo.findAll();
+    public Place save(Place place) {
+        log.info("in save(Place place), save place - {}", place.getName());
+
+        return placeRepo.saveAndFlush(place);
     }
 
     /**
@@ -118,17 +120,17 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
         log.info(
-                "in findPlacesLocationByMapsBounds(MapBoundsDto mapBoundsDto), dto - {}",
-                mapBoundsDto);
+            "in findPlacesLocationByMapsBounds(MapBoundsDto mapBoundsDto), dto - {}",
+            mapBoundsDto);
 
         List<Place> list =
-                placeRepo.findPlacesByMapsBounds(
-                        mapBoundsDto.getNorthEastLat(),
-                        mapBoundsDto.getNorthEastLng(),
-                        mapBoundsDto.getSouthWestLat(),
-                        mapBoundsDto.getSouthWestLng());
+            placeRepo.findPlacesByMapsBounds(
+                mapBoundsDto.getNorthEastLat(),
+                mapBoundsDto.getNorthEastLng(),
+                mapBoundsDto.getSouthWestLat(),
+                mapBoundsDto.getSouthWestLng());
         return list.stream()
-                .map(place -> mapper.map(place, PlaceByBoundsDto.class))
-                .collect(Collectors.toList());
+            .map(place -> mapper.map(place, PlaceByBoundsDto.class))
+            .collect(Collectors.toList());
     }
 }
