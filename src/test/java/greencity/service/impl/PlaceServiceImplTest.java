@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.entity.*;
+import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadIdException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.*;
@@ -27,6 +28,8 @@ public class PlaceServiceImplTest {
 
     @Mock private PlaceRepo placeRepo;
 
+    @Mock private ModelMapper modelMapper;
+
     @Mock private CategoryService categoryService;
 
     @Mock private LocationService locationService;
@@ -42,6 +45,7 @@ public class PlaceServiceImplTest {
         placeService =
                 new PlaceServiceImpl(
                         placeRepo,
+                        modelMapper,
                         categoryService,
                         locationService,
                         openHoursService,
@@ -75,7 +79,7 @@ public class PlaceServiceImplTest {
     public void findByIdBadIdTest() {
         when(placeRepo.findById(any())).thenThrow(BadIdException.class);
         placeService.findById(1L);
-        }
+    }
 
     @Test
     public void updateStatusTest() {

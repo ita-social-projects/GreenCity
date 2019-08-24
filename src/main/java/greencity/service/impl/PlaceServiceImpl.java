@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlaceServiceImpl implements PlaceService {
 
     private PlaceRepo placeRepo;
+
     /** Autowired mapper. */
     private ModelMapper modelMapper;
 
@@ -42,7 +43,6 @@ public class PlaceServiceImpl implements PlaceService {
     private OpenHoursService openingHoursService;
 
     private PlaceAddDtoMapper placeAddDtoMapper;
-
 
     /**
      * Finds all {@code Place} with status {@code PlaceStatus}.
@@ -143,14 +143,6 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public Place findById(Long id) {
-        log.info("In findById() method.");
-        return placeRepo
-                .findById(id)
-                .orElseThrow(() -> new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
-    }
-
-    @Override
     public List<Place> findAll() {
         log.info("In findAll() place method.");
         return placeRepo.findAll();
@@ -163,7 +155,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param placeStatus - enum of Place status value.
      * @return saved Place entity.
      * @author Nazar Vladyka.
-     * */
+     */
     public Place updateStatus(Long placeId, PlaceStatus placeStatus) {
         Place updatable =
                 placeRepo
@@ -195,7 +187,7 @@ public class PlaceServiceImpl implements PlaceService {
 
         return placeRepo
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException("Place not found with id " + id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -210,6 +202,7 @@ public class PlaceServiceImpl implements PlaceService {
         log.info("in save(Place place), save place - {}", place.getName());
 
         return placeRepo.saveAndFlush(place);
+    }
 
     @Override
     public Place update(Place place) {

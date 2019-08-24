@@ -27,13 +27,5 @@ public interface OpenHoursService {
      */
     List<OpeningHours> getOpenHoursByPlace(Place place);
 
-    List<OpeningHours> findAll();
-
-    OpeningHours findById(Long id);
-
-    OpeningHours save(OpeningHours hours);
-
     OpeningHours update(Long id, OpeningHours updatedHours);
-
-    void deleteById(Long id);
 }

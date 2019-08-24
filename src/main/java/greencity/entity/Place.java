@@ -29,6 +29,14 @@ public class Place {
     @Column(nullable = false, length = 50)
     private String name;
 
+    private String description;
+
+    @Column(unique = true, length = 15)
+    private String phone;
+
+    @Column(unique = true, length = 50)
+    private String email;
+
     @OneToMany(mappedBy = "place")
     private List<Comment> comments = new ArrayList<>();
 

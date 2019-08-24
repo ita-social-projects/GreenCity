@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (byName != null) {
             throw new BadCategoryRequestException(
-                ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
+                    ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
         }
         return categoryRepo.save(Category.builder().name(dto.getName()).build());
     }
@@ -131,5 +131,16 @@ public class CategoryServiceImpl implements CategoryService {
         } catch (IllegalArgumentException e) {
             throw new NotFoundException("Id can't be NULL");
         }
+    }
+
+    /**
+     * Find entity from DB by name.
+     *
+     * @param name - Category name.
+     * @author Kateryna Horokh
+     */
+    @Override
+    public Category findByName(String name) {
+        return categoryRepo.findByName(name);
     }
 }

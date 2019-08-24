@@ -23,11 +23,7 @@ public interface PlaceService {
 
     Place update(Place place);
 
-    Place findById(Long id);
-
     List<Place> findAll();
 
     Boolean deleteById(Long id);
-
-    List<Place> getPlacesByStatus(PlaceStatus placeStatus);
 }

@@ -10,19 +10,18 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * The class provides implementation of the {@code OpenHoursService}.
- * */
+/** The class provides implementation of the {@code OpenHoursService}. */
 @Slf4j
 @AllArgsConstructor
 @Service
 public class OpenHoursServiceImpl implements OpenHoursService {
 
-    /** Autowired repository.*/
+    /** Autowired repository. */
     private OpenHoursRepo hoursRepo;
 
     /**
      * {@inheritDoc}
+     *
      * @author Roman Zahorui
      */
     public List<OpeningHours> getOpenHoursByPlace(Place place) {
@@ -69,6 +68,11 @@ public class OpenHoursServiceImpl implements OpenHoursService {
         log.info("in save(OpeningHours hours), {}", hours);
 
         return hoursRepo.saveAndFlush(hours);
+    }
+
+    @Override
+    public OpeningHours update(OpeningHours openingHours) {
+        return null;
     }
 
     /**

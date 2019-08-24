@@ -5,9 +5,7 @@ import greencity.entity.Category;
 
 import java.util.List;
 
-/**
- * Provides the interface to manage {@code Category} entity.
- * */
+/** Provides the interface to manage {@code Category} entity. */
 public interface CategoryService {
 
     /**
@@ -24,9 +22,10 @@ public interface CategoryService {
      * Method for updating Category.
      *
      * @param category - Category entity.
+     * @param id
      * @return a category.
      */
-    Category update(Category category);
+    Category update(Long id, Category category);
 
     /**
      * Method for finding Category by id.
