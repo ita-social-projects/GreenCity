@@ -75,5 +75,28 @@ public class PlaceServiceImplTest {
     public void findByIdBadIdTest() {
         when(placeRepo.findById(any())).thenThrow(BadIdException.class);
         placeService.findById(1L);
+        }
+
+    @Test
+    public void updateStatusTest() {
+        Category category = Category.builder().name("categoryName").build();
+
+        Place genericEntity =
+                Place.builder()
+                        .id(1L)
+                        .name("placeName")
+                        .description("placeDescription")
+                        .email("placeEmail@gmail.com")
+                        .phone("0973439892")
+                        .status(PlaceStatus.PROPOSED)
+                        .category(category)
+                        .build();
+
+        when(placeRepo.findById(any())).thenReturn(Optional.of(genericEntity));
+        when(placeRepo.saveAndFlush(any())).thenReturn(genericEntity);
+
+        placeService.updateStatus(genericEntity.getId(), PlaceStatus.DECLINED);
+
+        assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
 }

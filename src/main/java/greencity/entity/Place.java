@@ -26,7 +26,7 @@ public class Place {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(nullable = false, length = 50)
     private String name;
 
     @OneToMany(mappedBy = "place")

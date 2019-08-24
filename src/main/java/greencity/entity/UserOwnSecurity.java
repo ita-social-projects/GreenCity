@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import javax.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +21,5 @@ public class UserOwnSecurity {
 
     private Boolean isCheckedEmail = false;
 
-    @OneToOne
-    private User user;
-
+    @OneToOne private User user;
 }
