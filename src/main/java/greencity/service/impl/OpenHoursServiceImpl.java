@@ -22,7 +22,11 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     /** Autowired repository. */
     private OpenHoursRepo hoursRepo;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @author Roman Zahorui
+     */
     public List<OpeningHours> getOpenHoursByPlace(Place place) {
         return hoursRepo.findAllByPlace(place);
     }
