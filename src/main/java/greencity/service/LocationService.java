@@ -4,6 +4,9 @@ import greencity.entity.Location;
 
 import java.util.List;
 
+/**
+ * Provides the interface to manage {@code Location} entity.
+ * */
 public interface LocationService {
 
     Location save(Location location);

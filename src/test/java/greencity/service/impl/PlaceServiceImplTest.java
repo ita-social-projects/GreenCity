@@ -1,9 +1,8 @@
 package greencity.service.impl;
 
-import greencity.dto.place.PlaceAddDto;
 import greencity.entity.*;
 import greencity.exception.BadIdException;
-import greencity.exception.BadPlaceRequestException;
+import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.*;
 import greencity.service.*;
 import org.junit.Assert;
@@ -12,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -31,9 +31,9 @@ public class PlaceServiceImplTest {
 
     @Mock private LocationService locationService;
 
-    @Mock private OpeningHoursService openingHoursService;
+    @Mock private OpenHoursService openHoursService;
 
-    @Mock private UserService userService;
+    @Mock private PlaceAddDtoMapper placeAddDtoMapper;
 
     private PlaceService placeService;
 
@@ -44,8 +44,8 @@ public class PlaceServiceImplTest {
                         placeRepo,
                         categoryService,
                         locationService,
-                        openingHoursService,
-                        userService);
+                        openHoursService,
+                        placeAddDtoMapper);
     }
 
     @Test

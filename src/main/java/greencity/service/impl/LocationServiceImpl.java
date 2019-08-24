@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
 import greencity.entity.Location;
 import greencity.exception.BadIdException;
 import greencity.repository.LocationRepo;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/** The class provides implementation of the {@code LocationService}. */
 @Service
 @AllArgsConstructor
 public class LocationServiceImpl implements LocationService {
@@ -29,7 +31,7 @@ public class LocationServiceImpl implements LocationService {
     public Location findById(Long id) {
         return locationRepo
                 .findById(id)
-                .orElseThrow(() -> new BadIdException("No location with this id: " + id));
+                .orElseThrow(() -> new BadIdException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
     }
 
     @Override

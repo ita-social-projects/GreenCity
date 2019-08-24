@@ -1,43 +1,34 @@
 package greencity.dto.place;
 
+import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.location.LocationDto;
-import greencity.dto.openingHours.OpeningHoursDto;
-import greencity.entity.Place;
+import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.entity.enums.PlaceStatus;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class PlaceAddDto {
 
-    @NotBlank
-    @Length(max = 30)
+    @NotBlank(message = ValidationConstants.EMPTY_PLACE_NAME)
+    @Size(max = ValidationConstants.PLACE_NAME_MAX_LENGTH)
     private String name;
 
-    @NotNull private LocationDto location;
+    @NotNull private LocationAddressAndGeoDto location;
 
-    @NotBlank
-    @Length(max = 30)
-    private String address;
+    private CategoryDto category;
 
-    private String categoryName;
+//    @NotNull private Long authorId;
 
-    private Long categoryId;
-
-    @NotNull private Long authorId;
-
-    @NotNull private List<OpeningHoursDto> openingHoursDtoList;
+    @NotNull private List<OpeningHoursDto> openingHoursList;
 
     @NotNull private PlaceStatus placeStatus = PlaceStatus.PROPOSED;
 }

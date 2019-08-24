@@ -22,5 +22,4 @@ public class PlaceController {
         placeService.save(dto);
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
-
 }

@@ -1,12 +1,14 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Category;
 import greencity.entity.Location;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
+import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadIdException;
-import greencity.exception.BadPlaceRequestException;
+import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** The class provides implementation of the {@code PlaceService}. */
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -28,72 +31,84 @@ public class PlaceServiceImpl implements PlaceService {
 
     private LocationService locationService;
 
-    private OpeningHoursService openingHoursService;
+    private OpenHoursService openingHoursService;
 
-    private UserService userService;
+    private PlaceAddDtoMapper placeAddDtoMapper;
 
+    /**
+     * Method for saving proposed Place to database.
+     *
+     * @param dto - dto for Place entity
+     * @return place
+     * @author Kateryna Horokh
+     */
     @Transactional
     @Override
     public Place save(PlaceAddDto dto) {
-        log.info("In save place method");
-
-        Category category = createCategoryByName(dto);
-
-        Place place =
-                placeRepo.save(
-                        Place.builder()
-                                .name(dto.getName())
-                                .category(
-                                        categoryService.findById(
-                                                dto.getCategoryId() == null
-                                                        ? category.getId()
-                                                        : dto.getCategoryId()))
-                                .author(userService.findById(dto.getAuthorId()))
-                                .status(dto.getPlaceStatus())
-                                .build());
-
-        saveOpeningHoursWithPlace(dto, place);
-
-        saveLocationWithPlace(dto, place);
+        log.info("in save(PlaceAddDto dto), save place - {}", dto.getName());
+        Category category = createCategoryByName(dto.getCategory().getName());
+        Place place = placeRepo.save(placeAddDtoMapper.convertToEntity(dto));
+        place.setCategory(category);
+        setPlaceToLocation(place);
+        setPlaceToOpeningHours(place);
 
         return place;
     }
 
-    private void saveLocationWithPlace(PlaceAddDto dto, Place place) {
-        Location location =
-                locationService.save(
-                        Location.builder()
-                                .lat(dto.getLocation().getLat())
-                                .lng(dto.getLocation().getLng())
-                                .address(dto.getAddress())
-                                .place(place)
-                                .build());
+    /**
+     * Method for setting OpeningHours entity with Place to database.
+     *
+     * @param place - Place entity
+     * @author Kateryna Horokh
+     */
+    private void setPlaceToOpeningHours(Place place) {
+        log.info("in setPlaceToOpeningHours(Place place)", place.getName());
+        List<OpeningHours> hours = place.getOpeningHoursList();
+        hours.forEach(
+                h -> {
+                    h.setPlace(place);
+                    openingHoursService.save(h);
+                });
     }
 
-    private void saveOpeningHoursWithPlace(PlaceAddDto dto, Place place) {
-        dto.getOpeningHoursDtoList()
-                .forEach(
-                        openingHoursDto -> {
-                            OpeningHours openingHours =
-                                    OpeningHours.builder()
-                                            .openTime(openingHoursDto.getOpenTime())
-                                            .closeTime(openingHoursDto.getCloseTime())
-                                            .weekDays(openingHoursDto.getWeekDays())
-                                            .place(place)
-                                            .build();
-                            openingHoursService.save(openingHours);
-                        });
+    /**
+     * Method for setting Location entity with Place to database.
+     *
+     * @param place - Place entity
+     * @author Kateryna Horokh
+     */
+    private void setPlaceToLocation(Place place) {
+        log.info("in setPlaceToLocation(Place place)", place.getName());
+        Location location = place.getLocation();
+        location.setPlace(place);
+        locationService.save(location);
     }
 
-    private Category createCategoryByName(PlaceAddDto dto) {
-        Category category = new Category();
+    /**
+     * Method for creating new category to database if it does not exists by name.
+     *
+     * @param name - String category's name
+     * @return category
+     * @author Kateryna Horokh
+     */
+    private Category createCategoryByName(String name) {
+        log.info("in setPlaceToLocation(Place place)", name);
 
-        if (dto.getCategoryId() == null) {
-            category = categoryService.save(Category.builder().name(dto.getCategoryName()).build());
+        Category category = categoryService.findByName(name);
+        if (category == null) {
+            category = new Category();
+            category.setName(name);
+            category = categoryService.save(category);
         }
         return category;
     }
 
+    /**
+     * Method for deleting place by id.
+     *
+     * @param id - Long place's id
+     * @return boolean
+     */
     @Override
     public Boolean deleteById(Long id) {
         log.info("In deleteById() place method.");
@@ -108,13 +123,19 @@ public class PlaceServiceImpl implements PlaceService {
         log.info("In findById() method.");
         return placeRepo
                 .findById(id)
-                .orElseThrow(() -> new BadIdException("No place with this id:" + id));
+                .orElseThrow(() -> new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
 
     @Override
     public List<Place> findAll() {
         log.info("In findAll() place method.");
         return placeRepo.findAll();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Place> getPlacesByStatus(PlaceStatus placeStatus) {
+        return placeRepo.findPlacesByStatus(placeStatus);
     }
 
     @Override
