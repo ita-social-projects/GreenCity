@@ -1,13 +1,16 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
 import greencity.entity.Category;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Service implementation for Category entity.
@@ -29,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public List<Category> findAll() {
-        log.info("in findAll()");
+        log.info(LogMessage.IN_FIND_ALL);
 
         return categoryRepo.findAll();
     }
@@ -43,25 +46,12 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public Category findById(Long id) {
-        log.info("in findById(Long id), id - {}", id);
+        log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return categoryRepo
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException("Category not found with id " + id));
-    }
-
-    /**
-     * Save Category to DB.
-     *
-     * @param category - entity of Category.
-     * @return saved Category.
-     * @author Nazar Vladyka
-     */
-    @Override
-    public Category save(Category category) {
-        log.info("in save(Category category), {}", category);
-
-        return categoryRepo.saveAndFlush(category);
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -74,16 +64,22 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public Category update(Long id, Category category) {
-        Category updatable = findById(id);
+        log.info(LogMessage.IN_UPDATE, category);
+
+        Category updatable =
+                categoryRepo
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new NotFoundException(
+                                                ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
 
         updatable.setName(category.getName());
         updatable.setParentCategory(category.getParentCategory());
         updatable.setCategories(category.getCategories());
         updatable.setPlaces(category.getPlaces());
 
-        log.info("in update(Long id, Category category), {}", category);
-
-        return categoryRepo.saveAndFlush(updatable);
+        return categoryRepo.save(category);
     }
 
     /**
@@ -94,12 +90,13 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void deleteById(Long id) {
-        log.info("in delete(Category category), category with id - {}", id);
+        log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        try {
-            categoryRepo.deleteById(id);
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException("Id can't be NULL");
-        }
+        categoryRepo
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
+
+        categoryRepo.deleteById(id);
     }
 }

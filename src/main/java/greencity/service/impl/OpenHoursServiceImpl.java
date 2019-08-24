@@ -1,29 +1,28 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
 import greencity.service.OpenHoursService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * The class provides implementation of the {@code OpenHoursService}.
- * */
+import java.util.List;
+
+/** The class provides implementation of the {@code OpenHoursService}. */
 @Slf4j
 @AllArgsConstructor
 @Service
 public class OpenHoursServiceImpl implements OpenHoursService {
 
-    /** Autowired repository.*/
+    /** Autowired repository. */
     private OpenHoursRepo hoursRepo;
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public List<OpeningHours> getOpenHoursByPlace(Place place) {
         return hoursRepo.findAllByPlace(place);
     }
@@ -36,7 +35,8 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     @Override
     public List<OpeningHours> findAll() {
-        log.info("in findAll()");
+        log.info(LogMessage.IN_FIND_ALL);
+
         return hoursRepo.findAll();
     }
 
@@ -49,25 +49,12 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     @Override
     public OpeningHours findById(Long id) {
-        log.info("in findById(Long id), with id - {} ", id);
+        log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return hoursRepo
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException("OpeningHours not found with id " + id));
-    }
-
-    /**
-     * Save OpeningHours to DB.
-     *
-     * @param hours - entity of OpeningHours.
-     * @return saved OpeningHours.
-     * @author Nazar Vladyka
-     */
-    @Override
-    public OpeningHours save(OpeningHours hours) {
-        log.info("in save(OpeningHours hours), {}", hours);
-
-        return hoursRepo.saveAndFlush(hours);
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -80,16 +67,22 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     @Override
     public OpeningHours update(Long id, OpeningHours updatedHours) {
-        OpeningHours updatable = findById(id);
+        log.info(LogMessage.IN_UPDATE, updatedHours);
+
+        OpeningHours updatable =
+                hoursRepo
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new NotFoundException(
+                                                ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
 
         updatable.setOpenTime(updatedHours.getOpenTime());
         updatable.setCloseTime(updatedHours.getCloseTime());
         updatable.setWeekDay(updatedHours.getWeekDay());
         updatable.setPlace(updatedHours.getPlace());
 
-        log.info("in update(Long id, OpeningHours updatedHours), {}", updatedHours);
-
-        return hoursRepo.saveAndFlush(updatable);
+        return hoursRepo.save(updatable);
     }
 
     /**
@@ -100,12 +93,13 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     @Override
     public void deleteById(Long id) {
-        log.info("in delete(Category category), category with id - {}", id);
+        log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        try {
-            hoursRepo.deleteById(id);
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException("Id can't be NULL");
-        }
+        hoursRepo
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
+
+        hoursRepo.deleteById(id);
     }
 }
