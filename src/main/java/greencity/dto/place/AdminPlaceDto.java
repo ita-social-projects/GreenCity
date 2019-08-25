@@ -24,6 +24,6 @@ public class AdminPlaceDto {
     private List<OpenHoursDto> openingHours;
     private PlaceAuthorDto author;
     private PlaceStatus status;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime modifiedDate;
 }
