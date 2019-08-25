@@ -1,10 +1,11 @@
 package greencity.entity;
 
-import greencity.entity.enums.ROLE;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+
+import greencity.entity.enums.ROLE;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "user")
+@Table(name = "_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +61,9 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;
+
+    @OneToOne(mappedBy = "user")
+    private VerifyEmail verifyEmail;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
