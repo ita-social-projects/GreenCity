@@ -57,7 +57,7 @@ public class PlaceServiceImpl implements PlaceService {
     public Place updateStatus(Long placeId, PlaceStatus placeStatus) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, placeId, placeStatus.toString());
 
-        Place updatable = findById(id);
+        Place updatable = findById(placeId);
 
         if (updatable.getStatus().equals(placeStatus)) {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, placeStatus);
