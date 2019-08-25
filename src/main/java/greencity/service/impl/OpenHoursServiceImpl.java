@@ -73,13 +73,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     public OpeningHours update(Long id, OpeningHours updatedHours) {
         log.info(LogMessage.IN_UPDATE, updatedHours);
 
-        OpeningHours updatable =
-                hoursRepo
-                        .findById(id)
-                        .orElseThrow(
-                                () ->
-                                        new NotFoundException(
-                                                ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
+        OpeningHours updatable = findById(id);
 
         updatable.setOpenTime(updatedHours.getOpenTime());
         updatable.setCloseTime(updatedHours.getCloseTime());
@@ -99,10 +93,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     public void deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        hoursRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
+        findById(id);
 
         hoursRepo.deleteById(id);
     }

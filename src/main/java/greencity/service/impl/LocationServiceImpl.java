@@ -66,13 +66,7 @@ public class LocationServiceImpl implements LocationService {
     public Location update(Long id, Location location) {
         log.info(LogMessage.IN_UPDATE, location);
 
-        Location updatable =
-                locationRepo
-                        .findById(id)
-                        .orElseThrow(
-                                () ->
-                                        new NotFoundException(
-                                                ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
+        Location updatable = findById(id);
 
         updatable.setLat(location.getLat());
         updatable.setLng(location.getLng());
@@ -92,10 +86,7 @@ public class LocationServiceImpl implements LocationService {
     public void deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        locationRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
+        findById(id);
 
         locationRepo.deleteById(id);
     }

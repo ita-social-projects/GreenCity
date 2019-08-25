@@ -6,11 +6,10 @@ import greencity.entity.Category;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Service implementation for Category entity.
@@ -49,15 +48,15 @@ public class CategoryServiceImpl implements CategoryService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return categoryRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
     }
 
     /**
      * Update Category in DB.
      *
-     * @param id - Category id.
+     * @param id       - Category id.
      * @param category - Category entity.
      * @return Category updated entity.
      * @author Nazar Vladyka
@@ -66,13 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category update(Long id, Category category) {
         log.info(LogMessage.IN_UPDATE, category);
 
-        Category updatable =
-                categoryRepo
-                        .findById(id)
-                        .orElseThrow(
-                                () ->
-                                        new NotFoundException(
-                                                ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
+        Category updatable = findById(id);
 
         updatable.setName(category.getName());
         updatable.setParentCategory(category.getParentCategory());
@@ -92,10 +85,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        categoryRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
+        findById(id);
 
         categoryRepo.deleteById(id);
     }
