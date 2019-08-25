@@ -8,8 +8,6 @@ public interface LocationService {
 
     Location findById(Long id);
 
-    Location save(Location location);
-
     Location update(Long id, Location location);
 
     void deleteById(Long id);
