@@ -1,7 +1,12 @@
 package greencity.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import greencity.entity.enums.PlaceStatus;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -57,12 +62,12 @@ public class Place {
     private List<Rate> rates = new ArrayList<>();
 
     @OneToMany(mappedBy = "place")
+    @JsonManagedReference
     private List<OpeningHours> openingHours = new ArrayList<>();
 
     @ManyToOne private User author;
 
     @Column(name = "modified_date")
-    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
     private LocalDateTime modifiedDate = LocalDateTime.now();
 
     @Enumerated(value = EnumType.ORDINAL)
