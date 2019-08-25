@@ -34,7 +34,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus) {
-        List<Place> places = placeRepo.getPlacesByStatus(placeStatus);
+        List<Place> places = placeRepo.findAllByStatus(placeStatus);
         return places.stream()
                 .map(place -> modelMapper.map(place, AdminPlaceDto.class))
                 .collect(Collectors.toList());
