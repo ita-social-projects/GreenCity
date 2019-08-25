@@ -57,13 +57,7 @@ public class PlaceServiceImpl implements PlaceService {
     public Place updateStatus(Long placeId, PlaceStatus placeStatus) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, placeId, placeStatus.toString());
 
-        Place updatable =
-                placeRepo
-                        .findById(placeId)
-                        .orElseThrow(
-                                () ->
-                                        new NotFoundException(
-                                                ErrorMessage.PLACE_NOT_FOUND_BY_ID + placeId));
+        Place updatable = findById(id);
 
         if (updatable.getStatus().equals(placeStatus)) {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, placeStatus);
