@@ -1,13 +1,18 @@
 package greencity.dto.place;
 
+import greencity.constant.ValidationConstants;
 import greencity.entity.enums.PlaceStatus;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
 public class PlaceStatusDto {
-    @NotNull Long id;
-    @NotNull PlaceStatus status;
+    @NotNull(message = ValidationConstants.EMPTY_ID)
+    Long id;
+
+    @NotNull(message = ValidationConstants.EMPTY_STATUS)
+    PlaceStatus status;
 }
