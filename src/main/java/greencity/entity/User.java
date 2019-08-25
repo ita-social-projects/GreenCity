@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "_user")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,9 +40,8 @@ public class User {
     @Column(nullable = false)
     private ROLE role;
 
-    private Boolean isBanned = false;
-
-    private Boolean isBlocked = false;
+    @Enumerated(value = EnumType.ORDINAL)
+    private UserStatus userStatus;
 
     @Column(nullable = false)
     @DateTimeFormat(pattern = "HH:mm")

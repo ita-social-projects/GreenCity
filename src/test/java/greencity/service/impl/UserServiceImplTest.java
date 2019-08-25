@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import greencity.GreenCityApplication;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
@@ -15,7 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,49 +29,44 @@ import static org.mockito.Mockito.when;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserServiceImplTest {
 
-    @Mock UserRepo userRepo;
+    @MockBean UserRepo userRepo;
 
-    private UserService userService;
-
-    @Before
-    public void init() {
-        userService = new UserServiceImpl(userRepo);
-    }
+    @Autowired private UserService userService;
 
     @Test
-    public void blockUserTest() {
+    public void updateUserStatusBlockedTest() {
         User user =
                 User.builder()
                         .firstName("test")
                         .lastName("test")
                         .email("test@gmail.com")
                         .role(ROLE.USER_ROLE)
-                        .isBlocked(false)
+                        .userStatus(UserStatus.BLOCKED)
                         .lastVisit(LocalDateTime.now())
                         .dateOfRegistration(LocalDateTime.now())
                         .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.blockUser(user.getId());
-        assertEquals(true, user.getIsBlocked());
+        userService.updateUserStatus(user.getId(), UserStatus.BLOCKED);
+        assertEquals(UserStatus.BLOCKED, user.getUserStatus());
     }
 
     @Test
-    public void banUserTest() {
+    public void updateUserStatusDeactivatedTest() {
         User user =
                 User.builder()
                         .firstName("test")
                         .lastName("test")
                         .email("test@gmail.com")
                         .role(ROLE.USER_ROLE)
-                        .isBanned(false)
+                        .userStatus(UserStatus.DEACTIVATED)
                         .lastVisit(LocalDateTime.now())
                         .dateOfRegistration(LocalDateTime.now())
                         .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.banUser(user.getId());
-        assertEquals(true, user.getIsBanned());
+        userService.updateUserStatus(user.getId(), UserStatus.DEACTIVATED);
+        assertEquals(UserStatus.DEACTIVATED, user.getUserStatus());
     }
 
     @Test
@@ -96,7 +94,6 @@ public class UserServiceImplTest {
         user.setId(1l);
 
         when(userRepo.findById(id)).thenReturn(Optional.of(user));
-
         User expectedUser = userService.findById(id);
         assertEquals(user, expectedUser);
     }

@@ -13,5 +13,4 @@ public class PlaceAuthorDto {
     private String firstName;
     private String lastName;
     private String email;
-    private Long placeId;
 }
