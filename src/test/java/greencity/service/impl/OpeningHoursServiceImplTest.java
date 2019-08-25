@@ -1,126 +1,89 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-
 import greencity.GreenCityApplication;
 import greencity.entity.OpeningHours;
-import greencity.entity.enums.WeekDay;
 import greencity.exception.NotFoundException;
+import greencity.repository.OpenHoursRepo;
 import greencity.service.OpenHoursService;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class OpeningHoursServiceImplTest {
+    @MockBean private OpenHoursRepo openHoursRepo;
     @Autowired private OpenHoursService openHoursService;
 
     @Test
-    public void findAllTest() {
-        List<OpeningHours> genericEntities = new ArrayList<>();
-        List<OpeningHours> foundEntities;
-
-        OpeningHours openingHours1 =
-                OpeningHours.builder()
-                        .openTime(LocalTime.of(9, 0))
-                        .closeTime(LocalTime.of(18, 0))
-                        .weekDay(WeekDay.MONDAY)
-                        .build();
-
-        OpeningHours openingHours2 =
-                OpeningHours.builder()
-                        .openTime(LocalTime.of(9, 0))
-                        .closeTime(LocalTime.of(18, 0))
-                        .weekDay(WeekDay.TUESDAY)
-                        .build();
-
-        genericEntities.add(openingHours1);
-        genericEntities.add(openingHours2);
-
-        openHoursService.save(openingHours1);
-        openHoursService.save(openingHours2);
-
-        foundEntities = openHoursService.findAll();
-
-        assertNotNull(foundEntities);
-        assertEquals(genericEntities, foundEntities);
-    }
-
-    @Test
     public void findByIdTest() {
-        OpeningHours genericEntity =
-                OpeningHours.builder()
-                        .openTime(LocalTime.of(9, 0))
-                        .closeTime(LocalTime.of(18, 0))
-                        .weekDay(WeekDay.MONDAY)
-                        .build();
-        openHoursService.save(genericEntity);
+        OpeningHours genericEntity = new OpeningHours();
 
-        OpeningHours foundEntity = openHoursService.findById(genericEntity.getId());
+        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        assertNotNull(foundEntity);
-        assertEquals(genericEntity, foundEntity);
-    }
-
-    @Test
-    public void saveTest() {
-        OpeningHours genericEntity =
-                OpeningHours.builder()
-                        .openTime(LocalTime.of(9, 0))
-                        .closeTime(LocalTime.of(18, 0))
-                        .weekDay(WeekDay.MONDAY)
-                        .build();
-        openHoursService.save(genericEntity);
-
-        OpeningHours foundEntity = openHoursService.findById(1L);
+        OpeningHours foundEntity = openHoursService.findById(anyLong());
 
         assertEquals(genericEntity, foundEntity);
     }
 
     @Test(expected = NotFoundException.class)
-    public void deleteTest() {
-        OpeningHours genericEntity =
-                OpeningHours.builder()
-                        .openTime(LocalTime.of(9, 0))
-                        .closeTime(LocalTime.of(18, 0))
-                        .weekDay(WeekDay.MONDAY)
-                        .build();
-        openHoursService.save(genericEntity);
-        openHoursService.deleteById(1L);
-
-        openHoursService.findById(1L);
+    public void findByIdGivenIdNullThenThrowException() {
+        openHoursService.findById(null);
     }
 
     @Test
     public void updateTest() {
-        OpeningHours genericEntity =
-                OpeningHours.builder()
-                        .openTime(LocalTime.of(9, 0))
-                        .closeTime(LocalTime.of(18, 0))
-                        .weekDay(WeekDay.MONDAY)
-                        .build();
-        openHoursService.save(genericEntity);
+        OpeningHours updated = new OpeningHours();
 
-        OpeningHours updated =
-                OpeningHours.builder()
-                        .openTime(LocalTime.of(9, 0))
-                        .closeTime(LocalTime.of(19, 0))
-                        .weekDay(WeekDay.MONDAY)
-                        .build();
-        openHoursService.update(1L, updated);
+        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(updated));
+        when(openHoursRepo.save(any())).thenReturn(updated);
 
-        OpeningHours foundEntity = openHoursService.findById(1L);
+        openHoursService.update(anyLong(), updated);
+        OpeningHours foundEntity = openHoursService.findById(anyLong());
 
-        assertEquals(updated.getCloseTime(), foundEntity.getCloseTime());
+        assertEquals(updated, foundEntity);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateGivenIdNullThenThrowException() {
+        openHoursService.update(null, new OpeningHours());
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteByIdThrowExceptionWhenCallFindById() {
+        when(openHoursRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+
+        openHoursService.deleteById(1L);
+        openHoursService.findById(1L);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteByIdGivenIdNullThenThrowException() {
+        openHoursService.deleteById(null);
+    }
+
+    @Test
+    public void findAllTest() {
+        List<OpeningHours> genericEntities =
+                new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
+
+        when(openHoursRepo.findAll()).thenReturn(genericEntities);
+
+        List<OpeningHours> foundEntities = openHoursService.findAll();
+
+        assertEquals(genericEntities, foundEntities);
     }
 }
