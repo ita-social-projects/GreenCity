@@ -1,5 +1,7 @@
 package greencity.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import greencity.entity.enums.PlaceStatus;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,6 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Getter
@@ -61,12 +62,12 @@ public class Place {
     private List<Rate> rates = new ArrayList<>();
 
     @OneToMany(mappedBy = "place")
+    @JsonManagedReference
     private List<OpeningHours> openingHoursList = new ArrayList<>();
 
     @ManyToOne private User author;
 
     @Column(name = "modified_date")
-    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
     private LocalDateTime modifiedDate = LocalDateTime.now();
 
     @Enumerated(value = EnumType.ORDINAL)

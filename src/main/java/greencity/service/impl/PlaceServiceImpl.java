@@ -3,32 +3,27 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.constant.ErrorMessage;
 import greencity.dto.place.PlaceAddDto;
 import greencity.entity.*;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.exception.BadIdException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
-import greencity.repository.UserRepo;
 import greencity.service.*;
 
 import greencity.service.DateTimeService;
 import greencity.service.PlaceService;
 import java.util.List;
-
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** The class provides implementation of the {@code PlaceService}. */
 @Slf4j
@@ -59,7 +54,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus) {
-        List<Place> places = placeRepo.getPlacesByStatus(placeStatus);
+        List<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus);
         return places.stream()
                 .map(place -> modelMapper.map(place, AdminPlaceDto.class))
                 .collect(Collectors.toList());
