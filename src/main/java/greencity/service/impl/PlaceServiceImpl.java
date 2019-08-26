@@ -1,13 +1,18 @@
 package greencity.service.impl;
 
+import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
 import greencity.constant.ErrorMessage;
 import greencity.dto.place.PlaceAddDto;
 import greencity.entity.*;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadIdException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.exception.NotFoundException;
+import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.service.*;
@@ -22,13 +27,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /** The class provides implementation of the {@code PlaceService}. */
+@Slf4j
 @Service
 @AllArgsConstructor
-@Slf4j
 public class PlaceServiceImpl implements PlaceService {
 
+    /** Autowired repository. */
     private PlaceRepo placeRepo;
 
     /** Autowired mapper. */
@@ -156,22 +164,22 @@ public class PlaceServiceImpl implements PlaceService {
      * @return saved Place entity.
      * @author Nazar Vladyka.
      */
+    @Override
     public Place updateStatus(Long placeId, PlaceStatus placeStatus) {
-        Place updatable =
-                placeRepo
-                        .findById(placeId)
-                        .orElseThrow(
-                                () -> new NotFoundException("Place not found with id " + placeId));
+        log.info(LogMessage.IN_UPDATE_PLACE_STATUS, placeId, placeStatus.toString());
 
-        updatable.setStatus(placeStatus);
-        updatable.setModifiedDate(DateTimeService.getDateTime("Europe/Kiev"));
+        Place updatable = findById(placeId);
 
-        log.info(
-                "in updateStatus(Long placeId, PlaceStatus placeStatus) update place with id - {} and status - {}",
-                placeId,
-                placeStatus.toString());
+        if (updatable.getStatus().equals(placeStatus)) {
+            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, placeStatus);
+            throw new PlaceStatusException(
+                    ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
+        } else {
+            updatable.setStatus(placeStatus);
+            updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
+        }
 
-        return placeRepo.saveAndFlush(updatable);
+        return placeRepo.save(updatable);
     }
 
     /**
@@ -183,7 +191,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public Place findById(Long id) {
-        log.info("in findById(Long id), find place with id - {}", id);
+        log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return placeRepo
                 .findById(id)

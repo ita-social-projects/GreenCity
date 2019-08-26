@@ -10,8 +10,6 @@ public interface OpenHoursService {
 
     OpeningHours save(OpeningHours openingHours);
 
-    OpeningHours update(OpeningHours openingHours);
-
     OpeningHours findById(Long id);
 
     List<OpeningHours> findAll();
@@ -26,6 +24,8 @@ public interface OpenHoursService {
      * @return a list of the {@code OpeningHours} for the place.
      */
     List<OpeningHours> getOpenHoursByPlace(Place place);
+
+    List<OpeningHours> findAll();
 
     OpeningHours update(Long id, OpeningHours updatedHours);
 }

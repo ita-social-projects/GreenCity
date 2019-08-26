@@ -19,13 +19,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+/** The class provides implementation of the {@code UserService}. */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    /** Autowired repository. */
     private UserRepo repo;
 
+    /** Autowired mapper. */
     private ModelMapper modelMapper;
 
     @Override
@@ -47,6 +50,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadIdException("No user with this id: " + id));
     }
 
+    /**
+     * Find by page {@code User}.
+     *
+     * @param pageable a value with pageable configuration.
+     * @return a dto of {@code PageableDto<UserForDtoList>}.
+     * @author Rostyslav Khasanov
+     */
     @Override
     public PageableDto<UserForListDto> findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
@@ -55,7 +65,8 @@ public class UserServiceImpl implements UserService {
                         .map(user -> modelMapper.map(user, UserForListDto.class))
                         .collect(Collectors.toList());
         PageableDto<UserForListDto> page =
-                new PageableDto<>(userForListDtos, users.getTotalPages());
+                new PageableDto<>(
+                        userForListDtos, users.getTotalElements(), pageable.getPageNumber());
         return page;
     }
 
@@ -70,6 +81,13 @@ public class UserServiceImpl implements UserService {
         return repo.findByEmail(email);
     }
 
+    /**
+     * Update {@code ROLE} of user.
+     *
+     * @param id {@code User} id.
+     * @param role {@code ROLE} for user.
+     * @author Rostyslav Khasanov
+     */
     @Override
     public void updateRole(Long id, ROLE role) {
         User user =
@@ -80,6 +98,13 @@ public class UserServiceImpl implements UserService {
         repo.save(user);
     }
 
+    /**
+     * Update {@code UserStatus} of user.
+     *
+     * @param id {@code User} id.
+     * @param userStatus {@code UserStatus} for user.
+     * @author Rostyslav Khasanov
+     */
     @Override
     public void updateUserStatus(Long id, UserStatus userStatus) {
         User user =

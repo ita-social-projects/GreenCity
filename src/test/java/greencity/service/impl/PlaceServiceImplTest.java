@@ -2,13 +2,18 @@ package greencity.service.impl;
 
 import greencity.dto.place.PlaceAddDto;
 import greencity.entity.*;
+import greencity.GreenCityApplication;
+import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadIdException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.*;
 import greencity.service.*;
 import org.junit.Assert;
-import org.junit.Before;
+import greencity.exception.NotFoundException;
+import greencity.exception.PlaceStatusException;
+import greencity.repository.PlaceRepo;
+import greencity.service.PlaceService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,12 +26,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = GreenCityApplication.class)
 public class PlaceServiceImplTest {
 
     @MockBean private PlaceRepo placeRepo;
@@ -59,21 +65,6 @@ public class PlaceServiceImplTest {
         Assert.assertEquals(true, placeService.deleteById(1L));
     }
 
-    @Test
-    public void findByIdTest() {
-        Long id = 1L;
-
-        Place expectedPlace = new Place();
-        expectedPlace.setId(1L);
-
-        when(placeRepo.findById(id)).thenReturn(Optional.of(expectedPlace));
-
-        Place resultPlace = placeService.findById(id);
-
-        assertEquals("IDs should be the same", id, resultPlace.getId());
-        assertNotNull("PlaceAddress should be not null", resultPlace.getId());
-    }
-
     @Test(expected = BadIdException.class)
     public void findByIdBadIdTest() {
         when(placeRepo.findById(any())).thenThrow(BadIdException.class);
@@ -82,24 +73,48 @@ public class PlaceServiceImplTest {
 
     @Test
     public void updateStatusTest() {
-        Category category = Category.builder().name("categoryName").build();
+        Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
 
-        Place genericEntity =
-                Place.builder()
-                        .id(1L)
-                        .name("placeName")
-                        .description("placeDescription")
-                        .email("placeEmail@gmail.com")
-                        .phone("0973439892")
-                        .status(PlaceStatus.PROPOSED)
-                        .category(category)
-                        .build();
-
-        when(placeRepo.findById(any())).thenReturn(Optional.of(genericEntity));
-        when(placeRepo.saveAndFlush(any())).thenReturn(genericEntity);
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+        when(placeRepo.save(any())).thenReturn(genericEntity);
 
         placeService.updateStatus(genericEntity.getId(), PlaceStatus.DECLINED);
 
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
+    }
+
+    @Test(expected = PlaceStatusException.class)
+    public void updateStatusGivenTheSameStatusThenThrowException() {
+        Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
+
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+        when(placeRepo.save(any())).thenReturn(genericEntity);
+
+        placeService.updateStatus(anyLong(), PlaceStatus.PROPOSED);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateStatusGivenPlaceIdNullThenThrowException() {
+        Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
+
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+
+        placeService.updateStatus(null, PlaceStatus.DECLINED);
+    }
+
+    @Test
+    public void findByIdTest() {
+        Place genericEntity = new Place();
+
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+
+        Place foundEntity = placeService.findById(anyLong());
+
+        assertEquals(genericEntity, foundEntity);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void findByIdGivenIdNullThenThrowException() {
+        placeService.findById(null);
     }
 }
