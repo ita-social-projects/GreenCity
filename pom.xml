@@ -130,7 +130,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configLocation>checkstyle/greenCity_checkstyle.xml</configLocation>
+                    <configLocation>checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
         </plugins>
