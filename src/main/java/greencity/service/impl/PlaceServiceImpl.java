@@ -2,16 +2,14 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.place.PlaceAddDto;
-import greencity.entity.Category;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
+import greencity.entity.*;
 import greencity.dto.place.AdminPlaceDto;
-import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadIdException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.exception.NotFoundException;
 import greencity.repository.PlaceRepo;
+import greencity.repository.UserRepo;
 import greencity.service.*;
 
 import greencity.service.DateTimeService;
@@ -43,6 +41,8 @@ public class PlaceServiceImpl implements PlaceService {
     private OpenHoursService openingHoursService;
 
     private PlaceAddDtoMapper placeAddDtoMapper;
+
+    private UserService userService;
 
     /**
      * Finds all {@code Place} with status {@code PlaceStatus}.

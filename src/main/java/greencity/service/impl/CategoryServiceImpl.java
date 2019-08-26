@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Category;
 import greencity.exception.BadCategoryRequestException;
 import greencity.exception.NotFoundException;
@@ -14,9 +15,11 @@ import greencity.exception.BadIdException;
 import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,6 +33,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepo categoryRepo;
+
+    private ModelMapper modelMapper;
 
     /**
      * Method for saving Category to database.
@@ -142,5 +147,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category findByName(String name) {
         return categoryRepo.findByName(name);
+    }
+
+    @Override
+    public List<CategoryDto> findAllCategoryDto() {
+        List<Category> categories = findAll();
+        return categories.stream()
+            .map(category -> modelMapper.map(category, CategoryDto.class))
+            .collect(Collectors.toList());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -18,8 +19,15 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryDto dto) {
+    public ResponseEntity saveCategory(@Valid @RequestBody CategoryDto dto) {
         categoryService.save(dto);
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategoryDto>> findAllCategory() {
+        List<CategoryDto> categoryDtos = categoryService.findAllCategoryDto();
+        return ResponseEntity.ok(categoryDtos);
+    }
+
 }

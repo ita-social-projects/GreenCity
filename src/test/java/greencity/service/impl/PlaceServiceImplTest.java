@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.dto.place.PlaceAddDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadIdException;
@@ -13,7 +14,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
@@ -26,30 +29,26 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class PlaceServiceImplTest {
 
-    @Mock private PlaceRepo placeRepo;
+    @MockBean private PlaceRepo placeRepo;
 
-    @Mock private ModelMapper modelMapper;
+    @MockBean private ModelMapper modelMapper;
 
-    @Mock private CategoryService categoryService;
+    @MockBean private CategoryService categoryService;
 
-    @Mock private LocationService locationService;
+    @MockBean private LocationService locationService;
 
-    @Mock private OpenHoursService openHoursService;
+    @MockBean private OpenHoursService openHoursService;
 
-    @Mock private PlaceAddDtoMapper placeAddDtoMapper;
+    @MockBean private PlaceAddDtoMapper placeAddDtoMapper;
 
-    private PlaceService placeService;
+    @MockBean
+    private UserService userService;
 
-    @Before
-    public void init() {
-        placeService =
-                new PlaceServiceImpl(
-                        placeRepo,
-                        modelMapper,
-                        categoryService,
-                        locationService,
-                        openHoursService,
-                        placeAddDtoMapper);
+    @Autowired private PlaceService placeService;
+
+    @Test
+    public  void saveTest() {
+
     }
 
     @Test

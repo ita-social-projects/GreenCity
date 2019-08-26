@@ -56,4 +56,6 @@ public interface CategoryService {
      * @return a category by name.
      */
     Category findByName(String name);
+
+    List<CategoryDto> findAllCategoryDto();
 }

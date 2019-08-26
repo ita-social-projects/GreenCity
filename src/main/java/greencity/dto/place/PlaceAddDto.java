@@ -26,8 +26,6 @@ public class PlaceAddDto {
 
     private CategoryDto category;
 
-//    @NotNull private Long authorId;
-
     @NotNull private List<OpeningHoursDto> openingHoursList;
 
     @NotNull private PlaceStatus placeStatus = PlaceStatus.PROPOSED;

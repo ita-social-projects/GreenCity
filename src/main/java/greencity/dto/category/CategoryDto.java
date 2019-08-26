@@ -10,6 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 public class CategoryDto {
 
+    private Long id;
+
     @NotBlank(message = ValidationConstants.EMPTY_NAME_OF_CATEGORY)
     private String name;
 }
