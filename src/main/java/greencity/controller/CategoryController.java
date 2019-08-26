@@ -26,8 +26,7 @@ public class CategoryController {
 
     @GetMapping("/categories")
     public ResponseEntity<List<CategoryDto>> findAllCategory() {
-        List<CategoryDto> categoryDtos = categoryService.findAllCategoryDto();
-        return ResponseEntity.ok(categoryDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.findAllCategoryDto());
     }
 
 }

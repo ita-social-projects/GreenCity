@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.dto.place.PlaceAddDto;
+import greencity.entity.Place;
 import greencity.service.PlaceService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -21,5 +23,10 @@ public class PlaceController {
     public ResponseEntity<?> proposePlace(@Valid @RequestBody PlaceAddDto dto) {
         placeService.save(dto);
         return new ResponseEntity<Void>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/places")
+    public ResponseEntity<List<Place>> findAllCategory() {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll());
     }
 }
