@@ -18,6 +18,7 @@ import greencity.service.VerifyEmailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     private UserOwnSecurityRepo repo;
     private UserService userService;
     private VerifyEmailService verifyEmailService;
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -55,7 +57,10 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     }
 
     private UserOwnSecurity createUserOwnSecurityToUser(UserRegisterDto dto, User user) {
-        return UserOwnSecurity.builder().password(dto.getPassword()).user(user).build();
+        return UserOwnSecurity.builder()
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .user(user)
+                .build();
     }
 
     private User createNewRegisteredUser(UserRegisterDto dto) {
@@ -104,7 +109,8 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         User byEmail = userService.findByEmail(dto.getEmail());
 
         if (byEmail != null
-                && byEmail.getUserOwnSecurity().getPassword().equals(dto.getPassword())
+                && passwordEncoder.matches(
+                        dto.getPassword(), byEmail.getUserOwnSecurity().getPassword())
                 && byEmail.getVerifyEmail() == null) {
             return UserSuccessSignInDto.builder()
                     .email(dto.getEmail())
