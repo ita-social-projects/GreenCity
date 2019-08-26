@@ -11,13 +11,12 @@ import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
 import greencity.service.DateTimeService;
 import greencity.service.PlaceService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** The class provides implementation of {@code PlaceService} interface. */
 @Slf4j
@@ -39,7 +38,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus) {
-        List<Place> places = placeRepo.getPlacesByStatus(placeStatus);
+        List<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus);
         return places.stream()
                 .map(place -> modelMapper.map(place, AdminPlaceDto.class))
                 .collect(Collectors.toList());
