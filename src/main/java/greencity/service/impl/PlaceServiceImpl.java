@@ -50,8 +50,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     private PlaceAddDtoMapper placeAddDtoMapper;
 
-    private UserService userService;
-
     /**
      * Finds all {@code Place} with status {@code PlaceStatus}.
      *

@@ -12,8 +12,6 @@ public interface OpenHoursService {
 
     OpeningHours findById(Long id);
 
-    List<OpeningHours> findAll();
-
     void deleteById(Long id);
 
     /**

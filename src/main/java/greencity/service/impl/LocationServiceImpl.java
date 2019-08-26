@@ -56,6 +56,20 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
+     * Save Location to DB.
+     *
+     * @param location - entity of Location.
+     * @return saved Location.
+     * @author Nazar Vladyka
+     */
+    @Override
+    public Location save(Location location) {
+        log.info("in save(Location location), {}", location);
+
+        return locationRepo.saveAndFlush(location);
+    }
+
+    /**
      * Update Location in DB.
      *
      * @param id - Location id.

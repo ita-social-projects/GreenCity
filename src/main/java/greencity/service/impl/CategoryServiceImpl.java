@@ -89,6 +89,20 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
+     * Save Category to DB.
+     *
+     * @param category - entity of Category.
+     * @return saved Category.
+     * @author Nazar Vladyka
+     */
+    @Override
+    public Category save(Category category) {
+        log.info("in save(Category category), {}", category);
+
+        return categoryRepo.saveAndFlush(category);
+    }
+
+    /**
      * Update Category in DB.
      *
      * @param id       - Category id.

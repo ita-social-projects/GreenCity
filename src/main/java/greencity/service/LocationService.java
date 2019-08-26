@@ -16,4 +16,6 @@ public interface LocationService {
     List<Location> findAll();
 
     void deleteById(Long id);
+
+    Location save(Location location);
 }
