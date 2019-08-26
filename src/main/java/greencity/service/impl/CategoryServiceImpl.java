@@ -83,9 +83,9 @@ public class CategoryServiceImpl implements CategoryService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return categoryRepo
-            .findById(id)
-            .orElseThrow(
-                () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -105,7 +105,7 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * Update Category in DB.
      *
-     * @param id       - Category id.
+     * @param id - Category id.
      * @param category - Category entity.
      * @return Category updated entity.
      * @author Nazar Vladyka
@@ -154,7 +154,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> findAllCategoryDto() {
         List<Category> categories = findAll();
         return categories.stream()
-            .map(category -> modelMapper.map(category, CategoryDto.class))
-            .collect(Collectors.toList());
+                .map(category -> modelMapper.map(category, CategoryDto.class))
+                .collect(Collectors.toList());
     }
 }
