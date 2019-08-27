@@ -37,7 +37,7 @@ public class AdminController {
      * The method which change place status.
      *
      * @param dto a PlaceStatusDto for accepting place status.
-     * @return response object this OK status if everything is ok.
+     * @return response object with dto and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @PostMapping("places/proposed/changeStatus")

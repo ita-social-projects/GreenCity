@@ -1,5 +1,7 @@
 package greencity.dto.place;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.user.PlaceAuthorDto;
@@ -18,8 +20,10 @@ public class AdminPlaceDto {
     private Long id;
     private String name;
     private LocationDto location;
+    private CategoryDto category;
     private List<OpenHoursDto> openingHours;
     private PlaceAuthorDto author;
-    private LocalDateTime modifiedDate;
     private PlaceStatus status;
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
+    private LocalDateTime modifiedDate;
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /** The class provides implementation of the {@code OpenHoursService}. */
+/** The class provides implementation of the {@code OpenHoursService}. */
 @Slf4j
 @AllArgsConstructor
 @Service
@@ -29,6 +30,20 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     public List<OpeningHours> getOpenHoursByPlace(Place place) {
         return hoursRepo.findAllByPlace(place);
+    }
+
+    /**
+     * Save OpeningHours to DB.
+     *
+     * @param hours - entity of OpeningHours.
+     * @return saved OpeningHours.
+     * @author Nazar Vladyka
+     */
+    @Override
+    public OpeningHours save(OpeningHours hours) {
+        log.info("in save(OpeningHours hours), {}", hours);
+
+        return hoursRepo.saveAndFlush(hours);
     }
 
     /**
