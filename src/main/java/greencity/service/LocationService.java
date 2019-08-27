@@ -1,21 +1,14 @@
 package greencity.service;
 
 import greencity.entity.Location;
-
 import java.util.List;
 
-/**
- * Provides the interface to manage {@code Location} entity.
- * */
 public interface LocationService {
-
-    Location update(Long id, Location location);
+    List<Location> findAll();
 
     Location findById(Long id);
 
-    List<Location> findAll();
+    Location update(Long id, Location location);
 
     void deleteById(Long id);
-
-    Location save(Location location);
 }

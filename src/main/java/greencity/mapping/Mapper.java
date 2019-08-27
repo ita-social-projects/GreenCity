@@ -1,7 +1,5 @@
 package greencity.mapping;
 
-import ch.qos.logback.core.pattern.Converter;
-
 /**
  * The interface provides method declaration for mapping entity classes to dto classes and vise
  * versa.

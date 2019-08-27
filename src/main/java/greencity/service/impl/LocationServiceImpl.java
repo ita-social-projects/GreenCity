@@ -22,7 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class LocationServiceImpl implements LocationService {
-
     private final LocationRepo locationRepo;
 
     /**
@@ -53,20 +52,6 @@ public class LocationServiceImpl implements LocationService {
                 .findById(id)
                 .orElseThrow(
                         () -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
-    }
-
-    /**
-     * Save Location to DB.
-     *
-     * @param location - entity of Location.
-     * @return saved Location.
-     * @author Nazar Vladyka
-     */
-    @Override
-    public Location save(Location location) {
-        log.info("in save(Location location), {}", location);
-
-        return locationRepo.saveAndFlush(location);
     }
 
     /**

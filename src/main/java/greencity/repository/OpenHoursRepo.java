@@ -2,12 +2,13 @@ package greencity.repository;
 
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-/** Provides an interface to manage {@link OpeningHours} entity. */
+/**
+ * Provides an interface to manage {@link OpeningHours} entity.
+ */
 @Repository
 public interface OpenHoursRepo extends JpaRepository<OpeningHours, Long> {
 

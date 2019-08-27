@@ -11,9 +11,6 @@ import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.mapping.PlaceAddDtoMapper;
-import greencity.service.*;
-import org.junit.Assert;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
@@ -25,8 +22,6 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,30 +32,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class PlaceServiceImplTest {
-
-    @MockBean private PlaceRepo placeRepo;
-
-    @MockBean private ModelMapper modelMapper;
-
-    @MockBean private CategoryService categoryService;
-
-    @MockBean private LocationService locationService;
-
-    @MockBean private OpenHoursService openHoursService;
-
-    @MockBean private PlaceAddDtoMapper placeAddDtoMapper;
-
-    @MockBean
-    private UserService userService;
-
+    @MockBean PlaceRepo placeRepo;
     @Autowired private PlaceService placeService;
-    @Test
-    public void deleteByIdTest() {
-        Place placeToDelete = new Place();
-        Mockito.when(placeRepo.findById(1L)).thenReturn(Optional.of(placeToDelete));
-
-        Assert.assertEquals(true, placeService.deleteById(1L));
-    }
 
     @Test
     public void updateStatusTest() {
