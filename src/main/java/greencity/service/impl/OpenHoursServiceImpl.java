@@ -1,60 +1,35 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
 import greencity.service.OpenHoursService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * The class provides implementation of the {@code OpenHoursService}.
- * */
+import java.util.List;
+
+/** The class provides implementation of the {@code OpenHoursService}. */
+/** The class provides implementation of the {@code OpenHoursService}. */
 @Slf4j
 @AllArgsConstructor
 @Service
 public class OpenHoursServiceImpl implements OpenHoursService {
 
-    /** Autowired repository.*/
+    /** Autowired repository. */
     private OpenHoursRepo hoursRepo;
 
     /**
      * {@inheritDoc}
+     *
      * @author Roman Zahorui
      */
     public List<OpeningHours> getOpenHoursByPlace(Place place) {
         return hoursRepo.findAllByPlace(place);
-    }
-
-    /**
-     * Find all opening hours from DB.
-     *
-     * @return List of opening hours.
-     * @author Nazar Vladyka
-     */
-    @Override
-    public List<OpeningHours> findAll() {
-        log.info("in findAll()");
-        return hoursRepo.findAll();
-    }
-
-    /**
-     * Find OpeningHours entity by id.
-     *
-     * @param id - OpeningHours id.
-     * @return OpeningHours entity.
-     * @author Nazar Vladyka
-     */
-    @Override
-    public OpeningHours findById(Long id) {
-        log.info("in findById(Long id), with id - {} ", id);
-
-        return hoursRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException("OpeningHours not found with id " + id));
     }
 
     /**
@@ -72,6 +47,36 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     }
 
     /**
+     * Find all opening hours from DB.
+     *
+     * @return List of opening hours.
+     * @author Nazar Vladyka
+     */
+    @Override
+    public List<OpeningHours> findAll() {
+        log.info(LogMessage.IN_FIND_ALL);
+
+        return hoursRepo.findAll();
+    }
+
+    /**
+     * Find OpeningHours entity by id.
+     *
+     * @param id - OpeningHours id.
+     * @return OpeningHours entity.
+     * @author Nazar Vladyka
+     */
+    @Override
+    public OpeningHours findById(Long id) {
+        log.info(LogMessage.IN_FIND_BY_ID, id);
+
+        return hoursRepo
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
+    }
+
+    /**
      * Update OpeningHours in DB.
      *
      * @param id - OpeningHours id.
@@ -81,6 +86,8 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     @Override
     public OpeningHours update(Long id, OpeningHours updatedHours) {
+        log.info(LogMessage.IN_UPDATE, updatedHours);
+
         OpeningHours updatable = findById(id);
 
         updatable.setOpenTime(updatedHours.getOpenTime());
@@ -88,9 +95,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
         updatable.setWeekDay(updatedHours.getWeekDay());
         updatable.setPlace(updatedHours.getPlace());
 
-        log.info("in update(Long id, OpeningHours updatedHours), {}", updatedHours);
-
-        return hoursRepo.saveAndFlush(updatable);
+        return hoursRepo.save(updatable);
     }
 
     /**
@@ -101,12 +106,10 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     @Override
     public void deleteById(Long id) {
-        log.info("in delete(Category category), category with id - {}", id);
+        log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        try {
-            hoursRepo.deleteById(id);
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException("Id can't be NULL");
-        }
+        findById(id);
+
+        hoursRepo.deleteById(id);
     }
 }

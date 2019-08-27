@@ -1,88 +1,89 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-
 import greencity.GreenCityApplication;
 import greencity.entity.Category;
 import greencity.exception.NotFoundException;
+import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class CategoryServiceImplTest {
+    @MockBean private CategoryRepo categoryRepo;
     @Autowired private CategoryService categoryService;
 
     @Test
     public void findByIdTest() {
-        Category genericEntity = Category.builder().name("categoryName").build();
-        categoryService.save(genericEntity);
+        Category genericEntity = new Category();
 
-        Category foundEntity = categoryService.findById(genericEntity.getId());
+        when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        assertNotNull(foundEntity);
+        Category foundEntity = categoryService.findById(anyLong());
+
         assertEquals(genericEntity, foundEntity);
     }
 
-    @Test
-    public void saveTest() {
-        Category genericEntity = Category.builder().name("categoryName").build();
-        categoryService.save(genericEntity);
-
-        Category foundEntity = categoryService.findById(1L);
-
-        assertEquals(genericEntity, foundEntity);
+    @Test(expected = NotFoundException.class)
+    public void findByIdGivenIdNullThenThrowException() {
+        categoryService.findById(null);
     }
 
     @Test
     public void updateTest() {
-        Category genericEntity = Category.builder().name("categoryName").build();
-        categoryService.save(genericEntity);
+        Category updated = new Category();
 
-        Category updated = Category.builder().id(1L).name("updatedName").build();
-        categoryService.update(1L, updated);
+        when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(updated));
+        when(categoryRepo.save(any())).thenReturn(updated);
 
-        Category foundEntity = categoryService.findById(1L);
+        categoryService.update(anyLong(), updated);
+        Category foundEntity = categoryService.findById(anyLong());
 
         assertEquals(updated, foundEntity);
     }
 
     @Test(expected = NotFoundException.class)
-    public void deleteTest() {
-        Category genericEntity = Category.builder().name("categoryName").build();
-        categoryService.save(genericEntity);
-        categoryService.deleteById(1L);
+    public void updateGivenIdNullThenThrowException() {
+        categoryService.update(null, new Category());
+    }
 
+    @Test(expected = NotFoundException.class)
+    public void deleteByIdThrowExceptionWhenCallFindById() {
+        when(categoryRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+
+        categoryService.deleteById(1L);
         categoryService.findById(1L);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteByIdGivenIdNullThenThrowException() {
+        categoryService.deleteById(null);
     }
 
     @Test
     public void findAllTest() {
-        List<Category> genericEntities = new ArrayList<>();
-        List<Category> foundEntities;
+        List<Category> genericEntities =
+                new ArrayList<>(Arrays.asList(new Category(), new Category()));
 
-        Category category1 = Category.builder().name("categoryName1").build();
-        Category category2 = Category.builder().name("categoryName2").build();
+        when(categoryRepo.findAll()).thenReturn(genericEntities);
 
-        genericEntities.add(category1);
-        genericEntities.add(category2);
+        List<Category> foundEntities = categoryService.findAll();
 
-        categoryService.save(category1);
-        categoryService.save(category2);
-
-        foundEntities = categoryService.findAll();
-
-        assertNotNull(foundEntities);
         assertEquals(genericEntities, foundEntities);
     }
 }
