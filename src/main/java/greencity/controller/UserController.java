@@ -26,18 +26,18 @@ public class UserController {
     public ResponseEntity<?> updateRole(
             @RequestParam("id") Long id, @RequestParam("role") ROLE role) {
         userService.updateRole(id, role);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("update/status")
     public ResponseEntity<?> updateUserStatus(
             @RequestParam("id") Long id, @RequestParam UserStatus status) {
         userService.updateUserStatus(id, status);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
     public ResponseEntity<?> getAllUsers(Pageable pageable) {
-        return new ResponseEntity<>(userService.findByPage(pageable), HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
 }
