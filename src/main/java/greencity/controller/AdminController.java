@@ -36,13 +36,12 @@ public class AdminController {
     /**
      * The method which change place status.
      *
-     * @param placeStatusDto a dto for accepting changes in place status.
+     * @param dto a PlaceStatusDto for accepting place status.
      * @return response object this OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @PostMapping("places/proposed/changeStatus")
-    public ResponseEntity changePlaceStatus(@Validated @RequestBody PlaceStatusDto placeStatusDto) {
-        placeService.updateStatus(placeStatusDto.getId(), placeStatusDto.getStatus());
-        return new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity changePlaceStatus(@Validated @RequestBody PlaceStatusDto dto) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatus(dto));
     }
 }

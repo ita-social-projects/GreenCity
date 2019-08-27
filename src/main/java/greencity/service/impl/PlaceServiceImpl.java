@@ -4,20 +4,20 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
-import greencity.service.DateTimeService;
+import greencity.util.DateTimeService;
 import greencity.service.PlaceService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** The class provides implementation of {@code PlaceService} interface. */
 @Slf4j
@@ -48,27 +48,29 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * Update status for the Place and set the time of modification.
      *
-     * @param placeId - place id.
-     * @param placeStatus - enum of Place status value.
-     * @return saved Place entity.
+     * @param dto - place dto with place id and place status.
+     * @return saved PlaceStatusDto entity.
      * @author Nazar Vladyka.
      */
     @Override
-    public Place updateStatus(Long placeId, PlaceStatus placeStatus) {
-        log.info(LogMessage.IN_UPDATE_PLACE_STATUS, placeId, placeStatus.toString());
+    public PlaceStatusDto updateStatus(PlaceStatusDto dto) {
+        Long id = dto.getId();
+        PlaceStatus status = dto.getStatus();
 
-        Place updatable = findById(placeId);
+        log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
-        if (updatable.getStatus().equals(placeStatus)) {
-            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, placeStatus);
+        Place updatable = findById(id);
+
+        if (updatable.getStatus().equals(status)) {
+            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
             throw new PlaceStatusException(
                     ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         } else {
-            updatable.setStatus(placeStatus);
+            updatable.setStatus(status);
             updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
         }
 
-        return placeRepo.save(updatable);
+        return modelMapper.map(placeRepo.save(updatable), PlaceStatusDto.class);
     }
 
     /**

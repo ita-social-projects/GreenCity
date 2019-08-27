@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -10,7 +11,7 @@ public interface PlaceService {
 
     List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus);
 
-    Place updateStatus(Long placeId, PlaceStatus placeStatus);
+    PlaceStatusDto updateStatus(PlaceStatusDto dto);
 
     Place findById(Long id);
 }
