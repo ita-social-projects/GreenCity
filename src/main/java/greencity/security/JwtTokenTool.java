@@ -46,11 +46,11 @@ public class JwtTokenTool {
         calendar.setTime(now);
         calendar.add(Calendar.MINUTE, tokenValidTimeInMinutes);
 
-        return Jwts.builder() //
-                .setClaims(claims) //
-                .setIssuedAt(now) //
-                .setExpiration(calendar.getTime()) //
-                .signWith(SignatureAlgorithm.HS256, tokenKey) //
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(calendar.getTime())
+                .signWith(SignatureAlgorithm.HS256, tokenKey)
                 .compact();
     }
 
@@ -62,12 +62,12 @@ public class JwtTokenTool {
         calendar.setTime(now);
         calendar.add(Calendar.MINUTE, tokenValidTimeInMinutes);
 
-        return Jwts.builder() //
-            .setClaims(claims) //
-            .setIssuedAt(now) //
-            .setExpiration(calendar.getTime()) //
-            .signWith(SignatureAlgorithm.HS256, tokenKey) //
-            .compact();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(calendar.getTime())
+                .signWith(SignatureAlgorithm.HS256, tokenKey)
+                .compact();
     }
 
     public boolean isTokenValid(String token) {
