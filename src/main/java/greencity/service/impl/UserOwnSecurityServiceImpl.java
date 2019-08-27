@@ -133,7 +133,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
 
     @Override
     public String updateAccessToken(String refreshToken) {
-        if (jwtTokenTool.isAccessTokenValid(refreshToken)) {
+        if (jwtTokenTool.isTokenValid(refreshToken)) {
             String email = jwtTokenTool.getEmailByToken(refreshToken);
             User user = userService.findByEmail(email);
             if (user != null) {

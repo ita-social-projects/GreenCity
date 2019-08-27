@@ -39,46 +39,38 @@ public class JwtTokenTool {
 
     public String createAccessToken(String email, ROLE role) {
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("roles", Collections.singleton(role));
-        Calendar calendar = Calendar.getInstance();
+        claims.put("roles", Collections.singleton(role.name()));
 
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
         calendar.add(Calendar.MINUTE, tokenValidTimeInMinutes);
 
-        return Jwts.builder()
-                .setIssuedAt(new Date())
-                .setExpiration(calendar.getTime())
-                .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS256, tokenKey)
+        return Jwts.builder() //
+                .setClaims(claims) //
+                .setIssuedAt(now) //
+                .setExpiration(calendar.getTime()) //
+                .signWith(SignatureAlgorithm.HS256, tokenKey) //
                 .compact();
     }
 
     public String createRefreshToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
 
+        Date now = new Date();
         Calendar calendar = Calendar.getInstance();
-
+        calendar.setTime(now);
         calendar.add(Calendar.MINUTE, tokenValidTimeInMinutes);
 
-        return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS256, tokenKey)
-                .setIssuedAt(new Date())
-                .setExpiration(calendar.getTime())
-                .setClaims(claims)
-                .compact();
+        return Jwts.builder() //
+            .setClaims(claims) //
+            .setIssuedAt(now) //
+            .setExpiration(calendar.getTime()) //
+            .signWith(SignatureAlgorithm.HS256, tokenKey) //
+            .compact();
     }
 
-    public boolean isAccessTokenValid(String token) {
-        boolean isValid = false;
-        try {
-            Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token);
-            isValid = true;
-        } catch (Exception e) {
-
-        }
-        return isValid;
-    }
-
-    public boolean isRefreshTokenValid(String token) {
+    public boolean isTokenValid(String token) {
         boolean isValid = false;
         try {
             Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token);
@@ -105,6 +97,6 @@ public class JwtTokenTool {
     }
 
     public String getEmailByToken(String token) {
-        return Jwts.parser().setSigningKey(tokenKey).parseClaimsJwt(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token).getBody().getSubject();
     }
 }
