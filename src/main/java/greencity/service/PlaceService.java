@@ -3,6 +3,7 @@ package greencity.service;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 
@@ -26,4 +27,6 @@ public interface PlaceService {
     List<Place> findAll();
 
     Boolean deleteById(Long id);
+
+    PlaceInfoDto getAccessById(Long id);
 }

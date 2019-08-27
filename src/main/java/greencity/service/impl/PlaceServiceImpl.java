@@ -4,10 +4,12 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.*;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
+import greencity.exception.PlaceNotFoundException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
@@ -203,6 +205,19 @@ public class PlaceServiceImpl implements PlaceService {
         log.info("in save(Place place), save place - {}", place.getName());
 
         return placeRepo.saveAndFlush(place);
+    }
+
+    @Override
+    public PlaceInfoDto getAccessById(Long id) {
+
+        return modelMapper.map(
+                placeRepo
+                        .findById(id)
+                        .orElseThrow(
+                                () ->
+                                        new PlaceNotFoundException(
+                                                ErrorMessage.PLACE_NOT_FOUND_BY_ID + id)),
+                PlaceInfoDto.class);
     }
 
     @Override

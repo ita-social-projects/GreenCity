@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @CrossOrigin
@@ -28,5 +29,15 @@ public class PlaceController {
     @GetMapping("/places")
     public ResponseEntity<List<Place>> findAllCategory() {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll());
+    }
+
+    /**
+     * Controller to get place info
+     * @param id place
+     * @return info about place
+     */
+    @GetMapping("/getInfo/{id}")
+    public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getAccessById(id));
     }
 }
