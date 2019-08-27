@@ -28,5 +28,12 @@ public interface PlaceService {
 
     Boolean deleteById(Long id);
 
+    /**
+     Method for getting place information
+     *
+     * @param id place
+     * @return info about place
+     * @author Dmytro Dovhal
+     */
     PlaceInfoDto getAccessById(Long id);
 }
