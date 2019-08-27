@@ -8,16 +8,21 @@ import greencity.dto.user_own_security.UserSuccessSignInDto;
 import greencity.entity.User;
 import greencity.entity.UserOwnSecurity;
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadEmailOrPasswordException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserOwnSecurityRepo;
+import greencity.security.JwtTokenTool;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.UserService;
 import greencity.service.VerifyEmailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +36,8 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     private UserService userService;
     private VerifyEmailService verifyEmailService;
     private PasswordEncoder passwordEncoder;
+    private AuthenticationManager manager;
+    private JwtTokenTool jwtTokenTool;
 
     @Transactional
     @Override
@@ -71,6 +78,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                 .dateOfRegistration(LocalDateTime.now())
                 .role(ROLE.USER_ROLE)
                 .lastVisit(LocalDateTime.now())
+                .userStatus(UserStatus.ACTIVATED)
                 .build();
     }
 
@@ -106,19 +114,19 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     @Override
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
         // This method will be change when we will add security
-        User byEmail = userService.findByEmail(dto.getEmail());
 
-        if (byEmail != null
-                && passwordEncoder.matches(
-                        dto.getPassword(), byEmail.getUserOwnSecurity().getPassword())
-                && byEmail.getVerifyEmail() == null) {
-            return UserSuccessSignInDto.builder()
-                    .email(dto.getEmail())
-                    .accessToken("Access token")
-                    .refreshToken("Refresh token")
-                    .build();
-        } else {
-            throw new BadEmailOrPasswordException("Bad email or password!");
+        try {
+            manager.authenticate(
+                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+            User byEmail = userService.findByEmail(dto.getEmail());
+
+            String accessToken =
+                    jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
+            String refreshToken = jwtTokenTool.createRefreshToken();
+            return new UserSuccessSignInDto(byEmail.getEmail(), accessToken, refreshToken);
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+            throw new BadEmailOrPasswordException("Bad email or password");
         }
     }
 }

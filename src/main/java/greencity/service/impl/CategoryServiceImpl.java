@@ -3,10 +3,12 @@ package greencity.service.impl;
 import greencity.entity.Category;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
+import greencity.security.JwtUser;
 import greencity.service.CategoryService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**

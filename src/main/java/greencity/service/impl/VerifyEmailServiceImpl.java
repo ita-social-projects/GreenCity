@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class VerifyEmailServiceImpl implements VerifyEmailService {
 
     @Value("${verifyEmailTimeHour}")
-    private String expireTime;
+    private Integer expireTime;
 
     @Value("${address}")
     private String serverAddress;
@@ -45,7 +45,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
             VerifyEmail.builder()
                 .user(user)
                 .token(UUID.randomUUID().toString())
-                .expiryDate(calculateExpiryDate(Integer.valueOf(expireTime)))
+                .expiryDate(calculateExpiryDate(expireTime))
                 .build();
         repo.save(verifyEmail);
 

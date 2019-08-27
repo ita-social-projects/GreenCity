@@ -3,17 +3,15 @@ package greencity.config;
 import java.util.Arrays;
 import java.util.Collections;
 
+import greencity.security.JwtTokenTool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -22,9 +20,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private JwtTokenTool tool;
+
+    public SecurityConfig(JwtTokenTool tool) {
+        this.tool = tool;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Override
@@ -34,21 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/userOwnSecurity/**")
-                .permitAll();
-    }
-
-    @Bean
-    @Override
-    protected UserDetailsService userDetailsService() {
-        UserDetails userDetails =
-                User.builder()
-                        .passwordEncoder((p) -> passwordEncoder().encode(p))
-                        .username("u")
-                        .password("p")
-                        .roles("USER_ROLE")
-                        .build();
-        return new InMemoryUserDetailsManager(userDetails);
+                .antMatchers("/ownSecurity/**")
+                .permitAll()
+                .anyRequest()
+                .hasAnyRole("ADMIN")
+                .and()
+                .apply(new JwtConfig(tool));
     }
 
     @Bean
