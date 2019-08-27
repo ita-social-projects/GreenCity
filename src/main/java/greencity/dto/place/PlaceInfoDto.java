@@ -20,5 +20,5 @@ public class PlaceInfoDto {
     private List<OpenHoursDto> openingHoursList;
     private List<SpecificationValueDto> specificationValues;
     private List<CommentDto> comments;
-    private List<RateDto> rates;
+    private Byte rate;
 }

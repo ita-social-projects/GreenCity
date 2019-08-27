@@ -203,21 +203,22 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place save(Place place) {
         log.info("in save(Place place), save place - {}", place.getName());
-
         return placeRepo.saveAndFlush(place);
     }
 
     @Override
     public PlaceInfoDto getAccessById(Long id) {
-
-        return modelMapper.map(
-                placeRepo
-                        .findById(id)
-                        .orElseThrow(
-                                () ->
-                                        new PlaceNotFoundException(
-                                                ErrorMessage.PLACE_NOT_FOUND_BY_ID + id)),
-                PlaceInfoDto.class);
+        PlaceInfoDto placeInfoDto =
+                modelMapper.map(
+                        placeRepo
+                                .findById(id)
+                                .orElseThrow(
+                                        () ->
+                                                new PlaceNotFoundException(
+                                                        ErrorMessage.PLACE_NOT_FOUND_BY_ID + id)),
+                        PlaceInfoDto.class);
+        placeInfoDto.setRate(placeRepo.averageRate(id));
+        return placeInfoDto;
     }
 
     @Override
