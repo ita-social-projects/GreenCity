@@ -1,31 +1,50 @@
 package greencity.controller;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import greencity.dto.user_own_security.UserRegisterDto;
+import greencity.dto.user_own_security.UserSignInDto;
+import greencity.dto.user_own_security.UserSuccessSignInDto;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.VerifyEmailService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/ownSecurity")
-@AllArgsConstructor
 public class UserOwnSecurityController {
+
+    @Value("${client.address}")
+    private String clientAddress;
 
     private UserOwnSecurityService service;
     private VerifyEmailService verifyEmailService;
 
-    @PostMapping
-    public ResponseEntity<String> register(@Valid @RequestBody UserRegisterDto dto) {
+    public UserOwnSecurityController(
+            UserOwnSecurityService service, VerifyEmailService verifyEmailService) {
+        this.service = service;
+        this.verifyEmailService = verifyEmailService;
+    }
+
+    @PostMapping("/signUp")
+    public ResponseEntity<String> singUp(@Valid @RequestBody UserRegisterDto dto) {
         service.register(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PostMapping("/signIn")
+    public UserSuccessSignInDto singIn(@Valid @RequestBody UserSignInDto dto) {
+        return service.signIn(dto);
+    }
+
     @GetMapping("/verifyEmail")
-    public void verify(@RequestParam String token) {
+    public void verify(@RequestParam String token, HttpServletResponse response)
+            throws IOException {
         verifyEmailService.verify(token);
+        response.sendRedirect(clientAddress);
     }
 }
