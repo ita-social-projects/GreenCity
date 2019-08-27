@@ -66,7 +66,9 @@ public class UserServiceImpl implements UserService {
                         .collect(Collectors.toList());
         PageableDto<UserForListDto> page =
                 new PageableDto<>(
-                        userForListDtos, users.getTotalElements(), pageable.getPageNumber());
+                        userForListDtos,
+                        users.getTotalElements(),
+                        users.getPageable().getPageNumber());
         return page;
     }
 
