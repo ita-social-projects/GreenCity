@@ -27,7 +27,7 @@ public class AdminController {
      * @return response object with list of dto. The list can be empty.
      * @author Roman Zahorui
      */
-    @PostMapping("/places")
+    @GetMapping("/places")
     public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@RequestParam String status) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return new ResponseEntity<>(placeService.getPlacesByStatus(placeStatus), HttpStatus.OK);
