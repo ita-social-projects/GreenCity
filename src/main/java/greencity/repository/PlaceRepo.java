@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;

@@ -1,21 +1,27 @@
 package greencity.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import greencity.entity.enums.PlaceStatus;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+
+import lombok.*;
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(
+    exclude = {"comments", "photos", "location", "favoritePlaces", "category", "rates", "webPages", "status"})
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,13 +30,12 @@ public class Place {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false, unique = true, length = 15)
+    @Column(unique = true, length = 15)
     private String phone;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(unique = true, length = 50)
     private String email;
 
     @OneToMany(mappedBy = "place")
@@ -58,7 +63,7 @@ public class Place {
 
     @OneToMany(mappedBy = "place")
     @JsonManagedReference
-    private List<OpeningHours> openingHours = new ArrayList<>();
+    private List<OpeningHours> openingHoursList = new ArrayList<>();
 
     @ManyToOne private User author;
 

@@ -6,10 +6,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -17,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "user")
+@Table(name = "_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +47,9 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime dateOfRegistration;
 
+    @OneToMany(mappedBy = "author")
+    private List<Place> places = new ArrayList<>();
+
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
 
@@ -60,6 +61,9 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;
+
+    @OneToOne(mappedBy = "user")
+    private VerifyEmail verifyEmail;
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
