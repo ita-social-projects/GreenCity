@@ -16,4 +16,7 @@ public class ValidationConstants {
 
     public static final String EMPTY_EMAIL = "The email field can not be empty";
     public static final String INVALID_EMAIL = "The email is invalid";
+
+    public static final String EMPTY_ID = "The id field can not be empty";
+    public static final String EMPTY_STATUS = "The status field can not be empty";
 }
