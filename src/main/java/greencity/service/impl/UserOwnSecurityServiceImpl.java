@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 
 import greencity.dto.user_own_security.UserRegisterDto;
@@ -52,6 +53,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                     .email(dto.getEmail())
                     .dateOfRegistration(LocalDateTime.now())
                     .role(ROLE.USER_ROLE)
+                    .userStatus(UserStatus.ACTIVATED)
                     .lastVisit(LocalDateTime.now())
                     .build();
             User savedUser = userService.save(user);
