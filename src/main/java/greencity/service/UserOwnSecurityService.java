@@ -14,4 +14,6 @@ public interface UserOwnSecurityService {
     void deleteNotActiveEmailUsers();
 
     UserSuccessSignInDto signIn(UserSignInDto dto);
+
+    String updateAccessToken(String refreshToken);
 }

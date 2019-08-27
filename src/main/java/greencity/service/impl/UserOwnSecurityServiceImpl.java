@@ -12,6 +12,7 @@ import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadEmailOrPasswordException;
 import greencity.exception.BadIdException;
+import greencity.exception.BadRefreshTokenException;
 import greencity.repository.UserOwnSecurityRepo;
 import greencity.security.JwtTokenTool;
 import greencity.service.UserOwnSecurityService;
@@ -122,11 +123,23 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
 
             String accessToken =
                     jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
-            String refreshToken = jwtTokenTool.createRefreshToken();
+            String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
             return new UserSuccessSignInDto(byEmail.getEmail(), accessToken, refreshToken);
         } catch (AuthenticationException e) {
             e.printStackTrace();
             throw new BadEmailOrPasswordException("Bad email or password");
         }
+    }
+
+    @Override
+    public String updateAccessToken(String refreshToken) {
+        if (jwtTokenTool.isAccessTokenValid(refreshToken)) {
+            String email = jwtTokenTool.getEmailByToken(refreshToken);
+            User user = userService.findByEmail(email);
+            if (user != null) {
+                return jwtTokenTool.createAccessToken(user.getEmail(), user.getRole());
+            }
+        }
+        throw new BadRefreshTokenException("Refresh token not valid!");
     }
 }

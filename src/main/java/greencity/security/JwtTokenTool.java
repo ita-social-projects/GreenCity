@@ -52,7 +52,9 @@ public class JwtTokenTool {
                 .compact();
     }
 
-    public String createRefreshToken() {
+    public String createRefreshToken(String email) {
+        Claims claims = Jwts.claims().setSubject(email);
+
         Calendar calendar = Calendar.getInstance();
 
         calendar.add(Calendar.MINUTE, tokenValidTimeInMinutes);
@@ -61,6 +63,7 @@ public class JwtTokenTool {
                 .signWith(SignatureAlgorithm.HS256, tokenKey)
                 .setIssuedAt(new Date())
                 .setExpiration(calendar.getTime())
+                .setClaims(claims)
                 .compact();
     }
 

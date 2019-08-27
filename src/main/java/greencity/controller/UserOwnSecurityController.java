@@ -47,4 +47,8 @@ public class UserOwnSecurityController {
         verifyEmailService.verify(token);
         response.sendRedirect(clientAddress);
     }
+    @PostMapping
+    public String updateAccessToken(@RequestBody String refreshToken){
+        return service.updateAccessToken(refreshToken);
+    }
 }
