@@ -34,5 +34,14 @@ public interface PlaceService {
      */
     PlaceInfoDto getAccessById(Long id);
 
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} with information about place, *
+     * location depends on the map bounds.
+     *
+     * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
+     *     state of map
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Marian Milian.
+     */
     List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
 }

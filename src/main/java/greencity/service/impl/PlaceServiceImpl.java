@@ -227,22 +227,16 @@ public class PlaceServiceImpl implements PlaceService {
     public Place update(Place place) {
         return null;
     }
+
+
     /**
-     * Method witch return list dto with place id , place name,place address, place latitude ,and
-     * place longitude.
+     * @author Marian Milian
      *
-     * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *     state of map
-     * @return list of dto
-     * @author Marian Milian.
+     * {@inheritDoc}
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        log.info(
-            "in findPlacesLocationByMapsBounds(MapBoundsDto mapBoundsDto), dto - {}",
-            mapBoundsDto);
-
-        List<Place> list =
+             List<Place> list =
             placeRepo.findPlacesByMapsBounds(
                 mapBoundsDto.getNorthEastLat(),
                 mapBoundsDto.getNorthEastLng(),

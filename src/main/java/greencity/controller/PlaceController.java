@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/** */
 @CrossOrigin
 @RestController
 @RequestMapping("/place")
@@ -44,6 +45,14 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getAccessById(id));
     }
 
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} with information about place,
+     * location depends on the map bounds.
+     *
+     * @param mapBoundsDto Contains South-West and North-East bounds of map .
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Marian Milian
+     */
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
             @Valid @RequestBody MapBoundsDto mapBoundsDto) {
