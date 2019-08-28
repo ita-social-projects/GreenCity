@@ -2,23 +2,14 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.category.CategoryDto;
 import greencity.entity.Category;
 import greencity.exception.BadCategoryRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
 import java.util.List;
-import greencity.constant.ErrorMessage;
-import greencity.dto.category.CategoryDto;
-import greencity.entity.Category;
-import greencity.exception.BadCategoryRequestException;
-import greencity.exception.BadIdException;
-import greencity.repository.CategoryRepo;
-import greencity.service.CategoryService;
-import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

@@ -7,11 +7,10 @@ import greencity.entity.Place;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
 import greencity.service.OpenHoursService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /** The class provides implementation of the {@code OpenHoursService}. */
 /** The class provides implementation of the {@code OpenHoursService}. */
