@@ -33,7 +33,7 @@ public class UserController {
     public ResponseEntity<?> updateUserStatus(
             @RequestParam("id") Long id, @RequestParam UserStatus status) {
         userService.updateUserStatus(id, status);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping
