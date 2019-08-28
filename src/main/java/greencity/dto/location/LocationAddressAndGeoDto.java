@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
@@ -18,7 +19,11 @@ public class LocationAddressAndGeoDto {
     @Size(max = ValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
     private String address;
 
-    @NotNull private Double lat;
+    @NotNull(message = ValidationConstants.EMPTY_VALUE_OF_LATITUDE)
+    @Pattern(regexp = "[-+]?\\d+\\.\\d+")
+    private Double lat;
 
-    @NotNull private Double lng;
+    @NotNull(message = ValidationConstants.EMPTY_VALUE_OF_LONGITUDE)
+    @Pattern(regexp = "[-+]?\\d+\\.\\d+")
+    private Double lng;
 }

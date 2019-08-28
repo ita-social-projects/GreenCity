@@ -7,8 +7,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
+import greencity.dto.category.CategoryDto;
+import greencity.dto.location.LocationDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Category;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.mapping.PlaceAddDtoMapper;
@@ -19,6 +24,7 @@ import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
 import greencity.service.PlaceService;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +60,64 @@ public class PlaceServiceImplTest {
     private UserService userService;
 
     @Autowired private PlaceService placeService;
+
+    @Test
+    public void save() {
+        Category category = setCategoryToPlaceTest();
+
+        Place place = new Place();
+        place.setName("test");
+        place.setCategory(category);
+        Place expectedPlace = new Place();
+        place.setId(1L);
+        place.setName("test");
+        place.setCategory(category);
+        when(placeRepo.save(place)).thenReturn(expectedPlace);
+
+        setPlaceToLocalionTest(expectedPlace);
+        setPlaceToOpeningHoursTest(expectedPlace);
+    }
+
+    private Category setCategoryToPlaceTest() {
+        Category category = new Category();
+        category.setName("cafe");
+        category.setId(1L);
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setName("cafe");
+        categoryService.save(categoryDto);
+        when(categoryService.findByName("cafe")).thenReturn(category);
+        return category;
+    }
+
+    private void setPlaceToOpeningHoursTest(Place expectedPlace) {
+        OpeningHours openingHours = new OpeningHours();
+        openingHours.setOpenTime(LocalTime.parse("10:30"));
+        openingHours.setOpenTime(LocalTime.parse("20:30"));
+        openingHours.setPlace(expectedPlace);
+        OpeningHours expectedOpeningHours = new OpeningHours();
+        openingHours.setId(1L);
+        openingHours.setOpenTime(LocalTime.parse("10:30"));
+        openingHours.setOpenTime(LocalTime.parse("20:30"));
+        openingHours.setPlace(expectedPlace);
+        when(openHoursService.save(openingHours)).thenReturn(expectedOpeningHours);
+    }
+
+    private void setPlaceToLocalionTest(Place expectedPlace) {
+        Location location = new Location();
+        location.setAddress("test address");
+        location.setLat(45.456);
+        location.setLng(46.456);
+        location.setPlace(expectedPlace);
+        locationService.save(location);
+        Location expectedLocation = new Location();
+        expectedLocation.setId(1L);
+        location.setAddress("test address");
+        location.setLat(45.456);
+        location.setLng(46.456);
+        location.setPlace(expectedPlace);
+        when(locationService.findById(1L)).thenReturn(expectedLocation);
+    }
+
     @Test
     public void deleteByIdTest() {
         Place placeToDelete = new Place();

@@ -27,4 +27,13 @@ public class ValidationConstants {
     public static final String EMPTY_PLACE_ADDRESS = "The address of place field can not be empty";
 
     public static final String EMPTY_NAME_OF_CATEGORY = "The address of place field can not be empty";
+
+    public static final String EMPTY_VALUE_OF_LATITUDE = "The latitude can not be empty";
+    public static final String EMPTY_VALUE_OF_LONGITUDE = "The longitude can not be empty";
+
+    public static final String EMPTY_OPEN_TIME_VALUE = "The opening time can not be empty";
+    public static final String EMPTY_CLOSE_TIME_VALUE = "The closing time can not be empty";
+
+    public static final String EMPTY_WEEK_DAY_VALUE = "The week day can not be empty";
+
 }

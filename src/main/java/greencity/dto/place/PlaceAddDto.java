@@ -22,11 +22,14 @@ public class PlaceAddDto {
     @Size(max = ValidationConstants.PLACE_NAME_MAX_LENGTH)
     private String name;
 
-    @NotNull private LocationAddressAndGeoDto location;
+    @NotNull
+    private LocationAddressAndGeoDto location;
 
+    @NotNull
     private CategoryDto category;
 
-    @NotNull private List<OpeningHoursDto> openingHoursList;
+    @NotNull
+    private List<OpeningHoursDto> openingHoursList;
 
     @NotNull private PlaceStatus placeStatus = PlaceStatus.PROPOSED;
 }
