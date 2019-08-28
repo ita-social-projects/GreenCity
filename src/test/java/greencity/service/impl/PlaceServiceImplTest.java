@@ -69,12 +69,11 @@ public class PlaceServiceImplTest {
     @Test
     public void updateStatusTest() {
         Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
-        PlaceStatusDto genericDto = new PlaceStatusDto(1L, PlaceStatus.DECLINED);
 
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
 
-        placeService.updateStatus(genericDto);
+        placeService.updateStatus(1L, PlaceStatus.DECLINED);
 
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
@@ -120,22 +119,20 @@ public class PlaceServiceImplTest {
     @Test(expected = PlaceStatusException.class)
     public void updateStatusGivenTheSameStatusThenThrowException() {
         Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
-        PlaceStatusDto genericDto = new PlaceStatusDto(1L, PlaceStatus.PROPOSED);
 
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-        when(placeRepo.save(any())).thenReturn(genericDto);
+        when(placeRepo.save(any())).thenReturn(genericEntity);
 
-        placeService.updateStatus(genericDto);
+        placeService.updateStatus(1L, PlaceStatus.PROPOSED);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateStatusGivenPlaceIdNullThenThrowException() {
         Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
-        PlaceStatusDto genericDto = new PlaceStatusDto(null, PlaceStatus.DECLINED);
 
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        placeService.updateStatus(genericDto);
+        placeService.updateStatus(null, PlaceStatus.PROPOSED);
     }
 
     @Test

@@ -13,7 +13,7 @@ public interface PlaceService {
 
     List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus);
 
-    PlaceStatusDto updateStatus(PlaceStatusDto dto);
+    PlaceStatusDto updateStatus(Long id, PlaceStatus status);
 
     Place findById(Long id);
 

@@ -157,15 +157,13 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * Update status for the Place and set the time of modification.
      *
-     * @param dto - place dto with place id and place status.
+     * @param id - place id.
+     * @param status - place status.
      * @return saved PlaceStatusDto entity.
      * @author Nazar Vladyka.
      */
     @Override
-    public PlaceStatusDto updateStatus(PlaceStatusDto dto) {
-        Long id = dto.getId();
-        PlaceStatus status = dto.getStatus();
-
+    public PlaceStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
