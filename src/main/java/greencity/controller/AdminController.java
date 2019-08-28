@@ -5,6 +5,8 @@ import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.PlaceService;
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,7 @@ public class AdminController {
     @GetMapping("/places")
     public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@RequestParam String status) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
-        return new ResponseEntity<>(placeService.getPlacesByStatus(placeStatus), HttpStatus.OK);
+        return ResponseEntity.ok().body(placeService.getPlacesByStatus(placeStatus));
     }
 
     /**
