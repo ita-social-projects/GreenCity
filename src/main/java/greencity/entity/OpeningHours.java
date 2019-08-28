@@ -1,9 +1,9 @@
 package greencity.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import greencity.entity.enums.WeekDay;
 import java.time.LocalTime;
 import javax.persistence.*;
-
-import greencity.entity.enums.WeekDay;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +16,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Builder
 public class OpeningHours {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,5 +30,7 @@ public class OpeningHours {
 
     @Enumerated private WeekDay weekDay;
 
-    @ManyToOne private Place place;
+    @ManyToOne
+    @JsonBackReference
+    private Place place;
 }

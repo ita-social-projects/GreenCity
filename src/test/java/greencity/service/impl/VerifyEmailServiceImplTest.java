@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -20,10 +21,14 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class VerifyEmailServiceImplTest {
 
-    @Autowired private VerifyEmailRepo repo;
-    @Autowired private VerifyEmailServiceImpl verifyEmailService;
-    @Autowired private UserOwnSecurityServiceImpl userOwnSecurityService;
-    @Autowired private UserServiceImpl userService;
+    @Autowired
+    private VerifyEmailRepo repo;
+    @Autowired
+    private VerifyEmailServiceImpl verifyEmailService;
+    @Autowired
+    private UserOwnSecurityServiceImpl userOwnSecurityService;
+    @Autowired
+    private UserServiceImpl userService;
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
@@ -67,22 +72,16 @@ public class VerifyEmailServiceImplTest {
 
         VerifyEmail verifyEmail =
                 repo.findByUser(userService.findByEmail("Nazar.stasyuk@gmail.com"));
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, -48);
-        verifyEmail.setExpiryDate(calendar.getTime());
+
+        verifyEmail.setExpiryDate(LocalDateTime.now().minusHours(48));
+
         VerifyEmail save = repo.save(verifyEmail);
         verifyEmailService.verify(save.getToken());
     }
 
     @Test
     public void isDateValidate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, 24);
-        Date date = calendar.getTime();
-        assertTrue(verifyEmailService.isDateValidate(date));
-
-        calendar.add(Calendar.HOUR, -48);
-        Date newDate = calendar.getTime();
-        assertFalse(verifyEmailService.isDateValidate(newDate));
+        assertTrue(verifyEmailService.isDateValidate(LocalDateTime.now().plusHours(24)));
+        assertFalse(verifyEmailService.isDateValidate(LocalDateTime.now().minusHours(48)));
     }
 }

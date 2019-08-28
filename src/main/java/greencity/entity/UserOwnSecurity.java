@@ -21,8 +21,6 @@ public class UserOwnSecurity {
     @Column(nullable = false)
     private String password;
 
-    private Boolean isCheckedEmail = false;
-
     @OneToOne
     private User user;
 
