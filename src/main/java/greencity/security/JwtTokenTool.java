@@ -11,6 +11,7 @@ import greencity.entity.enums.ROLE;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,10 +19,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class JwtTokenTool {
 
-    @Value("${tokenValidTimeInMinutes}")
-    private Integer tokenValidTimeInMinutes;
+    @Value("${accessTokenValidTimeInMinutes}")
+    private Integer accessTokenValidTimeInMinutes;
+
+    @Value("${refreshTokenValidTimeInMinutes}")
+    private Integer refreshTokenValidTimeInMinutes;
 
     @Value("${tokenKey}")
     private String tokenKey;
@@ -44,7 +49,7 @@ public class JwtTokenTool {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
-        calendar.add(Calendar.MINUTE, tokenValidTimeInMinutes);
+        calendar.add(Calendar.MINUTE, accessTokenValidTimeInMinutes);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -60,7 +65,7 @@ public class JwtTokenTool {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
-        calendar.add(Calendar.MINUTE, tokenValidTimeInMinutes);
+        calendar.add(Calendar.MINUTE, refreshTokenValidTimeInMinutes);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -91,7 +96,9 @@ public class JwtTokenTool {
     }
 
     public Authentication getAuthentication(String token) {
+        log.info("begin");
         UserDetails userDetails = userDetailsService.loadUserByUsername(getEmailByToken(token));
+        log.info("end");
         return new UsernamePasswordAuthenticationToken(
                 userDetails, "", userDetails.getAuthorities());
     }

@@ -19,6 +19,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import static greencity.constant.ErrorMessage.*;
+
 @Service
 @Slf4j
 public class VerifyEmailServiceImpl implements VerifyEmailService {
@@ -42,11 +44,11 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     public void save(User user) {
         log.info("begin");
         VerifyEmail verifyEmail =
-            VerifyEmail.builder()
-                .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(calculateExpiryDate(expireTime))
-                .build();
+                VerifyEmail.builder()
+                        .user(user)
+                        .token(UUID.randomUUID().toString())
+                        .expiryDate(calculateExpiryDate(expireTime))
+                        .build();
         repo.save(verifyEmail);
 
         new Thread(
@@ -65,18 +67,15 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     public void verify(String token) {
         log.info("begin");
         VerifyEmail verifyEmail =
-            repo.findByToken(token)
-                .orElseThrow(
-                    () ->
-                        new BadTokenException(
-                            "No eny email to verify by this token"));
+                repo.findByToken(token)
+                        .orElseThrow(
+                                () -> new BadTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
         if (isDateValidate(verifyEmail.getExpiryDate())) {
             log.info("Date of user email is valid.");
             delete(verifyEmail);
         } else {
             log.info("User late with verify. Token is invalid.");
-            throw new UserActivationEmailTokenExpiredException(
-                "User late with verify. Token is invalid.");
+            throw new UserActivationEmailTokenExpiredException(EMAIL_TOKEN_EXPIRED);
         }
         log.info("end");
     }
@@ -125,8 +124,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     public void delete(VerifyEmail verifyEmail) {
         log.info("begin");
         if (!repo.existsById(verifyEmail.getId())) {
-            throw new BadIdException(
-                    "No any VerifyEmail to delete with this id: " + verifyEmail.getId());
+            throw new BadIdException(NO_ANY_VERIFY_EMAIL_TO_DELETE + verifyEmail.getId());
         }
         repo.delete(verifyEmail);
         log.info("end");

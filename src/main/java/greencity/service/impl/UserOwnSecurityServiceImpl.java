@@ -28,6 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static greencity.constant.ErrorMessage.*;
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -53,7 +55,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                 repo.save(createUserOwnSecurityToUser(dto, byEmail));
                 verifyEmailService.save(byEmail);
             } else {
-                throw new BadEmailException("User with this email are already registered");
+                throw new BadEmailException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
             }
         } else {
             User user = createNewRegisteredUser(dto);
@@ -88,7 +90,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         log.info("begin");
         if (!repo.existsById(userOwnSecurity.getId())) {
             throw new BadIdException(
-                    "No any userOwnSecurity to delete with this id: " + userOwnSecurity.getId());
+                NO_ENY_USER_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
         }
         repo.delete(userOwnSecurity);
         log.info("end");
@@ -115,7 +117,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     @Override
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
         // This method will be change when we will add security
-
+        log.info("begin");
         try {
             manager.authenticate(
                     new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
@@ -124,10 +126,10 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
             String accessToken =
                     jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
             String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
-            return new UserSuccessSignInDto(byEmail.getEmail(), accessToken, refreshToken);
+            log.info("end");
+            return new UserSuccessSignInDto(accessToken, refreshToken);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
-            throw new BadEmailOrPasswordException("Bad email or password");
+            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
         }
     }
 
@@ -140,6 +142,6 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                 return jwtTokenTool.createAccessToken(user.getEmail(), user.getRole());
             }
         }
-        throw new BadRefreshTokenException("Refresh token not valid!");
+        throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
     }
 }

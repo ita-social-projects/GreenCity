@@ -7,10 +7,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
+@Slf4j
 public class JwtFilter extends GenericFilterBean {
 
     private JwtTokenTool tool;
@@ -23,6 +25,7 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(
             ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
+        log.info("begin");
         String token = tool.getTokenByBody((HttpServletRequest) servletRequest);
         if (token != null && tool.isTokenValid(token)) {
             Authentication authentication = tool.getAuthentication(token);
@@ -31,5 +34,6 @@ public class JwtFilter extends GenericFilterBean {
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);
+        log.info("end");
     }
 }
