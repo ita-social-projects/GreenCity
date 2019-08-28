@@ -1,12 +1,9 @@
 package greencity.service;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.location.MapBoundsDto;
+import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-
 import java.util.List;
 
 /** Provides the interface to manage {@code Place} entity. */
@@ -14,7 +11,7 @@ public interface PlaceService {
 
     List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus);
 
-    Place updateStatus(Long placeId, PlaceStatus placeStatus);
+    PlaceStatusDto updateStatus(Long id, PlaceStatus status);
 
     Place findById(Long id);
 
@@ -29,11 +26,13 @@ public interface PlaceService {
     Boolean deleteById(Long id);
 
     /**
-     Method for getting place information
+     * Method for getting place information
      *
      * @param id place
      * @return info about place
      * @author Dmytro Dovhal
      */
     PlaceInfoDto getAccessById(Long id);
+
+    List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
 }
