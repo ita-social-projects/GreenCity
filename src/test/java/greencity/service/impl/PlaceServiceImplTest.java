@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import greencity.GreenCityApplication;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.location.LocationDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Category;
 import greencity.entity.Location;

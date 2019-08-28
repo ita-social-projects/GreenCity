@@ -34,7 +34,7 @@ public class PlaceController {
     }
 
     @GetMapping("/places")
-    public ResponseEntity<List<Place>> findAllCategory() {
+    public ResponseEntity<List<Place>> findAllPlaces() {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll());
     }
 
