@@ -18,6 +18,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+/**
+ * Class that provide Jwt token logic.
+ *
+ * @author Nazar Stasyuk
+ * @version 1.0
+ */
 @Component
 @Slf4j
 public class JwtTokenTool {
@@ -42,6 +48,12 @@ public class JwtTokenTool {
         tokenKey = Base64.getEncoder().encodeToString(tokenKey.getBytes());
     }
 
+    /**
+     * Method for creating access token.
+     *
+     * @param email this is email of user.
+     * @param role this is role of user.
+     */
     public String createAccessToken(String email, ROLE role) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("roles", Collections.singleton(role.name()));
@@ -59,6 +71,11 @@ public class JwtTokenTool {
                 .compact();
     }
 
+    /**
+     * Method for creating refresh token.
+     *
+     * @param email this is email of user.
+     */
     public String createRefreshToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
 
@@ -75,6 +92,12 @@ public class JwtTokenTool {
                 .compact();
     }
 
+    /**
+     * Method that check if token still valid
+     *
+     * @param token this is token.
+     * @return {@link Boolean}
+     */
     public boolean isTokenValid(String token) {
         boolean isValid = false;
         try {
@@ -86,6 +109,12 @@ public class JwtTokenTool {
         return isValid;
     }
 
+    /**
+     * Method that get token by body request.
+     *
+     * @param servletRequest this is your request.
+     * @return {@link String} of token or null.
+     */
     public String getTokenByBody(HttpServletRequest servletRequest) {
         String token = servletRequest.getHeader("Authorization");
 
@@ -95,6 +124,12 @@ public class JwtTokenTool {
         return null;
     }
 
+    /**
+     * Method that create authentication.
+     *
+     * @param token token from request
+     * @return {@link Authentication}
+     */
     public Authentication getAuthentication(String token) {
         log.info("begin");
         UserDetails userDetails = userDetailsService.loadUserByUsername(getEmailByToken(token));
@@ -103,6 +138,12 @@ public class JwtTokenTool {
                 userDetails, "", userDetails.getAuthorities());
     }
 
+    /**
+     * Method that get email from token.
+     *
+     * @param token token from request.
+     * @return {@link String} of email.
+     */
     public String getEmailByToken(String token) {
         return Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token).getBody().getSubject();
     }

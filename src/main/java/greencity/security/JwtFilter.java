@@ -12,6 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
+/**
+ * Class that provide filtering for JWT security
+ *
+ * @author Nazar Stasyuk
+ * @version 1.0
+ */
 @Slf4j
 public class JwtFilter extends GenericFilterBean {
 
@@ -20,7 +26,14 @@ public class JwtFilter extends GenericFilterBean {
     public JwtFilter(JwtTokenTool tool) {
         this.tool = tool;
     }
-
+    /**
+     * Method that check if request has token in body, if this token still valid, and set
+     * authentication for spring.
+     *
+     * @param servletRequest this is servlet that take request
+     * @param servletResponse this is response servlet
+     * @param filterChain this is filter of chain
+     */
     @Override
     public void doFilter(
             ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)

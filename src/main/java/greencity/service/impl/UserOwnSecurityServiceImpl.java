@@ -30,6 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static greencity.constant.ErrorMessage.*;
 
+/**
+ * Provides the class to manage {@link UserOwnSecurityService} entity.
+ *
+ * @author Nazar Stasyuk
+ * @version 1.0
+ */
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -42,6 +48,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     private AuthenticationManager manager;
     private JwtTokenTool jwtTokenTool;
 
+    /** {@inheritDoc} */
     @Transactional
     @Override
     public void register(UserRegisterDto dto) {
@@ -85,17 +92,18 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                 .build();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete(UserOwnSecurity userOwnSecurity) {
         log.info("begin");
         if (!repo.existsById(userOwnSecurity.getId())) {
-            throw new BadIdException(
-                NO_ENY_USER_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
+            throw new BadIdException(NO_ENY_USER_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
         }
         repo.delete(userOwnSecurity);
         log.info("end");
     }
 
+    /** {@inheritDoc} */
     @Scheduled(fixedRate = 86400000)
     @Override
     public void deleteNotActiveEmailUsers() {
@@ -114,6 +122,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         log.info("end");
     }
 
+    /** {@inheritDoc} */
     @Override
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
         // This method will be change when we will add security
@@ -133,6 +142,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String updateAccessToken(String refreshToken) {
         if (jwtTokenTool.isTokenValid(refreshToken)) {
