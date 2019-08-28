@@ -19,6 +19,8 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
      *
      * @param status to find by.
      * @return a list of places with the given {@code PlaceStatus}.
+     *
+     * @author Roman Zahorui
      */
     List<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status);
 
