@@ -228,22 +228,20 @@ public class PlaceServiceImpl implements PlaceService {
         return null;
     }
 
-
     /**
      * @author Marian Milian
-     *
-     * {@inheritDoc}
+     *     <p>{@inheritDoc}
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-             List<Place> list =
-            placeRepo.findPlacesByMapsBounds(
-                mapBoundsDto.getNorthEastLat(),
-                mapBoundsDto.getNorthEastLng(),
-                mapBoundsDto.getSouthWestLat(),
-                mapBoundsDto.getSouthWestLng());
+        List<Place> list =
+                placeRepo.findPlacesByMapsBounds(
+                        mapBoundsDto.getNorthEastLat(),
+                        mapBoundsDto.getNorthEastLng(),
+                        mapBoundsDto.getSouthWestLat(),
+                        mapBoundsDto.getSouthWestLng());
         return list.stream()
-            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
-            .collect(Collectors.toList());
+                .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+                .collect(Collectors.toList());
     }
 }
