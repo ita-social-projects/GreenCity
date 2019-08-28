@@ -1,13 +1,16 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
 import greencity.entity.Location;
 import greencity.exception.NotFoundException;
 import greencity.repository.LocationRepo;
 import greencity.service.LocationService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Service implementation for Location entity.
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Slf4j
 public class LocationServiceImpl implements LocationService {
+
     private final LocationRepo locationRepo;
 
     /**
@@ -29,7 +33,7 @@ public class LocationServiceImpl implements LocationService {
      */
     @Override
     public List<Location> findAll() {
-        log.info("in findAll()");
+        log.info(LogMessage.IN_FIND_ALL);
 
         return locationRepo.findAll();
     }
@@ -43,11 +47,12 @@ public class LocationServiceImpl implements LocationService {
      */
     @Override
     public Location findById(Long id) {
-        log.info("in findById(Long id), id - {}", id);
+        log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return locationRepo
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException("Location not found with id " + id));
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -74,6 +79,8 @@ public class LocationServiceImpl implements LocationService {
      */
     @Override
     public Location update(Long id, Location location) {
+        log.info(LogMessage.IN_UPDATE, location);
+
         Location updatable = findById(id);
 
         updatable.setLat(location.getLat());
@@ -81,9 +88,7 @@ public class LocationServiceImpl implements LocationService {
         updatable.setAddress(location.getAddress());
         updatable.setPlace(location.getPlace());
 
-        log.info("in update(), {}", location);
-
-        return locationRepo.saveAndFlush(updatable);
+        return locationRepo.save(updatable);
     }
 
     /**
@@ -94,12 +99,10 @@ public class LocationServiceImpl implements LocationService {
      */
     @Override
     public void deleteById(Long id) {
-        log.info("in delete(Category category), category with id - {}", id);
+        log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        try {
-            locationRepo.deleteById(id);
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException("Id can't be NULL");
-        }
+        findById(id);
+
+        locationRepo.deleteById(id);
     }
 }

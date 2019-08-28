@@ -1,94 +1,89 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import greencity.GreenCityApplication;
 import greencity.entity.Location;
 import greencity.exception.NotFoundException;
+import greencity.repository.LocationRepo;
 import greencity.service.LocationService;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LocationServiceImplTest {
+    @MockBean private LocationRepo locationRepo;
     @Autowired private LocationService locationService;
 
     @Test
     public void findByIdTest() {
-        Location genericEntity =
-                Location.builder().lat(20.56).lng(45.89).address("Street, number1").build();
-        locationService.save(genericEntity);
+        Location genericEntity = new Location();
 
-        Location foundEntity = locationService.findById(genericEntity.getId());
+        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        assertNotNull(foundEntity);
+        Location foundEntity = locationService.findById(anyLong());
+
         assertEquals(genericEntity, foundEntity);
     }
 
-    @Test
-    public void saveTest() {
-        Location genericEntity =
-                Location.builder().lat(20.56).lng(45.89).address("Street, number1").build();
-        locationService.save(genericEntity);
-
-        Location foundEntity = locationService.findById(1L);
-
-        assertEquals(genericEntity, foundEntity);
+    @Test(expected = NotFoundException.class)
+    public void findByIdGivenIdNullThenThrowException() {
+        locationService.findById(null);
     }
 
     @Test
     public void updateTest() {
-        Location genericEntity =
-                Location.builder().lat(20.56).lng(45.89).address("Street, number1").build();
-        locationService.save(genericEntity);
+        Location updated = new Location();
 
-        Location updated =
-                Location.builder().id(1L).lat(20.56).lng(45.89).address("Street, number8").build();
-        locationService.update(1L, updated);
+        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(updated));
+        when(locationRepo.save(any())).thenReturn(updated);
 
-        Location foundEntity = locationService.findById(1L);
+        locationService.update(anyLong(), updated);
+        Location foundEntity = locationService.findById(anyLong());
 
         assertEquals(updated, foundEntity);
     }
 
     @Test(expected = NotFoundException.class)
-    public void deleteTest() {
-        Location genericEntity =
-                Location.builder().lat(20.56).lng(45.89).address("Street, number1").build();
-        locationService.save(genericEntity);
-        locationService.deleteById(1L);
+    public void updateGivenIdNullThenThrowException() {
+        locationService.update(null, new Location());
+    }
 
+    @Test(expected = NotFoundException.class)
+    public void deleteByIdThrowExceptionWhenCallFindById() {
+        when(locationRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+
+        locationService.deleteById(1L);
         locationService.findById(1L);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteByIdGivenIdNullThenThrowException() {
+        locationService.deleteById(null);
     }
 
     @Test
     public void findAllTest() {
-        List<Location> genericEntities = new ArrayList<>();
-        List<Location> foundEntities;
+        List<Location> genericEntities =
+                new ArrayList<>(Arrays.asList(new Location(), new Location()));
 
-        Location location1 =
-                Location.builder().lat(20.56).lng(45.89).address("Street, number1").build();
-        Location location2 =
-                Location.builder().lat(20.56).lng(45.89).address("Street, number2").build();
+        when(locationRepo.findAll()).thenReturn(genericEntities);
 
-        genericEntities.add(location1);
-        genericEntities.add(location2);
+        List<Location> foundEntities = locationService.findAll();
 
-        locationService.save(location1);
-        locationService.save(location2);
-
-        foundEntities = locationService.findAll();
-
-        assertNotNull(foundEntities);
         assertEquals(genericEntities, foundEntities);
     }
 }
