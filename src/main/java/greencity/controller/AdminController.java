@@ -23,19 +23,6 @@ public class AdminController {
     private final PlaceService placeService;
 
     /**
-     * The method parse the string param to PlaceStatus value.
-     *
-     * @param status a string represents {@link PlaceStatus} enum value.
-     * @return response object with list of dto. The list can be empty.
-     * @author Roman Zahorui
-     */
-    @GetMapping("/places")
-    public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@RequestParam String status) {
-        PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
-        return ResponseEntity.ok().body(placeService.getPlacesByStatus(placeStatus));
-    }
-
-    /**
      * The method which change place status.
      *
      * @param placeStatusDto a dto for accepting changes in place status.
