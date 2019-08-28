@@ -25,12 +25,8 @@ public class Place {
     private String name;
 
     @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false, unique = true, length = 15)
-    private String phone;
-
-    @Column(nullable = false, unique = true, length = 50)
+    private String address;
+    @Column(nullable = false)
     private String email;
 
     @OneToMany(mappedBy = "place")
@@ -51,20 +47,22 @@ public class Place {
     @ManyToMany(mappedBy = "places")
     private List<WebPage> webPages = new ArrayList<>();
 
-    @ManyToOne private Category category;
+    @ManyToOne
+    private Category category;
 
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
 
+    @ManyToOne
+    private User author;
+
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHours = new ArrayList<>();
-
-    @ManyToOne private User author;
 
     @Column(name = "modified_date")
     private LocalDate modifiedDate = LocalDate.now();
 
     @Enumerated(value = EnumType.ORDINAL)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private PlaceStatus status = PlaceStatus.PROPOSED;
 }

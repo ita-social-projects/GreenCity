@@ -43,11 +43,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(Long id) {
         User user = findById(id);
-         repo.delete(user);
+        repo.delete(user);
     }
 
     @Override
     public User findByEmail(String email) {
         return repo.findByEmail(email);
     }
+    @Override
+    public Long findIdByEmail(String email) {
+        return repo.findIdByEmail(email);
+    }
+
+    //zakhar
+    @Override
+    public boolean existsByEmail(String email) { //zakhar
+        return repo.existsByEmail(email);
+    }
+
 }

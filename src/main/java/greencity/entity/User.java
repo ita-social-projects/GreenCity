@@ -44,6 +44,9 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime dateOfRegistration = LocalDateTime.now();
 
+    @OneToMany(mappedBy = "author")
+    private List<Place> places = new ArrayList<>();
+
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
 
@@ -61,4 +64,5 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
+
 }
