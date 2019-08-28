@@ -1,28 +1,33 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.mapping.PlaceAddDtoMapper;
-import greencity.service.*;
-import org.junit.Assert;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
+import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
+import greencity.service.CategoryService;
+import greencity.service.LocationService;
+import greencity.service.OpenHoursService;
 import greencity.service.PlaceService;
+import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -31,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import static org.mockito.ArgumentMatchers.anyLong;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -39,8 +43,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 public class PlaceServiceImplTest {
 
     @MockBean private PlaceRepo placeRepo;
-
-    @MockBean private ModelMapper modelMapper;
 
     @MockBean private CategoryService categoryService;
 
@@ -50,10 +52,10 @@ public class PlaceServiceImplTest {
 
     @MockBean private PlaceAddDtoMapper placeAddDtoMapper;
 
-    @MockBean
-    private UserService userService;
+    @MockBean private UserService userService;
 
     @Autowired private PlaceService placeService;
+
     @Test
     public void deleteByIdTest() {
         Place placeToDelete = new Place();
@@ -76,27 +78,13 @@ public class PlaceServiceImplTest {
 
     @Test
     public void getPlacesByStatusTest() {
-        Category category = Category.builder().name("categoryName").build();
-        List<AdminPlaceDto> foundList;
-        List<Place> places = new ArrayList<>(3);
+        List<Place> places = new ArrayList<>();
         for (long i = 0; i < 3; i++) {
-            Place place =
-                    Place.builder()
-                            .id(i + 1)
-                            .name("placeName" + i)
-                            .description("placeDescription" + i)
-                            .email("placeEmail@gmail.com" + i)
-                            .phone("066034022" + i)
-                            .modifiedDate(LocalDateTime.now().minusDays(i))
-                            .status(PlaceStatus.PROPOSED)
-                            .category(category)
-                            .build();
-
+            Place place = Place.builder().id(i).status(PlaceStatus.PROPOSED).build();
             places.add(place);
         }
-
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any())).thenReturn(places);
-        foundList = placeService.getPlacesByStatus(PlaceStatus.PROPOSED);
+        List<AdminPlaceDto> foundList = placeService.getPlacesByStatus(PlaceStatus.PROPOSED);
 
         assertNotNull(foundList);
         for (AdminPlaceDto dto : foundList) {
@@ -145,5 +133,24 @@ public class PlaceServiceImplTest {
     @Test(expected = NotFoundException.class)
     public void findByIdGivenIdNullThenThrowException() {
         placeService.findById(null);
+    }
+
+    @Test
+    public void findPlacesByMapsBoundsTest() {
+        MapBoundsDto mapBoundsDto = new MapBoundsDto(20.0, 60.0, 60.0, 10.0);
+        List<Place> placeExpected =
+                new ArrayList<Place>() {
+                    {
+                        add(Place.builder().name("MyPlace").id(1L).build());
+                    }
+                };
+        when(placeRepo.findPlacesByMapsBounds(
+                        mapBoundsDto.getNorthEastLat(),
+                        mapBoundsDto.getNorthEastLng(),
+                        mapBoundsDto.getSouthWestLat(),
+                        mapBoundsDto.getSouthWestLng()))
+                .thenReturn(placeExpected);
+        assertEquals(
+                placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
 }
