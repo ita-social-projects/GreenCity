@@ -13,13 +13,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
@@ -70,5 +64,20 @@ public class PlaceController {
     public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@PathVariable String status) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.ok().body(placeService.getPlacesByStatus(placeStatus));
+    }
+
+    /**
+     * The method which change place status.
+     *
+     * @param id - place id.
+     * @param status - place status.
+     * @return response object with dto and OK status if everything is ok.
+     * @author Nazar Vladyka
+     */
+    @PatchMapping("/changeStatus")
+    public ResponseEntity changePlaceStatus(
+            @RequestParam("id") Long id, @RequestParam("status") PlaceStatus status) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatus(id, status));
     }
 }

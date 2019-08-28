@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import greencity.GreenCityApplication;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
@@ -71,7 +72,7 @@ public class PlaceServiceImplTest {
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
 
-        placeService.updateStatus(genericEntity.getId(), PlaceStatus.DECLINED);
+        placeService.updateStatus(1L, PlaceStatus.DECLINED);
 
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
@@ -107,7 +108,7 @@ public class PlaceServiceImplTest {
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
 
-        placeService.updateStatus(anyLong(), PlaceStatus.PROPOSED);
+        placeService.updateStatus(1L, PlaceStatus.PROPOSED);
     }
 
     @Test(expected = NotFoundException.class)
@@ -116,7 +117,7 @@ public class PlaceServiceImplTest {
 
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        placeService.updateStatus(null, PlaceStatus.DECLINED);
+        placeService.updateStatus(null, PlaceStatus.PROPOSED);
     }
 
     @Test
