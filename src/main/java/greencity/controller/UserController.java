@@ -27,7 +27,7 @@ public class UserController {
     public ResponseEntity<?> updateRole(
             @RequestParam("id") Long id, @RequestParam("role") ROLE role) {
         userService.updateRole(id, role);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PutMapping("update/status")
