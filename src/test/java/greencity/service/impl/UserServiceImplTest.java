@@ -6,6 +6,7 @@ import greencity.GreenCityApplication;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
@@ -26,7 +27,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserServiceImplTest {
 
     @MockBean UserRepo userRepo;
@@ -102,5 +102,11 @@ public class UserServiceImplTest {
     public void findByIdBadIdTest() {
         when(userRepo.findById(any())).thenThrow(BadIdException.class);
         userService.findById(1l);
+    }
+
+    @Test(expected = BadEmailException.class)
+    public void saveExceptionTest() {
+        when(userService.findByEmail(any())).thenThrow(BadEmailException.class);
+        userService.save(new User());
     }
 }

@@ -26,14 +26,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
     @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity<?> handle(RuntimeException e, WebRequest request) {
+    public final ResponseEntity handle(RuntimeException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     @ExceptionHandler(BadEmailOrPasswordException.class)
-    public final ResponseEntity<?> handle(BadEmailOrPasswordException e, WebRequest request) {
+    public final ResponseEntity handle(BadEmailOrPasswordException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
@@ -45,11 +45,23 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(BadEmailException.class)
-    public final ResponseEntity<?> handle(BadEmailException e, WebRequest request) {
+    public final ResponseEntity handle(BadEmailException e, WebRequest request) {
         ValidationExceptionDto validationExceptionDto =
                 new ValidationExceptionDto("email", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonList(validationExceptionDto));
+    }
+
+    @ExceptionHandler(BadPlaceRequestException.class)
+    public final ResponseEntity handle(BadPlaceRequestException e, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(BadCategoryRequestException.class)
+    public final ResponseEntity handle(BadCategoryRequestException e, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     @Override
