@@ -1,12 +1,15 @@
 package greencity.dto.category;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.validation.constraints.NotBlank;
+
+import greencity.constant.ValidationConstants;
+import lombok.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CategoryDto {
+
+    @NotBlank(message = ValidationConstants.EMPTY_NAME_OF_CATEGORY)
     private String name;
 }
