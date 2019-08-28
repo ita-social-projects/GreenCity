@@ -3,7 +3,11 @@ package greencity.dto.user_own_security;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 @Data
@@ -20,7 +24,9 @@ public class UserRegisterDto {
     @Length(max = 20)
     private String lastName;
 
-    @NotBlank @Email private String email;
+    @NotBlank
+    @Email(message = "This is not email.")
+    private String email;
 
     @NotBlank
     @Pattern(regexp = "^[A-z0-9~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]{8,}$")

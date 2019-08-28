@@ -3,26 +3,33 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.place.PlaceAddDto;
-import greencity.entity.*;
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.entity.Category;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.mapping.PlaceAddDtoMapper;
 import greencity.exception.NotFoundException;
+import greencity.exception.PlaceNotFoundException;
 import greencity.exception.PlaceStatusException;
+import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
-import greencity.service.*;
-
+import greencity.service.CategoryService;
 import greencity.service.DateTimeService;
+import greencity.service.LocationService;
+import greencity.service.OpenHoursService;
 import greencity.service.PlaceService;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 /** The class provides implementation of the {@code PlaceService}. */
@@ -201,12 +208,51 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place save(Place place) {
         log.info("in save(Place place), save place - {}", place.getName());
-
         return placeRepo.saveAndFlush(place);
+    }
+
+    @Override
+    public PlaceInfoDto getAccessById(Long id) {
+        PlaceInfoDto placeInfoDto =
+                modelMapper.map(
+                        placeRepo
+                                .findById(id)
+                                .orElseThrow(
+                                        () ->
+                                                new PlaceNotFoundException(
+                                                        ErrorMessage.PLACE_NOT_FOUND_BY_ID + id)),
+                        PlaceInfoDto.class);
+        placeInfoDto.setRate(placeRepo.averageRate(id));
+        return placeInfoDto;
     }
 
     @Override
     public Place update(Place place) {
         return null;
+    }
+    /**
+     * Method witch return list dto with place id , place name,place address, place latitude ,and
+     * place longitude.
+     *
+     * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
+     *     state of map
+     * @return list of dto
+     * @author Marian Milian.
+     */
+    @Override
+    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
+        log.info(
+            "in findPlacesLocationByMapsBounds(MapBoundsDto mapBoundsDto), dto - {}",
+            mapBoundsDto);
+
+        List<Place> list =
+            placeRepo.findPlacesByMapsBounds(
+                mapBoundsDto.getNorthEastLat(),
+                mapBoundsDto.getNorthEastLng(),
+                mapBoundsDto.getSouthWestLat(),
+                mapBoundsDto.getSouthWestLng());
+        return list.stream()
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+            .collect(Collectors.toList());
     }
 }

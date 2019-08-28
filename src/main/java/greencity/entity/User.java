@@ -62,6 +62,9 @@ public class User {
     @OneToOne(mappedBy = "user")
     private UserOwnSecurity userOwnSecurity;
 
+    @OneToOne(mappedBy = "user")
+    private VerifyEmail verifyEmail;
+
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
 }
