@@ -26,14 +26,14 @@ public class UserController {
     public ResponseEntity<?> updateRole(
             @RequestParam("id") Long id, @RequestParam("role") ROLE role) {
         userService.updateRole(id, role);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("update/status")
     public ResponseEntity<?> updateUserStatus(
             @RequestParam("id") Long id, @RequestParam UserStatus status) {
         userService.updateUserStatus(id, status);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
