@@ -6,11 +6,10 @@ import greencity.entity.Location;
 import greencity.exception.NotFoundException;
 import greencity.repository.LocationRepo;
 import greencity.service.LocationService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Service implementation for Location entity.

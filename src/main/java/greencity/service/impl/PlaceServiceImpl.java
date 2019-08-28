@@ -1,24 +1,27 @@
 package greencity.service.impl;
 
-import greencity.dto.location.MapBoundsDto;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.entity.*;
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.entity.Category;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.exception.PlaceNotFoundException;
-import greencity.mapping.PlaceAddDtoMapper;
 import greencity.exception.NotFoundException;
+import greencity.exception.PlaceNotFoundException;
 import greencity.exception.PlaceStatusException;
+import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
-import greencity.service.*;
-
+import greencity.service.CategoryService;
 import greencity.service.DateTimeService;
+import greencity.service.LocationService;
+import greencity.service.OpenHoursService;
 import greencity.service.PlaceService;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +30,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 /** The class provides implementation of the {@code PlaceService}. */

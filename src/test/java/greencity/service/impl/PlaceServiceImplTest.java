@@ -1,32 +1,33 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
-import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.location.MapBoundsDto;
+import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.mapping.PlaceAddDtoMapper;
-import greencity.service.*;
-import org.junit.Assert;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
+import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
+import greencity.service.CategoryService;
+import greencity.service.LocationService;
+import greencity.service.OpenHoursService;
 import greencity.service.PlaceService;
+import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -35,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import static org.mockito.ArgumentMatchers.anyLong;
 
 @Slf4j
 @RunWith(SpringRunner.class)
