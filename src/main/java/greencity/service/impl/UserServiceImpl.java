@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -31,6 +32,7 @@ public class UserServiceImpl implements UserService {
     /** Autowired mapper. */
     private ModelMapper modelMapper;
 
+    /** {@inheritDoc} */
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
@@ -39,11 +41,7 @@ public class UserServiceImpl implements UserService {
         return repo.save(user);
     }
 
-    @Override
-    public User update(User user) {
-        return null;
-    }
-
+    /** {@inheritDoc} */
     @Override
     public User findById(Long id) {
         return repo.findById(id)
@@ -51,44 +49,41 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Find by page {@code User}.
-     *
-     * @param pageable a value with pageable configuration.
-     * @return a dto of {@code PageableDto<UserForDtoList>}.
      * @author Rostyslav Khasanov
+     * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserForListDto> findByPage(Pageable pageable) {
+    public UserPageableDto findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
         List<UserForListDto> userForListDtos =
                 users.getContent().stream()
                         .map(user -> modelMapper.map(user, UserForListDto.class))
                         .collect(Collectors.toList());
-        PageableDto<UserForListDto> page =
-                new PageableDto<>(
+        UserPageableDto page =
+                new UserPageableDto(
                         userForListDtos,
                         users.getTotalElements(),
-                        users.getPageable().getPageNumber());
+                        users.getPageable().getPageNumber(),
+                        ROLE.class.getEnumConstants());
         return page;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void deleteById(Long id) {
         User user = findById(id);
         repo.delete(user);
     }
 
+    /** {@inheritDoc} */
     @Override
     public User findByEmail(String email) {
         return repo.findByEmail(email);
     }
 
     /**
-     * Update {@code ROLE} of user.
-     *
-     * @param id {@code User} id.
-     * @param role {@code ROLE} for user.
      * @author Rostyslav Khasanov
+     * {@inheritDoc}
      */
     @Override
     public void updateRole(Long id, ROLE role) {
@@ -101,11 +96,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Update {@code UserStatus} of user.
-     *
-     * @param id {@code User} id.
-     * @param userStatus {@code UserStatus} for user.
      * @author Rostyslav Khasanov
+     * {@inheritDoc}
      */
     @Override
     public void updateUserStatus(Long id, UserStatus userStatus) {
