@@ -3,10 +3,8 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlaceStatusDto;
+import greencity.dto.location.MapBoundsDto;
+import greencity.dto.place.*;
 import greencity.entity.Category;
 import greencity.entity.Location;
 import greencity.entity.OpeningHours;
@@ -24,6 +22,7 @@ import greencity.service.PlaceService;
 import greencity.util.DateTimeService;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -227,5 +226,30 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place update(Place place) {
         return null;
+    }
+    /**
+     * Method witch return list dto with place id , place name,place address, place latitude ,and
+     * place longitude.
+     *
+     * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
+     *     state of map
+     * @return list of dto
+     * @author Marian Milian.
+     */
+    @Override
+    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
+        log.info(
+            "in findPlacesLocationByMapsBounds(MapBoundsDto mapBoundsDto), dto - {}",
+            mapBoundsDto);
+
+        List<Place> list =
+            placeRepo.findPlacesByMapsBounds(
+                mapBoundsDto.getNorthEastLat(),
+                mapBoundsDto.getNorthEastLng(),
+                mapBoundsDto.getSouthWestLat(),
+                mapBoundsDto.getSouthWestLng());
+        return list.stream()
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+            .collect(Collectors.toList());
     }
 }

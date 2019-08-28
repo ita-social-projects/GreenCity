@@ -30,4 +30,22 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
      */
     @Query(value = "select avg(r.rate) FROM Rate r " + "where place_id = :id")
     Byte averageRate(@Param("id") Long id);
+
+    @Query("from Place p where p.status = :status")
+    List<Place> getPlacesByStatus(@Param("status") PlaceStatus status);
+
+    @Query(
+        value =
+            "FROM Place p"
+                + " left join"
+                + " Location l  on p.location.id =l.id "
+                + " where l.lat > :northEastLat  and l.lat<:southWestLat"
+                + " AND l.lng >:southWestLng and l.lng<:northEastLng "
+                + " and p.status = 2"
+                + " ORDER BY p.name")
+    List<Place> findPlacesByMapsBounds(
+        @Param("northEastLat") Double northEastLat,
+        @Param("northEastLng") Double northEastLng,
+        @Param("southWestLat") Double southWestLat,
+        @Param("southWestLng") Double southWestLng);
 }

@@ -1,6 +1,6 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.Category;
@@ -149,5 +150,23 @@ public class PlaceServiceImplTest {
     @Test(expected = NotFoundException.class)
     public void findByIdGivenIdNullThenThrowException() {
         placeService.findById(null);
+    }
+    @Test
+    public void findPlacesByMapsBoundsTest() {
+        MapBoundsDto mapBoundsDto = new MapBoundsDto(20.0, 60.0, 60.0, 10.0);
+        List<Place> placeExpected =
+            new ArrayList<Place>() {
+                {
+                    add(Place.builder().name("MyPlace").id(1L).build());
+                }
+            };
+        when(placeRepo.findPlacesByMapsBounds(
+            mapBoundsDto.getNorthEastLat(),
+            mapBoundsDto.getNorthEastLng(),
+            mapBoundsDto.getSouthWestLat(),
+            mapBoundsDto.getSouthWestLng()))
+            .thenReturn(placeExpected);
+        assertEquals(
+            placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
 }

@@ -1,9 +1,7 @@
 package greencity.service;
 
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlaceStatusDto;
+import greencity.dto.location.MapBoundsDto;
+import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -35,4 +33,6 @@ public interface PlaceService {
      * @author Dmytro Dovhal
      */
     PlaceInfoDto getAccessById(Long id);
+
+    List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
 }

@@ -1,6 +1,8 @@
 package greencity.controller;
 
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.PlaceService;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
-
+    /** Autowired PlaceService instance. */
     private PlaceService placeService;
 
     @PostMapping("/propose")
@@ -40,6 +42,13 @@ public class PlaceController {
     @GetMapping("/getInfo/{id}")
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getAccessById(id));
+    }
+
+    @PostMapping("/getListPlaceLocationByMapsBounds")
+    public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
+            @Valid @RequestBody MapBoundsDto mapBoundsDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
     }
 
     /**
