@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 
 import greencity.entity.enums.ROLE;
@@ -11,14 +12,35 @@ import org.springframework.data.domain.Pageable;
 /** Provides the interface to manage {@code User} entity. */
 public interface UserService {
 
+    /**
+     * Save {@code User}.
+     *
+     * @param user User object.
+     * @return {@code User}
+     */
     User save(User user);
 
-    User update(User user);
-
+    /**
+     * Find {@code User} by id.
+     *
+     * @param id id of user.
+     * @return {@code User}
+     */
     User findById(Long id);
 
+    /**
+     * Delete {@code User} by id.
+     *
+     * @param id id of user.
+     */
     void deleteById(Long id);
 
+    /**
+     * Find {@code User} by email.
+     *
+     * @param email email of user.
+     * @return {@code User}
+     */
     User findByEmail(String email);
 
     /**
@@ -46,5 +68,5 @@ public interface UserService {
      * @return a dto of {@code PageableDto<UserForDtoList>}.
      * @author Rostyslav Khasanov
      */
-    PageableDto<UserForListDto> findByPage(Pageable pageable);
+    UserPageableDto findByPage(Pageable pageable);
 }
