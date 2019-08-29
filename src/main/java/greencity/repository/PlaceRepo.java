@@ -1,10 +1,8 @@
 package greencity.repository;
 
-import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
-import org.hibernate.annotations.OrderBy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

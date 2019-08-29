@@ -63,7 +63,8 @@ public class PlaceController {
     @GetMapping("/{status}")
     public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@PathVariable String status) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
-        return ResponseEntity.ok().body(placeService.getPlacesByStatus(placeStatus));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(placeService.getPlacesByStatus(placeStatus));
     }
 
     /**
