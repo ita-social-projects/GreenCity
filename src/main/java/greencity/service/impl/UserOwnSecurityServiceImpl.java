@@ -86,7 +86,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                 .lastName(dto.getLastName())
                 .email(dto.getEmail())
                 .dateOfRegistration(LocalDateTime.now())
-                .role(ROLE.USER_ROLE)
+                .role(ROLE.ROLE_USER)
                 .lastVisit(LocalDateTime.now())
                 .userStatus(UserStatus.ACTIVATED)
                 .build();
