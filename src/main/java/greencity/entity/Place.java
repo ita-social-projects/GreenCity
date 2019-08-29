@@ -58,7 +58,8 @@ public class Place {
     @ManyToMany(mappedBy = "places")
     private List<WebPage> webPages = new ArrayList<>();
 
-    @ManyToOne private Category category;
+    @ManyToOne(cascade = {CascadeType.ALL})
+    private Category category;
 
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();

@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+import static greencity.constant.ValidationConstants.INVALID_EMAIL;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,7 +27,7 @@ public class UserRegisterDto {
     private String lastName;
 
     @NotBlank
-    @Email(message = "This is not email.")
+    @Email(message = INVALID_EMAIL)
     private String email;
 
     @NotBlank
