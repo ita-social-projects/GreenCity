@@ -73,5 +73,5 @@ public interface UserService {
      * @return a dto of {@code PageableDto<UserForDtoList>}.
      * @author Rostyslav Khasanov
      */
-    PageableDto<UserForListDto> findByPage(Pageable pageable);
+    UserPageableDto findByPage(Pageable pageable);
 }

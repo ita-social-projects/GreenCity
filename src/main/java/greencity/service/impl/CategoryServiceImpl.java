@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 /**
  * Service implementation for Category entity.
  *
- * @author Nazar Vladyka
  * @version 1.0
  */
 @Service
@@ -50,9 +49,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Find all categories from DB.
+     * {@inheritDoc}
      *
-     * @return List of categories.
      * @author Nazar Vladyka
      */
     @Override
@@ -63,10 +61,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Find Category entity by id.
+     * {@inheritDoc}
      *
-     * @param id - Category id.
-     * @return Category entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -80,25 +76,20 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Save Category to DB.
+     * {@inheritDoc}
      *
-     * @param category - entity of Category.
-     * @return saved Category.
      * @author Nazar Vladyka
      */
     @Override
     public Category save(Category category) {
-        log.info("in save(Category category), {}", category);
+        log.info(LogMessage.IN_SAVE, category);
 
         return categoryRepo.saveAndFlush(category);
     }
 
     /**
-     * Update Category in DB.
+     * {@inheritDoc}
      *
-     * @param id - Category id.
-     * @param category - Category entity.
-     * @return Category updated entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -116,9 +107,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Delete entity from DB by id.
+     * {@inheritDoc}
      *
-     * @param id - Category id.
      * @author Nazar Vladyka
      */
     @Override
