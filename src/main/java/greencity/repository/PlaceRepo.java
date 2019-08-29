@@ -47,7 +47,7 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
                     "FROM Place p"
                             + " left join"
                             + " Location l  on p.location.id =l.id "
-                            + " where l.lat > :northEastLat  and l.lat<:southWestLat"
+                            + " where l.lat > :southWestLat  and l.lat< :northEastLat"
                             + " AND l.lng >:southWestLng and l.lng<:northEastLng "
                             + " and p.status = 2"
                             + " ORDER BY p.name")
