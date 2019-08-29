@@ -9,14 +9,6 @@ public interface FavoritePlaceService {
     /**
      * Save place as favorite for user
      *
-     * @param favoritePlace - favorite place entity instance
-     * @return FavoritePlace entity instance
-     * @author Zakhar Skaletskyi
-     */
-    FavoritePlace save(FavoritePlace favoritePlace);
-    /**
-     * Save place as favorite for user
-     *
      * @param favoritePlaceDto - dto for FavoritePlace entity
      * @return FavoritePlaceDto instance
      * @author Zakhar Skaletskyi

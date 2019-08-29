@@ -38,7 +38,8 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      *
      * {@inheritDoc}
      */
-    public FavoritePlace save(FavoritePlace favoritePlace) {
+    public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto) {
+        FavoritePlace favoritePlace= modelMapper.map(favoritePlaceDto, FavoritePlace.class);
         log.info(LogMessage.IN_SAVE, FavoritePlace.class.getName());
 
         if (!userService.existsByEmail(favoritePlace.getUser().getEmail())) {
@@ -51,17 +52,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
             throw new BadIdAndEmailException(ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS);
         }
         favoritePlace.getUser().setId(userRepo.findIdByEmail(favoritePlace.getUser().getEmail()));
-        return repo.save(favoritePlace);
-    }
-
-    /**
-     * @author Zakhar Skaletskyi
-     * <p>
-     * {@inheritDoc}
-     */
-    @Override
-    public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto) {
-        return modelMapper.map(save(modelMapper.map(favoritePlaceDto, FavoritePlace.class)), FavoritePlaceDto.class);
+        return modelMapper.map(repo.save(favoritePlace), FavoritePlaceDto.class);
     }
 
     /**
