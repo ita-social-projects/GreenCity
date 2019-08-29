@@ -1,8 +1,11 @@
 package greencity.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import greencity.constant.ErrorMessage;
-import greencity.dto.PageableDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -10,8 +13,6 @@ import greencity.exception.BadIdException;
 import greencity.exception.BadUserException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -31,10 +32,11 @@ public class UserServiceImpl implements UserService {
     /** Autowired mapper. */
     private ModelMapper modelMapper;
 
+    /** {@inheritDoc} */
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
-            throw new BadUserException("We have user with this email " + user.getEmail());
+            throw new BadUserException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
     }
@@ -44,52 +46,42 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public User findById(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new BadIdException("No user with this id: " + id));
+                .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
-    /**
-     * Find by page {@code User}.
-     *
-     * @param pageable a value with pageable configuration.
-     * @return a dto of {@code PageableDto<UserForDtoList>}.
-     * @author Rostyslav Khasanov
-     */
+    /** @author Rostyslav Khasanov {@inheritDoc} */
     @Override
-    public PageableDto<UserForListDto> findByPage(Pageable pageable) {
+    public UserPageableDto findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
         List<UserForListDto> userForListDtos =
                 users.getContent().stream()
                         .map(user -> modelMapper.map(user, UserForListDto.class))
                         .collect(Collectors.toList());
-        PageableDto<UserForListDto> page =
-                new PageableDto<>(
-                        userForListDtos,
-                        users.getTotalElements(),
-                        users.getPageable().getPageNumber());
-        return page;
+        return new UserPageableDto(
+                userForListDtos,
+                users.getTotalElements(),
+                users.getPageable().getPageNumber(),
+                ROLE.class.getEnumConstants());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void deleteById(Long id) {
         User user = findById(id);
         repo.delete(user);
     }
 
+    /** {@inheritDoc} */
     @Override
     public User findByEmail(String email) {
         return repo.findByEmail(email);
     }
 
-    /**
-     * Update {@code ROLE} of user.
-     *
-     * @param id {@code User} id.
-     * @param role {@code ROLE} for user.
-     * @author Rostyslav Khasanov
-     */
+    /** @author Rostyslav Khasanov {@inheritDoc} */
     @Override
     public void updateRole(Long id, ROLE role) {
         User user =
@@ -100,13 +92,7 @@ public class UserServiceImpl implements UserService {
         repo.save(user);
     }
 
-    /**
-     * Update {@code UserStatus} of user.
-     *
-     * @param id {@code User} id.
-     * @param userStatus {@code UserStatus} for user.
-     * @author Rostyslav Khasanov
-     */
+    /** @author Rostyslav Khasanov {@inheritDoc} */
     @Override
     public void updateUserStatus(Long id, UserStatus userStatus) {
         User user =

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @AllArgsConstructor
 @RestControllerAdvice
+@Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ErrorAttributes errorAttributes;
@@ -32,6 +34,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BadEmailOrPasswordException.class)
     public final ResponseEntity handle(BadEmailOrPasswordException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(BadRefreshTokenException.class)
+    public final ResponseEntity<?> handle(BadRefreshTokenException e, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
@@ -39,6 +48,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity handle(BadEmailException e, WebRequest request) {
         ValidationExceptionDto validationExceptionDto =
                 new ValidationExceptionDto("email", e.getMessage());
+        log.trace(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonList(validationExceptionDto));
     }
@@ -46,12 +56,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BadPlaceRequestException.class)
     public final ResponseEntity handle(BadPlaceRequestException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     @ExceptionHandler(BadCategoryRequestException.class)
     public final ResponseEntity handle(BadCategoryRequestException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
@@ -65,13 +77,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getBindingResult().getFieldErrors().stream()
                         .map(ValidationExceptionDto::new)
                         .collect(Collectors.toList());
-
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
     }
 
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
         Map<String, Object> errorMap = new HashMap<>();
-        errorMap.putAll(errorAttributes.getErrorAttributes(webRequest, false));
+        errorMap.putAll(errorAttributes.getErrorAttributes(webRequest, true));
         return errorMap;
     }
 }
