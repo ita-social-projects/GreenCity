@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UserSuccessSignInDto {
-    private String email;
     private String accessToken;
     private String refreshToken;
 }

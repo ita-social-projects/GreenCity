@@ -1,45 +1,48 @@
 package greencity.service;
 
-import greencity.dto.PageableDto;
-import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
-
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
 
-/** Provides the interface to manage {@code User} entity. */
+/**
+ * Provides the interface to manage {@link User} entity.
+ *
+ * @author Nazar Stasyuk and Rostyslav .....
+ * @version 1.0
+ */
 public interface UserService {
 
     /**
-     * Save {@code User}.
+     * Method that allow you to save new {@link User}
      *
-     * @param user User object.
-     * @return {@code User}
+     * @param user a value of {@link User}
      */
     User save(User user);
 
+    User update(User user);
+
     /**
-     * Find {@code User} by id.
+     * Method that allow you to find {@link User} by ID
      *
-     * @param id id of user.
-     * @return {@code User}
+     * @param id a value of {@link Long}
+     * @return {@link User}
      */
     User findById(Long id);
 
     /**
-     * Delete {@code User} by id.
+     * Method that allow you to delete {@link User} by ID
      *
-     * @param id id of user.
+     * @param id a value of {@link Long}
      */
     void deleteById(Long id);
 
     /**
-     * Find {@code User} by email.
+     * Method that allow you to find {@link User} by email
      *
-     * @param email email of user.
-     * @return {@code User}
+     * @param email a value of {@link String}
+     * @return {@link User}
      */
     User findByEmail(String email);
 

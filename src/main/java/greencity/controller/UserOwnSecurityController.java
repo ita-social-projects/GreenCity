@@ -3,6 +3,7 @@ package greencity.controller;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import greencity.dto.user_own_security.UserRegisterDto;
 import greencity.dto.user_own_security.UserSignInDto;
@@ -42,9 +43,14 @@ public class UserOwnSecurityController {
     }
 
     @GetMapping("/verifyEmail")
-    public void verify(@RequestParam String token, HttpServletResponse response)
+    public void verify(@RequestParam @NotBlank String token, HttpServletResponse response)
             throws IOException {
         verifyEmailService.verify(token);
         response.sendRedirect(clientAddress);
+    }
+
+    @PostMapping("/updateAccessToken")
+    public String updateAccessToken(@RequestBody @NotBlank String refreshToken) {
+        return service.updateAccessToken(refreshToken);
     }
 }
