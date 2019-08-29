@@ -11,6 +11,7 @@ import greencity.GreenCityApplication;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.Category;
 import greencity.entity.Location;
 import greencity.entity.OpeningHours;
@@ -48,8 +49,6 @@ public class PlaceServiceImplTest {
 
     @MockBean private PlaceRepo placeRepo;
 
-    @MockBean private ModelMapper modelMapper;
-
     @MockBean private CategoryService categoryService;
 
     @MockBean private LocationService locationService;
@@ -58,10 +57,10 @@ public class PlaceServiceImplTest {
 
     @MockBean private PlaceAddDtoMapper placeAddDtoMapper;
 
-    @MockBean
-    private UserService userService;
+    @MockBean private UserService userService;
 
     @Autowired private PlaceService placeService;
+
 
     @Test
     public void save() {
@@ -135,34 +134,20 @@ public class PlaceServiceImplTest {
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
 
-        placeService.updateStatus(genericEntity.getId(), PlaceStatus.DECLINED);
+        placeService.updateStatus(1L, PlaceStatus.DECLINED);
 
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
 
     @Test
     public void getPlacesByStatusTest() {
-        Category category = Category.builder().name("categoryName").build();
-        List<AdminPlaceDto> foundList;
-        List<Place> places = new ArrayList<>(3);
+        List<Place> places = new ArrayList<>();
         for (long i = 0; i < 3; i++) {
-            Place place =
-                    Place.builder()
-                            .id(i + 1)
-                            .name("placeName" + i)
-                            .description("placeDescription" + i)
-                            .email("placeEmail@gmail.com" + i)
-                            .phone("066034022" + i)
-                            .modifiedDate(LocalDateTime.now().minusDays(i))
-                            .status(PlaceStatus.PROPOSED)
-                            .category(category)
-                            .build();
-
+            Place place = Place.builder().id(i).status(PlaceStatus.PROPOSED).build();
             places.add(place);
         }
-
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any())).thenReturn(places);
-        foundList = placeService.getPlacesByStatus(PlaceStatus.PROPOSED);
+        List<AdminPlaceDto> foundList = placeService.getPlacesByStatus(PlaceStatus.PROPOSED);
 
         assertNotNull(foundList);
         for (AdminPlaceDto dto : foundList) {
@@ -185,7 +170,7 @@ public class PlaceServiceImplTest {
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
 
-        placeService.updateStatus(anyLong(), PlaceStatus.PROPOSED);
+        placeService.updateStatus(1L, PlaceStatus.PROPOSED);
     }
 
     @Test(expected = NotFoundException.class)
@@ -194,7 +179,7 @@ public class PlaceServiceImplTest {
 
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        placeService.updateStatus(null, PlaceStatus.DECLINED);
+        placeService.updateStatus(null, PlaceStatus.PROPOSED);
     }
 
     @Test
@@ -212,22 +197,23 @@ public class PlaceServiceImplTest {
     public void findByIdGivenIdNullThenThrowException() {
         placeService.findById(null);
     }
+
     @Test
     public void findPlacesByMapsBoundsTest() {
         MapBoundsDto mapBoundsDto = new MapBoundsDto(20.0, 60.0, 60.0, 10.0);
         List<Place> placeExpected =
-            new ArrayList<Place>() {
-                {
-                    add(Place.builder().name("MyPlace").id(1L).build());
-                }
-            };
+                new ArrayList<Place>() {
+                    {
+                        add(Place.builder().name("MyPlace").id(1L).build());
+                    }
+                };
         when(placeRepo.findPlacesByMapsBounds(
-            mapBoundsDto.getNorthEastLat(),
-            mapBoundsDto.getNorthEastLng(),
-            mapBoundsDto.getSouthWestLat(),
-            mapBoundsDto.getSouthWestLng()))
-            .thenReturn(placeExpected);
+                        mapBoundsDto.getNorthEastLat(),
+                        mapBoundsDto.getNorthEastLng(),
+                        mapBoundsDto.getSouthWestLat(),
+                        mapBoundsDto.getSouthWestLng()))
+                .thenReturn(placeExpected);
         assertEquals(
-            placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
+                placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
 }
