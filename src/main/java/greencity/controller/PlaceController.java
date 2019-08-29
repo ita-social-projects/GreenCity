@@ -3,16 +3,17 @@ package greencity.controller;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.Place;
-import greencity.entity.enums.PlaceStatus;
 import greencity.service.PlaceService;
-import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -54,15 +55,13 @@ public class PlaceController {
     /**
      * The method which change place status.
      *
-     * @param id - place id.
-     * @param status - place status.
+     * @param dto - place dto with place id and updated place status.
      * @return response object with dto and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @PatchMapping("/changeStatus")
-    public ResponseEntity changePlaceStatus(
-            @RequestParam("id") Long id, @RequestParam("status") PlaceStatus status) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatus(id, status));
+    public ResponseEntity changePlaceStatus(@Valid @RequestBody PlaceStatusDto dto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
 }

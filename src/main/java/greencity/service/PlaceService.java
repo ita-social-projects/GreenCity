@@ -11,11 +11,22 @@ public interface PlaceService {
 
     List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus);
 
+    /**
+     * Update status for the Place and set the time of modification.
+     *
+     * @param id - place id.
+     * @param status - place status.
+     * @return saved PlaceStatusDto entity.
+     */
     PlaceStatusDto updateStatus(Long id, PlaceStatus status);
 
+    /**
+     * Find place by it's id.
+     *
+     * @param id - place id.
+     * @return Place entity.
+     */
     Place findById(Long id);
-
-    Place save(Place place);
 
     Place save(PlaceAddDto dto);
 

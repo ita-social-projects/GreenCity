@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /** The class provides implementation of the {@code OpenHoursService}. */
-/** The class provides implementation of the {@code OpenHoursService}. */
 @Slf4j
 @AllArgsConstructor
 @Service
@@ -32,23 +31,20 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     }
 
     /**
-     * Save OpeningHours to DB.
+     * {@inheritDoc}
      *
-     * @param hours - entity of OpeningHours.
-     * @return saved OpeningHours.
      * @author Nazar Vladyka
      */
     @Override
     public OpeningHours save(OpeningHours hours) {
-        log.info("in save(OpeningHours hours), {}", hours);
+        log.info(LogMessage.IN_SAVE, hours);
 
         return hoursRepo.saveAndFlush(hours);
     }
 
     /**
-     * Find all opening hours from DB.
+     * {@inheritDoc}
      *
-     * @return List of opening hours.
      * @author Nazar Vladyka
      */
     @Override
@@ -59,10 +55,8 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     }
 
     /**
-     * Find OpeningHours entity by id.
+     * {@inheritDoc}
      *
-     * @param id - OpeningHours id.
-     * @return OpeningHours entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -76,11 +70,8 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     }
 
     /**
-     * Update OpeningHours in DB.
+     * {@inheritDoc}
      *
-     * @param id - OpeningHours id.
-     * @param updatedHours - OpeningHours entity.
-     * @return OpeningHours updated entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -98,9 +89,8 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     }
 
     /**
-     * Delete entity from DB by id.
+     * {@inheritDoc}
      *
-     * @param id - OpeningHours id.
      * @author Nazar Vladyka
      */
     @Override
