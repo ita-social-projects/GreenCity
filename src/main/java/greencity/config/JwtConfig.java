@@ -1,5 +1,7 @@
 package greencity.config;
 
+import javax.sql.DataSource;
+
 import greencity.security.JwtFilter;
 import greencity.security.JwtTokenTool;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
