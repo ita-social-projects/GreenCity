@@ -5,7 +5,11 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.Place;
 import greencity.service.PlaceService;
+
+import java.security.Principal;
 import java.util.List;
+
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,9 +32,10 @@ public class PlaceController {
     private PlaceService placeService;
 
     @PostMapping("/propose")
-    public ResponseEntity<?> proposePlace(@Valid @RequestBody PlaceAddDto dto) {
-        placeService.save(dto);
-        return new ResponseEntity<Void>(HttpStatus.CREATED);
+//    @PreAuthorize()
+    public ResponseEntity proposePlace(@Valid @RequestBody PlaceAddDto dto, Principal principal) {
+        placeService.save(dto, principal.getName());
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @GetMapping("/places")

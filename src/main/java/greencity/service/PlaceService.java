@@ -7,6 +7,8 @@ import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
+
+import java.security.Principal;
 import java.util.List;
 
 /** Provides the interface to manage {@code Place} entity. */
@@ -20,7 +22,14 @@ public interface PlaceService {
 
     Place save(Place place);
 
-    Place save(PlaceAddDto dto);
+    /**
+     * Method for saving proposed {@code Place} to database.
+     *
+     * @param dto - dto for Place entity
+     * @return place {@code Place}
+     * @author Kateryna Horokh
+     */
+    Place save(PlaceAddDto dto, String email);
 
     Place update(Place place);
 
