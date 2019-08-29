@@ -1,24 +1,29 @@
 package greencity.controller;
 
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceStatusDto;
+import greencity.dto.place.*;
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
+import greencity.mapping.PlaceAddDtoMapper;
+import greencity.security.JwtUser;
 import greencity.service.PlaceService;
 
 import java.security.Principal;
 import java.util.List;
 
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.omg.IOP.ServiceContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 
 @CrossOrigin
 @RestController
@@ -29,16 +34,21 @@ public class PlaceController {
     /** Autowired PlaceService instance. */
     private PlaceService placeService;
 
-    @PostMapping("/propose")
-//    @PreAuthorize()
-    public ResponseEntity proposePlace(@Valid @RequestBody PlaceAddDto dto, Principal principal) {
-        placeService.save(dto, principal.getName());
-        return new ResponseEntity(HttpStatus.CREATED);
-    }
+    private ModelMapper modelMapper;
 
-    @GetMapping("/places")
-    public ResponseEntity<List<Place>> findAllPlaces() {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll());
+    /**
+     * The method which return new proposed {@code Place} from user.
+     *
+     * @param dto - Place dto fot adding with all parameters.
+     * @return new {@code Place}.
+     * @author Kateryna Horokh
+     */
+    @PostMapping("/propose")
+    public ResponseEntity<PlaceWithUserDto> proposePlace(
+            @Valid @RequestBody PlaceAddDto dto, Principal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                modelMapper.map(
+                        placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
     }
 
     /**

@@ -74,19 +74,19 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * @author Kateryna Horokh
-     *
      * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
      */
     @Transactional
     @Override
     public Place save(PlaceAddDto dto, String email) {
         log.info("in save(PlaceAddDto dto), save place - {}", dto.getName());
         Category category = createCategoryByName(dto.getCategory().getName());
-        dto.setAuthor(modelMapper.map(userService.findByEmail(email),
-            UserForListDto.class));
-        Place place = placeRepo.save(placeAddDtoMapper.convertToEntity(dto));
+        Place place = placeAddDtoMapper.convertToEntity(dto);
+        place.setAuthor(userService.findByEmail(email));
         place.setCategory(category);
+        placeRepo.save(place);
         setPlaceToLocation(place);
         setPlaceToOpeningHours(place);
 
@@ -220,9 +220,9 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     *  {@inheritDoc}
-     * @author Marian Milian
+     * {@inheritDoc}
      *
+     * @author Marian Milian
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
