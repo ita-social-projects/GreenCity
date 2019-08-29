@@ -3,10 +3,12 @@ package greencity.config;
 import java.util.Arrays;
 import java.util.Collections;
 
+import greencity.entity.User;
 import greencity.security.JwtTokenTool;
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -20,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableOAuth2Sso
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private JwtTokenTool tool;
@@ -46,10 +49,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/ownSecurity/**")
+                .antMatchers("/ownSecurity/**", "/googleSecurity**")
                 .permitAll()
                 .anyRequest()
-                .hasAnyRole("ADMIN")
+                .authenticated()
                 .and()
                 .apply(new JwtConfig(tool));
     }
@@ -67,6 +70,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public PrincipalExtractor principalExtractor() {
+        return map -> {
+            return new User();
+        };
     }
 
     @Override
