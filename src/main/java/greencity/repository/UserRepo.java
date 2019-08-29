@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /** Provides an interface to manage {@link User} entity. */
 public interface UserRepo extends JpaRepository<User, Long> {
 
-    Optional<User> findByEmail(String email);
+    User findByEmail(String email);
 
     /**
      * Find {@code User} by page.

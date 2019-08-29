@@ -76,9 +76,7 @@ public class UserServiceImpl implements UserService {
     /** {@inheritDoc} */
     @Override
     public User findByEmail(String email) {
-        return repo.findByEmail(email)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return repo.findByEmail(email);
     }
 
     /** @author Rostyslav Khasanov {@inheritDoc} */
