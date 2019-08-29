@@ -9,6 +9,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadIdException;
 import greencity.exception.BadUserException;
+import greencity.exception.NotFoundException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.util.List;
@@ -48,10 +49,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
-    /**
-     * @author Rostyslav Khasanov
-     * {@inheritDoc}
-     */
+    /** @author Rostyslav Khasanov {@inheritDoc} */
     @Override
     public UserPageableDto findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
@@ -78,13 +76,12 @@ public class UserServiceImpl implements UserService {
     /** {@inheritDoc} */
     @Override
     public User findByEmail(String email) {
-        return repo.findByEmail(email);
+        return repo.findByEmail(email)
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
-    /**
-     * @author Rostyslav Khasanov
-     * {@inheritDoc}
-     */
+    /** @author Rostyslav Khasanov {@inheritDoc} */
     @Override
     public void updateRole(Long id, ROLE role) {
         User user =
@@ -95,10 +92,7 @@ public class UserServiceImpl implements UserService {
         repo.save(user);
     }
 
-    /**
-     * @author Rostyslav Khasanov
-     * {@inheritDoc}
-     */
+    /** @author Rostyslav Khasanov {@inheritDoc} */
     @Override
     public void updateUserStatus(Long id, UserStatus userStatus) {
         User user =
