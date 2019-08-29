@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@Slf4j
 @AllArgsConstructor
 @RestControllerAdvice
+@Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ErrorAttributes errorAttributes;
@@ -28,7 +28,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public final ResponseEntity handle(RuntimeException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
@@ -36,6 +35,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity handle(BadEmailOrPasswordException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(BadRefreshTokenException.class)
+    public final ResponseEntity<?> handle(BadRefreshTokenException e, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 

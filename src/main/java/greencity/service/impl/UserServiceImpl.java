@@ -1,7 +1,9 @@
 package greencity.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import greencity.constant.ErrorMessage;
-import greencity.dto.PageableDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
@@ -9,11 +11,8 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadIdException;
 import greencity.exception.BadUserException;
-import greencity.exception.NotFoundException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -42,6 +41,11 @@ public class UserServiceImpl implements UserService {
         return repo.save(user);
     }
 
+    @Override
+    public User update(User user) {
+        return null;
+    }
+
     /** {@inheritDoc} */
     @Override
     public User findById(Long id) {
@@ -57,13 +61,11 @@ public class UserServiceImpl implements UserService {
                 users.getContent().stream()
                         .map(user -> modelMapper.map(user, UserForListDto.class))
                         .collect(Collectors.toList());
-        UserPageableDto page =
-                new UserPageableDto(
-                        userForListDtos,
-                        users.getTotalElements(),
-                        users.getPageable().getPageNumber(),
-                        ROLE.class.getEnumConstants());
-        throw new NullPointerException();
+        return new UserPageableDto(
+                userForListDtos,
+                users.getTotalElements(),
+                users.getPageable().getPageNumber(),
+                ROLE.class.getEnumConstants());
     }
 
     /** {@inheritDoc} */
