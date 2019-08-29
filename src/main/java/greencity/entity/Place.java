@@ -74,7 +74,6 @@ public class Place {
     private LocalDateTime modifiedDate = LocalDateTime.now();
 
     @Enumerated(value = EnumType.ORDINAL)
-
     @Column(name = "status")
     private PlaceStatus status = PlaceStatus.PROPOSED;
 }

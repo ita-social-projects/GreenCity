@@ -1,10 +1,10 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
 import greencity.dto.favoritePlace.FavoritePlaceDto;
-import greencity.dto.favoritePlace.FavoritePlaceUpdateDto;
 import greencity.entity.FavoritePlace;
-import greencity.entity.Place;
-import greencity.entity.User;
+import greencity.exception.BadIdAndEmailException;
 import greencity.exception.NotFoundException;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.UserRepo;
@@ -31,81 +31,89 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     private PlaceService placeService;
     private ModelMapper modelMapper;
 
+
     @Override
+    /**
+     * @author Zakhar Skaletskyi
+     *
+     * {@inheritDoc}
+     */
     public FavoritePlace save(FavoritePlace favoritePlace) {
-        log.info("in save(FavoritePlace favoritePlace)");
-        if (repo.existsByPlaceIdAndUserEmail(favoritePlace.getPlace().getId(), favoritePlace.getUser().getEmail())) {  //змінити  запит
-            throw new BadIdException("Favorite place already exist."); //перенести в константи повідоення
-        }
+        log.info(LogMessage.IN_SAVE, FavoritePlace.class.getName());
+
         if (!userService.existsByEmail(favoritePlace.getUser().getEmail())) {
-            throw new BadIdException("User not exist.");
+            throw new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
         }
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
-            throw new BadIdException("Place not exist.");
+            throw new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
-
+        if (repo.existsByPlaceIdAndUserEmail(favoritePlace.getPlace().getId(), favoritePlace.getUser().getEmail())) {
+            throw new BadIdAndEmailException(ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS);
+        }
+        favoritePlace.getUser().setId(userRepo.findIdByEmail(favoritePlace.getUser().getEmail()));
         return repo.save(favoritePlace);
     }
 
-
+    /**
+     * @author Zakhar Skaletskyi
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto) {
-        log.info("in save(FavoritePlaceDto favoritePlaceDto)");
+        return modelMapper.map(save(modelMapper.map(favoritePlaceDto, FavoritePlace.class)), FavoritePlaceDto.class);
+    }
 
-        if (repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlace().getId(), favoritePlaceDto.getUser().getEmail())) {//
-            throw new BadIdException("Favorite place already exist.");
-        }
+    /**
+     * @author Zakhar Skaletskyi
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto) {
+        log.info(LogMessage.IN_UPDATE, FavoritePlace.class.getName());
         if (!userService.existsByEmail(favoritePlaceDto.getUser().getEmail())) {
-            throw new NotFoundException("User not exist.");
+            throw new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
         }
         if (!placeService.existsById(favoritePlaceDto.getPlace().getId())) {
-            throw new BadIdException("Place not exist.");
+            throw new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
-        favoritePlaceDto.getUser().setId(userRepo.findIdByEmail(favoritePlaceDto.getUser().getEmail()));
-        return modelMapper.map(repo.save(modelMapper.map(favoritePlaceDto, FavoritePlace.class)), FavoritePlaceDto.class);
+
+        if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlace().getId(), favoritePlaceDto.getUser().getEmail())) {//
+            throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
+        }
+        FavoritePlace favoritePlace=modelMapper.map(favoritePlaceDto, FavoritePlace.class);
+        favoritePlace.getUser().setId(userService.findIdByEmail(favoritePlace.getUser().getEmail()));
+        favoritePlace.setId(repo.findByUserAndPlace(favoritePlace.getUser(), favoritePlace.getPlace()).getId());
+        return modelMapper.map(repo.save(favoritePlace), FavoritePlaceDto.class);
     }
 
-
-    @Override
-    public FavoritePlaceUpdateDto update(FavoritePlaceUpdateDto favoritePlaceUpdateDto) {
-        log.info("in update()");
-        if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceUpdateDto.getPlace().getId(), favoritePlaceUpdateDto.getUser().getEmail())) {//
-            throw new BadIdException("Favorite place not exist.");
-        }
-        if (!userService.existsByEmail(favoritePlaceUpdateDto.getUser().getEmail())) {
-            throw new NotFoundException("User not exist.");
-        }
-        if (!placeService.existsById(favoritePlaceUpdateDto.getPlace().getId())) {
-            throw new BadIdException("Place not exist.");
-        }
-        favoritePlaceUpdateDto.getUser().setId(userService.findIdByEmail(favoritePlaceUpdateDto.getUser().getEmail()));
-        favoritePlaceUpdateDto.setId(repo.findByUserAndPlace(modelMapper.map(favoritePlaceUpdateDto.getUser(), User.class), modelMapper.map(favoritePlaceUpdateDto.getPlace(), Place.class)).getId());
-        return modelMapper.map(repo.save(modelMapper.map(favoritePlaceUpdateDto, FavoritePlace.class)), FavoritePlaceUpdateDto.class);
-    }
-
-    @Override
-    public FavoritePlace findById(Long id) {
-        log.info("In findById() method.");
-        return repo.findById(id).orElseThrow(() -> new NotFoundException("No favorite place with this id:" + id));
-
-    }
-
+    /**
+     * @author Zakhar Skaletskyi
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     public List<FavoritePlaceDto> findAllByUserEmail(String email) {
-        log.info("In findAllByUserEmail() method.");
+        log.info(LogMessage.IN_FIND_ALL);
         if (!userService.existsByEmail(email)) {
-            throw new NotFoundException("User not exist.");
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
         }
         List<FavoritePlace> favoritePlaces = repo.findAllByUserEmail(email);
         return favoritePlaces.stream().map(fp -> modelMapper.map(fp, FavoritePlaceDto.class)).collect(Collectors.toList());
     }
 
+    /**
+     * @author Zakhar Skaletskyi
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void deleteByPlaceIdAndUserEmail(FavoritePlaceDto favoritePlaceDto) {
-        log.info("in deleteByPlaceIdAndUserEmail()");
+        log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL);
         if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlace().getId(), favoritePlaceDto.getUser().getEmail())) {
-            throw new NotFoundException("Favorite place not exist.");
+            throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
         repo.deleteByPlaceIdAndUserEmail(favoritePlaceDto.getPlace().getId(), favoritePlaceDto.getUser().getEmail());
     }

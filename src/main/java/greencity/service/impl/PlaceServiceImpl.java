@@ -20,25 +20,33 @@ import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
 import greencity.service.PlaceService;
 import greencity.util.DateTimeService;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** The class provides implementation of the {@code PlaceService}. */
+/**
+ * The class provides implementation of the {@code PlaceService}.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
 
-    /** Autowired repository. */
+    /**
+     * Autowired repository.
+     */
     private PlaceRepo placeRepo;
 
-    /** Autowired mapper. */
+    /**
+     * Autowired mapper.
+     */
     private ModelMapper modelMapper;
 
     private CategoryService categoryService;
@@ -156,7 +164,7 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * Update status for the Place and set the time of modification.
      *
-     * @param id - place id.
+     * @param id     - place id.
      * @param status - place status.
      * @return saved PlaceStatusDto entity.
      * @author Nazar Vladyka.
@@ -227,33 +235,38 @@ public class PlaceServiceImpl implements PlaceService {
     public Place update(Place place) {
         return null;
     }
+
     /**
      * Method witch return list dto with place id , place name,place address, place latitude ,and
      * place longitude.
      *
      * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *     state of map
+     *                     state of map
      * @return list of dto
      * @author Marian Milian.
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
         log.info(
-            "in findPlacesLocationByMapsBounds(MapBoundsDto mapBoundsDto), dto - {}",
-            mapBoundsDto);
+                "in findPlacesLocationByMapsBounds(MapBoundsDto mapBoundsDto), dto - {}",
+                mapBoundsDto);
 
         List<Place> list =
-            placeRepo.findPlacesByMapsBounds(
-                mapBoundsDto.getNorthEastLat(),
-                mapBoundsDto.getNorthEastLng(),
-                mapBoundsDto.getSouthWestLat(),
-                mapBoundsDto.getSouthWestLng());
+                placeRepo.findPlacesByMapsBounds(
+                        mapBoundsDto.getNorthEastLat(),
+                        mapBoundsDto.getNorthEastLng(),
+                        mapBoundsDto.getSouthWestLat(),
+                        mapBoundsDto.getSouthWestLng());
         return list.stream()
-            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
-            .collect(Collectors.toList());
+                .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+                .collect(Collectors.toList());
     }
 
-    //zakhar
+    /**
+     * @author Zakhar Skaletskyi
+     *
+     * {@inheritDoc}
+     */
     @Override
     public boolean existsById(Long id) {
         return placeRepo.existsById(id);

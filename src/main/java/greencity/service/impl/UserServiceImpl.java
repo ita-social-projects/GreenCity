@@ -82,13 +82,21 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return repo.findByEmail(email);
     }
-//zakhar
+    /**
+     * @author Zakhar Skaletskyi
+     *
+     * {@inheritDoc}
+     */
     @Override
     public Long findIdByEmail(String email) {
         return repo.findIdByEmail(email);
     }
 
-    //zakhar
+    /**
+     * @author Zakhar Skaletskyi
+     *
+     * {@inheritDoc}
+     */
     @Override
     public boolean existsByEmail(String email) { //zakhar
         return repo.existsByEmail(email);

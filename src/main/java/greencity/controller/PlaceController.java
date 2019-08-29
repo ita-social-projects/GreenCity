@@ -1,10 +1,12 @@
 package greencity.controller;
 
+import greencity.dto.favoritePlace.FavoritePlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
+import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import java.util.List;
 import javax.validation.Valid;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class PlaceController {
     /** Autowired PlaceService instance. */
     private PlaceService placeService;
+    private final FavoritePlaceService favoritePlaceService;
 
     @PostMapping("/propose")
     public ResponseEntity<?> proposePlace(@Valid @RequestBody PlaceAddDto dto) {
@@ -42,6 +45,10 @@ public class PlaceController {
     @GetMapping("/getInfo/{id}")
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getAccessById(id));
+    }
+    @PostMapping("/save/favoritePlace")
+    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.save(favoritePlaceDto));
     }
 
     @PostMapping("/getListPlaceLocationByMapsBounds")

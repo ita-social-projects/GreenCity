@@ -21,9 +21,21 @@ public interface UserService {
 
     User findByEmail(String email);
 
-            //zakhar
+    /**
+     * Find User id by User email
+     *
+     * @param email - User email
+     * @return User id
+     * @author Zakhar Skaletskyi
+     */
     Long findIdByEmail(String email);
-//zakhar
+    /**
+     * Check user existing by email
+     *
+     * @param email - User email
+     * @return boolean check result
+     * @author Zakhar Skaletskyi
+     */
     boolean existsByEmail(String email);
     /**
      * Update {@code ROLE} of user.

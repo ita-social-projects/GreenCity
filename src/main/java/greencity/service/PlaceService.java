@@ -34,7 +34,14 @@ public interface PlaceService {
      */
     PlaceInfoDto getAccessById(Long id);
 
-    //zakhar
+    /**
+     * Check place existing by id
+     *
+     * @param id - place id
+     * @return boolean check result
+     * @author Zakhar Skaletskyi
+     */
     boolean existsById(Long id);
+
     List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
 }

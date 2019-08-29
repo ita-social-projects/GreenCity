@@ -20,13 +20,7 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
      * @return a list of places with the given {@code PlaceStatus}.
      */
     List<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status);
-    @Query("SELECT id from Place where email=:email")
-    Long findIdByEmail(String email);    //zakhar
 
-    Place findByAddress(String address);
-    //zakhar
-    Place findByEmail(String email);
-    boolean existsByEmail(String email);
     /**
      * Method to find average rate
      *
