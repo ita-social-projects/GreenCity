@@ -1,9 +1,7 @@
 package greencity.service;
 
-import greencity.dto.PageableDto;
-import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
-
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
