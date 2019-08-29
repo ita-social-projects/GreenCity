@@ -1,7 +1,7 @@
 package greencity.entity.enums;
 
 public enum ROLE {
-    USER_ROLE,
-    ADMIN_ROLE,
-    MODERATOR_ROLE
+    ROLE_USER,
+    ROLE_ADMIN,
+    ROLE_MODERATOR
 }
