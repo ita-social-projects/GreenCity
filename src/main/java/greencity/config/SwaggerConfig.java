@@ -23,7 +23,6 @@ import static springfox.documentation.builders.PathSelectors.regex;
 @Import(springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class)
 @Slf4j
 public class SwaggerConfig {
-
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String DEFAULT_INCLUDE_PATTERN = "/.*";
 
