@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
-            throw new BadUserException("We have user with this email " + user.getEmail());
+            throw new BadUserException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
     }
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new BadIdException("No user with this id: " + id));
+                .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
     /**
