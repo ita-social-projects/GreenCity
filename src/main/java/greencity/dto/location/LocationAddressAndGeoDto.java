@@ -14,7 +14,6 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 public class LocationAddressAndGeoDto {
 
-    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = ValidationConstants.LOCATION_ADDRESS_BAD_FORMED)
     @Length(
             min = ValidationConstants.PLACE_ADDRESS_MIN_LENGTH,
             max = ValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
