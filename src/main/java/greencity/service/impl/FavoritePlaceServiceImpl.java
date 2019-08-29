@@ -4,10 +4,11 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.favoritePlace.FavoritePlaceDto;
 import greencity.entity.FavoritePlace;
+import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.exception.BadIdAndEmailException;
 import greencity.exception.NotFoundException;
 import greencity.repository.FavoritePlaceRepo;
-import greencity.repository.UserRepo;
 import greencity.service.FavoritePlaceService;
 import greencity.exception.BadIdException;
 import greencity.service.PlaceService;
@@ -26,7 +27,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     private FavoritePlaceRepo repo;
-    private UserRepo userRepo;
     private UserService userService;
     private PlaceService placeService;
     private ModelMapper modelMapper;
@@ -40,6 +40,10 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      */
     public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto) {
         FavoritePlace favoritePlace= modelMapper.map(favoritePlaceDto, FavoritePlace.class);
+        favoritePlace.setUser(new User());
+        favoritePlace.getUser().setEmail(favoritePlaceDto.getUserEmail());
+        favoritePlace.setPlace(new Place());
+        favoritePlace.getPlace().setId(favoritePlaceDto.getPlaceId());
         log.info(LogMessage.IN_SAVE, FavoritePlace.class.getName());
 
         if (!userService.existsByEmail(favoritePlace.getUser().getEmail())) {
@@ -51,7 +55,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         if (repo.existsByPlaceIdAndUserEmail(favoritePlace.getPlace().getId(), favoritePlace.getUser().getEmail())) {
             throw new BadIdAndEmailException(ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS);
         }
-        favoritePlace.getUser().setId(userRepo.findIdByEmail(favoritePlace.getUser().getEmail()));
+        favoritePlace.getUser().setId(userService.findIdByEmail(favoritePlace.getUser().getEmail()));
         return modelMapper.map(repo.save(favoritePlace), FavoritePlaceDto.class);
     }
 
@@ -62,15 +66,16 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      */
     @Override
     public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto) {
+
         log.info(LogMessage.IN_UPDATE, FavoritePlace.class.getName());
-        if (!userService.existsByEmail(favoritePlaceDto.getUser().getEmail())) {
+        if (!userService.existsByEmail(favoritePlaceDto.getUserEmail())) {
             throw new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
         }
-        if (!placeService.existsById(favoritePlaceDto.getPlace().getId())) {
+        if (!placeService.existsById(favoritePlaceDto.getPlaceId())) {
             throw new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
 
-        if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlace().getId(), favoritePlaceDto.getUser().getEmail())) {//
+        if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), favoritePlaceDto.getUserEmail())) {
             throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
         FavoritePlace favoritePlace=modelMapper.map(favoritePlaceDto, FavoritePlace.class);
@@ -103,9 +108,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     @Transactional
     public void deleteByPlaceIdAndUserEmail(FavoritePlaceDto favoritePlaceDto) {
         log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL);
-        if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlace().getId(), favoritePlaceDto.getUser().getEmail())) {
+        if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), favoritePlaceDto.getUserEmail())) {
             throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
-        repo.deleteByPlaceIdAndUserEmail(favoritePlaceDto.getPlace().getId(), favoritePlaceDto.getUser().getEmail());
+        repo.deleteByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), favoritePlaceDto.getUserEmail());
     }
 }

@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.favoritePlace.FavoritePlaceDto;
-import greencity.entity.FavoritePlace;
 
 import java.util.List;
 
@@ -9,7 +8,7 @@ public interface FavoritePlaceService {
     /**
      * Save place as favorite for user
      *
-     * @param favoritePlaceDto - dto for FavoritePlace entity
+     * @param favoritePlaceDto - dto with favorite_place name, place id and user email
      * @return FavoritePlaceDto instance
      * @author Zakhar Skaletskyi
      */
@@ -17,7 +16,7 @@ public interface FavoritePlaceService {
     /**
      * Update favorite place name for user
      *
-     * @param favoritePlaceDto - dto for FavoritePlace entity
+     * @param favoritePlaceDto - dto with favorite place name, place id and user email
      * @return FavoritePlaceDto instance
      * @author Zakhar Skaletskyi
      */
@@ -33,7 +32,7 @@ public interface FavoritePlaceService {
     /**
      * Delete favorite place by place id and user email
      *
-     * @param  favoritePlaceDto - dto for FavoritePlace entity
+     * @param  favoritePlaceDto - dto with favorite place name, place id and user email
      * @author Zakhar Skaletskyi
      */
     void deleteByPlaceIdAndUserEmail(FavoritePlaceDto favoritePlaceDto);

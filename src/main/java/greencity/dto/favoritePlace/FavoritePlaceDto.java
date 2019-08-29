@@ -1,7 +1,5 @@
 package greencity.dto.favoritePlace;
 
-import greencity.dto.place.PlaceIdDto;
-import greencity.dto.user.UserEmailDto;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -13,7 +11,7 @@ public class FavoritePlaceDto {
     @Length(max = 30)
     private String name;
 
-    private PlaceIdDto place;
+    private Long placeId ;
 
-    private UserEmailDto user;
+    private String userEmail;
 }
