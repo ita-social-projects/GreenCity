@@ -16,13 +16,19 @@ public interface CategoryService {
      */
     Category save(CategoryDto dto);
 
+    /**
+     * Save Category to DB.
+     *
+     * @param category - entity of Category.
+     * @return saved Category.
+     */
     Category save(Category category);
 
     /**
      * Method for updating Category.
      *
+     * @param id - category id.
      * @param category - Category entity.
-     * @param id
      * @return a category.
      */
     Category update(Long id, Category category);

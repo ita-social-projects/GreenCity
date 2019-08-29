@@ -152,11 +152,8 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Update status for the Place and set the time of modification.
+     * {@inheritDoc}
      *
-     * @param id - place id.
-     * @param status - place status.
-     * @return saved PlaceStatusDto entity.
      * @author Nazar Vladyka.
      */
     @Override
@@ -178,10 +175,8 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Find place by it's id.
+     * {@inheritDoc}
      *
-     * @param id - place id.
-     * @return Place entity.
      * @author Nazar Vladyka.
      */
     @Override
@@ -191,19 +186,6 @@ public class PlaceServiceImpl implements PlaceService {
         return placeRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
-    }
-
-    /**
-     * Save place to database.
-     *
-     * @param place - Place entity.
-     * @return saved Place entity.
-     * @author Nazar Vladyka.
-     */
-    @Override
-    public Place save(Place place) {
-        log.info("in save(Place place), save place - {}", place.getName());
-        return placeRepo.saveAndFlush(place);
     }
 
     @Override
