@@ -21,7 +21,7 @@ public class AdminPlaceDto {
     private String name;
     private LocationDto location;
     private CategoryDto category;
-    private List<OpenHoursDto> openingHours;
+    private List<OpenHoursDto> openingHoursList;
     private PlaceAuthorDto author;
     private PlaceStatus status;
     @JsonFormat(pattern = "dd.MM.yyyy HH:mm")

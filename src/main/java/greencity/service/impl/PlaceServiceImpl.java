@@ -50,10 +50,8 @@ public class PlaceServiceImpl implements PlaceService {
     private PlaceAddDtoMapper placeAddDtoMapper;
 
     /**
-     * Finds all {@code Place} with status {@code PlaceStatus}.
+     * {@inheritDoc}
      *
-     * @param placeStatus a value of {@link PlaceStatus} enum.
-     * @return a list of {@code Place} with the given {@code placeStatus}
      * @author Roman Zahorui
      */
     @Override
