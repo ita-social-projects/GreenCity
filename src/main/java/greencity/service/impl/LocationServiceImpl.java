@@ -60,7 +60,7 @@ public class LocationServiceImpl implements LocationService {
     public Location save(Location location) {
         log.info(LogMessage.IN_SAVE, location);
 
-        return locationRepo.saveAndFlush(location);
+        return locationRepo.save(location);
     }
 
     /**
