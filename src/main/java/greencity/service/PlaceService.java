@@ -1,7 +1,11 @@
 package greencity.service;
 
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.place.*;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -52,5 +56,14 @@ public interface PlaceService {
      */
     PlaceInfoDto getAccessById(Long id);
 
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} with information about place, *
+     * location depends on the map bounds.
+     *
+     * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
+     *     state of map
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Marian Milian.
+     */
     List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
 }
