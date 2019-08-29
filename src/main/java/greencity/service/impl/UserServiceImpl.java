@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
                         users.getTotalElements(),
                         users.getPageable().getPageNumber(),
                         ROLE.class.getEnumConstants());
-        return page;
+        throw new NullPointerException();
     }
 
     /** {@inheritDoc} */
