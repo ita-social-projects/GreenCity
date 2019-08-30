@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
@@ -37,5 +39,17 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> getAllUsers(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
+    }
+
+    /**
+     * The method which return the role of user who sends request.
+     *
+     * @param principal - principal of user.
+     * @return role of user.
+     * @author Nazar Vladyka
+     */
+    @GetMapping("/getRole")
+    public ResponseEntity getRole(Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getRole(principal.getName()));
     }
 }

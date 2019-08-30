@@ -102,4 +102,14 @@ public class UserServiceImpl implements UserService {
         user.setUserStatus(userStatus);
         repo.save(user);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka.
+     */
+    @Override
+    public ROLE getRole(String email) {
+        return findByEmail(email).getRole();
+    }
 }
