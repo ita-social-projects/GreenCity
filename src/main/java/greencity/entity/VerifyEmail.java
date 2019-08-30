@@ -1,7 +1,7 @@
 package greencity.entity;
 
+import java.time.LocalDateTime;
 import javax.persistence.*;
-import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,5 +23,5 @@ public class VerifyEmail {
 
     private String token;
 
-    private Date expiryDate;
+    private LocalDateTime expiryDate;
 }

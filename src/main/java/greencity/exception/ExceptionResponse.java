@@ -1,25 +1,18 @@
 package greencity.exception;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-
 public class ExceptionResponse {
     private String message;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<String> details;
-    @JsonIgnore
-    private String timeStamp;
-    @JsonIgnore
-    private String trace;
-    @JsonIgnore
-    private String path;
+    @JsonIgnore private String timeStamp;
+    @JsonIgnore private String trace;
+    @JsonIgnore private String path;
 
     public ExceptionResponse(Map<String, Object> errorAttributes) {
         this.setPath((String) errorAttributes.get("path"));

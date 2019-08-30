@@ -2,15 +2,17 @@ package greencity.dto.user;
 
 import greencity.constant.ValidationConstants;
 import greencity.entity.User;
+import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class UserForListDto {
 
     private Long id;
@@ -35,11 +37,7 @@ public class UserForListDto {
     @NotBlank(message = ValidationConstants.EMPTY_EMAIL)
     private String email;
 
-    public UserForListDto(User user) {
-        this.id = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.dateOfRegistration = user.getDateOfRegistration();
-        this.email = user.getEmail();
-    }
+    @NotNull private UserStatus userStatus;
+
+    @NotNull private ROLE role;
 }
