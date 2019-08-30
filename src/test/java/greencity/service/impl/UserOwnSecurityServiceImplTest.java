@@ -31,7 +31,7 @@ public class UserOwnSecurityServiceImplTest {
                     .email("Nazar.stasyuk@gmail.com")
                     .firstName("Nazar")
                     .lastName("Stasyuk")
-                    .role(ROLE.USER_ROLE)
+                    .role(ROLE.ROLE_USER)
                     .lastVisit(LocalDateTime.now())
                     .dateOfRegistration(LocalDateTime.now())
                     .build();
@@ -82,7 +82,7 @@ public class UserOwnSecurityServiceImplTest {
                         .email("Nazar.stasyuk@gmail.com")
                         .firstName("Nazar")
                         .lastName("Stasyuk")
-                        .role(ROLE.USER_ROLE)
+                        .role(ROLE.ROLE_USER)
                         .lastVisit(LocalDateTime.now())
                         .userOwnSecurity(new UserOwnSecurity())
                         .dateOfRegistration(LocalDateTime.now())

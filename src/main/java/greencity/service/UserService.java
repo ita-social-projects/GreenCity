@@ -88,4 +88,14 @@ public interface UserService {
      * @author Rostyslav Khasanov
      */
     UserPageableDto findByPage(Pageable pageable);
+
+    /**
+     * Find user role by his email.
+     *
+     * @param email user email.
+     * @return role of user.
+     *
+     * @author Nazar Vladyka
+     */
+    ROLE getRole(String email);
 }

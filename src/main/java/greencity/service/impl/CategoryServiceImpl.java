@@ -84,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category save(Category category) {
         log.info(LogMessage.IN_SAVE, category);
 
-        return categoryRepo.saveAndFlush(category);
+        return categoryRepo.save(category);
     }
 
     /**
