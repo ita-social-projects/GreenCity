@@ -48,6 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/ownSecurity/**")
                 .permitAll()
+                .antMatchers("/place/propose/**")
+                .hasAnyRole("USER", "ADMIN", "MODERATOR")
                 .antMatchers("/place/update/status**")
                 .hasAnyRole("ADMIN", "MODERATOR")
                 .anyRequest()

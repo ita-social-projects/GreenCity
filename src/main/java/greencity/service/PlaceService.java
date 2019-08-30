@@ -39,7 +39,14 @@ public interface PlaceService {
      */
     Place findById(Long id);
 
-    Place save(PlaceAddDto dto);
+    /**
+     * Method for saving proposed {@code Place} to database.
+     *
+     * @param dto - dto for Place entity
+     * @return place {@code Place}
+     * @author Kateryna Horokh
+     */
+    Place save(PlaceAddDto dto, String email);
 
     Place update(Place place);
 

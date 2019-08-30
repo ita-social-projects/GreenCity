@@ -3,7 +3,14 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.category.CategoryDto;
 import greencity.dto.location.MapBoundsDto;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.user.UserForListDto;
+import greencity.entity.*;
 import greencity.dto.place.*;
 import greencity.entity.Category;
 import greencity.entity.Location;
@@ -11,10 +18,11 @@ import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
-import greencity.exception.PlaceNotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
+import greencity.service.*;
+
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
@@ -49,6 +57,8 @@ public class PlaceServiceImpl implements PlaceService {
 
     private PlaceAddDtoMapper placeAddDtoMapper;
 
+    private UserService userService;
+
     /**
      * {@inheritDoc}
      *
@@ -63,19 +73,19 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for saving proposed Place to database.
+     * {@inheritDoc}
      *
-     * @param dto - dto for Place entity
-     * @return place
      * @author Kateryna Horokh
      */
     @Transactional
     @Override
-    public Place save(PlaceAddDto dto) {
+    public Place save(PlaceAddDto dto, String email) {
         log.info("in save(PlaceAddDto dto), save place - {}", dto.getName());
         Category category = createCategoryByName(dto.getCategory().getName());
-        Place place = placeRepo.save(placeAddDtoMapper.convertToEntity(dto));
+        Place place = placeAddDtoMapper.convertToEntity(dto);
+        place.setAuthor(userService.findByEmail(email));
         place.setCategory(category);
+        placeRepo.save(place);
         setPlaceToLocation(place);
         setPlaceToOpeningHours(place);
 
@@ -83,13 +93,13 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for setting OpeningHours entity with Place to database.
+     * Method for setting {@code OpeningHours} with {@code Place} to database.
      *
-     * @param place - Place entity
+     * @param place of {@link Place} entity.
      * @author Kateryna Horokh
      */
     private void setPlaceToOpeningHours(Place place) {
-        log.info("in setPlaceToOpeningHours(Place place)", place.getName());
+        log.info("in setPlaceToOpeningHours(Place place) - {}", place.getName());
         List<OpeningHours> hours = place.getOpeningHoursList();
         hours.forEach(
                 h -> {
@@ -99,9 +109,9 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for setting Location entity with Place to database.
+     * Method for setting {@code Location} with {@code Place} to database.
      *
-     * @param place - Place entity
+     * @param place of {@link Place} entity.
      * @author Kateryna Horokh
      */
     private void setPlaceToLocation(Place place) {
@@ -112,10 +122,10 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for creating new category to database if it does not exists by name.
+     * Method for creating new {@code Category} to database if it does not exists by name.
      *
      * @param name - String category's name
-     * @return category
+     * @return category of {@link Category} entity.
      * @author Kateryna Horokh
      */
     private Category createCategoryByName(String name) {
@@ -196,7 +206,7 @@ public class PlaceServiceImpl implements PlaceService {
                                 .findById(id)
                                 .orElseThrow(
                                         () ->
-                                                new PlaceNotFoundException(
+                                                new NotFoundException(
                                                         ErrorMessage.PLACE_NOT_FOUND_BY_ID + id)),
                         PlaceInfoDto.class);
         placeInfoDto.setRate(placeRepo.averageRate(id));
@@ -209,9 +219,9 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     *  {@inheritDoc}
-     * @author Marian Milian
+     * {@inheritDoc}
      *
+     * @author Marian Milian
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
