@@ -27,6 +27,7 @@
     * delete module - <module name="AvoidStarImport"/>
     * <property name="max" value="100"/> -> <property name="max" value="120"/>
     * add "public static final" - application constants to LineLength ignorePattern
+    * <property name="allowedAbbreviationLength" value="1"/> -> <property name="allowedAbbreviationLength" value="5"/>
  -->
 
 <module name="Checker">
@@ -217,7 +218,7 @@
         </module>
         <module name="AbbreviationAsWordInName">
             <property name="ignoreFinal" value="false"/>
-            <property name="allowedAbbreviationLength" value="1"/>
+            <property name="allowedAbbreviationLength" value="5"/>
         </module>
         <module name="OverloadMethodsDeclarationOrder"/>
         <module name="VariableDeclarationUsageDistance"/>
