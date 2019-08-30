@@ -107,4 +107,12 @@ public class UserServiceImplTest {
         when(userService.findByEmail(any())).thenThrow(BadEmailException.class);
         userService.save(new User());
     }
+
+    @Test
+    public void getUserRoleTest() {
+        User user = User.builder().email("nazarvladykaaa@gmail.com").role(ROLE.ROLE_ADMIN).build();
+        when(userService.findByEmail("nazarvladykaaa@gmail.com")).thenReturn(user);
+
+        assertEquals(ROLE.ROLE_ADMIN, userService.getRole("nazarvladykaaa@gmail.com"));
+    }
 }

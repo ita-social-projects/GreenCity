@@ -39,7 +39,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     public OpeningHours save(OpeningHours hours) {
         log.info(LogMessage.IN_SAVE, hours);
 
-        return hoursRepo.saveAndFlush(hours);
+        return hoursRepo.save(hours);
     }
 
     /**

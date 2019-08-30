@@ -92,14 +92,14 @@ public class PlaceController {
     }
 
     /**
-     * The method which change place status.
+     * The method which update place status.
      *
      * @param dto - place dto with place id and updated place status.
      * @return response object with dto and OK status if everything is ok.
      * @author Nazar Vladyka
      */
-    @PatchMapping("/changeStatus")
-    public ResponseEntity changePlaceStatus(@Valid @RequestBody PlaceStatusDto dto) {
+    @PatchMapping("/status")
+    public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }

@@ -24,9 +24,18 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
-public class OpeningHoursServiceImplTest {
+public class OpenHoursServiceImplTest {
     @MockBean private OpenHoursRepo openHoursRepo;
     @Autowired private OpenHoursService openHoursService;
+
+    @Test
+    public void saveTest() {
+        OpeningHours genericEntity = new OpeningHours();
+
+        when(openHoursRepo.save(genericEntity)).thenReturn(genericEntity);
+
+        assertEquals(genericEntity, openHoursService.save(genericEntity));
+    }
 
     @Test
     public void findByIdTest() {
@@ -64,7 +73,10 @@ public class OpeningHoursServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void deleteByIdThrowExceptionWhenCallFindById() {
-        when(openHoursRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+        OpeningHours generic = new OpeningHours();
+
+        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(generic));
+        when(openHoursService.findById(anyLong())).thenThrow(NotFoundException.class);
 
         openHoursService.deleteById(1L);
         openHoursService.findById(1L);
