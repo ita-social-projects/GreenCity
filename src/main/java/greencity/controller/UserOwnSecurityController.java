@@ -43,10 +43,10 @@ public class UserOwnSecurityController {
     }
 
     @GetMapping("/verifyEmail")
-    public void verify(@RequestParam @NotBlank String token, HttpServletResponse response)
+    public ResponseEntity verify(@RequestParam @NotBlank String token)
             throws IOException {
         verifyEmailService.verify(token);
-        response.sendRedirect(clientAddress);
+        return new ResponseEntity(HttpStatus.FOUND);
     }
 
     @PostMapping("/updateAccessToken")
