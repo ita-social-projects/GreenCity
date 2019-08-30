@@ -98,7 +98,7 @@ public class PlaceController {
      * @return response object with dto and OK status if everything is ok.
      * @author Nazar Vladyka
      */
-    @PatchMapping("/update/status")
+    @PatchMapping("/status")
     public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(placeService.updateStatus(dto.getId(), dto.getStatus()));

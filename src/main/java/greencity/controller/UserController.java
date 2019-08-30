@@ -48,7 +48,7 @@ public class UserController {
      * @return role of user.
      * @author Nazar Vladyka
      */
-    @GetMapping("/getRole")
+    @GetMapping("/role")
     public ResponseEntity getRole(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getRole(principal.getName()));
     }
