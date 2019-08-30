@@ -18,7 +18,6 @@ import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
-import greencity.exception.PlaceNotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
@@ -207,7 +206,7 @@ public class PlaceServiceImpl implements PlaceService {
                                 .findById(id)
                                 .orElseThrow(
                                         () ->
-                                                new PlaceNotFoundException(
+                                                new NotFoundException(
                                                         ErrorMessage.PLACE_NOT_FOUND_BY_ID + id)),
                         PlaceInfoDto.class);
         placeInfoDto.setRate(placeRepo.averageRate(id));
