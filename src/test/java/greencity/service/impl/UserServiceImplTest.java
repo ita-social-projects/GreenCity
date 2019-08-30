@@ -10,24 +10,21 @@ import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
-import greencity.service.impl.UserServiceImpl;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
-import org.junit.Before;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserServiceImplTest {
 
     @MockBean UserRepo userRepo;
@@ -41,7 +38,7 @@ public class UserServiceImplTest {
                         .firstName("test")
                         .lastName("test")
                         .email("test@gmail.com")
-                        .role(ROLE.USER_ROLE)
+                        .role(ROLE.ROLE_USER)
                         .userStatus(UserStatus.BLOCKED)
                         .lastVisit(LocalDateTime.now())
                         .dateOfRegistration(LocalDateTime.now())
@@ -59,7 +56,7 @@ public class UserServiceImplTest {
                         .firstName("test")
                         .lastName("test")
                         .email("test@gmail.com")
-                        .role(ROLE.USER_ROLE)
+                        .role(ROLE.ROLE_USER)
                         .userStatus(UserStatus.DEACTIVATED)
                         .lastVisit(LocalDateTime.now())
                         .dateOfRegistration(LocalDateTime.now())
@@ -77,14 +74,14 @@ public class UserServiceImplTest {
                         .firstName("test")
                         .lastName("test")
                         .email("test@gmail.com")
-                        .role(ROLE.USER_ROLE)
+                        .role(ROLE.ROLE_USER)
                         .lastVisit(LocalDateTime.now())
                         .dateOfRegistration(LocalDateTime.now())
                         .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateRole(user.getId(), ROLE.MODERATOR_ROLE);
-        assertEquals(ROLE.MODERATOR_ROLE, user.getRole());
+        userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR);
+        assertEquals(ROLE.ROLE_MODERATOR, user.getRole());
     }
 
     @Test
@@ -109,5 +106,13 @@ public class UserServiceImplTest {
     public void saveExceptionTest() {
         when(userService.findByEmail(any())).thenThrow(BadEmailException.class);
         userService.save(new User());
+    }
+
+    @Test
+    public void getUserRoleTest() {
+        User user = User.builder().email("nazarvladykaaa@gmail.com").role(ROLE.ROLE_ADMIN).build();
+        when(userService.findByEmail("nazarvladykaaa@gmail.com")).thenReturn(user);
+
+        assertEquals(ROLE.ROLE_ADMIN, userService.getRole("nazarvladykaaa@gmail.com"));
     }
 }

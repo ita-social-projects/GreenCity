@@ -29,6 +29,15 @@ public class CategoryServiceImplTest {
     @Autowired private CategoryService categoryService;
 
     @Test
+    public void saveTest() {
+        Category genericEntity = new Category();
+
+        when(categoryRepo.save(genericEntity)).thenReturn(genericEntity);
+
+        assertEquals(genericEntity, categoryService.save(genericEntity));
+    }
+
+    @Test
     public void findByIdTest() {
         Category genericEntity = new Category();
 
@@ -64,7 +73,10 @@ public class CategoryServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void deleteByIdThrowExceptionWhenCallFindById() {
-        when(categoryRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+        Category generic = new Category();
+
+        when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(generic));
+        when(categoryService.findById(anyLong())).thenThrow(NotFoundException.class);
 
         categoryService.deleteById(1L);
         categoryService.findById(1L);

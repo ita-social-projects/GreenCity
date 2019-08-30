@@ -15,19 +15,18 @@ import java.util.List;
 /**
  * Service implementation for Location entity.
  *
- * @author Nazar Vladyka
  * @version 1.0
  */
 @Service
 @AllArgsConstructor
 @Slf4j
 public class LocationServiceImpl implements LocationService {
+
     private final LocationRepo locationRepo;
 
     /**
-     * Find all locations from DB.
+     * {@inheritDoc}
      *
-     * @return List of categories.
      * @author Nazar Vladyka
      */
     @Override
@@ -38,10 +37,8 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
-     * Find Location entity by id.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
-     * @return Location entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -55,11 +52,20 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
-     * Update Location in DB.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
-     * @param location - Location entity.
-     * @return Location updated entity.
+     * @author Nazar Vladyka
+     */
+    @Override
+    public Location save(Location location) {
+        log.info(LogMessage.IN_SAVE, location);
+
+        return locationRepo.save(location);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Vladyka
      */
     @Override
@@ -77,9 +83,8 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
-     * Delete entity from DB by id.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
      * @author Nazar Vladyka
      */
     @Override

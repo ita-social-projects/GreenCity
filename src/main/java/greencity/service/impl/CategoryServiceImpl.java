@@ -2,19 +2,22 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.category.CategoryDto;
 import greencity.entity.Category;
+import greencity.exception.BadCategoryRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 /**
  * Service implementation for Category entity.
  *
- * @author Nazar Vladyka
  * @version 1.0
  */
 @Service
@@ -23,10 +26,31 @@ import org.springframework.stereotype.Service;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepo categoryRepo;
 
+    private ModelMapper modelMapper;
+
     /**
-     * Find all categories from DB.
+     * Method for saving Category to database.
      *
-     * @return List of categories.
+     * @param dto - dto for Category entity
+     * @return category
+     * @author Kateryna Horokh
+     */
+    @Override
+    public Category save(CategoryDto dto) {
+        log.info("In save category method");
+
+        Category byName = categoryRepo.findByName(dto.getName());
+
+        if (byName != null) {
+            throw new BadCategoryRequestException(
+                    ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
+        }
+        return categoryRepo.save(Category.builder().name(dto.getName()).build());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Vladyka
      */
     @Override
@@ -37,10 +61,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Find Category entity by id.
+     * {@inheritDoc}
      *
-     * @param id - Category id.
-     * @return Category entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -48,17 +70,26 @@ public class CategoryServiceImpl implements CategoryService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return categoryRepo
-            .findById(id)
-            .orElseThrow(
-                () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
     }
 
     /**
-     * Update Category in DB.
+     * {@inheritDoc}
      *
-     * @param id       - Category id.
-     * @param category - Category entity.
-     * @return Category updated entity.
+     * @author Nazar Vladyka
+     */
+    @Override
+    public Category save(Category category) {
+        log.info(LogMessage.IN_SAVE, category);
+
+        return categoryRepo.save(category);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Vladyka
      */
     @Override
@@ -76,9 +107,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Delete entity from DB by id.
+     * {@inheritDoc}
      *
-     * @param id - Category id.
      * @author Nazar Vladyka
      */
     @Override
@@ -88,5 +118,24 @@ public class CategoryServiceImpl implements CategoryService {
         findById(id);
 
         categoryRepo.deleteById(id);
+    }
+
+    /**
+     * Find entity from DB by name.
+     *
+     * @param name - Category name.
+     * @author Kateryna Horokh
+     */
+    @Override
+    public Category findByName(String name) {
+        return categoryRepo.findByName(name);
+    }
+
+    @Override
+    public List<CategoryDto> findAllCategoryDto() {
+        List<Category> categories = findAll();
+        return categories.stream()
+                .map(category -> modelMapper.map(category, CategoryDto.class))
+                .collect(Collectors.toList());
     }
 }

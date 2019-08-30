@@ -19,4 +19,29 @@ public class ValidationConstants {
 
     public static final String EMPTY_ID = "The id field can not be empty";
     public static final String EMPTY_STATUS = "The status field can not be empty";
+
+    public static final int PLACE_NAME_MAX_LENGTH = 30;
+    public static final int PLACE_ADDRESS_MAX_LENGTH = 60;
+    public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
+    public static final String LOCATION_ADDRESS_BAD_FORMED = "Bad formed address: ${validatedValue}";
+    public static final String LOCATION_LATITUDE_BAD_FORMED = "Bad formed latitude: ${validatedValue}";
+    public static final String LOCATION_LONGITUDE_BAD_FORMED = "Bad formed longitude: ${validatedValue}";
+
+    public static final String CATEGORY_NAME_BAD_FORMED = "Bad formed category name: ${validatedValue}";
+    public static final int CATEGORY_NAME_MAX_LENGTH = 30;
+    public static final int CATEGORY_NAME_MIN_LENGTH = 3;
+
+    public static final String EMPTY_PLACE_NAME = "The name of place field can not be empty";
+    public static final String EMPTY_PLACE_ADDRESS = "The address of place field can not be empty";
+
+    public static final String EMPTY_NAME_OF_CATEGORY = "The category name field can not be empty";
+
+    public static final String EMPTY_VALUE_OF_LATITUDE = "The latitude can not be empty";
+    public static final String EMPTY_VALUE_OF_LONGITUDE = "The longitude can not be empty";
+
+    public static final String EMPTY_OPEN_TIME_VALUE = "The opening time can not be empty";
+    public static final String EMPTY_CLOSE_TIME_VALUE = "The closing time can not be empty";
+
+    public static final String EMPTY_WEEK_DAY_VALUE = "The week day can not be empty";
+
 }

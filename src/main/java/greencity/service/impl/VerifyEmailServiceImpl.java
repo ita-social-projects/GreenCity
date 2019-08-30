@@ -1,28 +1,32 @@
 package greencity.service.impl;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
+import greencity.exception.BadIdException;
 import greencity.exception.BadTokenException;
 import greencity.exception.UserActivationEmailTokenExpiredException;
 import greencity.repository.VerifyEmailRepo;
 import greencity.service.VerifyEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import static greencity.constant.ErrorMessage.*;
 
 @Service
 @Slf4j
 public class VerifyEmailServiceImpl implements VerifyEmailService {
 
     @Value("${verifyEmailTimeHour}")
-    private String expireTime;
+    private Integer expireTime;
 
     @Value("${address}")
     private String serverAddress;
@@ -40,13 +44,22 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     public void save(User user) {
         log.info("begin");
         VerifyEmail verifyEmail =
-            VerifyEmail.builder()
-                .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(calculateExpiryDate(Integer.valueOf(expireTime)))
-                .build();
+                VerifyEmail.builder()
+                        .user(user)
+                        .token(UUID.randomUUID().toString())
+                        .expiryDate(calculateExpiryDate(expireTime))
+                        .build();
         repo.save(verifyEmail);
-        sentEmail(user.getEmail(), verifyEmail.getToken());
+
+        new Thread(
+                        () -> {
+                            try {
+                                sentEmail(user, verifyEmail.getToken());
+                            } catch (MessagingException e) {
+                                log.error(e.getMessage());
+                            }
+                        })
+                .start();
         log.info("end");
     }
 
@@ -54,18 +67,15 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     public void verify(String token) {
         log.info("begin");
         VerifyEmail verifyEmail =
-            repo.findByToken(token)
-                .orElseThrow(
-                    () ->
-                        new BadTokenException(
-                            "No eny email to verify by this token"));
+                repo.findByToken(token)
+                        .orElseThrow(
+                                () -> new BadTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
         if (isDateValidate(verifyEmail.getExpiryDate())) {
             log.info("Date of user email is valid.");
             delete(verifyEmail);
         } else {
             log.info("User late with verify. Token is invalid.");
-            throw new UserActivationEmailTokenExpiredException(
-                "User late with verify. Token is invalid.");
+            throw new UserActivationEmailTokenExpiredException(EMAIL_TOKEN_EXPIRED);
         }
         log.info("end");
     }
@@ -75,34 +85,47 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         return repo.findAll();
     }
 
-    private Date calculateExpiryDate(Integer expiryTimeInHour) {
+    private LocalDateTime calculateExpiryDate(Integer expiryTimeInHour) {
         log.info("begin");
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.HOUR, expiryTimeInHour);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime localDateTime = now.plusHours(expiryTimeInHour);
         log.info("end");
-        return cal.getTime();
+        return localDateTime;
     }
 
-    private void sentEmail(String email, String token) {
+    private void sentEmail(User user, String token) throws MessagingException {
         log.info("begin");
-        String subject = "Registration Confirmation";
-        String message = "Confirm your registration ";
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
 
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setTo(email);
-        simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(message + serverAddress + "/ownSecurity/verifyEmail?token=" + token);
-        javaMailSender.send(simpleMailMessage);
+        String subject = "Verify your email address";
+        String message =
+                "<b>Verify your email address to complete registration.</b><br>"
+                        + "Hi "
+                        + user.getFirstName()
+                        + "!\n"
+                        + "Thanks for your interest in joining Green City! To complete your registration, we need you to verify your email address. ";
+
+        mimeMessageHelper.setTo(user.getEmail());
+        mimeMessageHelper.setSubject(subject);
+        mimeMessage.setContent(
+                message + serverAddress + "/ownSecurity/verifyEmail?token=" + token,
+                "text/html; charset=utf-8");
+
+        javaMailSender.send(mimeMessage);
         log.info("end");
     }
 
-    public boolean isDateValidate(Date emailExpiredDate) {
-        return new Date().before(emailExpiredDate);
+    public boolean isDateValidate(LocalDateTime emailExpiredDate) {
+        return LocalDateTime.now().isBefore(emailExpiredDate);
     }
 
     @Override
     public void delete(VerifyEmail verifyEmail) {
         log.info("begin");
+        if (!repo.existsById(verifyEmail.getId())) {
+            throw new BadIdException(NO_ANY_VERIFY_EMAIL_TO_DELETE + verifyEmail.getId());
+        }
         repo.delete(verifyEmail);
         log.info("end");
     }
