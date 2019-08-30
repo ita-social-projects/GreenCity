@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -27,9 +28,11 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = GreenCityApplication.class)
 public class UserServiceImplTest {
 
-    @MockBean UserRepo userRepo;
+    @MockBean
+    UserRepo userRepo;
 
-    @Autowired private UserService userService;
+    @Autowired
+    private UserService userService;
 
     @Test
     public void updateUserStatusBlockedTest() {

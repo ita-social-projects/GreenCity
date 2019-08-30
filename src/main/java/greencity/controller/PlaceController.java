@@ -1,12 +1,10 @@
 package greencity.controller;
 
+import greencity.dto.favoritePlace.FavoritePlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.Place;
-import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
-import greencity.mapping.PlaceAddDtoMapper;
-import greencity.security.JwtUser;
+import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 
 import java.security.Principal;
@@ -16,14 +14,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.omg.IOP.ServiceContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.spi.service.contexts.SecurityContext;
 
 @CrossOrigin
 @RestController
@@ -33,6 +26,7 @@ public class PlaceController {
 
     /** Autowired PlaceService instance. */
     private PlaceService placeService;
+    private final FavoritePlaceService favoritePlaceService;
 
     private ModelMapper modelMapper;
 
@@ -60,6 +54,10 @@ public class PlaceController {
     @GetMapping("/getInfo/{id}")
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getAccessById(id));
+    }
+    @PostMapping("/save/favoritePlace")
+    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.save(favoritePlaceDto));
     }
 
     /**
