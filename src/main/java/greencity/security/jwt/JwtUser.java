@@ -1,4 +1,4 @@
-package greencity.security;
+package greencity.security.jwt;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +31,7 @@ public class JwtUser implements UserDetails {
     /** {@inheritDoc} */
     @Override
     public String getPassword() {
-        return user.getUserOwnSecurity().getPassword();
+        return user.getOwnSecurity().getPassword();
     }
     /** {@inheritDoc} */
     @Override

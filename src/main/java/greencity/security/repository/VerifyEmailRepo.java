@@ -1,4 +1,4 @@
-package greencity.repository;
+package greencity.security.repository;
 
 import java.util.Optional;
 

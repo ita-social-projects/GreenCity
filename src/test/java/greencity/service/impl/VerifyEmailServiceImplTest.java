@@ -1,13 +1,13 @@
 package greencity.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 
-import greencity.dto.user_own_security.UserRegisterDto;
+import greencity.security.dto.own_security.OwnSignUpDto;
 import greencity.entity.VerifyEmail;
 import greencity.exception.UserActivationEmailTokenExpiredException;
-import greencity.repository.VerifyEmailRepo;
+import greencity.security.repository.VerifyEmailRepo;
+import greencity.security.service.impl.OwnSecurityServiceImpl;
+import greencity.security.service.impl.VerifyEmailServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +23,14 @@ public class VerifyEmailServiceImplTest {
 
     @Autowired private VerifyEmailRepo repo;
     @Autowired private VerifyEmailServiceImpl verifyEmailService;
-    @Autowired private UserOwnSecurityServiceImpl userOwnSecurityService;
+    @Autowired private OwnSecurityServiceImpl userOwnSecurityService;
     @Autowired private UserServiceImpl userService;
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     public void verify() {
-        UserRegisterDto dto =
-                UserRegisterDto.builder()
+        OwnSignUpDto dto =
+                OwnSignUpDto.builder()
                         .email("Nazar.stasyuk@gmail.com")
                         .firstName("Nazar")
                         .lastName("Stasyuk")
@@ -57,8 +57,8 @@ public class VerifyEmailServiceImplTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test(expected = UserActivationEmailTokenExpiredException.class)
     public void verifyIsNotActive() {
-        UserRegisterDto dto =
-                UserRegisterDto.builder()
+        OwnSignUpDto dto =
+                OwnSignUpDto.builder()
                         .email("Nazar.stasyuk@gmail.com")
                         .firstName("Nazar")
                         .lastName("Stasyuk")

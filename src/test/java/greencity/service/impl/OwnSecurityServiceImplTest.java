@@ -2,13 +2,15 @@ package greencity.service.impl;
 
 import java.time.LocalDateTime;
 
-import greencity.dto.user_own_security.UserRegisterDto;
+import greencity.security.dto.own_security.OwnSignUpDto;
 import greencity.entity.User;
-import greencity.entity.UserOwnSecurity;
+import greencity.entity.OwnSecurity;
 import greencity.entity.enums.ROLE;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
-import greencity.repository.UserOwnSecurityRepo;
+import greencity.security.repository.OwnSecurityRepo;
+import greencity.security.service.impl.OwnSecurityServiceImpl;
+import greencity.security.service.impl.VerifyEmailServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class UserOwnSecurityServiceImplTest {
+public class OwnSecurityServiceImplTest {
 
     User user =
             User.builder()
@@ -35,15 +37,15 @@ public class UserOwnSecurityServiceImplTest {
                     .lastVisit(LocalDateTime.now())
                     .dateOfRegistration(LocalDateTime.now())
                     .build();
-    UserRegisterDto dto =
-            UserRegisterDto.builder()
+    OwnSignUpDto dto =
+            OwnSignUpDto.builder()
                     .email(user.getEmail())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .password("123123123")
                     .build();
-    @Autowired private UserOwnSecurityServiceImpl service;
-    @MockBean private UserOwnSecurityRepo repo;
+    @Autowired private OwnSecurityServiceImpl service;
+    @MockBean private OwnSecurityRepo repo;
     @MockBean private UserServiceImpl userService;
     @MockBean private VerifyEmailServiceImpl verifyEmailService;
 
@@ -51,7 +53,7 @@ public class UserOwnSecurityServiceImplTest {
     public void registerNewUser() {
         when(userService.findByEmail(anyString())).thenReturn(null);
         when(userService.save(any(User.class))).thenReturn(user);
-        when(repo.save(any())).thenReturn(new UserOwnSecurity());
+        when(repo.save(any())).thenReturn(new OwnSecurity());
         doNothing().when(verifyEmailService).save(any());
 
         service.register(dto);
@@ -63,7 +65,7 @@ public class UserOwnSecurityServiceImplTest {
     @Test
     public void registerUserThatWasRegisteredByAnotherMethod() {
         when(userService.findByEmail(anyString())).thenReturn(user);
-        when(repo.save(any())).thenReturn(new UserOwnSecurity());
+        when(repo.save(any())).thenReturn(new OwnSecurity());
         doNothing().when(verifyEmailService).save(any());
 
         service.register(dto);
@@ -80,7 +82,7 @@ public class UserOwnSecurityServiceImplTest {
                         .lastName("Stasyuk")
                         .role(ROLE.USER_ROLE)
                         .lastVisit(LocalDateTime.now())
-                        .userOwnSecurity(new UserOwnSecurity())
+                        .ownSecurity(new OwnSecurity())
                         .dateOfRegistration(LocalDateTime.now())
                         .build();
         when(userService.findByEmail(anyString())).thenReturn(user);
@@ -89,17 +91,17 @@ public class UserOwnSecurityServiceImplTest {
 
     @Test
     public void delete() {
-        doNothing().when(repo).delete(any(UserOwnSecurity.class));
+        doNothing().when(repo).delete(any(OwnSecurity.class));
         when(repo.existsById(anyLong())).thenReturn(true);
-        service.delete(UserOwnSecurity.builder().id(1L).build());
-        verify(repo, times(1)).delete(any(UserOwnSecurity.class));
+        service.delete(OwnSecurity.builder().id(1L).build());
+        verify(repo, times(1)).delete(any(OwnSecurity.class));
     }
 
     @Test(expected = BadIdException.class)
     public void deleteNoExist() {
-        doNothing().when(repo).delete(any(UserOwnSecurity.class));
+        doNothing().when(repo).delete(any(OwnSecurity.class));
         when(repo.existsById(anyLong())).thenReturn(false);
-        service.delete(UserOwnSecurity.builder().id(1L).build());
+        service.delete(OwnSecurity.builder().id(1L).build());
     }
 
     @Test

@@ -1,4 +1,4 @@
-package greencity.dto.user_own_security;
+package greencity.security.dto.own_security;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -16,7 +16,7 @@ import static greencity.constant.ValidationConstants.INVALID_EMAIL;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserRegisterDto {
+public class OwnSignUpDto {
 
     @NotBlank
     @Length(max = 20)

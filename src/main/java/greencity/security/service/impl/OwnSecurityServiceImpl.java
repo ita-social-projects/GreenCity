@@ -1,23 +1,23 @@
-package greencity.service.impl;
+package greencity.security.service.impl;
 
 import java.time.LocalDateTime;
 
-import greencity.dto.user_own_security.UserRegisterDto;
-import greencity.dto.user_own_security.UserSignInDto;
-import greencity.dto.user_own_security.UserSuccessSignInDto;
+import greencity.security.dto.own_security.OwnSignInDto;
+import greencity.security.dto.own_security.OwnSignUpDto;
+import greencity.security.dto.SuccessSignInDto;
 import greencity.entity.User;
-import greencity.entity.UserOwnSecurity;
+import greencity.entity.OwnSecurity;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadEmailOrPasswordException;
 import greencity.exception.BadIdException;
 import greencity.exception.BadRefreshTokenException;
-import greencity.repository.UserOwnSecurityRepo;
-import greencity.security.JwtTokenTool;
-import greencity.service.UserOwnSecurityService;
+import greencity.security.repository.OwnSecurityRepo;
+import greencity.security.jwt.JwtTokenTool;
+import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
-import greencity.service.VerifyEmailService;
+import greencity.security.service.VerifyEmailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static greencity.constant.ErrorMessage.*;
 
 /**
- * Provides the class to manage {@link UserOwnSecurityService} entity.
+ * Provides the class to manage {@link OwnSecurityService} entity.
  *
  * @author Nazar Stasyuk
  * @version 1.0
@@ -39,9 +39,9 @@ import static greencity.constant.ErrorMessage.*;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
+public class OwnSecurityServiceImpl implements OwnSecurityService {
 
-    private UserOwnSecurityRepo repo;
+    private OwnSecurityRepo repo;
     private UserService userService;
     private VerifyEmailService verifyEmailService;
     private PasswordEncoder passwordEncoder;
@@ -51,13 +51,13 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void register(UserRegisterDto dto) {
+    public void register(OwnSignUpDto dto) {
         log.info("begin");
         User byEmail = userService.findByEmail(dto.getEmail());
 
         if (byEmail != null) {
             // He has already registered
-            if (byEmail.getUserOwnSecurity() == null) {
+            if (byEmail.getOwnSecurity() == null) {
                 // He has already registered by else method of registration
                 repo.save(createUserOwnSecurityToUser(dto, byEmail));
                 verifyEmailService.save(byEmail);
@@ -73,14 +73,14 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         log.info("end");
     }
 
-    private UserOwnSecurity createUserOwnSecurityToUser(UserRegisterDto dto, User user) {
-        return UserOwnSecurity.builder()
+    private OwnSecurity createUserOwnSecurityToUser(OwnSignUpDto dto, User user) {
+        return OwnSecurity.builder()
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .user(user)
                 .build();
     }
 
-    private User createNewRegisteredUser(UserRegisterDto dto) {
+    private User createNewRegisteredUser(OwnSignUpDto dto) {
         return User.builder()
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
@@ -94,12 +94,12 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
 
     /** {@inheritDoc} */
     @Override
-    public void delete(UserOwnSecurity userOwnSecurity) {
+    public void delete(OwnSecurity ownSecurity) {
         log.info("begin");
-        if (!repo.existsById(userOwnSecurity.getId())) {
-            throw new BadIdException(NO_ENY_USER_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
+        if (!repo.existsById(ownSecurity.getId())) {
+            throw new BadIdException(NO_ENY_USER_OWN_SECURITY_TO_DELETE + ownSecurity.getId());
         }
-        repo.delete(userOwnSecurity);
+        repo.delete(ownSecurity);
         log.info("end");
     }
 
@@ -114,7 +114,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                 .forEach(
                         verifyEmail -> {
                             if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
-                                delete(verifyEmail.getUser().getUserOwnSecurity());
+                                delete(verifyEmail.getUser().getOwnSecurity());
                                 verifyEmailService.delete(verifyEmail);
                                 userService.deleteById(verifyEmail.getUser().getId());
                             }
@@ -124,7 +124,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
 
     /** {@inheritDoc} */
     @Override
-    public UserSuccessSignInDto signIn(UserSignInDto dto) {
+    public SuccessSignInDto signIn(OwnSignInDto dto) {
         // This method will be change when we will add security
         log.info("begin");
         try {
@@ -136,7 +136,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
                     jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
             String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
             log.info("end");
-            return new UserSuccessSignInDto(accessToken, refreshToken);
+            return new SuccessSignInDto(accessToken, refreshToken);
         } catch (AuthenticationException e) {
             throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
         }

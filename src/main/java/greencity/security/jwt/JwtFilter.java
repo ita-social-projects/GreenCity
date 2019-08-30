@@ -1,4 +1,4 @@
-package greencity.security;
+package greencity.security.jwt;
 
 import java.io.IOException;
 import javax.servlet.FilterChain;

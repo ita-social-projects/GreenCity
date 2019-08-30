@@ -30,9 +30,6 @@ public class User {
     @Column(unique = true, nullable = false, length = 50)
     private String email;
 
-    @OneToOne(mappedBy = "user")
-    private Photo photo;
-
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)
     private ROLE role;
@@ -60,7 +57,7 @@ public class User {
     private List<Place> addedPlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
-    private UserOwnSecurity userOwnSecurity;
+    private OwnSecurity ownSecurity;
 
     @OneToOne(mappedBy = "user")
     private VerifyEmail verifyEmail;

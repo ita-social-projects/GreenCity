@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.security.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,8 +11,8 @@ import greencity.entity.VerifyEmail;
 import greencity.exception.BadIdException;
 import greencity.exception.BadTokenException;
 import greencity.exception.UserActivationEmailTokenExpiredException;
-import greencity.repository.VerifyEmailRepo;
-import greencity.service.VerifyEmailService;
+import greencity.security.repository.VerifyEmailRepo;
+import greencity.security.service.VerifyEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;

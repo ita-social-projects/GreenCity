@@ -1,4 +1,4 @@
-package greencity.dto.user_own_security;
+package greencity.security.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserSuccessSignInDto {
+public class SuccessSignInDto {
     private String accessToken;
     private String refreshToken;
 }

@@ -1,4 +1,4 @@
-package greencity.security;
+package greencity.security.jwt;
 
 import greencity.entity.User;
 import greencity.service.UserService;

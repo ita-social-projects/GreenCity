@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserOwnSecurity {
+public class OwnSecurity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

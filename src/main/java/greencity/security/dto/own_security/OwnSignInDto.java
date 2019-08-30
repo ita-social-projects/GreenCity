@@ -1,4 +1,4 @@
-package greencity.dto.user_own_security;
+package greencity.security.dto.own_security;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserSignInDto {
+public class OwnSignInDto {
     @Email @NotBlank private String email;
     @NotBlank private String password;
 }

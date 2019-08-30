@@ -1,15 +1,15 @@
-package greencity.controller;
+package greencity.security.controller;
 
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-import greencity.dto.user_own_security.UserRegisterDto;
-import greencity.dto.user_own_security.UserSignInDto;
-import greencity.dto.user_own_security.UserSuccessSignInDto;
-import greencity.service.UserOwnSecurityService;
-import greencity.service.VerifyEmailService;
+import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.own_security.OwnSignInDto;
+import greencity.security.dto.own_security.OwnSignUpDto;
+import greencity.security.service.OwnSecurityService;
+import greencity.security.service.VerifyEmailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +17,28 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/ownSecurity")
-public class UserOwnSecurityController {
+public class OwnSecurityController {
 
     @Value("${client.address}")
     private String clientAddress;
 
-    private UserOwnSecurityService service;
+    private OwnSecurityService service;
     private VerifyEmailService verifyEmailService;
 
-    public UserOwnSecurityController(
-            UserOwnSecurityService service, VerifyEmailService verifyEmailService) {
+    public OwnSecurityController(
+        OwnSecurityService service, VerifyEmailService verifyEmailService) {
         this.service = service;
         this.verifyEmailService = verifyEmailService;
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<String> singUp(@Valid @RequestBody UserRegisterDto dto) {
+    public ResponseEntity<String> singUp(@Valid @RequestBody OwnSignUpDto dto) {
         service.register(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/signIn")
-    public UserSuccessSignInDto singIn(@Valid @RequestBody UserSignInDto dto) {
+    public SuccessSignInDto singIn(@Valid @RequestBody OwnSignInDto dto) {
         return service.signIn(dto);
     }
 
