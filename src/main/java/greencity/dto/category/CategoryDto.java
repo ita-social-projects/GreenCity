@@ -1,15 +1,19 @@
 package greencity.dto.category;
 
-import javax.validation.constraints.NotBlank;
-
 import greencity.constant.ValidationConstants;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDto {
 
-    @NotBlank(message = ValidationConstants.EMPTY_NAME_OF_CATEGORY)
+    @Pattern(regexp = "^[a-zA-Z\\s]*$", message = ValidationConstants.CATEGORY_NAME_BAD_FORMED)
+    @Length(
+            min = ValidationConstants.CATEGORY_NAME_MIN_LENGTH,
+            max = ValidationConstants.CATEGORY_NAME_MAX_LENGTH)
     private String name;
 }
