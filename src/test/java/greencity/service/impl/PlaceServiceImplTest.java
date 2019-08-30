@@ -45,8 +45,6 @@ public class PlaceServiceImplTest {
 
     @MockBean private PlaceRepo placeRepo;
 
-    @MockBean private ModelMapper modelMapper;
-
     @MockBean private CategoryService categoryService;
 
     @MockBean private LocationService locationService;
@@ -81,27 +79,13 @@ public class PlaceServiceImplTest {
 
     @Test
     public void getPlacesByStatusTest() {
-        Category category = Category.builder().name("categoryName").build();
-        List<AdminPlaceDto> foundList;
-        List<Place> places = new ArrayList<>(3);
+        List<Place> places = new ArrayList<>();
         for (long i = 0; i < 3; i++) {
-            Place place =
-                    Place.builder()
-                            .id(i + 1)
-                            .name("placeName" + i)
-                            .description("placeDescription" + i)
-                            .email("placeEmail@gmail.com" + i)
-                            .phone("066034022" + i)
-                            .modifiedDate(LocalDateTime.now().minusDays(i))
-                            .status(PlaceStatus.PROPOSED)
-                            .category(category)
-                            .build();
-
+            Place place = Place.builder().id(i).status(PlaceStatus.PROPOSED).build();
             places.add(place);
         }
-
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any())).thenReturn(places);
-        foundList = placeService.getPlacesByStatus(PlaceStatus.PROPOSED);
+        List<AdminPlaceDto> foundList = placeService.getPlacesByStatus(PlaceStatus.PROPOSED);
 
         assertNotNull(foundList);
         for (AdminPlaceDto dto : foundList) {
@@ -151,22 +135,23 @@ public class PlaceServiceImplTest {
     public void findByIdGivenIdNullThenThrowException() {
         placeService.findById(null);
     }
+
     @Test
     public void findPlacesByMapsBoundsTest() {
         MapBoundsDto mapBoundsDto = new MapBoundsDto(20.0, 60.0, 60.0, 10.0);
         List<Place> placeExpected =
-            new ArrayList<Place>() {
-                {
-                    add(Place.builder().name("MyPlace").id(1L).build());
-                }
-            };
+                new ArrayList<Place>() {
+                    {
+                        add(Place.builder().name("MyPlace").id(1L).build());
+                    }
+                };
         when(placeRepo.findPlacesByMapsBounds(
-            mapBoundsDto.getNorthEastLat(),
-            mapBoundsDto.getNorthEastLng(),
-            mapBoundsDto.getSouthWestLat(),
-            mapBoundsDto.getSouthWestLng()))
-            .thenReturn(placeExpected);
+                        mapBoundsDto.getNorthEastLat(),
+                        mapBoundsDto.getNorthEastLng(),
+                        mapBoundsDto.getSouthWestLat(),
+                        mapBoundsDto.getSouthWestLng()))
+                .thenReturn(placeExpected);
         assertEquals(
-            placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
+                placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
 }

@@ -6,15 +6,15 @@ import greencity.entity.Location;
 import greencity.exception.NotFoundException;
 import greencity.repository.LocationRepo;
 import greencity.service.LocationService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Service implementation for Location entity.
  *
- * @author Nazar Vladyka
  * @version 1.0
  */
 @Service
@@ -25,9 +25,8 @@ public class LocationServiceImpl implements LocationService {
     private final LocationRepo locationRepo;
 
     /**
-     * Find all locations from DB.
+     * {@inheritDoc}
      *
-     * @return List of categories.
      * @author Nazar Vladyka
      */
     @Override
@@ -38,10 +37,8 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
-     * Find Location entity by id.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
-     * @return Location entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -55,25 +52,20 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
-     * Save Location to DB.
+     * {@inheritDoc}
      *
-     * @param location - entity of Location.
-     * @return saved Location.
      * @author Nazar Vladyka
      */
     @Override
     public Location save(Location location) {
-        log.info("in save(Location location), {}", location);
+        log.info(LogMessage.IN_SAVE, location);
 
         return locationRepo.saveAndFlush(location);
     }
 
     /**
-     * Update Location in DB.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
-     * @param location - Location entity.
-     * @return Location updated entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -91,9 +83,8 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
-     * Delete entity from DB by id.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
      * @author Nazar Vladyka
      */
     @Override

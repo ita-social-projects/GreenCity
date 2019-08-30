@@ -58,10 +58,8 @@ public class PlaceServiceImpl implements PlaceService {
     private PlaceAddDtoMapper placeAddDtoMapper;
 
     /**
-     * Finds all {@code Place} with status {@code PlaceStatus}.
+     * {@inheritDoc}
      *
-     * @param placeStatus a value of {@link PlaceStatus} enum.
-     * @return a list of {@code Place} with the given {@code placeStatus}
      * @author Roman Zahorui
      */
     @Override
@@ -162,11 +160,8 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Update status for the Place and set the time of modification.
+     * {@inheritDoc}
      *
-     * @param id     - place id.
-     * @param status - place status.
-     * @return saved PlaceStatusDto entity.
      * @author Nazar Vladyka.
      */
     @Override
@@ -188,10 +183,8 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Find place by it's id.
+     * {@inheritDoc}
      *
-     * @param id - place id.
-     * @return Place entity.
      * @author Nazar Vladyka.
      */
     @Override
@@ -201,19 +194,6 @@ public class PlaceServiceImpl implements PlaceService {
         return placeRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
-    }
-
-    /**
-     * Save place to database.
-     *
-     * @param place - Place entity.
-     * @return saved Place entity.
-     * @author Nazar Vladyka.
-     */
-    @Override
-    public Place save(Place place) {
-        log.info("in save(Place place), save place - {}", place.getName());
-        return placeRepo.saveAndFlush(place);
     }
 
     @Override
@@ -237,20 +217,12 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method witch return list dto with place id , place name,place address, place latitude ,and
-     * place longitude.
+     *  {@inheritDoc}
+     * @author Marian Milian
      *
-     * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *                     state of map
-     * @return list of dto
-     * @author Marian Milian.
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        log.info(
-                "in findPlacesLocationByMapsBounds(MapBoundsDto mapBoundsDto), dto - {}",
-                mapBoundsDto);
-
         List<Place> list =
                 placeRepo.findPlacesByMapsBounds(
                         mapBoundsDto.getNorthEastLat(),
@@ -260,6 +232,7 @@ public class PlaceServiceImpl implements PlaceService {
         return list.stream()
                 .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
                 .collect(Collectors.toList());
+
     }
 
     /**
@@ -270,6 +243,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public boolean existsById(Long id) {
         return placeRepo.existsById(id);
+
     }
 
 }

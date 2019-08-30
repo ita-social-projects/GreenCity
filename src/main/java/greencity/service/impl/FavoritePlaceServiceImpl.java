@@ -67,7 +67,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     @Override
     public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto) {
 
-        log.info(LogMessage.IN_UPDATE, FavoritePlace.class.getName());
+        log.info(LogMessage.IN_UPDATE, favoritePlaceDto);
         if (!userService.existsByEmail(favoritePlaceDto.getUserEmail())) {
             throw new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
         }

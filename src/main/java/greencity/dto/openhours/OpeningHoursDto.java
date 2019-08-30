@@ -2,10 +2,9 @@ package greencity.dto.openhours;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.entity.enums.WeekDay;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalTime;
 import javax.validation.constraints.NotNull;
-
-import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 @Data

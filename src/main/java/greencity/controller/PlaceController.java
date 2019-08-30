@@ -2,8 +2,10 @@ package greencity.controller;
 
 import greencity.dto.favoritePlace.FavoritePlaceDto;
 import greencity.dto.location.MapBoundsDto;
+import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceStatusDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
+
     /** Autowired PlaceService instance. */
     private PlaceService placeService;
     private final FavoritePlaceService favoritePlaceService;
@@ -51,6 +54,14 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.save(favoritePlaceDto));
     }
 
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} with information about place,
+     * location depends on the map bounds.
+     *
+     * @param mapBoundsDto Contains South-West and North-East bounds of map .
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Marian Milian
+     */
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
             @Valid @RequestBody MapBoundsDto mapBoundsDto) {
@@ -59,17 +70,29 @@ public class PlaceController {
     }
 
     /**
+     * The method parse the string param to PlaceStatus value.
+     *
+     * @param status a string represents {@link PlaceStatus} enum value.
+     * @return response object with list of dto. The list can be empty.
+     * @author Roman Zahorui
+     */
+    @GetMapping("/{status}")
+    public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@PathVariable String status) {
+        PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(placeService.getPlacesByStatus(placeStatus));
+    }
+
+    /**
      * The method which change place status.
      *
-     * @param id - place id.
-     * @param status - place status.
+     * @param dto - place dto with place id and updated place status.
      * @return response object with dto and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @PatchMapping("/changeStatus")
-    public ResponseEntity changePlaceStatus(
-            @RequestParam("id") Long id, @RequestParam("status") PlaceStatus status) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatus(id, status));
+    public ResponseEntity changePlaceStatus(@Valid @RequestBody PlaceStatusDto dto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
 }
