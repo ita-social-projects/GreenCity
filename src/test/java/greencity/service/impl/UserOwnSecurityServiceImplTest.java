@@ -42,10 +42,14 @@ public class UserOwnSecurityServiceImplTest {
                     .lastName(user.getLastName())
                     .password("123123123")
                     .build();
-    @Autowired private UserOwnSecurityServiceImpl service;
-    @MockBean private UserOwnSecurityRepo repo;
-    @MockBean private UserServiceImpl userService;
-    @MockBean private VerifyEmailServiceImpl verifyEmailService;
+    @Autowired
+    private UserOwnSecurityServiceImpl service;
+    @MockBean
+    private UserOwnSecurityRepo repo;
+    @MockBean
+    private UserServiceImpl userService;
+    @MockBean
+    private VerifyEmailServiceImpl verifyEmailService;
 
     @Test
     public void registerNewUser() {
@@ -103,5 +107,6 @@ public class UserOwnSecurityServiceImplTest {
     }
 
     @Test
-    public void deleteNotActiveEmailUsers() {}
+    public void deleteNotActiveEmailUsers() {
+    }
 }

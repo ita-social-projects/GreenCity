@@ -28,25 +28,33 @@ import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
 import greencity.service.PlaceService;
 import greencity.util.DateTimeService;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** The class provides implementation of the {@code PlaceService}. */
+/**
+ * The class provides implementation of the {@code PlaceService}.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
 
-    /** Autowired repository. */
+    /**
+     * Autowired repository.
+     */
     private PlaceRepo placeRepo;
 
-    /** Autowired mapper. */
+    /**
+     * Autowired mapper.
+     */
     private ModelMapper modelMapper;
 
     private CategoryService categoryService;
@@ -234,5 +242,18 @@ public class PlaceServiceImpl implements PlaceService {
         return list.stream()
                 .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
                 .collect(Collectors.toList());
+
     }
+
+    /**
+     * @author Zakhar Skaletskyi
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean existsById(Long id) {
+        return placeRepo.existsById(id);
+
+    }
+
 }
