@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalTime;
 import javax.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Data
 @NoArgsConstructor

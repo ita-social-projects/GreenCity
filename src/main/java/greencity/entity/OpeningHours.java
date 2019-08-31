@@ -30,7 +30,5 @@ public class OpeningHours {
 
     @Enumerated private WeekDay weekDay;
 
-    @ManyToOne
-    @JsonBackReference
-    private Place place;
+    @ManyToOne @JsonBackReference private Place place;
 }

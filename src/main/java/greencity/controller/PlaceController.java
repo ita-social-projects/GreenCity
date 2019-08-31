@@ -2,11 +2,7 @@ package greencity.controller;
 
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.Place;
-import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
-import greencity.mapping.PlaceAddDtoMapper;
-import greencity.security.JwtUser;
 import greencity.service.PlaceService;
 
 import java.security.Principal;
@@ -16,14 +12,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.omg.IOP.ServiceContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.spi.service.contexts.SecurityContext;
 
 @CrossOrigin
 @RestController
@@ -39,7 +30,7 @@ public class PlaceController {
     /**
      * The method which return new proposed {@code Place} from user.
      *
-     * @param dto - Place dto fot adding with all parameters.
+     * @param dto - Place dto for adding with all parameters.
      * @return new {@code Place}.
      * @author Kateryna Horokh
      */

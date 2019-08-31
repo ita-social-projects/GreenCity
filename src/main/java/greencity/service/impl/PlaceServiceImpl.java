@@ -102,7 +102,7 @@ public class PlaceServiceImpl implements PlaceService {
     private void setPlaceToOpeningHours(Place place) {
         log.info("in setPlaceToOpeningHours(Place place) - {}", place.getName());
         List<OpeningHours> hours = place.getOpeningHoursList();
-        hours.forEach(
+        hours.stream().distinct().forEach(
                 h -> {
                     h.setPlace(place);
                     openingHoursService.save(h);

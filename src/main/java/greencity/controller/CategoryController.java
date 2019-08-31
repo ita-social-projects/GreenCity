@@ -22,11 +22,24 @@ public class CategoryController {
 
     private CategoryService categoryService;
 
+    /**
+     * The method which return new {@code Category}.
+     *
+     * @param dto - CategoryDto dto for adding with all parameters.
+     * @return new {@code Category}.
+     * @author Kateryna Horokh
+     */
     @PostMapping("/save")
     public ResponseEntity saveCategory(@Valid @RequestBody CategoryDto dto) {
         return  ResponseEntity.status(HttpStatus.CREATED).body( categoryService.save(dto));
     }
 
+    /**
+     * The method which return all {@code Category}.
+
+     * @return list of {@code Category}.
+     * @author Kateryna Horokh
+     */
     @GetMapping("/categories")
     public ResponseEntity<List<CategoryDto>> findAllCategory() {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.findAllCategoryDto());
