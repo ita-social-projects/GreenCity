@@ -80,6 +80,26 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return repo.findByEmail(email);
     }
+    /**
+     * @author Zakhar Skaletskyi
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public Long findIdByEmail(String email) {
+        return repo.findIdByEmail(email);
+    }
+
+    /**
+     * @author Zakhar Skaletskyi
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean existsByEmail(String email) { //zakhar
+        return repo.existsByEmail(email);
+    }
+
 
     /** @author Rostyslav Khasanov {@inheritDoc} */
     @Override
@@ -101,5 +121,15 @@ public class UserServiceImpl implements UserService {
                                 () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         user.setUserStatus(userStatus);
         repo.save(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka.
+     */
+    @Override
+    public ROLE getRole(String email) {
+        return findByEmail(email).getRole();
     }
 }

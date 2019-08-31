@@ -29,6 +29,15 @@ public class LocationServiceImplTest {
     @Autowired private LocationService locationService;
 
     @Test
+    public void saveTest() {
+        Location genericEntity = new Location();
+
+        when(locationRepo.save(genericEntity)).thenReturn(genericEntity);
+
+        assertEquals(genericEntity, locationService.save(genericEntity));
+    }
+
+    @Test
     public void findByIdTest() {
         Location genericEntity = new Location();
 
@@ -64,7 +73,10 @@ public class LocationServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void deleteByIdThrowExceptionWhenCallFindById() {
-        when(locationRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+        Location generic = new Location();
+
+        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(generic));
+        when(locationService.findById(anyLong())).thenThrow(NotFoundException.class);
 
         locationService.deleteById(1L);
         locationService.findById(1L);

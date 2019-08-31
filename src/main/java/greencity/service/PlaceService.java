@@ -64,6 +64,14 @@ public interface PlaceService {
     PlaceInfoDto getAccessById(Long id);
 
     /**
+     * Check place existing by id
+     *
+     * @param id - place id
+     * @return boolean check result
+     * @author Zakhar Skaletskyi
+     */
+    boolean existsById(Long id);
+    /**
      * The method which return a list {@code PlaceByBoundsDto} with information about place, *
      * location depends on the map bounds.
      *

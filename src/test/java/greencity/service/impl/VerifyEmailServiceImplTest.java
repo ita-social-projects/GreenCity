@@ -21,10 +21,14 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class VerifyEmailServiceImplTest {
 
-    @Autowired private VerifyEmailRepo repo;
-    @Autowired private VerifyEmailServiceImpl verifyEmailService;
-    @Autowired private UserOwnSecurityServiceImpl userOwnSecurityService;
-    @Autowired private UserServiceImpl userService;
+    @Autowired
+    private VerifyEmailRepo repo;
+    @Autowired
+    private VerifyEmailServiceImpl verifyEmailService;
+    @Autowired
+    private UserOwnSecurityServiceImpl userOwnSecurityService;
+    @Autowired
+    private UserServiceImpl userService;
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)

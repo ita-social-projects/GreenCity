@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -27,9 +28,11 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = GreenCityApplication.class)
 public class UserServiceImplTest {
 
-    @MockBean UserRepo userRepo;
+    @MockBean
+    UserRepo userRepo;
 
-    @Autowired private UserService userService;
+    @Autowired
+    private UserService userService;
 
     @Test
     public void updateUserStatusBlockedTest() {
@@ -106,5 +109,13 @@ public class UserServiceImplTest {
     public void saveExceptionTest() {
         when(userService.findByEmail(any())).thenThrow(BadEmailException.class);
         userService.save(new User());
+    }
+
+    @Test
+    public void getUserRoleTest() {
+        User user = User.builder().email("nazarvladykaaa@gmail.com").role(ROLE.ROLE_ADMIN).build();
+        when(userService.findByEmail("nazarvladykaaa@gmail.com")).thenReturn(user);
+
+        assertEquals(ROLE.ROLE_ADMIN, userService.getRole("nazarvladykaaa@gmail.com"));
     }
 }
