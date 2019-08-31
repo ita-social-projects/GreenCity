@@ -22,11 +22,14 @@ public class Comment {
     @Column(nullable = false)
     private String text;
 
-    @ManyToOne private User user;
+    @ManyToOne
+    private User user;
 
-    @ManyToOne private Place place;
+    @ManyToOne
+    private Place place;
 
-    @ManyToOne private Comment parentComment;
+    @ManyToOne
+    private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment")
     private List<Comment> comments = new ArrayList<>();

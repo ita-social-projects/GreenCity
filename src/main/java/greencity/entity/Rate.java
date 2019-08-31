@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import javax.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +19,9 @@ public class Rate {
     @Column(nullable = false)
     private Byte rate;
 
-    @ManyToOne private User user;
+    @ManyToOne
+    private User user;
 
-    @ManyToOne private Place place;
+    @ManyToOne
+    private Place place;
 }

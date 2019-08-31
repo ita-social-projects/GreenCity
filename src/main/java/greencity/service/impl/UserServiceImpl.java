@@ -1,8 +1,5 @@
 package greencity.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserPageableDto;
@@ -13,6 +10,8 @@ import greencity.exception.BadIdException;
 import greencity.exception.BadUserException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -20,19 +19,26 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-/** The class provides implementation of the {@code UserService}. */
+/**
+ * The class provides implementation of the {@code UserService}.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    /** Autowired repository. */
+    /**
+     * Autowired repository.
+     */
     private UserRepo repo;
 
-    /** Autowired mapper. */
+    /**
+     * Autowired mapper.
+     */
     private ModelMapper modelMapper;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
@@ -46,44 +52,55 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public User findById(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
-    /** @author Rostyslav Khasanov {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
     @Override
     public UserPageableDto findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
         List<UserForListDto> userForListDtos =
-                users.getContent().stream()
-                        .map(user -> modelMapper.map(user, UserForListDto.class))
-                        .collect(Collectors.toList());
+            users.getContent().stream()
+                .map(user -> modelMapper.map(user, UserForListDto.class))
+                .collect(Collectors.toList());
         return new UserPageableDto(
-                userForListDtos,
-                users.getTotalElements(),
-                users.getPageable().getPageNumber(),
-                ROLE.class.getEnumConstants());
+            userForListDtos,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            ROLE.class.getEnumConstants());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteById(Long id) {
         User user = findById(id);
         repo.delete(user);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public User findByEmail(String email) {
         return repo.findByEmail(email);
     }
+
     /**
-     * @author Zakhar Skaletskyi
-     *
      * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
      */
     @Override
     public Long findIdByEmail(String email) {
@@ -91,34 +108,41 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @author Zakhar Skaletskyi
-     *
      * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
      */
     @Override
     public boolean existsByEmail(String email) { //zakhar
         return repo.existsByEmail(email);
     }
 
-
-    /** @author Rostyslav Khasanov {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
     @Override
     public void updateRole(Long id, ROLE role) {
         User user =
-                repo.findById(id)
-                        .orElseThrow(
-                                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            repo.findById(id)
+                .orElseThrow(
+                    () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         user.setRole(role);
         repo.save(user);
     }
 
-    /** @author Rostyslav Khasanov {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
     @Override
     public void updateUserStatus(Long id, UserStatus userStatus) {
         User user =
-                repo.findById(id)
-                        .orElseThrow(
-                                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            repo.findById(id)
+                .orElseThrow(
+                    () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         user.setUserStatus(userStatus);
         repo.save(user);
     }

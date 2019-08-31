@@ -1,10 +1,19 @@
 package greencity.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
 import greencity.GreenCityApplication;
 import greencity.entity.Location;
 import greencity.exception.NotFoundException;
 import greencity.repository.LocationRepo;
 import greencity.service.LocationService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +21,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class LocationServiceImplTest {
-    @MockBean private LocationRepo locationRepo;
-    @Autowired private LocationService locationService;
+    @MockBean
+    private LocationRepo locationRepo;
+    @Autowired
+    private LocationService locationService;
 
     @Test
     public void saveTest() {
@@ -90,7 +91,7 @@ public class LocationServiceImplTest {
     @Test
     public void findAllTest() {
         List<Location> genericEntities =
-                new ArrayList<>(Arrays.asList(new Location(), new Location()));
+            new ArrayList<>(Arrays.asList(new Location(), new Location()));
 
         when(locationRepo.findAll()).thenReturn(genericEntities);
 

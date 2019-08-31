@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PageableDto<T> {
-
     private List<T> page;
 
     private long totalElements;
