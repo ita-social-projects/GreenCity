@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import javax.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +19,9 @@ public class SpecificationValue {
     @Column(nullable = false, length = 100)
     private String value;
 
-    @ManyToOne private Place place;
+    @ManyToOne
+    private Place place;
 
-    @ManyToOne private Specification specification;
+    @ManyToOne
+    private Specification specification;
 }

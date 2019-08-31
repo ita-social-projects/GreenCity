@@ -3,12 +3,14 @@ package greencity.service;
 import greencity.entity.Location;
 import java.util.List;
 
-/** Provides the interface to manage {@code Location} entity. */
+/**
+ * Provides the interface to manage {@code Location} entity.
+ */
 public interface LocationService {
     /**
      * Update Location in DB.
      *
-     * @param id - Location id.
+     * @param id       - Location id.
      * @param location - Location entity.
      * @return Location updated entity.
      */

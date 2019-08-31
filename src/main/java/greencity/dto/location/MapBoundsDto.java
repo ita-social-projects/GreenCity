@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class MapBoundsDto {
-
     @Min(value = -90, message = "The latitude must be at least -90")
     @Max(value = 90, message = "The latitude must be less than 90")
     @NotNull(message = "North-east latitude can not be null")
