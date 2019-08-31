@@ -1,10 +1,10 @@
 package greencity.service.impl;
 
-import java.time.LocalDateTime;
+import static greencity.constant.ErrorMessage.*;
 
-import greencity.dto.user_own_security.UserRegisterDto;
-import greencity.dto.user_own_security.UserSignInDto;
-import greencity.dto.user_own_security.UserSuccessSignInDto;
+import greencity.dto.userownsecurity.UserRegisterDto;
+import greencity.dto.userownsecurity.UserSignInDto;
+import greencity.dto.userownsecurity.UserSuccessSignInDto;
 import greencity.entity.User;
 import greencity.entity.UserOwnSecurity;
 import greencity.entity.enums.ROLE;
@@ -18,6 +18,7 @@ import greencity.security.JwtTokenTool;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.UserService;
 import greencity.service.VerifyEmailService;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,8 +28,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static greencity.constant.ErrorMessage.*;
 
 /**
  * Provides the class to manage {@link UserOwnSecurityService} entity.
@@ -40,7 +39,6 @@ import static greencity.constant.ErrorMessage.*;
 @AllArgsConstructor
 @Slf4j
 public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
-
     private UserOwnSecurityRepo repo;
     private UserService userService;
     private VerifyEmailService verifyEmailService;
@@ -48,7 +46,9 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     private AuthenticationManager manager;
     private JwtTokenTool jwtTokenTool;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public void register(UserRegisterDto dto) {
@@ -75,24 +75,26 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
 
     private UserOwnSecurity createUserOwnSecurityToUser(UserRegisterDto dto, User user) {
         return UserOwnSecurity.builder()
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .user(user)
-                .build();
+            .password(passwordEncoder.encode(dto.getPassword()))
+            .user(user)
+            .build();
     }
 
     private User createNewRegisteredUser(UserRegisterDto dto) {
         return User.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .email(dto.getEmail())
-                .dateOfRegistration(LocalDateTime.now())
-                .role(ROLE.ROLE_USER)
-                .lastVisit(LocalDateTime.now())
-                .userStatus(UserStatus.ACTIVATED)
-                .build();
+            .firstName(dto.getFirstName())
+            .lastName(dto.getLastName())
+            .email(dto.getEmail())
+            .dateOfRegistration(LocalDateTime.now())
+            .role(ROLE.ROLE_USER)
+            .lastVisit(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
+            .build();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(UserOwnSecurity userOwnSecurity) {
         log.info("begin");
@@ -103,37 +105,41 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         log.info("end");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Scheduled(fixedRate = 86400000)
     @Override
     public void deleteNotActiveEmailUsers() {
         // 86400000 - доба
         log.info("begin");
         verifyEmailService
-                .findAll()
-                .forEach(
-                        verifyEmail -> {
-                            if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
-                                delete(verifyEmail.getUser().getUserOwnSecurity());
-                                verifyEmailService.delete(verifyEmail);
-                                userService.deleteById(verifyEmail.getUser().getId());
-                            }
-                        });
+            .findAll()
+            .forEach(
+                verifyEmail -> {
+                    if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
+                        delete(verifyEmail.getUser().getUserOwnSecurity());
+                        verifyEmailService.delete(verifyEmail);
+                        userService.deleteById(verifyEmail.getUser().getId());
+                    }
+                });
         log.info("end");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
         // This method will be change when we will add security
         log.info("begin");
         try {
             manager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
             User byEmail = userService.findByEmail(dto.getEmail());
 
             String accessToken =
-                    jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
+                jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
             String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
             log.info("end");
             return new UserSuccessSignInDto(accessToken, refreshToken);
@@ -142,7 +148,9 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String updateAccessToken(String refreshToken) {
         if (jwtTokenTool.isTokenValid(refreshToken)) {

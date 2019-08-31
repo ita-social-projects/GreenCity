@@ -8,8 +8,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.entity.Category;
 import greencity.entity.Location;
@@ -20,11 +20,7 @@ import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
-import greencity.service.CategoryService;
-import greencity.service.LocationService;
-import greencity.service.OpenHoursService;
-import greencity.service.PlaceService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,21 +39,26 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class PlaceServiceImplTest {
+    @MockBean
+    private PlaceRepo placeRepo;
 
-    @MockBean private PlaceRepo placeRepo;
+    @MockBean
+    private CategoryService categoryService;
 
-    @MockBean private CategoryService categoryService;
+    @MockBean
+    private LocationService locationService;
 
-    @MockBean private LocationService locationService;
+    @MockBean
+    private OpenHoursService openHoursService;
 
-    @MockBean private OpenHoursService openHoursService;
+    @MockBean
+    private PlaceAddDtoMapper placeAddDtoMapper;
 
-    @MockBean private PlaceAddDtoMapper placeAddDtoMapper;
+    @MockBean
+    private UserService userService;
 
-    @MockBean private UserService userService;
-
-    @Autowired private PlaceService placeService;
-
+    @Autowired
+    private PlaceService placeService;
 
     @Test
     public void save() {
@@ -199,18 +200,18 @@ public class PlaceServiceImplTest {
     public void findPlacesByMapsBoundsTest() {
         MapBoundsDto mapBoundsDto = new MapBoundsDto(20.0, 60.0, 60.0, 10.0);
         List<Place> placeExpected =
-                new ArrayList<Place>() {
-                    {
-                        add(Place.builder().name("MyPlace").id(1L).build());
-                    }
-                };
+            new ArrayList<Place>() {
+                {
+                    add(Place.builder().name("MyPlace").id(1L).build());
+                }
+            };
         when(placeRepo.findPlacesByMapsBounds(
-                        mapBoundsDto.getNorthEastLat(),
-                        mapBoundsDto.getNorthEastLng(),
-                        mapBoundsDto.getSouthWestLat(),
-                        mapBoundsDto.getSouthWestLng()))
-                .thenReturn(placeExpected);
+            mapBoundsDto.getNorthEastLat(),
+            mapBoundsDto.getNorthEastLng(),
+            mapBoundsDto.getSouthWestLat(),
+            mapBoundsDto.getSouthWestLng()))
+            .thenReturn(placeExpected);
         assertEquals(
-                placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
+            placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
 }

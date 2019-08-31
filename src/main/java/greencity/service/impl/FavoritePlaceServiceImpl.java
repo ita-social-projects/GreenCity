@@ -2,25 +2,24 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.favoritePlace.FavoritePlaceDto;
+import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.exception.BadIdAndEmailException;
+import greencity.exception.BadIdException;
 import greencity.exception.NotFoundException;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.FavoritePlaceService;
-import greencity.exception.BadIdException;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -39,7 +38,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * {@inheritDoc}
      */
     public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto) {
-        FavoritePlace favoritePlace= modelMapper.map(favoritePlaceDto, FavoritePlace.class);
+        FavoritePlace favoritePlace = modelMapper.map(favoritePlaceDto, FavoritePlace.class);
         favoritePlace.setUser(new User());
         favoritePlace.getUser().setEmail(favoritePlaceDto.getUserEmail());
         favoritePlace.setPlace(new Place());
@@ -60,13 +59,12 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     }
 
     /**
-     * @author Zakhar Skaletskyi
-     * <p>
      * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
      */
     @Override
     public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto) {
-
         log.info(LogMessage.IN_UPDATE, favoritePlaceDto);
         if (!userService.existsByEmail(favoritePlaceDto.getUserEmail())) {
             throw new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
@@ -78,16 +76,16 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), favoritePlaceDto.getUserEmail())) {
             throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
-        FavoritePlace favoritePlace=modelMapper.map(favoritePlaceDto, FavoritePlace.class);
+        FavoritePlace favoritePlace = modelMapper.map(favoritePlaceDto, FavoritePlace.class);
         favoritePlace.getUser().setId(userService.findIdByEmail(favoritePlace.getUser().getEmail()));
         favoritePlace.setId(repo.findByUserAndPlace(favoritePlace.getUser(), favoritePlace.getPlace()).getId());
         return modelMapper.map(repo.save(favoritePlace), FavoritePlaceDto.class);
     }
 
     /**
-     * @author Zakhar Skaletskyi
-     * <p>
      * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
      */
     @Override
     public List<FavoritePlaceDto> findAllByUserEmail(String email) {
@@ -96,13 +94,14 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
         }
         List<FavoritePlace> favoritePlaces = repo.findAllByUserEmail(email);
-        return favoritePlaces.stream().map(fp -> modelMapper.map(fp, FavoritePlaceDto.class)).collect(Collectors.toList());
+        return favoritePlaces.stream().map(fp -> modelMapper.map(fp, FavoritePlaceDto.class))
+            .collect(Collectors.toList());
     }
 
     /**
-     * @author Zakhar Skaletskyi
-     * <p>
      * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
      */
     @Override
     @Transactional
