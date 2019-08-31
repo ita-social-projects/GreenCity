@@ -1,14 +1,17 @@
 package greencity.service.impl;
 
-import java.time.LocalDateTime;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
-import greencity.dto.user_own_security.UserRegisterDto;
+import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.entity.User;
 import greencity.entity.UserOwnSecurity;
 import greencity.entity.enums.ROLE;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserOwnSecurityRepo;
+import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,31 +20,26 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class UserOwnSecurityServiceImplTest {
-
     User user =
-            User.builder()
-                    .email("Nazar.stasyuk@gmail.com")
-                    .firstName("Nazar")
-                    .lastName("Stasyuk")
-                    .role(ROLE.ROLE_USER)
-                    .lastVisit(LocalDateTime.now())
-                    .dateOfRegistration(LocalDateTime.now())
-                    .build();
+        User.builder()
+            .email("Nazar.stasyuk@gmail.com")
+            .firstName("Nazar")
+            .lastName("Stasyuk")
+            .role(ROLE.ROLE_USER)
+            .lastVisit(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .build();
     UserRegisterDto dto =
-            UserRegisterDto.builder()
-                    .email(user.getEmail())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .password("123123123")
-                    .build();
+        UserRegisterDto.builder()
+            .email(user.getEmail())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .password("123123123")
+            .build();
     @Autowired
     private UserOwnSecurityServiceImpl service;
     @MockBean
@@ -78,15 +76,15 @@ public class UserOwnSecurityServiceImplTest {
     @Test(expected = BadEmailException.class)
     public void registerSameUser() {
         User user =
-                User.builder()
-                        .email("Nazar.stasyuk@gmail.com")
-                        .firstName("Nazar")
-                        .lastName("Stasyuk")
-                        .role(ROLE.ROLE_USER)
-                        .lastVisit(LocalDateTime.now())
-                        .userOwnSecurity(new UserOwnSecurity())
-                        .dateOfRegistration(LocalDateTime.now())
-                        .build();
+            User.builder()
+                .email("Nazar.stasyuk@gmail.com")
+                .firstName("Nazar")
+                .lastName("Stasyuk")
+                .role(ROLE.ROLE_USER)
+                .lastVisit(LocalDateTime.now())
+                .userOwnSecurity(new UserOwnSecurity())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
         when(userService.findByEmail(anyString())).thenReturn(user);
         service.register(dto);
     }

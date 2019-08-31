@@ -6,11 +6,10 @@ import greencity.entity.Location;
 import greencity.exception.NotFoundException;
 import greencity.repository.LocationRepo;
 import greencity.service.LocationService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Service implementation for Location entity.
@@ -21,7 +20,6 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class LocationServiceImpl implements LocationService {
-
     private final LocationRepo locationRepo;
 
     /**
@@ -46,9 +44,9 @@ public class LocationServiceImpl implements LocationService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return locationRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
     }
 
     /**

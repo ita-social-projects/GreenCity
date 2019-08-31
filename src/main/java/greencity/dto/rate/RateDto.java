@@ -1,7 +1,6 @@
 package greencity.dto.rate;
 
 import greencity.dto.user.UserForListDto;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,10 +1,19 @@
 package greencity.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
 import greencity.GreenCityApplication;
 import greencity.entity.OpeningHours;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
 import greencity.service.OpenHoursService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +21,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class OpenHoursServiceImplTest {
-    @MockBean private OpenHoursRepo openHoursRepo;
-    @Autowired private OpenHoursService openHoursService;
+    @MockBean
+    private OpenHoursRepo openHoursRepo;
+    @Autowired
+    private OpenHoursService openHoursService;
 
     @Test
     public void saveTest() {
@@ -90,7 +91,7 @@ public class OpenHoursServiceImplTest {
     @Test
     public void findAllTest() {
         List<OpeningHours> genericEntities =
-                new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
+            new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
 
         when(openHoursRepo.findAll()).thenReturn(genericEntities);
 

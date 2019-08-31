@@ -1,4 +1,4 @@
-package greencity.dto.user_own_security;
+package greencity.dto.userownsecurity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -4,11 +4,16 @@ import greencity.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/** Provides an interface to manage {@link Category} entity. */
+/**
+ * Provides an interface to manage {@link Category} entity.
+ */
 @Repository
 public interface CategoryRepo extends JpaRepository<Category, Long> {
-
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     Boolean existsByName(String name);
+
     /**
      * Finds category by name.
      *

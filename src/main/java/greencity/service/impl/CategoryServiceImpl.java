@@ -43,9 +43,21 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (byName != null) {
             throw new BadCategoryRequestException(
-                    ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
+                ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
         }
         return categoryRepo.save(Category.builder().name(dto.getName()).build());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Override
+    public Category save(Category category) {
+        log.info(LogMessage.IN_SAVE, category);
+
+        return categoryRepo.save(category);
     }
 
     /**
@@ -70,21 +82,9 @@ public class CategoryServiceImpl implements CategoryService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return categoryRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
-     */
-    @Override
-    public Category save(Category category) {
-        log.info(LogMessage.IN_SAVE, category);
-
-        return categoryRepo.save(category);
+            .findById(id)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -135,7 +135,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> findAllCategoryDto() {
         List<Category> categories = findAll();
         return categories.stream()
-                .map(category -> modelMapper.map(category, CategoryDto.class))
-                .collect(Collectors.toList());
+            .map(category -> modelMapper.map(category, CategoryDto.class))
+            .collect(Collectors.toList());
     }
 }

@@ -28,7 +28,8 @@ public class OpeningHours {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime closeTime;
 
-    @Enumerated private WeekDay weekDay;
+    @Enumerated
+    private WeekDay weekDay;
 
     @ManyToOne @JsonBackReference private Place place;
 }

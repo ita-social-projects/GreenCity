@@ -14,7 +14,6 @@ import org.hibernate.validator.constraints.UniqueElements;
 @AllArgsConstructor
 @Builder
 public class OpeningHoursDto {
-
     @NotNull(message = ValidationConstants.EMPTY_OPEN_TIME_VALUE)
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
     @ApiModelProperty(dataType = "java.lang.String")
@@ -27,5 +26,4 @@ public class OpeningHoursDto {
 
     @NotNull(message = ValidationConstants.EMPTY_WEEK_DAY_VALUE)
     private WeekDay weekDay;
-
 }
