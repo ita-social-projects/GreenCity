@@ -47,6 +47,22 @@ public interface UserService {
     User findByEmail(String email);
 
     /**
+     * Find User id by User email
+     *
+     * @param email - User email
+     * @return User id
+     * @author Zakhar Skaletskyi
+     */
+    Long findIdByEmail(String email);
+    /**
+     * Check user existing by email
+     *
+     * @param email - User email
+     * @return boolean check result
+     * @author Zakhar Skaletskyi
+     */
+    boolean existsByEmail(String email);
+    /**
      * Update {@code ROLE} of user.
      *
      * @param id {@code User} id.
@@ -72,4 +88,14 @@ public interface UserService {
      * @author Rostyslav Khasanov
      */
     UserPageableDto findByPage(Pageable pageable);
+
+    /**
+     * Find user role by his email.
+     *
+     * @param email user email.
+     * @return role of user.
+     *
+     * @author Nazar Vladyka
+     */
+    ROLE getRole(String email);
 }
