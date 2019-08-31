@@ -31,6 +31,13 @@ public class UserServiceImplTest {
     private UserService userService;
 
     @Test
+    public void saveTest() {
+        User user = new User();
+        when(userRepo.save(user)).thenReturn(user);
+        assertEquals(user, userService.save(user));
+    }
+
+    @Test
     public void updateUserStatusBlockedTest() {
         User user =
             User.builder()
@@ -113,5 +120,10 @@ public class UserServiceImplTest {
         when(userService.findByEmail("nazarvladykaaa@gmail.com")).thenReturn(user);
 
         assertEquals(ROLE.ROLE_ADMIN, userService.getRole("nazarvladykaaa@gmail.com"));
+    }
+
+    @Test(expected = BadIdException.class)
+    public void deleteByIdExceptionBadIdTest() {
+        userService.deleteById(1l);
     }
 }
