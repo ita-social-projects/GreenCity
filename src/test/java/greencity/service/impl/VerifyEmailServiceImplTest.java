@@ -57,7 +57,7 @@ public class VerifyEmailServiceImplTest {
         when(repo.findByToken(anyString())).thenReturn(Optional.of(verifyEmail));
         when(repo.existsById(anyLong())).thenReturn(true);
         doNothing().when(repo).delete(any(VerifyEmail.class));
-        verifyEmailService.verifyByEmail("some token");
+        verifyEmailService.verifyByToken("some token");
         verify(repo, times(1)).delete(any());
     }
 
@@ -66,7 +66,7 @@ public class VerifyEmailServiceImplTest {
         VerifyEmail verifyEmail =
                 VerifyEmail.builder().expiryDate(LocalDateTime.now().minusHours(2)).build();
         when(repo.findByToken(anyString())).thenReturn(Optional.of(verifyEmail));
-        verifyEmailService.verifyByEmail("some token");
+        verifyEmailService.verifyByToken("some token");
     }
 
     @Test

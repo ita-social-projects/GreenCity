@@ -21,8 +21,6 @@ public interface UserService {
      */
     User save(User user);
 
-    User update(User user);
-
     /**
      * Method that allow you to find {@link User} by ID
      *

@@ -9,8 +9,8 @@ import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
-import greencity.exception.BadUserException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import lombok.AllArgsConstructor;
@@ -36,14 +36,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
-            throw new BadUserException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
+            throw new BadEmailException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
-    }
-
-    @Override
-    public User update(User user) {
-        return null;
     }
 
     /** {@inheritDoc} */

@@ -4,10 +4,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import static greencity.constant.ValidationConstants.INVALID_EMAIL;
@@ -16,6 +13,7 @@ import static greencity.constant.ValidationConstants.INVALID_EMAIL;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class UserRegisterDto {
 
     @NotBlank

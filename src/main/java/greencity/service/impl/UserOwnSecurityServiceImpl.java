@@ -28,12 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static greencity.constant.ErrorMessage.*;
 
-/**
- * Provides the class to manage {@link UserOwnSecurityService} entity.
- *
- * @author Nazar Stasyuk
- * @version 1.0
- */
+/** {@inheritDoc} */
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -52,7 +47,6 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     public void signUp(UserRegisterDto dto) {
         log.info("begin");
         User byEmail = userService.findByEmail(dto.getEmail());
-
         if (byEmail != null) {
             // He has already registered
             if (byEmail.getUserOwnSecurity() == null) {
@@ -125,11 +119,9 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
         // This method will be change when we will add security
         log.info("begin");
-
         manager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         User byEmail = userService.findByEmail(dto.getEmail());
-
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
         log.info("end");

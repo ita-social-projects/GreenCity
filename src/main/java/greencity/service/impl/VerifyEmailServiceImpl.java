@@ -21,13 +21,16 @@ import org.springframework.stereotype.Service;
 
 import static greencity.constant.ErrorMessage.*;
 
+/** {@inheritDoc} */
 @Service
 @Slf4j
 public class VerifyEmailServiceImpl implements VerifyEmailService {
 
+    /** Time for validation email token. */
     @Value("${verifyEmailTimeHour}")
     private Integer expireTime;
 
+    /** This is server address. We send it to user email. And user can simply submit it. */
     @Value("${address}")
     private String serverAddress;
 
@@ -35,11 +38,18 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
 
     private JavaMailSender javaMailSender;
 
+    /**
+     * Constructor.
+     *
+     * @param repo {@VerifyEmailRepo} - this is repository for {@link VerifyEmail}
+     * @param javaMailSender {@link JavaMailSender} - use it for sending submits to users email.
+     */
     public VerifyEmailServiceImpl(VerifyEmailRepo repo, JavaMailSender javaMailSender) {
         this.repo = repo;
         this.javaMailSender = javaMailSender;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void save(User user) {
         log.info("begin");
@@ -63,8 +73,9 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         log.info("end");
     }
 
+    /** {@inheritDoc} */
     @Override
-    public void verifyByEmail(String token) {
+    public void verifyByToken(String token) {
         log.info("begin");
         VerifyEmail verifyEmail =
                 repo.findByToken(token)
@@ -80,6 +91,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         log.info("end");
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<VerifyEmail> findAll() {
         return repo.findAll();
@@ -93,11 +105,16 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         return localDateTime;
     }
 
+    /**
+     * Method that send email to user to verify it.
+     *
+     * @param user {@link User} - user that has to get submit email.
+     * @param token {@link String} - token.
+     */
     private void sentEmail(User user, String token) throws MessagingException {
         log.info("begin");
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-
         String subject = "Verify your email address";
         String message =
                 "<b>Verify your email address to complete registration.</b><br>"
@@ -116,10 +133,13 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         log.info("end");
     }
 
+    /** {@inheritDoc} */
+    @Override
     public boolean isDateValidate(LocalDateTime emailExpiredDate) {
         return LocalDateTime.now().isBefore(emailExpiredDate);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete(VerifyEmail verifyEmail) {
         log.info("begin");
