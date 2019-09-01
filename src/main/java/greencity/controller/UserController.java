@@ -53,6 +53,8 @@ public class UserController {
      */
     @GetMapping("/role")
     public ResponseEntity getRole(Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getRole(principal.getName()));
+        return ResponseEntity.status(HttpStatus.OK).body(principal != null
+            ? userService.getRole(principal.getName())
+            : "\"UNREGISTERED\"");
     }
 }
