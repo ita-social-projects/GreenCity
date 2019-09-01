@@ -26,12 +26,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class FavoritePlaceServiceImplTest {
@@ -65,8 +63,10 @@ public class FavoritePlaceServiceImplTest {
         Mockito.when(placeService.existsById(any())).thenReturn(true);
         Mockito.when(repo.existsByPlaceIdAndUserEmail(any(), any())).thenReturn(false);
         Mockito.when(repo.save(any(FavoritePlace.class))).thenReturn(fp);
-        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
-        Mockito.when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class))).thenReturn(dto);
+        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class)))
+            .thenReturn(fp);
+        Mockito.when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class)))
+            .thenReturn(dto);
         Mockito.when(userService.findIdByEmail(anyString())).thenReturn((long) 3L);
         FavoritePlaceDto dto2 = favoritePlaceService.save(dto);
 
@@ -93,7 +93,8 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class)))
+            .thenReturn(fp);
         Mockito.when(userService.existsByEmail(any())).thenReturn(false);
         favoritePlaceService.save(dto);
     }
@@ -111,7 +112,8 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class)))
+            .thenReturn(fp);
         Mockito.when(userService.existsByEmail(any())).thenReturn(true);
         Mockito.when(placeService.existsById(any())).thenReturn(false);
 
@@ -128,7 +130,8 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class)))
+            .thenReturn(fp);
         Mockito.when(userService.existsByEmail(any())).thenReturn(true);
         Mockito.when(placeService.existsById(any())).thenReturn(true);
         Mockito.when(repo.existsByPlaceIdAndUserEmail(any(), any())).thenReturn(true);
@@ -149,7 +152,6 @@ public class FavoritePlaceServiceImplTest {
         favoritePlaceService.deleteByPlaceIdAndUserEmail(dto);
         verify(repo, times(1)).existsByPlaceIdAndUserEmail(anyLong(), anyString());
         verify(repo, times(1)).deleteByPlaceIdAndUserEmail(anyLong(), anyString());
-
     }
 
     /**
@@ -165,7 +167,6 @@ public class FavoritePlaceServiceImplTest {
         favoritePlaceService.deleteByPlaceIdAndUserEmail(dto);
         verify(repo, times(1)).existsByPlaceIdAndUserEmail(anyLong(), anyString());
         verify(repo, times(1)).deleteByPlaceIdAndUserEmail(anyLong(), anyString());
-
     }
 
     /**
@@ -187,8 +188,10 @@ public class FavoritePlaceServiceImplTest {
         Mockito.when(placeService.existsById(any())).thenReturn(true);
         Mockito.when(repo.existsByPlaceIdAndUserEmail(any(), any())).thenReturn(true);
         Mockito.when(repo.save(any(FavoritePlace.class))).thenReturn(fp);
-        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
-        Mockito.when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class))).thenReturn(dto);
+        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class)))
+            .thenReturn(fp);
+        Mockito.when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class)))
+            .thenReturn(dto);
         Mockito.when(userService.findIdByEmail(anyString())).thenReturn((long) 3L);
         FavoritePlace favoritePlace2 = new FavoritePlace();
         favoritePlace2.setId(22L);
@@ -210,7 +213,8 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class)))
+            .thenReturn(fp);
         Mockito.when(userService.existsByEmail(any())).thenReturn(false);
         favoritePlaceService.update(dto);
     }
@@ -228,7 +232,8 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class)))
+            .thenReturn(fp);
         Mockito.when(userService.existsByEmail(any())).thenReturn(true);
         Mockito.when(placeService.existsById(any())).thenReturn(false);
 
@@ -248,7 +253,8 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        Mockito.when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class)))
+            .thenReturn(fp);
         Mockito.when(userService.existsByEmail(any())).thenReturn(true);
         Mockito.when(placeService.existsById(any())).thenReturn(true);
         Mockito.when(repo.existsByPlaceIdAndUserEmail(any(), any())).thenReturn(false);
@@ -273,11 +279,11 @@ public class FavoritePlaceServiceImplTest {
         for (long i = 0; i < 5; i++) {
             favoritePlaces.add(favoritePlace);
             favoritePlaceDtos.add(favoritePlaceDto);
-
         }
         Mockito.when(userService.existsByEmail(any())).thenReturn(true);
         Mockito.when(repo.findAllByUserEmail(anyString())).thenReturn(favoritePlaces);
-        Mockito.when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class))).thenReturn(favoritePlaceDto);
+        Mockito.when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class)))
+            .thenReturn(favoritePlaceDto);
         Assert.assertEquals(favoritePlaceDtos, favoritePlaceService.findAllByUserEmail("aas"));
     }
 
@@ -289,5 +295,4 @@ public class FavoritePlaceServiceImplTest {
         Mockito.when(userService.existsByEmail(any())).thenReturn(false);
         favoritePlaceService.findAllByUserEmail("aas");
     }
-
 }
