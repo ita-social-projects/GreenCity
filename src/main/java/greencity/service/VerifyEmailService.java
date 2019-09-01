@@ -13,7 +13,7 @@ public interface VerifyEmailService {
 
     void delete(VerifyEmail verifyEmail);
 
-    void verify(String token);
+    void verifyByEmail(String token);
 
     List<VerifyEmail> findAll();
 

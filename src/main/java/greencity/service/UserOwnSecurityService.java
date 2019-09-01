@@ -18,7 +18,7 @@ public interface UserOwnSecurityService {
      *
      * @param dto a value of {@link UserRegisterDto}
      */
-    void register(UserRegisterDto dto);
+    void signUp(UserRegisterDto dto);
 
     /**
      * Method that allow you to delete {@link UserOwnSecurity}.

@@ -10,7 +10,6 @@ import greencity.entity.UserOwnSecurity;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
-import greencity.exception.BadEmailOrPasswordException;
 import greencity.exception.BadIdException;
 import greencity.exception.BadRefreshTokenException;
 import greencity.repository.UserOwnSecurityRepo;
@@ -23,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +49,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void register(UserRegisterDto dto) {
+    public void signUp(UserRegisterDto dto) {
         log.info("begin");
         User byEmail = userService.findByEmail(dto.getEmail());
 
@@ -127,19 +125,15 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
         // This method will be change when we will add security
         log.info("begin");
-        try {
-            manager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-            User byEmail = userService.findByEmail(dto.getEmail());
 
-            String accessToken =
-                    jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
-            String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
-            log.info("end");
-            return new UserSuccessSignInDto(accessToken, refreshToken);
-        } catch (AuthenticationException e) {
-            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
-        }
+        manager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+        User byEmail = userService.findByEmail(dto.getEmail());
+
+        String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
+        String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
+        log.info("end");
+        return new UserSuccessSignInDto(accessToken, refreshToken);
     }
 
     /** {@inheritDoc} */

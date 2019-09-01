@@ -33,7 +33,7 @@ public class UserOwnSecurityController {
 
     @PostMapping("/signUp")
     public ResponseEntity<String> singUp(@Valid @RequestBody UserRegisterDto dto) {
-        service.register(dto);
+        service.signUp(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -45,7 +45,7 @@ public class UserOwnSecurityController {
     @GetMapping("/verifyEmail")
     public void verify(@RequestParam @NotBlank String token, HttpServletResponse response)
             throws IOException {
-        verifyEmailService.verify(token);
+        verifyEmailService.verifyByEmail(token);
         response.sendRedirect(clientAddress);
     }
 

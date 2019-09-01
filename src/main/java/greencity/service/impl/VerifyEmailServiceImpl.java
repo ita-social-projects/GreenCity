@@ -64,7 +64,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     }
 
     @Override
-    public void verify(String token) {
+    public void verifyByEmail(String token) {
         log.info("begin");
         VerifyEmail verifyEmail =
                 repo.findByToken(token)
