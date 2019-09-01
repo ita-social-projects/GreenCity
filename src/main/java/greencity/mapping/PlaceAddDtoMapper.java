@@ -17,8 +17,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 @AllArgsConstructor
 @Component
 public class PlaceAddDtoMapper implements Mapper<Place, PlaceAddDto> {
-
-    /** Autowired mappers. */
+    /**
+     * Autowired mappers.
+     */
     private ModelMapper modelMapper;
 
     @Override

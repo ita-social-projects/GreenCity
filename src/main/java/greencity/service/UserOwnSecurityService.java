@@ -1,8 +1,8 @@
 package greencity.service;
 
-import greencity.dto.user_own_security.UserRegisterDto;
-import greencity.dto.user_own_security.UserSignInDto;
-import greencity.dto.user_own_security.UserSuccessSignInDto;
+import greencity.dto.userownsecurity.UserRegisterDto;
+import greencity.dto.userownsecurity.UserSignInDto;
+import greencity.dto.userownsecurity.UserSuccessSignInDto;
 import greencity.entity.UserOwnSecurity;
 
 /**
@@ -12,7 +12,6 @@ import greencity.entity.UserOwnSecurity;
  * @version 1.0
  */
 public interface UserOwnSecurityService {
-
     /**
      * Method that allow you sign-up user.
      *
@@ -27,7 +26,9 @@ public interface UserOwnSecurityService {
      */
     void delete(UserOwnSecurity userOwnSecurity);
 
-    /** Method that delete {@link greencity.entity.VerifyEmail} when user not submit email. */
+    /**
+     * Method that delete {@link greencity.entity.VerifyEmail} when user not submit email.
+     */
     void deleteNotActiveEmailUsers();
 
     /**

@@ -19,10 +19,11 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Slf4j
 public class JwtUserDetailService implements UserDetailsService {
-
     private UserService userService;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("begin");
