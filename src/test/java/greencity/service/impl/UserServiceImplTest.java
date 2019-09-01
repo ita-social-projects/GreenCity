@@ -51,7 +51,7 @@ public class UserServiceImplTest {
                 .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateUserStatus(user.getId(), UserStatus.BLOCKED);
+        userService.updateStatus(user.getId(), UserStatus.BLOCKED);
         assertEquals(UserStatus.BLOCKED, user.getUserStatus());
     }
 
@@ -69,7 +69,7 @@ public class UserServiceImplTest {
                 .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateUserStatus(user.getId(), UserStatus.DEACTIVATED);
+        userService.updateStatus(user.getId(), UserStatus.DEACTIVATED);
         assertEquals(UserStatus.DEACTIVATED, user.getUserStatus());
     }
 
