@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -198,17 +199,18 @@ public class PlaceServiceImpl implements PlaceService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
     @Override
-    public PlaceInfoDto getAccessById(Long id) {
-        PlaceInfoDto placeInfoDto =
-                modelMapper.map(
-                        placeRepo
-                                .findById(id)
-                                .orElseThrow(
-                                        () ->
-                                                new NotFoundException(
-                                                        ErrorMessage.PLACE_NOT_FOUND_BY_ID + id)),
-                        PlaceInfoDto.class);
+    public PlaceInfoDto getInfoById(Long id) {
+        Place place =
+                placeRepo
+                        .findById(id)
+                        .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+        PlaceInfoDto placeInfoDto = modelMapper.map(place, PlaceInfoDto.class);
         placeInfoDto.setRate(placeRepo.averageRate(id));
         return placeInfoDto;
     }

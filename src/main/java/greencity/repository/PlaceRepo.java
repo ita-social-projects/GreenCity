@@ -29,7 +29,7 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
      * @return average rate
      */
     @Query(value = "select avg(r.rate) FROM Rate r " + "where place_id = :id")
-    Byte averageRate(@Param("id") Long id);
+    double averageRate(@Param("id") Long id);
 
     @Query("from Place p where p.status = :status")
     List<Place> getPlacesByStatus(@Param("status") PlaceStatus status);

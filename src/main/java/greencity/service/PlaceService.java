@@ -58,10 +58,10 @@ public interface PlaceService {
      * Method for getting place information
      *
      * @param id place
-     * @return info about place
+     * @return PlaceInfoDto with info about place
      * @author Dmytro Dovhal
      */
-    PlaceInfoDto getAccessById(Long id);
+    PlaceInfoDto getInfoById(Long id);
 
     /**
      * The method which return a list {@code PlaceByBoundsDto} with information about place, *

@@ -50,6 +50,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/place/propose/**")
                 .hasAnyRole("USER", "ADMIN", "MODERATOR")
+                .antMatchers("/place/getInfo/{id}/**")
+                .permitAll()
                 .anyRequest()
                 .hasAnyRole("ADMIN")
                 .and()
