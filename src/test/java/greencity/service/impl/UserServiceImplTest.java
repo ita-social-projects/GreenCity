@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -18,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,6 +29,9 @@ public class UserServiceImplTest {
 
     @Mock
     UserRepo userRepo;
+
+    @Mock
+    ModelMapper modelMapper;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -45,14 +51,17 @@ public class UserServiceImplTest {
                 .lastName("test")
                 .email("test@gmail.com")
                 .role(ROLE.ROLE_USER)
-                .userStatus(UserStatus.BLOCKED)
+                .userStatus(UserStatus.ACTIVATED)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
+         UserStatusDto userStatusDto = new UserStatusDto(user.getId(), UserStatus.BLOCKED);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateStatus(user.getId(), UserStatus.BLOCKED);
-        assertEquals(UserStatus.BLOCKED, user.getUserStatus());
+        when(modelMapper.map(any(), any())).thenReturn(userStatusDto);
+        assertEquals(
+            UserStatus.BLOCKED,
+            userService.updateStatus(user.getId(), UserStatus.BLOCKED).getUserStatus());
     }
 
     @Test
@@ -63,14 +72,17 @@ public class UserServiceImplTest {
                 .lastName("test")
                 .email("test@gmail.com")
                 .role(ROLE.ROLE_USER)
-                .userStatus(UserStatus.DEACTIVATED)
+                .userStatus(UserStatus.ACTIVATED)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
+        UserStatusDto userStatusDto = new UserStatusDto(user.getId(), UserStatus.DEACTIVATED);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateStatus(user.getId(), UserStatus.DEACTIVATED);
-        assertEquals(UserStatus.DEACTIVATED, user.getUserStatus());
+        when(modelMapper.map(any(), any())).thenReturn(userStatusDto);
+        assertEquals(
+            UserStatus.DEACTIVATED,
+            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED).getUserStatus());
     }
 
     @Test
@@ -84,10 +96,13 @@ public class UserServiceImplTest {
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
+        UserRoleDto userRoleDto = new UserRoleDto(user.getId(), ROLE.ROLE_MODERATOR);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR);
-        assertEquals(ROLE.ROLE_MODERATOR, user.getRole());
+        when(modelMapper.map(any(), any())).thenReturn(userRoleDto);
+        assertEquals(
+            ROLE.ROLE_MODERATOR,
+            userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR).getRole());
     }
 
     @Test
