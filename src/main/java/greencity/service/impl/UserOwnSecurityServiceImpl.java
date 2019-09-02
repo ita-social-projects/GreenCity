@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import java.time.LocalDateTime;
 
+import greencity.dto.user_own_security.AccessTokenDto;
 import greencity.dto.user_own_security.UserRegisterDto;
 import greencity.dto.user_own_security.UserSignInDto;
 import greencity.dto.user_own_security.UserSuccessSignInDto;
@@ -117,7 +118,6 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     /** {@inheritDoc} */
     @Override
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
-        // This method will be change when we will add security
         log.info("begin");
         manager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
@@ -125,17 +125,18 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
         log.info("end");
-        return new UserSuccessSignInDto(accessToken, refreshToken);
+        return new UserSuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName());
     }
 
     /** {@inheritDoc} */
     @Override
-    public String updateAccessToken(String refreshToken) {
+    public AccessTokenDto updateAccessToken(String refreshToken) {
         if (jwtTokenTool.isTokenValid(refreshToken)) {
             String email = jwtTokenTool.getEmailByToken(refreshToken);
             User user = userService.findByEmail(email);
             if (user != null) {
-                return jwtTokenTool.createAccessToken(user.getEmail(), user.getRole());
+                return new AccessTokenDto(
+                        jwtTokenTool.createAccessToken(user.getEmail(), user.getRole()));
             }
         }
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);

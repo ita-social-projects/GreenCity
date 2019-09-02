@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.user_own_security.AccessTokenDto;
 import greencity.dto.user_own_security.UserRegisterDto;
 import greencity.dto.user_own_security.UserSignInDto;
 import greencity.dto.user_own_security.UserSuccessSignInDto;
@@ -42,7 +43,7 @@ public interface UserOwnSecurityService {
      * Method that update your access token by refresh token.
      *
      * @param refreshToken a value of {@link String}
-     * @return {@link String} this is new access token
+     * @return {@link AccessTokenDto} this is DTO with new access token
      */
-    String updateAccessToken(String refreshToken);
+    AccessTokenDto updateAccessToken(String refreshToken);
 }

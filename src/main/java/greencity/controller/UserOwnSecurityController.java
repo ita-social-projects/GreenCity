@@ -80,10 +80,10 @@ public class UserOwnSecurityController {
      * Method for refresh access token.
      *
      * @param refreshToken - {@link String} this is refresh token.
-     * @return {@link String} - new access token.
+     * @return {@link ResponseEntity} - with new access token.
      */
     @PostMapping("/updateAccessToken")
-    public String updateAccessToken(@RequestBody @NotBlank String refreshToken) {
-        return service.updateAccessToken(refreshToken);
+    public ResponseEntity updateAccessToken(@RequestBody @NotBlank String refreshToken) {
+        return ResponseEntity.ok().body(service.updateAccessToken(refreshToken));
     }
 }
