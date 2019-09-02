@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
@@ -29,9 +30,6 @@ public class UserServiceImplTest {
 
     @Mock
     UserRepo userRepo;
-
-    @Mock
-    ModelMapper modelMapper;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -55,10 +53,9 @@ public class UserServiceImplTest {
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
-         UserStatusDto userStatusDto = new UserStatusDto(user.getId(), UserStatus.BLOCKED);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        when(modelMapper.map(any(), any())).thenReturn(userStatusDto);
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             UserStatus.BLOCKED,
             userService.updateStatus(user.getId(), UserStatus.BLOCKED).getUserStatus());
@@ -76,10 +73,9 @@ public class UserServiceImplTest {
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
-        UserStatusDto userStatusDto = new UserStatusDto(user.getId(), UserStatus.DEACTIVATED);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        when(modelMapper.map(any(), any())).thenReturn(userStatusDto);
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             UserStatus.DEACTIVATED,
             userService.updateStatus(user.getId(), UserStatus.DEACTIVATED).getUserStatus());
@@ -96,10 +92,9 @@ public class UserServiceImplTest {
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
-        UserRoleDto userRoleDto = new UserRoleDto(user.getId(), ROLE.ROLE_MODERATOR);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        when(modelMapper.map(any(), any())).thenReturn(userRoleDto);
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             ROLE.ROLE_MODERATOR,
             userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR).getRole());
