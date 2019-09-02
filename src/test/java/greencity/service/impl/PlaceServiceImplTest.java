@@ -8,7 +8,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import greencity.dto.location.MapBoundsDto;
+import greencity.GreenCityApplication;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.Category;
@@ -20,6 +22,7 @@ import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
+import greencity.service.*;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
@@ -38,6 +41,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 @Slf4j
 @RunWith(MockitoJUnitRunner.class)
@@ -168,19 +175,19 @@ public class PlaceServiceImplTest {
     public void findPlacesByMapsBoundsTest() {
         MapBoundsDto mapBoundsDto = new MapBoundsDto(20.0, 60.0, 60.0, 10.0);
         List<Place> placeExpected =
-                new ArrayList<Place>() {
-                    {
-                        add(Place.builder().name("MyPlace").id(1L).build());
-                    }
-                };
+            new ArrayList<Place>() {
+                {
+                    add(Place.builder().name("MyPlace").id(1L).build());
+                }
+            };
         when(placeRepo.findPlacesByMapsBounds(
-                        mapBoundsDto.getNorthEastLat(),
-                        mapBoundsDto.getNorthEastLng(),
-                        mapBoundsDto.getSouthWestLat(),
-                        mapBoundsDto.getSouthWestLng()))
-                .thenReturn(placeExpected);
+            mapBoundsDto.getNorthEastLat(),
+            mapBoundsDto.getNorthEastLng(),
+            mapBoundsDto.getSouthWestLat(),
+            mapBoundsDto.getSouthWestLng()))
+            .thenReturn(placeExpected);
         assertEquals(
-                placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
+            placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
 
     @Test

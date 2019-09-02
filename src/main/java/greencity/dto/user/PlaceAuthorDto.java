@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PlaceAuthorDto {
-
     private Long id;
     private String firstName;
     private String lastName;

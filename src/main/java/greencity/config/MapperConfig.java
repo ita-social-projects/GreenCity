@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MapperConfig {
-
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
      * properties to be strictly matched to destination properties. Sets matching fields to be
@@ -20,11 +19,11 @@ public class MapperConfig {
     public ModelMapper getModelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper
-                .getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.STRICT)
-                .setFieldMatchingEnabled(true)
-                .setSkipNullEnabled(true)
-                .setFieldAccessLevel(AccessLevel.PRIVATE);
+            .getConfiguration()
+            .setMatchingStrategy(MatchingStrategies.STRICT)
+            .setFieldMatchingEnabled(true)
+            .setSkipNullEnabled(true)
+            .setFieldAccessLevel(AccessLevel.PRIVATE);
         return modelMapper;
     }
 }

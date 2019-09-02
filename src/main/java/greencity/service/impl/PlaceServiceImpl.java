@@ -3,14 +3,7 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.category.CategoryDto;
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.user.UserForListDto;
-import greencity.entity.*;
 import greencity.dto.place.*;
 import greencity.entity.Category;
 import greencity.entity.Location;
@@ -22,12 +15,8 @@ import greencity.exception.PlaceStatusException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
-
-import greencity.service.CategoryService;
-import greencity.service.LocationService;
-import greencity.service.OpenHoursService;
-import greencity.service.PlaceService;
 import greencity.util.DateTimeService;
+import io.jsonwebtoken.lang.Assert;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -38,16 +27,21 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** The class provides implementation of the {@code PlaceService}. */
+/**
+ * The class provides implementation of the {@code PlaceService}.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
-
-    /** Autowired repository. */
+    /**
+     * Autowired repository.
+     */
     private PlaceRepo placeRepo;
 
-    /** Autowired mapper. */
+    /**
+     * Autowired mapper.
+     */
     private ModelMapper modelMapper;
 
     private CategoryService categoryService;
@@ -69,8 +63,8 @@ public class PlaceServiceImpl implements PlaceService {
     public List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus) {
         List<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus);
         return places.stream()
-                .map(place -> modelMapper.map(place, AdminPlaceDto.class))
-                .collect(Collectors.toList());
+            .map(place -> modelMapper.map(place, AdminPlaceDto.class))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -103,10 +97,10 @@ public class PlaceServiceImpl implements PlaceService {
         log.info("in setPlaceToOpeningHours(Place place) - {}", place.getName());
         List<OpeningHours> hours = place.getOpeningHoursList();
         hours.forEach(
-                h -> {
-                    h.setPlace(place);
-                    openingHoursService.save(h);
-                });
+            h -> {
+                h.setPlace(place);
+                openingHoursService.save(h);
+            });
     }
 
     /**
@@ -172,11 +166,12 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
+        Assert.notNull(updatable.getStatus(), ErrorMessage.PLACE_STATUS_IS_NULL);
 
         if (updatable.getStatus().equals(status)) {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
             throw new PlaceStatusException(
-                    ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
+                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         } else {
             updatable.setStatus(status);
             updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
@@ -195,8 +190,8 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return placeRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -228,13 +223,23 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
         List<Place> list =
-                placeRepo.findPlacesByMapsBounds(
-                        mapBoundsDto.getNorthEastLat(),
-                        mapBoundsDto.getNorthEastLng(),
-                        mapBoundsDto.getSouthWestLat(),
-                        mapBoundsDto.getSouthWestLng());
+            placeRepo.findPlacesByMapsBounds(
+                mapBoundsDto.getNorthEastLat(),
+                mapBoundsDto.getNorthEastLng(),
+                mapBoundsDto.getSouthWestLat(),
+                mapBoundsDto.getSouthWestLng());
         return list.stream()
-                .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
-                .collect(Collectors.toList());
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
+     */
+    @Override
+    public boolean existsById(Long id) {
+        return placeRepo.existsById(id);
     }
 }
