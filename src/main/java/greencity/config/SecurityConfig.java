@@ -1,12 +1,10 @@
 package greencity.config;
 
+import greencity.security.JwtTokenTool;
 import java.util.Arrays;
 import java.util.Collections;
-
-import greencity.security.JwtTokenTool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -21,13 +19,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
     private JwtTokenTool tool;
 
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     public SecurityConfig(JwtTokenTool tool) {
         this.tool = tool;
     }
 
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -42,33 +45,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
-                .and()
-                .csrf()
-                .disable()
-                .authorizeRequests()
-                .antMatchers("/ownSecurity/**")
-                .permitAll()
-                .antMatchers("/place/propose/**")
-                .hasAnyRole("USER", "ADMIN", "MODERATOR")
-                .anyRequest()
-                .hasAnyRole("ADMIN")
-                .and()
-                .apply(new JwtConfig(tool));
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("*"));
-        configuration.setAllowedMethods(
-                Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
-        configuration.setAllowedHeaders(
-                Arrays.asList(
-                        "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+            .and()
+            .csrf()
+            .disable()
+            .authorizeRequests()
+            .antMatchers("/ownSecurity/**")
+            .permitAll()
+            .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
+            .permitAll()
+            .antMatchers("/place/propose/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/place/{status}")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/place/status**")
+            .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers("/favoritePlace/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/place/save/favoritePlace")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/user/role/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .anyRequest()
+            .hasAnyRole("ADMIN")
+            .and()
+            .apply(new JwtConfig(tool));
     }
 
     @Override
@@ -78,5 +78,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/swagger-ui.html");
         web.ignoring().antMatchers("/swagger-resources/**");
         web.ignoring().antMatchers("/webjars/**");
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
+        configuration.setAllowedMethods(
+            Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
+        configuration.setAllowedHeaders(
+            Arrays.asList(
+                "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

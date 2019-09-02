@@ -6,17 +6,28 @@
 <!--
     Checkstyle configuration that checks the Google coding conventions from Google Java Style
     that can be found at https://google.github.io/styleguide/javaguide.html
-
     Checkstyle is very configurable. Be sure to read the documentation at
     http://checkstyle.sf.net (or in your downloaded distribution).
-
     To completely disable a check, just comment it out or delete it from the file.
-
     Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
 
-    The only difference from google_checks is a identity size, here it's 4.
-    Length of abbreviation - 100.
-    AvoidStarImport disabled.
+    Edited
+    * <property name="basicOffset" value="2"/> -> <property name="basicOffset" value="4"/>
+    * add to avoid empty lines in start and end of block
+    <module name="RegexpMultiline">
+        <property name="message" value="Blank line at start of block should be removed"/>
+        <property name="format" value="(?&lt;=\{\s{0,99}$)^$"/>
+        <property name="fileExtensions" value="groovy,java"/>
+    </module>
+    <module name="RegexpMultiline">
+        <property name="message" value="Blank line at end of block should be removed"/>
+        <property name="format" value="(?&lt;!\{\s{0,99}$)^$(?=^\s{0,99}\})"/>
+        <property name="fileExtensions" value="groovy,java"/>
+    </module>
+    * delete module - <module name="AvoidStarImport"/>
+    * <property name="max" value="100"/> -> <property name="max" value="120"/>
+    * add "public static final" - application constants to LineLength ignorePattern
+    * <property name="allowedAbbreviationLength" value="1"/> -> <property name="allowedAbbreviationLength" value="5"/>
  -->
 
 <module name="Checker">
@@ -36,6 +47,18 @@
         <property name="eachLine" value="true"/>
     </module>
 
+    <module name="RegexpMultiline">
+        <property name="message" value="Blank line at start of block should be removed"/>
+        <property name="format" value="(?&lt;=\{\s{0,99}$)^$"/>
+        <property name="fileExtensions" value="groovy,java"/>
+    </module>
+
+    <module name="RegexpMultiline">
+        <property name="message" value="Blank line at end of block should be removed"/>
+        <property name="format" value="(?&lt;!\{\s{0,99}$)^$(?=^\s{0,99}\})"/>
+        <property name="fileExtensions" value="groovy,java"/>
+    </module>
+
     <module name="TreeWalker">
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
@@ -51,10 +74,9 @@
             <property name="allowNonPrintableEscapes" value="true"/>
         </module>
         <module name="LineLength">
-            <property name="max" value="100"/>
-            <property name="ignorePattern" value="^package.*|a href|href|http://|https://|ftp://"/>
+            <property name="max" value="120"/>
+            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|public static final"/>
         </module>
-        <!--        <module name="AvoidStarImport"/>-->
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap"/>
         <module name="EmptyBlock">
@@ -189,14 +211,14 @@
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
             <property name="braceAdjustment" value="0"/>
-            <property name="caseIndent" value="4"/>
-            <property name="throwsIndent" value="2"/>
+            <property name="caseIndent" value="2"/>
+            <property name="throwsIndent" value="4"/>
             <property name="lineWrappingIndentation" value="4"/>
-            <property name="arrayInitIndent" value="4"/>
+            <property name="arrayInitIndent" value="2"/>
         </module>
         <module name="AbbreviationAsWordInName">
             <property name="ignoreFinal" value="false"/>
-            <property name="allowedAbbreviationLength" value="100"/>
+            <property name="allowedAbbreviationLength" value="5"/>
         </module>
         <module name="OverloadMethodsDeclarationOrder"/>
         <module name="VariableDeclarationUsageDistance"/>
@@ -248,11 +270,6 @@
             <property name="allowedAnnotations" value="Override, Test"/>
             <property name="allowThrowsTagsForSubclasses" value="true"/>
         </module>
-        <!--<module name="MissingJavadocMethod">-->
-        <!--<property name="scope" value="public"/>-->
-        <!--<property name="minLineCount" value="2"/>-->
-        <!--<property name="allowedAnnotations" value="Override, Test"/>-->
-        <!--</module>-->
         <module name="MethodName">
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
             <message key="name.invalidPattern"
