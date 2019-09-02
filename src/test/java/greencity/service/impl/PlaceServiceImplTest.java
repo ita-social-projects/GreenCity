@@ -30,10 +30,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -131,6 +133,7 @@ public class PlaceServiceImplTest {
 
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
+        ReflectionTestUtils.setField(placeService, "modelMapper", new ModelMapper());
 
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
 

@@ -43,18 +43,4 @@ public class UserController {
     public ResponseEntity<?> getAllUsers(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
-
-    /**
-     * The method which return the role of user who sends request.
-     *
-     * @param principal - principal of user.
-     * @return role of user.
-     * @author Nazar Vladyka
-     */
-    @GetMapping("/role")
-    public ResponseEntity getRole(Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(principal != null
-            ? userService.getRole(principal.getName())
-            : "\"UNREGISTERED\"");
-    }
 }

@@ -16,7 +16,6 @@ import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
-import io.jsonwebtoken.lang.Assert;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
