@@ -5,8 +5,7 @@ import greencity.constant.AppConstant;
 import greencity.entity.enums.PlaceStatus;
 import greencity.util.DateTimeService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.persistence.*;
 import lombok.*;
 
@@ -43,7 +42,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
 
-    @OneToOne(mappedBy = "place")
+    @OneToOne(mappedBy = "place", cascade = {CascadeType.ALL})
     private Location location;
 
     @OneToMany(mappedBy = "place")
@@ -61,7 +60,6 @@ public class Place {
     @OneToMany(mappedBy = "place")
     @JsonManagedReference
     private List<OpeningHours> openingHoursList = new ArrayList<>();
-
 
     @ManyToOne
     private User author;

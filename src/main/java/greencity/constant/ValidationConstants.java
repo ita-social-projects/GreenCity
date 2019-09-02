@@ -20,9 +20,6 @@ public class ValidationConstants {
     public static final int PLACE_NAME_MAX_LENGTH = 30;
     public static final int PLACE_ADDRESS_MAX_LENGTH = 60;
     public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
-    public static final String LOCATION_ADDRESS_BAD_FORMED = "Bad formed address: ${validatedValue}";
-    public static final String LOCATION_LATITUDE_BAD_FORMED = "Bad formed latitude: ${validatedValue}";
-    public static final String LOCATION_LONGITUDE_BAD_FORMED = "Bad formed longitude: ${validatedValue}";
 
     public static final String CATEGORY_NAME_BAD_FORMED = "Bad formed category name: ${validatedValue}";
     public static final int CATEGORY_NAME_MAX_LENGTH = 30;

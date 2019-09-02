@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -45,6 +46,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Generated javadoc, must be replaced with real one.
      */
+    @ExceptionHandler(BadPlaceRequestException.class)
+    public final ResponseEntity handle(BadPlaceRequestException e, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     @ExceptionHandler(BadRefreshTokenException.class)
     public final ResponseEntity<?> handle(BadRefreshTokenException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
@@ -66,8 +77,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Generated javadoc, must be replaced with real one.
      */
-    @ExceptionHandler(BadPlaceRequestException.class)
-    public final ResponseEntity handle(BadPlaceRequestException e, WebRequest request) {
+    @ExceptionHandler(BadCategoryRequestException.class)
+    public final ResponseEntity handle(BadCategoryRequestException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -76,8 +87,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Generated javadoc, must be replaced with real one.
      */
-    @ExceptionHandler(BadCategoryRequestException.class)
-    public final ResponseEntity handle(BadCategoryRequestException e, WebRequest request) {
+    @ExceptionHandler(BadLocationRequestException.class)
+    public final ResponseEntity handle(BadLocationRequestException e, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

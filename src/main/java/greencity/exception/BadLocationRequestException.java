@@ -1,18 +1,18 @@
 package greencity.exception;
 
 /**
- * Exception that we get when user trying to save place with bad parameters.
+ * Exception that we get when user trying to save place with same coordinates.
  *
  * @author Kateryna Horokh
  * @version 1.0
  */
-public class BadPlaceRequestException extends RuntimeException {
+public class BadLocationRequestException extends RuntimeException {
     /**
      * Constructor for BadPlaceRequestException.
      *
      * @param message - giving message.
      */
-    public BadPlaceRequestException(String message) {
+    public BadLocationRequestException(String message) {
         super(message);
     }
 }

@@ -10,6 +10,8 @@ import greencity.entity.Location;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
+import greencity.exception.BadLocationRequestException;
+import greencity.exception.CheckRepeatingValueException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.PlaceAddDtoMapper;
@@ -17,14 +19,17 @@ import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
 import io.jsonwebtoken.lang.Assert;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -33,14 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
-    /**
-     * Autowired repository.
-     */
     private PlaceRepo placeRepo;
 
-    /**
-     * Autowired mapper.
-     */
     private ModelMapper modelMapper;
 
     private CategoryService categoryService;
@@ -74,7 +73,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public Place save(PlaceAddDto dto, String email) {
-        log.info("in save(PlaceAddDto dto), save place - {}", dto.getName());
+        log.info(LogMessage.IN_SAVE, dto.getName());
         Category category = createCategoryByName(dto.getCategory().getName());
         Place place = placeAddDtoMapper.convertToEntity(dto);
         place.setAuthor(userService.findByEmail(email));
@@ -93,13 +92,34 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private void setPlaceToOpeningHours(Place place) {
-        log.info("in setPlaceToOpeningHours(Place place) - {}", place.getName());
+        log.info(LogMessage.SET_PLACE_TO_OPENING_HOURS, place.getName());
+
         List<OpeningHours> hours = place.getOpeningHoursList();
-        hours.stream().distinct().forEach(
+        checkRepeatingValue(hours);
+        hours.stream()
+            .distinct()
+            .forEach(
                 h -> {
                     h.setPlace(place);
                     openingHoursService.save(h);
                 });
+    }
+
+    /**
+     * Method for checking list of giving {@code OpeningHours} on repeating value of week days.
+     *
+     * @param hours - list of {@link OpeningHours} entity.
+     * @author Kateryna Horokh
+     */
+    private void checkRepeatingValue(List<OpeningHours> hours) {
+        log.info(LogMessage.CHECK_REPEATING_VALUE);
+        for (int i = 0; i < hours.size(); i++) {
+            for (int j = i + 1; j < hours.size(); j++) {
+                if (hours.get(i).getWeekDay() == (hours.get(j).getWeekDay())) {
+                    throw new CheckRepeatingValueException(ErrorMessage.REPEATING_VALUE_OF_WEEKDAY_VALUE);
+                }
+            }
+        }
     }
 
     /**
@@ -109,10 +129,19 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private void setPlaceToLocation(Place place) {
-        log.info("in setPlaceToLocation(Place place)", place.getName());
-        Location location = place.getLocation();
-        location.setPlace(place);
-        locationService.save(location);
+        log.info(LogMessage.SET_PLACE_TO_LOCATION, place.getName());
+
+        Location location =
+            locationService.findByLatAndLng(
+                place.getLocation().getLat(), place.getLocation().getLng());
+        if (location == null) {
+            location = place.getLocation();
+            location.setPlace(place);
+            locationService.save(location);
+        } else {
+            throw new BadLocationRequestException(
+                ErrorMessage.LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES);
+        }
     }
 
     /**
@@ -123,7 +152,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private Category createCategoryByName(String name) {
-        log.info("in setPlaceToLocation(Place place)", name);
+        log.info(LogMessage.CREATE_CATEGORY_BY_NAME, name);
 
         Category category = categoryService.findByName(name);
         if (category == null) {
@@ -139,19 +168,19 @@ public class PlaceServiceImpl implements PlaceService {
      *
      * @param id - Long place's id
      * @return boolean
+     * @author Kateryn Horokh
      */
     @Override
     public Boolean deleteById(Long id) {
-        log.info("In deleteById() place method.");
+        log.info(LogMessage.IN_DELETE_BY_ID);
         Place place = findById(id);
         placeRepo.delete(place);
-        log.info("This place was deleted.");
         return true;
     }
 
     @Override
     public List<Place> findAll() {
-        log.info("In findAll() place method.");
+        log.info(LogMessage.IN_FIND_ALL);
         return placeRepo.findAll();
     }
 
@@ -206,11 +235,6 @@ public class PlaceServiceImpl implements PlaceService {
                 PlaceInfoDto.class);
         placeInfoDto.setRate(placeRepo.averageRate(id));
         return placeInfoDto;
-    }
-
-    @Override
-    public Place update(Place place) {
-        return null;
     }
 
     /**

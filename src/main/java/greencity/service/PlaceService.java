@@ -48,11 +48,6 @@ public interface PlaceService {
     /**
      * Generated javadoc, must be replaced with real one.
      */
-    Place update(Place place);
-
-    /**
-     * Generated javadoc, must be replaced with real one.
-     */
     List<Place> findAll();
 
     /**

@@ -9,4 +9,8 @@ public class LogMessage {
     public static final String IN_DELETE_BY_ID = "in deleteById(), id: {}";
     public static final String IN_UPDATE_PLACE_STATUS = "in updateStatus(), place id: {} and status: {}";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "the place with id: {} already has status: {}";
+    public static final String SET_PLACE_TO_OPENING_HOURS = "in setPlaceToOpeningHours(Place place) - {}";
+    public static final String CHECK_REPEATING_VALUE = "in checkRepeatingValue() - {}";
+    public static final String SET_PLACE_TO_LOCATION = "in setPlaceToLocation(Place place) - {}";
+    public static final String CREATE_CATEGORY_BY_NAME = "in createCategoryByName(String name) - {}";
 }

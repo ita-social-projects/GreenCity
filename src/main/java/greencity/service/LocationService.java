@@ -45,4 +45,14 @@ public interface LocationService {
      * @return saved Location.
      */
     Location save(Location location);
+
+    /**
+     * The method which return a {@code Location} depends on the map position.
+     *
+     * @param lat latitude of point of the map
+     * @param lng longitude of point of the map
+     * @return a {@code Location}
+     * @author Kateryna Horokh.
+     */
+    Location findByLatAndLng(Double lat, Double lng);
 }

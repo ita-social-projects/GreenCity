@@ -3,119 +3,190 @@ package greencity.service.impl;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
+
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.MapBoundsDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
-import greencity.entity.Category;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.userownsecurity.UserRegisterDto;
+import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
+import greencity.entity.enums.ROLE;
+import greencity.exception.BadLocationRequestException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
+
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
+import org.powermock.api.mockito.PowerMockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @Slf4j
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class PlaceServiceImplTest {
-    @MockBean
+    Category category = Category.builder()
+        .name("test").build();
+
+    CategoryDto categoryDto = CategoryDto.builder()
+        .name("test")
+        .build();
+
+    User user =
+        User.builder()
+            .email("Nazar.stasyuk@gmail.com")
+            .firstName("Nazar")
+            .lastName("Stasyuk")
+            .role(ROLE.ROLE_USER)
+            .lastVisit(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .build();
+    UserRegisterDto dto =
+        UserRegisterDto.builder()
+            .email(user.getEmail())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .password("123123123")
+            .build();
+
+
+    OpeningHoursDto openingHoursDto1 = OpeningHoursDto.builder()
+        .openTime(LocalTime.parse("10:30"))
+        .closeTime(LocalTime.parse("20:30"))
+        .weekDay(DayOfWeek.TUESDAY)
+        .build();
+    OpeningHoursDto openingHoursDto2 = OpeningHoursDto.builder()
+        .openTime(LocalTime.parse("10:30"))
+        .closeTime(LocalTime.parse("20:30"))
+        .weekDay(DayOfWeek.MONDAY)
+        .build();
+
+
+    LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
+        .address("test")
+        .lat(45.456)
+        .lng(46.456)
+        .build();
+
+    Place place = Place.builder()
+        .id(1L)
+        .name("Test")
+        .category(category)
+        .author(user)
+        .build();
+
+    List<OpeningHoursDto> openingHoursDtoList = Arrays.asList(openingHoursDto1, openingHoursDto2);
+
+    PlaceAddDto placeAddDto = PlaceAddDto.
+        builder()
+        .name(place.getName())
+        .category(categoryDto)
+        .location(locationDto)
+        .openingHoursList(openingHoursDtoList)
+        .build();
+
+    Location location = Location.builder()
+        .id(1L)
+        .address("test address")
+        .lat(45.456)
+        .lng(46.456)
+        .place(place)
+        .build();
+
+    OpeningHours openingHours = OpeningHours.builder()
+        .id(1L)
+        .openTime(LocalTime.parse("10:30"))
+        .closeTime(LocalTime.parse("20:30"))
+        .weekDay(DayOfWeek.MONDAY)
+        .place(place)
+        .build();
+
+    String email;
+
+    @Mock
     private PlaceRepo placeRepo;
 
-    @MockBean
+    @Mock
     private CategoryService categoryService;
 
-    @MockBean
-    private LocationService locationService;
+    @Mock
+    private LocationServiceImpl locationService;
 
-    @MockBean
-    private OpenHoursService openHoursService;
+    @Mock
+    private OpenHoursService openingHoursService;
 
-    @MockBean
+    @Mock
     private PlaceAddDtoMapper placeAddDtoMapper;
 
-    @MockBean
+
+    private ModelMapper modelMapper;
+
+    @Mock
     private UserService userService;
 
-    @Autowired
-    private PlaceService placeService;
+    @InjectMocks
+    private PlaceServiceImpl placeService;
+
+    @Before
+    public void init(){
+        placeService = new PlaceServiceImpl(placeRepo,modelMapper, categoryService,
+            locationService, openingHoursService, placeAddDtoMapper, userService);
+    }
 
     @Test
     public void save() {
-        Category category = setCategoryToPlaceTest();
-
-        Place place = new Place();
-        place.setName("test");
-        place.setCategory(category);
-        Place expectedPlace = new Place();
-        place.setId(1L);
-        place.setName("test");
-        place.setCategory(category);
-        when(placeRepo.save(place)).thenReturn(expectedPlace);
-
-        setPlaceToLocalionTest(expectedPlace);
-        setPlaceToOpeningHoursTest(expectedPlace);
+        when(placeAddDtoMapper.convertToEntity(placeAddDto)).thenReturn(place);
+        when(placeRepo.save(place)).thenReturn(place);
     }
 
-    private Category setCategoryToPlaceTest() {
-        Category category = new Category();
-        category.setName("cafe");
-        category.setId(1L);
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setName("cafe");
-        categoryService.save(categoryDto);
-        when(categoryService.findByName("cafe")).thenReturn(category);
-        return category;
+    @Test
+    public void createCategoryByNameTest() throws Exception {
+        category = new Category();
+        PowerMockito.when(placeService, "createCategoryByName", ArgumentMatchers.any()).thenReturn(category);
     }
 
-    private void setPlaceToOpeningHoursTest(Place expectedPlace) {
-        OpeningHours openingHours = new OpeningHours();
-        openingHours.setOpenTime(LocalTime.parse("10:30"));
-        openingHours.setOpenTime(LocalTime.parse("20:30"));
-        openingHours.setPlace(expectedPlace);
-        OpeningHours expectedOpeningHours = new OpeningHours();
-        openingHours.setId(1L);
-        openingHours.setOpenTime(LocalTime.parse("10:30"));
-        openingHours.setOpenTime(LocalTime.parse("20:30"));
-        openingHours.setPlace(expectedPlace);
-        when(openHoursService.save(openingHours)).thenReturn(expectedOpeningHours);
+    @Test
+    public void setPlaceToLocationTest() throws Exception {
+//        when(locationService.findByLatAndLng(anyDouble(), anyDouble())).thenReturn(location);
+//        when(locationService.findByLatAndLng(45.45, 45.456)).thenReturn(null);
+//        when(locationService.save(location)).thenThrow(BadLocationRequestException.class);
+//        PlaceServiceImpl placeServiceSpy = PowerMockito.spy(placeService);
+//        PowerMockito.when(placeService, "setPlaceToLocation", ArgumentMatchers.any()).thenReturn();
+//        Deencapsulation.invoke(placeService, "methodName", place);
+
+
     }
 
-    private void setPlaceToLocalionTest(Place expectedPlace) {
-        Location location = new Location();
-        location.setAddress("test address");
-        location.setLat(45.456);
-        location.setLng(46.456);
-        location.setPlace(expectedPlace);
-        locationService.save(location);
-        Location expectedLocation = new Location();
-        expectedLocation.setId(1L);
-        location.setAddress("test address");
-        location.setLat(45.456);
-        location.setLng(46.456);
-        location.setPlace(expectedPlace);
-        when(locationService.findById(1L)).thenReturn(expectedLocation);
-    }
+//    @Test
+//    public void setPlaceToOpeningHours() {
+//
+//    }
 
     @Test
     public void deleteByIdTest() {
