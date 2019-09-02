@@ -17,6 +17,5 @@ public class JwtFilterTest {
 
     @Test
     public void doFilter() {
-
     }
 }
