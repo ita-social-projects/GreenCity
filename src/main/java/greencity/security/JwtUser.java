@@ -19,6 +19,11 @@ public class JwtUser implements UserDetails {
 
     private User user;
 
+    /**
+     * Constructor.
+     *
+     * @param user {@link User}
+     */
     public JwtUser(User user) {
         this.user = user;
     }
