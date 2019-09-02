@@ -6,14 +6,16 @@ import greencity.entity.enums.WeekDay;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalTime;
 import javax.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class OpeningHoursDto {
-
     @NotNull(message = ValidationConstants.EMPTY_OPEN_TIME_VALUE)
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
     @ApiModelProperty(dataType = "java.lang.String")
@@ -26,5 +28,4 @@ public class OpeningHoursDto {
 
     @NotNull(message = ValidationConstants.EMPTY_WEEK_DAY_VALUE)
     private WeekDay weekDay;
-
 }

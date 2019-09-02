@@ -1,6 +1,8 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
 import greencity.entity.User;
@@ -10,10 +12,8 @@ import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class UserServiceImplTest {
-
     @MockBean
     UserRepo userRepo;
 
@@ -37,15 +33,15 @@ public class UserServiceImplTest {
     @Test
     public void updateUserStatusBlockedTest() {
         User user =
-                User.builder()
-                        .firstName("test")
-                        .lastName("test")
-                        .email("test@gmail.com")
-                        .role(ROLE.ROLE_USER)
-                        .userStatus(UserStatus.BLOCKED)
-                        .lastVisit(LocalDateTime.now())
-                        .dateOfRegistration(LocalDateTime.now())
-                        .build();
+            User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@gmail.com")
+                .role(ROLE.ROLE_USER)
+                .userStatus(UserStatus.BLOCKED)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         userService.updateUserStatus(user.getId(), UserStatus.BLOCKED);
@@ -55,15 +51,15 @@ public class UserServiceImplTest {
     @Test
     public void updateUserStatusDeactivatedTest() {
         User user =
-                User.builder()
-                        .firstName("test")
-                        .lastName("test")
-                        .email("test@gmail.com")
-                        .role(ROLE.ROLE_USER)
-                        .userStatus(UserStatus.DEACTIVATED)
-                        .lastVisit(LocalDateTime.now())
-                        .dateOfRegistration(LocalDateTime.now())
-                        .build();
+            User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@gmail.com")
+                .role(ROLE.ROLE_USER)
+                .userStatus(UserStatus.DEACTIVATED)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         userService.updateUserStatus(user.getId(), UserStatus.DEACTIVATED);
@@ -73,14 +69,14 @@ public class UserServiceImplTest {
     @Test
     public void updateRoleTest() {
         User user =
-                User.builder()
-                        .firstName("test")
-                        .lastName("test")
-                        .email("test@gmail.com")
-                        .role(ROLE.ROLE_USER)
-                        .lastVisit(LocalDateTime.now())
-                        .dateOfRegistration(LocalDateTime.now())
-                        .build();
+            User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@gmail.com")
+                .role(ROLE.ROLE_USER)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR);

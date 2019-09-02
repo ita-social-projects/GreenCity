@@ -1,9 +1,8 @@
-package greencity.dto.favoritePlace;
-
-import lombok.Data;
-import org.hibernate.validator.constraints.Length;
+package greencity.dto.favoriteplace;
 
 import javax.validation.constraints.NotBlank;
+import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 public class FavoritePlaceDto {
@@ -11,7 +10,7 @@ public class FavoritePlaceDto {
     @Length(max = 30)
     private String name;
 
-    private Long placeId ;
+    private Long placeId;
 
     private String userEmail;
 }

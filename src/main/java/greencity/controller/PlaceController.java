@@ -1,15 +1,13 @@
 package greencity.controller;
 
-import greencity.dto.favoritePlace.FavoritePlaceDto;
+import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
-
 import java.security.Principal;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,8 +21,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
-
-    /** Autowired PlaceService instance. */
+    /**
+     * Autowired PlaceService instance.
+     */
     private PlaceService placeService;
     private final FavoritePlaceService favoritePlaceService;
 
@@ -39,14 +38,14 @@ public class PlaceController {
      */
     @PostMapping("/propose")
     public ResponseEntity<PlaceWithUserDto> proposePlace(
-            @Valid @RequestBody PlaceAddDto dto, Principal principal) {
+        @Valid @RequestBody PlaceAddDto dto, Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                modelMapper.map(
-                        placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
+            modelMapper.map(
+                placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
     }
 
     /**
-     * Controller to get place info
+     * Controller to get place info.
      *
      * @param id place
      * @return info about place
@@ -55,8 +54,14 @@ public class PlaceController {
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getAccessById(id));
     }
-    @PostMapping("/save/favoritePlace")
-    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto) {
+
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
+    @PostMapping("/save/favorite_place")
+    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
+                                                                 Principal principal) {
+        favoritePlaceDto.setUserEmail(principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.save(favoritePlaceDto));
     }
 
@@ -70,9 +75,9 @@ public class PlaceController {
      */
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
-            @Valid @RequestBody MapBoundsDto mapBoundsDto) {
+        @Valid @RequestBody MapBoundsDto mapBoundsDto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
+            .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
     }
 
     /**
@@ -86,7 +91,7 @@ public class PlaceController {
     public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@PathVariable String status) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(placeService.getPlacesByStatus(placeStatus));
+            .body(placeService.getPlacesByStatus(placeStatus));
     }
 
     /**
@@ -99,6 +104,6 @@ public class PlaceController {
     @PatchMapping("/status")
     public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
+            .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
 }

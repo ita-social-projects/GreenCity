@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminPlaceDto {
-
     private Long id;
     private String name;
     private LocationDto location;
