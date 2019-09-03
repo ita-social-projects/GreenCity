@@ -5,10 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.Category;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
+import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
@@ -16,10 +13,14 @@ import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
+import io.jsonwebtoken.lang.Assert;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -41,15 +42,10 @@ public class PlaceServiceImpl implements PlaceService {
      * Autowired mapper.
      */
     private ModelMapper modelMapper;
-
     private CategoryService categoryService;
-
     private LocationService locationService;
-
     private OpenHoursService openingHoursService;
-
     private PlaceAddDtoMapper placeAddDtoMapper;
-
     private UserService userService;
 
     /**
@@ -188,24 +184,24 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
-
         return placeRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
     @Override
-    public PlaceInfoDto getAccessById(Long id) {
-        PlaceInfoDto placeInfoDto =
-            modelMapper.map(
-                placeRepo
-                    .findById(id)
-                    .orElseThrow(
-                        () ->
-                            new NotFoundException(
-                                ErrorMessage.PLACE_NOT_FOUND_BY_ID + id)),
-                PlaceInfoDto.class);
-        placeInfoDto.setRate(placeRepo.averageRate(id));
+    public PlaceInfoDto getInfoById(Long id) {
+        Place place =
+            placeRepo
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+        PlaceInfoDto placeInfoDto = modelMapper.map(place, PlaceInfoDto.class);
+        placeInfoDto.setRate(placeRepo.getAverageRate(id));
         return placeInfoDto;
     }
 
@@ -239,6 +235,18 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public boolean existsById(Long id) {
+        log.info(LogMessage.IN_EXISTS_BY_ID,id);
         return placeRepo.existsById(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
+     */
+    @Override
+    public Double averageRate(Long id) {
+        log.info(LogMessage.IN_AVERAGE_RATE,id);
+        return placeRepo.getAverageRate(id);
     }
 }
