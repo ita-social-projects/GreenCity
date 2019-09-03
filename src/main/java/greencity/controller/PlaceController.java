@@ -56,11 +56,24 @@ public class PlaceController {
     }
 
     /**
+     * Controller to get favorite place as place info.
+     *
+     * @param id favorite place
+     * @return info about place with name as in favorite place
+     */
+    @GetMapping("/info/favorite")
+    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @RequestParam Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(id));
+    }
+
+    /**
      * Generated javadoc, must be replaced with real one.
      */
-    @PostMapping("/save/favoritePlace")
-    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.save(favoritePlaceDto));
+    @PostMapping("/save/favorite")
+    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
+                                                                Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
+            .save(favoritePlaceDto, principal.getName()));
     }
 
     /**
