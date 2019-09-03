@@ -11,6 +11,4 @@ public class FavoritePlaceDto {
     private String name;
 
     private Long placeId;
-
-    private String userEmail;
 }
