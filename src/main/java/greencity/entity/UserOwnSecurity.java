@@ -1,8 +1,7 @@
 package greencity.entity;
 
-import lombok.*;
-
 import javax.persistence.*;
+import lombok.*;
 
 
 @Entity
@@ -21,5 +20,4 @@ public class UserOwnSecurity {
 
     @OneToOne
     private User user;
-
 }

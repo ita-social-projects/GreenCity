@@ -13,7 +13,6 @@ import greencity.entity.UserOwnSecurity;
  * @version 1.0
  */
 public interface UserOwnSecurityService {
-
     /**
      * Method that allow you sign-up user.
      *
@@ -28,7 +27,9 @@ public interface UserOwnSecurityService {
      */
     void delete(UserOwnSecurity userOwnSecurity);
 
-    /** Method that delete {@link greencity.entity.VerifyEmail} when user not submit email. */
+    /**
+     * Method that delete {@link greencity.entity.VerifyEmail} when user not submit email.
+     */
     void deleteNotActiveEmailUsers();
 
     /**
