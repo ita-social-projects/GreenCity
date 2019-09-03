@@ -176,7 +176,6 @@ public class UserServiceImplTest {
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
         when(userRepo.findAllByOrderByEmail(any())).thenReturn(usersPage);
-        when(userRepo.findAllByOrderByEmail(any())).thenReturn(usersPage);
         assertEquals(userPageableDto, userService.findByPage(any()));
     }
 }
