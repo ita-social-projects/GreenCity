@@ -13,10 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceInfoDto {
+    private Long id;
     private String name;
     private LocationDto location;
     private List<OpenHoursDto> openingHoursList;
     private List<SpecificationValueDto> specificationValues;
     private List<CommentDto> comments;
-    private Byte rate;
+    private Double rate;
 }

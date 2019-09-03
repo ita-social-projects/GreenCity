@@ -58,12 +58,10 @@ public class JwtTokenTool {
     public String createAccessToken(String email, ROLE role) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("roles", Collections.singleton(role.name()));
-
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
         calendar.add(Calendar.MINUTE, accessTokenValidTimeInMinutes);
-
         return Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(now)
@@ -79,12 +77,10 @@ public class JwtTokenTool {
      */
     public String createRefreshToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
-
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
         calendar.add(Calendar.MINUTE, refreshTokenValidTimeInMinutes);
-
         return Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(now)
@@ -118,7 +114,6 @@ public class JwtTokenTool {
      */
     public String getTokenByBody(HttpServletRequest servletRequest) {
         String token = servletRequest.getHeader("Authorization");
-
         if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7);
         }

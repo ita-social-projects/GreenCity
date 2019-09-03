@@ -22,7 +22,9 @@ public class JwtFilter extends GenericFilterBean {
     private JwtTokenTool tool;
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor.
+     *
+     * @param tool {@link JwtTokenTool} - tool for JWT
      */
     public JwtFilter(JwtTokenTool tool) {
         this.tool = tool;

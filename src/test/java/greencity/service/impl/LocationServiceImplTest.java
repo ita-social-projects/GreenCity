@@ -9,25 +9,24 @@ import greencity.GreenCityApplication;
 import greencity.entity.Location;
 import greencity.exception.NotFoundException;
 import greencity.repository.LocationRepo;
-import greencity.service.LocationService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class LocationServiceImplTest {
-    @MockBean
+    @Mock
     private LocationRepo locationRepo;
-    @Autowired
-    private LocationService locationService;
+    @InjectMocks
+    private LocationServiceImpl locationService;
 
     @Test
     public void saveTest() {
@@ -70,17 +69,6 @@ public class LocationServiceImplTest {
     @Test(expected = NotFoundException.class)
     public void updateGivenIdNullThenThrowException() {
         locationService.update(null, new Location());
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void deleteByIdThrowExceptionWhenCallFindById() {
-        Location generic = new Location();
-
-        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(generic));
-        when(locationService.findById(anyLong())).thenThrow(NotFoundException.class);
-
-        locationService.deleteById(1L);
-        locationService.findById(1L);
     }
 
     @Test(expected = NotFoundException.class)
