@@ -45,13 +45,16 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @Slf4j
 @RunWith(MockitoJUnitRunner.Silent.class)
 @SpringBootTest(classes = GreenCityApplication.class)
+@PrepareForTest(PlaceServiceImpl.class)
 public class PlaceServiceImplTest {
     Category category = Category.builder()
+        .id(1L)
         .name("test").build();
 
     CategoryDto categoryDto = CategoryDto.builder()
@@ -75,7 +78,6 @@ public class PlaceServiceImplTest {
             .password("123123123")
             .build();
 
-
     OpeningHoursDto openingHoursDto1 = OpeningHoursDto.builder()
         .openTime(LocalTime.parse("10:30"))
         .closeTime(LocalTime.parse("20:30"))
@@ -86,7 +88,6 @@ public class PlaceServiceImplTest {
         .closeTime(LocalTime.parse("20:30"))
         .weekDay(DayOfWeek.MONDAY)
         .build();
-
 
     LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
         .address("test")
@@ -101,14 +102,14 @@ public class PlaceServiceImplTest {
         .author(user)
         .build();
 
-    List<OpeningHoursDto> openingHoursDtoList = Arrays.asList(openingHoursDto1, openingHoursDto2);
+    List<OpeningHoursDto> openingHoursList = Arrays.asList(openingHoursDto1, openingHoursDto2);
 
     PlaceAddDto placeAddDto = PlaceAddDto.
         builder()
         .name(place.getName())
         .category(categoryDto)
         .location(locationDto)
-        .openingHoursList(openingHoursDtoList)
+        .openingHoursList(openingHoursList)
         .build();
 
     Location location = Location.builder()
@@ -144,7 +145,6 @@ public class PlaceServiceImplTest {
     @Mock
     private PlaceAddDtoMapper placeAddDtoMapper;
 
-
     private ModelMapper modelMapper;
 
     @Mock
@@ -161,8 +161,16 @@ public class PlaceServiceImplTest {
 
     @Test
     public void save() {
+        when(categoryService.findByName(anyString())).thenReturn(any());
+        when(categoryService.save(categoryDto)).thenReturn(category);
         when(placeAddDtoMapper.convertToEntity(placeAddDto)).thenReturn(place);
-        when(placeRepo.save(place)).thenReturn(place);
+        when(placeRepo.save(any())).thenReturn(new Place());
+        when(userService.findByEmail(anyString())).thenReturn(null);
+        when(locationService.findByLatAndLng(anyDouble(), anyDouble())).thenReturn(location);
+        when(locationService.findByLatAndLng(45.45, 45.456)).thenReturn(null);
+        when(locationService.save(location)).thenThrow(BadLocationRequestException.class);
+        when(openingHoursService.save(openingHours)).thenReturn(openingHours);
+
     }
 
     @Test
@@ -170,23 +178,6 @@ public class PlaceServiceImplTest {
         category = new Category();
         PowerMockito.when(placeService, "createCategoryByName", ArgumentMatchers.any()).thenReturn(category);
     }
-
-    @Test
-    public void setPlaceToLocationTest() throws Exception {
-//        when(locationService.findByLatAndLng(anyDouble(), anyDouble())).thenReturn(location);
-//        when(locationService.findByLatAndLng(45.45, 45.456)).thenReturn(null);
-//        when(locationService.save(location)).thenThrow(BadLocationRequestException.class);
-//        PlaceServiceImpl placeServiceSpy = PowerMockito.spy(placeService);
-//        PowerMockito.when(placeService, "setPlaceToLocation", ArgumentMatchers.any()).thenReturn();
-//        Deencapsulation.invoke(placeService, "methodName", place);
-
-
-    }
-
-//    @Test
-//    public void setPlaceToOpeningHours() {
-//
-//    }
 
     @Test
     public void deleteByIdTest() {

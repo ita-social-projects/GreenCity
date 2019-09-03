@@ -44,7 +44,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Set response headers and content to {@code BadPlaceRequestException}.
+     *
+     * @param e - {@code BadPlaceRequestException}, request - {@code WebRequest}
+     * @return {@code ExceptionResponse} with HttpStatus.
+     * @author Kateryna Horokh
      */
     @ExceptionHandler(BadPlaceRequestException.class)
     public final ResponseEntity handle(BadPlaceRequestException e, WebRequest request) {
@@ -75,7 +79,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Set response headers and content to {@code BadCategoryRequestException}.
+     *
+     * @param e - {@code BadCategoryRequestException}, request - {@code WebRequest}
+     * @return {@code ExceptionResponse} with HttpStatus.
+     * @author Kateryna Horokh
      */
     @ExceptionHandler(BadCategoryRequestException.class)
     public final ResponseEntity handle(BadCategoryRequestException e, WebRequest request) {
@@ -85,7 +93,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Set response headers and content to {@code BadLocationRequestException}.
+     *
+     * @param e - {@code BadLocationRequestException}, request - {@code WebRequest}
+     * @return {@code ExceptionResponse} with HttpStatus.
+     * @author Kateryna Horokh
      */
     @ExceptionHandler(BadLocationRequestException.class)
     public final ResponseEntity handle(BadLocationRequestException e, WebRequest request) {

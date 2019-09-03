@@ -73,7 +73,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public Place save(PlaceAddDto dto, String email) {
-        log.info(LogMessage.IN_SAVE, dto.getName());
+        log.info(LogMessage.IN_SAVE);
         Category category = createCategoryByName(dto.getCategory().getName());
         Place place = placeAddDtoMapper.convertToEntity(dto);
         place.setAuthor(userService.findByEmail(email));
