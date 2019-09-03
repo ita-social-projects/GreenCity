@@ -1,8 +1,7 @@
 package greencity.service.impl;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -225,4 +224,25 @@ public class PlaceServiceImplTest {
         assertEquals(
             placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test
+    public  void existsById()
+    {
+        when(placeRepo.existsById(anyLong())).thenReturn(true);
+        assertTrue(placeService.existsById(3L));
+        when(placeRepo.existsById(anyLong())).thenReturn(false);
+        assertFalse(placeService.existsById(2L));
+    }
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test
+    public  void averageRate(){
+          byte averageRate=4;
+        when(placeRepo.averageRate(anyLong())).thenReturn(averageRate);
+        assertEquals(averageRate,placeService.averageRate(2L));
+    }
+
 }

@@ -5,10 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.Category;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
+import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
@@ -41,15 +38,10 @@ public class PlaceServiceImpl implements PlaceService {
      * Autowired mapper.
      */
     private ModelMapper modelMapper;
-
     private CategoryService categoryService;
-
     private LocationService locationService;
-
     private OpenHoursService openingHoursService;
-
     private PlaceAddDtoMapper placeAddDtoMapper;
-
     private UserService userService;
 
     /**
@@ -188,7 +180,6 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
-
         return placeRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
@@ -239,6 +230,18 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public boolean existsById(Long id) {
+        log.info(LogMessage.IN_EXISTS_BY_ID,id);
         return placeRepo.existsById(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
+     */
+    @Override
+    public byte averageRate(Long id) {
+        log.info(LogMessage.IN_AVERAGE_RATE,id);
+        return placeRepo.averageRate(id);
     }
 }
