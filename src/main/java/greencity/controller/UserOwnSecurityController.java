@@ -1,5 +1,7 @@
 package greencity.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
@@ -8,7 +10,9 @@ import greencity.dto.user_own_security.UserSignInDto;
 import greencity.dto.user_own_security.UserSuccessSignInDto;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.VerifyEmailService;
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,9 +75,11 @@ public class UserOwnSecurityController {
      * @return {@link ResponseEntity}
      */
     @GetMapping("/verifyEmail")
-    public ResponseEntity verify(@RequestParam @NotBlank String token) {
+    public ResponseEntity verify(@RequestParam @NotBlank String token) throws URISyntaxException {
         verifyEmailService.verifyByToken(token);
-        return new ResponseEntity<>(HttpStatus.OK);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setLocation(new URI(clientAddress));
+        return new ResponseEntity(responseHeaders, HttpStatus.SEE_OTHER);
     }
 
     /**

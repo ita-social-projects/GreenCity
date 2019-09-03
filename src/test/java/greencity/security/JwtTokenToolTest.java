@@ -29,7 +29,7 @@ public class JwtTokenToolTest {
     @Test
     public void createAccessToken() {
         String accessToken =
-                jwtTokenTool.createAccessToken("nazar.stasyuk@gmail.com", ROLE.USER_ROLE);
+                jwtTokenTool.createAccessToken("nazar.stasyuk@gmail.com", ROLE.ROLE_USER);
         assertTrue(jwtTokenTool.isTokenValid(accessToken));
     }
 
@@ -48,7 +48,7 @@ public class JwtTokenToolTest {
     @Test
     public void getEmailByToken() {
         String email = "nazar.stasyuk@gmail.com";
-        String accessToken = jwtTokenTool.createAccessToken(email, ROLE.USER_ROLE);
+        String accessToken = jwtTokenTool.createAccessToken(email, ROLE.ROLE_USER);
 
         String emailByToken = jwtTokenTool.getEmailByToken(accessToken);
         assertEquals(email, emailByToken);

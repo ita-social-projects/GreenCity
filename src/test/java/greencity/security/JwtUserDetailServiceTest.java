@@ -34,7 +34,7 @@ public class JwtUserDetailServiceTest {
                                 .email(email)
                                 .userOwnSecurity(
                                         UserOwnSecurity.builder().password(password).build())
-                                .role(ROLE.USER_ROLE)
+                                .role(ROLE.ROLE_USER)
                                 .build());
 
         UserDetails userDetails = jwtUserDetailService.loadUserByUsername(email);

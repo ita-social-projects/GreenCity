@@ -31,7 +31,7 @@ public class JwtUserTest {
                                 .firstName("Nazar")
                                 .lastName("Stasyuk")
                                 .email("nazar.stasyuk@gmail.com")
-                                .role(ROLE.USER_ROLE)
+                                .role(ROLE.ROLE_USER)
                                 .userStatus(UserStatus.ACTIVATED)
                                 .userOwnSecurity(
                                         UserOwnSecurity.builder().password("123123").build())

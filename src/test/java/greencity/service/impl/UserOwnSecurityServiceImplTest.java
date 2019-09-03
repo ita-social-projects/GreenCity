@@ -39,7 +39,7 @@ public class UserOwnSecurityServiceImplTest {
                     .email("Nazar.stasyuk@gmail.com")
                     .firstName("Nazar")
                     .lastName("Stasyuk")
-                    .role(ROLE.USER_ROLE)
+                    .role(ROLE.ROLE_USER)
                     .lastVisit(LocalDateTime.now())
                     .dateOfRegistration(LocalDateTime.now())
                     .build();
@@ -88,7 +88,7 @@ public class UserOwnSecurityServiceImplTest {
                         .email("Nazar.stasyuk@gmail.com")
                         .firstName("Nazar")
                         .lastName("Stasyuk")
-                        .role(ROLE.USER_ROLE)
+                        .role(ROLE.ROLE_USER)
                         .lastVisit(LocalDateTime.now())
                         .userOwnSecurity(new UserOwnSecurity())
                         .dateOfRegistration(LocalDateTime.now())
@@ -144,7 +144,7 @@ public class UserOwnSecurityServiceImplTest {
                         new UsernamePasswordAuthenticationToken(
                                 new JwtUser(new User()), "", Collections.singleton(new SimpleGrantedAuthority("user"))));
         when(userService.findByEmail(anyString()))
-                .thenReturn(User.builder().email("").role(ROLE.USER_ROLE).build());
+                .thenReturn(User.builder().email("").role(ROLE.ROLE_USER).build());
         service.signIn(UserSignInDto.builder().email("").password("").build());
         verify(manager, times(1)).authenticate(any());
         verify(userService, times(1)).findByEmail(any());
