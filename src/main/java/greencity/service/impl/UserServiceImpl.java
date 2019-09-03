@@ -126,10 +126,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserRoleDto updateRole(Long id, ROLE role) {
-        User user =
-            repo.findById(id)
-                .orElseThrow(
-                    () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        User user = findById(id);
         user.setRole(role);
         return modelMapper.map(repo.save(user), UserRoleDto.class);
     }
@@ -141,10 +138,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserStatusDto updateStatus(Long id, UserStatus userStatus) {
-        User user =
-            repo.findById(id)
-                .orElseThrow(
-                    () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        User user = findById(id);
         user.setUserStatus(userStatus);
         return modelMapper.map(repo.save(user), UserStatusDto.class);
     }
