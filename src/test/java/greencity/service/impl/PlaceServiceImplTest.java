@@ -36,13 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.powermock.api.mockito.PowerMockito;
 
 @Slf4j
 @RunWith(MockitoJUnitRunner.class)
@@ -155,23 +153,18 @@ public class PlaceServiceImplTest {
     private PlaceServiceImpl placeService;
 
     @Test
-    public void save() {
+    public void savePlaceWithVerificationAllParametersTest() {
         when(categoryService.findByName(anyString())).thenReturn(any());
         when(categoryService.save(categoryDto)).thenReturn(category);
         when(placeAddDtoMapper.convertToEntity(placeAddDto)).thenReturn(placeEntity);
-        when(placeRepo.save(any())).thenReturn(new Place());
+        when(placeRepo.save(any())).thenReturn(place);
         when(userService.findByEmail(anyString())).thenReturn(null);
         when(service.findByLatAndLng(anyDouble(), anyDouble())).thenReturn(location);
-        when(service.findByLatAndLng(45.45, 45.456)).thenReturn(null);
-        when(service.save(location)).thenThrow(BadLocationRequestException.class);
         when(openingHoursService.save(openingHours)).thenReturn(openingHours);
-
-    }
-
-    @Test
-    public void createCategoryByNameTest() throws Exception {
-        category = new Category();
-        PowerMockito.when(placeService, "createCategoryByName", ArgumentMatchers.any()).thenReturn(category);
+        assertEquals(place, placeRepo.save(place));
+        assertEquals(location, service.findByLatAndLng(45.456, 45.456));
+        assertEquals(openingHours, openingHoursService.save(openingHours));
+        assertEquals(category, categoryService.save(categoryDto));
     }
 
     @Test
