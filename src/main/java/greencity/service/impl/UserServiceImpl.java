@@ -10,7 +10,6 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
-import greencity.exception.BadUserException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.util.List;
