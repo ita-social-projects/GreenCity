@@ -5,7 +5,10 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadLocationRequestException;
 import greencity.exception.CheckRepeatingValueException;
@@ -15,14 +18,10 @@ import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
-import io.jsonwebtoken.lang.Assert;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -257,7 +256,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public boolean existsById(Long id) {
-        log.info(LogMessage.IN_EXISTS_BY_ID,id);
+        log.info(LogMessage.IN_EXISTS_BY_ID, id);
         return placeRepo.existsById(id);
     }
 
@@ -268,7 +267,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public Double averageRate(Long id) {
-        log.info(LogMessage.IN_AVERAGE_RATE,id);
+        log.info(LogMessage.IN_AVERAGE_RATE, id);
         return placeRepo.getAverageRate(id);
     }
 }
