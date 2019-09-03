@@ -49,7 +49,6 @@ public class UserServiceImpl implements UserService {
         return repo.save(user);
     }
 
-
     /**
      * {@inheritDoc}
      */

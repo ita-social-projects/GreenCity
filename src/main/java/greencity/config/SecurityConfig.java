@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -71,15 +72,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
             .antMatchers("/place/propose/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/{status}")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/status**")
+            .antMatchers(HttpMethod.PATCH,"/place/status**")
             .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers("/place/{status}/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers("/favoritePlace/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers("/place/save/favoritePlace")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/user/role/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")
