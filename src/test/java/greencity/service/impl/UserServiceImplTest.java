@@ -115,14 +115,18 @@ public class UserServiceImplTest {
 
         assertEquals(ROLE.ROLE_ADMIN, userService.getRole("nazarvladykaaa@gmail.com"));
     }
-
+    /**
+     * @author Zakhar Skaletskyi
+     */
     @Test
     public void findIdByEmail() {
         String email = "email";
         when(userRepo.findIdByEmail(email)).thenReturn(2L);
         assertEquals(2L, (long) userService.findIdByEmail(email));
     }
-
+    /**
+     * @author Zakhar Skaletskyi
+     */
     @Test(expected = BadEmailException.class)
     public void findIdByEmailNotFound() {
         String email = "email";

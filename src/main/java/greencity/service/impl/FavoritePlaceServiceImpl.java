@@ -12,7 +12,6 @@ import greencity.exception.BadIdException;
 import greencity.exception.NotFoundException;
 import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.repository.FavoritePlaceRepo;
-import greencity.repository.PlaceRepo;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
@@ -128,7 +127,8 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
                 placeService
                     .findById(favoritePlace.getPlace().getId()),
                 PlaceInfoDto.class);
-        log.info("place id=" + favoritePlace.getPlace().getId());
+        log.info("favoritePlace.getPlace().getId() =" + favoritePlace.getPlace().getId());
+        log.info("placeInfoDto.getName() =" + placeInfoDto);
         placeInfoDto.setRate(placeService.averageRate(favoritePlace.getPlace().getId()));
         placeInfoDto.setName(favoritePlace.getName());
         return placeInfoDto;

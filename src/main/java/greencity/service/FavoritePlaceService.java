@@ -59,7 +59,7 @@ public interface FavoritePlaceService {
     FavoritePlace findById(Long id);
 
     /**
-     * Method for getting favorite place as place information.
+     * Method for getting FavoritePlace as Place information.
      *
      * @param favoritePlaceId - favorite place id
      * @return info about place with name from favorite place
