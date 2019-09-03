@@ -1,8 +1,7 @@
 package greencity.service.impl;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -30,10 +29,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -137,6 +138,15 @@ public class PlaceServiceImplTest {
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
 
+    @Test(expected = NullPointerException.class)
+    public void updateStatusWhenOldStatusIsNullThrowException() {
+        Place genericEntity = Place.builder().id(1L).status(null).build();
+
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+
+        placeService.updateStatus(1L, PlaceStatus.DECLINED);
+    }
+
     @Test
     public void getPlacesByStatusTest() {
         List<Place> places = new ArrayList<>();
@@ -214,4 +224,25 @@ public class PlaceServiceImplTest {
         assertEquals(
             placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test
+    public  void existsById()
+    {
+        when(placeRepo.existsById(anyLong())).thenReturn(true);
+        assertTrue(placeService.existsById(3L));
+        when(placeRepo.existsById(anyLong())).thenReturn(false);
+        assertFalse(placeService.existsById(2L));
+    }
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test
+    public  void averageRate(){
+          byte averageRate=4;
+        when(placeRepo.averageRate(anyLong())).thenReturn(averageRate);
+        assertEquals(averageRate,placeService.averageRate(2L));
+    }
+
 }

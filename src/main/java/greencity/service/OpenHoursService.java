@@ -28,8 +28,9 @@ public interface OpenHoursService {
      * Delete entity from DB by id.
      *
      * @param id - OpeningHours id.
+     * @return id of deleted OpeningHours.
      */
-    void deleteById(Long id);
+    Long deleteById(Long id);
 
     /**
      * Finds all {@code OpeningHours} records related to the specified {@link

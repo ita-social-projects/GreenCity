@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserPageableDto;
 import greencity.dto.user.UserRoleDto;
@@ -48,7 +49,6 @@ public class UserServiceImpl implements UserService {
         }
         return repo.save(user);
     }
-
 
     /**
      * {@inheritDoc}
@@ -102,17 +102,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Long findIdByEmail(String email) {
-        return repo.findIdByEmail(email);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Zakhar Skaletskyi
-     */
-    @Override
-    public boolean existsByEmail(String email) { //zakhar
-        return repo.existsByEmail(email);
+        log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
+        Long id = repo.findIdByEmail(email);
+        if (id == null) {
+            throw new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
+        }
+        return id;
     }
 
     /**

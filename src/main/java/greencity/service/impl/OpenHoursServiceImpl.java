@@ -97,11 +97,10 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      * @author Nazar Vladyka
      */
     @Override
-    public void deleteById(Long id) {
+    public Long deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        findById(id);
-
-        hoursRepo.deleteById(id);
+        hoursRepo.delete(findById(id));
+        return id;
     }
 }

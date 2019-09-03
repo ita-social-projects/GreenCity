@@ -15,6 +15,7 @@ import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import javafx.beans.binding.When;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -127,5 +128,23 @@ public class UserServiceImplTest {
     @Test(expected = BadIdException.class)
     public void deleteByIdExceptionBadIdTest() {
         userService.deleteById(1l);
+    }
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test
+    public void findIdByEmail() {
+        String email = "email";
+        when(userRepo.findIdByEmail(email)).thenReturn(2L);
+        assertEquals(2L, (long) userService.findIdByEmail(email));
+    }
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test(expected = BadEmailException.class)
+    public void findIdByEmailNotFound() {
+        String email = "email";
+        when(userRepo.findIdByEmail(email)).thenReturn(null);
+        userService.findIdByEmail(email);
     }
 }
