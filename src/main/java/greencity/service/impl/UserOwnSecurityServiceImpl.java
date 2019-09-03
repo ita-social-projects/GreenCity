@@ -1,6 +1,6 @@
 package greencity.service.impl;
 
-import java.time.LocalDateTime;
+import static greencity.constant.ErrorMessage.*;
 
 import greencity.dto.userownsecurity.AccessTokenDto;
 import greencity.dto.userownsecurity.UserRegisterDto;
@@ -18,6 +18,7 @@ import greencity.security.JwtTokenTool;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.UserService;
 import greencity.service.VerifyEmailService;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,14 +28,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static greencity.constant.ErrorMessage.*;
-
-/** {@inheritDoc} */
+/**
+ * {@inheritDoc}
+ */
 @Service
 @AllArgsConstructor
 @Slf4j
 public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
-
     private UserOwnSecurityRepo repo;
     private UserService userService;
     private VerifyEmailService verifyEmailService;
@@ -42,7 +42,9 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
     private AuthenticationManager manager;
     private JwtTokenTool jwtTokenTool;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public void signUp(UserRegisterDto dto) {
@@ -68,24 +70,26 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
 
     private UserOwnSecurity createUserOwnSecurityToUser(UserRegisterDto dto, User user) {
         return UserOwnSecurity.builder()
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .user(user)
-                .build();
+            .password(passwordEncoder.encode(dto.getPassword()))
+            .user(user)
+            .build();
     }
 
     private User createNewRegisteredUser(UserRegisterDto dto) {
         return User.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .email(dto.getEmail())
-                .dateOfRegistration(LocalDateTime.now())
-                .role(ROLE.ROLE_USER)
-                .lastVisit(LocalDateTime.now())
-                .userStatus(UserStatus.ACTIVATED)
-                .build();
+            .firstName(dto.getFirstName())
+            .lastName(dto.getLastName())
+            .email(dto.getEmail())
+            .dateOfRegistration(LocalDateTime.now())
+            .role(ROLE.ROLE_USER)
+            .lastVisit(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
+            .build();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(UserOwnSecurity userOwnSecurity) {
         log.info("begin");
@@ -96,31 +100,35 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         log.info("end");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Scheduled(fixedRate = 86400000)
     @Override
     public void deleteNotActiveEmailUsers() {
         // 86400000 - доба
         log.info("begin");
         verifyEmailService
-                .findAll()
-                .forEach(
-                        verifyEmail -> {
-                            if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
-                                delete(verifyEmail.getUser().getUserOwnSecurity());
-                                verifyEmailService.delete(verifyEmail);
-                                userService.deleteById(verifyEmail.getUser().getId());
-                            }
-                        });
+            .findAll()
+            .forEach(
+                verifyEmail -> {
+                    if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
+                        delete(verifyEmail.getUser().getUserOwnSecurity());
+                        verifyEmailService.delete(verifyEmail);
+                        userService.deleteById(verifyEmail.getUser().getId());
+                    }
+                });
         log.info("end");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
         log.info("begin");
         manager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+            new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         User byEmail = userService.findByEmail(dto.getEmail());
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
@@ -128,7 +136,9 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
         return new UserSuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AccessTokenDto updateAccessToken(String refreshToken) {
         if (jwtTokenTool.isTokenValid(refreshToken)) {
@@ -136,7 +146,7 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
             User user = userService.findByEmail(email);
             if (user != null) {
                 return new AccessTokenDto(
-                        jwtTokenTool.createAccessToken(user.getEmail(), user.getRole()));
+                    jwtTokenTool.createAccessToken(user.getEmail(), user.getRole()));
             }
         }
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
