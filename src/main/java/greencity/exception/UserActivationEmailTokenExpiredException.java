@@ -7,6 +7,9 @@ package greencity.exception;
  * @version 1.0
  */
 public class UserActivationEmailTokenExpiredException extends RuntimeException {
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     public UserActivationEmailTokenExpiredException(String message) {
         super(message);
     }

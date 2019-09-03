@@ -4,6 +4,7 @@ import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.user.UserForListDto;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -15,7 +16,9 @@ import org.hibernate.validator.constraints.Length;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlaceAddDto {
+public class PlaceWithUserDto {
+    private Long id;
+
     @NotBlank(message = ValidationConstants.EMPTY_PLACE_NAME)
     @Length(max = ValidationConstants.PLACE_NAME_MAX_LENGTH)
     private String name;
@@ -28,4 +31,7 @@ public class PlaceAddDto {
 
     @Valid
     private List<OpeningHoursDto> openingHoursList;
+
+    @Valid
+    private UserForListDto author;
 }

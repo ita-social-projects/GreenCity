@@ -12,13 +12,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/** The class provides implementation of the {@code OpenHoursService}. */
+/**
+ * The class provides implementation of the {@code OpenHoursService}.
+ */
 @Slf4j
 @AllArgsConstructor
 @Service
 public class OpenHoursServiceImpl implements OpenHoursService {
-
-    /** Autowired repository. */
+    /**
+     * Autowired repository.
+     */
     private OpenHoursRepo hoursRepo;
 
     /**
@@ -39,7 +42,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     public OpeningHours save(OpeningHours hours) {
         log.info(LogMessage.IN_SAVE, hours);
 
-        return hoursRepo.saveAndFlush(hours);
+        return hoursRepo.save(hours);
     }
 
     /**
@@ -64,9 +67,9 @@ public class OpenHoursServiceImpl implements OpenHoursService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return hoursRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
     }
 
     /**

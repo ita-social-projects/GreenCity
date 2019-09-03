@@ -1,10 +1,10 @@
 package greencity.exception;
 
-public class BadPlaceRequestException extends RuntimeException {
+public class BadIdAndEmailException extends RuntimeException {
     /**
      * Generated javadoc, must be replaced with real one.
      */
-    public BadPlaceRequestException(String message) {
+    public BadIdAndEmailException(String message) {
         super(message);
     }
 }

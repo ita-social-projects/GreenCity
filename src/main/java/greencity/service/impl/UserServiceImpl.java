@@ -9,8 +9,8 @@ import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
+import greencity.exception.BadUserException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import lombok.AllArgsConstructor;
@@ -48,7 +48,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
-    /** @author Rostyslav Khasanov {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
     @Override
     public UserPageableDto findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
@@ -76,7 +80,31 @@ public class UserServiceImpl implements UserService {
         return repo.findByEmail(email);
     }
 
-    /** @author Rostyslav Khasanov {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
+     */
+    @Override
+    public Long findIdByEmail(String email) {
+        return repo.findIdByEmail(email);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
+     */
+    @Override
+    public boolean existsByEmail(String email) { // zakhar
+        return repo.existsByEmail(email);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
     @Override
     public void updateRole(Long id, ROLE role) {
         User user =
@@ -87,7 +115,11 @@ public class UserServiceImpl implements UserService {
         repo.save(user);
     }
 
-    /** @author Rostyslav Khasanov {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
     @Override
     public void updateUserStatus(Long id, UserStatus userStatus) {
         User user =
@@ -96,5 +128,15 @@ public class UserServiceImpl implements UserService {
                                 () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         user.setUserStatus(userStatus);
         repo.save(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka.
+     */
+    @Override
+    public ROLE getRole(String email) {
+        return findByEmail(email).getRole();
     }
 }

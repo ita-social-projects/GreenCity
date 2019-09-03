@@ -1,17 +1,17 @@
 package greencity.controller;
 
+import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceStatusDto;
-import greencity.entity.Place;
+import greencity.dto.place.*;
 import greencity.entity.enums.PlaceStatus;
+import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
+import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,23 +21,31 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
-
-    /** Autowired PlaceService instance. */
+    /**
+     * Autowired PlaceService instance.
+     */
     private PlaceService placeService;
+    private final FavoritePlaceService favoritePlaceService;
 
+    private ModelMapper modelMapper;
+
+    /**
+     * The method which return new proposed {@code Place} from user.
+     *
+     * @param dto - Place dto fot adding with all parameters.
+     * @return new {@code Place}.
+     * @author Kateryna Horokh
+     */
     @PostMapping("/propose")
-    public ResponseEntity<?> proposePlace(@Valid @RequestBody PlaceAddDto dto) {
-        placeService.save(dto);
-        return new ResponseEntity<Void>(HttpStatus.CREATED);
-    }
-
-    @GetMapping("/places")
-    public ResponseEntity<List<Place>> findAllCategory() {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll());
+    public ResponseEntity<PlaceWithUserDto> proposePlace(
+        @Valid @RequestBody PlaceAddDto dto, Principal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            modelMapper.map(
+                placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
     }
 
     /**
-     * Controller to get place info
+     * Controller to get place info.
      *
      * @param id place
      * @return info about place
@@ -45,6 +53,14 @@ public class PlaceController {
     @GetMapping("/getInfo/{id}")
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getAccessById(id));
+    }
+
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
+    @PostMapping("/save/favoritePlace")
+    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.save(favoritePlaceDto));
     }
 
     /**
@@ -57,9 +73,9 @@ public class PlaceController {
      */
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
-            @Valid @RequestBody MapBoundsDto mapBoundsDto) {
+        @Valid @RequestBody MapBoundsDto mapBoundsDto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
+            .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
     }
 
     /**
@@ -73,19 +89,19 @@ public class PlaceController {
     public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@PathVariable String status) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(placeService.getPlacesByStatus(placeStatus));
+            .body(placeService.getPlacesByStatus(placeStatus));
     }
 
     /**
-     * The method which change place status.
+     * The method which update place status.
      *
      * @param dto - place dto with place id and updated place status.
      * @return response object with dto and OK status if everything is ok.
      * @author Nazar Vladyka
      */
-    @PatchMapping("/changeStatus")
-    public ResponseEntity changePlaceStatus(@Valid @RequestBody PlaceStatusDto dto) {
+    @PatchMapping("/status")
+    public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
+            .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
 }

@@ -3,13 +3,11 @@ package greencity.dto.place;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
-import greencity.dto.rate.RateDto;
 import greencity.dto.specification.SpecificationValueDto;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
