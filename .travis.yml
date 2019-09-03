@@ -1,0 +1,20 @@
+language: java
+dist: trusty
+sudo: true
+install: true
+
+addons:
+    sonarcloud:
+        organization: "zakharskaletskyi"
+        token:
+            secure: "1cb7fac288d65ac3d1edcb14e254c1e82513e79a"
+jdk:
+    - oraclejdk8
+
+script:
+    - mvn clean install sonar:sonar 
+    
+  directories:
+    - '$HOME/.m2/repository' 
+    - '$HOME/.sonar/cache'
+    
