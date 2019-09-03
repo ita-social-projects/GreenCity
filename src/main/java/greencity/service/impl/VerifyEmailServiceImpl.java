@@ -20,12 +20,21 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+/**
+ * {@inheritDoc}
+ */
 @Service
 @Slf4j
 public class VerifyEmailServiceImpl implements VerifyEmailService {
+    /**
+     * Time for validation email token.
+     */
     @Value("${verifyEmailTimeHour}")
     private Integer expireTime;
 
+    /**
+     * This is server address. We send it to user email. And user can simply submit it.
+     */
     @Value("${address}")
     private String serverAddress;
 
@@ -34,7 +43,10 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     private JavaMailSender javaMailSender;
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor.
+     *
+     * @param repo           {@VerifyEmailRepo} - this is repository for {@link VerifyEmail}
+     * @param javaMailSender {@link JavaMailSender} - use it for sending submits to users email.
      */
     public VerifyEmailServiceImpl(VerifyEmailRepo repo, JavaMailSender javaMailSender) {
         this.repo = repo;
@@ -42,7 +54,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * {@inheritDoc}
      */
     @Override
     public void save(User user) {
@@ -68,10 +80,10 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * {@inheritDoc}
      */
     @Override
-    public void verify(String token) {
+    public void verifyByToken(String token) {
         log.info("begin");
         VerifyEmail verifyEmail =
             repo.findByToken(token)
@@ -88,7 +100,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * {@inheritDoc}
      */
     @Override
     public List<VerifyEmail> findAll() {
@@ -103,19 +115,24 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         return localDateTime;
     }
 
+    /**
+     * Method that send email to user to verify it.
+     *
+     * @param user  {@link User} - user that has to get submit email.
+     * @param token {@link String} - token.
+     */
     private void sentEmail(User user, String token) throws MessagingException {
         log.info("begin");
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-
         String subject = "Verify your email address";
         String message =
             "<b>Verify your email address to complete registration.</b><br>"
                 + "Hi "
                 + user.getFirstName()
                 + "!\n"
-                + "Thanks for your interest in joining Green City! "
-                + "To complete your registration, we need you to verify your email address. ";
+                + "Thanks for your interest in joining Green City! To complete your registration, we need you to "
+                + "verify your email address. ";
 
         mimeMessageHelper.setTo(user.getEmail());
         mimeMessageHelper.setSubject(subject);
@@ -128,14 +145,15 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * {@inheritDoc}
      */
+    @Override
     public boolean isDateValidate(LocalDateTime emailExpiredDate) {
         return LocalDateTime.now().isBefore(emailExpiredDate);
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * {@inheritDoc}
      */
     @Override
     public void delete(VerifyEmail verifyEmail) {
