@@ -1,6 +1,8 @@
 package greencity.service;
 
 import greencity.dto.user.UserPageableDto;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -73,7 +75,7 @@ public interface UserService {
      * @param role {@code ROLE} for user.
      * @author Rostyslav Khasanov
      */
-    void updateRole(Long id, ROLE role);
+    UserRoleDto updateRole(Long id, ROLE role);
 
     /**
      * Update {@code UserStatus} of user.
@@ -82,7 +84,7 @@ public interface UserService {
      * @param userStatus {@code UserStatus} for user.
      * @author Rostyslav Khasanov
      */
-    void updateUserStatus(Long id, UserStatus userStatus);
+    UserStatusDto updateStatus(Long id, UserStatus userStatus);
 
     /**
      * Find by page {@code User}.
@@ -92,13 +94,4 @@ public interface UserService {
      * @author Rostyslav Khasanov
      */
     UserPageableDto findByPage(Pageable pageable);
-
-    /**
-     * Find user role by his email.
-     *
-     * @param email user email.
-     * @return role of user.
-     * @author Nazar Vladyka
-     */
-    ROLE getRole(String email);
 }
