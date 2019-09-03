@@ -1,18 +1,20 @@
 package greencity.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserPageableDto;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
+import greencity.exception.BadUserException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -20,16 +22,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-/** The class provides implementation of the {@code UserService}. */
+/**
+ * The class provides implementation of the {@code UserService}.
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    /** Autowired repository. */
+    /**
+     * Autowired repository.
+     */
     private UserRepo repo;
 
-    /** Autowired mapper. */
+    /**
+     * Autowired mapper.
+     */
     private ModelMapper modelMapper;
 
     /** {@inheritDoc} */
@@ -41,11 +48,14 @@ public class UserServiceImpl implements UserService {
         return repo.save(user);
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public User findById(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -57,24 +67,28 @@ public class UserServiceImpl implements UserService {
     public UserPageableDto findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
         List<UserForListDto> userForListDtos =
-                users.getContent().stream()
-                        .map(user -> modelMapper.map(user, UserForListDto.class))
-                        .collect(Collectors.toList());
+            users.getContent().stream()
+                .map(user -> modelMapper.map(user, UserForListDto.class))
+                .collect(Collectors.toList());
         return new UserPageableDto(
-                userForListDtos,
-                users.getTotalElements(),
-                users.getPageable().getPageNumber(),
-                ROLE.class.getEnumConstants());
+            userForListDtos,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            ROLE.class.getEnumConstants());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteById(Long id) {
         User user = findById(id);
         repo.delete(user);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public User findByEmail(String email) {
         return repo.findByEmail(email);
@@ -96,7 +110,7 @@ public class UserServiceImpl implements UserService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public boolean existsByEmail(String email) { // zakhar
+    public boolean existsByEmail(String email) { //zakhar
         return repo.existsByEmail(email);
     }
 
@@ -106,13 +120,10 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     @Override
-    public void updateRole(Long id, ROLE role) {
-        User user =
-                repo.findById(id)
-                        .orElseThrow(
-                                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+    public UserRoleDto updateRole(Long id, ROLE role) {
+        User user = findById(id);
         user.setRole(role);
-        repo.save(user);
+        return modelMapper.map(repo.save(user), UserRoleDto.class);
     }
 
     /**
@@ -121,22 +132,9 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     @Override
-    public void updateUserStatus(Long id, UserStatus userStatus) {
-        User user =
-                repo.findById(id)
-                        .orElseThrow(
-                                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+    public UserStatusDto updateStatus(Long id, UserStatus userStatus) {
+        User user = findById(id);
         user.setUserStatus(userStatus);
-        repo.save(user);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Nazar Vladyka.
-     */
-    @Override
-    public ROLE getRole(String email) {
-        return findByEmail(email).getRole();
+        return modelMapper.map(repo.save(user), UserStatusDto.class);
     }
 }

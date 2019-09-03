@@ -1,5 +1,6 @@
 package greencity.config;
 
+import greencity.security.JwtTokenTool;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -26,7 +27,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
     private JwtTokenTool tool;
 
     /**
@@ -58,16 +58,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
-                .and()
-                .csrf()
-                .disable()
-                .authorizeRequests()
-                .antMatchers("/ownSecurity/**")
-                .permitAll()
-                .anyRequest()
-                .hasAnyRole("ADMIN")
-                .and()
-                .apply(new JwtConfig(tool));
+            .and()
+            .csrf()
+            .disable()
+            .authorizeRequests()
+            .antMatchers("/ownSecurity/**")
+            .permitAll()
+            .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
+            .permitAll()
+            .antMatchers("/place/propose/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/place/{status}")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/place/status**")
+            .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers("/favoritePlace/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/place/save/favoritePlace")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/user/role/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .anyRequest()
+            .hasAnyRole("ADMIN")
+            .and()
+            .apply(new JwtConfig(tool));
     }
 
     /** Bean {@link CorsConfigurationSource} that uses for CORS setup. */
@@ -76,10 +90,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(
-                Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
+            Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
         configuration.setAllowedHeaders(
-                Arrays.asList(
-                        "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+            Arrays.asList(
+                "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
