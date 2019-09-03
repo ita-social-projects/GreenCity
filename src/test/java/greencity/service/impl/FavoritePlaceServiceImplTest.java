@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
 import greencity.constant.ErrorMessage;
+import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
@@ -15,7 +16,6 @@ import greencity.exception.BadIdException;
 import greencity.exception.NotFoundException;
 import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.repository.FavoritePlaceRepo;
-import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
 import java.util.ArrayList;
@@ -28,11 +28,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
 
 import static org.mockito.Mockito.times;
 
@@ -47,6 +43,8 @@ public class FavoritePlaceServiceImplTest {
     private PlaceService placeService;
     @Mock
     private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private FavoritePlaceServiceImpl favoritePlaceService;
 
@@ -150,7 +148,7 @@ public class FavoritePlaceServiceImplTest {
         dto.setPlaceId(1L);
         String userEmail = "email";
         Mockito.when(repo.existsByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(true);
-         Mockito.when(repo.deleteByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(1);
+        Mockito.when(repo.deleteByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(1);
         favoritePlaceService.deleteByPlaceIdAndUserEmail(dto.getPlaceId(), userEmail);
         verify(repo, times(1)).existsByPlaceIdAndUserEmail(anyLong(), anyString());
         verify(repo, times(1)).deleteByPlaceIdAndUserEmail(anyLong(), anyString());
@@ -257,19 +255,19 @@ public class FavoritePlaceServiceImplTest {
     public void findAllTest() {
         List<FavoritePlace> favoritePlaces = new ArrayList<>();
         FavoritePlace favoritePlace;
-        List<FavoritePlaceDto> favoritePlaceDtos = new ArrayList<>();
-        FavoritePlaceDto favoritePlaceDto;
+        List<FavoritePlaceShowDto> favoritePlaceShowDtos = new ArrayList<>();
+        FavoritePlaceShowDto favoritePlaceShowDto;
         favoritePlace = new FavoritePlace();
-        favoritePlaceDto = new FavoritePlaceDto();
-        favoritePlaceDto.setName("a");
-        favoritePlaceDto.setPlaceId((long) 1);
+        favoritePlaceShowDto = new FavoritePlaceShowDto();
+        favoritePlaceShowDto.setName("a");
+        favoritePlaceShowDto.setId((long) 1);
         for (long i = 0; i < 5; i++) {
             favoritePlaces.add(favoritePlace);
-            favoritePlaceDtos.add(favoritePlaceDto);
+            favoritePlaceShowDtos.add(favoritePlaceShowDto);
         }
         Mockito.when(repo.findAllByUserEmail(anyString())).thenReturn(favoritePlaces);
-        Mockito.when(favoritePlaceDtoMapper.convertToDto(any(FavoritePlace.class))).thenReturn(favoritePlaceDto);
-        Assert.assertEquals(favoritePlaceDtos, favoritePlaceService.findAllByUserEmail("aas"));
+        Mockito.when(modelMapper.map(FavoritePlace.class, eq(FavoritePlaceShowDto.class))).thenReturn(favoritePlaceShowDto);
+        Assert.assertEquals(favoritePlaceShowDtos, favoritePlaceService.findAllByUserEmail("aas"));
     }
 
     /**

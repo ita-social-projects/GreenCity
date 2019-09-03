@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.service.FavoritePlaceService;
 import java.security.Principal;
 import java.util.List;
@@ -39,7 +40,7 @@ public class FavoritePlaceController {
      */
 
     @GetMapping
-    public ResponseEntity<List<FavoritePlaceDto>> findAllByUserEmail(Principal principal) {
+    public ResponseEntity<List<FavoritePlaceShowDto>> findAllByUserEmail(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(principal.getName()));
     }
 
@@ -50,7 +51,6 @@ public class FavoritePlaceController {
      * @param principal - Principal with user email
      * @author Zakhar Skaletskyi
      */
-    @SuppressWarnings("checkstyle:GenericWhitespace")
     @DeleteMapping
     public ResponseEntity<Integer> deleteByPlaceIdAndUserEmail(@Valid @RequestParam Long placeId,
                                                                Principal principal) {
@@ -58,5 +58,3 @@ public class FavoritePlaceController {
             .deleteByPlaceIdAndUserEmail(placeId, principal.getName()));
     }
 }
-
-

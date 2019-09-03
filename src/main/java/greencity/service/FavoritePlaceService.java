@@ -1,6 +1,9 @@
 package greencity.service;
 
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.favoriteplace.FavoritePlaceShowDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.entity.FavoritePlace;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +33,10 @@ public interface FavoritePlaceService {
      * Find all favorite places by user email.
      *
      * @param email - user's email
-     * @return list of FavoritePlaceDto
+     * @return list of FavoritePlaceShowDto
      * @author Zakhar Skaletskyi
      */
-    List<FavoritePlaceDto> findAllByUserEmail(String email);
+    List<FavoritePlaceShowDto> findAllByUserEmail(String email);
 
     /**
      * Delete favorite place by place id and user email.
@@ -45,4 +48,22 @@ public interface FavoritePlaceService {
      */
     @Transactional
     int deleteByPlaceIdAndUserEmail(Long placeId, String userEmail);
+
+    /**
+     * FInd favorite place by id.
+     *
+     * @param id - favorite place id
+     * @return FavoritePlace entity
+     * @author Zakhar Skaletskyi
+     */
+    FavoritePlace findById(Long id);
+
+    /**
+     * Method for getting favorite place as place information.
+     *
+     * @param favoritePlaceId - favorite place id
+     * @return info about place with name from favorite place
+     * @author Dmytro Dovhal
+     */
+    PlaceInfoDto getAccessPlaceAsFavoritePlace(Long favoritePlaceId);
 }
