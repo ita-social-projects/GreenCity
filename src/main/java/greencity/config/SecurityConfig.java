@@ -72,6 +72,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
             .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
             .permitAll()
+            .antMatchers("/category/categories/**")
+            .permitAll()
             .antMatchers("/place/propose/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.PATCH, "/place/status**")
