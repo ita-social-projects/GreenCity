@@ -50,7 +50,7 @@ public class PlaceController {
      * @param id place
      * @return info about place
      */
-    @GetMapping("/getInfo/{id}")
+    @GetMapping("/Info/{id}")
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getInfoById(id));
     }
