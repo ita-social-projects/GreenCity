@@ -3,8 +3,8 @@ package greencity.service.impl;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
-import greencity.dto.user_own_security.UserRegisterDto;
-import greencity.dto.user_own_security.UserSignInDto;
+import greencity.dto.userownsecurity.UserRegisterDto;
+import greencity.dto.userownsecurity.UserSignInDto;
 import greencity.entity.User;
 import greencity.entity.UserOwnSecurity;
 import greencity.entity.VerifyEmail;

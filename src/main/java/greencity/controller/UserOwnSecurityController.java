@@ -6,9 +6,10 @@ import java.net.URISyntaxException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-import greencity.dto.user_own_security.UserRegisterDto;
-import greencity.dto.user_own_security.UserSignInDto;
-import greencity.dto.user_own_security.UserSuccessSignInDto;
+
+import greencity.dto.userownsecurity.UserRegisterDto;
+import greencity.dto.userownsecurity.UserSignInDto;
+import greencity.dto.userownsecurity.UserSuccessSignInDto;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.VerifyEmailService;
 import org.springframework.beans.factory.annotation.Value;

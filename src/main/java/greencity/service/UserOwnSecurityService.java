@@ -1,9 +1,9 @@
 package greencity.service;
 
-import greencity.dto.user_own_security.AccessTokenDto;
-import greencity.dto.user_own_security.UserRegisterDto;
-import greencity.dto.user_own_security.UserSignInDto;
-import greencity.dto.user_own_security.UserSuccessSignInDto;
+import greencity.dto.userownsecurity.AccessTokenDto;
+import greencity.dto.userownsecurity.UserRegisterDto;
+import greencity.dto.userownsecurity.UserSignInDto;
+import greencity.dto.userownsecurity.UserSuccessSignInDto;
 import greencity.entity.UserOwnSecurity;
 
 /**
