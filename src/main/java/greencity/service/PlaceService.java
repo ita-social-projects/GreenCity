@@ -47,12 +47,17 @@ public interface PlaceService {
 
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Find all places from DB.
+     *
+     * @return List of places.
      */
     List<Place> findAll();
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Delete entity from DB by id.
+     *
+     * @param id - Place id.
+     * @return boolean.
      */
     Boolean deleteById(Long id);
 
