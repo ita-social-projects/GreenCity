@@ -5,8 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -14,8 +14,9 @@ import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import javafx.beans.binding.When;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,6 +24,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -129,6 +134,7 @@ public class UserServiceImplTest {
     public void deleteByIdExceptionBadIdTest() {
         userService.deleteById(1l);
     }
+
     /**
      * @author Zakhar Skaletskyi
      */
@@ -138,6 +144,7 @@ public class UserServiceImplTest {
         when(userRepo.findIdByEmail(email)).thenReturn(2L);
         assertEquals(2L, (long) userService.findIdByEmail(email));
     }
+
     /**
      * @author Zakhar Skaletskyi
      */
@@ -146,5 +153,30 @@ public class UserServiceImplTest {
         String email = "email";
         when(userRepo.findIdByEmail(email)).thenReturn(null);
         userService.findIdByEmail(email);
+    }
+
+    @Test
+    public void findByPage() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        User user = new User();
+        user.setFirstName("Roman");
+
+        UserForListDto userForListDto = new UserForListDto();
+        userForListDto.setFirstName("Roman");
+
+        Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
+        List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
+
+        UserPageableDto userPageableDto =
+            new UserPageableDto(userForListDtos,
+                userForListDtos.size(), 0, ROLE.class.getEnumConstants());
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+
+        when(userRepo.findAllByOrderByEmail(any())).thenReturn(usersPage);
+        when(userRepo.findAllByOrderByEmail(any())).thenReturn(usersPage);
+        assertEquals(userPageableDto, userService.findByPage(any()));
     }
 }
