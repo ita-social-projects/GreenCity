@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.userownsecurity.AccessTokenDto;
 import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.dto.userownsecurity.UserSignInDto;
 import greencity.dto.userownsecurity.UserSuccessSignInDto;
@@ -17,7 +18,7 @@ public interface UserOwnSecurityService {
      *
      * @param dto a value of {@link UserRegisterDto}
      */
-    void register(UserRegisterDto dto);
+    void signUp(UserRegisterDto dto);
 
     /**
      * Method that allow you to delete {@link UserOwnSecurity}.
@@ -43,7 +44,7 @@ public interface UserOwnSecurityService {
      * Method that update your access token by refresh token.
      *
      * @param refreshToken a value of {@link String}
-     * @return {@link String} this is new access token
+     * @return {@link AccessTokenDto} this is DTO with new access token
      */
-    String updateAccessToken(String refreshToken);
+    AccessTokenDto updateAccessToken(String refreshToken);
 }

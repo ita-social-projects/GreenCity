@@ -41,12 +41,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @Slf4j
 @RunWith(MockitoJUnitRunner.class)
@@ -136,6 +138,15 @@ public class PlaceServiceImplTest {
         when(placeRepo.save(any())).thenReturn(genericEntity);
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void updateStatusWhenOldStatusIsNullThrowException() {
+        Place genericEntity = Place.builder().id(1L).status(null).build();
+
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+
+        placeService.updateStatus(1L, PlaceStatus.DECLINED);
     }
 
     @Test
