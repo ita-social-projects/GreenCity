@@ -130,7 +130,7 @@ public class UserServiceImplTest {
     @Test(expected = BadEmailException.class)
     public void findIdByEmailNotFound() {
         String email = "email";
-        when(userRepo.findIdByEmail(email)).thenReturn(0L);
+        when(userRepo.findIdByEmail(email)).thenReturn(null);
         userService.findIdByEmail(email);
     }
 }
