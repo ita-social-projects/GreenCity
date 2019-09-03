@@ -4,12 +4,13 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserPageableDto;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
-import greencity.exception.BadUserException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.util.List;
@@ -38,21 +39,15 @@ public class UserServiceImpl implements UserService {
      */
     private ModelMapper modelMapper;
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
-            throw new BadUserException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
+            throw new BadEmailException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
     }
 
-    @Override
-    public User update(User user) {
-        return null;
-    }
 
     /**
      * {@inheritDoc}
@@ -120,13 +115,10 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     @Override
-    public void updateRole(Long id, ROLE role) {
-        User user =
-            repo.findById(id)
-                .orElseThrow(
-                    () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+    public UserRoleDto updateRole(Long id, ROLE role) {
+        User user = findById(id);
         user.setRole(role);
-        repo.save(user);
+        return modelMapper.map(repo.save(user), UserRoleDto.class);
     }
 
     /**
@@ -135,22 +127,9 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     @Override
-    public void updateUserStatus(Long id, UserStatus userStatus) {
-        User user =
-            repo.findById(id)
-                .orElseThrow(
-                    () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+    public UserStatusDto updateStatus(Long id, UserStatus userStatus) {
+        User user = findById(id);
         user.setUserStatus(userStatus);
-        repo.save(user);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Nazar Vladyka.
-     */
-    @Override
-    public ROLE getRole(String email) {
-        return findByEmail(email).getRole();
+        return modelMapper.map(repo.save(user), UserStatusDto.class);
     }
 }

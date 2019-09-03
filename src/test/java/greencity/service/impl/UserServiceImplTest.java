@@ -5,31 +5,42 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
-import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import javafx.beans.binding.When;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class UserServiceImplTest {
-    @MockBean
+
+    @Mock
     UserRepo userRepo;
 
-    @Autowired
-    private UserService userService;
+    @InjectMocks
+    private UserServiceImpl userService;
+
+    @Test
+    public void saveTest() {
+        User user = new User();
+        when(userRepo.save(user)).thenReturn(user);
+        assertEquals(user, userService.save(user));
+    }
 
     @Test
     public void updateUserStatusBlockedTest() {
@@ -39,14 +50,16 @@ public class UserServiceImplTest {
                 .lastName("test")
                 .email("test@gmail.com")
                 .role(ROLE.ROLE_USER)
-                .userStatus(UserStatus.BLOCKED)
+                .userStatus(UserStatus.ACTIVATED)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateUserStatus(user.getId(), UserStatus.BLOCKED);
-        assertEquals(UserStatus.BLOCKED, user.getUserStatus());
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+        assertEquals(
+            UserStatus.BLOCKED,
+            userService.updateStatus(user.getId(), UserStatus.BLOCKED).getUserStatus());
     }
 
     @Test
@@ -57,14 +70,16 @@ public class UserServiceImplTest {
                 .lastName("test")
                 .email("test@gmail.com")
                 .role(ROLE.ROLE_USER)
-                .userStatus(UserStatus.DEACTIVATED)
+                .userStatus(UserStatus.ACTIVATED)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
                 .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateUserStatus(user.getId(), UserStatus.DEACTIVATED);
-        assertEquals(UserStatus.DEACTIVATED, user.getUserStatus());
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+        assertEquals(
+            UserStatus.DEACTIVATED,
+            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED).getUserStatus());
     }
 
     @Test
@@ -80,8 +95,10 @@ public class UserServiceImplTest {
                 .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR);
-        assertEquals(ROLE.ROLE_MODERATOR, user.getRole());
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+        assertEquals(
+            ROLE.ROLE_MODERATOR,
+            userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR).getRole());
     }
 
     @Test
@@ -108,12 +125,9 @@ public class UserServiceImplTest {
         userService.save(new User());
     }
 
-    @Test
-    public void getUserRoleTest() {
-        User user = User.builder().email("nazarvladykaaa@gmail.com").role(ROLE.ROLE_ADMIN).build();
-        when(userService.findByEmail("nazarvladykaaa@gmail.com")).thenReturn(user);
-
-        assertEquals(ROLE.ROLE_ADMIN, userService.getRole("nazarvladykaaa@gmail.com"));
+    @Test(expected = BadIdException.class)
+    public void deleteByIdExceptionBadIdTest() {
+        userService.deleteById(1l);
     }
     /**
      * @author Zakhar Skaletskyi
