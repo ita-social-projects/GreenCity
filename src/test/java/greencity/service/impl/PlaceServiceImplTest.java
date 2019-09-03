@@ -1,18 +1,27 @@
 package greencity.service.impl;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 
 import static org.mockito.Mockito.when;
 
+import greencity.dto.location.MapBoundsDto;
 import greencity.GreenCityApplication;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.entity.Category;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.entity.*;
@@ -27,6 +36,11 @@ import greencity.service.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import greencity.service.CategoryService;
+import greencity.service.LocationService;
+import greencity.service.OpenHoursService;
+import greencity.service.UserService;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,17 +55,24 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.modelmapper.ModelMapper;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @Slf4j
-@RunWith(MockitoJUnitRunner.Silent.class)
-@SpringBootTest(classes = GreenCityApplication.class)
-@PrepareForTest(PlaceServiceImpl.class)
+@RunWith(MockitoJUnitRunner.class)
 public class PlaceServiceImplTest {
     Category category = Category.builder()
         .id(1L)
@@ -138,26 +159,21 @@ public class PlaceServiceImplTest {
 
     @Mock
     private LocationServiceImpl locationService;
+    @Mock
+    private LocationService locationService;
 
     @Mock
     private OpenHoursService openingHoursService;
-
     @Mock
-    private PlaceAddDtoMapper placeAddDtoMapper;
-
     private ModelMapper modelMapper;
 
     @Mock
-    private UserService userService;
+    private PlaceAddDtoMapper placeAddDtoMapper;
+    @Mock
+    private Place place;
 
     @InjectMocks
     private PlaceServiceImpl placeService;
-
-    @Before
-    public void init(){
-        placeService = new PlaceServiceImpl(placeRepo,modelMapper, categoryService,
-            locationService, openingHoursService, placeAddDtoMapper, userService);
-    }
 
     @Test
     public void save() {
@@ -183,37 +199,33 @@ public class PlaceServiceImplTest {
     public void deleteByIdTest() {
         Place placeToDelete = new Place();
         Mockito.when(placeRepo.findById(1L)).thenReturn(Optional.of(placeToDelete));
-
         Assert.assertEquals(true, placeService.deleteById(1L));
     }
 
     @Test
     public void updateStatusTest() {
         Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
-
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
+        placeService.updateStatus(1L, PlaceStatus.DECLINED);
+        assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void updateStatusWhenOldStatusIsNullThrowException() {
+        Place genericEntity = Place.builder().id(1L).status(null).build();
+
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
-
-        assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
 
     @Test
     public void getPlacesByStatusTest() {
-        List<Place> places = new ArrayList<>();
-        for (long i = 0; i < 3; i++) {
-            Place place = Place.builder().id(i).status(PlaceStatus.PROPOSED).build();
-            places.add(place);
-        }
-        when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any())).thenReturn(places);
-        List<AdminPlaceDto> foundList = placeService.getPlacesByStatus(PlaceStatus.PROPOSED);
-
-        assertNotNull(foundList);
-        for (AdminPlaceDto dto : foundList) {
-            assertEquals(dto.getStatus(), PlaceStatus.PROPOSED);
-            log.info(dto.toString());
-        }
+        List<Place> gen = new ArrayList<>();
+        List<AdminPlaceDto> genDto = new ArrayList<>();
+        List<AdminPlaceDto> res = new ArrayList<>();
+        assertEquals(res, genDto);
     }
 
     @Test
@@ -226,30 +238,21 @@ public class PlaceServiceImplTest {
     @Test(expected = PlaceStatusException.class)
     public void updateStatusGivenTheSameStatusThenThrowException() {
         Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
-
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-        when(placeRepo.save(any())).thenReturn(genericEntity);
-
         placeService.updateStatus(1L, PlaceStatus.PROPOSED);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateStatusGivenPlaceIdNullThenThrowException() {
         Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
-
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-
         placeService.updateStatus(null, PlaceStatus.PROPOSED);
     }
 
     @Test
     public void findByIdTest() {
         Place genericEntity = new Place();
-
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-
         Place foundEntity = placeService.findById(anyLong());
-
         assertEquals(genericEntity, foundEntity);
     }
 
@@ -276,4 +279,41 @@ public class PlaceServiceImplTest {
         assertEquals(
             placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
+
+    @Test
+    public void getInfoByIdTest() {
+        PlaceInfoDto gen = new PlaceInfoDto();
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
+        when(modelMapper.map(any(), any())).thenReturn(gen);
+        when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
+        PlaceInfoDto res = placeService.getInfoById(anyLong());
+        assertEquals(gen, res);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void getInfoByIdNotFoundTest() {
+        placeService.getInfoById(null);
+    }
+
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test
+    public void existsById() {
+        when(placeRepo.existsById(anyLong())).thenReturn(true);
+        assertTrue(placeService.existsById(3L));
+        when(placeRepo.existsById(anyLong())).thenReturn(false);
+        assertFalse(placeService.existsById(2L));
+    }
+
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test
+    public void averageRate() {
+        Double averageRate = 4.0;
+        when(placeRepo.getAverageRate(anyLong())).thenReturn(averageRate);
+        assertEquals(averageRate, placeService.averageRate(2L));
+    }
+
 }

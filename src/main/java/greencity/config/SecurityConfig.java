@@ -1,10 +1,13 @@
 package greencity.config;
 
 import greencity.security.JwtTokenTool;
+
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -61,34 +64,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
-                .and()
-                .csrf()
-                .disable()
-                .authorizeRequests()
-                .antMatchers("/ownSecurity/**")
-                .permitAll()
-                .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
-                .permitAll()
-                .antMatchers("/place/propose/**")
-                .hasAnyRole("USER", "ADMIN", "MODERATOR")
-                .antMatchers("/place/{status}")
-                .hasAnyRole("USER", "ADMIN", "MODERATOR")
-                .antMatchers("/place/status**")
-                .hasAnyRole("ADMIN", "MODERATOR")
-                .antMatchers("/favoritePlace/**")
-                .hasAnyRole("USER", "ADMIN", "MODERATOR")
-                .antMatchers("/place/save/favoritePlace")
-                .hasAnyRole("USER", "ADMIN", "MODERATOR")
-                .antMatchers("/user/role/**")
-                .hasAnyRole("USER", "ADMIN", "MODERATOR")
-                .antMatchers("/category/categories/**")
-                .permitAll()
-                .antMatchers("/category/save")
-                .permitAll()
-                .anyRequest()
-                .hasAnyRole("ADMIN")
-                .and()
-                .apply(new JwtConfig(tool));
+            .and()
+            .csrf()
+            .disable()
+            .authorizeRequests()
+            .antMatchers("/ownSecurity/**")
+            .permitAll()
+            .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
+            .permitAll()
+            .antMatchers("/place/propose/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH, "/place/status**")
+            .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.GET, "/place/Info/{id}/**")
+            .permitAll()
+            .antMatchers("/place/{status}/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/favoritePlace/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/place/save/favorite")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers("/place/info/favorite")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH, "/user/status")
+            .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH, "/user/role")
+            .hasRole("ADMIN")
+            .antMatchers(HttpMethod.GET, "/user")
+            .hasAnyRole("ADMIN", "MODERATOR")
+            .anyRequest()
+            .hasAnyRole("ADMIN")
+            .and()
+            .apply(new JwtConfig(tool));
     }
 
     /**

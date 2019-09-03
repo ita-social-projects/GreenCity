@@ -52,8 +52,9 @@ public interface CategoryService {
      * Method for deleting Category by id.
      *
      * @param id - category's id.
+     * @return id of deleted Category.
      */
-    void deleteById(Long id);
+    Long deleteById(Long id);
 
     /**
      * Finds category by name.

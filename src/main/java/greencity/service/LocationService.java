@@ -35,8 +35,9 @@ public interface LocationService {
      * Delete entity from DB by id.
      *
      * @param id - Location id.
+     * @return id of deleted Location.
      */
-    void deleteById(Long id);
+    Long deleteById(Long id);
 
     /**
      * Save Location to DB.
