@@ -1,18 +1,23 @@
 package greencity.repository;
 
-import greencity.entity.User;
-import greencity.entity.VerifyEmail;
 import java.util.Optional;
+
+import greencity.entity.VerifyEmail;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+/**
+ * Repository for {@link VerifyEmail}
+ *
+ * @author Nazar Stasyuk
+ * @version 1.0
+ */
 public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
-    /**
-     * Generated javadoc, must be replaced with real one.
-     */
-    Optional<VerifyEmail> findByToken(String token);
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method that allow you find {@link VerifyEmail} by token
+     *
+     * @param token - {@link String}
+     * @return {@link Optional<VerifyEmail>}
      */
-    VerifyEmail findByUser(User user);
+    Optional<VerifyEmail> findByToken(String token);
 }
