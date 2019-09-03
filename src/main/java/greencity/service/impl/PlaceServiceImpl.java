@@ -16,7 +16,6 @@ import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
-import io.jsonwebtoken.lang.Assert;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -165,15 +164,17 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
-        Assert.notNull(updatable.getStatus(), ErrorMessage.PLACE_STATUS_IS_NULL);
-
-        if (updatable.getStatus().equals(status)) {
-            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
-            throw new PlaceStatusException(
-                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
+        if (updatable.getStatus() != null) {
+            if (!updatable.getStatus().equals(status)) {
+                updatable.setStatus(status);
+                updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
+            } else {
+                log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
+                throw new PlaceStatusException(
+                    ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
+            }
         } else {
-            updatable.setStatus(status);
-            updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
+            throw new NullPointerException(ErrorMessage.PLACE_STATUS_IS_NULL);
         }
 
         return modelMapper.map(placeRepo.save(updatable), PlaceStatusDto.class);

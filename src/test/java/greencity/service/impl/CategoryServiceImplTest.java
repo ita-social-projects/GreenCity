@@ -9,25 +9,24 @@ import greencity.GreenCityApplication;
 import greencity.entity.Category;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
-import greencity.service.CategoryService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class CategoryServiceImplTest {
-    @MockBean
+    @Mock
     private CategoryRepo categoryRepo;
-    @Autowired
-    private CategoryService categoryService;
+    @InjectMocks
+    private CategoryServiceImpl categoryService;
 
     @Test
     public void saveTest() {
@@ -70,17 +69,6 @@ public class CategoryServiceImplTest {
     @Test(expected = NotFoundException.class)
     public void updateGivenIdNullThenThrowException() {
         categoryService.update(null, new Category());
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void deleteByIdThrowExceptionWhenCallFindById() {
-        Category generic = new Category();
-
-        when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(generic));
-        when(categoryService.findById(anyLong())).thenThrow(NotFoundException.class);
-
-        categoryService.deleteById(1L);
-        categoryService.findById(1L);
     }
 
     @Test(expected = NotFoundException.class)
