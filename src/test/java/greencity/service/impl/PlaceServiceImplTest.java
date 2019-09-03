@@ -27,10 +27,12 @@ import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
 import greencity.service.UserService;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,17 +52,23 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class PlaceServiceImplTest {
 
-    @Mock private PlaceRepo placeRepo;
+    @Mock
+    private PlaceRepo placeRepo;
 
-    @Mock private CategoryService categoryService;
+    @Mock
+    private CategoryService categoryService;
 
-    @Mock private LocationService locationService;
+    @Mock
+    private LocationService locationService;
 
-    @Mock private ModelMapper modelMapper;
+    @Mock
+    private ModelMapper modelMapper;
 
-    @Mock private Place place;
+    @Mock
+    private Place place;
 
-    @InjectMocks private PlaceServiceImpl placeService;
+    @InjectMocks
+    private PlaceServiceImpl placeService;
 
     @Test
     public void save() {
@@ -195,7 +203,7 @@ public class PlaceServiceImplTest {
         PlaceInfoDto gen = new PlaceInfoDto();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
         when(modelMapper.map(any(), any())).thenReturn(gen);
-        when(placeRepo.averageRate(anyLong())).thenReturn(1.5);
+        when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
         PlaceInfoDto res = placeService.getInfoById(anyLong());
         assertEquals(gen, res);
     }
