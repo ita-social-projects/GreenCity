@@ -1,11 +1,5 @@
 package greencity.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.exception.BadIdException;
@@ -18,6 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 import static greencity.constant.ErrorMessage.*;
 
