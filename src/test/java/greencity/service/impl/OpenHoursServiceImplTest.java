@@ -1,10 +1,19 @@
 package greencity.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
 import greencity.GreenCityApplication;
 import greencity.entity.OpeningHours;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
 import greencity.service.OpenHoursService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,21 +21,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
-public class OpeningHoursServiceImplTest {
-    @MockBean private OpenHoursRepo openHoursRepo;
-    @Autowired private OpenHoursService openHoursService;
+public class OpenHoursServiceImplTest {
+    @MockBean
+    private OpenHoursRepo openHoursRepo;
+    @Autowired
+    private OpenHoursService openHoursService;
+
+    @Test
+    public void saveTest() {
+        OpeningHours genericEntity = new OpeningHours();
+
+        when(openHoursRepo.save(genericEntity)).thenReturn(genericEntity);
+
+        assertEquals(genericEntity, openHoursService.save(genericEntity));
+    }
 
     @Test
     public void findByIdTest() {
@@ -64,7 +74,10 @@ public class OpeningHoursServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void deleteByIdThrowExceptionWhenCallFindById() {
-        when(openHoursRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+        OpeningHours generic = new OpeningHours();
+
+        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(generic));
+        when(openHoursService.findById(anyLong())).thenThrow(NotFoundException.class);
 
         openHoursService.deleteById(1L);
         openHoursService.findById(1L);
@@ -78,7 +91,7 @@ public class OpeningHoursServiceImplTest {
     @Test
     public void findAllTest() {
         List<OpeningHours> genericEntities =
-                new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
+            new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
 
         when(openHoursRepo.findAll()).thenReturn(genericEntities);
 

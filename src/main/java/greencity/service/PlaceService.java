@@ -1,18 +1,15 @@
 package greencity.service;
 
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlaceStatusDto;
+import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
 
-/** Provides the interface to manage {@code Place} entity. */
+/**
+ * Provides the interface to manage {@code Place} entity.
+ */
 public interface PlaceService {
-
     /**
      * Finds all {@code Place} with status {@code PlaceStatus}.
      *
@@ -25,7 +22,7 @@ public interface PlaceService {
     /**
      * Update status for the Place and set the time of modification.
      *
-     * @param id - place id.
+     * @param id     - place id.
      * @param status - place status.
      * @return saved PlaceStatusDto entity.
      */
@@ -48,14 +45,23 @@ public interface PlaceService {
      */
     Place save(PlaceAddDto dto, String email);
 
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     Place update(Place place);
 
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     List<Place> findAll();
 
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     Boolean deleteById(Long id);
 
     /**
-     * Method for getting place information
+     * Method for getting place information.
      *
      * @param id place
      * @return info about place
@@ -64,11 +70,20 @@ public interface PlaceService {
     PlaceInfoDto getAccessById(Long id);
 
     /**
+     * Check place existing by id.
+     *
+     * @param id - place id
+     * @return boolean check result
+     * @author Zakhar Skaletskyi
+     */
+    boolean existsById(Long id);
+
+    /**
      * The method which return a list {@code PlaceByBoundsDto} with information about place, *
      * location depends on the map bounds.
      *
      * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *     state of map
+     *                     state of map
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */

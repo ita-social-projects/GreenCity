@@ -1,10 +1,10 @@
 package greencity.exception;
 
-public class BadUserException extends RuntimeException {
+public class BadIdAndEmailException extends RuntimeException {
     /**
      * Generated javadoc, must be replaced with real one.
      */
-    public BadUserException(String message) {
+    public BadIdAndEmailException(String message) {
         super(message);
     }
 }
