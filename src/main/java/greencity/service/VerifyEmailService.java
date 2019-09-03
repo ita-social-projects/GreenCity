@@ -5,29 +5,46 @@ import greencity.entity.VerifyEmail;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Service that provide {@link VerifyEmail} logic.
+ *
+ * @author Nazar Stasyuk
+ * @version 1.0
+ */
 public interface VerifyEmailService {
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Save method.
+     *
+     * @param user {@link User} - we use here user, not DTO, because we create this user in sign-in
+     *             and sign-up logic.
      */
     void save(User user);
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method that provide delete {@link VerifyEmail}.
+     *
+     * @param verifyEmail {@link VerifyEmail}
      */
     void delete(VerifyEmail verifyEmail);
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Verify email by token.
+     *
+     * @param token {@link String} - token that confirm that this user are owner of this email.
      */
-    void verify(String token);
+    void verifyByToken(String token);
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Find all method.
+     *
+     * @return {@link List}
      */
     List<VerifyEmail> findAll();
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method that check if user not late with validation of his email.
+     *
+     * @return {@code boolean}
      */
     boolean isDateValidate(LocalDateTime emailExpiredDate);
 }

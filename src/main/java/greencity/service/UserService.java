@@ -1,6 +1,8 @@
 package greencity.service;
 
 import greencity.dto.user.UserPageableDto;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -19,11 +21,6 @@ public interface UserService {
      * @param user a value of {@link User}
      */
     User save(User user);
-
-    /**
-     * Generated javadoc, must be replaced with real one.
-     */
-    User update(User user);
 
     /**
      * Method that allow you to find {@link User} by ID.
@@ -69,20 +66,20 @@ public interface UserService {
     /**
      * Update {@code ROLE} of user.
      *
-     * @param id   {@code User} id.
+     * @param id {@code User} id.
      * @param role {@code ROLE} for user.
      * @author Rostyslav Khasanov
      */
-    void updateRole(Long id, ROLE role);
+    UserRoleDto updateRole(Long id, ROLE role);
 
     /**
      * Update {@code UserStatus} of user.
      *
-     * @param id         {@code User} id.
+     * @param id {@code User} id.
      * @param userStatus {@code UserStatus} for user.
      * @author Rostyslav Khasanov
      */
-    void updateUserStatus(Long id, UserStatus userStatus);
+    UserStatusDto updateStatus(Long id, UserStatus userStatus);
 
     /**
      * Find by page {@code User}.

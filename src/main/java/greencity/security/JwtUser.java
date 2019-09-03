@@ -18,7 +18,9 @@ public class JwtUser implements UserDetails {
     private User user;
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor.
+     *
+     * @param user {@link User}
      */
     public JwtUser(User user) {
         this.user = user;

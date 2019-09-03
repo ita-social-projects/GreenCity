@@ -133,7 +133,6 @@ public class PlaceServiceImplTest {
 
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
-        ReflectionTestUtils.setField(placeService, "modelMapper", new ModelMapper());
 
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
 

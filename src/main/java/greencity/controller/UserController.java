@@ -1,9 +1,9 @@
 package greencity.controller;
 
-import greencity.entity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
-import java.security.Principal;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,27 +17,41 @@ public class UserController {
     private UserService userService;
 
     /**
-     * Generated javadoc, must be replaced with real one.
-     */
-    @PatchMapping("update/role")
-    public ResponseEntity<?> updateRole(
-        @RequestParam("id") Long id, @RequestParam("role") ROLE role) {
-        userService.updateRole(id, role);
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Generated javadoc, must be replaced with real one.
+     * The method which update user status.
+     *
+     * @param userStatusDto - dto with updated filed.
+     * @return {@code UserStatusDto}
+     * @author Rostyslav Khasnaov
      */
     @PatchMapping("update/status")
-    public ResponseEntity<?> updateUserStatus(
-        @RequestParam("id") Long id, @RequestParam UserStatus status) {
-        userService.updateUserStatus(id, status);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> updateStatus(@Valid @RequestBody UserStatusDto userStatusDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                userService.updateStatus(
+                    userStatusDto.getId(), userStatusDto.getUserStatus()));
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * The method which update user role.
+     *
+     * @param userRoleDto - dto with updated filed.
+     * @return {@code UserRoleDto}
+     * @author Rostyslav Khasnaov
+     */
+    @PatchMapping("update/role")
+    public ResponseEntity<?> updateRole(@Valid @RequestBody UserRoleDto userRoleDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                userService.updateRole(
+                    userRoleDto.getId(), userRoleDto.getRole()));
+    }
+
+    /**
+     * The method which return list of users by page.
+     *
+     * @param pageable - pageable configuration.
+     * @return list of {@code UserPageableDto}
+     * @author Rostyslav Khasnaov
      */
     @GetMapping
     public ResponseEntity<?> getAllUsers(Pageable pageable) {
