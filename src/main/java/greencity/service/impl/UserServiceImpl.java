@@ -142,14 +142,4 @@ public class UserServiceImpl implements UserService {
         user.setUserStatus(userStatus);
         return modelMapper.map(repo.save(user), UserStatusDto.class);
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Nazar Vladyka.
-     */
-    @Override
-    public ROLE getRole(String email) {
-        return findByEmail(email).getRole();
-    }
 }
