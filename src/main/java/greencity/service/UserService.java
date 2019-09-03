@@ -49,22 +49,13 @@ public interface UserService {
     User findByEmail(String email);
 
     /**
-     * Find User id by User email.
+     * Find User's id by User email.
      *
-     * @param email - User email
-     * @return User id
+     * @param email - {@link User} email
+     * @return {@link User} id
      * @author Zakhar Skaletskyi
      */
     Long findIdByEmail(String email);
-
-    /**
-     * Check user existing by email.
-     *
-     * @param email - User email
-     * @return boolean check result
-     * @author Zakhar Skaletskyi
-     */
-    boolean existsByEmail(String email);
 
     /**
      * Update {@code ROLE} of user.

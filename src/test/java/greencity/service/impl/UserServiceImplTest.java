@@ -14,6 +14,7 @@ import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import javafx.beans.binding.When;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,5 +114,19 @@ public class UserServiceImplTest {
         when(userService.findByEmail("nazarvladykaaa@gmail.com")).thenReturn(user);
 
         assertEquals(ROLE.ROLE_ADMIN, userService.getRole("nazarvladykaaa@gmail.com"));
+    }
+
+    @Test
+    public void findIdByEmail() {
+        String email = "email";
+        when(userRepo.findIdByEmail(email)).thenReturn(2L);
+        assertEquals(2L, (long) userService.findIdByEmail(email));
+    }
+
+    @Test(expected = BadEmailException.class)
+    public void findIdByEmailNotFound() {
+        String email = "email";
+        when(userRepo.findIdByEmail(email)).thenReturn(0L);
+        userService.findIdByEmail(email);
     }
 }

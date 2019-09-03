@@ -35,7 +35,7 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
      * @param email   - user's email
      * @author Zakhar Skaletskyi
      */
-    void deleteByPlaceIdAndUserEmail(Long placeId, String email);
+    int deleteByPlaceIdAndUserEmail(Long placeId, String email);
 
     /**
      * Find favorite place by place id and user id.

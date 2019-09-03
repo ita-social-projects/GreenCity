@@ -6,6 +6,7 @@ import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.exception.BadUserException;
 import greencity.repository.UserRepo;
@@ -104,17 +105,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Long findIdByEmail(String email) {
-        return repo.findIdByEmail(email);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Zakhar Skaletskyi
-     */
-    @Override
-    public boolean existsByEmail(String email) { //zakhar
-        return repo.existsByEmail(email);
+        Long id = repo.findIdByEmail(email);
+        if (id == 0L) {
+            throw  new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
+        }
+        return id;
     }
 
     /**

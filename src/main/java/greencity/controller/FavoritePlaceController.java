@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/favorite_place")
 @AllArgsConstructor
 public class FavoritePlaceController {
@@ -27,39 +26,36 @@ public class FavoritePlaceController {
     @PutMapping
     public ResponseEntity<FavoritePlaceDto> update(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
                                                    Principal principal) {
-        favoritePlaceDto.setUserEmail(principal.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.update(favoritePlaceDto));
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
+            .update(favoritePlaceDto, principal.getName()));
     }
 
     /**
      * Find all favorite places by user email.
      *
-     * @param email - user's email
+     * @param principal - Principal with user email
      * @return list of dto
      * @author Zakhar Skaletskyi
      */
 
     @GetMapping
-    public ResponseEntity<List<FavoritePlaceDto>> findAllByUserEmail(@Valid @RequestParam String email,
-                                                                     Principal principal) {
-        email = principal.getName();
-
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(email));
+    public ResponseEntity<List<FavoritePlaceDto>> findAllByUserEmail(Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(principal.getName()));
     }
 
     /**
      * Delete favorite place by place id and user email.
      *
-     * @param favoritePlaceDto - dto for FavoritePlace entity
+     * @param placeId   - place id
+     * @param principal - Principal with user email
      * @author Zakhar Skaletskyi
      */
+    @SuppressWarnings("checkstyle:GenericWhitespace")
     @DeleteMapping
-    public ResponseEntity deleteByPlaceIdAndUserEmail(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
-                                                      Principal principal) {
-        favoritePlaceDto.setUserEmail(principal.getName());
-
-        favoritePlaceService.deleteByPlaceIdAndUserEmail(favoritePlaceDto);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<Integer> deleteByPlaceIdAndUserEmail(@Valid @RequestParam Long placeId,
+                                                               Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
+            .deleteByPlaceIdAndUserEmail(placeId, principal.getName()));
     }
 }
 

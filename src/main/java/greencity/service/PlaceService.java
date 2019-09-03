@@ -70,9 +70,9 @@ public interface PlaceService {
     PlaceInfoDto getAccessById(Long id);
 
     /**
-     * Check place existing by id.
+     * Check {@link Place} existing by id.
      *
-     * @param id - place id
+     * @param id - {@link Place} id
      * @return boolean check result
      * @author Zakhar Skaletskyi
      */
