@@ -2,7 +2,7 @@ package greencity.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
 import greencity.dto.user.UserForListDto;
@@ -40,25 +40,25 @@ public class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
+    User user =
+        User.builder()
+            .firstName("test")
+            .lastName("test")
+            .email("test@gmail.com")
+            .role(ROLE.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastVisit(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .build();
+
     @Test
     public void saveTest() {
-        User user = new User();
         when(userRepo.save(user)).thenReturn(user);
         assertEquals(user, userService.save(user));
     }
 
     @Test
     public void updateUserStatusBlockedTest() {
-        User user =
-            User.builder()
-                .firstName("test")
-                .lastName("test")
-                .email("test@gmail.com")
-                .role(ROLE.ROLE_USER)
-                .userStatus(UserStatus.ACTIVATED)
-                .lastVisit(LocalDateTime.now())
-                .dateOfRegistration(LocalDateTime.now())
-                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
@@ -69,16 +69,6 @@ public class UserServiceImplTest {
 
     @Test
     public void updateUserStatusDeactivatedTest() {
-        User user =
-            User.builder()
-                .firstName("test")
-                .lastName("test")
-                .email("test@gmail.com")
-                .role(ROLE.ROLE_USER)
-                .userStatus(UserStatus.ACTIVATED)
-                .lastVisit(LocalDateTime.now())
-                .dateOfRegistration(LocalDateTime.now())
-                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
@@ -89,21 +79,13 @@ public class UserServiceImplTest {
 
     @Test
     public void updateRoleTest() {
-        User user =
-            User.builder()
-                .firstName("test")
-                .lastName("test")
-                .email("test@gmail.com")
-                .role(ROLE.ROLE_USER)
-                .lastVisit(LocalDateTime.now())
-                .dateOfRegistration(LocalDateTime.now())
-                .build();
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             ROLE.ROLE_MODERATOR,
             userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR).getRole());
+        verify(userRepo, times(1)).save(any());
     }
 
     @Test
@@ -114,8 +96,9 @@ public class UserServiceImplTest {
         user.setId(1l);
 
         when(userRepo.findById(id)).thenReturn(Optional.of(user));
-        User expectedUser = userService.findById(id);
-        assertEquals(user, expectedUser);
+
+        assertEquals(user, userService.findById(id));
+        verify(userRepo, times(1)).findById(id);
     }
 
     @Test(expected = BadIdException.class)
@@ -173,9 +156,12 @@ public class UserServiceImplTest {
         UserPageableDto userPageableDto =
             new UserPageableDto(userForListDtos,
                 userForListDtos.size(), 0, ROLE.class.getEnumConstants());
+
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
         when(userRepo.findAllByOrderByEmail(any())).thenReturn(usersPage);
+
         assertEquals(userPageableDto, userService.findByPage(any()));
+        verify(userRepo, times(1)).findAllByOrderByEmail(any());
     }
 }
