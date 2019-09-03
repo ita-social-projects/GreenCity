@@ -45,6 +45,7 @@ public interface PlaceService {
      */
     Place save(PlaceAddDto dto, String email);
 
+
     /**
      * Generated javadoc, must be replaced with real one.
      */
@@ -69,10 +70,11 @@ public interface PlaceService {
      */
     PlaceInfoDto getAccessById(Long id);
 
+
     /**
-     * Check place existing by id.
+     * Check {@link Place} existing by id.
      *
-     * @param id - place id
+     * @param id - {@link Place} id
      * @return boolean check result
      * @author Zakhar Skaletskyi
      */
@@ -88,4 +90,13 @@ public interface PlaceService {
      * @author Marian Milian.
      */
     List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
+
+    /**
+     * Get average rate of {@link Place}.
+     *
+     * @param id - {@link Place} id
+     * @return byte rate number
+     * @author Zakhar Skaletskyi
+     */
+    byte averageRate(Long id);
 }
