@@ -1,17 +1,14 @@
 package greencity.controller;
 
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
-
 import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.dto.userownsecurity.UserSignInDto;
 import greencity.dto.userownsecurity.UserSuccessSignInDto;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.VerifyEmailService;
+import java.net.URI;
+import java.net.URISyntaxException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/ownSecurity")
 public class UserOwnSecurityController {
-
     @Value("${client.address}")
     private String clientAddress;
 
@@ -37,11 +33,11 @@ public class UserOwnSecurityController {
     /**
      * Constructor.
      *
-     * @param service - {@link UserOwnSecurityService} - service for security logic.
+     * @param service            - {@link UserOwnSecurityService} - service for security logic.
      * @param verifyEmailService {@link VerifyEmailService} - service for verify email logic.
      */
     public UserOwnSecurityController(
-            UserOwnSecurityService service, VerifyEmailService verifyEmailService) {
+        UserOwnSecurityService service, VerifyEmailService verifyEmailService) {
         this.service = service;
         this.verifyEmailService = verifyEmailService;
     }

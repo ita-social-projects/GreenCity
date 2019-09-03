@@ -69,7 +69,7 @@ public class PlaceController {
     /**
      * Generated javadoc, must be replaced with real one.
      */
-    @PostMapping("/save/favorite_place")
+    @PostMapping("/save/favorite")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
                                                                 Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService

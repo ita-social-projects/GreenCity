@@ -12,7 +12,6 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode
 public class VerifyEmail {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,10 +1,9 @@
 package greencity.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Service that provide {@link VerifyEmail} logic.
@@ -17,12 +16,12 @@ public interface VerifyEmailService {
      * Save method.
      *
      * @param user {@link User} - we use here user, not DTO, because we create this user in sign-in
-     *     and sign-up logic.
+     *             and sign-up logic.
      */
     void save(User user);
 
     /**
-     * Method that provide delete {@link VerifyEmail}
+     * Method that provide delete {@link VerifyEmail}.
      *
      * @param verifyEmail {@link VerifyEmail}
      */
@@ -38,7 +37,7 @@ public interface VerifyEmailService {
     /**
      * Find all method.
      *
-     * @return {@link List<VerifyEmail>}
+     * @return {@link List}
      */
     List<VerifyEmail> findAll();
 

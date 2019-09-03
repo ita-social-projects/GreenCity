@@ -9,25 +9,24 @@ import greencity.GreenCityApplication;
 import greencity.entity.OpeningHours;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
-import greencity.service.OpenHoursService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class OpenHoursServiceImplTest {
-    @MockBean
+    @Mock
     private OpenHoursRepo openHoursRepo;
-    @Autowired
-    private OpenHoursService openHoursService;
+    @InjectMocks
+    private OpenHoursServiceImpl openHoursService;
 
     @Test
     public void saveTest() {
@@ -70,17 +69,6 @@ public class OpenHoursServiceImplTest {
     @Test(expected = NotFoundException.class)
     public void updateGivenIdNullThenThrowException() {
         openHoursService.update(null, new OpeningHours());
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void deleteByIdThrowExceptionWhenCallFindById() {
-        OpeningHours generic = new OpeningHours();
-
-        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(generic));
-        when(openHoursService.findById(anyLong())).thenThrow(NotFoundException.class);
-
-        openHoursService.deleteById(1L);
-        openHoursService.findById(1L);
     }
 
     @Test(expected = NotFoundException.class)

@@ -297,7 +297,7 @@ public class FavoritePlaceServiceImplTest {
         when(modelMapper.map(any(Place.class), eq(PlaceInfoDto.class))).thenReturn(placeInfoDto);
         when(placeService.findById(anyLong())).thenReturn(new Place());
         when(placeService.averageRate(anyLong())).thenReturn((byte) 2);
-        Assert.assertEquals(placeInfoDto, favoritePlaceService.getAccessPlaceAsFavoritePlace(2L));
+        Assert.assertEquals(placeInfoDto, favoritePlaceService.getInfoFavoritePlace(2L));
     }
 
     /**
@@ -307,7 +307,7 @@ public class FavoritePlaceServiceImplTest {
     public void getAccessPlaceAsFavoritePlace_FavoritePlaceNotExist() {
         FavoritePlace fp = new FavoritePlace();
         when(repo.findById(anyLong())).thenThrow(new NotFoundException(anyString()));
-        favoritePlaceService.getAccessPlaceAsFavoritePlace(2L);
+        favoritePlaceService.getInfoFavoritePlace(2L);
     }
 
     /**
@@ -320,7 +320,7 @@ public class FavoritePlaceServiceImplTest {
         FavoritePlace fp = new FavoritePlace();
         when(repo.findById(anyLong())).thenReturn(Optional.of(favoritePlace));
         when(placeService.findById(anyLong())).thenThrow(new NotFoundException("a"));
-        favoritePlaceService.getAccessPlaceAsFavoritePlace(2L);
+        favoritePlaceService.getInfoFavoritePlace(2L);
     }
 
 

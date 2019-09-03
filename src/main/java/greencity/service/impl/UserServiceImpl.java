@@ -39,7 +39,9 @@ public class UserServiceImpl implements UserService {
      */
     private ModelMapper modelMapper;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
@@ -47,7 +49,6 @@ public class UserServiceImpl implements UserService {
         }
         return repo.save(user);
     }
-
 
     /**
      * {@inheritDoc}
