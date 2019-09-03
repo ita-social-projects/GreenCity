@@ -1,6 +1,7 @@
 package greencity.dto.location;
 
 import greencity.constant.ValidationConstants;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @Builder
 public class LocationAddressAndGeoDto {
+    @NotBlank(message = ValidationConstants.EMPTY_PLACE_ADDRESS)
     @Length(
         min = ValidationConstants.PLACE_ADDRESS_MIN_LENGTH,
         max = ValidationConstants.PLACE_ADDRESS_MAX_LENGTH)

@@ -10,7 +10,6 @@ import greencity.entity.Location;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.exception.BadLocationRequestException;
 import greencity.exception.CheckRepeatingValueException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
@@ -123,17 +122,9 @@ public class PlaceServiceImpl implements PlaceService {
     private void setPlaceToLocation(Place place) {
         log.info(LogMessage.SET_PLACE_TO_LOCATION, place.getName());
 
-        Location location =
-            locationService.findByLatAndLng(
-                place.getLocation().getLat(), place.getLocation().getLng());
-        if (location == null) {
-            location = place.getLocation();
-            location.setPlace(place);
-            locationService.save(location);
-        } else {
-            throw new BadLocationRequestException(
-                ErrorMessage.LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES);
-        }
+        Location location = place.getLocation();
+        location.setPlace(place);
+        locationService.save(location);
     }
 
     /**

@@ -16,7 +16,6 @@ import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
-import greencity.exception.BadLocationRequestException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.PlaceAddDtoMapper;

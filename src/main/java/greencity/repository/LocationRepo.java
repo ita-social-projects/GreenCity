@@ -18,7 +18,5 @@ public interface LocationRepo extends JpaRepository<Location, Long> {
      * @return a {@code Location}
      * @author Kateryna Horokh.
      */
-    @Query(value = "select l.address from Location l where l.lat = ?1 "
-        + "and l.lng = ?2 and l.place_id is not null", nativeQuery = true)
     Location findByLatAndLng(Double lat, Double lng);
 }
