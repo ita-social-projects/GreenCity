@@ -1,5 +1,6 @@
 package greencity.controller;
 
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
@@ -10,7 +11,6 @@ import greencity.dto.user_own_security.UserSignInDto;
 import greencity.dto.user_own_security.UserSuccessSignInDto;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.VerifyEmailService;
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
