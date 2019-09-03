@@ -19,9 +19,11 @@ import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -288,7 +290,7 @@ public class FavoritePlaceServiceImplTest {
     @Test
     public void getAccessPlaceAsFavoritePlace() {
         PlaceInfoDto placeInfoDto = new PlaceInfoDto();
-        placeInfoDto.setRate((byte) 2);
+        placeInfoDto.setRate(2.0);
         placeInfoDto.setName("abc");
         FavoritePlace favoritePlace = FavoritePlace.builder().place(Place.builder().id(1L).build())
             .user(new User()).name("abc").build();
@@ -296,7 +298,7 @@ public class FavoritePlaceServiceImplTest {
         when(repo.findById(anyLong())).thenReturn(Optional.of(favoritePlace));
         when(modelMapper.map(any(Place.class), eq(PlaceInfoDto.class))).thenReturn(placeInfoDto);
         when(placeService.findById(anyLong())).thenReturn(new Place());
-        when(placeService.averageRate(anyLong())).thenReturn((byte) 2);
+        when(placeService.averageRate(anyLong())).thenReturn(2.0);
         Assert.assertEquals(placeInfoDto, favoritePlaceService.getInfoFavoritePlace(2L));
     }
 

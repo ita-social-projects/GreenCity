@@ -65,10 +65,10 @@ public interface PlaceService {
      * Method for getting place information.
      *
      * @param id place
-     * @return info about place
+     * @return PlaceInfoDto with info about place
      * @author Dmytro Dovhal
      */
-    PlaceInfoDto getAccessById(Long id);
+    PlaceInfoDto getInfoById(Long id);
 
 
     /**
@@ -98,5 +98,5 @@ public interface PlaceService {
      * @return byte rate number
      * @author Zakhar Skaletskyi
      */
-    byte averageRate(Long id);
+    Double averageRate(Long id);
 }
