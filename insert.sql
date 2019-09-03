@@ -32,9 +32,9 @@ INSERT INTO specification_value (value, place_id, specification_id) VALUES ('dis
 INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 2, 3);
 INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 1, 4);
 
-INSERT INTO favorite_place (place_id, user_id) values (1, 1);
-INSERT INTO favorite_place (place_id, user_id) values (2, 2);
-INSERT INTO favorite_place (place_id, user_id) values (2, 2);
+INSERT INTO favorite_place (place_id, user_id, name) values (1, 1, 'My best place');
+INSERT INTO favorite_place (place_id, user_id, name) values (2, 2, 'My best place');
+INSERT INTO favorite_place (place_id, user_id, name) values (2, 2, 'My best place');
 
 INSERT INTO rate (rate, place_id, user_id) values (5, 1, 1);
 INSERT INTO rate (rate, place_id, user_id) values (4, 2, 2);

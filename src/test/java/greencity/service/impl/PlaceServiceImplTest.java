@@ -222,25 +222,26 @@ public class PlaceServiceImplTest {
     public void getInfoByIdNotFoundTest() {
         placeService.getInfoById(null);
     }
+
     /**
      * @author Zakhar Skaletskyi
      */
     @Test
-    public  void existsById()
-    {
+    public void existsById() {
         when(placeRepo.existsById(anyLong())).thenReturn(true);
         assertTrue(placeService.existsById(3L));
         when(placeRepo.existsById(anyLong())).thenReturn(false);
         assertFalse(placeService.existsById(2L));
     }
+
     /**
      * @author Zakhar Skaletskyi
      */
     @Test
-    public  void averageRate(){
-          byte averageRate=4;
-        when(placeRepo.averageRate(anyLong())).thenReturn(averageRate);
-        assertEquals(averageRate,placeService.averageRate(2L));
+    public void averageRate() {
+        Double averageRate = 4.0;
+        when(placeRepo.getAverageRate(anyLong())).thenReturn(averageRate);
+        assertEquals(averageRate, placeService.averageRate(2L));
     }
 
 }

@@ -245,8 +245,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public byte averageRate(Long id) {
+    public Double averageRate(Long id) {
         log.info(LogMessage.IN_AVERAGE_RATE,id);
-        return placeRepo.averageRate(id);
+        return placeRepo.getAverageRate(id);
     }
 }

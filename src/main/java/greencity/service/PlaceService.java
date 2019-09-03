@@ -98,5 +98,5 @@ public interface PlaceService {
      * @return byte rate number
      * @author Zakhar Skaletskyi
      */
-    byte averageRate(Long id);
+    Double averageRate(Long id);
 }
