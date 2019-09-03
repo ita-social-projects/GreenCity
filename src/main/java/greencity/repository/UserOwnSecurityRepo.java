@@ -4,7 +4,7 @@ import greencity.entity.UserOwnSecurity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Repository for {@link UserOwnSecurity}
+ * Repository for {@link UserOwnSecurity}.
  *
  * @author Nazar Stasyuk
  * @version 1.0

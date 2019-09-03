@@ -1,13 +1,12 @@
 package greencity.dto.userownsecurity;
 
+import static greencity.constant.ValidationConstants.INVALID_EMAIL;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
-
-import static greencity.constant.ValidationConstants.INVALID_EMAIL;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +14,6 @@ import static greencity.constant.ValidationConstants.INVALID_EMAIL;
 @Builder
 @EqualsAndHashCode
 public class UserRegisterDto {
-
     @NotBlank
     @Length(max = 20)
     private String firstName;
