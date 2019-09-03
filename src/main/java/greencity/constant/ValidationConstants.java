@@ -37,4 +37,18 @@ public class ValidationConstants {
     public static final String EMPTY_CLOSE_TIME_VALUE = "The closing time can not be empty";
 
     public static final String EMPTY_WEEK_DAY_VALUE = "The week day can not be empty";
+
+    public static final String MIN_VALUE_LATITUDE =
+        "The '${validatedValue}' must be at least {value}";
+    public static final String MAX_VALUE_LATITUDE =
+        "The '${validatedValue}' must be at least {value}";
+    public static final String MIN_VALUE_LONGITUDE =
+        "The '${validatedValue}' must be at least {value}";
+    public static final String MAX_VALUE_LONGITUDE =
+        "The '${validatedValue}' must be at least {value}";
+
+    public static final String N_E_LAT_CAN_NOT_BE_NULL = "North-east latitude can not be null";
+    public static final String N_E_LNG_CAN_NOT_BE_NULL = "North-east longitude can not be null";
+    public static final String S_W_LAT_CAN_NOT_BE_NULL = "South-west latitude can not be null";
+    public static final String S_W_LNG_CAN_NOT_BE_NULL = "South-west longitude can not be null";
 }
