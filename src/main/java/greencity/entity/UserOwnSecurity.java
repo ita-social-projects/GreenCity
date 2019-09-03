@@ -1,10 +1,8 @@
 package greencity.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 
 @Entity
@@ -12,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class UserOwnSecurity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +21,5 @@ public class UserOwnSecurity {
 
     @OneToOne
     private User user;
+
 }

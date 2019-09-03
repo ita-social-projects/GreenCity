@@ -3,6 +3,8 @@ package greencity.config;
 import greencity.security.JwtTokenTool;
 import java.util.Arrays;
 import java.util.Collections;
+
+import greencity.security.JwtTokenTool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,32 +18,43 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+/**
+ * Config for security.
+ *
+ * @author Nazar Stasyuk
+ * @version 1.0
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtTokenTool tool;
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor.
+     *
+     * @param tool {@link JwtTokenTool} - tool for JWT
      */
     public SecurityConfig(JwtTokenTool tool) {
         this.tool = tool;
     }
 
-    /**
-     * Generated javadoc, must be replaced with real one.
-     */
+    /** Bean {@link PasswordEncoder} that uses in coding password. */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /** Bean {@link AuthenticationManager} that uses in authentication managing. */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
+    /**
+     * Method for configure security
+     *
+     * @param http {@link HttpSecurity}
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
@@ -75,15 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .apply(new JwtConfig(tool));
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/v2/api-docs/**");
-        web.ignoring().antMatchers("/swagger.json");
-        web.ignoring().antMatchers("/swagger-ui.html");
-        web.ignoring().antMatchers("/swagger-resources/**");
-        web.ignoring().antMatchers("/webjars/**");
-    }
-
+    /** Bean {@link CorsConfigurationSource} that uses for CORS setup. */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -97,5 +102,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    /**
+     * Method for configure matchers that will be ignored in security
+     *
+     * @param web {@link WebSecurity}
+     */
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/v2/api-docs/**");
+        web.ignoring().antMatchers("/swagger.json");
+        web.ignoring().antMatchers("/swagger-ui.html");
+        web.ignoring().antMatchers("/swagger-resources/**");
+        web.ignoring().antMatchers("/webjars/**");
     }
 }
