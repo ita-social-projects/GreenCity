@@ -76,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers("/place/save/favorite_place")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/getFavoritePlaceInfo")
+            .antMatchers("/place/info/favorite")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers("/user/role/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")

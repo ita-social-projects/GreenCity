@@ -61,9 +61,9 @@ public class PlaceController {
      * @param id favorite place
      * @return info about place with name as in favorite place
      */
-    @GetMapping("/getFavoritePlaceInfo")
+    @GetMapping("/info/favorite")
     public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @RequestParam Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getAccessPlaceAsFavoritePlace(id));
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(id));
     }
 
     /**

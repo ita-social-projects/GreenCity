@@ -118,7 +118,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      */
 
     @Override
-    public PlaceInfoDto getAccessPlaceAsFavoritePlace(Long favoritePlaceId) {
+    public PlaceInfoDto getInfoFavoritePlace(Long favoritePlaceId) {
         log.info(LogMessage.IN_GET_ACCESS_PLACE_AS_FAVORITE_PLACE, favoritePlaceId);
         FavoritePlace favoritePlace = findById(favoritePlaceId);
         PlaceInfoDto placeInfoDto =

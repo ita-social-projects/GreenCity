@@ -65,5 +65,5 @@ public interface FavoritePlaceService {
      * @return info about place with name from favorite place
      * @author Dmytro Dovhal
      */
-    PlaceInfoDto getAccessPlaceAsFavoritePlace(Long favoritePlaceId);
+    PlaceInfoDto getInfoFavoritePlace(Long favoritePlaceId);
 }
