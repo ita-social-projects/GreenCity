@@ -3,11 +3,9 @@ package greencity.config;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 import com.google.common.collect.Lists;
-
 import java.awt.print.Pageable;
 import java.util.Date;
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

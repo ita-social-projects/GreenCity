@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Nazar Stasyuk
  * @version 1.0
  */
-public interface UserOwnSecurityRepo extends JpaRepository<UserOwnSecurity, Long> {}
+public interface UserOwnSecurityRepo extends JpaRepository<UserOwnSecurity, Long> {
+}
