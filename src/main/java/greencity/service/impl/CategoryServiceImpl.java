@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public Category save(CategoryDto dto) {
-        log.info("In save category method");
+        log.info(LogMessage.IN_SAVE);
 
         Category byName = categoryRepo.findByName(dto.getName());
 
