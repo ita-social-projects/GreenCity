@@ -5,6 +5,7 @@ import greencity.dto.userownsecurity.UserSignInDto;
 import greencity.dto.userownsecurity.UserSuccessSignInDto;
 import greencity.service.UserOwnSecurityService;
 import greencity.service.VerifyEmailService;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
