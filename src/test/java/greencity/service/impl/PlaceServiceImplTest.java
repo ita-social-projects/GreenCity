@@ -18,7 +18,6 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
-import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
@@ -140,9 +139,6 @@ public class PlaceServiceImplTest {
     private ModelMapper modelMapper;
 
     @Mock
-    private PlaceAddDtoMapper placeAddDtoMapper;
-
-    @Mock
     private UserService userService;
 
     @Mock
@@ -155,7 +151,6 @@ public class PlaceServiceImplTest {
     public void savePlaceWithVerificationAllParametersTest() {
         when(categoryService.findByName(anyString())).thenReturn(any());
         when(categoryService.save(categoryDto)).thenReturn(category);
-        when(placeAddDtoMapper.convertToEntity(placeAddDto)).thenReturn(placeEntity);
         when(placeRepo.save(any())).thenReturn(place);
         when(userService.findByEmail(anyString())).thenReturn(null);
         when(service.findByLatAndLng(anyDouble(), anyDouble())).thenReturn(location);

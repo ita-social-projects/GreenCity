@@ -13,7 +13,6 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.exception.CheckRepeatingValueException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
-import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
@@ -40,7 +39,6 @@ public class PlaceServiceImpl implements PlaceService {
     private CategoryService categoryService;
     private LocationService locationService;
     private OpenHoursService openingHoursService;
-    private PlaceAddDtoMapper placeAddDtoMapper;
     private UserService userService;
 
     /**
@@ -66,7 +64,7 @@ public class PlaceServiceImpl implements PlaceService {
     public Place save(PlaceAddDto dto, String email) {
         log.info(LogMessage.IN_SAVE);
         Category category = createCategoryByName(dto.getCategory().getName());
-        Place place = placeAddDtoMapper.convertToEntity(dto);
+        Place place = modelMapper.map(dto, Place.class);
         place.setAuthor(userService.findByEmail(email));
         place.setCategory(category);
         placeRepo.save(place);
