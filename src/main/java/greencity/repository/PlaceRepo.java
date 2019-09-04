@@ -5,6 +5,8 @@ import greencity.entity.enums.PlaceStatus;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,10 +21,11 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
      * Finds all places related to the given {@code PlaceStatus}.
      *
      * @param status to find by.
+     * @param pageable pageable configuration.
      * @return a list of places with the given {@code PlaceStatus}.
      * @author Roman Zahorui
      */
-    List<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status);
+    Page<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status, Pageable pageable);
 
     /**
      * Method to find average rate.

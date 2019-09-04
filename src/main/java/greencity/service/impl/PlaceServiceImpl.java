@@ -22,6 +22,8 @@ import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,11 +49,12 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-    public List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus) {
-        List<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus);
-        return places.stream()
+    public PlacePageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
+        Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
+        List<AdminPlaceDto> list = places.stream()
             .map(place -> modelMapper.map(place, AdminPlaceDto.class))
             .collect(Collectors.toList());
+        return new PlacePageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
     }
 
     /**
