@@ -5,26 +5,26 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
+import greencity.exception.CheckRepeatingValueException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
-import greencity.mapping.PlaceAddDtoMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
-import io.jsonwebtoken.lang.Assert;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -33,19 +33,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
-    /**
-     * Autowired repository.
-     */
     private PlaceRepo placeRepo;
 
-    /**
-     * Autowired mapper.
-     */
     private ModelMapper modelMapper;
     private CategoryService categoryService;
     private LocationService locationService;
     private OpenHoursService openingHoursService;
-    private PlaceAddDtoMapper placeAddDtoMapper;
     private UserService userService;
 
     /**
@@ -69,9 +62,9 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public Place save(PlaceAddDto dto, String email) {
-        log.info("in save(PlaceAddDto dto), save place - {}", dto.getName());
+        log.info(LogMessage.IN_SAVE);
         Category category = createCategoryByName(dto.getCategory().getName());
-        Place place = placeAddDtoMapper.convertToEntity(dto);
+        Place place = modelMapper.map(dto, Place.class);
         place.setAuthor(userService.findByEmail(email));
         place.setCategory(category);
         placeRepo.save(place);
@@ -88,13 +81,34 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private void setPlaceToOpeningHours(Place place) {
-        log.info("in setPlaceToOpeningHours(Place place) - {}", place.getName());
+        log.info(LogMessage.SET_PLACE_TO_OPENING_HOURS, place.getName());
+
         List<OpeningHours> hours = place.getOpeningHoursList();
-        hours.forEach(
-            h -> {
-                h.setPlace(place);
-                openingHoursService.save(h);
-            });
+        checkRepeatingValue(hours);
+        hours.stream()
+            .distinct()
+            .forEach(
+                h -> {
+                    h.setPlace(place);
+                    openingHoursService.save(h);
+                });
+    }
+
+    /**
+     * Method for checking list of giving {@code OpeningHours} on repeating value of week days.
+     *
+     * @param hours - list of {@link OpeningHours} entity.
+     * @author Kateryna Horokh
+     */
+    private void checkRepeatingValue(List<OpeningHours> hours) {
+        log.info(LogMessage.CHECK_REPEATING_VALUE);
+        for (int i = 0; i < hours.size(); i++) {
+            for (int j = i + 1; j < hours.size(); j++) {
+                if (hours.get(i).getWeekDay().equals(hours.get(j).getWeekDay())) {
+                    throw new CheckRepeatingValueException(ErrorMessage.REPEATING_VALUE_OF_WEEKDAY_VALUE);
+                }
+            }
+        }
     }
 
     /**
@@ -104,7 +118,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private void setPlaceToLocation(Place place) {
-        log.info("in setPlaceToLocation(Place place)", place.getName());
+        log.info(LogMessage.SET_PLACE_TO_LOCATION, place.getName());
+
         Location location = place.getLocation();
         location.setPlace(place);
         locationService.save(location);
@@ -118,7 +133,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private Category createCategoryByName(String name) {
-        log.info("in setPlaceToLocation(Place place)", name);
+        log.info(LogMessage.CREATE_CATEGORY_BY_NAME, name);
 
         Category category = categoryService.findByName(name);
         if (category == null) {
@@ -134,19 +149,19 @@ public class PlaceServiceImpl implements PlaceService {
      *
      * @param id - Long place's id
      * @return boolean
+     * @author Kateryn Horokh
      */
     @Override
     public Boolean deleteById(Long id) {
-        log.info("In deleteById() place method.");
+        log.info(LogMessage.IN_DELETE_BY_ID);
         Place place = findById(id);
         placeRepo.delete(place);
-        log.info("This place was deleted.");
         return true;
     }
 
     @Override
     public List<Place> findAll() {
-        log.info("In findAll() place method.");
+        log.info(LogMessage.IN_FIND_ALL);
         return placeRepo.findAll();
     }
 
@@ -205,11 +220,6 @@ public class PlaceServiceImpl implements PlaceService {
         return placeInfoDto;
     }
 
-    @Override
-    public Place update(Place place) {
-        return null;
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -235,7 +245,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public boolean existsById(Long id) {
-        log.info(LogMessage.IN_EXISTS_BY_ID,id);
+        log.info(LogMessage.IN_EXISTS_BY_ID, id);
         return placeRepo.existsById(id);
     }
 
@@ -246,7 +256,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public Double averageRate(Long id) {
-        log.info(LogMessage.IN_AVERAGE_RATE,id);
+        log.info(LogMessage.IN_AVERAGE_RATE, id);
         return placeRepo.getAverageRate(id);
     }
 }

@@ -3,9 +3,11 @@ package greencity.config;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 import com.google.common.collect.Lists;
+
 import java.awt.print.Pageable;
 import java.util.Date;
 import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,16 +22,23 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * Configuration Swagger into Green City project.
+ *
+ * @author Kateryna Horokh
+ */
 @Configuration
 @EnableSwagger2
 @Import(springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class)
 @Slf4j
 public class SwaggerConfig {
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String DEFAULT_INCLUDE_PATTERN = "/.*";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String DEFAULT_INCLUDE_PATTERN = "/.*";
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Customizing the Docket bean.
+     *
+     * @return docket - {@code Docket}
      */
     @Bean
     public Docket swaggerSpringfoxDocket() {

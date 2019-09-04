@@ -1,5 +1,6 @@
 package greencity.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.constant.ValidationConstants;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -28,6 +29,7 @@ public class UserForListDto {
         message = ValidationConstants.INVALID_LASTNAME_LENGTH)
     private String lastName;
 
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime dateOfRegistration;
 
     @Email(message = ValidationConstants.INVALID_EMAIL)

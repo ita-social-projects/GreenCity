@@ -32,7 +32,7 @@ public class PlaceController {
     /**
      * The method which return new proposed {@code Place} from user.
      *
-     * @param dto - Place dto fot adding with all parameters.
+     * @param dto - Place dto for adding with all parameters.
      * @return new {@code Place}.
      * @author Kateryna Horokh
      */
