@@ -7,13 +7,15 @@ import greencity.entity.enums.PlaceStatus;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
-/** Provides the interface to manage {@code Place} entity. */
+/**
+ * Provides the interface to manage {@code Place} entity.
+ */
 public interface PlaceService {
     /**
      * Finds all {@code Place} with status {@code PlaceStatus}.
      *
      * @param placeStatus a value of {@link PlaceStatus} enum.
-     * @param pageable pageable configuration.
+     * @param pageable    pageable configuration.
      * @return an object of {@code PlacePageableDto} which contains a list of {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
@@ -22,7 +24,7 @@ public interface PlaceService {
     /**
      * Update status for the Place and set the time of modification.
      *
-     * @param id - place id.
+     * @param id     - place id.
      * @param status - place status.
      * @return saved PlaceStatusDto entity.
      */
@@ -83,7 +85,7 @@ public interface PlaceService {
      * location depends on the map bounds.
      *
      * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *     state of map
+     *                     state of map
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */

@@ -7,7 +7,9 @@ package greencity.exception;
  * @version 1.0
  */
 public class BadRefreshTokenException extends RuntimeException {
-    /** Generated javadoc, must be replaced with real one. */
+    /**
+     * Generated javadoc, must be replaced with real one.
+     */
     public BadRefreshTokenException(String message) {
         super(message);
     }

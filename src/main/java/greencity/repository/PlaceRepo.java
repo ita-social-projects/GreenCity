@@ -2,9 +2,7 @@ package greencity.repository;
 
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +18,7 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
     /**
      * Finds all places related to the given {@code PlaceStatus}.
      *
-     * @param status to find by.
+     * @param status   to find by.
      * @param pageable pageable configuration.
      * @return a list of places with the given {@code PlaceStatus}.
      * @author Roman Zahorui

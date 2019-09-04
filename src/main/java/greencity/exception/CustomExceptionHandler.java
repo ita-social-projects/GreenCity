@@ -80,7 +80,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Method intercept exception {@link BadEmailException}.
      *
-     * @param ex      Exception witch should be intercepted.
+     * @param ex Exception witch should be intercepted.
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      * @author Nazar Stasyuk
      */

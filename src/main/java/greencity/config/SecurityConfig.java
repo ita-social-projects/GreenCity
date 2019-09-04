@@ -70,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
             .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
             .permitAll()
-            .antMatchers(HttpMethod.GET,"/category/**")
+            .antMatchers(HttpMethod.GET, "/category/**")
             .permitAll()
             .antMatchers(HttpMethod.POST, "/category/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
