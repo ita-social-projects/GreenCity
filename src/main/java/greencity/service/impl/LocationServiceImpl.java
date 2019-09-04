@@ -86,11 +86,10 @@ public class LocationServiceImpl implements LocationService {
      * @author Nazar Vladyka
      */
     @Override
-    public void deleteById(Long id) {
+    public Long deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        findById(id);
-
-        locationRepo.deleteById(id);
+        locationRepo.delete(findById(id));
+        return id;
     }
 }

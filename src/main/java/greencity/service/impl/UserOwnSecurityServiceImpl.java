@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
 
+import greencity.dto.userownsecurity.AccessTokenDto;
 import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.dto.userownsecurity.UserSignInDto;
 import greencity.dto.userownsecurity.UserSuccessSignInDto;
@@ -10,7 +11,6 @@ import greencity.entity.UserOwnSecurity;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
-import greencity.exception.BadEmailOrPasswordException;
 import greencity.exception.BadIdException;
 import greencity.exception.BadRefreshTokenException;
 import greencity.repository.UserOwnSecurityRepo;
@@ -24,16 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Provides the class to manage {@link UserOwnSecurityService} entity.
- *
- * @author Nazar Stasyuk
- * @version 1.0
+ * {@inheritDoc}
  */
 @Service
 @AllArgsConstructor
@@ -51,10 +47,9 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
      */
     @Transactional
     @Override
-    public void register(UserRegisterDto dto) {
+    public void signUp(UserRegisterDto dto) {
         log.info("begin");
         User byEmail = userService.findByEmail(dto.getEmail());
-
         if (byEmail != null) {
             // He has already registered
             if (byEmail.getUserOwnSecurity() == null) {
@@ -131,33 +126,27 @@ public class UserOwnSecurityServiceImpl implements UserOwnSecurityService {
      */
     @Override
     public UserSuccessSignInDto signIn(UserSignInDto dto) {
-        // This method will be change when we will add security
         log.info("begin");
-        try {
-            manager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-            User byEmail = userService.findByEmail(dto.getEmail());
-
-            String accessToken =
-                jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
-            String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
-            log.info("end");
-            return new UserSuccessSignInDto(accessToken, refreshToken);
-        } catch (AuthenticationException e) {
-            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
-        }
+        manager.authenticate(
+            new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+        User byEmail = userService.findByEmail(dto.getEmail());
+        String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
+        String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
+        log.info("end");
+        return new UserSuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String updateAccessToken(String refreshToken) {
+    public AccessTokenDto updateAccessToken(String refreshToken) {
         if (jwtTokenTool.isTokenValid(refreshToken)) {
             String email = jwtTokenTool.getEmailByToken(refreshToken);
             User user = userService.findByEmail(email);
             if (user != null) {
-                return jwtTokenTool.createAccessToken(user.getEmail(), user.getRole());
+                return new AccessTokenDto(
+                    jwtTokenTool.createAccessToken(user.getEmail(), user.getRole()));
             }
         }
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);

@@ -1,10 +1,13 @@
 package greencity.config;
 
 import greencity.security.JwtTokenTool;
+
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -16,32 +19,48 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+/**
+ * Config for security.
+ *
+ * @author Nazar Stasyuk
+ * @version 1.0
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtTokenTool tool;
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor.
+     *
+     * @param tool {@link JwtTokenTool} - tool for JWT
      */
     public SecurityConfig(JwtTokenTool tool) {
         this.tool = tool;
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Bean {@link PasswordEncoder} that uses in coding password.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Bean {@link AuthenticationManager} that uses in authentication managing.
+     */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * Method for configure security.
+     *
+     * @param http {@link HttpSecurity}
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
@@ -55,22 +74,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
             .antMatchers("/place/propose/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/{status}")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/status**")
+            .antMatchers(HttpMethod.PATCH, "/place/status**")
             .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.GET, "/place/Info/{id}/**")
+            .permitAll()
+            .antMatchers("/place/{status}/**")
+            .hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers("/favoritePlace/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/save/favoritePlace")
+            .antMatchers("/place/save/favorite")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/user/role/**")
+            .antMatchers("/place/info/favorite")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH, "/user/status")
+            .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH, "/user/role")
+            .hasRole("ADMIN")
+            .antMatchers(HttpMethod.GET, "/user")
+            .hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")
             .and()
             .apply(new JwtConfig(tool));
     }
 
+    /**
+     * Method for configure matchers that will be ignored in security.
+     *
+     * @param web {@link WebSecurity}
+     */
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/v2/api-docs/**");
@@ -80,6 +112,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/webjars/**");
     }
 
+    /**
+     * Bean {@link CorsConfigurationSource} that uses for CORS setup.
+     */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

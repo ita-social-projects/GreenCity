@@ -8,8 +8,10 @@ import greencity.exception.BadCategoryRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -112,12 +114,11 @@ public class CategoryServiceImpl implements CategoryService {
      * @author Nazar Vladyka
      */
     @Override
-    public void deleteById(Long id) {
+    public Long deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        findById(id);
-
-        categoryRepo.deleteById(id);
+        categoryRepo.delete(findById(id));
+        return id;
     }
 
     /**
