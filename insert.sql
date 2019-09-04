@@ -53,13 +53,14 @@ INSERT INTO specification (name) VALUES ('Animal');
 INSERT INTO specification (name) VALUES ('Own cup');
 INSERT INTO specification (name) VALUES ('Karaoke');
 INSERT INTO specification (name) VALUES ('Shopping');
-INSERT INTO specification (name) VALUES ('Shopping');
+INSERT INTO specification (name) VALUES ('Ukrainian food');
+INSERT INTO specification (name) VALUES ('Dance');
 
-INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 1, 1);
-INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 2, 2);
-INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 3, 2);
-INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 2, 3);
 INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 1, 4);
+INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 2, 2);
+INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 3, 3);
+INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 4, 6);
+INSERT INTO specification_value (value, place_id, specification_id) VALUES ('disc', 5, 5);
 
 INSERT INTO favorite_place (place_id, user_id, name) values (1, 1, 'My best place');
 INSERT INTO favorite_place (place_id, user_id, name) values (2, 2, 'My best place');
