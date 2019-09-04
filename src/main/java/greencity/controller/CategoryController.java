@@ -23,7 +23,7 @@ public class CategoryController {
      * @return new {@code Category}.
      * @author Kateryna Horokh
      */
-    @PostMapping("/save")
+    @PostMapping
     public ResponseEntity saveCategory(@Valid @RequestBody CategoryDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(dto));
     }
@@ -34,7 +34,7 @@ public class CategoryController {
      * @return list of {@code Category}.
      * @author Kateryna Horokh
      */
-    @GetMapping("/categories")
+    @GetMapping
     public ResponseEntity<List<CategoryDto>> findAllCategory() {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.findAllCategoryDto());
     }
