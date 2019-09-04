@@ -6,6 +6,35 @@ INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_v
   (2, '2019-09-03 12:17:18.345000', 'dovgal.dmytr@gmail.com', 'Dima', 'Dovhal', '2019-09-03 12:17:18.346000', 0, 2);
 INSERT INTO user_own_security (id, password, user_id)
 VALUES (2, '$2a$10$HqJME/hE.0THMpGbzBci5usUe9T7t4dfLyL./JbndpWgGhjD2qyqC', 2);
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+  (3,'2019-09-04 13:20:31.755000','rapac@clockus.ru','Paul','Kos','2019-09-04 13:20:31.757000',1,2);
+INSERT INTO user_own_security (id, password, user_id)
+VALUES (3,'$2a$10$Mdu2vmDtmjgATCh0EpZ6V.Q3uhJn5Kz4biDu.Ol3EX55Pv4D7Ltla',3);
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+  (4,'2019-09-04 13:38:44.518000','rsssac@clockus.ru','Roman','KOcak','2019-09-04 13:38:44.518000',0,2);
+INSERT INTO user_own_security (id, password, user_id)
+VALUES (4,'$2a$10$5ms4Ni.xuIfSXp1RxScQjOlQvLbrCUlZUNNtkQm23jc99NQXkppMe',4);
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+  (5,'2019-09-04 13:39:25.827000','rsssasssc@clockus.ru','Misha','Pavluv','2019-09-04 13:39:25.827000',0,2);
+INSERT INTO user_own_security (id, password, user_id)
+VALUES (5,'$2a$10$QCM1BwKCmM2GCSeK6pTpOeaXrcYOLCleifvrytgwgB3FnoE497dV.',5);
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+  (6,'2019-09-04 13:40:21.531000','1warsssasssc@clockus.ru','Taras','Tymkiv','2019-09-04 13:40:21.531000',0,2);
+INSERT INTO user_own_security (id, password, user_id)
+VALUES (6,'$2a$10$bQggp0SIPwHh5D/ahmm4reKJtsod6dcEo79WJBO0aIAUIs/j9JGrC',6);
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+  (7,'2019-09-04 13:43:00.061000','1warssssssssasssc@clockus.ru','Ihor','Zdebskiy','2019-09-04 13:43:00.061000',0,2);
+INSERT INTO user_own_security (id, password, user_id)
+VALUES (7,'$2a$10$v.k/53rC6NnIsosZEH0ezecuKWrG8fL4yOHXW5w3AudFeFUub0It2',7);
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+  (8,'2019-09-04 13:44:08.939000','1warssssssssassssc@clockus.ru','Amon','Azarov','2019-09-04 13:44:08.939000',0,2);
+INSERT INTO user_own_security (id, password, user_id)
+VALUES (8,'$2a$10$hSKDmeUboTyvBpUnXj8c2ulIXBeHq5rd4h.H0Oj8gpzYlwS0L78qO',8);
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+  (9,'2019-09-04 14:04:14.931000','rostuk.khasanov@gmail.com','Rostyslav','Khasanov','2019-09-04 14:04:14.931000',1,2);
+INSERT INTO user_own_security (id, password, user_id)
+VALUES (9,'$2a$10$cgaNMFjdAFX6k810YSZDSuvKVlWFcq6/F7p2lcgLzK6sFB48dky2W',9);
+
 
 INSERT INTO category (name) values ('Food');
 
