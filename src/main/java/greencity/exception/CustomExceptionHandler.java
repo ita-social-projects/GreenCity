@@ -1,5 +1,6 @@
 package greencity.exception;
 
+import greencity.constant.AppConstant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,69 +18,105 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+/**
+ * Custom exception handler .
+ *
+ * @author Marian Milian
+ * @version 1.0
+ */
+
 @AllArgsConstructor
 @RestControllerAdvice
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
+
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method intercept exception {@link RuntimeException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @author Marian Milian
      */
     @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity handle(RuntimeException e, WebRequest request) {
+    public final ResponseEntity handle(RuntimeException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method intercept exception {@link BadEmailOrPasswordException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @author Marian Milian
      */
     @ExceptionHandler(BadEmailOrPasswordException.class)
-    public final ResponseEntity handle(BadEmailOrPasswordException e, WebRequest request) {
+    public final ResponseEntity handle(BadEmailOrPasswordException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method intercept exception {@link BadRefreshTokenException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @author Marian Milian
      */
     @ExceptionHandler(BadRefreshTokenException.class)
-    public final ResponseEntity<?> handle(BadRefreshTokenException e, WebRequest request) {
+    public final ResponseEntity handle(BadRefreshTokenException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method intercept exception {@link BadEmailException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @author Nazar Stasyuk
      */
     @ExceptionHandler(BadEmailException.class)
-    public final ResponseEntity handle(BadEmailException e, WebRequest request) {
+    public final ResponseEntity handle(BadEmailException ex) {
         ValidationExceptionDto validationExceptionDto =
-            new ValidationExceptionDto("email", e.getMessage());
-        log.trace(e.getMessage(), e);
+            new ValidationExceptionDto(AppConstant.REGISTRATION_EMAIL_FIELD_NAME, ex.getMessage());
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(Collections.singletonList(validationExceptionDto));
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method intercept exception {@link BadPlaceRequestException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
     @ExceptionHandler(BadPlaceRequestException.class)
-    public final ResponseEntity handle(BadPlaceRequestException e, WebRequest request) {
+    public final ResponseEntity handle(BadPlaceRequestException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(e.getMessage(), e);
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method intercept exception {@link BadCategoryRequestException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
     @ExceptionHandler(BadCategoryRequestException.class)
-    public final ResponseEntity handle(BadCategoryRequestException e, WebRequest request) {
+    public final ResponseEntity handle(BadCategoryRequestException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(e.getMessage(), e);
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
@@ -98,8 +135,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
-        Map<String, Object> errorMap = new HashMap<>();
-        errorMap.putAll(errorAttributes.getErrorAttributes(webRequest, true));
-        return errorMap;
+        return new HashMap<>(errorAttributes.getErrorAttributes(webRequest, true));
     }
 }

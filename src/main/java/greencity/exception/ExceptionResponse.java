@@ -5,6 +5,12 @@ import java.util.Map;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Response object with information of occur exception.
+ *
+ * @author Marian Milian
+ * @version 1.0
+ */
 @Data
 @NoArgsConstructor
 public class ExceptionResponse {
@@ -17,7 +23,7 @@ public class ExceptionResponse {
     private String path;
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor with parameters.
      */
     public ExceptionResponse(Map<String, Object> errorAttributes) {
         this.setPath((String) errorAttributes.get("path"));

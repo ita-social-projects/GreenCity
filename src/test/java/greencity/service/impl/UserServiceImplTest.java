@@ -2,11 +2,11 @@ package greencity.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserPageableDto;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -14,9 +14,8 @@ import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import javafx.beans.binding.When;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,10 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,6 +64,16 @@ public class UserServiceImplTest {
 
     @Test
     public void updateUserStatusDeactivatedTest() {
+        User user =
+            User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@gmail.com")
+                .role(ROLE.ROLE_USER)
+                .userStatus(UserStatus.ACTIVATED)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
@@ -82,6 +87,7 @@ public class UserServiceImplTest {
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             ROLE.ROLE_MODERATOR,
             userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR).getRole());
@@ -127,7 +133,6 @@ public class UserServiceImplTest {
         when(userRepo.findIdByEmail(email)).thenReturn(2L);
         assertEquals(2L, (long) userService.findIdByEmail(email));
     }
-
     /**
      * @author Zakhar Skaletskyi
      */
