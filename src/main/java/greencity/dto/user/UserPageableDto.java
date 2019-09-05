@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserPageableDto {
+    @NotNull
     private List<UserForListDto> page;
 
     @NotNull
@@ -17,5 +18,6 @@ public class UserPageableDto {
     @NotNull
     private int currentPage;
 
+    @NotNull
     private ROLE[] roles;
 }

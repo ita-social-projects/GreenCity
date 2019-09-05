@@ -1,5 +1,7 @@
 package greencity.security;
 
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
+
 import greencity.entity.User;
 import greencity.service.UserService;
 import lombok.AllArgsConstructor;
@@ -30,7 +32,7 @@ public class JwtUserDetailService implements UserDetailsService {
         User user = userService.findByEmail(email);
 
         if (user == null) {
-            throw new UsernameNotFoundException("User with this email not found: " + email);
+            throw new UsernameNotFoundException(USER_NOT_FOUND_BY_EMAIL + email);
         }
         log.info("end");
         return new JwtUser(user);
