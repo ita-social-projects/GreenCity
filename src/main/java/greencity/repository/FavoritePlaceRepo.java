@@ -29,21 +29,12 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
     boolean existsByPlaceIdAndUserEmail(Long placeId, String userEmail);
 
     /**
-     * Delete favorite place by place id and user email.
+     * Find favorite place existing by place id and user email.
      *
-     * @param placeId - place's id
-     * @param email   - user's email
-     * @return count of deleted rows
+     * @param id        - favorite place
+     * @param userEmail - user's email
+     * @return FavoritePlace entity
      * @author Zakhar Skaletskyi
      */
-    int deleteByPlaceIdAndUserEmail(Long placeId, String email);
-
-    /**
-     * Find favorite place by place id and user id.
-     *
-     * @param user  - User's instance with user id
-     * @param place - Place's instance with place id
-     * @author Zakhar Skaletskyi
-     */
-    FavoritePlace findByUserAndPlace(User user, Place place);
+    FavoritePlace findByIdAndUserEmail(Long id, String userEmail);
 }

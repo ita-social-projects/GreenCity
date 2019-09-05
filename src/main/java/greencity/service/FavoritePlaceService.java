@@ -21,13 +21,13 @@ public interface FavoritePlaceService {
     /**
      * Update favorite place name for user.
      *
-     * @param favoritePlaceDto - dto with favorite place name, place id and user email
-     * @param userEmail        - User email
+     * @param favoritePlaceShowDto - dto with favorite place name, place id and user email
+     * @param userEmail            - User email
      * @return FavoritePlaceDto instance
      * @author Zakhar Skaletskyi
      */
 
-    FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, String userEmail);
+    FavoritePlaceShowDto update(FavoritePlaceShowDto favoritePlaceShowDto, String userEmail);
 
     /**
      * Find all favorite places by user email.
@@ -41,13 +41,13 @@ public interface FavoritePlaceService {
     /**
      * Delete favorite place by place id and user email.
      *
-     * @param placeId   - place id
+     * @param id   - favorite place id
      * @param userEmail - user's email
-     * @return -  number of deleted records
+     * @return -  id of deleted favorite place
      * @author Zakhar Skaletskyi
      */
     @Transactional
-    int deleteByPlaceIdAndUserEmail(Long placeId, String userEmail);
+    Long deleteByIdAndUserEmail(Long id, String userEmail);
 
     /**
      * FInd favorite place by id.
