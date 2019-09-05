@@ -6,6 +6,7 @@ import greencity.service.FavoritePlaceService;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +21,15 @@ public class FavoritePlaceController {
     /**
      * Update favorite place name for user.
      *
-     * @param favoritePlaceDto - dto for FavoritePlace entity
+     * @param favoritePlaceShowDto - dto for FavoritePlace entity
      * @return FavoritePlaceDto instance
      * @author Zakhar Skaletskyi
      */
     @PutMapping
-    public ResponseEntity<FavoritePlaceDto> update(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
-                                                   Principal principal) {
+    public ResponseEntity<FavoritePlaceShowDto> update(@Valid @RequestBody FavoritePlaceShowDto favoritePlaceShowDto,
+                                                       Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .update(favoritePlaceDto, principal.getName()));
+            .update(favoritePlaceShowDto, principal.getName()));
     }
 
     /**
@@ -45,16 +46,17 @@ public class FavoritePlaceController {
     }
 
     /**
-     * Delete favorite place by place id and user email.
+     * Delete favorite place by id and user email.
      *
-     * @param placeId   - place id
+     * @param id        - favorite place
      * @param principal - Principal with user email
+     * @return id of deleted favorite place
      * @author Zakhar Skaletskyi
      */
-    @DeleteMapping
-    public ResponseEntity<Integer> deleteByPlaceIdAndUserEmail(@Valid @RequestParam Long placeId,
-                                                               Principal principal) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteByIdAndUserEmail(@NotNull  @PathVariable Long id,
+                                                       Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .deleteByPlaceIdAndUserEmail(placeId, principal.getName()));
+            .deleteByIdAndUserEmail(id, principal.getName()));
     }
 }
