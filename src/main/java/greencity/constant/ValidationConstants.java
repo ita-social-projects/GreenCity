@@ -18,11 +18,8 @@ public class ValidationConstants {
     public static final String EMPTY_STATUS = "The status field can not be empty";
 
     public static final int PLACE_NAME_MAX_LENGTH = 30;
-    public static final int PLACE_ADDRESS_MAX_LENGTH = 60;
+    public static final int PLACE_ADDRESS_MAX_LENGTH = 100;
     public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
-    public static final String LOCATION_ADDRESS_BAD_FORMED = "Bad formed address: ${validatedValue}";
-    public static final String LOCATION_LATITUDE_BAD_FORMED = "Bad formed latitude: ${validatedValue}";
-    public static final String LOCATION_LONGITUDE_BAD_FORMED = "Bad formed longitude: ${validatedValue}";
 
     public static final String CATEGORY_NAME_BAD_FORMED = "Bad formed category name: ${validatedValue}";
     public static final int CATEGORY_NAME_MAX_LENGTH = 30;
@@ -40,4 +37,18 @@ public class ValidationConstants {
     public static final String EMPTY_CLOSE_TIME_VALUE = "The closing time can not be empty";
 
     public static final String EMPTY_WEEK_DAY_VALUE = "The week day can not be empty";
+
+    public static final String MIN_VALUE_LATITUDE =
+        "The '${validatedValue}' must be at least {value}";
+    public static final String MAX_VALUE_LATITUDE =
+        "The '${validatedValue}' must be at least {value}";
+    public static final String MIN_VALUE_LONGITUDE =
+        "The '${validatedValue}' must be at least {value}";
+    public static final String MAX_VALUE_LONGITUDE =
+        "The '${validatedValue}' must be at least {value}";
+
+    public static final String N_E_LAT_CAN_NOT_BE_NULL = "North-east latitude can not be null";
+    public static final String N_E_LNG_CAN_NOT_BE_NULL = "North-east longitude can not be null";
+    public static final String S_W_LAT_CAN_NOT_BE_NULL = "South-west latitude can not be null";
+    public static final String S_W_LNG_CAN_NOT_BE_NULL = "South-west longitude can not be null";
 }

@@ -9,4 +9,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface LocationRepo extends JpaRepository<Location, Long> {
+    /**
+     * Method return a location {@code Location} which has not a {@code Place}.
+     *
+     * @param lat latitude of point of the map
+     * @param lng longitude of point of the map
+     * @return a {@code Location}
+     * @author Kateryna Horokh.
+     */
+    Location findByLatAndLng(Double lat, Double lng);
 }

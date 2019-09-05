@@ -8,10 +8,8 @@ import greencity.exception.BadCategoryRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public Category save(CategoryDto dto) {
-        log.info("In save category method");
+        log.info(LogMessage.IN_SAVE);
 
         Category byName = categoryRepo.findByName(dto.getName());
 

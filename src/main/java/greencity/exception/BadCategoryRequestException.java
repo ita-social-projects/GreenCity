@@ -1,8 +1,16 @@
 package greencity.exception;
 
+/**
+ * Exception that we get when user trying to save category with bad parameters.
+ *
+ * @author Kateryna Horokh
+ * @version 1.0
+ */
 public class BadCategoryRequestException extends RuntimeException {
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor for BadCategoryRequestException.
+     *
+     * @param message - giving message.
      */
     public BadCategoryRequestException(String message) {
         super(message);
