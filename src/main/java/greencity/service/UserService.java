@@ -57,7 +57,7 @@ public interface UserService {
     /**
      * Update {@code ROLE} of user.
      *
-     * @param id {@code User} id.
+     * @param id   {@code User} id.
      * @param role {@code ROLE} for user.
      * @author Rostyslav Khasanov
      */
@@ -66,7 +66,7 @@ public interface UserService {
     /**
      * Update {@code UserStatus} of user.
      *
-     * @param id {@code User} id.
+     * @param id         {@code User} id.
      * @param userStatus {@code UserStatus} for user.
      * @author Rostyslav Khasanov
      */

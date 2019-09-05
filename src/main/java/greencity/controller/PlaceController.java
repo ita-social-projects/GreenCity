@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class PlaceController {
      * Autowired PlaceService instance.
      */
     private PlaceService placeService;
+
     private final FavoritePlaceService favoritePlaceService;
 
     private ModelMapper modelMapper;
@@ -38,9 +40,11 @@ public class PlaceController {
     @PostMapping("/propose")
     public ResponseEntity<PlaceWithUserDto> proposePlace(
         @Valid @RequestBody PlaceAddDto dto, Principal principal) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-            modelMapper.map(
-                placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(
+                modelMapper.map(
+                    placeService.save(dto, principal.getName()),
+                    PlaceWithUserDto.class));
     }
 
     /**
@@ -60,8 +64,8 @@ public class PlaceController {
      * @param id favorite place
      * @return info about place with name as in favorite place
      */
-    @GetMapping("/info/favorite")
-    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @RequestParam Long id) {
+    @GetMapping("/info/favorite/{id}")
+    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(id));
     }
 
@@ -69,10 +73,10 @@ public class PlaceController {
      * Generated javadoc, must be replaced with real one.
      */
     @PostMapping("/save/favorite")
-    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
-                                                                Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .save(favoritePlaceDto, principal.getName()));
+    public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
+        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(favoritePlaceService.save(favoritePlaceDto, principal.getName()));
     }
 
     /**
@@ -93,15 +97,17 @@ public class PlaceController {
     /**
      * The method parse the string param to PlaceStatus value.
      *
-     * @param status a string represents {@link PlaceStatus} enum value.
-     * @return response object with list of dto. The list can be empty.
+     * @param status   a string represents {@link PlaceStatus} enum value.
+     * @param pageable pageable configuration.
+     * @return response {@link PlacePageableDto} object. Contains a list of {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
     @GetMapping("/{status}")
-    public ResponseEntity<List<AdminPlaceDto>> getPlacesByStatus(@PathVariable String status) {
+    public ResponseEntity<PlacePageableDto> getPlacesByStatus(
+        @PathVariable String status, Pageable pageable) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.getPlacesByStatus(placeStatus));
+            .body(placeService.getPlacesByStatus(placeStatus, pageable));
     }
 
     /**

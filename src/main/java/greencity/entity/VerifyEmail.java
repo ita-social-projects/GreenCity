@@ -2,7 +2,6 @@ package greencity.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.*;
-
 import lombok.*;
 
 @Entity
@@ -16,7 +15,8 @@ public class VerifyEmail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne private User user;
+    @OneToOne
+    private User user;
 
     private String token;
 

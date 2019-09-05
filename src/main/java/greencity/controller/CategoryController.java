@@ -29,7 +29,7 @@ public class CategoryController {
 
     /**
      * The method which return all {@code Category}.
-
+     *
      * @return list of {@code Category}.
      * @author Kateryna Horokh
      */

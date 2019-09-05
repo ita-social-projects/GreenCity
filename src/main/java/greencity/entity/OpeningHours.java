@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import javax.persistence.*;
@@ -32,5 +31,7 @@ public class OpeningHours {
     @Enumerated
     private DayOfWeek weekDay;
 
-    @ManyToOne @JsonBackReference private Place place;
+    @ManyToOne
+    @JsonBackReference
+    private Place place;
 }
