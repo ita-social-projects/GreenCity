@@ -5,6 +5,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.entity.Category;
 import greencity.exception.BadCategoryRequestException;
+import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
 import greencity.service.CategoryService;
@@ -114,8 +115,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Long deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
+        Category category = findById(id);
 
-        categoryRepo.delete(findById(id));
+        if (!category.getPlaces().isEmpty()) {
+            throw new BadRequestException(ErrorMessage.NOT_SAVE_DELETION);
+        }
+
+        categoryRepo.delete(category);
         return id;
     }
 

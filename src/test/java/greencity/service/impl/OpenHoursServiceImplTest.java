@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
+import greencity.entity.Category;
 import greencity.entity.OpeningHours;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
@@ -69,6 +70,13 @@ public class OpenHoursServiceImplTest {
     @Test(expected = NotFoundException.class)
     public void updateGivenIdNullThenThrowException() {
         openHoursService.update(null, new OpeningHours());
+    }
+
+    @Test
+    public void deleteByIdTest() {
+        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(new OpeningHours()));
+
+        assertEquals(new Long(1), openHoursService.deleteById(1L));
     }
 
     @Test(expected = NotFoundException.class)

@@ -185,15 +185,6 @@ public class PlaceServiceImplTest {
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void updateStatusWhenOldStatusIsNullThrowException() {
-        Place genericEntity = Place.builder().id(1L).status(null).build();
-
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-
-        placeService.updateStatus(1L, PlaceStatus.DECLINED);
-    }
-
     @Test
     public void getPlacesByStatusTest() {
         int pageNumber = 0;
