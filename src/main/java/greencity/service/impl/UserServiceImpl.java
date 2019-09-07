@@ -2,8 +2,9 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableDto;
+import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserPageableDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
@@ -61,21 +62,18 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
      */
     @Override
-    public UserPageableDto findByPage(Pageable pageable) {
+    public PageableDto<UserForListDto> findByPage(Pageable pageable) {
         Page<User> users = repo.findAllByOrderByEmail(pageable);
         List<UserForListDto> userForListDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
                 .collect(Collectors.toList());
-        return new UserPageableDto(
+        return new PageableDto<UserForListDto>(
             userForListDtos,
             users.getTotalElements(),
-            users.getPageable().getPageNumber(),
-            ROLE.class.getEnumConstants());
+            users.getPageable().getPageNumber());
     }
 
     /**
@@ -112,8 +110,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
      */
     @Override
     public UserRoleDto updateRole(Long id, ROLE role) {
@@ -124,13 +120,19 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
      */
     @Override
     public UserStatusDto updateStatus(Long id, UserStatus userStatus) {
         User user = findById(id);
         user.setUserStatus(userStatus);
         return modelMapper.map(repo.save(user), UserStatusDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RoleDto getRoles() {
+        return new RoleDto(ROLE.class.getEnumConstants());
     }
 }

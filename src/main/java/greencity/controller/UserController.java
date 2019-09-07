@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
+import greencity.entity.enums.ROLE;
 import greencity.service.UserService;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -56,5 +57,16 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> getAllUsers(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
+    }
+
+    /**
+     * The method which return array of existing roles.
+     *
+     * @return array of roles
+     * @author Rostyslav Khasnaov
+     */
+    @GetMapping("roles")
+    public ResponseEntity<?> getRoles() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
     }
 }

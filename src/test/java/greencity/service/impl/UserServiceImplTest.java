@@ -5,8 +5,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
+import greencity.dto.PageableDto;
+import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -163,9 +164,9 @@ public class UserServiceImplTest {
         Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
 
-        UserPageableDto userPageableDto =
-            new UserPageableDto(userForListDtos,
-                userForListDtos.size(), 0, ROLE.class.getEnumConstants());
+        PageableDto<UserForListDto> userPageableDto =
+            new PageableDto<UserForListDto>(userForListDtos,
+                userForListDtos.size(), 0);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -173,5 +174,11 @@ public class UserServiceImplTest {
 
         assertEquals(userPageableDto, userService.findByPage(any()));
         verify(userRepo, times(1)).findAllByOrderByEmail(any());
+    }
+
+    @Test
+    public void getRoles() {
+        RoleDto roleDto = new RoleDto(ROLE.class.getEnumConstants());
+        assertEquals(roleDto, userService.getRoles());
     }
 }

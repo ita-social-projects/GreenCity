@@ -1,6 +1,7 @@
 package greencity.service;
 
-import greencity.dto.user.UserPageableDto;
+import greencity.dto.PageableDto;
+import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
@@ -79,5 +80,13 @@ public interface UserService {
      * @return a dto of {@code PageableDto<UserForDtoList>}.
      * @author Rostyslav Khasanov
      */
-    UserPageableDto findByPage(Pageable pageable);
+    PageableDto findByPage(Pageable pageable);
+
+    /**
+     * Find by page {@code User}.
+     *
+     * @return a dto of {@code RoleDto}.
+     * @author Rostyslav Khasanov
+     */
+    RoleDto getRoles();
 }
