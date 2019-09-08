@@ -12,6 +12,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
+import greencity.exception.LastAdminException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.util.List;
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageableDto<UserForListDto> findByPage(Pageable pageable) {
-        Page<User> users = repo.findAllByOrderByEmail(pageable);
+        Page<User> users = repo.findAll(pageable);
         List<UserForListDto> userForListDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
@@ -112,7 +113,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserRoleDto updateRole(Long id, ROLE role) {
+    public UserRoleDto updateRole(Long id, ROLE role, String email) {
+        checkUpdatableUser(id, email);
+        checkLastAdmin(id);
         User user = findById(id);
         user.setRole(role);
         return modelMapper.map(repo.save(user), UserRoleDto.class);
@@ -122,7 +125,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserStatusDto updateStatus(Long id, UserStatus userStatus) {
+    public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
+        checkUpdatableUser(id, email);
+        checkLastAdmin(id);
         User user = findById(id);
         user.setUserStatus(userStatus);
         return modelMapper.map(repo.save(user), UserStatusDto.class);
@@ -134,5 +139,32 @@ public class UserServiceImpl implements UserService {
     @Override
     public RoleDto getRoles() {
         return new RoleDto(ROLE.class.getEnumConstants());
+    }
+
+    /**
+     * Method which check that, if admin/moderator update role/status of himself, then throw exception.
+     *
+     * @param id    id of updatable user.
+     * @param email email of admin/moderator.
+     * @author Rostyslav Khasanov
+     */
+    private void checkUpdatableUser(Long id, String email) {
+        if (id == findIdByEmail(email)) {
+            throw new BadIdException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
+        }
+    }
+
+    /**
+     * Method which check that, if admin/moderator try update role/status of last admin, then throw exception.
+     *
+     * @param id id of updatable user.
+     * @author Rostyslav Khasanov
+     */
+    private void checkLastAdmin(Long id) {
+        if (repo.countByRole(ROLE.ROLE_ADMIN) == 1) {
+            if (repo.findByRole(ROLE.ROLE_ADMIN).getId() == id) {
+                throw new LastAdminException(ErrorMessage.IMPOSSIBLE_DELETE_LAST_ADMIN);
+            }
+        }
     }
 }

@@ -59,33 +59,13 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void updateUserStatusBlockedTest() {
-        when(userRepo.findById(any())).thenReturn(Optional.of(user));
-        when(userRepo.save(any())).thenReturn(user);
-        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
-        assertEquals(
-            UserStatus.BLOCKED,
-            userService.updateStatus(user.getId(), UserStatus.BLOCKED).getUserStatus());
-    }
-
-    @Test
     public void updateUserStatusDeactivatedTest() {
-        User user =
-            User.builder()
-                .firstName("test")
-                .lastName("test")
-                .email("test@gmail.com")
-                .role(ROLE.ROLE_USER)
-                .userStatus(UserStatus.ACTIVATED)
-                .lastVisit(LocalDateTime.now())
-                .dateOfRegistration(LocalDateTime.now())
-                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             UserStatus.DEACTIVATED,
-            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED).getUserStatus());
+            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, any()).getUserStatus());
     }
 
     @Test
@@ -96,7 +76,7 @@ public class UserServiceImplTest {
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             ROLE.ROLE_MODERATOR,
-            userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR).getRole());
+            userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR, any()).getRole());
         verify(userRepo, times(1)).save(any());
     }
 
@@ -139,6 +119,7 @@ public class UserServiceImplTest {
         when(userRepo.findIdByEmail(email)).thenReturn(2L);
         assertEquals(2L, (long) userService.findIdByEmail(email));
     }
+
     /**
      * @author Zakhar Skaletskyi
      */
@@ -170,10 +151,10 @@ public class UserServiceImplTest {
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
-        when(userRepo.findAllByOrderByEmail(any())).thenReturn(usersPage);
+        when(userRepo.findAll(pageable)).thenReturn(usersPage);
 
-        assertEquals(userPageableDto, userService.findByPage(any()));
-        verify(userRepo, times(1)).findAllByOrderByEmail(any());
+        assertEquals(userPageableDto, userService.findByPage(pageable));
+        verify(userRepo, times(1)).findAll(pageable);
     }
 
     @Test

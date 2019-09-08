@@ -62,7 +62,7 @@ public interface UserService {
      * @param role {@code ROLE} for user.
      * @author Rostyslav Khasanov
      */
-    UserRoleDto updateRole(Long id, ROLE role);
+    UserRoleDto updateRole(Long id, ROLE role, String email);
 
     /**
      * Update {@code UserStatus} of user.
@@ -71,7 +71,7 @@ public interface UserService {
      * @param userStatus {@code UserStatus} for user.
      * @author Rostyslav Khasanov
      */
-    UserStatusDto updateStatus(Long id, UserStatus userStatus);
+    UserStatusDto updateStatus(Long id, UserStatus userStatus, String email);
 
     /**
      * Find by page {@code User}.
@@ -83,7 +83,7 @@ public interface UserService {
     PageableDto findByPage(Pageable pageable);
 
     /**
-     * Find by page {@code User}.
+     * Get all exists roles.
      *
      * @return a dto of {@code RoleDto}.
      * @author Rostyslav Khasanov
