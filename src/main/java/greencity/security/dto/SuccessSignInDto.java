@@ -1,14 +1,16 @@
-package greencity.dto.userownsecurity;
+package greencity.security.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-public class AccessTokenDto {
+@Builder
+public class SuccessSignInDto {
     private String accessToken;
+    private String refreshToken;
+    private String firstName;
 }

@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
 
@@ -7,8 +7,8 @@ import greencity.entity.VerifyEmail;
 import greencity.exception.BadIdException;
 import greencity.exception.BadTokenException;
 import greencity.exception.UserActivationEmailTokenExpiredException;
-import greencity.repository.VerifyEmailRepo;
-import greencity.service.VerifyEmailService;
+import greencity.security.repository.VerifyEmailRepo;
+import greencity.security.service.VerifyEmailService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
 
 /**
  * {@inheritDoc}

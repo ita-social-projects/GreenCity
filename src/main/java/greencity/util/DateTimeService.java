@@ -16,8 +16,6 @@ public class DateTimeService {
      * @author Nazar Vladyka.
      */
     public static LocalDateTime getDateTime(String zoneId) {
-        log.info("in getDateTime(String zoneId), get time in timezone - {}", zoneId);
-
         return LocalDateTime.now(ZoneId.of(zoneId)).withSecond(0).withNano(0);
     }
 }
