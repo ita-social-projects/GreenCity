@@ -7,7 +7,7 @@ package greencity.exception;
  */
 public class LastAdminException extends RuntimeException {
     /**
-     * Constructor for CountOfAdminsException.
+     * Constructor for LastAdminException.
      *
      * @param message - giving message.
      */
