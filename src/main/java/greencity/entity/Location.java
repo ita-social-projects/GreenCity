@@ -1,7 +1,10 @@
 package greencity.entity;
 
 import javax.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -13,14 +16,15 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Double lat;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Double lng;
 
     @Column(name = "address", nullable = false)
     private String address;
 
-    @OneToOne private Place place;
+    @OneToOne
+    private Place place;
 }

@@ -7,28 +7,33 @@ import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/category")
 @AllArgsConstructor
 public class CategoryController {
-
     private CategoryService categoryService;
 
-    @PostMapping("/save")
+    /**
+     * The method which return new {@code Category}.
+     *
+     * @param dto - CategoryDto dto for adding with all parameters.
+     * @return new {@code Category}.
+     * @author Kateryna Horokh
+     */
+    @PostMapping
     public ResponseEntity saveCategory(@Valid @RequestBody CategoryDto dto) {
-        categoryService.save(dto);
-        return new ResponseEntity<Void>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(dto));
     }
 
-    @GetMapping("/categories")
+    /**
+     * The method which return all {@code Category}.
+     *
+     * @return list of {@code Category}.
+     * @author Kateryna Horokh
+     */
+    @GetMapping
     public ResponseEntity<List<CategoryDto>> findAllCategory() {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.findAllCategoryDto());
     }

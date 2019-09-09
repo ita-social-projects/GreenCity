@@ -2,17 +2,35 @@ package greencity.service;
 
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
-
 import java.util.List;
 
-/** Provides the interface to manage {@code OpeningHours} entity. */
+/**
+ * Provides the interface to manage {@code OpeningHours} entity.
+ */
 public interface OpenHoursService {
+    /**
+     * Save OpeningHours to DB.
+     *
+     * @param hours - entity of OpeningHours.
+     * @return saved OpeningHours.
+     */
+    OpeningHours save(OpeningHours hours);
 
-    OpeningHours save(OpeningHours openingHours);
-
+    /**
+     * Find OpeningHours entity by id.
+     *
+     * @param id - OpeningHours id.
+     * @return OpeningHours entity.
+     */
     OpeningHours findById(Long id);
 
-    void deleteById(Long id);
+    /**
+     * Delete entity from DB by id.
+     *
+     * @param id - OpeningHours id.
+     * @return id of deleted OpeningHours.
+     */
+    Long deleteById(Long id);
 
     /**
      * Finds all {@code OpeningHours} records related to the specified {@link
@@ -23,7 +41,19 @@ public interface OpenHoursService {
      */
     List<OpeningHours> getOpenHoursByPlace(Place place);
 
+    /**
+     * Find all opening hours from DB.
+     *
+     * @return List of opening hours.
+     */
     List<OpeningHours> findAll();
 
+    /**
+     * Update OpeningHours in DB.
+     *
+     * @param id           - OpeningHours id.
+     * @param updatedHours - OpeningHours entity.
+     * @return OpeningHours updated entity.
+     */
     OpeningHours update(Long id, OpeningHours updatedHours);
 }

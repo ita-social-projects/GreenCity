@@ -14,20 +14,17 @@ import org.springframework.stereotype.Service;
 /**
  * Service implementation for Location entity.
  *
- * @author Nazar Vladyka
  * @version 1.0
  */
 @Service
 @AllArgsConstructor
 @Slf4j
 public class LocationServiceImpl implements LocationService {
-
     private final LocationRepo locationRepo;
 
     /**
-     * Find all locations from DB.
+     * {@inheritDoc}
      *
-     * @return List of categories.
      * @author Nazar Vladyka
      */
     @Override
@@ -38,10 +35,8 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
-     * Find Location entity by id.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
-     * @return Location entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -49,31 +44,36 @@ public class LocationServiceImpl implements LocationService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return locationRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND_BY_ID + id));
     }
 
     /**
-     * Save Location to DB.
+     * {@inheritDoc}
      *
-     * @param location - entity of Location.
-     * @return saved Location.
      * @author Nazar Vladyka
      */
     @Override
     public Location save(Location location) {
-        log.info("in save(Location location), {}", location);
+        log.info(LogMessage.IN_SAVE, location);
 
-        return locationRepo.saveAndFlush(location);
+        return locationRepo.save(location);
     }
 
     /**
-     * Update Location in DB.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
-     * @param location - Location entity.
-     * @return Location updated entity.
+     * @author Kateryna Horokh
+     */
+    @Override
+    public Location findByLatAndLng(Double lat, Double lng) {
+        return locationRepo.findByLatAndLng(lat, lng);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Vladyka
      */
     @Override
@@ -91,17 +91,15 @@ public class LocationServiceImpl implements LocationService {
     }
 
     /**
-     * Delete entity from DB by id.
+     * {@inheritDoc}
      *
-     * @param id - Location id.
      * @author Nazar Vladyka
      */
     @Override
-    public void deleteById(Long id) {
+    public Long deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        findById(id);
-
-        locationRepo.deleteById(id);
+        locationRepo.delete(findById(id));
+        return id;
     }
 }

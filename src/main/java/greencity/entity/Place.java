@@ -1,18 +1,14 @@
 package greencity.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import greencity.constant.AppConstant;
 import greencity.entity.enums.PlaceStatus;
+import greencity.util.DateTimeService;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-
 import lombok.*;
-import java.time.LocalDateTime;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -47,7 +43,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
 
-    @OneToOne(mappedBy = "place")
+    @OneToOne(mappedBy = "place", cascade = {CascadeType.ALL})
     private Location location;
 
     @OneToMany(mappedBy = "place")
@@ -56,7 +52,8 @@ public class Place {
     @ManyToMany(mappedBy = "places")
     private List<WebPage> webPages = new ArrayList<>();
 
-    @ManyToOne private Category category;
+    @ManyToOne(cascade = {CascadeType.ALL})
+    private Category category;
 
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
@@ -65,10 +62,11 @@ public class Place {
     @JsonManagedReference
     private List<OpeningHours> openingHoursList = new ArrayList<>();
 
-    @ManyToOne private User author;
+    @ManyToOne
+    private User author;
 
     @Column(name = "modified_date")
-    private LocalDateTime modifiedDate = LocalDateTime.now();
+    private LocalDateTime modifiedDate = DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE);
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(name = "status")

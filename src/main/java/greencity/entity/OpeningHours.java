@@ -1,7 +1,7 @@
 package greencity.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import greencity.entity.enums.WeekDay;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,8 @@ public class OpeningHours {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime closeTime;
 
-    @Enumerated private WeekDay weekDay;
+    @Enumerated
+    private DayOfWeek weekDay;
 
     @ManyToOne
     @JsonBackReference

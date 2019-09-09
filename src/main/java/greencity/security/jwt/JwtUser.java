@@ -1,10 +1,9 @@
 package greencity.security.jwt;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
+import java.util.Collection;
+import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,46 +15,70 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @version 1.0
  */
 public class JwtUser implements UserDetails {
-
     private User user;
 
+    /**
+     * Constructor.
+     *
+     * @param user {@link User}
+     */
     public JwtUser(User user) {
         this.user = user;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()));
     }
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getPassword() {
         return user.getOwnSecurity().getPassword();
     }
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getUsername() {
         return user.getEmail();
     }
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isAccountNonExpired() {
-        return user.getVerifyEmail() == null;
+        return true;
     }
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isAccountNonLocked() {
         return user.getUserStatus().equals(UserStatus.ACTIVATED);
     }
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEnabled() {
-        return user.getUserStatus().equals(UserStatus.ACTIVATED);
+        return user.getVerifyEmail() == null;
     }
 }

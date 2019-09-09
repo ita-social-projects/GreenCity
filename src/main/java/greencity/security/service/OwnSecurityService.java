@@ -1,9 +1,10 @@
 package greencity.security.service;
 
 import greencity.entity.OwnSecurity;
+import greencity.security.dto.AccessTokenDto;
 import greencity.security.dto.SuccessSignInDto;
-import greencity.security.dto.own_security.OwnSignInDto;
-import greencity.security.dto.own_security.OwnSignUpDto;
+import greencity.security.dto.ownsecurity.OwnSignInDto;
+import greencity.security.dto.ownsecurity.OwnSignUpDto;
 
 /**
  * Provides the interface to manage {@link OwnSecurityService} entity.
@@ -12,22 +13,23 @@ import greencity.security.dto.own_security.OwnSignUpDto;
  * @version 1.0
  */
 public interface OwnSecurityService {
-
     /**
      * Method that allow you sign-up user.
      *
      * @param dto a value of {@link OwnSignUpDto}
      */
-    void register(OwnSignUpDto dto);
+    void signUp(OwnSignUpDto dto);
 
     /**
      * Method that allow you to delete {@link OwnSecurity}.
      *
-     * @param ownSecurity a value of {@link OwnSecurity}
+     * @param userOwnSecurity a value of {@link OwnSecurity}
      */
-    void delete(OwnSecurity ownSecurity);
+    void delete(OwnSecurity userOwnSecurity);
 
-    /** Method that delete {@link greencity.entity.VerifyEmail} when user not submit email. */
+    /**
+     * Method that delete {@link greencity.entity.VerifyEmail} when user not submit email.
+     */
     void deleteNotActiveEmailUsers();
 
     /**
@@ -42,7 +44,7 @@ public interface OwnSecurityService {
      * Method that update your access token by refresh token.
      *
      * @param refreshToken a value of {@link String}
-     * @return {@link String} this is new access token
+     * @return {@link AccessTokenDto} this is DTO with new access token
      */
-    String updateAccessToken(String refreshToken);
+    AccessTokenDto updateAccessToken(String refreshToken);
 }

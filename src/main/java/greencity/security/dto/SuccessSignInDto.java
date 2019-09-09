@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class SuccessSignInDto {
     private String accessToken;
     private String refreshToken;
+    private String firstName;
 }

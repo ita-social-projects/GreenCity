@@ -1,89 +1,102 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
+import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
-import greencity.service.UserService;
-import greencity.service.impl.UserServiceImpl;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class UserServiceImplTest {
 
-    @MockBean UserRepo userRepo;
+    @Mock
+    UserRepo userRepo;
 
-    @Autowired private UserService userService;
+    @InjectMocks
+    private UserServiceImpl userService;
+
+    User user =
+        User.builder()
+            .firstName("test")
+            .lastName("test")
+            .email("test@gmail.com")
+            .role(ROLE.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastVisit(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .build();
+
+    @Test
+    public void saveTest() {
+        when(userRepo.save(user)).thenReturn(user);
+        assertEquals(user, userService.save(user));
+    }
 
     @Test
     public void updateUserStatusBlockedTest() {
-        User user =
-                User.builder()
-                        .firstName("test")
-                        .lastName("test")
-                        .email("test@gmail.com")
-                        .role(ROLE.USER_ROLE)
-                        .userStatus(UserStatus.BLOCKED)
-                        .lastVisit(LocalDateTime.now())
-                        .dateOfRegistration(LocalDateTime.now())
-                        .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateUserStatus(user.getId(), UserStatus.BLOCKED);
-        assertEquals(UserStatus.BLOCKED, user.getUserStatus());
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+        assertEquals(
+            UserStatus.BLOCKED,
+            userService.updateStatus(user.getId(), UserStatus.BLOCKED).getUserStatus());
     }
 
     @Test
     public void updateUserStatusDeactivatedTest() {
         User user =
-                User.builder()
-                        .firstName("test")
-                        .lastName("test")
-                        .email("test@gmail.com")
-                        .role(ROLE.USER_ROLE)
-                        .userStatus(UserStatus.DEACTIVATED)
-                        .lastVisit(LocalDateTime.now())
-                        .dateOfRegistration(LocalDateTime.now())
-                        .build();
+            User.builder()
+                .firstName("test")
+                .lastName("test")
+                .email("test@gmail.com")
+                .role(ROLE.ROLE_USER)
+                .userStatus(UserStatus.ACTIVATED)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateUserStatus(user.getId(), UserStatus.DEACTIVATED);
-        assertEquals(UserStatus.DEACTIVATED, user.getUserStatus());
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+        assertEquals(
+            UserStatus.DEACTIVATED,
+            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED).getUserStatus());
     }
 
     @Test
     public void updateRoleTest() {
-        User user =
-                User.builder()
-                        .firstName("test")
-                        .lastName("test")
-                        .email("test@gmail.com")
-                        .role(ROLE.USER_ROLE)
-                        .lastVisit(LocalDateTime.now())
-                        .dateOfRegistration(LocalDateTime.now())
-                        .build();
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        userService.updateRole(user.getId(), ROLE.MODERATOR_ROLE);
-        assertEquals(ROLE.MODERATOR_ROLE, user.getRole());
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+        assertEquals(
+            ROLE.ROLE_MODERATOR,
+            userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR).getRole());
+        verify(userRepo, times(1)).save(any());
     }
 
     @Test
@@ -94,8 +107,9 @@ public class UserServiceImplTest {
         user.setId(1l);
 
         when(userRepo.findById(id)).thenReturn(Optional.of(user));
-        User expectedUser = userService.findById(id);
-        assertEquals(user, expectedUser);
+
+        assertEquals(user, userService.findById(id));
+        verify(userRepo, times(1)).findById(id);
     }
 
     @Test(expected = BadIdException.class)
@@ -108,5 +122,56 @@ public class UserServiceImplTest {
     public void saveExceptionTest() {
         when(userService.findByEmail(any())).thenThrow(BadEmailException.class);
         userService.save(new User());
+    }
+
+    @Test(expected = BadIdException.class)
+    public void deleteByIdExceptionBadIdTest() {
+        userService.deleteById(1l);
+    }
+
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test
+    public void findIdByEmail() {
+        String email = "email";
+        when(userRepo.findIdByEmail(email)).thenReturn(2L);
+        assertEquals(2L, (long) userService.findIdByEmail(email));
+    }
+    /**
+     * @author Zakhar Skaletskyi
+     */
+    @Test(expected = BadEmailException.class)
+    public void findIdByEmailNotFound() {
+        String email = "email";
+        when(userRepo.findIdByEmail(email)).thenReturn(null);
+        userService.findIdByEmail(email);
+    }
+
+    @Test
+    public void findByPage() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        User user = new User();
+        user.setFirstName("Roman");
+
+        UserForListDto userForListDto = new UserForListDto();
+        userForListDto.setFirstName("Roman");
+
+        Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
+        List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
+
+        UserPageableDto userPageableDto =
+            new UserPageableDto(userForListDtos,
+                userForListDtos.size(), 0, ROLE.class.getEnumConstants());
+
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+
+        when(userRepo.findAllByOrderByEmail(any())).thenReturn(usersPage);
+
+        assertEquals(userPageableDto, userService.findByPage(any()));
+        verify(userRepo, times(1)).findAllByOrderByEmail(any());
     }
 }

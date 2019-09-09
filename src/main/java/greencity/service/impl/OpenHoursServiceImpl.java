@@ -12,14 +12,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/** The class provides implementation of the {@code OpenHoursService}. */
-/** The class provides implementation of the {@code OpenHoursService}. */
+/**
+ * The class provides implementation of the {@code OpenHoursService}.
+ */
 @Slf4j
 @AllArgsConstructor
 @Service
 public class OpenHoursServiceImpl implements OpenHoursService {
-
-    /** Autowired repository. */
+    /**
+     * Autowired repository.
+     */
     private OpenHoursRepo hoursRepo;
 
     /**
@@ -32,23 +34,20 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     }
 
     /**
-     * Save OpeningHours to DB.
+     * {@inheritDoc}
      *
-     * @param hours - entity of OpeningHours.
-     * @return saved OpeningHours.
      * @author Nazar Vladyka
      */
     @Override
     public OpeningHours save(OpeningHours hours) {
-        log.info("in save(OpeningHours hours), {}", hours);
+        log.info(LogMessage.IN_SAVE, hours);
 
-        return hoursRepo.saveAndFlush(hours);
+        return hoursRepo.save(hours);
     }
 
     /**
-     * Find all opening hours from DB.
+     * {@inheritDoc}
      *
-     * @return List of opening hours.
      * @author Nazar Vladyka
      */
     @Override
@@ -59,10 +58,8 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     }
 
     /**
-     * Find OpeningHours entity by id.
+     * {@inheritDoc}
      *
-     * @param id - OpeningHours id.
-     * @return OpeningHours entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -70,17 +67,14 @@ public class OpenHoursServiceImpl implements OpenHoursService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return hoursRepo
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
     }
 
     /**
-     * Update OpeningHours in DB.
+     * {@inheritDoc}
      *
-     * @param id - OpeningHours id.
-     * @param updatedHours - OpeningHours entity.
-     * @return OpeningHours updated entity.
      * @author Nazar Vladyka
      */
     @Override
@@ -98,17 +92,15 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     }
 
     /**
-     * Delete entity from DB by id.
+     * {@inheritDoc}
      *
-     * @param id - OpeningHours id.
      * @author Nazar Vladyka
      */
     @Override
-    public void deleteById(Long id) {
+    public Long deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        findById(id);
-
-        hoursRepo.deleteById(id);
+        hoursRepo.delete(findById(id));
+        return id;
     }
 }

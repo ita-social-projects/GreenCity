@@ -1,4 +1,4 @@
-package greencity.security.dto.own_security;
+package greencity.security.dto.ownsecurity;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
