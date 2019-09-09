@@ -16,10 +16,10 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Double lat;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Double lng;
 
     @Column(name = "address", nullable = false)

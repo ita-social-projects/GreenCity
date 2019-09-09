@@ -18,7 +18,7 @@ public class ValidationConstants {
     public static final String EMPTY_STATUS = "The status field can not be empty";
 
     public static final int PLACE_NAME_MAX_LENGTH = 30;
-    public static final int PLACE_ADDRESS_MAX_LENGTH = 100;
+    public static final int PLACE_ADDRESS_MAX_LENGTH = 120;
     public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
 
     public static final String CATEGORY_NAME_BAD_FORMED = "Bad formed category name: ${validatedValue}";

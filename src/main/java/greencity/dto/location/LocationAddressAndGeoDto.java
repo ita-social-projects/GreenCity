@@ -19,7 +19,7 @@ public class LocationAddressAndGeoDto {
     @Length(
         min = ValidationConstants.PLACE_ADDRESS_MIN_LENGTH,
         max = ValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
-    @Pattern(regexp = "^[a-zA-Z0-9_.,-]*$")
+    @Pattern(regexp = "^[^<>]+$")
     private String address;
 
     @NotNull(message = ValidationConstants.EMPTY_VALUE_OF_LATITUDE)

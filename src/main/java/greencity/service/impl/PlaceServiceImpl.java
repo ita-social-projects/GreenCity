@@ -10,7 +10,6 @@ import greencity.entity.Location;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.exception.CheckRepeatingValueException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
@@ -84,7 +83,6 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.SET_PLACE_TO_OPENING_HOURS, place.getName());
 
         List<OpeningHours> hours = place.getOpeningHoursList();
-        checkRepeatingValue(hours);
         hours.stream()
             .distinct()
             .forEach(
@@ -92,23 +90,6 @@ public class PlaceServiceImpl implements PlaceService {
                     h.setPlace(place);
                     openingHoursService.save(h);
                 });
-    }
-
-    /**
-     * Method for checking list of giving {@code OpeningHours} on repeating value of week days.
-     *
-     * @param hours - list of {@link OpeningHours} entity.
-     * @author Kateryna Horokh
-     */
-    private void checkRepeatingValue(List<OpeningHours> hours) {
-        log.info(LogMessage.CHECK_REPEATING_VALUE);
-        for (int i = 0; i < hours.size(); i++) {
-            for (int j = i + 1; j < hours.size(); j++) {
-                if (hours.get(i).getWeekDay().equals(hours.get(j).getWeekDay())) {
-                    throw new CheckRepeatingValueException(ErrorMessage.REPEATING_VALUE_OF_WEEKDAY_VALUE);
-                }
-            }
-        }
     }
 
     /**
