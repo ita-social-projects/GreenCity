@@ -22,7 +22,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * Custom exception handler .
  *
  * @author Marian Milian
- * @version 1.0
  */
 
 @AllArgsConstructor
@@ -41,9 +40,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Marian Milian
      */
     @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity handle(RuntimeException ex, WebRequest request) {
+    public final ResponseEntity handleRuntimeException(RuntimeException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(exceptionResponse.getTrace());
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
@@ -56,9 +55,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Marian Milian
      */
     @ExceptionHandler(BadEmailOrPasswordException.class)
-    public final ResponseEntity handle(BadEmailOrPasswordException ex, WebRequest request) {
+    public final ResponseEntity handleBadEmailOrPasswordException(BadEmailOrPasswordException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(exceptionResponse.getTrace());
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
@@ -71,20 +70,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Marian Milian
      */
     @ExceptionHandler(BadRefreshTokenException.class)
-    public final ResponseEntity handle(BadRefreshTokenException ex, WebRequest request) {
+    public final ResponseEntity handleBadRefreshTokenException(BadRefreshTokenException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
     /**
      * Method intercept exception {@link BadEmailException}.
      *
-     * @param ex      Exception witch should be intercepted.
+     * @param ex Exception witch should be intercepted.
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      * @author Nazar Stasyuk
      */
     @ExceptionHandler(BadEmailException.class)
-    public final ResponseEntity handle(BadEmailException ex) {
+    public final ResponseEntity handleBadEmailException(BadEmailException ex) {
         ValidationExceptionDto validationExceptionDto =
             new ValidationExceptionDto(AppConstant.REGISTRATION_EMAIL_FIELD_NAME, ex.getMessage());
         log.trace(ex.getMessage(), ex);
@@ -100,7 +100,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
     @ExceptionHandler(BadPlaceRequestException.class)
-    public final ResponseEntity handle(BadPlaceRequestException ex, WebRequest request) {
+    public final ResponseEntity handleBadPlaceRequestException(BadPlaceRequestException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -114,7 +114,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
     @ExceptionHandler(BadCategoryRequestException.class)
-    public final ResponseEntity handle(BadCategoryRequestException ex, WebRequest request) {
+    public final ResponseEntity handleBadCategoryRequestException(BadCategoryRequestException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

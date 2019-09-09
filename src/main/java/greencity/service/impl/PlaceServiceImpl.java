@@ -21,9 +21,10 @@ import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -32,8 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
+    private static final PlaceStatus APPROVED_STATUS = PlaceStatus.APPROVED;
     private PlaceRepo placeRepo;
-
     private ModelMapper modelMapper;
     private CategoryService categoryService;
     private LocationService locationService;
@@ -46,11 +47,12 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-    public List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus) {
-        List<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus);
-        return places.stream()
+    public PlacePageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
+        Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
+        List<AdminPlaceDto> list = places.stream()
             .map(place -> modelMapper.map(place, AdminPlaceDto.class))
             .collect(Collectors.toList());
+        return new PlacePageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
     }
 
     /**
@@ -156,17 +158,13 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
-        if (updatable.getStatus() != null) {
-            if (!updatable.getStatus().equals(status)) {
-                updatable.setStatus(status);
-                updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
-            } else {
-                log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
-                throw new PlaceStatusException(
-                    ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
-            }
+        if (!updatable.getStatus().equals(status)) {
+            updatable.setStatus(status);
+            updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
         } else {
-            throw new NullPointerException(ErrorMessage.PLACE_STATUS_IS_NULL);
+            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
+            throw new PlaceStatusException(
+                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         }
 
         return modelMapper.map(placeRepo.save(updatable), PlaceStatusDto.class);
@@ -213,7 +211,8 @@ public class PlaceServiceImpl implements PlaceService {
                 mapBoundsDto.getNorthEastLat(),
                 mapBoundsDto.getNorthEastLng(),
                 mapBoundsDto.getSouthWestLat(),
-                mapBoundsDto.getSouthWestLng());
+                mapBoundsDto.getSouthWestLng(),
+                APPROVED_STATUS);
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());

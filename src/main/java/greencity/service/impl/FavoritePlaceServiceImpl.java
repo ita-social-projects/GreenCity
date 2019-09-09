@@ -16,6 +16,7 @@ import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,18 +59,15 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, String userEmail) {
-        log.info(LogMessage.IN_UPDATE, favoritePlaceDto);
-        if (!placeService.existsById(favoritePlaceDto.getPlaceId())) {
-            throw new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + favoritePlaceDto.getPlaceId());
+    public FavoritePlaceShowDto update(FavoritePlaceShowDto favoritePlaceShowDto, String userEmail) {
+        log.info(LogMessage.IN_UPDATE, favoritePlaceShowDto);
+
+        FavoritePlace favoritePlace = repo.findByIdAndUserEmail(favoritePlaceShowDto.getId(), userEmail);
+        if (favoritePlace == null) {
+            throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceShowDto.getId());
         }
-        if (!repo.existsByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail)) {
-            throw new BadIdAndEmailException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
-        }
-        FavoritePlace favoritePlace = favoritePlaceDtoMapper.convertToEntity(favoritePlaceDto);
-        favoritePlace.setUser(User.builder().id(userService.findIdByEmail(userEmail)).email(userEmail).build());
-        favoritePlace.setId(repo.findByUserAndPlace(favoritePlace.getUser(), favoritePlace.getPlace()).getId());
-        return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
+        favoritePlace.setName(favoritePlaceShowDto.getName());
+        return modelMapper.map(repo.save(favoritePlace), FavoritePlaceShowDto.class);
     }
 
     /**
@@ -92,12 +90,14 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      */
     @Override
     @Transactional
-    public int deleteByPlaceIdAndUserEmail(Long placeId, String userEmail) {
+    public Long deleteByIdAndUserEmail(Long id, String userEmail) {
         log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL);
-        if (!repo.existsByPlaceIdAndUserEmail(placeId, userEmail)) {
-            throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
+        FavoritePlace favoritePlace = repo.findByIdAndUserEmail(id, userEmail);
+        if (favoritePlace == null) {
+            throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
-        return repo.deleteByPlaceIdAndUserEmail(placeId, userEmail);
+        repo.delete(favoritePlace);
+        return favoritePlace.getId();
     }
 
     /**

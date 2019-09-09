@@ -3,7 +3,6 @@ package greencity.dto.openhours;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.constant.ValidationConstants;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
@@ -15,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"openTime","closeTime"})
+@EqualsAndHashCode(exclude = {"openTime", "closeTime"})
 public class OpeningHoursDto {
     @NotNull(message = ValidationConstants.EMPTY_OPEN_TIME_VALUE)
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)

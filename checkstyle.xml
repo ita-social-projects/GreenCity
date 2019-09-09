@@ -10,7 +10,6 @@
     http://checkstyle.sf.net (or in your downloaded distribution).
     To completely disable a check, just comment it out or delete it from the file.
     Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
-
     Edited
     * <property name="basicOffset" value="2"/> -> <property name="basicOffset" value="4"/>
     * add to avoid empty lines in start and end of block
@@ -75,7 +74,8 @@
         </module>
         <module name="LineLength">
             <property name="max" value="120"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|public static final"/>
+            <property name="ignorePattern"
+                      value="^package.*|^import.*|a href|href|http://|https://|ftp://|public static final"/>
         </module>
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap"/>

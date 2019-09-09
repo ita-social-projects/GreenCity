@@ -5,6 +5,7 @@ import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Provides the interface to manage {@code Place} entity.
@@ -14,10 +15,11 @@ public interface PlaceService {
      * Finds all {@code Place} with status {@code PlaceStatus}.
      *
      * @param placeStatus a value of {@link PlaceStatus} enum.
-     * @return a list of {@code Place} with the given {@code placeStatus}
+     * @param pageable    pageable configuration.
+     * @return an object of {@code PlacePageableDto} which contains a list of {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
-    List<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus);
+    PlacePageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
 
     /**
      * Update status for the Place and set the time of modification.
@@ -45,7 +47,6 @@ public interface PlaceService {
      */
     Place save(PlaceAddDto dto, String email);
 
-
     /**
      * Find all places from DB.
      *
@@ -69,7 +70,6 @@ public interface PlaceService {
      * @author Dmytro Dovhal
      */
     PlaceInfoDto getInfoById(Long id);
-
 
     /**
      * Check {@link Place} existing by id.

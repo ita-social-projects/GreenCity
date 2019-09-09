@@ -7,12 +7,11 @@ import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
 import greencity.entity.Category;
+import greencity.entity.Place;
+import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -71,9 +70,25 @@ public class CategoryServiceImplTest {
         categoryService.update(null, new Category());
     }
 
+    @Test
+    public void deleteByIdTest() {
+        when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(new Category()));
+
+        assertEquals(new Long(1), categoryService.deleteById(1L));
+    }
+
     @Test(expected = NotFoundException.class)
     public void deleteByIdGivenIdNullThenThrowException() {
         categoryService.deleteById(null);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void deleteByIdGivenCategoryRelatedToExistencePlaceThrowException() {
+        Category generatedEntity = Category.builder().places(Collections.singletonList(new Place())).build();
+
+        when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(generatedEntity));
+
+        categoryService.deleteById(1L);
     }
 
     @Test

@@ -13,7 +13,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Find {@code User} by email.
+     *
+     * @param email user email.
+     * @return {@code User}
      */
     User findByEmail(String email);
 
@@ -22,17 +25,9 @@ public interface UserRepo extends JpaRepository<User, Long> {
      *
      * @param pageable pageable configuration.
      * @return {@code Page<User>}
+     * @author Rostyslav Khasanov
      */
-    Page<User> findAllByOrderByEmail(Pageable pageable);
-
-    /**
-     * Check user existing by email.
-     *
-     * @param email - User email
-     * @return check result
-     * @author Zakhar Skaletskyi
-     */
-    boolean existsByEmail(String email);
+    Page<User> findAll(Pageable pageable);
 
     /**
      * Find id by email.

@@ -1,6 +1,6 @@
 package greencity.config;
 
-import greencity.security.JwtTokenTool;
+import greencity.security.jwt.JwtTokenTool;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
@@ -70,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
             .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
             .permitAll()
-            .antMatchers(HttpMethod.GET,"/category/**")
+            .antMatchers(HttpMethod.GET, "/category/**")
             .permitAll()
             .antMatchers(HttpMethod.POST, "/category/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
@@ -82,17 +82,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
             .antMatchers("/place/{status}/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/favoritePlace/**")
+            .antMatchers("/favorite_place/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers("/place/save/favorite")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/info/favorite")
+            .antMatchers("/place/info/favorite/**")
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.PATCH, "/user/status")
+            .antMatchers(HttpMethod.PATCH, "/user/update/status")
             .hasAnyRole("ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.PATCH, "/user/role")
+            .antMatchers(HttpMethod.PATCH, "/user/update/role")
             .hasRole("ADMIN")
             .antMatchers(HttpMethod.GET, "/user")
+            .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers("/user/roles")
             .hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")

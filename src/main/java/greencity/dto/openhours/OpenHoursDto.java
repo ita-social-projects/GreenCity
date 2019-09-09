@@ -1,7 +1,6 @@
 package greencity.dto.openhours;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;

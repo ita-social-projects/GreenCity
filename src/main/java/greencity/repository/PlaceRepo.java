@@ -2,9 +2,9 @@ package greencity.repository;
 
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-
 import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,11 +18,12 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
     /**
      * Finds all places related to the given {@code PlaceStatus}.
      *
-     * @param status to find by.
+     * @param status   to find by.
+     * @param pageable pageable configuration.
      * @return a list of places with the given {@code PlaceStatus}.
      * @author Roman Zahorui
      */
-    List<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status);
+    Page<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status, Pageable pageable);
 
     /**
      * Method to find average rate.
@@ -42,10 +43,11 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
     /**
      * Method return a list {@code Place} depends on the map bounds.
      *
-     * @param northEastLat latitude of extreme North-East point of the map
-     * @param northEastLng longitude of extreme North-East point of the map
-     * @param southWestLat latitude of South-West point of the map
-     * @param southWestLng longitude of South-West point of the map
+     * @param northEastLat latitude of extreme North-East point of the map.
+     * @param northEastLng longitude of extreme North-East point of the map.
+     * @param southWestLat latitude of South-West point of the map.
+     * @param southWestLng longitude of South-West point of the map.
+     * @param status status of places witch should be presented.
      * @return a list of {@code Place}
      * @author Marian Milian.
      */
@@ -56,11 +58,13 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
                 + " Location l  on p.location.id =l.id "
                 + " where l.lat > :southWestLat  and l.lat< :northEastLat"
                 + " AND l.lng >:southWestLng and l.lng<:northEastLng "
-                + " and p.status = 2"
+                + " and p.status = :status"
                 + " ORDER BY p.name")
     List<Place> findPlacesByMapsBounds(
         @Param("northEastLat") Double northEastLat,
         @Param("northEastLng") Double northEastLng,
         @Param("southWestLat") Double southWestLat,
-        @Param("southWestLng") Double southWestLng);
+        @Param("southWestLng") Double southWestLng,
+        @Param("status") PlaceStatus status
+    );
 }

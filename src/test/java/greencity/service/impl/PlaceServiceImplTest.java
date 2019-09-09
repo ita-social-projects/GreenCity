@@ -1,9 +1,10 @@
 package greencity.service.impl;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -11,6 +12,8 @@ import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlacePageableDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
@@ -18,6 +21,7 @@ import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
+import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
@@ -25,9 +29,7 @@ import greencity.service.UserService;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,11 +39,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 @Slf4j
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest( {PlaceServiceImpl.class})
 public class PlaceServiceImplTest {
     Category category = Category.builder()
         .id(1L)
@@ -160,28 +165,30 @@ public class PlaceServiceImplTest {
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void updateStatusWhenOldStatusIsNullThrowException() {
-        Place genericEntity = Place.builder().id(1L).status(null).build();
-
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-
-        placeService.updateStatus(1L, PlaceStatus.DECLINED);
-    }
-
     @Test
     public void getPlacesByStatusTest() {
-        List<Place> gen = new ArrayList<>();
-        List<AdminPlaceDto> genDto = new ArrayList<>();
-        List<AdminPlaceDto> res = new ArrayList<>();
-        assertEquals(res, genDto);
-    }
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-    @Test
-    public void getPlacesByNullStatusTest() {
-        List<AdminPlaceDto> list = placeService.getPlacesByStatus(null);
-        assertNotNull(list);
-        assertTrue(list.isEmpty());
+        Place place = new Place();
+        place.setName("Place");
+
+        AdminPlaceDto dto = new AdminPlaceDto();
+        dto.setName("Place");
+
+        Page<Place> placesPage = new PageImpl<>(Collections.singletonList(place), pageable, 1);
+        List<AdminPlaceDto> listDto = Collections.singletonList(dto);
+
+        PlacePageableDto pageableDto =
+            new PlacePageableDto(listDto, listDto.size(), 0);
+        pageableDto.setPage(listDto);
+
+        when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any(), any())).thenReturn(placesPage);
+        when(modelMapper.map(any(), any())).thenReturn(dto);
+
+        Assert.assertEquals(pageableDto, placeService.getPlacesByStatus(any(), any()));
+        verify(placeRepo, times(1)).findAllByStatusOrderByModifiedDateDesc(any(), any());
     }
 
     @Test(expected = PlaceStatusException.class)
@@ -223,21 +230,22 @@ public class PlaceServiceImplTest {
             mapBoundsDto.getNorthEastLat(),
             mapBoundsDto.getNorthEastLng(),
             mapBoundsDto.getSouthWestLat(),
-            mapBoundsDto.getSouthWestLng()))
+            mapBoundsDto.getSouthWestLng(),
+            PlaceStatus.APPROVED))
             .thenReturn(placeExpected);
         assertEquals(
             placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
     }
 
-//    @Test
-//    public void getInfoByIdTest() {
-//        PlaceInfoDto gen = new PlaceInfoDto();
-//        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
-//        when(modelMapper.map(any(), any())).thenReturn(gen);
-//        when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
-//        PlaceInfoDto res = placeService.getInfoById(anyLong());
-//        assertEquals(gen, res);
-//    }
+    @Test
+    public void getInfoByIdTest() {
+        PlaceInfoDto gen = new PlaceInfoDto();
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
+        when(modelMapper.map(any(), any())).thenReturn(gen);
+        when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
+        PlaceInfoDto res = placeService.getInfoById(anyLong());
+        assertEquals(gen, res);
+    }
 
     @Test(expected = NotFoundException.class)
     public void getInfoByIdNotFoundTest() {
