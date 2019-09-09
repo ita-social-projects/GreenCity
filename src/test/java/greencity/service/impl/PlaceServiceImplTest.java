@@ -14,7 +14,7 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlacePageableDto;
+import greencity.dto.PageableDto;
 import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
@@ -209,8 +209,8 @@ public class PlaceServiceImplTest {
         Page<Place> placesPage = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         List<AdminPlaceDto> listDto = Collections.singletonList(dto);
 
-        PlacePageableDto pageableDto =
-            new PlacePageableDto(listDto, listDto.size(), 0);
+        PageableDto pageableDto =
+            new PageableDto(listDto, listDto.size(), 0);
         pageableDto.setPage(listDto);
 
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any(), any())).thenReturn(placesPage);

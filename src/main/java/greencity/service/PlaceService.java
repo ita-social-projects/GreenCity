@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
@@ -19,7 +20,7 @@ public interface PlaceService {
      * @return an object of {@code PlacePageableDto} which contains a list of {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
-    PlacePageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
+    PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
 
     /**
      * Update status for the Place and set the time of modification.

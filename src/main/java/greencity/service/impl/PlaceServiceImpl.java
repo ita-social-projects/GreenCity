@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Category;
@@ -49,12 +50,12 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-    public PlacePageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
+    public PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
         List<AdminPlaceDto> list = places.stream()
             .map(place -> modelMapper.map(place, AdminPlaceDto.class))
             .collect(Collectors.toList());
-        return new PlacePageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
+        return new PageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
     }
 
     /**
