@@ -9,8 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
-public class UserOwnSecurity {
+public class OwnSecurity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

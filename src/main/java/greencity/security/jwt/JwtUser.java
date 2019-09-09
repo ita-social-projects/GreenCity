@@ -1,4 +1,4 @@
-package greencity.security;
+package greencity.security.jwt;
 
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
@@ -39,7 +39,7 @@ public class JwtUser implements UserDetails {
      */
     @Override
     public String getPassword() {
-        return user.getUserOwnSecurity().getPassword();
+        return user.getOwnSecurity().getPassword();
     }
 
     /**
@@ -55,7 +55,7 @@ public class JwtUser implements UserDetails {
      */
     @Override
     public boolean isAccountNonExpired() {
-        return user.getVerifyEmail() == null;
+        return true;
     }
 
     /**
@@ -79,6 +79,6 @@ public class JwtUser implements UserDetails {
      */
     @Override
     public boolean isEnabled() {
-        return user.getUserStatus().equals(UserStatus.ACTIVATED);
+        return user.getVerifyEmail() == null;
     }
 }

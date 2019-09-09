@@ -1,20 +1,20 @@
-package greencity.security;
+package greencity.security.jwt;
 
-import java.util.Collection;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import greencity.entity.OwnSecurity;
 import greencity.entity.User;
-import greencity.entity.UserOwnSecurity;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.security.jwt.JwtUser;
+import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.GrantedAuthority;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
@@ -33,8 +33,8 @@ public class JwtUserTest {
                                 .email("nazar.stasyuk@gmail.com")
                                 .role(ROLE.ROLE_USER)
                                 .userStatus(UserStatus.ACTIVATED)
-                                .userOwnSecurity(
-                                        UserOwnSecurity.builder().password("123123").build())
+                                .ownSecurity(
+                                        OwnSecurity.builder().password("123123").build())
                                 .build());
     }
 

@@ -1,11 +1,10 @@
 package greencity.service.impl;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -15,13 +14,13 @@ import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.PlacePageableDto;
-import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
+import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
@@ -29,11 +28,7 @@ import greencity.service.UserService;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -68,8 +63,8 @@ public class PlaceServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-    UserRegisterDto dto =
-        UserRegisterDto.builder()
+    OwnSignUpDto dto =
+        OwnSignUpDto.builder()
             .email(user.getEmail())
             .firstName(user.getFirstName())
             .lastName(user.getLastName())
@@ -250,7 +245,8 @@ public class PlaceServiceImplTest {
             mapBoundsDto.getNorthEastLat(),
             mapBoundsDto.getNorthEastLng(),
             mapBoundsDto.getSouthWestLat(),
-            mapBoundsDto.getSouthWestLng()))
+            mapBoundsDto.getSouthWestLng(),
+            PlaceStatus.APPROVED))
             .thenReturn(placeExpected);
         assertEquals(
             placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());

@@ -1,15 +1,18 @@
-package greencity.service.impl;
+package greencity.security.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.exception.BadIdException;
 import greencity.exception.UserActivationEmailTokenExpiredException;
-import greencity.repository.VerifyEmailRepo;
+import greencity.security.repository.VerifyEmailRepo;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,29 +23,24 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class VerifyEmailServiceImplTest {
 
-    @Mock private VerifyEmailRepo repo;
+    @Mock
+    private VerifyEmailRepo repo;
 
     private VerifyEmailServiceImpl verifyEmailService;
 
     @Before
-    public void init(){
+    public void init() {
         JavaMailSender javaMailSender = new JavaMailSenderImpl();
         verifyEmailService = new VerifyEmailServiceImpl(repo, javaMailSender);
     }
 
 
     @Test
-    public void save(){
+    public void save() {
         ReflectionTestUtils.setField(verifyEmailService, "expireTime", 5);
         when(repo.save(any(VerifyEmail.class))).thenReturn(null);
         verifyEmailService.save(User.builder().email("").firstName("").build());
@@ -53,7 +51,7 @@ public class VerifyEmailServiceImplTest {
     @Test
     public void verifyByEmail() {
         VerifyEmail verifyEmail =
-                VerifyEmail.builder().expiryDate(LocalDateTime.now().plusHours(2)).id(2L).build();
+            VerifyEmail.builder().expiryDate(LocalDateTime.now().plusHours(2)).id(2L).build();
         when(repo.findByToken(anyString())).thenReturn(Optional.of(verifyEmail));
         when(repo.existsById(anyLong())).thenReturn(true);
         doNothing().when(repo).delete(any(VerifyEmail.class));
@@ -64,7 +62,7 @@ public class VerifyEmailServiceImplTest {
     @Test(expected = UserActivationEmailTokenExpiredException.class)
     public void verifyIsNotActive() {
         VerifyEmail verifyEmail =
-                VerifyEmail.builder().expiryDate(LocalDateTime.now().minusHours(2)).build();
+            VerifyEmail.builder().expiryDate(LocalDateTime.now().minusHours(2)).build();
         when(repo.findByToken(anyString())).thenReturn(Optional.of(verifyEmail));
         verifyEmailService.verifyByToken("some token");
     }
@@ -74,7 +72,6 @@ public class VerifyEmailServiceImplTest {
         assertTrue(verifyEmailService.isDateValidate(LocalDateTime.now().plusHours(24)));
         assertFalse(verifyEmailService.isDateValidate(LocalDateTime.now().minusHours(48)));
     }
-
 
 
     @Test(expected = BadIdException.class)

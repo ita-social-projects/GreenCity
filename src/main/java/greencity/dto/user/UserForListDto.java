@@ -13,6 +13,7 @@ import lombok.Data;
 
 @Data
 public class UserForListDto {
+    @NotNull
     private Long id;
 
     @NotBlank(message = ValidationConstants.EMPTY_FIRSTNAME)
