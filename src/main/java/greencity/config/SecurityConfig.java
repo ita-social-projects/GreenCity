@@ -1,6 +1,6 @@
 package greencity.config;
 
-import greencity.security.JwtTokenTool;
+import greencity.security.jwt.JwtTokenTool;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;

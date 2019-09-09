@@ -1,10 +1,10 @@
-package greencity.controller;
+package greencity.security.controller;
 
-import greencity.dto.userownsecurity.UserRegisterDto;
-import greencity.dto.userownsecurity.UserSignInDto;
-import greencity.dto.userownsecurity.UserSuccessSignInDto;
-import greencity.service.UserOwnSecurityService;
-import greencity.service.VerifyEmailService;
+import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.ownsecurity.OwnSignInDto;
+import greencity.security.dto.ownsecurity.OwnSignUpDto;
+import greencity.security.service.OwnSecurityService;
+import greencity.security.service.VerifyEmailService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
@@ -23,21 +23,20 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/ownSecurity")
-public class UserOwnSecurityController {
+public class OwnSecurityController {
     @Value("${client.address}")
     private String clientAddress;
-
-    private UserOwnSecurityService service;
+    private OwnSecurityService service;
     private VerifyEmailService verifyEmailService;
 
     /**
      * Constructor.
      *
-     * @param service            - {@link UserOwnSecurityService} - service for security logic.
+     * @param service            - {@link OwnSecurityService} - service for security logic.
      * @param verifyEmailService {@link VerifyEmailService} - service for verify email logic.
      */
-    public UserOwnSecurityController(
-        UserOwnSecurityService service, VerifyEmailService verifyEmailService) {
+    public OwnSecurityController(
+        OwnSecurityService service, VerifyEmailService verifyEmailService) {
         this.service = service;
         this.verifyEmailService = verifyEmailService;
     }
@@ -45,11 +44,11 @@ public class UserOwnSecurityController {
     /**
      * Method for sign-up by our security logic.
      *
-     * @param dto - {@link UserRegisterDto} that have sign-up information.
+     * @param dto - {@link OwnSignUpDto} that have sign-up information.
      * @return {@link ResponseEntity}
      */
     @PostMapping("/signUp")
-    public ResponseEntity singUp(@Valid @RequestBody UserRegisterDto dto) {
+    public ResponseEntity singUp(@Valid @RequestBody OwnSignUpDto dto) {
         service.signUp(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -57,11 +56,11 @@ public class UserOwnSecurityController {
     /**
      * Method for sign-in by our security logic.
      *
-     * @param dto - {@link UserSignInDto} that have sign-in information.
+     * @param dto - {@link OwnSignInDto} that have sign-in information.
      * @return {@link ResponseEntity}
      */
     @PostMapping("/signIn")
-    public UserSuccessSignInDto singIn(@Valid @RequestBody UserSignInDto dto) {
+    public SuccessSignInDto singIn(@Valid @RequestBody OwnSignInDto dto) {
         return service.signIn(dto);
     }
 

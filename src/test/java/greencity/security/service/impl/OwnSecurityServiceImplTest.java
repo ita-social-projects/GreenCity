@@ -1,20 +1,21 @@
-package greencity.service.impl;
+package greencity.security.service.impl;
 
+import greencity.entity.OwnSecurity;
+import greencity.exception.BadRefreshTokenException;
+import greencity.security.dto.ownsecurity.OwnSignInDto;
+import greencity.security.dto.ownsecurity.OwnSignUpDto;
+import greencity.security.jwt.JwtTokenTool;
+import greencity.security.jwt.JwtUser;
+import greencity.security.repository.OwnSecurityRepo;
+import greencity.service.impl.UserServiceImpl;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
-import greencity.dto.userownsecurity.UserRegisterDto;
-import greencity.dto.userownsecurity.UserSignInDto;
 import greencity.entity.User;
-import greencity.entity.UserOwnSecurity;
 import greencity.entity.VerifyEmail;
 import greencity.entity.enums.ROLE;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
-import greencity.exception.BadRefreshTokenException;
-import greencity.repository.UserOwnSecurityRepo;
-import greencity.security.JwtTokenTool;
-import greencity.security.JwtUser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
-public class UserOwnSecurityServiceImplTest {
+public class OwnSecurityServiceImplTest {
 
     User user =
             User.builder()
@@ -43,15 +44,15 @@ public class UserOwnSecurityServiceImplTest {
                     .lastVisit(LocalDateTime.now())
                     .dateOfRegistration(LocalDateTime.now())
                     .build();
-    UserRegisterDto dto =
-            UserRegisterDto.builder()
+    OwnSignUpDto dto =
+        OwnSignUpDto.builder()
                     .email(user.getEmail())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .password("123123123")
                     .build();
-    @InjectMocks private UserOwnSecurityServiceImpl service;
-    @Mock private UserOwnSecurityRepo repo;
+    @InjectMocks private OwnSecurityServiceImpl service;
+    @Mock private OwnSecurityRepo repo;
     @Mock private UserServiceImpl userService;
     @Mock private VerifyEmailServiceImpl verifyEmailService;
     @Mock private BCryptPasswordEncoder passwordEncoder;
@@ -62,7 +63,7 @@ public class UserOwnSecurityServiceImplTest {
     public void signUp() {
         when(userService.findByEmail(anyString())).thenReturn(null);
         when(userService.save(any(User.class))).thenReturn(user);
-        when(repo.save(any())).thenReturn(new UserOwnSecurity());
+        when(repo.save(any())).thenReturn(new OwnSecurity());
         doNothing().when(verifyEmailService).save(any());
         service.signUp(dto);
         verify(userService, times(1)).findByEmail(anyString());
@@ -73,7 +74,7 @@ public class UserOwnSecurityServiceImplTest {
     @Test
     public void signUpUserThatWasRegisteredByAnotherMethod() {
         when(userService.findByEmail(anyString())).thenReturn(user);
-        when(repo.save(any())).thenReturn(new UserOwnSecurity());
+        when(repo.save(any())).thenReturn(new OwnSecurity());
         doNothing().when(verifyEmailService).save(any());
 
         service.signUp(dto);
@@ -90,7 +91,7 @@ public class UserOwnSecurityServiceImplTest {
                         .lastName("Stasyuk")
                         .role(ROLE.ROLE_USER)
                         .lastVisit(LocalDateTime.now())
-                        .userOwnSecurity(new UserOwnSecurity())
+                        .ownSecurity(new OwnSecurity())
                         .dateOfRegistration(LocalDateTime.now())
                         .build();
         when(userService.findByEmail(anyString())).thenReturn(user);
@@ -99,16 +100,16 @@ public class UserOwnSecurityServiceImplTest {
 
     @Test
     public void delete() {
-        doNothing().when(repo).delete(any(UserOwnSecurity.class));
+        doNothing().when(repo).delete(any(OwnSecurity.class));
         when(repo.existsById(anyLong())).thenReturn(true);
-        service.delete(UserOwnSecurity.builder().id(1L).build());
-        verify(repo, times(1)).delete(any(UserOwnSecurity.class));
+        service.delete(OwnSecurity.builder().id(1L).build());
+        verify(repo, times(1)).delete(any(OwnSecurity.class));
     }
 
     @Test(expected = BadIdException.class)
     public void deleteNoExist() {
         when(repo.existsById(anyLong())).thenReturn(false);
-        service.delete(UserOwnSecurity.builder().id(1L).build());
+        service.delete(OwnSecurity.builder().id(1L).build());
     }
 
     @Test
@@ -123,7 +124,7 @@ public class UserOwnSecurityServiceImplTest {
                                         .user(
                                                 User.builder()
                                                         .id(2L)
-                                                        .userOwnSecurity(new UserOwnSecurity())
+                                                        .ownSecurity(new OwnSecurity())
                                                         .build())
                                         .build()));
         when(verifyEmailService.isDateValidate(any())).thenReturn(true);
@@ -145,7 +146,7 @@ public class UserOwnSecurityServiceImplTest {
                                 new JwtUser(new User()), "", Collections.singleton(new SimpleGrantedAuthority("user"))));
         when(userService.findByEmail(anyString()))
                 .thenReturn(User.builder().email("").role(ROLE.ROLE_USER).build());
-        service.signIn(UserSignInDto.builder().email("").password("").build());
+        service.signIn(OwnSignInDto.builder().email("").password("").build());
         verify(manager, times(1)).authenticate(any());
         verify(userService, times(1)).findByEmail(any());
         verify(tokenTool, times(1)).createAccessToken(any(), any());
