@@ -254,7 +254,8 @@ public class PlaceServiceImplTest {
             mapBoundsDto.getNorthEastLat(),
             mapBoundsDto.getNorthEastLng(),
             mapBoundsDto.getSouthWestLat(),
-            mapBoundsDto.getSouthWestLng()))
+            mapBoundsDto.getSouthWestLng(),
+            PlaceStatus.APPROVED))
             .thenReturn(placeExpected);
         assertEquals(
             placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());

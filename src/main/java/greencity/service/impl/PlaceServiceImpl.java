@@ -28,7 +28,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 /**
  * The class provides implementation of the {@code PlaceService}.
  */
@@ -36,8 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
+    private static final PlaceStatus APPROVED_STATUS = PlaceStatus.APPROVED;
     private PlaceRepo placeRepo;
-
     private ModelMapper modelMapper;
     private CategoryService categoryService;
     private LocationService locationService;
@@ -236,7 +235,8 @@ public class PlaceServiceImpl implements PlaceService {
                 mapBoundsDto.getNorthEastLat(),
                 mapBoundsDto.getNorthEastLng(),
                 mapBoundsDto.getSouthWestLat(),
-                mapBoundsDto.getSouthWestLng());
+                mapBoundsDto.getSouthWestLng(),
+                APPROVED_STATUS);
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
