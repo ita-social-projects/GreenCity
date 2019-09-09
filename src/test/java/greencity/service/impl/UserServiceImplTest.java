@@ -61,6 +61,7 @@ public class UserServiceImplTest {
     @Test
     public void updateUserStatusDeactivatedTest() {
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userService.findByEmail(any())).thenReturn(user);
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
