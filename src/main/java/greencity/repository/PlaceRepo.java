@@ -43,10 +43,11 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
     /**
      * Method return a list {@code Place} depends on the map bounds.
      *
-     * @param northEastLat latitude of extreme North-East point of the map
-     * @param northEastLng longitude of extreme North-East point of the map
-     * @param southWestLat latitude of South-West point of the map
-     * @param southWestLng longitude of South-West point of the map
+     * @param northEastLat latitude of extreme North-East point of the map.
+     * @param northEastLng longitude of extreme North-East point of the map.
+     * @param southWestLat latitude of South-West point of the map.
+     * @param southWestLng longitude of South-West point of the map.
+     * @param status status of places witch should be presented.
      * @return a list of {@code Place}
      * @author Marian Milian.
      */
@@ -57,11 +58,13 @@ public interface PlaceRepo extends JpaRepository<Place, Long> {
                 + " Location l  on p.location.id =l.id "
                 + " where l.lat > :southWestLat  and l.lat< :northEastLat"
                 + " AND l.lng >:southWestLng and l.lng<:northEastLng "
-                + " and p.status = 2"
+                + " and p.status = :status"
                 + " ORDER BY p.name")
     List<Place> findPlacesByMapsBounds(
         @Param("northEastLat") Double northEastLat,
         @Param("northEastLng") Double northEastLng,
         @Param("southWestLat") Double southWestLat,
-        @Param("southWestLng") Double southWestLng);
+        @Param("southWestLng") Double southWestLng,
+        @Param("status") PlaceStatus status
+    );
 }
