@@ -27,4 +27,6 @@ public class ErrorMessage {
     public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No eny email to verify by this token";
     public static final String NO_ANY_VERIFY_EMAIL_TO_DELETE = "No any VerifyEmail to delete with this id: ";
     public static final String REPEATING_VALUE_OF_WEEKDAY_VALUE = "Value of week day repeating";
+    public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
+    public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
 }
