@@ -21,7 +21,6 @@ import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
-import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
@@ -43,7 +42,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 @Slf4j
 @RunWith(MockitoJUnitRunner.class)
