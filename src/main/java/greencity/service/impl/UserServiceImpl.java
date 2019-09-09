@@ -12,7 +12,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
-import greencity.exception.LastAdminException;
+import greencity.exception.LowRoleLevelException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.util.List;
@@ -115,7 +115,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserRoleDto updateRole(Long id, ROLE role, String email) {
         checkUpdatableUser(id, email);
-        checkLastAdmin(id);
         User user = findById(id);
         user.setRole(role);
         return modelMapper.map(repo.save(user), UserRoleDto.class);
@@ -127,7 +126,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
         checkUpdatableUser(id, email);
-        checkLastAdmin(id);
+        accessForUpdateUserStatus(id, email);
         User user = findById(id);
         user.setUserStatus(userStatus);
         return modelMapper.map(repo.save(user), UserStatusDto.class);
@@ -155,15 +154,17 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method which check that, if admin/moderator try update role/status of last admin, then throw exception.
+     * Method which check that, if moderator trying update status of admins or moderators, then throw exception.
      *
-     * @param id id of updatable user.
+     * @param id    id of updatable user.
+     * @param email email of admin/moderator.
      * @author Rostyslav Khasanov
      */
-    private void checkLastAdmin(Long id) {
-        if (repo.countByRole(ROLE.ROLE_ADMIN) == 1) {
-            if (repo.findByRole(ROLE.ROLE_ADMIN).getId() == id) {
-                throw new LastAdminException(ErrorMessage.IMPOSSIBLE_DELETE_LAST_ADMIN);
+    private void accessForUpdateUserStatus(Long id, String email) {
+        if (findByEmail(email).getRole() == ROLE.ROLE_MODERATOR) {
+            ROLE role = findById(id).getRole();
+            if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
+                throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);
             }
         }
     }
