@@ -14,13 +14,13 @@ import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.PlacePageableDto;
-import greencity.dto.userownsecurity.UserRegisterDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
+import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
@@ -63,8 +63,8 @@ public class PlaceServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-    UserRegisterDto dto =
-        UserRegisterDto.builder()
+    OwnSignUpDto dto =
+        OwnSignUpDto.builder()
             .email(user.getEmail())
             .firstName(user.getFirstName())
             .lastName(user.getLastName())

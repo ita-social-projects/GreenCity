@@ -1,4 +1,4 @@
-package greencity.security;
+package greencity.security.jwt;
 
 import greencity.entity.enums.ROLE;
 import io.jsonwebtoken.Claims;
@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;

@@ -1,5 +1,6 @@
-package greencity.security;
+package greencity.security.jwt;
 
+import greencity.security.jwt.JwtTokenTool;
 import java.util.UUID;
 
 import greencity.entity.enums.ROLE;

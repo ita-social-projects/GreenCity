@@ -6,12 +6,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,9 +31,6 @@ public class User {
 
     @Column(unique = true, nullable = false, length = 50)
     private String email;
-
-    @OneToOne(mappedBy = "user")
-    private Photo photo;
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)
@@ -60,7 +59,7 @@ public class User {
     private List<Place> addedPlaces = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
-    private UserOwnSecurity userOwnSecurity;
+    private OwnSecurity ownSecurity;
 
     @OneToOne(mappedBy = "user")
     private VerifyEmail verifyEmail;

@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
 public class VerifyEmail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
