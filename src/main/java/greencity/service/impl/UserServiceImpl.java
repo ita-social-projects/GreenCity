@@ -12,6 +12,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
+import greencity.exception.BadUpdateRequestException;
 import greencity.exception.LowRoleLevelException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
@@ -149,7 +150,7 @@ public class UserServiceImpl implements UserService {
      */
     private void checkUpdatableUser(Long id, String email) {
         if (id == findIdByEmail(email)) {
-            throw new BadIdException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
+            throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
     }
 

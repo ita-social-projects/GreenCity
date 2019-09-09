@@ -13,6 +13,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
+import greencity.exception.LowRoleLevelException;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -37,10 +38,6 @@ public class UserServiceImplTest {
 
     @Mock
     UserRepo userRepo;
-
-    @InjectMocks
-    private UserServiceImpl userService;
-
     User user =
         User.builder()
             .firstName("test")
@@ -51,6 +48,8 @@ public class UserServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
+    @InjectMocks
+    private UserServiceImpl userService;
 
     @Test
     public void saveTest() {
@@ -62,10 +61,19 @@ public class UserServiceImplTest {
     public void updateUserStatusDeactivatedTest() {
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
+        when(userService.findByEmail(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             UserStatus.DEACTIVATED,
             userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, any()).getUserStatus());
+    }
+
+    @Test(expected = LowRoleLevelException.class)
+    public void updateUserStatusLowRoleLevelException() {
+        user.setRole(ROLE.ROLE_MODERATOR);
+        when(userService.findByEmail(any())).thenReturn(user);
+        when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, "email");
     }
 
     @Test
