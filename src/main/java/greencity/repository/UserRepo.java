@@ -1,7 +1,6 @@
 package greencity.repository;
 
 import greencity.entity.User;
-import greencity.entity.enums.ROLE;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,20 +38,4 @@ public interface UserRepo extends JpaRepository<User, Long> {
      */
     @Query("SELECT id from User where email=:email")
     Long findIdByEmail(String email);
-
-    /**
-     * Find count of {@code User} with role ROLE_ADMIN.
-     *
-     * @return count of {@code User} with role ROLE_ADMIN.
-     * @author Rostyslav Khasanov
-     */
-    Long countByRole(ROLE role);
-
-    /**
-     * Find {@code User} by role.
-     *
-     * @return {@code User}
-     * @author Rostyslav Khasanov
-     */
-    User findByRole(ROLE role);
 }
