@@ -1,7 +1,7 @@
 package greencity.config;
 
-import greencity.security.JwtFilter;
-import greencity.security.JwtTokenTool;
+import greencity.security.jwt.JwtFilter;
+import greencity.security.jwt.JwtTokenTool;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;

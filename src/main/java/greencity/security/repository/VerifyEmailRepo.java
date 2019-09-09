@@ -1,4 +1,4 @@
-package greencity.repository;
+package greencity.security.repository;
 
 import greencity.entity.VerifyEmail;
 import java.util.Optional;
