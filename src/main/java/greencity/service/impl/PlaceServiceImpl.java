@@ -177,17 +177,13 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
-        if (updatable.getStatus() != null) {
-            if (!updatable.getStatus().equals(status)) {
-                updatable.setStatus(status);
-                updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
-            } else {
-                log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
-                throw new PlaceStatusException(
-                    ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
-            }
+        if (!updatable.getStatus().equals(status)) {
+            updatable.setStatus(status);
+            updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
         } else {
-            throw new NullPointerException(ErrorMessage.PLACE_STATUS_IS_NULL);
+            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
+            throw new PlaceStatusException(
+                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         }
 
         return modelMapper.map(placeRepo.save(updatable), PlaceStatusDto.class);
