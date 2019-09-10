@@ -17,7 +17,10 @@ public class SpecificationValue {
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String value;
+    private String desc;
+
+    @Column
+    private Long value;
 
     @ManyToOne
     private Place place;

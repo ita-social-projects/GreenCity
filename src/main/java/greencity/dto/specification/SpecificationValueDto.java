@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SpecificationValueDto {
     private Long id;
-    private String value;
+    private String desc;
+    private Long value;
     private SpecificationDto specification;
 }
