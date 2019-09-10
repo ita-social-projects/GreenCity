@@ -1,6 +1,5 @@
 package greencity.controller;
 
-import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.service.FavoritePlaceService;
 import java.security.Principal;
@@ -13,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/favorite_place")
+@RequestMapping("/favorite_place/")
 @AllArgsConstructor
 public class FavoritePlaceController {
     private final FavoritePlaceService favoritePlaceService;

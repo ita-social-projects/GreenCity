@@ -12,7 +12,7 @@ import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.exception.BadEmailException;
-import greencity.exception.BadIdAndEmailException;
+import greencity.exception.BadIdOrEmailException;
 import greencity.exception.BadIdException;
 import greencity.exception.NotFoundException;
 import greencity.mapping.FavoritePlaceDtoMapper;
@@ -32,6 +32,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import static org.mockito.Mockito.times;
 
@@ -124,7 +126,7 @@ public class FavoritePlaceServiceImplTest {
         favoritePlaceService.save(dto, userEmail);
     }
 
-    @Test(expected = BadIdAndEmailException.class)
+    @Test(expected = BadIdOrEmailException.class)
     public void saveFavoritePlaceAlreadyExistTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
@@ -256,10 +258,10 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = NotFoundException.class)
+    @Test(expected = BadIdException.class)
     public void getFavoritePlaceInfo_FavoritePlaceNotExist() {
         FavoritePlace fp = new FavoritePlace();
-        when(repo.findById(anyLong())).thenThrow(new NotFoundException(anyString()));
+        when(repo.findById(anyLong())).thenThrow(new BadIdException(anyString()));
         favoritePlaceService.getInfoFavoritePlace(2L);
     }
 

@@ -50,6 +50,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public PlacePageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
+        pageable.getSort();
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
         List<AdminPlaceDto> list = places.stream()
             .map(place -> modelMapper.map(place, AdminPlaceDto.class))

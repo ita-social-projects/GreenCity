@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,9 +72,11 @@ public class PlaceController {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Controller to save place to user's favorite list.
+     *
+     * @return favorite place name and place id
      */
-    @PostMapping("/save/favorite")
+    @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
         @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
