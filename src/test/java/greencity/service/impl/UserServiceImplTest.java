@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -65,11 +66,13 @@ public class UserServiceImplTest {
     @Test
     public void updateUserStatusDeactivatedTest() {
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userRepo.findIdByEmail(any())).thenReturn(Optional.of(2l));
+        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             UserStatus.DEACTIVATED,
-            userService.updateStatus(1l, UserStatus.DEACTIVATED, any()).getUserStatus());
+            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, any()).getUserStatus());
     }
 
     @Test(expected = LowRoleLevelException.class)

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.MapBoundsDto;
@@ -13,14 +14,13 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlacePageableDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
+import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
-import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
@@ -107,23 +107,6 @@ public class PlaceServiceImplTest {
         .openingHoursList(openingHoursList)
         .build();
 
-    Location location = Location.builder()
-        .id(1L)
-        .address("test address")
-        .lat(45.456)
-        .lng(46.456)
-        .place(placeEntity)
-        .build();
-
-    OpeningHours openingHours = OpeningHours.builder()
-        .id(1L)
-        .openTime(LocalTime.parse("10:30"))
-        .closeTime(LocalTime.parse("20:30"))
-        .weekDay(DayOfWeek.MONDAY)
-        .place(placeEntity)
-        .build();
-
-    String email;
 
     @Mock
     private PlaceRepo placeRepo;
@@ -149,24 +132,19 @@ public class PlaceServiceImplTest {
     @Mock
     private UserService userService;
 
-    @Mock
-    private Place place;
-
     @InjectMocks
     private PlaceServiceImpl placeService;
 
     @Test
-    public void savePlaceWithVerificationAllParametersTest() {
-        when(categoryService.findByName(anyString())).thenReturn(any());
-        when(categoryService.save(categoryDto)).thenReturn(category);
-        when(placeRepo.save(any())).thenReturn(place);
-        when(userService.findByEmail(anyString())).thenReturn(null);
-        when(service.findByLatAndLng(anyDouble(), anyDouble())).thenReturn(location);
-        when(openingHoursService.save(openingHours)).thenReturn(openingHours);
-        assertEquals(place, placeRepo.save(place));
-        assertEquals(location, service.findByLatAndLng(45.456, 45.456));
-        assertEquals(openingHours, openingHoursService.save(openingHours));
-        assertEquals(category, categoryService.save(categoryDto));
+    public void savePlaceWithVerificationAllParametersTest() throws Exception {
+        when(modelMapper.map(any(), any())).thenReturn(place);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
+        place.setAuthor(user);
+        place.setCategory(category);
+        openingHoursEntity.setPlace(place);
+        location.setPlace(place);
+        when(placeRepo.save(place)).thenReturn(place);
+        assertEquals(place, placeService.save(dto, user.getEmail()));
     }
 
     @Test
