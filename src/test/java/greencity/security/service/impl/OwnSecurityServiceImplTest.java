@@ -5,7 +5,6 @@ import greencity.exception.BadRefreshTokenException;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.jwt.JwtTokenTool;
-import greencity.security.jwt.JwtUser;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.service.impl.UserServiceImpl;
 import java.time.LocalDateTime;
@@ -14,7 +13,7 @@ import java.util.Collections;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.entity.enums.ROLE;
-import greencity.exception.BadEmailException;
+import greencity.exception.UserAlreadyRegisteredException;
 import greencity.exception.BadIdException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class OwnSecurityServiceImplTest {
 
-    User user =
+    private User user =
             User.builder()
                     .email("Nazar.stasyuk@gmail.com")
                     .firstName("Nazar")
@@ -44,7 +43,7 @@ public class OwnSecurityServiceImplTest {
                     .lastVisit(LocalDateTime.now())
                     .dateOfRegistration(LocalDateTime.now())
                     .build();
-    OwnSignUpDto dto =
+    private OwnSignUpDto dto =
         OwnSignUpDto.builder()
                     .email(user.getEmail())
                     .firstName(user.getFirstName())
@@ -71,18 +70,7 @@ public class OwnSecurityServiceImplTest {
         verify(repo, times(1)).save(any());
     }
 
-    @Test
-    public void signUpUserThatWasRegisteredByAnotherMethod() {
-        when(userService.findByEmail(anyString())).thenReturn(user);
-        when(repo.save(any())).thenReturn(new OwnSecurity());
-        doNothing().when(verifyEmailService).save(any());
-
-        service.signUp(dto);
-        verify(userService, times(1)).findByEmail(anyString());
-        verify(repo, times(1)).save(any());
-    }
-
-    @Test(expected = BadEmailException.class)
+    @Test(expected = UserAlreadyRegisteredException.class)
     public void signUpSameUser() {
         User user =
                 User.builder()
@@ -143,7 +131,7 @@ public class OwnSecurityServiceImplTest {
         when(manager.authenticate(any()))
                 .thenReturn(
                         new UsernamePasswordAuthenticationToken(
-                                new JwtUser(new User()), "", Collections.singleton(new SimpleGrantedAuthority("user"))));
+                                "", "", Collections.singleton(new SimpleGrantedAuthority("user"))));
         when(userService.findByEmail(anyString()))
                 .thenReturn(User.builder().email("").role(ROLE.ROLE_USER).build());
         service.signIn(OwnSignInDto.builder().email("").password("").build());

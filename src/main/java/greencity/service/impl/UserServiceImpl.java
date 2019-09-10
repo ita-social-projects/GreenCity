@@ -9,8 +9,8 @@ import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
+import greencity.exception.UserAlreadyRegisteredException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.util.List;
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
-            throw new BadEmailException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
+            throw new UserAlreadyRegisteredException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
     }
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
         Long id = repo.findIdByEmail(email);
         if (id == null) {
-            throw new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
+            throw new UserAlreadyRegisteredException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
         }
         return id;
     }

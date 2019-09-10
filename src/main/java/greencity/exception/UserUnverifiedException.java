@@ -3,16 +3,16 @@ package greencity.exception;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * Exception that we get when user trying to sign-in with bad email or password.
+ * Exception that we get when user trying to sign-in to account that has not verified email.
  *
  * @author Nazar Stasyuk
  * @version 1.0
  */
-public class BadEmailOrPasswordException extends AuthenticationException {
+public class UserUnverifiedException extends AuthenticationException {
     /**
      * Constructor.
      */
-    public BadEmailOrPasswordException(String message) {
+    public UserUnverifiedException(String message) {
         super(message);
     }
 }

@@ -4,14 +4,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
-import greencity.constant.ErrorMessage;
 import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.exception.BadEmailException;
 import greencity.exception.BadIdAndEmailException;
 import greencity.exception.BadIdException;
 import greencity.exception.NotFoundException;

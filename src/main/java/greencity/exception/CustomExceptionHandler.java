@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,7 +20,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
- * Custom exception handler .
+ * Custom exception handler.
  *
  * @author Marian Milian
  * @version 1.0
@@ -50,45 +51,40 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Method intercept exception {@link BadEmailOrPasswordException}.
      *
-     * @param ex      Exception witch should be intercepted.
      * @param request contain  detail about occur exception
      * @return ResponseEntity witch  contain http status and body  with message of exception.
-     * @author Marian Milian
+     * @author Nazar Stasyuk
      */
-    @ExceptionHandler(BadEmailOrPasswordException.class)
-    public final ResponseEntity handleBadEmailOrPasswordException(BadEmailOrPasswordException ex, WebRequest request) {
+    @ExceptionHandler(AuthenticationException.class)
+    public final ResponseEntity authenticationException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
     /**
      * Method intercept exception {@link BadRefreshTokenException}.
      *
-     * @param ex      Exception witch should be intercepted.
      * @param request contain  detail about occur exception
      * @return ResponseEntity witch  contain http status and body  with message of exception.
-     * @author Marian Milian
+     * @author Nazar Stasyuk
      */
     @ExceptionHandler(BadRefreshTokenException.class)
-    public final ResponseEntity handleBadRefreshTokenException(BadRefreshTokenException ex, WebRequest request) {
+    public final ResponseEntity handleBadRefreshTokenException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
     /**
-     * Method intercept exception {@link BadEmailException}.
+     * Method intercept exception {@link UserAlreadyRegisteredException}.
      *
      * @param ex Exception witch should be intercepted.
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      * @author Nazar Stasyuk
      */
-    @ExceptionHandler(BadEmailException.class)
-    public final ResponseEntity handleBadEmailException(BadEmailException ex) {
+    @ExceptionHandler(UserAlreadyRegisteredException.class)
+    public final ResponseEntity handleBadEmailException(UserAlreadyRegisteredException ex) {
         ValidationExceptionDto validationExceptionDto =
             new ValidationExceptionDto(AppConstant.REGISTRATION_EMAIL_FIELD_NAME, ex.getMessage());
-        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(Collections.singletonList(validationExceptionDto));
     }

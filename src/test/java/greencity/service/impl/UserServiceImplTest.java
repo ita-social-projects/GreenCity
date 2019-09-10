@@ -10,7 +10,7 @@ import greencity.dto.user.UserPageableDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
+import greencity.exception.UserAlreadyRegisteredException;
 import greencity.exception.BadIdException;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
@@ -118,9 +118,9 @@ public class UserServiceImplTest {
         userService.findById(1l);
     }
 
-    @Test(expected = BadEmailException.class)
+    @Test(expected = UserAlreadyRegisteredException.class)
     public void saveExceptionTest() {
-        when(userService.findByEmail(any())).thenThrow(BadEmailException.class);
+        when(userService.findByEmail(any())).thenThrow(UserAlreadyRegisteredException.class);
         userService.save(new User());
     }
 
@@ -141,7 +141,7 @@ public class UserServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = BadEmailException.class)
+    @Test(expected = UserAlreadyRegisteredException.class)
     public void findIdByEmailNotFound() {
         String email = "email";
         when(userRepo.findIdByEmail(email)).thenReturn(null);

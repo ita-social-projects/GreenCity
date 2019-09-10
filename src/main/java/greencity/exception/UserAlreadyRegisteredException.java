@@ -6,11 +6,11 @@ package greencity.exception;
  * @author Nazar Stasyuk
  * @version 1.0
  */
-public class BadEmailException extends RuntimeException {
+public class UserAlreadyRegisteredException extends RuntimeException {
     /**
      * Generated javadoc, must be replaced with real one.
      */
-    public BadEmailException(String message) {
+    public UserAlreadyRegisteredException(String message) {
         super(message);
     }
 }

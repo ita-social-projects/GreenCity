@@ -1,6 +1,8 @@
 package greencity.security.jwt;
 
+import greencity.entity.User;
 import greencity.entity.enums.ROLE;
+import greencity.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,9 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,13 +37,10 @@ public class JwtTokenTool {
     @Value("${tokenKey}")
     private String tokenKey;
 
-    private JwtUserDetailService userDetailsService;
+    private UserService userService;
 
-    /**
-     * Generated javadoc, must be replaced with real one.
-     */
-    public JwtTokenTool(JwtUserDetailService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public JwtTokenTool(UserService userService) {
+        this.userService = userService;
     }
 
     @PostConstruct
@@ -129,10 +127,11 @@ public class JwtTokenTool {
      */
     public Authentication getAuthentication(String token) {
         log.info("begin");
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getEmailByToken(token));
+        User user = userService.findByEmail(getEmailByToken(token));
+
         log.info("end");
         return new UsernamePasswordAuthenticationToken(
-            userDetails, "", userDetails.getAuthorities());
+            user.getEmail(), "", Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
     }
 
     /**

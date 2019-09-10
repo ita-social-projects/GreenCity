@@ -1,12 +1,15 @@
 package greencity.config;
 
+import greencity.security.jwt.JwtAuthenticationProvider;
 import greencity.security.jwt.JwtTokenTool;
+import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,14 +30,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtTokenTool tool;
+    private UserService userService;
 
     /**
      * Constructor.
      *
-     * @param tool {@link JwtTokenTool} - tool for JWT
+     * @param tool        {@link JwtTokenTool} - tool for JWT
+     * @param userService {@link UserService} - user service.
      */
-    public SecurityConfig(JwtTokenTool tool) {
+    public SecurityConfig(JwtTokenTool tool, UserService userService) {
         this.tool = tool;
+        this.userService = userService;
     }
 
     /**
@@ -112,6 +118,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/swagger-ui.html");
         web.ignoring().antMatchers("/swagger-resources/**");
         web.ignoring().antMatchers("/webjars/**");
+    }
+
+
+    /**
+     * Method for configure type of authentication provider.
+     *
+     * @param auth {@link AuthenticationManagerBuilder}
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(new JwtAuthenticationProvider(userService, passwordEncoder()));
     }
 
     /**

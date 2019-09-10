@@ -1,14 +1,16 @@
 package greencity.security.service.impl;
 
-import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.ErrorMessage.NO_ENY_USER_OWN_SECURITY_TO_DELETE;
+import static greencity.constant.ErrorMessage.REFRESH_TOKEN_NOT_VALID;
+import static greencity.constant.ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL;
 
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.exception.BadRefreshTokenException;
+import greencity.exception.UserAlreadyRegisteredException;
 import greencity.security.dto.AccessTokenDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
@@ -23,9 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,21 +52,15 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public void signUp(OwnSignUpDto dto) {
         log.info("begin");
         User byEmail = userService.findByEmail(dto.getEmail());
+
         if (byEmail != null) {
-            // He has already registered
-            if (byEmail.getOwnSecurity() == null) {
-                // He has already registered by else method of registration
-                repo.save(createUserOwnSecurityToUser(dto, byEmail));
-                verifyEmailService.save(byEmail);
-            } else {
-                throw new BadEmailException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
-            }
-        } else {
-            User user = createNewRegisteredUser(dto);
-            User savedUser = userService.save(user);
-            repo.save(createUserOwnSecurityToUser(dto, savedUser));
-            verifyEmailService.save(savedUser);
+            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
+        User user = createNewRegisteredUser(dto);
+        User savedUser = userService.save(user);
+        repo.save(createUserOwnSecurityToUser(dto, savedUser));
+        verifyEmailService.save(savedUser);
+
         log.info("end");
     }
 
