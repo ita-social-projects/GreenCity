@@ -22,7 +22,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * Custom exception handler .
  *
  * @author Marian Milian
- * @version 1.0
  */
 
 @AllArgsConstructor

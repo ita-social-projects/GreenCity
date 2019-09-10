@@ -27,7 +27,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
      * @return {@code Page<User>}
      * @author Rostyslav Khasanov
      */
-    Page<User> findAllByOrderByEmail(Pageable pageable);
+    Page<User> findAll(Pageable pageable);
 
     /**
      * Find id by email.
