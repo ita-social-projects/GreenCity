@@ -4,15 +4,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
-import greencity.constant.ErrorMessage;
 import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdAndEmailException;
 import greencity.exception.BadIdException;
 import greencity.exception.NotFoundException;
 import greencity.mapping.FavoritePlaceDtoMapper;
@@ -68,7 +65,6 @@ public class FavoritePlaceServiceImplTest {
         fp.getPlace().setId(2L);
         when(userService.findIdByEmail(any())).thenReturn(1L);
         when(placeService.existsById(any())).thenReturn(true);
-        when(repo.existsByPlaceIdAndUserEmail(any(), any())).thenReturn(false);
         when(repo.save(any(FavoritePlace.class))).thenReturn(fp);
         when(favoritePlaceDtoMapper.convertToEntity(any(FavoritePlaceDto.class))).thenReturn(fp);
         when(favoritePlaceDtoMapper.convertToDto(any(FavoritePlace.class))).thenReturn(dto);
@@ -77,7 +73,6 @@ public class FavoritePlaceServiceImplTest {
 
         verify(userService, times(1)).findIdByEmail(fp.getUser().getEmail());
         verify(placeService, times(1)).existsById(any());
-        verify(repo, times(1)).existsByPlaceIdAndUserEmail(any(), any());
         verify(repo, times(1)).save(any(FavoritePlace.class));
         verify(favoritePlaceDtoMapper, times(1)).convertToEntity(any(FavoritePlaceDto.class));
         verify(favoritePlaceDtoMapper, times(1)).convertToDto(any(FavoritePlace.class));
@@ -124,23 +119,7 @@ public class FavoritePlaceServiceImplTest {
         favoritePlaceService.save(dto, userEmail);
     }
 
-    @Test(expected = BadIdAndEmailException.class)
-    public void saveFavoritePlaceAlreadyExistTest() {
-        FavoritePlaceDto dto = new FavoritePlaceDto();
-        String userEmail = "email";
-        dto.setName("a");
-        dto.setPlaceId(1L);
-        FavoritePlace fp = new FavoritePlace();
-        fp.setName("a");
-        fp.setUser(new User());
-        fp.getUser().setEmail("setEmail()");
-        fp.setPlace(new Place());
-        fp.getPlace().setId(2L);
-        when(favoritePlaceDtoMapper.convertToEntity(any(FavoritePlaceDto.class))).thenReturn(fp);
-        when(placeService.existsById(any())).thenReturn(true);
-        when(repo.existsByPlaceIdAndUserEmail(any(), any())).thenReturn(true);
-        favoritePlaceService.save(dto, userEmail);
-    }
+
 
     /**
      * @author Zakhar Skaletskyi
@@ -256,10 +235,10 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = NotFoundException.class)
+    @Test(expected = BadIdException.class)
     public void getFavoritePlaceInfo_FavoritePlaceNotExist() {
         FavoritePlace fp = new FavoritePlace();
-        when(repo.findById(anyLong())).thenThrow(new NotFoundException(anyString()));
+        when(repo.findById(anyLong())).thenThrow(new BadIdException(anyString()));
         favoritePlaceService.getInfoFavoritePlace(2L);
     }
 

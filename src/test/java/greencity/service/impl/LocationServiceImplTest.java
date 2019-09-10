@@ -71,6 +71,13 @@ public class LocationServiceImplTest {
         locationService.update(null, new Location());
     }
 
+    @Test
+    public void deleteByIdTest() {
+        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(new Location()));
+
+        assertEquals(new Long(1), locationService.deleteById(1L));
+    }
+
     @Test(expected = NotFoundException.class)
     public void deleteByIdGivenIdNullThenThrowException() {
         locationService.deleteById(null);

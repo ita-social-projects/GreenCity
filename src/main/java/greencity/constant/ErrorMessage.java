@@ -8,18 +8,13 @@ public class ErrorMessage {
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist: ";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS = "Favorite place already exist for this place";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "The place already has this status: ";
-    public static final String PLACE_STATUS_IS_NULL = "The place status is null";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
-    public static final String OPENING_HOURS_NOT_FOUND_BY_ID =
-        "The opening hours does not exist by this id: ";
-    public static final String CATEGORY_ALREADY_EXISTS_BY_THIS_NAME =
-        "Category by this name already exists.";
-    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL =
-        "User with this email are already registered";
-    public static final String NO_ENY_USER_OWN_SECURITY_TO_DELETE =
-        "No any ownSecurity to delete with this id: ";
+    public static final String OPENING_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
+    public static final String CATEGORY_ALREADY_EXISTS_BY_THIS_NAME = "Category by this name already exists.";
+    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email are already registered";
+    public static final String NO_ENY_USER_OWN_SECURITY_TO_DELETE = "No any ownSecurity to delete with this id: ";
     public static final String LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES = "Location by this coordinates already exists.";
     public static final String BAD_EMAIL_OR_PASSWORD = "Bad email or password";
     public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
@@ -27,6 +22,7 @@ public class ErrorMessage {
     public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No eny email to verify by this token";
     public static final String NO_ANY_VERIFY_EMAIL_TO_DELETE = "No any VerifyEmail to delete with this id: ";
     public static final String REPEATING_VALUE_OF_WEEKDAY_VALUE = "Value of week day repeating";
+    public static final String NOT_SAVE_DELETION = "This is can't be deleted";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
 }

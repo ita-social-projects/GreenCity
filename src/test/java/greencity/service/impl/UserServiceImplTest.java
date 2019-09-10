@@ -1,6 +1,6 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -50,7 +50,7 @@ public class UserServiceImplTest {
             .email("test@gmail.com")
             .role(ROLE.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .lastVisit(LocalDateTime.now().minusHours(1))
+            .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
 
@@ -65,8 +65,6 @@ public class UserServiceImplTest {
     @Test
     public void updateUserStatusDeactivatedTest() {
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
-        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
-        when(userRepo.findIdByEmail(any())).thenReturn(Optional.of(2l));
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
