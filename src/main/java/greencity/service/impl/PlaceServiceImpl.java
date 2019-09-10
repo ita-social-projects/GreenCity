@@ -48,6 +48,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
+
     public PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
         List<AdminPlaceDto> list = places.stream()

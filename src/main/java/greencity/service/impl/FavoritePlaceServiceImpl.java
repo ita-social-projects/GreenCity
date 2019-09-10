@@ -7,16 +7,13 @@ import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.User;
-import greencity.exception.BadIdAndEmailException;
 import greencity.exception.BadIdException;
-import greencity.exception.NotFoundException;
 import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +42,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         FavoritePlace favoritePlace = favoritePlaceDtoMapper.convertToEntity(favoritePlaceDto);
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
             throw new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
-        }
-        if (repo.existsByPlaceIdAndUserEmail(favoritePlace.getPlace().getId(), userEmail)) {
-            throw new BadIdAndEmailException(ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS);
         }
         favoritePlace.setUser(User.builder().email(userEmail).id(userService.findIdByEmail(userEmail)).build());
         return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
