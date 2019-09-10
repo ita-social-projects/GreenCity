@@ -16,7 +16,9 @@ import greencity.exception.BadUpdateRequestException;
 import greencity.exception.LowRoleLevelException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +49,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User save(User user) {
-        if (findByEmail(user.getEmail()) != null) {
+        if (findByEmail(user.getEmail()).isPresent()) {
             throw new BadEmailException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
@@ -91,7 +93,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return repo.findByEmail(email);
     }
 
@@ -103,10 +105,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long findIdByEmail(String email) {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
-        Long id = repo.findIdByEmail(email);
-        if (id == null) {
-            throw new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
-        }
+        Long id = repo.findIdByEmail(email)
+            .orElseThrow(() -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         return id;
     }
 
@@ -142,6 +142,17 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public User updateLastVisit(User user) {
+        User updatable = findById(user.getId());
+        log.info(updatable.getLastVisit() + "s");
+        updatable.setLastVisit(LocalDateTime.now());
+        return repo.save(updatable);
+    }
+
+    /**
      * Method which check that, if admin/moderator update role/status of himself, then throw exception.
      *
      * @param id    id of updatable user.
@@ -162,7 +173,7 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void accessForUpdateUserStatus(Long id, String email) {
-        if (findByEmail(email).getRole() == ROLE.ROLE_MODERATOR) {
+        if (findByEmail(email).get().getRole() == ROLE.ROLE_MODERATOR) {
             ROLE role = findById(id).getRole();
             if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
                 throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);

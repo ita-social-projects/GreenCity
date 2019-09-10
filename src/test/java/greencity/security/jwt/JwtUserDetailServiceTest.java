@@ -9,6 +9,7 @@ import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.security.jwt.JwtUserDetailService;
 import greencity.service.impl.UserServiceImpl;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -29,14 +30,14 @@ public class JwtUserDetailServiceTest {
         String email = "email";
         String password = "password";
         when(userService.findByEmail(any()))
-                .thenReturn(
+                .thenReturn(Optional.of(
                         User.builder()
                                 .id(1L)
                                 .email(email)
                                 .ownSecurity(
                                         OwnSecurity.builder().password(password).build())
                                 .role(ROLE.ROLE_USER)
-                                .build());
+                                .build()));
 
         UserDetails userDetails = jwtUserDetailService.loadUserByUsername(email);
 

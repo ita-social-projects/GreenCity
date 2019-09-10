@@ -1,6 +1,6 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -38,21 +38,26 @@ public class UserServiceImplTest {
 
     @Mock
     UserRepo userRepo;
+
+    @InjectMocks
+    private UserServiceImpl userService;
+
     User user =
         User.builder()
+            .id(1l)
             .firstName("test")
             .lastName("test")
             .email("test@gmail.com")
             .role(ROLE.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .lastVisit(LocalDateTime.now())
+            .lastVisit(LocalDateTime.now().minusHours(1))
             .dateOfRegistration(LocalDateTime.now())
             .build();
-    @InjectMocks
-    private UserServiceImpl userService;
 
     @Test
     public void saveTest() {
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userService.findByEmail(user.getEmail())).thenReturn(Optional.empty());
         when(userRepo.save(user)).thenReturn(user);
         assertEquals(user, userService.save(user));
     }
@@ -60,19 +65,21 @@ public class UserServiceImplTest {
     @Test
     public void updateUserStatusDeactivatedTest() {
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
+        when(userRepo.findIdByEmail(any())).thenReturn(Optional.of(2l));
         when(userRepo.save(any())).thenReturn(user);
-        when(userService.findByEmail(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             UserStatus.DEACTIVATED,
-            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, any()).getUserStatus());
+            userService.updateStatus(1l, UserStatus.DEACTIVATED, any()).getUserStatus());
     }
 
     @Test(expected = LowRoleLevelException.class)
     public void updateUserStatusLowRoleLevelException() {
         user.setRole(ROLE.ROLE_MODERATOR);
-        when(userService.findByEmail(any())).thenReturn(user);
+        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userRepo.findIdByEmail(any())).thenReturn(Optional.of(2l));
         userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, "email");
     }
 
@@ -80,8 +87,8 @@ public class UserServiceImplTest {
     public void updateRoleTest() {
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userRepo.findIdByEmail(any())).thenReturn(Optional.of(2l));
         when(userRepo.save(any())).thenReturn(user);
-        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
             ROLE.ROLE_MODERATOR,
             userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR, any()).getRole());
@@ -109,7 +116,7 @@ public class UserServiceImplTest {
 
     @Test(expected = BadEmailException.class)
     public void saveExceptionTest() {
-        when(userService.findByEmail(any())).thenThrow(BadEmailException.class);
+        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
         userService.save(new User());
     }
 
@@ -124,7 +131,7 @@ public class UserServiceImplTest {
     @Test
     public void findIdByEmail() {
         String email = "email";
-        when(userRepo.findIdByEmail(email)).thenReturn(2L);
+        when(userRepo.findIdByEmail(email)).thenReturn(Optional.of(2L));
         assertEquals(2L, (long) userService.findIdByEmail(email));
     }
 
@@ -133,9 +140,7 @@ public class UserServiceImplTest {
      */
     @Test(expected = BadEmailException.class)
     public void findIdByEmailNotFound() {
-        String email = "email";
-        when(userRepo.findIdByEmail(email)).thenReturn(null);
-        userService.findIdByEmail(email);
+        userService.findIdByEmail(any());
     }
 
     @Test
@@ -169,5 +174,13 @@ public class UserServiceImplTest {
     public void getRoles() {
         RoleDto roleDto = new RoleDto(ROLE.class.getEnumConstants());
         assertEquals(roleDto, userService.getRoles());
+    }
+
+    @Test
+    public void updateLastVisit() {
+        LocalDateTime localDateTime = user.getLastVisit();
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.save(any())).thenReturn(user);
+        assertNotEquals(localDateTime, userService.updateLastVisit(user).getLastVisit());
     }
 }

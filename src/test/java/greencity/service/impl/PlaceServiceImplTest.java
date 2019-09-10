@@ -152,11 +152,9 @@ public class PlaceServiceImplTest {
 
     @Test
     public void savePlaceWithVerificationAllParametersTest() {
-        when(categoryService.findByName(anyString())).thenReturn(any());
         when(categoryService.save(categoryDto)).thenReturn(category);
-        when(placeRepo.save(any())).thenReturn(place);
-        when(userService.findByEmail(anyString())).thenReturn(null);
         when(service.findByLatAndLng(anyDouble(), anyDouble())).thenReturn(location);
+        when(placeRepo.save(any())).thenReturn(place);
         when(openingHoursService.save(openingHours)).thenReturn(openingHours);
         assertEquals(place, placeRepo.save(place));
         assertEquals(location, service.findByLatAndLng(45.456, 45.456));

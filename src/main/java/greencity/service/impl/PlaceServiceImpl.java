@@ -67,7 +67,7 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_SAVE);
         Category category = createCategoryByName(dto.getCategory().getName());
         Place place = modelMapper.map(dto, Place.class);
-        place.setAuthor(userService.findByEmail(email));
+        place.setAuthor(userService.findByEmail(email).get());
         place.setCategory(category);
         placeRepo.save(place);
         setPlaceToLocation(place);
