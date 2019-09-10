@@ -4,15 +4,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
-import greencity.constant.ErrorMessage;
 import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdOrEmailException;
 import greencity.exception.BadIdException;
 import greencity.exception.NotFoundException;
 import greencity.mapping.FavoritePlaceDtoMapper;
@@ -32,8 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import static org.mockito.Mockito.times;
 

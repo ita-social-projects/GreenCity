@@ -8,7 +8,6 @@ import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.User;
 import greencity.exception.BadIdException;
-import greencity.exception.BadIdOrEmailException;
 import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.FavoritePlaceService;
