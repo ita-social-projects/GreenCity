@@ -44,9 +44,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
             throw new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
-        if (repo.existsByPlaceIdAndUserEmail(favoritePlace.getPlace().getId(), userEmail)) {
-            throw new BadIdOrEmailException(ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS);
-        }
         favoritePlace.setUser(User.builder().email(userEmail).id(userService.findIdByEmail(userEmail)).build());
         return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
     }

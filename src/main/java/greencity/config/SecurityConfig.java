@@ -1,6 +1,6 @@
 package greencity.config;
 
-import greencity.security.JwtTokenTool;
+import greencity.security.jwt.JwtTokenTool;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
@@ -93,6 +93,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.PATCH, "/user/update/role")
             .hasRole("ADMIN")
             .antMatchers(HttpMethod.GET, "/user")
+            .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers("/user/roles")
             .hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")

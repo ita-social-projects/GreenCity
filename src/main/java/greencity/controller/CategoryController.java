@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/category")
 @AllArgsConstructor
@@ -17,7 +16,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * The method which return new {@code Category}.
+     * The method which returns new {@code Category}.
      *
      * @param dto - CategoryDto dto for adding with all parameters.
      * @return new {@code Category}.
@@ -29,7 +28,7 @@ public class CategoryController {
     }
 
     /**
-     * The method which return all {@code Category}.
+     * The method which returns all {@code Category}.
      *
      * @return list of {@code Category}.
      * @author Kateryna Horokh

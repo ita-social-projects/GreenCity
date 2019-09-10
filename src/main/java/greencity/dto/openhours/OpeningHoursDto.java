@@ -5,6 +5,8 @@ import greencity.constant.ValidationConstants;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Set;
 import javax.validation.constraints.NotNull;
 import lombok.*;
 
