@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
@@ -21,13 +22,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
+    private final FavoritePlaceService favoritePlaceService;
     /**
      * Autowired PlaceService instance.
      */
     private PlaceService placeService;
-
-    private final FavoritePlaceService favoritePlaceService;
-
     private ModelMapper modelMapper;
 
     /**
@@ -99,11 +98,11 @@ public class PlaceController {
      *
      * @param status   a string represents {@link PlaceStatus} enum value.
      * @param pageable pageable configuration.
-     * @return response {@link PlacePageableDto} object. Contains a list of {@link AdminPlaceDto}.
+     * @return response {@link PageableDto} object. Contains a list of {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
     @GetMapping("/{status}")
-    public ResponseEntity<PlacePageableDto> getPlacesByStatus(
+    public ResponseEntity<PageableDto> getPlacesByStatus(
         @PathVariable String status, Pageable pageable) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.status(HttpStatus.OK)
