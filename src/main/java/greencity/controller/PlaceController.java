@@ -30,7 +30,7 @@ public class PlaceController {
     private ModelMapper modelMapper;
 
     /**
-     * The method which return new proposed {@code Place} from user.
+     * The method which returns new proposed {@code Place} from user.
      *
      * @param dto - Place dto for adding with all parameters.
      * @return new {@code Place}.
