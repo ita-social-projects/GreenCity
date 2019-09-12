@@ -9,6 +9,9 @@ import org.springframework.security.core.AuthenticationException;
  * @version 1.0
  */
 public class UserDeactivatedException extends AuthenticationException {
+    /**
+     * Constructor.
+     */
     public UserDeactivatedException(String message) {
         super(message);
     }

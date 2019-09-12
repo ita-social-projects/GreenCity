@@ -72,34 +72,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf()
             .disable()
             .authorizeRequests()
-            .antMatchers("/ownSecurity/**")
-            .permitAll()
-            .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
-            .permitAll()
-            .antMatchers(HttpMethod.GET, "/category/**")
-            .permitAll()
-            .antMatchers(HttpMethod.POST, "/category/**")
+            .antMatchers(
+                "/ownSecurity/**",
+                "/place/getListPlaceLocationByMapsBounds/**",
+                "/googleSecurity/**"
+            ).permitAll()
+            .antMatchers(
+                HttpMethod.GET,
+                "/category/**",
+                "/place/Info/{id}/**"
+            ).permitAll()
+            .antMatchers(HttpMethod.POST,
+                "/category/**"
+            ).hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers(
+                "/place/propose/**",
+                "/place/{status}/**",
+                "/favorite_place/**",
+                "/place/save/favorite",
+                "/place/info/favorite/**"
+            )
             .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/propose/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.PATCH, "/place/status**")
-            .hasAnyRole("ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.GET, "/place/Info/{id}/**")
-            .permitAll()
-            .antMatchers("/place/{status}/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/favorite_place/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/save/favorite")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/info/favorite/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.PATCH, "/user/update/status")
-            .hasAnyRole("ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.PATCH, "/user/update/role")
-            .hasRole("ADMIN")
-            .antMatchers(HttpMethod.GET, "/user")
-            .hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH,
+                "/place/status**"
+            ).hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH,
+                "/user/update/status"
+            ).hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH,
+                "/user/update/role"
+            ).hasRole("ADMIN")
+            .antMatchers(HttpMethod.GET,
+                "/user"
+            ).hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")
             .and()

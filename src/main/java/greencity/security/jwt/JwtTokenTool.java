@@ -39,6 +39,11 @@ public class JwtTokenTool {
 
     private UserService userService;
 
+    /**
+     * Counsturtor.
+     *
+     * @param userService {@link UserService} - service for {@link User}
+     */
     public JwtTokenTool(UserService userService) {
         this.userService = userService;
     }
@@ -126,10 +131,7 @@ public class JwtTokenTool {
      * @return {@link Authentication}
      */
     public Authentication getAuthentication(String token) {
-        log.info("begin");
         User user = userService.findByEmail(getEmailByToken(token));
-
-        log.info("end");
         return new UsernamePasswordAuthenticationToken(
             user.getEmail(), "", Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
     }

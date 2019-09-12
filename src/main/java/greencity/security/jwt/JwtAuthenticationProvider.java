@@ -2,6 +2,7 @@ package greencity.security.jwt;
 
 import static greencity.constant.ErrorMessage.*;
 
+import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailOrPasswordException;
@@ -42,9 +43,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
      *
      * @param authentication {@link Authentication} - authentication.
      * @return {@link Authentication} if user successfully authenticated.
-     * @throws BadEmailOrPasswordException if user try to authenticate with bad credential.
-     * @throws UserUnverifiedException     if user try to authenticate with not activated email.
-     * @throws UserDeactivatedException    if user try to authenticate to deactivated account.
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -57,7 +55,13 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
         }
 
-        if (!passwordEncoder.matches(password, byEmail.getOwnSecurity().getPassword())) {
+        OwnSecurity ownSecurity = byEmail.getOwnSecurity();
+
+        if (ownSecurity == null) {
+            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
+        }
+
+        if (!passwordEncoder.matches(password, ownSecurity.getPassword())) {
             throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
         }
 
