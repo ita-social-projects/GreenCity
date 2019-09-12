@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller that provide google security logic.
+ *
+ * @author Nazar Stasyuk
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/googleSecurity")
 @AllArgsConstructor
@@ -19,7 +25,7 @@ public class GoogleSecurityController {
      * Method that provide authenticate with google token.
      *
      * @param idToken {@link String} - google idToken
-     * @return {@link SuccessSignInDto}
+     * @return {@link SuccessSignInDto} if token valid
      */
     @PostMapping
     public SuccessSignInDto authenticate(@Valid @RequestBody String idToken) {
