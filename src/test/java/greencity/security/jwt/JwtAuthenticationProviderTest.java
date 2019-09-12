@@ -14,6 +14,7 @@ import greencity.exception.BadEmailOrPasswordException;
 import greencity.exception.UserDeactivatedException;
 import greencity.exception.UserUnverifiedException;
 import greencity.service.UserService;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,7 +46,7 @@ public class JwtAuthenticationProviderTest {
             .userStatus(UserStatus.ACTIVATED)
             .build();
 
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         Authentication authenticate = provider.authenticate(new UsernamePasswordAuthenticationToken(
@@ -64,7 +65,7 @@ public class JwtAuthenticationProviderTest {
             .userStatus(UserStatus.ACTIVATED)
             .build();
 
-        when(userService.findByEmail(anyString())).thenReturn(null);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.empty());
 
         provider.authenticate(new UsernamePasswordAuthenticationToken(
             user.getEmail(),
@@ -82,7 +83,7 @@ public class JwtAuthenticationProviderTest {
             .userStatus(UserStatus.ACTIVATED)
             .build();
 
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         provider.authenticate(new UsernamePasswordAuthenticationToken(
@@ -101,7 +102,7 @@ public class JwtAuthenticationProviderTest {
             .userStatus(UserStatus.DEACTIVATED)
             .build();
 
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
         provider.authenticate(new UsernamePasswordAuthenticationToken(

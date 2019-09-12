@@ -49,11 +49,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         String email = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
 
-        User byEmail = userService.findByEmail(email);
-
-        if (byEmail == null) {
-            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
-        }
+        User byEmail = userService.findByEmail(email).orElseThrow(
+            () -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD)
+        );
 
         OwnSecurity ownSecurity = byEmail.getOwnSecurity();
 

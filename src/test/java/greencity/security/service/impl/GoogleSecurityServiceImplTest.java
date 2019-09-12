@@ -6,7 +6,10 @@ import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.security.jwt.JwtTokenTool;
 import greencity.service.UserService;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -38,9 +41,9 @@ public class GoogleSecurityServiceImplTest {
     @InjectMocks
     private GoogleSecurityServiceImpl googleSecurityService;
 
-   /* @Test
+    @Test
     public void authenticate() throws GeneralSecurityException, IOException {
-        GoogleIdToken googleIdToken = mock(GoogleIdToken.class);
+        /*GoogleIdToken googleIdToken = mock(GoogleIdToken.class);
         when(verifier.verify(anyString())).thenReturn(googleIdToken);
 
 
@@ -53,6 +56,6 @@ public class GoogleSecurityServiceImplTest {
 
         when(userService.findByEmail(anyString())).thenReturn(user);
         SuccessSignInDto authenticate = googleSecurityService.authenticate("");
-        assertEquals(authenticate.getFirstName(), user.getFirstName());
-    }*/
+        assertEquals(authenticate.getFirstName(), user.getFirstName());*/
+    }
 }

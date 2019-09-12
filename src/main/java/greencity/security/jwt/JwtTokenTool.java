@@ -1,7 +1,10 @@
 package greencity.security.jwt;
 
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
+
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
+import greencity.exception.BadEmailException;
 import greencity.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -40,7 +43,7 @@ public class JwtTokenTool {
     private UserService userService;
 
     /**
-     * Counsturtor.
+     * Constructor.
      *
      * @param userService {@link UserService} - service for {@link User}
      */
@@ -131,7 +134,8 @@ public class JwtTokenTool {
      * @return {@link Authentication}
      */
     public Authentication getAuthentication(String token) {
-        User user = userService.findByEmail(getEmailByToken(token));
+        User user = userService.findByEmail(getEmailByToken(token)).orElseThrow(
+            () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + getEmailByToken(token)));
         return new UsernamePasswordAuthenticationToken(
             user.getEmail(), "", Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
     }

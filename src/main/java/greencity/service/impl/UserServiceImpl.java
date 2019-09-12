@@ -10,10 +10,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdException;
-import greencity.exception.BadUpdateRequestException;
-import greencity.exception.LowRoleLevelException;
+import greencity.exception.*;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
@@ -50,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()).isPresent()) {
-            throw new BadEmailException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
+            throw new UserAlreadyRegisteredException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
     }

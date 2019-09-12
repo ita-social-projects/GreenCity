@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -65,12 +66,13 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                 String email = payload.getEmail();
                 String familyName = (String) payload.get("family_name");
                 String givenName = (String) payload.get("given_name");
-                User byEmail = userService.findByEmail(email);
-                if (byEmail != null) {
-                    String accessToken = tokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
-                    String refreshToken = tokenTool.createRefreshToken(byEmail.getEmail());
-                    log.info("Google sign-in exist user - {}", byEmail.getEmail());
-                    return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName());
+                Optional<User> byEmail = userService.findByEmail(email);
+                if (byEmail.isPresent()) {
+                    User user = byEmail.get();
+                    String accessToken = tokenTool.createAccessToken(user.getEmail(), user.getRole());
+                    String refreshToken = tokenTool.createRefreshToken(user.getEmail());
+                    log.info("Google sign-in exist user - {}", user.getEmail());
+                    return new SuccessSignInDto(accessToken, refreshToken, user.getFirstName());
                 } else {
                     User user = User.builder()
                         .email(email)

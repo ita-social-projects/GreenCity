@@ -1,13 +1,12 @@
 package greencity.security.service.impl;
 
-import static greencity.constant.ErrorMessage.NO_ENY_USER_OWN_SECURITY_TO_DELETE;
-import static greencity.constant.ErrorMessage.REFRESH_TOKEN_NOT_VALID;
-import static greencity.constant.ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL;
+import static greencity.constant.ErrorMessage.*;
 
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.exception.BadRefreshTokenException;
 import greencity.exception.UserAlreadyRegisteredException;
@@ -51,9 +50,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void signUp(OwnSignUpDto dto) {
         log.info("begin");
-        User byEmail = userService.findByEmail(dto.getEmail());
 
-        if (byEmail != null) {
+        if (userService.findByEmail(dto.getEmail()).isPresent()) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
         User user = createNewRegisteredUser(dto);
@@ -125,7 +123,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         log.info("begin");
         manager.authenticate(
             new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-        User byEmail = userService.findByEmail(dto.getEmail());
+        User byEmail = userService.findByEmail(dto.getEmail()).orElseThrow(
+            () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
         log.info("end");
@@ -139,11 +138,9 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public AccessTokenDto updateAccessToken(String refreshToken) {
         if (jwtTokenTool.isTokenValid(refreshToken)) {
             String email = jwtTokenTool.getEmailByToken(refreshToken);
-            User user = userService.findByEmail(email);
-            if (user != null) {
-                return new AccessTokenDto(
-                    jwtTokenTool.createAccessToken(user.getEmail(), user.getRole()));
-            }
+            User user = userService.findByEmail(email).orElseThrow(
+                () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            return new AccessTokenDto(jwtTokenTool.createAccessToken(user.getEmail(), user.getRole()));
         }
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
     }
