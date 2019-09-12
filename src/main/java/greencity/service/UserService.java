@@ -7,6 +7,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -42,9 +43,9 @@ public interface UserService {
      * Method that allow you to find {@link User} by email.
      *
      * @param email a value of {@link String}
-     * @return {@link User}
+     * @return Optional of {@link User}
      */
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     /**
      * Find User's id by User email.
@@ -89,4 +90,11 @@ public interface UserService {
      * @author Rostyslav Khasanov
      */
     RoleDto getRoles();
+
+    /**
+     * Update last visit of user.
+     *
+     * @return {@link User}.
+     */
+    User updateLastVisit(User user);
 }

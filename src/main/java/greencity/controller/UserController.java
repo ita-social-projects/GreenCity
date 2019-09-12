@@ -24,7 +24,7 @@ public class UserController {
      * @return {@code UserStatusDto}
      * @author Rostyslav Khasnaov
      */
-    @PatchMapping("update/status")
+    @PatchMapping("status")
     public ResponseEntity<?> updateStatus(@Valid @RequestBody UserStatusDto userStatusDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
@@ -39,7 +39,7 @@ public class UserController {
      * @return {@code UserRoleDto}
      * @author Rostyslav Khasnaov
      */
-    @PatchMapping("update/role")
+    @PatchMapping("role")
     public ResponseEntity<?> updateRole(@Valid @RequestBody UserRoleDto userRoleDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(

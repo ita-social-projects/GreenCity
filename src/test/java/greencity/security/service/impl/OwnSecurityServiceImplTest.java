@@ -16,6 +16,7 @@ import greencity.entity.VerifyEmail;
 import greencity.entity.enums.ROLE;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -73,7 +74,7 @@ public class OwnSecurityServiceImplTest {
 
     @Test
     public void signUpUserThatWasRegisteredByAnotherMethod() {
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(repo.save(any())).thenReturn(new OwnSecurity());
         doNothing().when(verifyEmailService).save(any());
 
@@ -94,7 +95,7 @@ public class OwnSecurityServiceImplTest {
                         .ownSecurity(new OwnSecurity())
                         .dateOfRegistration(LocalDateTime.now())
                         .build();
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
         service.signUp(dto);
     }
 
@@ -145,7 +146,7 @@ public class OwnSecurityServiceImplTest {
                         new UsernamePasswordAuthenticationToken(
                                 new JwtUser(new User()), "", Collections.singleton(new SimpleGrantedAuthority("user"))));
         when(userService.findByEmail(anyString()))
-                .thenReturn(User.builder().email("").role(ROLE.ROLE_USER).build());
+                .thenReturn(Optional.of(User.builder().email("").role(ROLE.ROLE_USER).build()));
         service.signIn(OwnSignInDto.builder().email("").password("").build());
         verify(manager, times(1)).authenticate(any());
         verify(userService, times(1)).findByEmail(any());

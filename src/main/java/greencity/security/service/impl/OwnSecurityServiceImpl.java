@@ -51,7 +51,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void signUp(OwnSignUpDto dto) {
         log.info("begin");
-        User byEmail = userService.findByEmail(dto.getEmail());
+        User byEmail = userService.findByEmail(dto.getEmail()).get();
         if (byEmail != null) {
             // He has already registered
             if (byEmail.getOwnSecurity() == null) {
@@ -131,7 +131,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         log.info("begin");
         manager.authenticate(
             new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-        User byEmail = userService.findByEmail(dto.getEmail());
+        User byEmail = userService.findByEmail(dto.getEmail()).get();
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
         log.info("end");
@@ -145,7 +145,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public AccessTokenDto updateAccessToken(String refreshToken) {
         if (jwtTokenTool.isTokenValid(refreshToken)) {
             String email = jwtTokenTool.getEmailByToken(refreshToken);
-            User user = userService.findByEmail(email);
+            User user = userService.findByEmail(email).get();
             if (user != null) {
                 return new AccessTokenDto(
                     jwtTokenTool.createAccessToken(user.getEmail(), user.getRole()));

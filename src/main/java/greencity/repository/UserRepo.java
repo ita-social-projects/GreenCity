@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.User;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,7 +19,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
      * @param email user email.
      * @return {@code User}
      */
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     /**
      * Find {@code User} by page.
@@ -37,5 +38,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
      * @author Zakhar Skaletskyi
      */
     @Query("SELECT id from User where email=:email")
-    Long findIdByEmail(String email);
+    Optional<Long> findIdByEmail(String email);
 }
