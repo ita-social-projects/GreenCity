@@ -153,6 +153,23 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * The method which return array of existing roles.
+     *
+     * @return array of roles
+     * @author Rostyslav Khasnaov
+     */
+    public List<UserForListDto> findByLike(String reg) {
+        List<User> users = repo
+            .findAllByFirstNameLikeOrLastNameLikeOrEmailLikeOrDateOfRegistrationLike(reg, reg, reg, reg);
+        log.info(users.size() + "asd");
+        List<UserForListDto> userForListDtos =
+            users.stream()
+                .map(user -> modelMapper.map(user, UserForListDto.class))
+                .collect(Collectors.toList());
+        return userForListDtos;
+    }
+
+    /**
      * Method which check that, if admin/moderator update role/status of himself, then throw exception.
      *
      * @param id    id of updatable user.
