@@ -69,30 +69,36 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                 Optional<User> byEmail = userService.findByEmail(email);
                 if (byEmail.isPresent()) {
                     User user = byEmail.get();
-                    String accessToken = tokenTool.createAccessToken(user.getEmail(), user.getRole());
-                    String refreshToken = tokenTool.createRefreshToken(user.getEmail());
                     log.info("Google sign-in exist user - {}", user.getEmail());
-                    return new SuccessSignInDto(accessToken, refreshToken, user.getFirstName());
+                    return getSuccessSignInDto(user);
                 } else {
-                    User user = User.builder()
-                        .email(email)
-                        .lastName(familyName)
-                        .firstName(givenName)
-                        .role(ROLE.ROLE_USER)
-                        .dateOfRegistration(LocalDateTime.now())
-                        .lastVisit(LocalDateTime.now())
-                        .userStatus(UserStatus.ACTIVATED)
-                        .build();
+                    User user = createNewUser(email, familyName, givenName);
                     userService.save(user);
-                    String accessToken = tokenTool.createAccessToken(user.getEmail(), user.getRole());
-                    String refreshToken = tokenTool.createRefreshToken(user.getEmail());
                     log.info("Google sign-up and sign-in user - {}", user.getEmail());
-                    return new SuccessSignInDto(accessToken, refreshToken, user.getFirstName());
+                    return getSuccessSignInDto(user);
                 }
             }
             throw new IllegalArgumentException(BAD_GOOGLE_TOKEN);
         } catch (GeneralSecurityException | IOException e) {
             throw new IllegalArgumentException(BAD_GOOGLE_TOKEN + ". " + e.getMessage());
         }
+    }
+
+    private User createNewUser(String email, String familyName, String givenName) {
+        return User.builder()
+            .email(email)
+            .lastName(familyName)
+            .firstName(givenName)
+            .role(ROLE.ROLE_USER)
+            .dateOfRegistration(LocalDateTime.now())
+            .lastVisit(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
+            .build();
+    }
+
+    private SuccessSignInDto getSuccessSignInDto(User user) {
+        String accessToken = tokenTool.createAccessToken(user.getEmail(), user.getRole());
+        String refreshToken = tokenTool.createRefreshToken(user.getEmail());
+        return new SuccessSignInDto(accessToken, refreshToken, user.getFirstName());
     }
 }
