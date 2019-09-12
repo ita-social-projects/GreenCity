@@ -82,21 +82,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/category/**",
                 "/place/Info/{id}/**"
             ).permitAll()
-            .antMatchers(HttpMethod.POST,
-                "/category/**"
-            ).hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers(
                 "/place/propose/**",
                 "/place/{status}/**",
                 "/favorite_place/**",
                 "/place/save/favorite",
                 "/place/info/favorite/**"
-            )
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
+            ).hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.POST,
+                "/category/**"
+            ).hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.PATCH,
-                "/place/status**"
-            ).hasAnyRole("ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.PATCH,
+                "/place/status**",
                 "/user/update/status"
             ).hasAnyRole("ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.PATCH,
