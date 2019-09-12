@@ -2,15 +2,17 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableDto;
+import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserPageableDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
-import greencity.exception.UserAlreadyRegisteredException;
+import greencity.exception.LowRoleLevelException;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.util.List;
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()) != null) {
-            throw new UserAlreadyRegisteredException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
+            throw new BadEmailException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
     }
@@ -61,21 +63,18 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
      */
     @Override
-    public UserPageableDto findByPage(Pageable pageable) {
-        Page<User> users = repo.findAllByOrderByEmail(pageable);
+    public PageableDto<UserForListDto> findByPage(Pageable pageable) {
+        Page<User> users = repo.findAll(pageable);
         List<UserForListDto> userForListDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
                 .collect(Collectors.toList());
-        return new UserPageableDto(
+        return new PageableDto<UserForListDto>(
             userForListDtos,
             users.getTotalElements(),
-            users.getPageable().getPageNumber(),
-            ROLE.class.getEnumConstants());
+            users.getPageable().getPageNumber());
     }
 
     /**
@@ -105,18 +104,17 @@ public class UserServiceImpl implements UserService {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
         Long id = repo.findIdByEmail(email);
         if (id == null) {
-            throw new UserAlreadyRegisteredException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
+            throw new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL);
         }
         return id;
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
      */
     @Override
-    public UserRoleDto updateRole(Long id, ROLE role) {
+    public UserRoleDto updateRole(Long id, ROLE role, String email) {
+        checkUpdatableUser(id, email);
         User user = findById(id);
         user.setRole(role);
         return modelMapper.map(repo.save(user), UserRoleDto.class);
@@ -124,13 +122,50 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
      */
     @Override
-    public UserStatusDto updateStatus(Long id, UserStatus userStatus) {
+    public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
+        checkUpdatableUser(id, email);
+        accessForUpdateUserStatus(id, email);
         User user = findById(id);
         user.setUserStatus(userStatus);
         return modelMapper.map(repo.save(user), UserStatusDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RoleDto getRoles() {
+        return new RoleDto(ROLE.class.getEnumConstants());
+    }
+
+    /**
+     * Method which check that, if admin/moderator update role/status of himself, then throw exception.
+     *
+     * @param id    id of updatable user.
+     * @param email email of admin/moderator.
+     * @author Rostyslav Khasanov
+     */
+    private void checkUpdatableUser(Long id, String email) {
+        if (id == findIdByEmail(email)) {
+            throw new BadIdException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
+        }
+    }
+
+    /**
+     * Method which check that, if moderator trying update status of admins or moderators, then throw exception.
+     *
+     * @param id    id of updatable user.
+     * @param email email of admin/moderator.
+     * @author Rostyslav Khasanov
+     */
+    private void accessForUpdateUserStatus(Long id, String email) {
+        if (findByEmail(email).getRole() == ROLE.ROLE_MODERATOR) {
+            ROLE role = findById(id).getRole();
+            if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
+                throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);
+            }
+        }
     }
 }

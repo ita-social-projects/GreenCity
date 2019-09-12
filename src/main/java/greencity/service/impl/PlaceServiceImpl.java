@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Category;
@@ -10,7 +11,6 @@ import greencity.entity.Location;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.exception.CheckRepeatingValueException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
@@ -48,12 +48,13 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-    public PlacePageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
+
+    public PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
         List<AdminPlaceDto> list = places.stream()
             .map(place -> modelMapper.map(place, AdminPlaceDto.class))
             .collect(Collectors.toList());
-        return new PlacePageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
+        return new PageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
     }
 
     /**
@@ -86,7 +87,6 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.SET_PLACE_TO_OPENING_HOURS, place.getName());
 
         List<OpeningHours> hours = place.getOpeningHoursList();
-        checkRepeatingValue(hours);
         hours.stream()
             .distinct()
             .forEach(
@@ -94,23 +94,6 @@ public class PlaceServiceImpl implements PlaceService {
                     h.setPlace(place);
                     openingHoursService.save(h);
                 });
-    }
-
-    /**
-     * Method for checking list of giving {@code OpeningHours} on repeating value of week days.
-     *
-     * @param hours - list of {@link OpeningHours} entity.
-     * @author Kateryna Horokh
-     */
-    private void checkRepeatingValue(List<OpeningHours> hours) {
-        log.info(LogMessage.CHECK_REPEATING_VALUE);
-        for (int i = 0; i < hours.size(); i++) {
-            for (int j = i + 1; j < hours.size(); j++) {
-                if (hours.get(i).getWeekDay().equals(hours.get(j).getWeekDay())) {
-                    throw new CheckRepeatingValueException(ErrorMessage.REPEATING_VALUE_OF_WEEKDAY_VALUE);
-                }
-            }
-        }
     }
 
     /**
@@ -177,17 +160,13 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
-        if (updatable.getStatus() != null) {
-            if (!updatable.getStatus().equals(status)) {
-                updatable.setStatus(status);
-                updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
-            } else {
-                log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
-                throw new PlaceStatusException(
-                    ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
-            }
+        if (!updatable.getStatus().equals(status)) {
+            updatable.setStatus(status);
+            updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
         } else {
-            throw new NullPointerException(ErrorMessage.PLACE_STATUS_IS_NULL);
+            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
+            throw new PlaceStatusException(
+                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         }
 
         return modelMapper.map(placeRepo.save(updatable), PlaceStatusDto.class);

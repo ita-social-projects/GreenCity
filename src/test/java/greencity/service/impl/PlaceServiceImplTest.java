@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.MapBoundsDto;
@@ -13,14 +14,13 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlacePageableDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
+import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
-import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.OpenHoursService;
@@ -56,6 +56,7 @@ public class PlaceServiceImplTest {
 
     User user =
         User.builder()
+            .id(1L)
             .email("Nazar.stasyuk@gmail.com")
             .firstName("Nazar")
             .lastName("Stasyuk")
@@ -63,24 +64,6 @@ public class PlaceServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-    OwnSignUpDto dto =
-        OwnSignUpDto.builder()
-            .email(user.getEmail())
-            .firstName(user.getFirstName())
-            .lastName(user.getLastName())
-            .password("123123123")
-            .build();
-
-    OpeningHoursDto openingHoursDto1 = OpeningHoursDto.builder()
-        .openTime(LocalTime.parse("10:30"))
-        .closeTime(LocalTime.parse("20:30"))
-        .weekDay(DayOfWeek.TUESDAY)
-        .build();
-    OpeningHoursDto openingHoursDto2 = OpeningHoursDto.builder()
-        .openTime(LocalTime.parse("10:30"))
-        .closeTime(LocalTime.parse("20:30"))
-        .weekDay(DayOfWeek.MONDAY)
-        .build();
 
     LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
         .address("test")
@@ -88,43 +71,48 @@ public class PlaceServiceImplTest {
         .lng(46.456)
         .build();
 
-    Place placeEntity = Place.builder()
+    Location location = Location.builder()
+        .id(1L)
+        .address("test")
+        .lat(45.456)
+        .lng(46.456)
+        .build();
+
+    List<OpeningHoursDto> openingHoursList = new ArrayList<>();
+
+    List<OpeningHours> openingHoursListEntity = new ArrayList<>();
+
+    OpeningHours openingHoursEntity = OpeningHours.builder()
+        .id(1L)
+        .openTime(LocalTime.parse("10:30"))
+        .closeTime(LocalTime.parse("20:30"))
+        .weekDay(DayOfWeek.MONDAY)
+        .build();
+
+    Place place = Place.builder()
         .id(1L)
         .name("Test")
         .category(category)
         .author(user)
+        .location(location)
+        .openingHoursList(openingHoursListEntity)
+        .status(PlaceStatus.PROPOSED)
         .build();
 
-    List<OpeningHoursDto> openingHoursList = Arrays.asList(openingHoursDto1, openingHoursDto2);
-
-    PlaceAddDto placeAddDto = PlaceAddDto.
+    PlaceAddDto dto = PlaceAddDto.
         builder()
-        .name(placeEntity.getName())
+        .name(place.getName())
         .category(categoryDto)
         .location(locationDto)
         .openingHoursList(openingHoursList)
         .build();
 
-    Location location = Location.builder()
-        .id(1L)
-        .address("test address")
-        .lat(45.456)
-        .lng(46.456)
-        .place(placeEntity)
-        .build();
-
-    OpeningHours openingHours = OpeningHours.builder()
-        .id(1L)
-        .openTime(LocalTime.parse("10:30"))
-        .closeTime(LocalTime.parse("20:30"))
-        .weekDay(DayOfWeek.MONDAY)
-        .place(placeEntity)
-        .build();
-
-    String email;
 
     @Mock
     private PlaceRepo placeRepo;
+
+    @Mock
+    private CategoryRepo categoryRepo;
 
     @Mock
     private CategoryService categoryService;
@@ -144,24 +132,19 @@ public class PlaceServiceImplTest {
     @Mock
     private UserService userService;
 
-    @Mock
-    private Place place;
-
     @InjectMocks
     private PlaceServiceImpl placeService;
 
     @Test
-    public void savePlaceWithVerificationAllParametersTest() {
-        when(categoryService.findByName(anyString())).thenReturn(any());
-        when(categoryService.save(categoryDto)).thenReturn(category);
-        when(placeRepo.save(any())).thenReturn(place);
-        when(userService.findByEmail(anyString())).thenReturn(null);
-        when(service.findByLatAndLng(anyDouble(), anyDouble())).thenReturn(location);
-        when(openingHoursService.save(openingHours)).thenReturn(openingHours);
-        assertEquals(place, placeRepo.save(place));
-        assertEquals(location, service.findByLatAndLng(45.456, 45.456));
-        assertEquals(openingHours, openingHoursService.save(openingHours));
-        assertEquals(category, categoryService.save(categoryDto));
+    public void savePlaceWithVerificationAllParametersTest() throws Exception {
+        when(modelMapper.map(any(), any())).thenReturn(place);
+        when(userService.findByEmail(anyString())).thenReturn(user);
+        place.setAuthor(user);
+        place.setCategory(category);
+        openingHoursEntity.setPlace(place);
+        location.setPlace(place);
+        when(placeRepo.save(place)).thenReturn(place);
+        assertEquals(place, placeService.save(dto, user.getEmail()));
     }
 
     @Test
@@ -180,15 +163,6 @@ public class PlaceServiceImplTest {
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void updateStatusWhenOldStatusIsNullThrowException() {
-        Place genericEntity = Place.builder().id(1L).status(null).build();
-
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-
-        placeService.updateStatus(1L, PlaceStatus.DECLINED);
-    }
-
     @Test
     public void getPlacesByStatusTest() {
         int pageNumber = 0;
@@ -204,8 +178,8 @@ public class PlaceServiceImplTest {
         Page<Place> placesPage = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         List<AdminPlaceDto> listDto = Collections.singletonList(dto);
 
-        PlacePageableDto pageableDto =
-            new PlacePageableDto(listDto, listDto.size(), 0);
+        PageableDto pageableDto =
+            new PageableDto(listDto, listDto.size(), 0);
         pageableDto.setPage(listDto);
 
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any(), any())).thenReturn(placesPage);

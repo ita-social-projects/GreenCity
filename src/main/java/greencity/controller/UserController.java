@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
+import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +25,11 @@ public class UserController {
      * @author Rostyslav Khasnaov
      */
     @PatchMapping("update/status")
-    public ResponseEntity<?> updateStatus(@Valid @RequestBody UserStatusDto userStatusDto) {
+    public ResponseEntity<?> updateStatus(@Valid @RequestBody UserStatusDto userStatusDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 userService.updateStatus(
-                    userStatusDto.getId(), userStatusDto.getUserStatus()));
+                    userStatusDto.getId(), userStatusDto.getUserStatus(), principal.getName()));
     }
 
     /**
@@ -39,11 +40,11 @@ public class UserController {
      * @author Rostyslav Khasnaov
      */
     @PatchMapping("update/role")
-    public ResponseEntity<?> updateRole(@Valid @RequestBody UserRoleDto userRoleDto) {
+    public ResponseEntity<?> updateRole(@Valid @RequestBody UserRoleDto userRoleDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 userService.updateRole(
-                    userRoleDto.getId(), userRoleDto.getRole()));
+                    userRoleDto.getId(), userRoleDto.getRole(), principal.getName()));
     }
 
     /**
@@ -56,5 +57,16 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> getAllUsers(Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
+    }
+
+    /**
+     * The method which return array of existing roles.
+     *
+     * @return array of roles
+     * @author Rostyslav Khasnaov
+     */
+    @GetMapping("roles")
+    public ResponseEntity<?> getRoles() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
     }
 }

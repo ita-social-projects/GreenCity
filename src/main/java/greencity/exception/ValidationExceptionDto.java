@@ -8,7 +8,6 @@ import org.springframework.validation.FieldError;
  * Dto for sending information about bad fields while validation.
  *
  * @author Nazar Stasyuk
- * @version 1.0
  */
 @Data
 public class ValidationExceptionDto implements Serializable {
