@@ -10,10 +10,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdException;
-import greencity.exception.BadUpdateRequestException;
-import greencity.exception.LowRoleLevelException;
+import greencity.exception.*;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
@@ -173,7 +170,8 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void accessForUpdateUserStatus(Long id, String email) {
-        if (findByEmail(email).get().getRole() == ROLE.ROLE_MODERATOR) {
+        User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        if (user.getRole() == ROLE.ROLE_MODERATOR) {
             ROLE role = findById(id).getRole();
             if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
                 throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);
