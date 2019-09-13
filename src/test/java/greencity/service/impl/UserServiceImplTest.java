@@ -15,6 +15,7 @@ import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
 import greencity.exception.BadIdException;
 import greencity.exception.LowRoleLevelException;
+import greencity.exception.UserAlreadyRegisteredException;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -115,7 +116,7 @@ public class UserServiceImplTest {
         userService.findById(1l);
     }
 
-    @Test(expected = BadEmailException.class)
+    @Test(expected = UserAlreadyRegisteredException.class)
     public void saveExceptionTest() {
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
         userService.save(new User());
