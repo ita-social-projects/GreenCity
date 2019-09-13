@@ -11,16 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SpecificationValue {
+public class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String value;
+    @Column
+    private int value;
 
     @ManyToOne
     private Place place;
+
+    @ManyToOne
+    private Category category;
 
     @ManyToOne
     private Specification specification;
