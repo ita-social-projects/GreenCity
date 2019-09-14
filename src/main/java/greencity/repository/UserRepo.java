@@ -41,5 +41,15 @@ public interface UserRepo extends JpaRepository<User, Long> {
     @Query("SELECT id from User where email=:email")
     Optional<Long> findIdByEmail(String email);
 
-    List<User> findAllByFirstNameLikeOrLastNameLikeOrEmailLikeOrDateOfRegistrationLike(String... args);
+    /**
+     * Find id by email.
+     *
+     * @return User id
+     */
+    @Query(value = "SELECT * from User u where"
+        + " u.first_Name like ?1 or"
+        + " u.last_Name like ?1 or"
+        + " u.email like ?1 or"
+        + " cast(cast(u.date_of_registration as date) as character) like ?1", nativeQuery = true)
+    Page<User> filter(String regex, Pageable pageable);
 }

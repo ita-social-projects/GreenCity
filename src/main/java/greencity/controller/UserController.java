@@ -69,4 +69,15 @@ public class UserController {
     public ResponseEntity<?> getRoles() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
     }
+
+    /**y
+     * The method which return array of existing roles.
+     *
+     * @return array of roles
+     * @author Rostyslav Khasnaov
+     */
+    @GetMapping("regex")
+    public ResponseEntity<?> getByReg(Pageable pageable, @RequestParam String reg) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.filterByName(reg, pageable));
+    }
 }

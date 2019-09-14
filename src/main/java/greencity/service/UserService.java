@@ -2,11 +2,13 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.user.RoleDto;
+import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
@@ -97,4 +99,11 @@ public interface UserService {
      * @return {@link User}.
      */
     User updateLastVisit(User user);
+
+    /**
+     * Update last visit of user.
+     *
+     * @return {@link User}.
+     */
+    PageableDto filterByName(String reg, Pageable pageable);
 }

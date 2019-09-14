@@ -10,10 +10,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdException;
-import greencity.exception.BadUpdateRequestException;
-import greencity.exception.LowRoleLevelException;
+import greencity.exception.*;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
@@ -158,15 +155,18 @@ public class UserServiceImpl implements UserService {
      * @return array of roles
      * @author Rostyslav Khasnaov
      */
-    public List<UserForListDto> findByLike(String reg) {
-        List<User> users = repo
-            .findAllByFirstNameLikeOrLastNameLikeOrEmailLikeOrDateOfRegistrationLike(reg, reg, reg, reg);
-        log.info(users.size() + "asd");
+    public PageableDto<UserForListDto> filterByName(String reg, Pageable pageable) {
+        Page<User> users = repo.filter(reg, pageable);
         List<UserForListDto> userForListDtos =
-            users.stream()
+            users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
                 .collect(Collectors.toList());
-        return userForListDtos;
+        log.info(users.getTotalElements() + " total elements");
+        log.info(users.getPageable().getPageNumber() + " current page");
+        return new PageableDto<UserForListDto>(
+            userForListDtos,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber());
     }
 
     /**
@@ -177,7 +177,8 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void checkUpdatableUser(Long id, String email) {
-        if (id == findIdByEmail(email)) {
+        User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        if (id == user.getId()) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
     }
@@ -190,7 +191,8 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void accessForUpdateUserStatus(Long id, String email) {
-        if (findByEmail(email).get().getRole() == ROLE.ROLE_MODERATOR) {
+        User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        if (user.getRole() == ROLE.ROLE_MODERATOR) {
             ROLE role = findById(id).getRole();
             if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
                 throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);
