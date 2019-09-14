@@ -1,7 +1,5 @@
 package greencity.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,26 +13,19 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OpeningHours {
+public class BreakTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     @DateTimeFormat(pattern = "HH:mm")
-    private LocalTime openTime;
+    private LocalTime startTime;
 
     @Column(nullable = false)
     @DateTimeFormat(pattern = "HH:mm")
-    private LocalTime closeTime;
+    private LocalTime endTime;
 
-    @Enumerated
-    private DayOfWeek weekDay;
-
-    @OneToOne
-    private BreakTime breakTime;
-
-    @ManyToOne
-    @JsonBackReference
-    private Place place;
+    @OneToOne(mappedBy = "breakTime", cascade = {CascadeType.ALL})
+    private OpeningHours openingHours;
 }

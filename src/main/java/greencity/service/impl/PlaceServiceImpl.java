@@ -5,10 +5,8 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.Category;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
+import greencity.dto.specification.SpecificationAddDto;
+import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
@@ -40,6 +38,8 @@ public class PlaceServiceImpl implements PlaceService {
     private LocationService locationService;
     private OpenHoursService openingHoursService;
     private UserService userService;
+    private SpecificationService specificationService;
+    private SpecificationValueService specificationValueService;
 
     /**
      * {@inheritDoc}

@@ -60,6 +60,10 @@ public class Place {
 
     @OneToMany(mappedBy = "place")
     @JsonManagedReference
+    private List<Discount> discounts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "place")
+    @JsonManagedReference
     private List<OpeningHours> openingHoursList = new ArrayList<>();
 
     @ManyToOne

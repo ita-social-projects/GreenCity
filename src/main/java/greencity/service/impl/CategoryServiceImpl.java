@@ -126,9 +126,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Find entity from DB by name.
+     * {@inheritDoc}
      *
-     * @param name - Category name.
      * @author Kateryna Horokh
      */
     @Override

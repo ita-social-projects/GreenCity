@@ -4,6 +4,8 @@ import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.specification.SpecificationValueAddDto;
+import greencity.dto.specification.SpecificationValueDto;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -30,4 +32,9 @@ public class PlaceAddDto {
 
     @Valid
     private List<OpeningHoursDto> openingHoursList;
+
+    @Valid
+    private List<SpecificationValueDto> specificationValues;
+
+    private SpecificationValueAddDto specificationValueAddDto;
 }
