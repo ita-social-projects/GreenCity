@@ -210,8 +210,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        List<Place> list =
-            placeRepo.findAll(new PlaceFilter(mapBoundsDto));
+        List<Place> list = placeRepo.findAll(new PlaceFilter(mapBoundsDto));
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
