@@ -138,7 +138,7 @@ public class PlaceServiceImplTest {
     @Test
     public void savePlaceWithVerificationAllParametersTest() throws Exception {
         when(modelMapper.map(any(), any())).thenReturn(place);
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
         place.setAuthor(user);
         place.setCategory(category);
         openingHoursEntity.setPlace(place);
