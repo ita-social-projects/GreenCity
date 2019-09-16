@@ -112,6 +112,14 @@ public class PlaceController {
             .body(placeService.getPlacesByStatus(placeStatus, pageable));
     }
 
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} filtered by values
+     * contained in the incoming {@link FilterPlaceDto} object.
+     *
+     * @param filterDto contains all information about the filtering of the list.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahorui
+     */
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
         @Valid @RequestBody FilterPlaceDto filterDto) {

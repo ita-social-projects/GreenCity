@@ -103,6 +103,13 @@ public interface PlaceService {
     Double averageRate(Long id);
 
 
-
+    /**
+     * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
+     *
+     * @param filterDto contains objects whose values determine
+     *                 the filter parameters of the returned list.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahouri
+     */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
 }
