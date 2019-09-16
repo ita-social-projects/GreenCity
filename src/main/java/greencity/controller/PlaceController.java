@@ -4,6 +4,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
+import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
@@ -114,10 +115,10 @@ public class PlaceController {
     }
 
     /**
-     * The method which update place status.
+     * The method which update {@link Place} status.
      *
-     * @param dto - place dto with place id and updated place status.
-     * @return response object with dto and OK status if everything is ok.
+     * @param dto - {@link PlaceStatusDto} with place id and updated {@link PlaceStatus}.
+     * @return response object with {@link PlaceStatusDto} and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @PatchMapping("/status")
@@ -127,7 +128,7 @@ public class PlaceController {
     }
 
     /**
-     * The method which return array of place statuses.
+     * The method which return array of {@link PlaceStatus}.
      *
      * @return array of statuses
      * @author Nazar Vladyka
@@ -138,10 +139,10 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete place from DB(change status to DELETED).
+     * The method which delete {@link Place} from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param id - place id
-     * @return response object with dto of deleted place and OK status if everything is ok.
+     * @param id - {@link Place} id
+     * @return response object with dto of deleted {@link Place} and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @DeleteMapping("/{id}")
@@ -150,10 +151,10 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete list of places from DB(change status to DELETED).
+     * The method which delete array of {@link Place} from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param ids - id's of places which need to be deleted
-     * @return placeIds of deleted place
+     * @param ids - id's of {@link Place} which need to be deleted
+     * @return placeIds of deleted {@link Place}
      * @author Nazar Vladyka
      */
     @DeleteMapping

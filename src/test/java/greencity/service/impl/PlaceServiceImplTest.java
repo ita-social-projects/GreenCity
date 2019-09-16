@@ -11,9 +11,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
@@ -96,7 +94,7 @@ public class PlaceServiceImplTest {
         .author(user)
         .location(location)
         .openingHoursList(openingHoursListEntity)
-        .status(PlaceStatus.PROPOSED)
+        .status(PlaceStatus.APPROVED)
         .build();
 
     PlaceAddDto dto = PlaceAddDto.
@@ -271,4 +269,22 @@ public class PlaceServiceImplTest {
         assertEquals(averageRate, placeService.averageRate(2L));
     }
 
+    @Test
+    public void deleteTest() {
+        List<Long> ids = Arrays.asList(1L, 2L, 3L);
+
+        when(placeRepo.findById(anyLong()))
+            .thenReturn(Optional.of(new Place()))
+            .thenReturn(Optional.of(new Place()))
+            .thenReturn(Optional.of(new Place()));
+
+        assertEquals(new PlaceBulkDeleteDto(3L), placeService.delete(ids));
+    }
+
+    @Test
+    public void getStatusesTest() {
+        PlaceStatus[] placeStatuses = {PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED};
+
+        assertEquals(new StatusDto(placeStatuses), placeService.getStatuses());
+    }
 }

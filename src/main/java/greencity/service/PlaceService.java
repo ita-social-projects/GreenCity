@@ -23,11 +23,11 @@ public interface PlaceService {
     PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
 
     /**
-     * Update status for the Place and set the time of modification.
+     * Update status for the {@link Place} and set the time of modification.
      *
-     * @param id     - place id.
-     * @param status - place status.
-     * @return saved PlaceStatusDto entity.
+     * @param id     - {@link Place} id.
+     * @param status - {@link Place} status.
+     * @return saved {@link PlaceStatusDto} entity.
      */
     PlaceStatusDto updateStatus(Long id, PlaceStatus status);
 
@@ -102,17 +102,17 @@ public interface PlaceService {
     Double averageRate(Long id);
 
     /**
-     * Get statuses of places.
+     * Get available statuses of {@link Place}.
      *
-     * @return place statuses.
+     * @return available {@link Place} statuses.
      */
     StatusDto getStatuses();
 
     /**
      * Delete entities from DB by id.
      *
-     * @param ids - Places ids.
-     * @return  dto with count of deleted entities.
+     * @param ids - {@link Place} ids.
+     * @return dto with count of deleted entities.
      */
     PlaceBulkDeleteDto delete(List<Long> ids);
 }
