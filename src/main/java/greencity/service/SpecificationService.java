@@ -1,22 +1,13 @@
 package greencity.service;
 
-import greencity.dto.specification.SpecificationAddDto;
+import greencity.dto.specification.SpecificationNameDto;
 import greencity.entity.Specification;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
 /**
  * Provides the interface to manage {@code Specification} entity.
  */
 public interface SpecificationService {
-    /**
-     * Method for saving new Specification to database.
-     *
-     * @param dto - dto for Specification entity.
-     * @return a Specification.
-     */
-    Specification save(SpecificationAddDto dto);
-
     /**
      * Save Specification to DB.
      *
@@ -55,4 +46,11 @@ public interface SpecificationService {
      * @return a specification by name.
      */
     Specification findByName(String name);
+
+    /**
+     * Method for finding all SpecificationNameDto.
+     *
+     * @return list of SpecificationNameDto.
+     */
+    List<SpecificationNameDto> findAllSpecificationDto();
 }

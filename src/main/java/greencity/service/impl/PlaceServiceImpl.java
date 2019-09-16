@@ -5,9 +5,10 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.dto.specification.SpecificationAddDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
+import greencity.entity.enums.ROLE;
+import greencity.exception.CheckRepeatingValueException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
@@ -39,7 +40,7 @@ public class PlaceServiceImpl implements PlaceService {
     private OpenHoursService openingHoursService;
     private UserService userService;
     private SpecificationService specificationService;
-    private SpecificationValueService specificationValueService;
+    private DiscountService discountService;
 
     /**
      * {@inheritDoc}
@@ -64,15 +65,38 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place save(PlaceAddDto dto, String email) {
         log.info(LogMessage.IN_SAVE);
-        Category category = createCategoryByName(dto.getCategory().getName());
+        Category category = categoryService.findByName(dto.getCategory().getName());
+
         Place place = modelMapper.map(dto, Place.class);
         place.setAuthor(userService.findByEmail(email));
+        if (place.getAuthor().getRole() == ROLE.ROLE_ADMIN || place.getAuthor().getRole() == ROLE.ROLE_MODERATOR) {
+            place.setStatus(PlaceStatus.APPROVED);
+        }
         place.setCategory(category);
         placeRepo.save(place);
         setPlaceToLocation(place);
         setPlaceToOpeningHours(place);
+        setToDiscountPlaceAndCategoty(category, place);
 
         return place;
+    }
+
+    /**
+     * Method for setting {@code Discount} with {@code Place} and {@code Category} to database.
+     *
+     * @param place    of {@link Place} entity.
+     * @param category of {@link Category} entity.
+     * @author Kateryna Horokh
+     */
+    private void setToDiscountPlaceAndCategoty(Category category, Place place) {
+        List<Discount> discounts = place.getDiscounts();
+        discounts.stream().forEach(val -> {
+            Specification specification = specificationService.findByName(val.getSpecification().getName());
+            val.setSpecification(specification);
+            val.setPlace(place);
+            val.setCategory(category);
+            discountService.save(val);
+        });
     }
 
     /**
@@ -85,6 +109,7 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.SET_PLACE_TO_OPENING_HOURS, place.getName());
 
         List<OpeningHours> hours = place.getOpeningHoursList();
+        checkRepeatingValue(hours);
         hours.stream()
             .distinct()
             .forEach(
@@ -109,22 +134,43 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for creating new {@code Category} to database if it does not exists by name.
+     * Method for checking list of giving {@code OpeningHours} on repeating value of week days.
      *
-     * @param name - String category's name
-     * @return category of {@link Category} entity.
+     * @param hours - list of {@link OpeningHours} entity.
      * @author Kateryna Horokh
      */
-    private Category createCategoryByName(String name) {
-        log.info(LogMessage.CREATE_CATEGORY_BY_NAME, name);
-
-        Category category = categoryService.findByName(name);
-        if (category == null) {
-            category = new Category();
-            category.setName(name);
-            category = categoryService.save(category);
+    private void checkRepeatingValue(List<OpeningHours> hours) {
+        for (int i = 0; i < hours.size(); i++) {
+            for (int j = i + 1; j < hours.size(); j++) {
+                if (hours.get(i).getWeekDay().equals(hours.get(j).getWeekDay())) {
+                    throw new CheckRepeatingValueException(ErrorMessage.REPEATING_VALUE_OF_WEEKDAY_VALUE);
+                }
+            }
         }
-        return category;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
+     */
+    @Transactional
+    @Override
+    public Place update(Long id, PlaceUpdateDto dto) {
+        log.info(LogMessage.IN_UPDATE, dto);
+
+        Place updatedPlace = findById(id);
+
+        Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
+
+        updatedPlace.setName(dto.getName());
+        updatedPlace.setCategory(updatedCategory);
+        placeRepo.save(updatedPlace);
+        setPlaceToLocation(updatedPlace);
+        setPlaceToOpeningHours(updatedPlace);
+        setToDiscountPlaceAndCategoty(updatedCategory, updatedPlace);
+
+        return updatedPlace;
     }
 
     /**

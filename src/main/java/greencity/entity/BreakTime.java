@@ -26,6 +26,6 @@ public class BreakTime {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
-    @OneToOne(mappedBy = "breakTime", cascade = {CascadeType.ALL})
+    @OneToOne(mappedBy = "breakTime")
     private OpeningHours openingHours;
 }

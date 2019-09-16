@@ -2,13 +2,13 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.specification.SpecificationAddDto;
+import greencity.dto.specification.SpecificationNameDto;
 import greencity.entity.Specification;
-import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.SpecificationRepo;
 import greencity.service.SpecificationService;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,24 +23,6 @@ import org.springframework.stereotype.Service;
 public class SpecificationServiceImpl implements SpecificationService {
     private SpecificationRepo specificationRepo;
     private ModelMapper modelMapper;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Kateryna Horokh
-     */
-    @Override
-    public Specification save(SpecificationAddDto dto) {
-        log.info(LogMessage.IN_SAVE);
-
-        Specification byName = specificationRepo.findByName(dto.getName());
-
-        if (byName != null) {
-            throw new BadRequestException(
-                ErrorMessage.SPECIFICATION_ALREADY_EXISTS_BY_THIS_NAME);
-        }
-        return specificationRepo.save(modelMapper.map(dto, Specification.class));
-    }
 
     /**
      * {@inheritDoc}
@@ -102,5 +84,18 @@ public class SpecificationServiceImpl implements SpecificationService {
     @Override
     public Specification findByName(String name) {
         return specificationRepo.findByName(name);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
+     */
+    @Override
+    public List<SpecificationNameDto> findAllSpecificationDto() {
+        List<Specification> specifications = findAll();
+        return specifications.stream()
+            .map(specification -> modelMapper.map(specification, SpecificationNameDto.class))
+            .collect(Collectors.toList());
     }
 }

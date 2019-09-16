@@ -51,4 +51,8 @@ public class ValidationConstants {
     public static final String N_E_LNG_CAN_NOT_BE_NULL = "North-east longitude can not be null";
     public static final String S_W_LAT_CAN_NOT_BE_NULL = "South-west latitude can not be null";
     public static final String S_W_LNG_CAN_NOT_BE_NULL = "South-west longitude can not be null";
+
+    public static final int DISCOUNT_VALUE_MIN = 1;
+    public static final int DISCOUNT_VALUE_MAX = 100;
+    public static final String EMPTY_SPECIFICATION_NAME = "The specification name can not be empty";
 }

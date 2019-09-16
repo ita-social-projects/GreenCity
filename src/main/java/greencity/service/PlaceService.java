@@ -2,6 +2,8 @@ package greencity.service;
 
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
+import greencity.dto.specification.SpecificationDto;
+import greencity.dto.specification.SpecificationNameDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -46,6 +48,16 @@ public interface PlaceService {
      * @author Kateryna Horokh
      */
     Place save(PlaceAddDto dto, String email);
+
+    /**
+     * Method for updating {@code Place}.
+     *
+     * @param id - {@link Place} id
+     * @param dto - dto for Place entity
+     * @return place {@code Place}
+     * @author Kateryna Horokh
+     */
+    Place update(Long id, PlaceUpdateDto dto);
 
     /**
      * Find all places from DB.

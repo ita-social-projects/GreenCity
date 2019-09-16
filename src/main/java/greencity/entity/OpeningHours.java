@@ -4,14 +4,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -31,7 +29,7 @@ public class OpeningHours {
     @Enumerated
     private DayOfWeek weekDay;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     private BreakTime breakTime;
 
     @ManyToOne

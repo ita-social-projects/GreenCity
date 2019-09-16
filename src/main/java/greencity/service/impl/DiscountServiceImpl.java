@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.dto.discount.DiscountDtoForAddPlace;
 import greencity.entity.Discount;
 import greencity.repository.DiscountRepo;
 import greencity.service.DiscountService;
@@ -23,6 +24,11 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     public Discount save(Discount discount) {
         return repo.save(discount);
+    }
+
+    @Override
+    public Discount save(DiscountDtoForAddPlace discountDtoForAddPlace) {
+        return repo.save(modelMapper.map(discountDtoForAddPlace, Discount.class));
     }
 
     @Override

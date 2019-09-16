@@ -21,13 +21,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
+    private final FavoritePlaceService favoritePlaceService;
     /**
      * Autowired PlaceService instance.
      */
     private PlaceService placeService;
-
-    private final FavoritePlaceService favoritePlaceService;
-
     private ModelMapper modelMapper;
 
     /**
@@ -45,6 +43,20 @@ public class PlaceController {
                 modelMapper.map(
                     placeService.save(dto, principal.getName()),
                     PlaceWithUserDto.class));
+    }
+
+    /**
+     * The method which returns new updated {@code Place}.
+     *
+     * @param dto - Place dto for updating with all parameters.
+     * @return new {@code Place}.
+     * @author Kateryna Horokh
+     */
+    @PostMapping("/update")
+    public ResponseEntity<PlaceUpdateDto> updatePlace(
+        @Valid @RequestBody PlaceUpdateDto dto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(modelMapper.map(placeService.update(dto.getId(), dto), PlaceUpdateDto.class));
     }
 
     /**

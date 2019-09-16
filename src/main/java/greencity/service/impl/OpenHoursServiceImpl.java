@@ -4,8 +4,10 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
+import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
+import greencity.service.BreakTimeService;
 import greencity.service.OpenHoursService;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -24,6 +26,8 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     private OpenHoursRepo hoursRepo;
 
+    private BreakTimeService breakTimeService;
+
     /**
      * {@inheritDoc}
      *
@@ -36,11 +40,24 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     /**
      * {@inheritDoc}
      *
-     * @author Nazar Vladyka
+     * @author Kateryna Horokh
      */
     @Override
     public OpeningHours save(OpeningHours hours) {
         log.info(LogMessage.IN_SAVE, hours);
+
+        if (hours.getOpenTime().getHour() > hours.getCloseTime().getHour()) {
+            throw new BadRequestException(ErrorMessage.CLOSE_TIME_LATE_THAN_OPEN_TIME);
+        }
+
+        if (hours.getBreakTime() != null) {
+            if (hours.getBreakTime().getStartTime().getHour() > hours.getOpenTime().getHour()
+                && hours.getBreakTime().getEndTime().getHour() < hours.getCloseTime().getHour()) {
+                breakTimeService.save(hours.getBreakTime());
+            } else {
+                throw new BadRequestException(ErrorMessage.WRONG_BREAK_TIME);
+            }
+        }
 
         return hoursRepo.save(hours);
     }

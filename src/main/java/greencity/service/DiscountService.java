@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.discount.DiscountDtoForAddPlace;
 import greencity.entity.Discount;
 
 /**
@@ -13,6 +14,8 @@ public interface DiscountService {
      * @return a category.
      */
     Discount save(Discount discount);
+
+    Discount save(DiscountDtoForAddPlace discountDtoForAddPlace);
 
     Discount findByValue(int value);
 

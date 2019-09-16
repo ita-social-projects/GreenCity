@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.entity.BreakTime;
+import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.BreakTimeRepo;
 import greencity.service.BreakTimeService;
@@ -32,6 +33,10 @@ public class BreakTimeServiceImpl implements BreakTimeService {
     @Override
     public BreakTime save(BreakTime breakTime) {
         log.info(LogMessage.IN_SAVE, breakTime);
+
+        if (breakTime.getEndTime().getHour() < breakTime.getStartTime().getHour()) {
+            throw new BadRequestException(ErrorMessage.END_TIME_LATE_THAN_START_TIME);
+        }
 
         return repo.save(breakTime);
     }
