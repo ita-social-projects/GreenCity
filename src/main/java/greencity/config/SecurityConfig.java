@@ -1,12 +1,15 @@
 package greencity.config;
 
+import greencity.security.jwt.JwtAuthenticationProvider;
 import greencity.security.jwt.JwtTokenTool;
+import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,14 +30,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtTokenTool tool;
+    private UserService userService;
 
     /**
      * Constructor.
      *
-     * @param tool {@link JwtTokenTool} - tool for JWT
+     * @param tool        {@link JwtTokenTool} - tool for JWT
+     * @param userService {@link UserService} - user service.
      */
-    public SecurityConfig(JwtTokenTool tool) {
+    public SecurityConfig(JwtTokenTool tool, UserService userService) {
         this.tool = tool;
+        this.userService = userService;
     }
 
     /**
@@ -66,41 +72,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf()
             .disable()
             .authorizeRequests()
-            .antMatchers("/ownSecurity/**")
-            .permitAll()
-            .antMatchers("/place/getListPlaceLocationByMapsBounds/**")
-            .permitAll()
-            .antMatchers(HttpMethod.GET, "/category/**")
-            .permitAll()
-            .antMatchers(HttpMethod.POST, "/category/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/propose/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.DELETE, "/place/{id}/**")
-            .hasAnyRole("ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.DELETE, "/place/**")
-            .permitAll()
-            .antMatchers(HttpMethod.PATCH, "/place/status**")
-            .hasAnyRole("ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.GET, "/place/statuses")
-            .permitAll()
-            .antMatchers(HttpMethod.GET, "/place/Info/{id}/**")
-            .permitAll()
-            .antMatchers("/place/{status}/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/favorite_place/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/save/favorite/**")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers("/place/info/favorite/")
-            .hasAnyRole("USER", "ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.PATCH, "/user/update/status")
-            .hasAnyRole("ADMIN", "MODERATOR")
-            .antMatchers(HttpMethod.PATCH, "/user/update/role")
-            .hasRole("ADMIN")
-            .antMatchers(HttpMethod.GET, "/user")
-            .hasAnyRole("ADMIN", "MODERATOR")
-            .antMatchers("/user/roles")
+            .antMatchers(
+                "/ownSecurity/**",
+                "/place/getListPlaceLocationByMapsBounds/**",
+                "/googleSecurity/**"
+            ).permitAll()
+            .antMatchers(
+                HttpMethod.GET,
+                "/category/**",
+                "/place/Info/{id}/**",
+                "/place/statuses/**"
+            ).permitAll()
+            .antMatchers(
+                "/place/propose/**",
+                "/place/{status}/**",
+                "/favorite_place/**",
+                "/place/save/favorite",
+                "/place/info/favorite/**"
+            ).hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.POST,
+                "/category/**"
+            ).hasAnyRole("USER", "ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH,
+                "/place/status**",
+                "/user/update/status"
+            ).hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.PATCH,
+                "/user/update/role"
+            ).hasRole("ADMIN")
+            .antMatchers(HttpMethod.GET,
+                "/user"
+            ).hasAnyRole("ADMIN", "MODERATOR")
+            .antMatchers(HttpMethod.DELETE,
+                "/place/{id}/**",
+                "/place/**")
             .hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")
@@ -120,6 +125,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/swagger-ui.html");
         web.ignoring().antMatchers("/swagger-resources/**");
         web.ignoring().antMatchers("/webjars/**");
+    }
+
+
+    /**
+     * Method for configure type of authentication provider.
+     *
+     * @param auth {@link AuthenticationManagerBuilder}
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(new JwtAuthenticationProvider(userService, passwordEncoder()));
     }
 
     /**

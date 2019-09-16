@@ -1,24 +1,33 @@
 package greencity.security.jwt;
 
-import greencity.security.jwt.JwtTokenTool;
-import java.util.UUID;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
+import greencity.entity.OwnSecurity;
+import greencity.entity.User;
 import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
+import greencity.service.UserService;
+import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import static org.junit.Assert.*;
 
 @RunWith(value = MockitoJUnitRunner.class)
 @SpringBootTest
 public class JwtTokenToolTest {
 
-    @InjectMocks private JwtTokenTool jwtTokenTool;
+    @Mock
+    private UserService userService;
+    @InjectMocks
+    private JwtTokenTool jwtTokenTool;
 
     @Before
     public void init() {
@@ -30,7 +39,7 @@ public class JwtTokenToolTest {
     @Test
     public void createAccessToken() {
         String accessToken =
-                jwtTokenTool.createAccessToken("nazar.stasyuk@gmail.com", ROLE.ROLE_USER);
+            jwtTokenTool.createAccessToken("nazar.stasyuk@gmail.com", ROLE.ROLE_USER);
         assertTrue(jwtTokenTool.isTokenValid(accessToken));
     }
 
