@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()).isPresent()) {
-            throw new BadEmailException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
+            throw new UserAlreadyRegisteredException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
         }
         return repo.save(user);
     }
@@ -102,9 +102,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long findIdByEmail(String email) {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
-        Long id = repo.findIdByEmail(email)
-            .orElseThrow(() -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
-        return id;
+        return repo.findIdByEmail(email).orElseThrow(
+            () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
     }
 
     /**
