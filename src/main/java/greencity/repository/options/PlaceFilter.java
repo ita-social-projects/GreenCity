@@ -5,55 +5,70 @@ import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
-@Slf4j
-public class PlaceFilter {
-    public static Specification<Place> getPredicates(FilterPlaceDto filterDto) {
-        log.error(filterDto.toString());
-        Specification<Place> predicates = Specification.where(Specification.where(hasStatus(filterDto.getStatus())));
+public class PlaceFilter implements Specification<Place> {
+    private FilterPlaceDto filterPlaceDto;
+    private MapBoundsDto mapBoundsDto;
 
-        MapBoundsDto bounds = filterDto.getMapBoundsDto();
-        if (null != bounds) {
-            predicates = Specification
-                .where(isLatBetween(bounds.getSouthWestLat(), bounds.getNorthEastLat()))
-                .and(isLngBetween(bounds.getSouthWestLng(), bounds.getNorthEastLng()));
+    public PlaceFilter(FilterPlaceDto filterPlaceDto) {
+        this.filterPlaceDto = filterPlaceDto;
+    }
+
+    public PlaceFilter(MapBoundsDto mapBoundsDto) {
+        this.mapBoundsDto = mapBoundsDto;
+    }
+
+    @Override
+    public Predicate toPredicate(Root<Place> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (null != filterPlaceDto) {
+            predicates.add(hasStatus(root, criteriaBuilder, filterPlaceDto.getStatus()));
+            predicates.add(hasPositionInBounds(root, criteriaBuilder, filterPlaceDto.getMapBoundsDto()));
+            predicates.add(hasDiscount(root, criteriaBuilder, filterPlaceDto.getDiscountDto()));
         }
 
-        FilterDiscountDto discount = filterDto.getDiscountDto();
-        if (null != discount) {
-            predicates = Specification.where(hasDiscountBetween(discount.getDiscountMin(), discount.getDiscountMax()))
-                .and(hasCategory(discount.getCategory().getName()))
-                .and(hasSpecification(discount.getSpecification().getName()))
-                .and(predicates);
+        if (null != mapBoundsDto) {
+            predicates.add(hasStatus(root, criteriaBuilder, PlaceStatus.APPROVED));
+            predicates.add(hasPositionInBounds(root, criteriaBuilder, mapBoundsDto));
         }
-        return predicates;
+
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
-    private static Specification<Place> isLatBetween(Double minLat, Double maxLat) {
-        return (root, query, cb) -> cb.between(root.join("location").get("lat"), minLat, maxLat);
+    private Predicate hasStatus(Root<Place> r, CriteriaBuilder cb, PlaceStatus status) {
+        if (status == null) {
+            status = PlaceStatus.APPROVED;
+        }
+        return cb.equal(r.get("status"), status);
     }
 
-    private static Specification<Place> isLngBetween(Double minLng, Double maxLng) {
-        return (root, query, cb) -> cb.between(root.join("location").get("lng"), minLng, maxLng);
+    private Predicate hasPositionInBounds(Root<Place> r, CriteriaBuilder cb, MapBoundsDto bounds) {
+        if (bounds == null) {
+            return cb.conjunction();
+        }
+        return cb.and(
+            cb.between(r.join("location").get("lat"), bounds.getSouthWestLat(), bounds.getNorthEastLat()),
+            cb.between(r.join("location").get("lng"), bounds.getSouthWestLng(), bounds.getNorthEastLng()));
     }
 
-    private static Specification<Place> hasDiscountBetween(int discountMin, int discountMax) {
-        return (root, query, cb) -> cb.between(root.join("discounts").get("value"), discountMin, discountMax);
-    }
-
-    private static Specification<Place> hasStatus(PlaceStatus status) {
-        return (root, query, cb) -> cb.equal(root.get("status"), status);
-    }
-
-    private static Specification<Place> hasCategory(String category) {
-        return (root, query, cb) -> cb.equal(root.join("discounts")
-            .join("category").get("name"), category);
-    }
-
-    private static Specification<Place> hasSpecification(String specification) {
-        return (root, query, cb) -> cb.equal(root.join("discounts")
-            .join("specification").get("name"), specification);
+    private Predicate hasDiscount(Root<Place> r, CriteriaBuilder cb, FilterDiscountDto disc) {
+        if (disc == null) {
+            return cb.conjunction();
+        }
+        return cb.and(
+            cb.equal(r.join("discounts").join("category").get("name"),
+                disc.getCategory().getName()),
+            cb.equal(r.join("discounts").join("specification").get("name"),
+                disc.getSpecification().getName()),
+            cb.between(r.join("discounts").get("value"),
+                disc.getDiscountMin(), disc.getDiscountMax()));
     }
 }
