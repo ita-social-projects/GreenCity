@@ -4,7 +4,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.location.FilterDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Category;
@@ -14,8 +14,8 @@ import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
-import greencity.repository.options.PlaceOptions;
 import greencity.repository.PlaceRepo;
+import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
 import java.util.List;
@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -245,28 +244,16 @@ public class PlaceServiceImpl implements PlaceService {
         return placeRepo.getAverageRate(id);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Roman Zahorui
+     */
     @Override
-    public List<PlaceByBoundsDto> getPlacesByFilter(FilterDto filterDto) {
-        Specification<Place> options = null;
-        if (filterDto.getMapBoundsDto() != null) {
-            options = Specification
-                .where(PlaceOptions.isLatGreaterThen(filterDto.getMapBoundsDto().getSouthWestLat()))
-                .and(PlaceOptions.isLatLessThen(filterDto.getMapBoundsDto().getNorthEastLat()))
-                .and(PlaceOptions.isLngGreaterThen(filterDto.getMapBoundsDto().getSouthWestLng()))
-                .and(PlaceOptions.isLngLessThen(filterDto.getMapBoundsDto().getNorthEastLng()));
-        }
-
-        if (filterDto.getDiscountMax() == 100) {
-            options = Specification.where(PlaceOptions.hasEmail("goodplace@gmail.com")).and(options);
-        }
-
-        if (options != null) {
-            List<Place> list = placeRepo.findAll(options);
-            return list.stream()
-                .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
-                .collect(Collectors.toList());
-        }
-
-        return null;
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
+        List<Place> list = placeRepo.findAll(PlaceFilter.getPredicates(filterDto));
+        return list.stream()
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+            .collect(Collectors.toList());
     }
 }

@@ -2,7 +2,7 @@ package greencity.controller;
 
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.location.FilterDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.enums.PlaceStatus;
@@ -114,7 +114,7 @@ public class PlaceController {
 
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
-        @Valid @RequestBody FilterDto filterDto) {
+        @Valid @RequestBody FilterPlaceDto filterDto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.getPlacesByFilter(filterDto));
     }
