@@ -100,4 +100,15 @@ public interface PlaceService {
      * @author Zakhar Skaletskyi
      */
     Double averageRate(Long id);
+
+    /**
+     * Finds all {@code Place} with status {@code PlaceStatus} by regex.
+     *
+     * @param placeStatus {@link PlaceStatus}.
+     * @param pageable    pageable configuration.
+     * @param reg regex for filtering places.
+     * @return an object of {@link PageableDto} which contains a list of {@link AdminPlaceDto}.
+     * @author Rostyslav Khasanov
+     */
+    PageableDto filterByRegex(PlaceStatus placeStatus, String reg, Pageable pageable);
 }

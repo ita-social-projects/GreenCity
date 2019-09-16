@@ -241,4 +241,16 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_AVERAGE_RATE, id);
         return placeRepo.getAverageRate(id);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto filterByRegex(PlaceStatus placeStatus, String reg, Pageable pageable) {
+        Page<Place> places = placeRepo.findByRegex(placeStatus.ordinal(), reg, pageable);
+        List<AdminPlaceDto> list = places.stream()
+            .map(place -> modelMapper.map(place, AdminPlaceDto.class))
+            .collect(Collectors.toList());
+        return new PageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
+    }
 }

@@ -13,7 +13,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -123,5 +122,20 @@ public class PlaceController {
     public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
+    }
+
+    /**
+     * The method return list of places by page.
+     *
+     * @param status   {@link PlaceStatus}.
+     * @param pageable pageable configuration.
+     * @param reg regex for filtering places.
+     * @return response {@link PageableDto} object. Contains a list of {@link AdminPlaceDto}.
+     * @author Rostyslav Khasanov
+     */
+    @GetMapping("/filter")
+    public ResponseEntity<?> filter(Pageable pageable, @RequestParam PlaceStatus status, @RequestParam String reg) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeService.filterByRegex(status, reg, pageable));
     }
 }
