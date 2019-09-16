@@ -100,4 +100,19 @@ public interface PlaceService {
      * @author Zakhar Skaletskyi
      */
     Double averageRate(Long id);
+
+    /**
+     * Get statuses of places.
+     *
+     * @return place statuses.
+     */
+    StatusDto getStatuses();
+
+    /**
+     * Delete entities from DB by id.
+     *
+     * @param ids - Places ids.
+     * @return  dto with count of deleted entities.
+     */
+    PlaceBulkDeleteDto delete(List<Long> ids);
 }

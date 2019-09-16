@@ -8,12 +8,13 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -123,5 +124,43 @@ public class PlaceController {
     public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
+    }
+
+    /**
+     * The method which return array of place statuses.
+     *
+     * @return array of statuses
+     * @author Nazar Vladyka
+     */
+    @GetMapping("/statuses")
+    public ResponseEntity getStatuses() {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getStatuses());
+    }
+
+    /**
+     * The method which delete place from DB(change status to DELETED).
+     *
+     * @param id - place id
+     * @return response object with dto of deleted place and OK status if everything is ok.
+     * @author Nazar Vladyka
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@NotNull @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatus(id, PlaceStatus.DELETED));
+    }
+
+    /**
+     * The method which delete list of places from DB(change status to DELETED).
+     *
+     * @param ids - id's of places which need to be deleted
+     * @return placeIds of deleted place
+     * @author Nazar Vladyka
+     */
+    @DeleteMapping
+    public ResponseEntity delete(@RequestParam String ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.delete(
+            Arrays.stream(ids.split(","))
+                .map(Long::valueOf)
+                .collect(Collectors.toList())));
     }
 }

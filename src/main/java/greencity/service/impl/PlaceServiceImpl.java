@@ -241,4 +241,29 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_AVERAGE_RATE, id);
         return placeRepo.getAverageRate(id);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Override
+    public StatusDto getStatuses() {
+        return new StatusDto(PlaceStatus.class.getEnumConstants());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Transactional
+    @Override
+    public PlaceBulkDeleteDto delete(List<Long> ids) {
+        for (Long id : ids) {
+            updateStatus(id, PlaceStatus.DELETED);
+        }
+
+        return new PlaceBulkDeleteDto((long) ids.size());
+    }
 }
