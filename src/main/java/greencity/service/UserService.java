@@ -106,4 +106,11 @@ public interface UserService {
      * @return {@link User}.
      */
     PageableDto filterByName(String reg, Pageable pageable);
+
+    /**
+     * Update last visit of user.
+     *
+     * @return {@link User}.
+     */
+    PageableDto<UserForListDto> filterByNameWithCriteria(String reg, Pageable pageable);
 }

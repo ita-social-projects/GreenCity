@@ -12,6 +12,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.*;
 import greencity.repository.UserRepo;
+import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -162,6 +163,24 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
         log.info(users.getTotalElements() + " total elements");
         log.info(users.getPageable().getPageNumber() + " current page");
+        return new PageableDto<UserForListDto>(
+            userForListDtos,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber());
+    }
+
+    /**
+     * The method which return array of existing roles.
+     *
+     * @return array of roles
+     * @author Rostyslav Khasnaov
+     */
+    public PageableDto<UserForListDto> filterByNameWithCriteria(String reg, Pageable pageable) {
+        Page<User> users = repo.findAll(new UserFilter(reg), pageable);
+        List<UserForListDto> userForListDtos =
+            users.getContent().stream()
+                .map(user -> modelMapper.map(user, UserForListDto.class))
+                .collect(Collectors.toList());
         return new PageableDto<UserForListDto>(
             userForListDtos,
             users.getTotalElements(),

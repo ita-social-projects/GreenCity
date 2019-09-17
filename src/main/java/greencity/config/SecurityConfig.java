@@ -101,7 +101,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasRole("ADMIN")
             .antMatchers(HttpMethod.GET,
                 "/user",
-                "/place/filter**"
+                "/place/filter**",
+                "/user/regex"
             ).hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")

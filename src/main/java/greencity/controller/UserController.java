@@ -78,6 +78,6 @@ public class UserController {
      */
     @GetMapping("regex")
     public ResponseEntity<?> getByReg(Pageable pageable, @RequestParam String reg) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.filterByName(reg, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.filterByNameWithCriteria(reg, pageable));
     }
 }
