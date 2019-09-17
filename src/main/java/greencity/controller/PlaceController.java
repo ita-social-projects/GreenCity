@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.enums.PlaceStatus;
@@ -13,7 +14,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -110,6 +110,21 @@ public class PlaceController {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.getPlacesByStatus(placeStatus, pageable));
+    }
+
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} filtered by values
+     * contained in the incoming {@link FilterPlaceDto} object.
+     *
+     * @param filterDto contains all information about the filtering of the list.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahorui
+     */
+    @PostMapping("/filter")
+    public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
+        @Valid @RequestBody FilterPlaceDto filterDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeService.getPlacesByFilter(filterDto));
     }
 
     /**
