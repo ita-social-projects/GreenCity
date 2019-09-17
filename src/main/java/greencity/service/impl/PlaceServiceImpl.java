@@ -4,6 +4,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Category;
@@ -14,6 +15,7 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
+import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
 import java.util.List;
@@ -208,13 +210,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        List<Place> list =
-            placeRepo.findPlacesByMapsBounds(
-                mapBoundsDto.getNorthEastLat(),
-                mapBoundsDto.getNorthEastLng(),
-                mapBoundsDto.getSouthWestLat(),
-                mapBoundsDto.getSouthWestLng(),
-                APPROVED_STATUS);
+        List<Place> list = placeRepo.findAll(new PlaceFilter(mapBoundsDto));
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
@@ -244,13 +240,14 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
+     *
+     * @author Roman Zahorui
      */
     @Override
-    public PageableDto filterByRegex(PlaceStatus placeStatus, String reg, Pageable pageable) {
-        Page<Place> places = placeRepo.findByRegex(placeStatus.ordinal(), reg, pageable);
-        List<AdminPlaceDto> list = places.stream()
-            .map(place -> modelMapper.map(place, AdminPlaceDto.class))
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
+        List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
+        return list.stream()
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
-        return new PageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
     }
 }

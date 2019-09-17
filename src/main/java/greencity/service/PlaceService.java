@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
@@ -101,14 +102,14 @@ public interface PlaceService {
      */
     Double averageRate(Long id);
 
+
     /**
-     * Finds all {@code Place} with status {@code PlaceStatus} by regex.
+     * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
      *
-     * @param placeStatus {@link PlaceStatus}.
-     * @param pageable    pageable configuration.
-     * @param reg regex for filtering places.
-     * @return an object of {@link PageableDto} which contains a list of {@link AdminPlaceDto}.
-     * @author Rostyslav Khasanov
+     * @param filterDto contains objects whose values determine
+     *                 the filter parameters of the returned list.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahouri
      */
-    PageableDto filterByRegex(PlaceStatus placeStatus, String reg, Pageable pageable);
+    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
 }
