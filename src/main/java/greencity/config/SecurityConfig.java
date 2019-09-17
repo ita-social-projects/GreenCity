@@ -75,7 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 "/ownSecurity/**",
                 "/place/getListPlaceLocationByMapsBounds/**",
-                "/googleSecurity/**"
+                "/googleSecurity/**",
+                "/place/filter/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.GET,
