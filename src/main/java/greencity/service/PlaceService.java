@@ -4,6 +4,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
+import greencity.dto.user.UserForListDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -112,4 +113,14 @@ public interface PlaceService {
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
+
+    /**
+     * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
+     *
+     * @param filterPlaceDto contains objects whose values determine
+     *                 the filter parameters of the returned list.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahouri
+     */
+    PageableDto<AdminPlaceDto> filterByNameWithCriteria(FilterPlaceDto filterPlaceDto, Pageable pageable);
 }

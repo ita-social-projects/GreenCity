@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.dto.filter.UserFilterDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
@@ -70,14 +71,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
     }
 
-    /**y
+    /**
+     * y
      * The method which return array of existing roles.
      *
      * @return array of roles
      * @author Rostyslav Khasnaov
      */
-    @GetMapping("regex")
-    public ResponseEntity<?> getByReg(Pageable pageable, @RequestParam String reg) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.filterByNameWithCriteria(reg, pageable));
+    @PostMapping("regex")
+    public ResponseEntity<?> getByReg(Pageable pageable, @RequestBody UserFilterDto userFilterDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.filterByNameWithCriteria(userFilterDto, pageable));
     }
 }

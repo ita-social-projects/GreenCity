@@ -1,12 +1,9 @@
 package greencity.repository.options;
 
+import greencity.dto.filter.UserFilterDto;
 import greencity.entity.User;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -19,13 +16,13 @@ import org.springframework.data.jpa.domain.Specification;
  * @return User id
  */
 public class UserFilter implements Specification<User> {
-    private String reg;
+    private UserFilterDto userFilterDto;
 
     /**
      * Find id by email.
      */
-    public UserFilter(String reg) {
-        this.reg = reg;
+    public UserFilter(UserFilterDto userFilterDto) {
+        this.userFilterDto = userFilterDto;
     }
 
     /**
@@ -37,7 +34,7 @@ public class UserFilter implements Specification<User> {
     public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
-        predicates.add(hasFieldsLike(root, criteriaBuilder, reg));
+        predicates.add(hasFieldsLike(root, criteriaBuilder, userFilterDto.getSearchReg()));
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }

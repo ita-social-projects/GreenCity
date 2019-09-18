@@ -250,4 +250,21 @@ public class PlaceServiceImpl implements PlaceService {
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
+    public PageableDto<AdminPlaceDto> filterByNameWithCriteria(FilterPlaceDto filterPlaceDto, Pageable pageable) {
+        Page<Place> places = placeRepo.findAll(new PlaceFilter(filterPlaceDto), pageable);
+        List<AdminPlaceDto> adminPlaceDtos =
+            places.getContent().stream()
+                .map(user -> modelMapper.map(user, AdminPlaceDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<AdminPlaceDto>(
+            adminPlaceDtos,
+            places.getTotalElements(),
+            places.getPageable().getPageNumber());
+    }
 }

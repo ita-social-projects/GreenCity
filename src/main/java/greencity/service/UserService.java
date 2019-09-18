@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.filter.UserFilterDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserRoleDto;
@@ -112,5 +113,5 @@ public interface UserService {
      *
      * @return {@link User}.
      */
-    PageableDto<UserForListDto> filterByNameWithCriteria(String reg, Pageable pageable);
+    PageableDto<UserForListDto> filterByNameWithCriteria(UserFilterDto userFilterDto, Pageable pageable);
 }

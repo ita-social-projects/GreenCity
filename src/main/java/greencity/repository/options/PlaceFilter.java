@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -20,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Roman Zahouri, Nazar Stasyuk
  */
+@Slf4j
 public class PlaceFilter implements Specification<Place> {
     private FilterPlaceDto filterPlaceDto;
     private MapBoundsDto mapBoundsDto;
@@ -52,14 +54,13 @@ public class PlaceFilter implements Specification<Place> {
         List<Predicate> predicates = new ArrayList<>();
 
         if (null != filterPlaceDto) {
-            predicates.add(hasStatus(root, criteriaBuilder, filterPlaceDto.getStatus()));
-            predicates.add(hasPositionInBounds(root, criteriaBuilder, filterPlaceDto.getMapBoundsDto()));
-            predicates.add(hasDiscount(root, criteriaBuilder, filterPlaceDto.getDiscountDto()));
-        }
-
-        if (null != mapBoundsDto) {
-            predicates.add(hasStatus(root, criteriaBuilder, PlaceStatus.APPROVED));
-            predicates.add(hasPositionInBounds(root, criteriaBuilder, mapBoundsDto));
+            // predicates.add(hasStatus(root, criteriaBuilder, filterPlaceDto.getStatus()));
+            // predicates.add(hasPositionInBounds(root, criteriaBuilder, filterPlaceDto.getMapBoundsDto()));
+            // predicates.add(hasDiscount(root, criteriaBuilder, filterPlaceDto.getDiscountDto()));
+            log.info(filterPlaceDto.getSearchReg());
+            log.info(filterPlaceDto.getStatus() + "");
+            predicates
+                .add(hasFieldLike(root, criteriaBuilder, filterPlaceDto.getSearchReg(), filterPlaceDto.getStatus()));
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -119,5 +120,28 @@ public class PlaceFilter implements Specification<Place> {
                 discount.getSpecification().getName()),
             cb.between(r.join("discounts").get("value"),
                 discount.getDiscountMin(), discount.getDiscountMax()));
+    }
+
+    /**
+     * Returns a predicate where {@link Place} has some values defined
+     * in the incoming {@link FilterDiscountDto} object.
+     *
+     * @param r  must not be {@literal null}.
+     * @param cb must not be {@literal null}.
+     * @return a {@link Predicate}, may be {@literal null}.
+     */
+    private Predicate hasFieldLike(Root<Place> r, CriteriaBuilder cb, String reg, PlaceStatus status) {
+        if (filterPlaceDto.getSearchReg() == null) {
+            return cb.conjunction();
+        }
+        Predicate or = cb.or(
+            cb.like(r.join("author").get("email"), reg),
+            cb.like(r.join("category").get("name"), reg),
+            cb.like(r.get("name"), reg),
+            cb.like(r.join("location").get("address"), reg),
+            cb.like(r.get("modifiedDate").as(String.class), reg));
+
+        Predicate isStatus = cb.equal(r.get("status"), status);
+        return cb.and(or, isStatus);
     }
 }

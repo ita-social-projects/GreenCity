@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.UserFilterDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserRoleDto;
@@ -175,8 +176,8 @@ public class UserServiceImpl implements UserService {
      * @return array of roles
      * @author Rostyslav Khasnaov
      */
-    public PageableDto<UserForListDto> filterByNameWithCriteria(String reg, Pageable pageable) {
-        Page<User> users = repo.findAll(new UserFilter(reg), pageable);
+    public PageableDto<UserForListDto> filterByNameWithCriteria(UserFilterDto userFilterDto, Pageable pageable) {
+        Page<User> users = repo.findAll(new UserFilter(userFilterDto), pageable);
         List<UserForListDto> userForListDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))

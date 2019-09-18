@@ -143,15 +143,13 @@ public class PlaceController {
     /**
      * The method return list of places by page.
      *
-     * @param status   {@link PlaceStatus}.
      * @param pageable pageable configuration.
-     * @param reg regex for filtering places.
      * @return response {@link PageableDto} object. Contains a list of {@link AdminPlaceDto}.
      * @author Rostyslav Khasanov
      */
-    @GetMapping("/filter")
-    public ResponseEntity<?> filter(Pageable pageable, @RequestParam PlaceStatus status, @RequestParam String reg) {
+    @PostMapping("/filter/regex")
+    public ResponseEntity<?> get(Pageable pageable, @RequestBody FilterPlaceDto filterPlaceDto) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.filterByRegex(status, reg, pageable));
+            .body(placeService.filterByNameWithCriteria(filterPlaceDto, pageable));
     }
 }
