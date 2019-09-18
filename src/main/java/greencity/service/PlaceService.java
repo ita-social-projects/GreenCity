@@ -32,6 +32,15 @@ public interface PlaceService {
     PlaceStatusDto updateStatus(Long id, PlaceStatus status);
 
     /**
+     * Update statuses for the {@link Place}'s and set the time of modification.
+     *
+     * @param ids    - {@link Place}'s ids.
+     * @param status - {@link Place}'s updated status.
+     * @return dto with count of updated entities.
+     */
+    BulkUpdateStatus updateStatuses(List<Long> ids, PlaceStatus status);
+
+    /**
      * Find place by it's id.
      *
      * @param id - place id.
@@ -107,12 +116,4 @@ public interface PlaceService {
      * @return available {@link Place} statuses.
      */
     StatusDto getStatuses();
-
-    /**
-     * Delete entities from DB by id.
-     *
-     * @param ids - {@link Place} ids.
-     * @return dto with count of deleted entities.
-     */
-    PlaceBulkDeleteDto delete(List<Long> ids);
 }

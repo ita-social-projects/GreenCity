@@ -128,6 +128,22 @@ public class PlaceController {
     }
 
     /**
+     * The method which update array of {@link Place}'s from DB.
+     *
+     * @param ids    - id's of {@link Place}'s which need to be updated
+     * @param status - updated {@link PlaceStatus}
+     * @return dto with status and  placeIds of updated {@link Place}'s
+     * @author Nazar Vladyka
+     */
+    @PatchMapping("/statuses")
+    public ResponseEntity updateStatuses(@RequestParam String ids, @RequestParam PlaceStatus status) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatuses(
+            Arrays.stream(ids.split(","))
+                .map(Long::valueOf)
+                .collect(Collectors.toList()), status));
+    }
+
+    /**
      * The method which return array of {@link PlaceStatus}.
      *
      * @return array of statuses
@@ -151,17 +167,17 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete array of {@link Place} from DB(change {@link PlaceStatus} to DELETED).
+     * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param ids - id's of {@link Place} which need to be deleted
-     * @return placeIds of deleted {@link Place}
+     * @param ids - id's of {@link Place}'s which need to be deleted
+     * @return dto with status and placeIds of deleted {@link Place}'s
      * @author Nazar Vladyka
      */
     @DeleteMapping
     public ResponseEntity delete(@RequestParam String ids) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.delete(
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatuses(
             Arrays.stream(ids.split(","))
                 .map(Long::valueOf)
-                .collect(Collectors.toList())));
+                .collect(Collectors.toList()), PlaceStatus.DELETED));
     }
 }

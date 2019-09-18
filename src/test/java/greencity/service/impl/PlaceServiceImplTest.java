@@ -270,7 +270,7 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void deleteTest() {
+    public void updateStatusesTest() {
         List<Long> ids = Arrays.asList(1L, 2L, 3L);
 
         when(placeRepo.findById(anyLong()))
@@ -278,7 +278,8 @@ public class PlaceServiceImplTest {
             .thenReturn(Optional.of(new Place()))
             .thenReturn(Optional.of(new Place()));
 
-        assertEquals(new PlaceBulkDeleteDto(3L), placeService.delete(ids));
+        assertEquals(new BulkUpdateStatus(PlaceStatus.DELETED, 3L),
+            placeService.updateStatuses(ids, PlaceStatus.DELETED));
     }
 
     @Test

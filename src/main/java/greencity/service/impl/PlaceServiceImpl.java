@@ -175,6 +175,21 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * {@inheritDoc}
      *
+     * @author Nazar Vladyka
+     */
+    @Transactional
+    @Override
+    public BulkUpdateStatus updateStatuses(List<Long> ids, PlaceStatus status) {
+        for (Long id : ids) {
+            updateStatus(id, status);
+        }
+
+        return new BulkUpdateStatus(status, (long) ids.size());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Vladyka.
      */
     @Override
@@ -250,20 +265,5 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public StatusDto getStatuses() {
         return new StatusDto(PlaceStatus.class.getEnumConstants());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
-     */
-    @Transactional
-    @Override
-    public PlaceBulkDeleteDto delete(List<Long> ids) {
-        for (Long id : ids) {
-            updateStatus(id, PlaceStatus.DELETED);
-        }
-
-        return new PlaceBulkDeleteDto((long) ids.size());
     }
 }

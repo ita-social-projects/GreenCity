@@ -95,6 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",
+                "/place/statuses**",
                 "/user/update/status"
             ).hasAnyRole("ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.PATCH,
@@ -105,8 +106,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole("ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",
-                "/place/**")
-            .hasAnyRole("ADMIN", "MODERATOR")
+                "/place/**"
+            ).hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")
             .and()
