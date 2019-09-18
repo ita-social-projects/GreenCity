@@ -73,10 +73,13 @@ public class PlaceFilter implements Specification<Place> {
      * @param r                must not be {@literal null}.
      * @param cb               must not be {@literal null}.
      * @param distanceFromUser {@link FilterDistanceDto} must not be {@literal null}.
-     * @return a {@link Predicate}, may be {@literal null}.
+     * @return a {@link Predicate}.
      */
     private Predicate hasDistanceFromUser(Root<Place> r, CriteriaBuilder cb, FilterDistanceDto distanceFromUser) {
-        if (distanceFromUser == null) {
+        if (distanceFromUser == null
+            || distanceFromUser.getLat() == null
+            || distanceFromUser.getLng() == null
+            || distanceFromUser.getDistance() == null) {
             return cb.conjunction();
         }
 
