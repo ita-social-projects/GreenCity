@@ -4,6 +4,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
@@ -11,6 +12,7 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
+import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_SAVE);
         Category category = createCategoryByName(dto.getCategory().getName());
         Place place = modelMapper.map(dto, Place.class);
-        place.setAuthor(userService.findByEmail(email));
+        place.setAuthor(userService.findByEmail(email).get());
         place.setCategory(category);
         placeRepo.save(place);
         setPlaceToLocation(place);
@@ -206,13 +208,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        List<Place> list =
-            placeRepo.findPlacesByMapsBounds(
-                mapBoundsDto.getNorthEastLat(),
-                mapBoundsDto.getNorthEastLng(),
-                mapBoundsDto.getSouthWestLat(),
-                mapBoundsDto.getSouthWestLng(),
-                APPROVED_STATUS);
+        List<Place> list = placeRepo.findAll(new PlaceFilter(mapBoundsDto));
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
@@ -244,5 +240,18 @@ public class PlaceServiceImpl implements PlaceService {
     public Double averageRate(Long id) {
         log.info(LogMessage.IN_AVERAGE_RATE, id);
         return placeRepo.getAverageRate(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Roman Zahorui
+     */
+    @Override
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
+        List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
+        return list.stream()
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+            .collect(Collectors.toList());
     }
 }

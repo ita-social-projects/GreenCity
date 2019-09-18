@@ -5,7 +5,7 @@ import static greencity.constant.ErrorMessage.*;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.exception.BadIdException;
-import greencity.exception.BadTokenException;
+import greencity.exception.BadVerifyEmailTokenException;
 import greencity.exception.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;
 import greencity.security.service.VerifyEmailService;
@@ -89,7 +89,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         VerifyEmail verifyEmail =
             repo.findByToken(token)
                 .orElseThrow(
-                    () -> new BadTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
+                    () -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
         if (isDateValidate(verifyEmail.getExpiryDate())) {
             log.info("Date of user email is valid.");
             delete(verifyEmail);

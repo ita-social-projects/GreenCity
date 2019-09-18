@@ -3,7 +3,7 @@ package greencity.exception;
 /**
  * Exception that we get when user trying to save schedule with repeating week days.
  *
- * @author Rostyslav Khasanov
+ * @author Kateryna Horokh
  */
 public class CheckRepeatingValueException extends RuntimeException {
     /**

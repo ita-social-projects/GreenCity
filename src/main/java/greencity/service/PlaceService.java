@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
@@ -101,4 +102,15 @@ public interface PlaceService {
      * @author Zakhar Skaletskyi
      */
     Double averageRate(Long id);
+
+
+    /**
+     * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
+     *
+     * @param filterDto contains objects whose values determine
+     *                 the filter parameters of the returned list.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahouri
+     */
+    List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
 }
