@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceShowDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import java.util.List;
@@ -39,15 +40,16 @@ public interface FavoritePlaceService {
     List<FavoritePlaceShowDto> findAllByUserEmail(String email);
 
     /**
-     * Delete favorite place by place id and user email.
+     * Delete favorite place by user email and place id or favorite place id.
+     * If id>0 then delete by favorite place id. If id<0 then delete by place id.
      *
-     * @param id   - favorite place id
+     * @param id        - favorite place id
      * @param userEmail - user's email
      * @return -  id of deleted favorite place
      * @author Zakhar Skaletskyi
      */
     @Transactional
-    Long deleteByIdAndUserEmail(Long id, String userEmail);
+    Long deleteByUserEmailAndFavoriteIdOrPlaceId(Long id, String userEmail);
 
     /**
      * FInd favorite place by id.
@@ -66,4 +68,24 @@ public interface FavoritePlaceService {
      * @author Dmytro Dovhal
      */
     PlaceInfoDto getInfoFavoritePlace(Long favoritePlaceId);
+
+    /**
+     * Get favorite place coordinates, id and name.
+     *
+     * @param id        favorite place
+     * @param email - user's email
+     * @return PlaceByBoundsDto with name from favorite place
+     *
+     * @author Zakhar Skaletskyi
+     */
+    PlaceByBoundsDto getFavoritePlaceWithLocation(Long id, String email);
+
+    /**
+     * Find all favorite places names with placeId by user email.
+     *
+     * @param email - user's email
+     * @return list of dto
+     * @author Zakhar Skaletskyi
+     */
+    List<FavoritePlaceDto> getFavoritePlaceWithPlaceId(String email);
 }

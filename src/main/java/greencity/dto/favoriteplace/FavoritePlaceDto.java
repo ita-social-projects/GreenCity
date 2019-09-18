@@ -9,6 +9,5 @@ public class FavoritePlaceDto {
     @NotBlank
     @Length(max = 30)
     private String name;
-
     private Long placeId;
 }

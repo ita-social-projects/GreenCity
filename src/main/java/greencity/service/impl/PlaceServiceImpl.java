@@ -6,16 +6,14 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.Category;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
+import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -218,6 +216,12 @@ public class PlaceServiceImpl implements PlaceService {
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
+    }
+
+    private List<Long> getPlaceBoundsId(List<PlaceByBoundsDto> listB) {
+        List<Long> result = new ArrayList<Long>();
+        listB.forEach(el -> result.add(el.getId()));
+        return result;
     }
 
     /**

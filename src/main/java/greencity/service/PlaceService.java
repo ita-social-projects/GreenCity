@@ -6,6 +6,7 @@ import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -90,7 +91,7 @@ public interface PlaceService {
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */
-    List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
+    List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto);
 
     /**
      * Get average rate of {@link Place}.
