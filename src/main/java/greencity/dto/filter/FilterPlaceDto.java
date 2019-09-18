@@ -15,4 +15,6 @@ public class FilterPlaceDto {
     private MapBoundsDto mapBoundsDto;
     private FilterDiscountDto discountDto;
     private PlaceStatus status;
+    @Valid
+    private FilterDistanceDto distanceFromUserDto;
 }
