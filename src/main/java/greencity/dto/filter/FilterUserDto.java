@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserFilterDto {
+public class FilterUserDto {
     @Valid
     private String searchReg;
 }

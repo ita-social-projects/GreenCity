@@ -54,11 +54,9 @@ public class PlaceFilter implements Specification<Place> {
         List<Predicate> predicates = new ArrayList<>();
 
         if (null != filterPlaceDto) {
-            // predicates.add(hasStatus(root, criteriaBuilder, filterPlaceDto.getStatus()));
-            // predicates.add(hasPositionInBounds(root, criteriaBuilder, filterPlaceDto.getMapBoundsDto()));
-            // predicates.add(hasDiscount(root, criteriaBuilder, filterPlaceDto.getDiscountDto()));
-            log.info(filterPlaceDto.getSearchReg());
-            log.info(filterPlaceDto.getStatus() + "");
+            predicates.add(hasStatus(root, criteriaBuilder, filterPlaceDto.getStatus()));
+            predicates.add(hasPositionInBounds(root, criteriaBuilder, filterPlaceDto.getMapBoundsDto()));
+            predicates.add(hasDiscount(root, criteriaBuilder, filterPlaceDto.getDiscountDto()));
             predicates
                 .add(hasFieldLike(root, criteriaBuilder, filterPlaceDto.getSearchReg(), filterPlaceDto.getStatus()));
         }
@@ -134,14 +132,11 @@ public class PlaceFilter implements Specification<Place> {
         if (filterPlaceDto.getSearchReg() == null) {
             return cb.conjunction();
         }
-        Predicate or = cb.or(
+        return cb.and(cb.or(
             cb.like(r.join("author").get("email"), reg),
             cb.like(r.join("category").get("name"), reg),
             cb.like(r.get("name"), reg),
             cb.like(r.join("location").get("address"), reg),
-            cb.like(r.get("modifiedDate").as(String.class), reg));
-
-        Predicate isStatus = cb.equal(r.get("status"), status);
-        return cb.and(or, isStatus);
+            cb.like(r.get("modifiedDate").as(String.class), reg)), cb.equal(r.get("status"), status));
     }
 }

@@ -1,6 +1,6 @@
 package greencity.repository.options;
 
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.filter.FilterUserDto;
 import greencity.entity.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,38 +11,44 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * Find id by email.
+ * The class implements {@link Specification}. Constructor
+ * takes a {@code DTO} class the type of which determines the further
+ * creation of a new {@link Predicate} object.
  *
- * @return User id
+ * @author Rostyslav Khasanov
  */
 public class UserFilter implements Specification<User> {
-    private UserFilterDto userFilterDto;
+    private FilterUserDto filterUserDto;
 
     /**
-     * Find id by email.
+     * The constructor takes {@link FilterUserDto} object.
+     *
+     * @param filterUserDto object contains fields to filter by.
      */
-    public UserFilter(UserFilterDto userFilterDto) {
-        this.userFilterDto = userFilterDto;
+    public UserFilter(FilterUserDto filterUserDto) {
+        this.filterUserDto = filterUserDto;
     }
 
     /**
-     * Find id by email.
-     *
-     * @return User id
+     * Forms a list of {@link Predicate} based on type of the classes
+     * initialized in the constructors.
      */
     @Override
     public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
-        predicates.add(hasFieldsLike(root, criteriaBuilder, userFilterDto.getSearchReg()));
+        predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getSearchReg()));
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
     /**
-     * Find id by email.
+     * Returns a predicate where {@link User} has some values defined
+     * in the incoming {@link FilterUserDto} object.
      *
-     * @return User id
+     * @param r  must not be {@literal null}.
+     * @param cb must not be {@literal null}.
+     * @return a {@link Predicate}, may be {@literal null}.
      */
     private Predicate hasFieldsLike(Root<User> r, CriteriaBuilder cb, String reg) {
         return cb.or(

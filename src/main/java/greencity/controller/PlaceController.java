@@ -141,9 +141,10 @@ public class PlaceController {
     }
 
     /**
-     * The method return list of places by page.
+     * The method which return list of places by filter.
      *
-     * @param pageable pageable configuration.
+     * @param filterPlaceDto dto which contains fields with filter criteria.
+     * @param pageable       pageable configuration.
      * @return response {@link PageableDto} object. Contains a list of {@link AdminPlaceDto}.
      * @author Rostyslav Khasanov
      */

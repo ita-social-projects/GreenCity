@@ -3,7 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserRoleDto;
@@ -151,33 +151,10 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * The method which return array of existing roles.
-     *
-     * @return array of roles
-     * @author Rostyslav Khasnaov
+     * {@inheritDoc}
      */
-    public PageableDto<UserForListDto> filterByName(String reg, Pageable pageable) {
-        Page<User> users = repo.filter(reg, pageable);
-        List<UserForListDto> userForListDtos =
-            users.getContent().stream()
-                .map(user -> modelMapper.map(user, UserForListDto.class))
-                .collect(Collectors.toList());
-        log.info(users.getTotalElements() + " total elements");
-        log.info(users.getPageable().getPageNumber() + " current page");
-        return new PageableDto<UserForListDto>(
-            userForListDtos,
-            users.getTotalElements(),
-            users.getPageable().getPageNumber());
-    }
-
-    /**
-     * The method which return array of existing roles.
-     *
-     * @return array of roles
-     * @author Rostyslav Khasnaov
-     */
-    public PageableDto<UserForListDto> filterByNameWithCriteria(UserFilterDto userFilterDto, Pageable pageable) {
-        Page<User> users = repo.findAll(new UserFilter(userFilterDto), pageable);
+    public PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable) {
+        Page<User> users = repo.findAll(new UserFilter(filterUserDto), pageable);
         List<UserForListDto> userForListDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))

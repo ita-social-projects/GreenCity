@@ -1,7 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserRoleDto;
@@ -9,7 +9,6 @@ import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
@@ -102,16 +101,12 @@ public interface UserService {
     User updateLastVisit(User user);
 
     /**
-     * Update last visit of user.
+     * Find users by filter.
      *
-     * @return {@link User}.
+     * @param filterUserDto contains objects whose values determine the filter parameters of the returned list.
+     * @param pageable      pageable configuration.
+     * @return {@link PageableDto}.
+     * @author Rostyslav Khasanov.
      */
-    PageableDto filterByName(String reg, Pageable pageable);
-
-    /**
-     * Update last visit of user.
-     *
-     * @return {@link User}.
-     */
-    PageableDto<UserForListDto> filterByNameWithCriteria(UserFilterDto userFilterDto, Pageable pageable);
+    PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable);
 }

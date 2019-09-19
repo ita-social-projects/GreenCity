@@ -1,6 +1,6 @@
 package greencity.controller;
 
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
@@ -72,14 +72,15 @@ public class UserController {
     }
 
     /**
-     * y
-     * The method which return array of existing roles.
+     * The method which return list of users by filter.
      *
-     * @return array of roles
+     * @param filterUserDto dto which contains fields with filter criteria.
+     * @param pageable      - pageable configuration.
+     * @return list of {@code UserPageableDto}
      * @author Rostyslav Khasnaov
      */
-    @PostMapping("regex")
-    public ResponseEntity<?> getByReg(Pageable pageable, @RequestBody UserFilterDto userFilterDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.filterByNameWithCriteria(userFilterDto, pageable));
+    @PostMapping("filter")
+    public ResponseEntity<?> getByReg(Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
 }

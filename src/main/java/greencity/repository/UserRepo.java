@@ -1,8 +1,6 @@
 package greencity.repository;
 
-import greencity.entity.Place;
 import greencity.entity.User;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,16 +40,4 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query("SELECT id from User where email=:email")
     Optional<Long> findIdByEmail(String email);
-
-    /**
-     * Find id by email.
-     *
-     * @return User id
-     */
-    @Query(value = "SELECT * from User u where"
-        + " u.first_Name like ?1 or"
-        + " u.last_Name like ?1 or"
-        + " u.email like ?1 or"
-        + " cast(cast(u.date_of_registration as date) as character) like ?1", nativeQuery = true)
-    Page<User> filter(String regex, Pageable pageable);
 }

@@ -68,49 +68,4 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
         @Param("southWestLng") Double southWestLng,
         @Param("status") PlaceStatus status
     );
-
-
-    /**
-     * Method .
-     *
-     * @return average rate
-     */
-    @Query(value = "select p from Place p where"
-        + " (p.category.name like :reg or"
-        + " p.name like :reg or"
-        + " p.author.email like :reg or "
-        + " p.location.address like :reg)"
-        + " and p.status = :status")
-    Page<Place> findByRegexs(PlaceStatus status, String reg, Pageable pageable);
-
-    /**
-     * Method .
-     *
-     * @return average rate
-     */
-    @Query(value = "from Place p where"
-        + " (p.category.name like :reg or"
-        + " p.name like :reg or"
-        + " p.author.email like :reg or "
-        + " p.location.address like :reg)"
-        + " and p.status = :status")
-    Page<Place> findByRegsexs(PlaceStatus status, String reg, Pageable pageable);
-
-
-    /**
-     * Method .
-     *
-     * @return average rate
-     */
-    @Query(value = "select * from place p "
-        + "left join category c on p.category_id = c.id "
-        + "left join user u on p.author_id = u.id "
-        + "left join location l on p.id = l.place_id "
-        + "where (c.name like :reg or "
-        + "u.email like :reg or "
-        + "l.address like :reg or "
-        + "p.name like :reg or "
-        + "cast(cast(p.modified_date as date) as character) like :reg)"
-        + "and p.status = :status", nativeQuery = true)
-    Page<Place> findByRegex(int status, String reg, Pageable pageable);
 }
