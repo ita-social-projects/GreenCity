@@ -8,6 +8,7 @@ import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
+import greencity.service.UtilService;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +31,7 @@ public class PlaceController {
      * Autowired PlaceService instance.
      */
     private PlaceService placeService;
+    private UtilService utilService;
     private ModelMapper modelMapper;
 
     /**
@@ -137,10 +139,8 @@ public class PlaceController {
      */
     @PatchMapping("/statuses")
     public ResponseEntity updateStatuses(@RequestParam String ids, @RequestParam PlaceStatus status) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatuses(
-            Arrays.stream(ids.split(","))
-                .map(Long::valueOf)
-                .collect(Collectors.toList()), status));
+        return ResponseEntity.status(HttpStatus.OK).body(
+            placeService.updateStatuses(utilService.getIdsFromString(ids), status));
     }
 
     /**
@@ -176,8 +176,6 @@ public class PlaceController {
     @DeleteMapping
     public ResponseEntity delete(@RequestParam String ids) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatuses(
-            Arrays.stream(ids.split(","))
-                .map(Long::valueOf)
-                .collect(Collectors.toList()), PlaceStatus.DELETED));
+            utilService.getIdsFromString(ids), PlaceStatus.DELETED));
     }
 }
