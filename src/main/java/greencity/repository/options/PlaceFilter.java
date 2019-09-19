@@ -24,7 +24,6 @@ import org.springframework.data.jpa.domain.Specification;
 @Slf4j
 public class PlaceFilter implements Specification<Place> {
     private FilterPlaceDto filterPlaceDto;
-    private MapBoundsDto mapBoundsDto;
 
     /**
      * The constructor takes {@link FilterPlaceDto} object.
@@ -33,15 +32,6 @@ public class PlaceFilter implements Specification<Place> {
      */
     public PlaceFilter(FilterPlaceDto filterPlaceDto) {
         this.filterPlaceDto = filterPlaceDto;
-    }
-
-    /**
-     * The constructor takes {@link MapBoundsDto} object.
-     *
-     * @param mapBoundsDto object contains fields to filter by.
-     */
-    public PlaceFilter(MapBoundsDto mapBoundsDto) {
-        this.mapBoundsDto = mapBoundsDto;
     }
 
     /**

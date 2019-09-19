@@ -209,8 +209,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Marian Milian
      */
     @Override
-    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        List<Place> list = placeRepo.findAll(new PlaceFilter(mapBoundsDto));
+    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid FilterPlaceDto filterPlaceDto) {
+        List<Place> list = placeRepo.findAll(new PlaceFilter(filterPlaceDto));
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
@@ -244,27 +244,15 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
-        List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
-        return list.stream()
-            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
-     */
-    public PageableDto<AdminPlaceDto> filterByNameWithCriteria(FilterPlaceDto filterPlaceDto, Pageable pageable) {
-        Page<Place> places = placeRepo.findAll(new PlaceFilter(filterPlaceDto), pageable);
+    public PageableDto<AdminPlaceDto> getPlacesByFilter(FilterPlaceDto filterDto, Pageable pageable) {
+        Page<Place> list = placeRepo.findAll(new PlaceFilter(filterDto), pageable);
         List<AdminPlaceDto> adminPlaceDtos =
-            places.getContent().stream()
+            list.getContent().stream()
                 .map(user -> modelMapper.map(user, AdminPlaceDto.class))
                 .collect(Collectors.toList());
         return new PageableDto<AdminPlaceDto>(
             adminPlaceDtos,
-            places.getTotalElements(),
-            places.getPageable().getPageNumber());
+            list.getTotalElements(),
+            list.getPageable().getPageNumber());
     }
 }
