@@ -94,8 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/category/**"
             ).hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.POST,
-                "/user/regex**",
-                "place/filter/regex**"
+                "/user/filter"
             ).hasAnyRole("ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",
@@ -106,7 +105,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasRole("ADMIN")
             .antMatchers(HttpMethod.GET,
                 "/user",
-                "/user/filter"
+                "/user/roles"
             ).hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")
