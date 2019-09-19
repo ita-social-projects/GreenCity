@@ -21,7 +21,6 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Roman Zahouri, Nazar Stasyuk
  */
-@Slf4j
 public class PlaceFilter implements Specification<Place> {
     private FilterPlaceDto filterPlaceDto;
 
