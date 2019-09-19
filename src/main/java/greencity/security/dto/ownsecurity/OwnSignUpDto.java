@@ -29,6 +29,6 @@ public class OwnSignUpDto {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^[A-z0-9~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]{8,}$")
+    @Pattern(regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]+).{8,}$")
     private String password;
 }
