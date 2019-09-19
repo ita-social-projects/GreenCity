@@ -81,17 +81,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 HttpMethod.GET,
                 "/category/**",
-                "/place/Info/{id}/**"
+                "/place/Info/{id}/**",
+                "/favorite_place/favorite/{id}",
+                "/place/info/favorite/**"
+
             ).permitAll()
             .antMatchers(
                 "/place/propose/**",
                 "/place/{status}/**",
                 "/favorite_place/**",
-                "/place/save/favorite",
-                "/place/info/favorite/**"
+                "/place/save/favorite"
             ).hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.POST,
-                "/category/**"
+                "/category/**",
+                "/place/save/favorite/**"
             ).hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.POST,
                 "/user/filter"

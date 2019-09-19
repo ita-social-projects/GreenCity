@@ -2,10 +2,12 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -85,12 +87,12 @@ public interface PlaceService {
      * The method which return a list {@code PlaceByBoundsDto} with information about place, *
      * location depends on the map bounds.
      *
-     * @param filterPlaceDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *                       state of map
+     * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
+     *                     state of map
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */
-    List<PlaceByBoundsDto> findPlacesByMapsBounds(FilterPlaceDto filterPlaceDto);
+    List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
 
     /**
      * Get average rate of {@link Place}.
@@ -101,11 +103,12 @@ public interface PlaceService {
      */
     Double averageRate(Long id);
 
+
     /**
      * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
      *
      * @param filterDto contains objects whose values determine
-     *                  the filter parameters of the returned list.
+     *                 the filter parameters of the returned list.
      * @return a list of {@code PlaceByBoundsDto}
      * @author Roman Zahouri
      */

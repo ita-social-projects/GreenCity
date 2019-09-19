@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/place")
 @AllArgsConstructor
@@ -63,6 +64,7 @@ public class PlaceController {
      *
      * @param id favorite place
      * @return info about place with name as in favorite place
+     * @author Zakhar Skaletskyi
      */
     @GetMapping("/info/favorite/{id}")
     public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @PathVariable Long id) {
@@ -73,12 +75,28 @@ public class PlaceController {
      * Controller to save place to user's favorite list.
      *
      * @return favorite place name and place id
+     * @author Zakhar Skaletskyi
      */
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
         @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(favoritePlaceService.save(favoritePlaceDto, principal.getName()));
+    }
+
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} with information about place,
+     * location depends on the map bounds.
+     *
+     * @param mapBoundsDto Contains South-West and North-East bounds of map .
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Marian Milian
+     */
+    @PostMapping("/getListPlaceLocationByMapsBounds")
+    public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
+        @Valid @RequestBody MapBoundsDto mapBoundsDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
     }
 
     /**
