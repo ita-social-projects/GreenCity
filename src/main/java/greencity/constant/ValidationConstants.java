@@ -13,6 +13,11 @@ public class ValidationConstants {
 
     public static final String EMPTY_EMAIL = "The email field can not be empty";
     public static final String INVALID_EMAIL = "The email is invalid";
+    public static final String INVALID_PASSWORD = "Password has contain at least one character of "
+        + "Uppercase letter (A-Z), "
+        + "Lowercase letter (a-z), "
+        + "Digit (0-9), "
+        + "Special character (~`!@#$%^&*()+=_-{}[]|:;”’?/<>,.).";
 
     public static final String EMPTY_ID = "The id field can not be empty";
     public static final String EMPTY_STATUS = "The status field can not be empty";
