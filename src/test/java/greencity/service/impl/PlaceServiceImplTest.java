@@ -94,7 +94,7 @@ public class PlaceServiceImplTest {
         .author(user)
         .location(location)
         .openingHoursList(openingHoursListEntity)
-        .status(PlaceStatus.APPROVED)
+        .status(PlaceStatus.PROPOSED)
         .build();
 
     PlaceAddDto dto = PlaceAddDto.
