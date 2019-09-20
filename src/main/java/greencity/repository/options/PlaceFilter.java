@@ -1,7 +1,6 @@
 package greencity.repository.options;
 
 import greencity.dto.filter.FilterDiscountDto;
-import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.entity.Place;
@@ -51,12 +50,10 @@ public class PlaceFilter implements Specification<Place> {
     @Override
     public Predicate toPredicate(Root<Place> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
-
         if (null != filterPlaceDto) {
             predicates.add(hasStatus(root, criteriaBuilder, filterPlaceDto.getStatus()));
             predicates.add(hasPositionInBounds(root, criteriaBuilder, filterPlaceDto.getMapBoundsDto()));
             predicates.add(hasDiscount(root, criteriaBuilder, filterPlaceDto.getDiscountDto()));
-            predicates.add(hasDistanceFromUser(root, criteriaBuilder, filterPlaceDto.getDistanceFromUserDto()));
         }
 
         if (null != mapBoundsDto) {
@@ -65,41 +62,6 @@ public class PlaceFilter implements Specification<Place> {
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-    }
-
-    /**
-     * Returns a predicate where location of {@link Place} is in distance from user.
-     *
-     * @param r                must not be {@literal null}.
-     * @param cb               must not be {@literal null}.
-     * @param distanceFromUser {@link FilterDistanceDto} must not be {@literal null}.
-     * @return a {@link Predicate}.
-     */
-    private Predicate hasDistanceFromUser(Root<Place> r, CriteriaBuilder cb, FilterDistanceDto distanceFromUser) {
-        if (distanceFromUser == null
-            || distanceFromUser.getLat() == null
-            || distanceFromUser.getLng() == null
-            || distanceFromUser.getDistance() == null) {
-            return cb.conjunction();
-        }
-
-        return cb.lessThanOrEqualTo(
-            cb.prod(cb.sqrt(
-                cb.sum(cb.prod(cb.diff(
-                    r.join("location").get("lat"),
-                    distanceFromUser.getLat()
-                    ), cb.diff(
-                    r.join("location").get("lat"),
-                    distanceFromUser.getLat()
-                    )),
-                    cb.prod(cb.diff(
-                        r.join("location").get("lng"),
-                        distanceFromUser.getLng()
-                    ), cb.diff(
-                        r.join("location").get("lng"),
-                        distanceFromUser.getLng()
-                    )))
-            ), 111.0), distanceFromUser.getDistance());
     }
 
     /**

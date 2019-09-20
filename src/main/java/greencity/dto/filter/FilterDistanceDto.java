@@ -1,5 +1,7 @@
 package greencity.dto.filter;
 
+import static greencity.constant.ValidationConstants.*;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
@@ -11,11 +13,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FilterDistanceDto {
-    @Min(value = -90, message = "Has to be greatest or equals -90")
-    @Max(value = 90, message = "Has to be lover or equals 90")
+    @Min(value = -90, message = LAT_MIN_VALIDATION)
+    @Max(value = 90, message = LAT_MAX_VALIDATION)
     private Double lat;
-    @Min(value = -180, message = "Has to be greatest or equals -180")
-    @Max(value = 180, message = "Has to be lover or equals 180")
+    @Min(value = -180, message = LNG_MIN_VALIDATION)
+    @Max(value = 180, message = LNG_MAX_VALIDATION)
     private Double lng;
     @Positive
     private Double distance;

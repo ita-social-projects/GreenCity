@@ -56,4 +56,9 @@ public class ValidationConstants {
     public static final String N_E_LNG_CAN_NOT_BE_NULL = "North-east longitude can not be null";
     public static final String S_W_LAT_CAN_NOT_BE_NULL = "South-west latitude can not be null";
     public static final String S_W_LNG_CAN_NOT_BE_NULL = "South-west longitude can not be null";
+
+    public static final String LAT_MIN_VALIDATION = "Has to be greatest or equals -90";
+    public static final String LAT_MAX_VALIDATION = "Has to be lover or equals 90";
+    public static final String LNG_MIN_VALIDATION = "Has to be greatest or equals -180";
+    public static final String LNG_MAX_VALIDATION = "Has to be lover or equals 180";
 }

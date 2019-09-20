@@ -4,6 +4,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
@@ -246,8 +247,41 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
         List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
+        list = getPlacesByDistanceFromUser(filterDto, list);
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Method that filtering places by distance.
+     *
+     * @param filterDto - {@link FilterPlaceDto} DTO.
+     * @param placeList - {@link List} of {@link Place} that will be filtered.
+     * @return {@link List} of {@link Place} - list of filtered {@link Place}s.
+     * @author Nazar Stasyuk
+     */
+    private List<Place> getPlacesByDistanceFromUser(FilterPlaceDto filterDto, List<Place> placeList) {
+        FilterDistanceDto distanceFromUserDto = filterDto.getDistanceFromUserDto();
+        if (distanceFromUserDto != null
+            && distanceFromUserDto.getLat() != null
+            && distanceFromUserDto.getLng() != null
+            && distanceFromUserDto.getDistance() != null) {
+            placeList = placeList.stream().filter(place -> {
+                double userLatRad = Math.toRadians(distanceFromUserDto.getLat());
+                double userLngRad = Math.toRadians(distanceFromUserDto.getLng());
+                double placeLatRad = Math.toRadians(place.getLocation().getLat());
+                double placeLngRad = Math.toRadians(place.getLocation().getLng());
+
+                double distance = 6371 * Math.acos(
+                    Math.cos(userLatRad)
+                        * Math.cos(placeLatRad)
+                        * Math.cos(placeLngRad - userLngRad)
+                        + Math.sin(userLatRad)
+                        * Math.sin(placeLatRad));
+                return distance <= distanceFromUserDto.getDistance();
+            }).collect(Collectors.toList());
+        }
+        return placeList;
     }
 }
