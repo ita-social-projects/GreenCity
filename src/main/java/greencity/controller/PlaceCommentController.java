@@ -1,8 +1,9 @@
 package greencity.controller;
 
-import greencity.entity.enums.EntityType;
+import greencity.exception.NotFoundException;
 import greencity.service.PlaceCommentService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +18,14 @@ public class PlaceCommentController {
      */
     private PlaceCommentService placeCommentService;
 
-    @GetMapping("/place/{placeId}")
-    public ResponseEntity getAllByPlaceId(@PathVariable Long placeId) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeCommentService.findAllByPlaceId(placeId));
+    @GetMapping("/place/{placeId}/comments/")
+    public ResponseEntity getAllByPlaceId(@PathVariable Long placeId, Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeCommentService.findAllByPlaceId(placeId, pageable));
     }
 
-//    @GetMapping("comments/{id}")
-//    public ResponseEntity getCommentById(@PathVariable Long id) {
-//        return ResponseEntity.status(HttpStatus.OK)
-//            .body(placeCommentService.);
-//    }
+    @GetMapping("comments/{id}")
+    public ResponseEntity getCommentById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeCommentService.findById(id).orElseThrow(() -> new NotFoundException("" + id)));
+    }
 }
