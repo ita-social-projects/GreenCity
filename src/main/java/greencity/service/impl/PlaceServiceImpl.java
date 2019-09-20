@@ -1,14 +1,18 @@
 package greencity.service.impl;
 
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
@@ -277,7 +281,7 @@ public class PlaceServiceImpl implements PlaceService {
                 double placeLatRad = Math.toRadians(place.getLocation().getLat());
                 double placeLngRad = Math.toRadians(place.getLocation().getLng());
 
-                double distance = 6371 * Math.acos(
+                double distance = CONSTANT_OF_FORMULA_HAVERSINE_KM * Math.acos(
                     Math.cos(userLatRad)
                         * Math.cos(placeLatRad)
                         * Math.cos(placeLngRad - userLngRad)
