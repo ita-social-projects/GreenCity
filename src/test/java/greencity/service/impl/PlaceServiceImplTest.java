@@ -214,26 +214,6 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void findPlacesByMapsBoundsTest() {
-        MapBoundsDto mapBoundsDto = new MapBoundsDto(20.0, 60.0, 60.0, 10.0);
-        List<Place> placeExpected =
-            new ArrayList<Place>() {
-                {
-                    add(Place.builder().name("MyPlace").id(1L).build());
-                }
-            };
-        when(placeRepo.findPlacesByMapsBounds(
-            mapBoundsDto.getNorthEastLat(),
-            mapBoundsDto.getNorthEastLng(),
-            mapBoundsDto.getSouthWestLat(),
-            mapBoundsDto.getSouthWestLng(),
-            PlaceStatus.APPROVED))
-            .thenReturn(placeExpected);
-        assertEquals(
-            placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
-    }
-
-    @Test
     public void getInfoByIdTest() {
         PlaceInfoDto gen = new PlaceInfoDto();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));

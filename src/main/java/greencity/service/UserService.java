@@ -1,7 +1,9 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
+import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.entity.User;
@@ -97,4 +99,14 @@ public interface UserService {
      * @return {@link User}.
      */
     User updateLastVisit(User user);
+
+    /**
+     * Find users by filter.
+     *
+     * @param filterUserDto contains objects whose values determine the filter parameters of the returned list.
+     * @param pageable      pageable configuration.
+     * @return {@link PageableDto}.
+     * @author Rostyslav Khasanov.
+     */
+    PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable);
 }

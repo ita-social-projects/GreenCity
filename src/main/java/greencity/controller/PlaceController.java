@@ -88,15 +88,15 @@ public class PlaceController {
      * The method which return a list {@code PlaceByBoundsDto} with information about place,
      * location depends on the map bounds.
      *
-     * @param mapBoundsDto Contains South-West and North-East bounds of map .
+     * @param filterPlaceDto Contains South-West and North-East bounds of map .
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian
      */
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
-        @Valid @RequestBody MapBoundsDto mapBoundsDto) {
+        @Valid @RequestBody FilterPlaceDto filterPlaceDto) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
+            .body(placeService.findPlacesByMapsBounds(filterPlaceDto));
     }
 
     /**
@@ -141,6 +141,22 @@ public class PlaceController {
     public ResponseEntity updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
+    }
+
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} filtered by values
+     * contained in the incoming {@link FilterPlaceDto} object.
+     *
+     * @param filterDto contains all information about the filtering of the list.
+     * @param pageable pageable configuration.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahorui
+     */
+    @PostMapping("/filter/predicate")
+    public ResponseEntity<PageableDto> filterPlaceBySearchPredicate(
+        @Valid @RequestBody FilterPlaceDto filterDto, Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeService.filterPlaceBySearchPredicate(filterDto, pageable));
     }
 
     /**

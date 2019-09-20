@@ -136,6 +136,7 @@ public class JwtTokenTool {
     public Authentication getAuthentication(String token) {
         User user = userService.findByEmail(getEmailByToken(token)).orElseThrow(
             () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + getEmailByToken(token)));
+        userService.updateLastVisit(user);
         return new UsernamePasswordAuthenticationToken(
             user.getEmail(), "", Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
     }

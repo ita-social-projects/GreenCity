@@ -94,12 +94,12 @@ public interface PlaceService {
      * The method which return a list {@code PlaceByBoundsDto} with information about place, *
      * location depends on the map bounds.
      *
-     * @param mapBoundsDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
+     * @param filterPlaceDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
      *                     state of map
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */
-    List<PlaceByBoundsDto> findPlacesByMapsBounds(MapBoundsDto mapBoundsDto);
+    List<PlaceByBoundsDto> findPlacesByMapsBounds(FilterPlaceDto filterPlaceDto);
 
     /**
      * Get average rate of {@link Place}.
@@ -119,6 +119,17 @@ public interface PlaceService {
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
+
+    /**
+     * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
+     *
+     * @param filterDto contains objects whose values determine
+     *                 the filter parameters of the returned list.
+     * @param pageable pageable configuration.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Rostyslav Khasanov
+     */
+    PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable);
 
     /**
      * Get list of available statuses of {@link Place}.

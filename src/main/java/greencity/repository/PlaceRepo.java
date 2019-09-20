@@ -48,13 +48,13 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      * @param northEastLng longitude of extreme North-East point of the map.
      * @param southWestLat latitude of South-West point of the map.
      * @param southWestLng longitude of South-West point of the map.
-     * @param status status of places witch should be presented.
+     * @param status       status of places witch should be presented.
      * @return a list of {@code Place}
      * @author Marian Milian.
      */
     @Query(
         value =
-            "FROM Place p"
+            "FROM Place p "
                 + " left join"
                 + " Location l  on p.location.id =l.id "
                 + " where l.lat > :southWestLat  and l.lat< :northEastLat"

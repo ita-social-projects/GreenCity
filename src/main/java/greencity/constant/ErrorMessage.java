@@ -28,4 +28,6 @@ public class ErrorMessage {
     public static final String NOT_SAVE_DELETION = "This is can't be deleted";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
+    public static final String NOT_IMPLEMENTED_METHOD = "Method hasn't implementation, please create it "
+        + "before use this method again";
 }
