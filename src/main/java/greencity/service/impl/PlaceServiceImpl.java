@@ -207,8 +207,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Marian Milian
      */
     @Override
-    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        List<Place> list = placeRepo.findAll(new PlaceFilter(mapBoundsDto));
+    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid FilterPlaceDto filterPlaceDto) {
+        List<Place> list = placeRepo.findAll(new PlaceFilter(filterPlaceDto));
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
@@ -253,5 +253,23 @@ public class PlaceServiceImpl implements PlaceService {
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
+    @Override
+    public PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable) {
+        Page<Place> list = placeRepo.findAll(new PlaceFilter(filterDto), pageable);
+        List<AdminPlaceDto> adminPlaceDtos =
+            list.getContent().stream()
+                .map(user -> modelMapper.map(user, AdminPlaceDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<AdminPlaceDto>(
+            adminPlaceDtos,
+            list.getTotalElements(),
+            list.getPageable().getPageNumber());
     }
 }
