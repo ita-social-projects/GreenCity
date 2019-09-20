@@ -54,7 +54,7 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      */
     @Query(
         value =
-            "FROM Place p"
+            "FROM Place p "
                 + " left join"
                 + " Location l  on p.location.id =l.id "
                 + " where l.lat > :southWestLat  and l.lat< :northEastLat"
