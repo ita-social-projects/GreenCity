@@ -9,7 +9,6 @@ import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
-import greencity.service.UtilService;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +31,6 @@ public class PlaceController {
      * Autowired PlaceService instance.
      */
     private PlaceService placeService;
-    private UtilService utilService;
     private ModelMapper modelMapper;
 
     /**
@@ -135,12 +133,12 @@ public class PlaceController {
     /**
      * The method which update {@link Place} status.
      *
-     * @param dto - {@link PlaceStatusDto} with place id and updated {@link PlaceStatus}.
-     * @return response object with {@link PlaceStatusDto} and OK status if everything is ok.
+     * @param dto - {@link UpdateStatusDto} with place id and updated {@link PlaceStatus}.
+     * @return response object with {@link UpdateStatusDto} and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @PatchMapping("/status")
-    public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
+    public ResponseEntity updateStatus(@Valid @RequestBody UpdateStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
@@ -148,15 +146,14 @@ public class PlaceController {
     /**
      * The method which update array of {@link Place}'s from DB.
      *
-     * @param ids    - id's of {@link Place}'s which need to be updated
-     * @param status - updated {@link PlaceStatus}
+     * @param dto - {@link BulkUpdateStatusDto} with places id's and updated {@link PlaceStatus}
      * @return dto with status and  placeIds of updated {@link Place}'s
      * @author Nazar Vladyka
      */
     @PatchMapping("/statuses")
-    public ResponseEntity updateStatuses(@RequestParam String ids, @RequestParam PlaceStatus status) {
+    public ResponseEntity updateStatuses(@Valid @RequestBody BulkUpdateStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            placeService.updateStatuses(utilService.getIdsFromString(ids), status));
+            placeService.updateStatuses(dto));
     }
 
     /**
@@ -191,7 +188,10 @@ public class PlaceController {
      */
     @DeleteMapping
     public ResponseEntity delete(@RequestParam String ids) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatuses(
-            utilService.getIdsFromString(ids), PlaceStatus.DELETED));
+        return ResponseEntity.status(HttpStatus.OK).body(
+            placeService.updateStatuses(new BulkUpdateStatusDto(
+                Arrays.stream(ids.split(","))
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList()), PlaceStatus.DELETED)));
     }
 }

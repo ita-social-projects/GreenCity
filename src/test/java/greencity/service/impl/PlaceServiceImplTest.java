@@ -271,6 +271,11 @@ public class PlaceServiceImplTest {
 
     @Test
     public void updateStatusesTest() {
+        BulkUpdateStatusDto dto = new BulkUpdateStatusDto(
+            Arrays.asList(1L, 2L, 3L),
+            PlaceStatus.DELETED
+        );
+
         List<Long> ids = Arrays.asList(1L, 2L, 3L);
 
         when(placeRepo.findById(anyLong()))
@@ -278,14 +283,13 @@ public class PlaceServiceImplTest {
             .thenReturn(Optional.of(new Place()))
             .thenReturn(Optional.of(new Place()));
 
-        assertEquals(new BulkUpdateStatus(PlaceStatus.DELETED, 3L),
-            placeService.updateStatuses(ids, PlaceStatus.DELETED));
+        assertEquals(dto, placeService.updateStatuses(dto));
     }
 
     @Test
     public void getStatusesTest() {
-        PlaceStatus[] placeStatuses = {PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED};
+        List<PlaceStatus> placeStatuses = Arrays.asList(PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED);
 
-        assertEquals(new StatusDto(placeStatuses), placeService.getStatuses());
+        assertEquals(placeStatuses, placeService.getStatuses());
     }
 }

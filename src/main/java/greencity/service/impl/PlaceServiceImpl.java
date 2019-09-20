@@ -18,6 +18,7 @@ import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -158,7 +159,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Nazar Vladyka.
      */
     @Override
-    public PlaceStatusDto updateStatus(Long id, PlaceStatus status) {
+    public UpdateStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
@@ -171,7 +172,7 @@ public class PlaceServiceImpl implements PlaceService {
                 ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         }
 
-        return modelMapper.map(placeRepo.save(updatable), PlaceStatusDto.class);
+        return modelMapper.map(placeRepo.save(updatable), UpdateStatusDto.class);
     }
 
     /**
@@ -181,12 +182,12 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Transactional
     @Override
-    public BulkUpdateStatus updateStatuses(List<Long> ids, PlaceStatus status) {
-        for (Long id : ids) {
-            updateStatus(id, status);
+    public BulkUpdateStatusDto updateStatuses(BulkUpdateStatusDto dto) {
+        for (Long id : dto.getIds()) {
+            updateStatus(id, dto.getStatus());
         }
 
-        return new BulkUpdateStatus(status, (long) ids.size());
+        return dto;
     }
 
     /**
@@ -272,7 +273,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Nazar Vladyka
      */
     @Override
-    public StatusDto getStatuses() {
-        return new StatusDto(PlaceStatus.class.getEnumConstants());
+    public List<PlaceStatus> getStatuses() {
+        return Arrays.asList(PlaceStatus.class.getEnumConstants());
     }
 }
