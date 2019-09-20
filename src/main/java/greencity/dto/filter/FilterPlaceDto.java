@@ -17,4 +17,5 @@ public class FilterPlaceDto {
     private PlaceStatus status;
     @Valid
     private FilterDistanceDto distanceFromUserDto;
+    private String searchReg;
 }
