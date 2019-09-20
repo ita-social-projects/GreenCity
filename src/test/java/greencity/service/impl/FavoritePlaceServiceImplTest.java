@@ -130,7 +130,7 @@ public class FavoritePlaceServiceImplTest {
         fp.setId(1L);
         String userEmail = "email";
         when(repo.findByIdAndUserEmail(anyLong(), anyString())).thenReturn(fp);
-        Assert.assertEquals(fp.getId(), favoritePlaceService.deleteByIdAndUserEmail(fp.getId(), userEmail));
+        Assert.assertEquals(fp.getId(), favoritePlaceService.deleteByUserEmailAndFavoriteIdOrPlaceId(fp.getId(), userEmail));
         verify(repo, times(1)).findByIdAndUserEmail(anyLong(), anyString());
         verify(repo, times(1)).delete(any());
     }
@@ -143,7 +143,7 @@ public class FavoritePlaceServiceImplTest {
         Long id = 9L;
         String userEmail = "email";
         when(repo.findByIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
-        favoritePlaceService.deleteByIdAndUserEmail(id, userEmail);
+        favoritePlaceService.deleteByUserEmailAndFavoriteIdOrPlaceId(id, userEmail);
         verify(repo, times(1)).findByIdAndUserEmail(anyLong(), anyString());
         verify(repo, times(1)).delete(any());
     }
