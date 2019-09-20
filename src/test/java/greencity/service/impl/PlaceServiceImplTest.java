@@ -271,24 +271,33 @@ public class PlaceServiceImplTest {
 
     @Test
     public void updateStatusesTest() {
-        BulkUpdateStatusDto dto = new BulkUpdateStatusDto(
+        BulkUpdatePlaceStatusDto requestDto = new BulkUpdatePlaceStatusDto(
             Arrays.asList(1L, 2L, 3L),
             PlaceStatus.DELETED
         );
 
-        List<Long> ids = Arrays.asList(1L, 2L, 3L);
+        List<UpdatePlaceStatusDto> expected = Arrays.asList(
+            new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED),
+            new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED),
+            new UpdatePlaceStatusDto(3L, PlaceStatus.DELETED)
+        );
 
         when(placeRepo.findById(anyLong()))
             .thenReturn(Optional.of(new Place()))
             .thenReturn(Optional.of(new Place()))
             .thenReturn(Optional.of(new Place()));
+        when(modelMapper.map(any(), any()))
+            .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED))
+            .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED))
+            .thenReturn(new UpdatePlaceStatusDto(3L, PlaceStatus.DELETED));
 
-        assertEquals(dto, placeService.updateStatuses(dto));
+        assertEquals(expected, placeService.updateStatuses(requestDto));
     }
 
     @Test
     public void getStatusesTest() {
-        List<PlaceStatus> placeStatuses = Arrays.asList(PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED);
+        List<PlaceStatus> placeStatuses =
+            Arrays.asList(PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED);
 
         assertEquals(placeStatuses, placeService.getStatuses());
     }

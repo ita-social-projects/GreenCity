@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BulkUpdateStatusDto {
+public class BulkUpdatePlaceStatusDto {
     @NotNull(message = ValidationConstants.EMPTY_ID)
     private List<Long> ids;
 

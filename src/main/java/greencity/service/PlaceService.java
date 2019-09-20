@@ -28,17 +28,17 @@ public interface PlaceService {
      *
      * @param id     - {@link Place} id.
      * @param status - {@link Place} status.
-     * @return saved {@link UpdateStatusDto} entity.
+     * @return saved {@link UpdatePlaceStatusDto} entity.
      */
-    UpdateStatusDto updateStatus(Long id, PlaceStatus status);
+    UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status);
 
     /**
      * Update statuses for the {@link Place}'s and set the time of modification.
      *
-     * @param dto - {@link BulkUpdateStatusDto} with places id's and updated {@link PlaceStatus}
-     * @return dto with count of updated entities.
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with places id's and updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated places and statuses.
      */
-    BulkUpdateStatusDto updateStatuses(BulkUpdateStatusDto dto);
+    List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto);
 
     /**
      * Find place by it's id.

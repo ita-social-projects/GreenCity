@@ -133,12 +133,12 @@ public class PlaceController {
     /**
      * The method which update {@link Place} status.
      *
-     * @param dto - {@link UpdateStatusDto} with place id and updated {@link PlaceStatus}.
-     * @return response object with {@link UpdateStatusDto} and OK status if everything is ok.
+     * @param dto - {@link UpdatePlaceStatusDto} with place id and updated {@link PlaceStatus}.
+     * @return response object with {@link UpdatePlaceStatusDto} and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @PatchMapping("/status")
-    public ResponseEntity updateStatus(@Valid @RequestBody UpdateStatusDto dto) {
+    public ResponseEntity updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
@@ -146,12 +146,12 @@ public class PlaceController {
     /**
      * The method which update array of {@link Place}'s from DB.
      *
-     * @param dto - {@link BulkUpdateStatusDto} with places id's and updated {@link PlaceStatus}
-     * @return dto with status and  placeIds of updated {@link Place}'s
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with places id's and updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated places and {@link PlaceStatus}'s
      * @author Nazar Vladyka
      */
     @PatchMapping("/statuses")
-    public ResponseEntity updateStatuses(@Valid @RequestBody BulkUpdateStatusDto dto) {
+    public ResponseEntity updateStatuses(@Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(
             placeService.updateStatuses(dto));
     }
@@ -171,7 +171,7 @@ public class PlaceController {
      * The method which delete {@link Place} from DB(change {@link PlaceStatus} to DELETED).
      *
      * @param id - {@link Place} id
-     * @return response object with dto of deleted {@link Place} and OK status if everything is ok.
+     * @return {@link UpdatePlaceStatusDto} of deleted {@link Place} and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @DeleteMapping("/{id}")
@@ -183,13 +183,13 @@ public class PlaceController {
      * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
      *
      * @param ids - id's of {@link Place}'s which need to be deleted
-     * @return dto with status and placeIds of deleted {@link Place}'s
+     * @return list of {@link UpdatePlaceStatusDto} with deleted places
      * @author Nazar Vladyka
      */
     @DeleteMapping
     public ResponseEntity delete(@RequestParam String ids) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            placeService.updateStatuses(new BulkUpdateStatusDto(
+            placeService.updateStatuses(new BulkUpdatePlaceStatusDto(
                 Arrays.stream(ids.split(","))
                     .map(Long::valueOf)
                     .collect(Collectors.toList()), PlaceStatus.DELETED)));

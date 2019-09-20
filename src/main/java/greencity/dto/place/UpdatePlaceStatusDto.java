@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateStatusDto {
+public class UpdatePlaceStatusDto {
     @NotNull(message = ValidationConstants.EMPTY_ID)
     private Long id;
 

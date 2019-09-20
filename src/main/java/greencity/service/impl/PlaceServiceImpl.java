@@ -18,6 +18,7 @@ import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -159,7 +160,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Nazar Vladyka.
      */
     @Override
-    public UpdateStatusDto updateStatus(Long id, PlaceStatus status) {
+    public UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
@@ -169,10 +170,10 @@ public class PlaceServiceImpl implements PlaceService {
         } else {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
             throw new PlaceStatusException(
-                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
+                 updatable.getId() + ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         }
 
-        return modelMapper.map(placeRepo.save(updatable), UpdateStatusDto.class);
+        return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
 
     /**
@@ -182,12 +183,14 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Transactional
     @Override
-    public BulkUpdateStatusDto updateStatuses(BulkUpdateStatusDto dto) {
+    public List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto) {
+        List<UpdatePlaceStatusDto> updatedPlaces = new ArrayList<>();
+
         for (Long id : dto.getIds()) {
-            updateStatus(id, dto.getStatus());
+            updatedPlaces.add(updateStatus(id, dto.getStatus()));
         }
 
-        return dto;
+        return updatedPlaces;
     }
 
     /**
