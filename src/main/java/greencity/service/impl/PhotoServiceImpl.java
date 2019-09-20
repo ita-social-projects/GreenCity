@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class PhotoServiceImpl implements PhotoService {
+public class  PhotoServiceImpl implements PhotoService {
     private PhotoRepo photoRepo;
 }
