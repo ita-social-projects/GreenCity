@@ -41,7 +41,6 @@ public class PlaceFilter implements Specification<Place> {
     @Override
     public Predicate toPredicate(Root<Place> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
-
         if (null != filterPlaceDto) {
             predicates.add(hasStatus(root, criteriaBuilder, filterPlaceDto.getStatus()));
             predicates.add(hasPositionInBounds(root, criteriaBuilder, filterPlaceDto.getMapBoundsDto()));
