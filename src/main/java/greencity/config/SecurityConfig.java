@@ -97,7 +97,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/save/favorite/**"
             ).hasAnyRole("USER", "ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.POST,
-                "/user/filter"
+                "/user/filter",
+                "/place/filter/predicate"
             ).hasAnyRole("ADMIN", "MODERATOR")
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",

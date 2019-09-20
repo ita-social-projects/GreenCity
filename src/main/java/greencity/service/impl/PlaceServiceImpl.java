@@ -248,7 +248,20 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-    public PageableDto<AdminPlaceDto> getPlacesByFilter(FilterPlaceDto filterDto, Pageable pageable) {
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
+        List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
+        return list.stream()
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
+    @Override
+    public PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable) {
         Page<Place> list = placeRepo.findAll(new PlaceFilter(filterDto), pageable);
         List<AdminPlaceDto> adminPlaceDtos =
             list.getContent().stream()
