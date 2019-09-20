@@ -167,7 +167,7 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @PatchMapping("/statuses")
-    public ResponseEntity updateStatuses(@Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
+    public ResponseEntity bulkUpdateStatuses(@Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(
             placeService.updateStatuses(dto));
     }
@@ -203,7 +203,7 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @DeleteMapping
-    public ResponseEntity delete(@RequestParam String ids) {
+    public ResponseEntity bulkDelete(@RequestParam String ids) {
         return ResponseEntity.status(HttpStatus.OK).body(
             placeService.updateStatuses(new BulkUpdatePlaceStatusDto(
                 Arrays.stream(ids.split(","))
