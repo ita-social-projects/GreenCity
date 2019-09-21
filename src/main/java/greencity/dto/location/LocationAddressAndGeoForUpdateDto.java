@@ -15,9 +15,6 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @Builder
 public class LocationAddressAndGeoForUpdateDto {
-    // @NotNull
-    // private Long id;
-
     @NotBlank(message = ValidationConstants.EMPTY_PLACE_ADDRESS)
     @Length(
         min = ValidationConstants.PLACE_ADDRESS_MIN_LENGTH,

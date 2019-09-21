@@ -16,7 +16,6 @@ public class LogMessage {
         + " favoritePlaceId: {}";
     public static final String SET_PLACE_TO_OPENING_HOURS = "in setPlaceToOpeningHours(Place place) - {}";
     public static final String SET_PLACE_TO_LOCATION = "in setPlaceToLocation(Place place) - {}";
-    public static final String CREATE_SPECIFICATION_BY_NAME = "in createSpecificationByName(String name) - {}";
     public static final String CREATE_CATEGORY_BY_NAME = "in createCategoryByName(String name) - {}";
     public static final String IN_GET_FAVORITE_PLACE_WITH_LOCATION = "in getFavoritePlaceWithLocation(), "
         + "favorite place id: {} and email: {}";
