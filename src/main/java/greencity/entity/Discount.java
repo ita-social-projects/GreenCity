@@ -2,16 +2,15 @@ package greencity.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"value", "place", "category"})
 public class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

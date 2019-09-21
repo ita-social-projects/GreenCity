@@ -6,7 +6,9 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.util.DateTimeService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import lombok.*;
 
@@ -17,7 +19,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(
-    exclude = {"comments", "photos", "location", "favoritePlaces", "category", "rates", "webPages", "status"})
+    exclude = {"discounts", "author", "openingHoursList", "comments", "photos",
+        "location", "favoritePlaces", "category", "rates", "webPages", "status"})
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,11 +63,11 @@ public class Place {
 
     @OneToMany(mappedBy = "place")
     @JsonManagedReference
-    private List<Discount> discounts = new ArrayList<>();
+    private Set<Discount> discounts = new HashSet<>();
 
     @OneToMany(mappedBy = "place")
     @JsonManagedReference
-    private List<OpeningHours> openingHoursList = new ArrayList<>();
+    private Set<OpeningHours> openingHoursList = new HashSet<>();
 
     @ManyToOne
     private User author;

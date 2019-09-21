@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class Specification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
