@@ -10,6 +10,7 @@ import greencity.repository.OpenHoursRepo;
 import greencity.service.BreakTimeService;
 import greencity.service.OpenHoursService;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     @Override
     public OpeningHours save(OpeningHours hours) {
-        log.info(LogMessage.IN_SAVE, hours);
+        log.info(LogMessage.IN_SAVE);
 
         if (hours.getOpenTime().getHour() > hours.getCloseTime().getHour()) {
             throw new BadRequestException(ErrorMessage.CLOSE_TIME_LATE_THAN_OPEN_TIME);
@@ -58,7 +59,6 @@ public class OpenHoursServiceImpl implements OpenHoursService {
                 throw new BadRequestException(ErrorMessage.WRONG_BREAK_TIME);
             }
         }
-
         return hoursRepo.save(hours);
     }
 
@@ -96,7 +96,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      */
     @Override
     public OpeningHours update(Long id, OpeningHours updatedHours) {
-        log.info(LogMessage.IN_UPDATE, updatedHours);
+        log.info(LogMessage.IN_UPDATE);
 
         OpeningHours updatable = findById(id);
 
@@ -119,5 +119,25 @@ public class OpenHoursServiceImpl implements OpenHoursService {
 
         hoursRepo.delete(findById(id));
         return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
+     */
+    @Override
+    public Set<OpeningHours> findAllByPlaceId(Long placeId) {
+        return hoursRepo.findAllByPlaceId(placeId);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
+     */
+    @Override
+    public void deleteAllByPlaceId(Long placeId) {
+        hoursRepo.deleteAllByPlaceId(placeId);
     }
 }

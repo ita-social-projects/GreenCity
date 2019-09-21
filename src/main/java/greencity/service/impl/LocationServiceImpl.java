@@ -92,4 +92,14 @@ public class LocationServiceImpl implements LocationService {
         locationRepo.delete(findById(id));
         return id;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
+     */
+    @Override
+    public Location findByPlaceId(Long placeId) {
+        return locationRepo.findByPlaceId(placeId);
+    }
 }

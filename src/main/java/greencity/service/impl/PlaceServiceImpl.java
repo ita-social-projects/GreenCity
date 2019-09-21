@@ -3,18 +3,21 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.discount.DiscountDtoForUpdatePlace;
 import greencity.dto.location.MapBoundsDto;
+import greencity.dto.openhours.OpeningHoursUpdateDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
-import greencity.exception.CheckRepeatingValueException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import greencity.util.DateTimeService;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -41,6 +44,7 @@ public class PlaceServiceImpl implements PlaceService {
     private UserService userService;
     private SpecificationService specificationService;
     private DiscountService discountService;
+    private BreakTimeService breakTimeService;
 
     /**
      * {@inheritDoc}
@@ -73,12 +77,24 @@ public class PlaceServiceImpl implements PlaceService {
             place.setStatus(PlaceStatus.APPROVED);
         }
         place.setCategory(category);
+        setPlaceToLocation(dto, place);
         placeRepo.save(place);
-        setPlaceToLocation(place);
         setPlaceToOpeningHours(place);
         setToDiscountPlaceAndCategoty(category, place);
-
         return place;
+    }
+
+    /**
+     * Method for setting {@code Location} with {@code Place} to database.
+     *
+     * @param place of {@link Place} entity.
+     * @param dto   of Place entity.
+     * @author Kateryna Horokh
+     */
+    private void setPlaceToLocation(PlaceAddDto dto, Place place) {
+        Location location = modelMapper.map(dto.getLocation(), Location.class);
+        location.setPlace(place);
+        place.setLocation(location);
     }
 
     /**
@@ -89,8 +105,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private void setToDiscountPlaceAndCategoty(Category category, Place place) {
-        List<Discount> discounts = place.getDiscounts();
-        discounts.stream().forEach(val -> {
+        Set<Discount> discounts = place.getDiscounts();
+        discounts.forEach(val -> {
             Specification specification = specificationService.findByName(val.getSpecification().getName());
             val.setSpecification(specification);
             val.setPlace(place);
@@ -108,8 +124,7 @@ public class PlaceServiceImpl implements PlaceService {
     private void setPlaceToOpeningHours(Place place) {
         log.info(LogMessage.SET_PLACE_TO_OPENING_HOURS, place.getName());
 
-        List<OpeningHours> hours = place.getOpeningHoursList();
-        checkRepeatingValue(hours);
+        Set<OpeningHours> hours = place.getOpeningHoursList();
         hours.stream()
             .distinct()
             .forEach(
@@ -117,36 +132,6 @@ public class PlaceServiceImpl implements PlaceService {
                     h.setPlace(place);
                     openingHoursService.save(h);
                 });
-    }
-
-    /**
-     * Method for setting {@code Location} with {@code Place} to database.
-     *
-     * @param place of {@link Place} entity.
-     * @author Kateryna Horokh
-     */
-    private void setPlaceToLocation(Place place) {
-        log.info(LogMessage.SET_PLACE_TO_LOCATION, place.getName());
-
-        Location location = place.getLocation();
-        location.setPlace(place);
-        locationService.save(location);
-    }
-
-    /**
-     * Method for checking list of giving {@code OpeningHours} on repeating value of week days.
-     *
-     * @param hours - list of {@link OpeningHours} entity.
-     * @author Kateryna Horokh
-     */
-    private void checkRepeatingValue(List<OpeningHours> hours) {
-        for (int i = 0; i < hours.size(); i++) {
-            for (int j = i + 1; j < hours.size(); j++) {
-                if (hours.get(i).getWeekDay().equals(hours.get(j).getWeekDay())) {
-                    throw new CheckRepeatingValueException(ErrorMessage.REPEATING_VALUE_OF_WEEKDAY_VALUE);
-                }
-            }
-        }
     }
 
     /**
@@ -159,18 +144,76 @@ public class PlaceServiceImpl implements PlaceService {
     public Place update(Long id, PlaceUpdateDto dto) {
         log.info(LogMessage.IN_UPDATE, dto);
 
-        Place updatedPlace = findById(id);
-
         Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
-
+        Place updatedPlace = findById(id);
         updatedPlace.setName(dto.getName());
         updatedPlace.setCategory(updatedCategory);
+        updateLocationOfUpdatedPlace(dto, updatedPlace);
         placeRepo.save(updatedPlace);
-        setPlaceToLocation(updatedPlace);
-        setPlaceToOpeningHours(updatedPlace);
-        setToDiscountPlaceAndCategoty(updatedCategory, updatedPlace);
+
+        updateOpeningHoursForUpdatedPlace(dto, updatedPlace);
+        updateDiscountForUpdatedPlace(dto, updatedCategory, updatedPlace);
 
         return updatedPlace;
+    }
+
+    /**
+     * Method for updating Discount list for updating place.
+     *
+     * @param dto - {@link Place} entity.
+     * @param updatedCategory - category updated place.
+     * @author Kateryna Horokh
+     */
+    private void updateDiscountForUpdatedPlace(PlaceUpdateDto dto, Category updatedCategory, Place updatedPlace) {
+        Set<DiscountDtoForUpdatePlace> discountList = dto.getDiscounts();
+        Set<Discount> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
+        discountService.deleteAllByPlaceId(updatedPlace.getId());
+        Set<Discount> discounts = new HashSet<>();
+        discountList.forEach(d -> {
+            Discount discount;
+            discount = modelMapper.map(d, Discount.class);
+            Specification specification = specificationService.findByName(d.getSpecification().getName());
+            discount.setPlace(updatedPlace);
+            discount.setCategory(updatedCategory);
+            discount.setSpecification(specification);
+            discountService.save(discount);
+            discounts.add(discount);
+        });
+        discountsOld.addAll(discounts);
+    }
+
+    /**
+     * Method for updating OpeningHours list for updating place.
+     *
+     * @param dto          - dto for {@link Place} entity.
+     * @param updatedPlace - {@link Place} entity.
+     * @author Kateryna Horokh
+     */
+    private void updateOpeningHoursForUpdatedPlace(PlaceUpdateDto dto, Place updatedPlace) {
+        Set<OpeningHoursUpdateDto> hoursUpdateDtoSet = dto.getOpeningHoursList();
+        Set<OpeningHours> openingHoursSetOld = openingHoursService.findAllByPlaceId(updatedPlace.getId());
+        openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
+        Set<OpeningHours> hours = new HashSet<>();
+        hoursUpdateDtoSet.forEach(h -> {
+            OpeningHours openingHours;
+            openingHours = modelMapper.map(h, OpeningHours.class);
+            openingHours.setPlace(updatedPlace);
+            openingHoursService.save(openingHours);
+            hours.add(openingHours);
+        });
+        openingHoursSetOld.addAll(hours);
+    }
+
+    /**
+     * Method for updating Location for updating place.
+     *
+     * @param dto          - dto for {@link Place} entity.
+     * @param updatedPlace - {@link Place} entity.
+     * @author Kateryna Horokh
+     */
+    private void updateLocationOfUpdatedPlace(PlaceUpdateDto dto, Place updatedPlace) {
+        Location location = locationService.findByPlaceId(updatedPlace.getId());
+        modelMapper.map(dto.getLocation(), location);
     }
 
     /**
@@ -178,7 +221,7 @@ public class PlaceServiceImpl implements PlaceService {
      *
      * @param id - Long place's id
      * @return boolean
-     * @author Kateryn Horokh
+     * @author Kateryna Horokh
      */
     @Override
     public Boolean deleteById(Long id) {
@@ -188,6 +231,11 @@ public class PlaceServiceImpl implements PlaceService {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka.
+     */
     @Override
     public List<Place> findAll() {
         log.info(LogMessage.IN_FIND_ALL);
@@ -243,6 +291,15 @@ public class PlaceServiceImpl implements PlaceService {
         PlaceInfoDto placeInfoDto = modelMapper.map(place, PlaceInfoDto.class);
         placeInfoDto.setRate(placeRepo.getAverageRate(id));
         return placeInfoDto;
+    }
+
+    @Override
+    public PlaceUpdateDto getInfoForUpdatingById(Long id) {
+        Place place = placeRepo
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+        PlaceUpdateDto placeUpdateDto = modelMapper.map(place, PlaceUpdateDto.class);
+        return placeUpdateDto;
     }
 
     /**

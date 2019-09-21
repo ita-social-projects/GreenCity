@@ -46,4 +46,12 @@ public interface LocationService {
      * @return saved Location.
      */
     Location save(Location location);
+
+    /**
+     * Finds {@code Location} records related to the specified {@code Place}.
+     *
+     * @param placeId to find by.
+     * @return a {@code Location} for the place by id.
+     */
+    Location findByPlaceId(Long placeId);
 }

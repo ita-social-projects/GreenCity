@@ -1,23 +1,40 @@
 package greencity.service;
 
-import greencity.dto.discount.DiscountDtoForAddPlace;
 import greencity.entity.Discount;
+import java.util.Set;
 
 /**
  * Provides the interface to manage {@code Discount} entity.
  */
 public interface DiscountService {
     /**
-     * Method for saving new Category to database.
+     * Method for saving new Discount to database.
      *
      * @param discount - Discount entity.
-     * @return a category.
+     * @return a discount.
      */
     Discount save(Discount discount);
 
-    Discount save(DiscountDtoForAddPlace discountDtoForAddPlace);
+    /**
+     * Find Discount entity by id.
+     *
+     * @param id - Discount id.
+     * @return Discount entity.
+     */
+    Discount findById(Long id);
 
-    Discount findByValue(int value);
+    /**
+     * Finds all {@code Discount} records related to the specified {@code Place}.
+     *
+     * @param placeId to find by.
+     * @return a set of the {@code Discount} for the place by id.
+     */
+    Set<Discount> findAllByPlaceId(Long placeId);
 
-    Discount update(Long id, Discount discount);
+    /**
+     * Delete all {@code Discount} records related to the specified {@code Place}.
+     *
+     * @param placeId to find by.
+     */
+    void deleteAllByPlaceId(Long placeId);
 }

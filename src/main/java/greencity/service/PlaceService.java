@@ -2,8 +2,6 @@ package greencity.service;
 
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.dto.specification.SpecificationDto;
-import greencity.dto.specification.SpecificationNameDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -52,7 +50,7 @@ public interface PlaceService {
     /**
      * Method for updating {@code Place}.
      *
-     * @param id - {@link Place} id
+     * @param id  - {@link Place} id
      * @param dto - dto for Place entity
      * @return place {@code Place}
      * @author Kateryna Horokh
@@ -111,4 +109,13 @@ public interface PlaceService {
      * @author Zakhar Skaletskyi
      */
     Double averageRate(Long id);
+
+    /**
+     * Method for getting place information by id.
+     *
+     * @param id place
+     * @return PlaceUpdateDto with info about place
+     * @author Kateryna Horokh
+     */
+    PlaceUpdateDto getInfoForUpdatingById(Long id);
 }
