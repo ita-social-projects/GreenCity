@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountDtoForAddPlace;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -15,7 +16,6 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlacePageableDto;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
@@ -115,7 +115,7 @@ public class PlaceServiceImplTest {
         builder()
         .name(place.getName())
         .category(categoryDto)
-        // .location(locationDto)
+        .location(locationDto)
         .openingHoursList(openingHoursList)
         .discounts(discountDtos)
         .build();
@@ -185,8 +185,8 @@ public class PlaceServiceImplTest {
         Page<Place> placesPage = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         List<AdminPlaceDto> listDto = Collections.singletonList(dto);
 
-        PlacePageableDto pageableDto =
-            new PlacePageableDto(listDto, listDto.size(), 0);
+        PageableDto pageableDto =
+            new PageableDto(listDto, listDto.size(), 0);
         pageableDto.setPage(listDto);
 
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any(), any())).thenReturn(placesPage);
@@ -223,29 +223,9 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void findPlacesByMapsBoundsTest() {
-        MapBoundsDto mapBoundsDto = new MapBoundsDto(20.0, 60.0, 60.0, 10.0);
-        List<Place> placeExpected =
-            new ArrayList<Place>() {
-                {
-                    add(Place.builder().name("MyPlace").id(1L).build());
-                }
-            };
-        when(placeRepo.findPlacesByMapsBounds(
-            mapBoundsDto.getNorthEastLat(),
-            mapBoundsDto.getNorthEastLng(),
-            mapBoundsDto.getSouthWestLat(),
-            mapBoundsDto.getSouthWestLng(),
-            PlaceStatus.APPROVED))
-            .thenReturn(placeExpected);
-        assertEquals(
-            placeExpected.size(), placeService.findPlacesByMapsBounds(mapBoundsDto).size());
-    }
-
-    @Test
     public void getInfoByIdTest() {
         PlaceInfoDto gen = new PlaceInfoDto();
-        // when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
         when(modelMapper.map(any(), any())).thenReturn(gen);
         when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
         PlaceInfoDto res = placeService.getInfoById(anyLong());

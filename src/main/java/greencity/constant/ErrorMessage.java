@@ -24,15 +24,20 @@ public class ErrorMessage {
     public static final String NO_ENY_USER_OWN_SECURITY_TO_DELETE = "No any ownSecurity to delete with this id: ";
     public static final String LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES = "Location by this coordinates already exists.";
     public static final String BAD_EMAIL_OR_PASSWORD = "Bad email or password";
+    public static final String USER_NOT_VERIFIED = "User not verified";
     public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
     public static final String REFRESH_TOKEN_NOT_VALID = "Refresh token not valid!";
     public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No eny email to verify by this token";
     public static final String NO_ANY_VERIFY_EMAIL_TO_DELETE = "No any VerifyEmail to delete with this id: ";
     public static final String REPEATING_VALUE_OF_WEEKDAY_VALUE = "Value of week day repeating";
+    public static final String USER_DEACTIVATED = "User is deactivated";
+    public static final String BAD_GOOGLE_TOKEN = "Bad google token";
     public static final String NOT_SAVE_DELETION = "This is can't be deleted";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String CLOSE_TIME_LATE_THAN_OPEN_TIME = "Close time have to be late than open time";
     public static final String END_TIME_LATE_THAN_START_TIME = "End time have to be late than start time";
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
+    public static final String NOT_IMPLEMENTED_METHOD = "Method hasn't implementation, please create it "
+        + "before use this method again";
 }

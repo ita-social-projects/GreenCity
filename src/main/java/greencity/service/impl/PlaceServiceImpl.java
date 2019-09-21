@@ -1,8 +1,13 @@
 package greencity.service.impl;
 
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterDistanceDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.discount.DiscountDtoForUpdatePlace;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursUpdateDto;
@@ -13,8 +18,10 @@ import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
+import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,12 +59,13 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-    public PlacePageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
+
+    public PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
         List<AdminPlaceDto> list = places.stream()
             .map(place -> modelMapper.map(place, AdminPlaceDto.class))
             .collect(Collectors.toList());
-        return new PlacePageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
+        return new PageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
     }
 
     /**
@@ -308,17 +316,17 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Marian Milian
      */
     @Override
-    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        List<Place> list =
-            placeRepo.findPlacesByMapsBounds(
-                mapBoundsDto.getNorthEastLat(),
-                mapBoundsDto.getNorthEastLng(),
-                mapBoundsDto.getSouthWestLat(),
-                mapBoundsDto.getSouthWestLng(),
-                APPROVED_STATUS);
+    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid FilterPlaceDto filterPlaceDto) {
+        List<Place> list = placeRepo.findAll(new PlaceFilter(filterPlaceDto));
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
+    }
+
+    private List<Long> getPlaceBoundsId(List<PlaceByBoundsDto> listB) {
+        List<Long> result = new ArrayList<Long>();
+        listB.forEach(el -> result.add(el.getId()));
+        return result;
     }
 
     /**
@@ -341,5 +349,69 @@ public class PlaceServiceImpl implements PlaceService {
     public Double averageRate(Long id) {
         log.info(LogMessage.IN_AVERAGE_RATE, id);
         return placeRepo.getAverageRate(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Roman Zahorui
+     */
+    @Override
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
+        List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
+        list = getPlacesByDistanceFromUser(filterDto, list);
+        return list.stream()
+            .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Method that filtering places by distance.
+     *
+     * @param filterDto - {@link FilterPlaceDto} DTO.
+     * @param placeList - {@link List} of {@link Place} that will be filtered.
+     * @return {@link List} of {@link Place} - list of filtered {@link Place}s.
+     * @author Nazar Stasyuk
+     */
+    private List<Place> getPlacesByDistanceFromUser(FilterPlaceDto filterDto, List<Place> placeList) {
+        FilterDistanceDto distanceFromUserDto = filterDto.getDistanceFromUserDto();
+        if (distanceFromUserDto != null
+            && distanceFromUserDto.getLat() != null
+            && distanceFromUserDto.getLng() != null
+            && distanceFromUserDto.getDistance() != null) {
+            placeList = placeList.stream().filter(place -> {
+                double userLatRad = Math.toRadians(distanceFromUserDto.getLat());
+                double userLngRad = Math.toRadians(distanceFromUserDto.getLng());
+                double placeLatRad = Math.toRadians(place.getLocation().getLat());
+                double placeLngRad = Math.toRadians(place.getLocation().getLng());
+
+                double distance = CONSTANT_OF_FORMULA_HAVERSINE_KM * Math.acos(
+                    Math.cos(userLatRad)
+                        * Math.cos(placeLatRad)
+                        * Math.cos(placeLngRad - userLngRad)
+                        + Math.sin(userLatRad)
+                        * Math.sin(placeLatRad));
+                return distance <= distanceFromUserDto.getDistance();
+            }).collect(Collectors.toList());
+        }
+        return placeList;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
+    @Override
+    public PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable) {
+        Page<Place> list = placeRepo.findAll(new PlaceFilter(filterDto), pageable);
+        List<AdminPlaceDto> adminPlaceDtos =
+            list.getContent().stream()
+                .map(user -> modelMapper.map(user, AdminPlaceDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<AdminPlaceDto>(
+            adminPlaceDtos,
+            list.getTotalElements(),
+            list.getPageable().getPageNumber());
     }
 }

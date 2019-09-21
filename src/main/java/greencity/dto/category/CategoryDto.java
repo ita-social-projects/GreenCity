@@ -1,5 +1,6 @@
 package greencity.dto.category;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.constant.ValidationConstants;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;

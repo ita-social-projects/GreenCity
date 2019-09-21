@@ -1,13 +1,15 @@
 package greencity.exception;
 
+import org.springframework.security.core.AuthenticationException;
+
 /**
  * Exception that we get when user trying to sign-in with bad email or password.
  *
  * @author Nazar Stasyuk
  */
-public class BadEmailOrPasswordException extends RuntimeException {
+public class BadEmailOrPasswordException extends AuthenticationException {
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor.
      */
     public BadEmailOrPasswordException(String message) {
         super(message);

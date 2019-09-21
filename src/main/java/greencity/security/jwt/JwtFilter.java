@@ -42,15 +42,14 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(
         ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
         throws IOException, ServletException {
-        log.info("begin");
         String token = tool.getTokenByBody((HttpServletRequest) servletRequest);
         if (token != null && tool.isTokenValid(token)) {
             Authentication authentication = tool.getAuthentication(token);
             if (authentication != null) {
+                log.info("User successfully authenticate - {}", authentication.getPrincipal());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);
-        log.info("end");
     }
 }

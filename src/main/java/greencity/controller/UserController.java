@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
@@ -24,7 +25,7 @@ public class UserController {
      * @return {@code UserStatusDto}
      * @author Rostyslav Khasnaov
      */
-    @PatchMapping("update/status")
+    @PatchMapping("status")
     public ResponseEntity<?> updateStatus(@Valid @RequestBody UserStatusDto userStatusDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
@@ -39,7 +40,7 @@ public class UserController {
      * @return {@code UserRoleDto}
      * @author Rostyslav Khasnaov
      */
-    @PatchMapping("update/role")
+    @PatchMapping("role")
     public ResponseEntity<?> updateRole(@Valid @RequestBody UserRoleDto userRoleDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
@@ -68,5 +69,18 @@ public class UserController {
     @GetMapping("roles")
     public ResponseEntity<?> getRoles() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
+    }
+
+    /**
+     * The method which return list of users by filter.
+     *
+     * @param filterUserDto dto which contains fields with filter criteria.
+     * @param pageable      - pageable configuration.
+     * @return list of {@code UserPageableDto}
+     * @author Rostyslav Khasnaov
+     */
+    @PostMapping("filter")
+    public ResponseEntity<?> getByReg(Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
 }

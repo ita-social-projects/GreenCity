@@ -1,6 +1,8 @@
 package greencity.controller;
 
+import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
@@ -27,6 +29,9 @@ public class PlaceController {
      * Autowired PlaceService instance.
      */
     private PlaceService placeService;
+
+    private final FavoritePlaceService favoritePlaceService;
+
     private ModelMapper modelMapper;
 
     /**
@@ -83,9 +88,11 @@ public class PlaceController {
     }
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Controller to save place to user's favorite list.
+     *
+     * @return favorite place name and place id
      */
-    @PostMapping("/save/favorite")
+    @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
         @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -96,15 +103,15 @@ public class PlaceController {
      * The method which return a list {@code PlaceByBoundsDto} with information about place,
      * location depends on the map bounds.
      *
-     * @param mapBoundsDto Contains South-West and North-East bounds of map .
+     * @param filterPlaceDto Contains South-West and North-East bounds of map .
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian
      */
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
-        @Valid @RequestBody MapBoundsDto mapBoundsDto) {
+        @Valid @RequestBody FilterPlaceDto filterPlaceDto) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
+            .body(placeService.findPlacesByMapsBounds(filterPlaceDto));
     }
 
     /**
@@ -112,15 +119,30 @@ public class PlaceController {
      *
      * @param status   a string represents {@link PlaceStatus} enum value.
      * @param pageable pageable configuration.
-     * @return response {@link PlacePageableDto} object. Contains a list of {@link AdminPlaceDto}.
+     * @return response {@link PageableDto} object. Contains a list of {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
     @GetMapping("/{status}")
-    public ResponseEntity<PlacePageableDto> getPlacesByStatus(
+    public ResponseEntity<PageableDto> getPlacesByStatus(
         @PathVariable String status, Pageable pageable) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.getPlacesByStatus(placeStatus, pageable));
+    }
+
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} filtered by values
+     * contained in the incoming {@link FilterPlaceDto} object.
+     *
+     * @param filterDto contains all information about the filtering of the list.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahorui
+     */
+    @PostMapping("/filter")
+    public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
+        @Valid @RequestBody FilterPlaceDto filterDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeService.getPlacesByFilter(filterDto));
     }
 
     /**
@@ -134,6 +156,22 @@ public class PlaceController {
     public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
+    }
+
+    /**
+     * The method which return a list {@code PlaceByBoundsDto} filtered by values
+     * contained in the incoming {@link FilterPlaceDto} object.
+     *
+     * @param filterDto contains all information about the filtering of the list.
+     * @param pageable pageable configuration.
+     * @return a list of {@code PlaceByBoundsDto}
+     * @author Roman Zahorui
+     */
+    @PostMapping("/filter/predicate")
+    public ResponseEntity<PageableDto> filterPlaceBySearchPredicate(
+        @Valid @RequestBody FilterPlaceDto filterDto, Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeService.filterPlaceBySearchPredicate(filterDto, pageable));
     }
 
     /**
