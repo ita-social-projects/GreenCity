@@ -5,25 +5,40 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.EmailService;
+import java.util.HashMap;
+import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 /**
  * {@inheritDoc}
  */
 @Service
-@AllArgsConstructor
 @Slf4j
 public class EmailServiceImpl implements EmailService {
-    private JavaMailSender javaMailSender;
-    private Environment env;
-    private String text;
+    private final JavaMailSender javaMailSender;
+    private final TemplateEngine templateEngine;
+
+    @Value("${client.address}")
+    private String clientLink;
+
+    /**
+     * Constructor.
+     *
+     * @param javaMailSender {@link JavaMailSender} - use it for sending submits to users email
+     * @param templateEngine - TemplateEngine to manege email templates
+     */
+    public EmailServiceImpl(JavaMailSender javaMailSender, TemplateEngine templateEngine) {
+        this.javaMailSender = javaMailSender;
+        this.templateEngine = templateEngine;
+    }
 
     /**
      * {@inheritDoc}
@@ -32,29 +47,37 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendChangePlaceStatusNotification(Place updatable, PlaceStatus status) {
-        text = "Your proposed place " + "\"<b>" + updatable.getName() + "</b>\"" + " has been <b>" + status + "</b>.";
-        if (status == PlaceStatus.APPROVED) {
-            text += " You can now view it in " + env.getProperty("client.address");
-        }
-        String finalText = text;
+        new Thread(() -> {
+            Map<String, Object> model = new HashMap<>();
+            model.put("placeName", updatable.getName());
+            model.put("status", status.toString().toLowerCase());
+            model.put("user", updatable.getAuthor());
+            model.put("clientLink", clientLink);
 
-        sendEmail(updatable.getAuthor(), "GreenCity contributors", finalText);
+            String template = createEmailTemplate(model, "email-change-place-status");
+            sendEmail(updatable.getAuthor(), "GreenCity contributors", template);
+        }).start();
     }
 
     private void sendEmail(User receiver, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
 
-        new Thread(() -> {
-            try {
-                mimeMessageHelper.setTo(receiver.getEmail());
-                mimeMessageHelper.setSubject(subject);
-                mimeMessage.setContent(text + EmailConstant.SIGNATURE, EmailConstant.CONTENT_TYPE);
-            } catch (MessagingException e) {
-                log.error(e.getMessage());
-            }
-        }).start();
+        try {
+            mimeMessageHelper.setTo(receiver.getEmail());
+            mimeMessageHelper.setSubject(subject);
+            mimeMessage.setContent(text, EmailConstant.CONTENT_TYPE);
 
-        javaMailSender.send(mimeMessage);
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private String createEmailTemplate(Map<String, Object> vars, String templateName) {
+        Context context = new Context();
+        context.setVariables(vars);
+
+        return templateEngine.process("email/" + templateName, context);
     }
 }

@@ -19,10 +19,7 @@ import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
-import greencity.service.CategoryService;
-import greencity.service.LocationService;
-import greencity.service.OpenHoursService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -130,6 +127,9 @@ public class PlaceServiceImplTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private PlaceServiceImpl placeService;
 
@@ -155,8 +155,10 @@ public class PlaceServiceImplTest {
     @Test
     public void updateStatusTest() {
         Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
+
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
+
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }

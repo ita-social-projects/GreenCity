@@ -168,9 +168,12 @@ public class PlaceServiceImpl implements PlaceService {
 
         Place updatable = findById(id);
         if (!updatable.getStatus().equals(status)) {
+            //if status was proposed and it's changes, means approve/declines by Admin
+            if (updatable.getStatus().equals(PlaceStatus.PROPOSED)) {
+                emailService.sendChangePlaceStatusNotification(updatable, status);
+            }
             updatable.setStatus(status);
             updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
-            emailService.sendChangePlaceStatusNotification(updatable, status);
         } else {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
             throw new PlaceStatusException(
