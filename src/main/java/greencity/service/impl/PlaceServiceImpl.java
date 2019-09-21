@@ -22,6 +22,7 @@ import greencity.service.*;
 import greencity.util.DateTimeService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -188,6 +189,11 @@ public class PlaceServiceImpl implements PlaceService {
         return placeRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+    }
+
+    @Override
+    public Optional<Place> findByIdOptional(Long id) {
+        return placeRepo.findById(id);
     }
 
     /**

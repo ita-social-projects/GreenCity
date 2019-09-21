@@ -7,6 +7,7 @@ import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -39,6 +40,8 @@ public interface PlaceService {
      * @return Place entity.
      */
     Place findById(Long id);
+
+    Optional<Place> findByIdOptional(Long id);
 
     /**
      * Method for saving proposed {@code Place} to database.

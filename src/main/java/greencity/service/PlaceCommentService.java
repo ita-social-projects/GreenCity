@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.CommentDto;
 import greencity.entity.Comment;
+import java.security.Principal;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
@@ -17,7 +18,7 @@ public interface PlaceCommentService {
 
     Optional<Comment> findById(Long id);
 
-    Comment save(Long placeId, CommentDto commentDto);
+    Comment save(Long placeId, CommentDto commentDto, String email);
 
     Long deleteById(Long id);
 }

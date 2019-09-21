@@ -7,6 +7,7 @@ import greencity.exception.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
+import java.security.Principal;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +57,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * @author Marian Milian
      */
     @Override
-    public Comment save(Long placeId, CommentDto commentDto) {
+    public Comment save(Long placeId, CommentDto commentDto, String email) {
         Comment comment = modelMapper.map(commentDto, Comment.class);
         comment.setPlace(placeService.findById(placeId));
         return placeCommentRepo.save(comment);
