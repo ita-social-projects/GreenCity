@@ -47,6 +47,7 @@ public class PlaceServiceImpl implements PlaceService {
     private LocationService locationService;
     private OpenHoursService openingHoursService;
     private UserService userService;
+    private EmailService emailService;
 
     /**
      * {@inheritDoc}
@@ -169,6 +170,7 @@ public class PlaceServiceImpl implements PlaceService {
         if (!updatable.getStatus().equals(status)) {
             updatable.setStatus(status);
             updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
+            emailService.sendChangePlaceStatusNotification(updatable, status);
         } else {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
             throw new PlaceStatusException(
