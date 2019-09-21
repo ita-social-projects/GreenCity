@@ -6,10 +6,9 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.discount.DiscountDtoForUpdatePlace;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.discount.DiscountDtoForUpdatePlace;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursUpdateDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
@@ -51,7 +50,6 @@ public class PlaceServiceImpl implements PlaceService {
     private UserService userService;
     private SpecificationService specificationService;
     private DiscountService discountService;
-    private BreakTimeService breakTimeService;
 
     /**
      * {@inheritDoc}
@@ -80,10 +78,13 @@ public class PlaceServiceImpl implements PlaceService {
         Category category = categoryService.findByName(dto.getCategory().getName());
 
         Place place = modelMapper.map(dto, Place.class);
-        place.setAuthor(userService.findByEmail(email));
+        place.setAuthor(userService.findByEmail(email).orElseThrow(
+            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL)));
+
         if (place.getAuthor().getRole() == ROLE.ROLE_ADMIN || place.getAuthor().getRole() == ROLE.ROLE_MODERATOR) {
-            place.setStatus(PlaceStatus.APPROVED);
+            place.setStatus(APPROVED_STATUS);
         }
+
         place.setCategory(category);
         setPlaceToLocation(dto, place);
         placeRepo.save(place);
@@ -166,9 +167,9 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for updating Discount list for updating place.
+     * Method for updating Discount list for place.
      *
-     * @param dto - {@link Place} entity.
+     * @param dto             - {@link Place} entity.
      * @param updatedCategory - category updated place.
      * @author Kateryna Horokh
      */
@@ -191,7 +192,7 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for updating OpeningHours list for updating place.
+     * Method for updating OpeningHours list for place.
      *
      * @param dto          - dto for {@link Place} entity.
      * @param updatedPlace - {@link Place} entity.
@@ -213,7 +214,7 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for updating Location for updating place.
+     * Method for updating Location for place.
      *
      * @param dto          - dto for {@link Place} entity.
      * @param updatedPlace - {@link Place} entity.

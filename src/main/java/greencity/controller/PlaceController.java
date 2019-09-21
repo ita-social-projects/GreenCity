@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
-    private final FavoritePlaceService favoritePlaceService;
     /**
      * Autowired PlaceService instance.
      */
@@ -180,7 +179,7 @@ public class PlaceController {
      * @param id place
      * @return  response {@link PlaceUpdateDto} object.
      */
-    @GetMapping("/aboutPlace/{id}")
+    @GetMapping("/about/{id}")
     public ResponseEntity<PlaceUpdateDto> getPlaceById(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.getInfoForUpdatingById(id));
