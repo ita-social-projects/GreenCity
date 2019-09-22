@@ -7,7 +7,6 @@ import greencity.exception.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
-import java.security.Principal;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
