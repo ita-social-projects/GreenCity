@@ -11,9 +11,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
@@ -251,4 +249,36 @@ public class PlaceServiceImplTest {
         assertEquals(averageRate, placeService.averageRate(2L));
     }
 
+    @Test
+    public void updateStatusesTest() {
+        BulkUpdatePlaceStatusDto requestDto = new BulkUpdatePlaceStatusDto(
+            Arrays.asList(1L, 2L, 3L),
+            PlaceStatus.DELETED
+        );
+
+        List<UpdatePlaceStatusDto> expected = Arrays.asList(
+            new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED),
+            new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED),
+            new UpdatePlaceStatusDto(3L, PlaceStatus.DELETED)
+        );
+
+        when(placeRepo.findById(anyLong()))
+            .thenReturn(Optional.of(new Place()))
+            .thenReturn(Optional.of(new Place()))
+            .thenReturn(Optional.of(new Place()));
+        when(modelMapper.map(any(), any()))
+            .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED))
+            .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED))
+            .thenReturn(new UpdatePlaceStatusDto(3L, PlaceStatus.DELETED));
+
+        assertEquals(expected, placeService.updateStatuses(requestDto));
+    }
+
+    @Test
+    public void getStatusesTest() {
+        List<PlaceStatus> placeStatuses =
+            Arrays.asList(PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED);
+
+        assertEquals(placeStatuses, placeService.getStatuses());
+    }
 }
