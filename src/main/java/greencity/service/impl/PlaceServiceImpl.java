@@ -22,6 +22,7 @@ import greencity.service.*;
 import greencity.util.DateTimeService;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -257,7 +258,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Nazar Vladyka.
      */
     @Override
-    public PlaceStatusDto updateStatus(Long id, PlaceStatus status) {
+    public UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
@@ -267,10 +268,27 @@ public class PlaceServiceImpl implements PlaceService {
         } else {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
             throw new PlaceStatusException(
-                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
+                updatable.getId() + ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         }
 
-        return modelMapper.map(placeRepo.save(updatable), PlaceStatusDto.class);
+        return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Transactional
+    @Override
+    public List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto) {
+        List<UpdatePlaceStatusDto> updatedPlaces = new ArrayList<>();
+
+        for (Long id : dto.getIds()) {
+            updatedPlaces.add(updateStatus(id, dto.getStatus()));
+        }
+
+        return updatedPlaces;
     }
 
     /**
@@ -414,5 +432,15 @@ public class PlaceServiceImpl implements PlaceService {
             adminPlaceDtos,
             list.getTotalElements(),
             list.getPageable().getPageNumber());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Override
+    public List<PlaceStatus> getStatuses() {
+        return Arrays.asList(PlaceStatus.class.getEnumConstants());
     }
 }

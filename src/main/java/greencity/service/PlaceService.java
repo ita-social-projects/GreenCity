@@ -24,13 +24,21 @@ public interface PlaceService {
     PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
 
     /**
-     * Update status for the Place and set the time of modification.
+     * Update status for the {@link Place} and set the time of modification.
      *
-     * @param id     - place id.
-     * @param status - place status.
-     * @return saved PlaceStatusDto entity.
+     * @param id     - {@link Place} id.
+     * @param status - {@link Place} status.
+     * @return saved {@link UpdatePlaceStatusDto} entity.
      */
-    PlaceStatusDto updateStatus(Long id, PlaceStatus status);
+    UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status);
+
+    /**
+     * Update statuses for the {@link Place}'s and set the time of modification.
+     *
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with places id's and updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated places and statuses.
+     */
+    List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto);
 
     /**
      * Find place by it's id.
@@ -112,12 +120,11 @@ public interface PlaceService {
      */
     Double averageRate(Long id);
 
-
     /**
      * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
      *
      * @param filterDto contains objects whose values determine
-     *                 the filter parameters of the returned list.
+     *                  the filter parameters of the returned list.
      * @return a list of {@code PlaceByBoundsDto}
      * @author Roman Zahouri
      */
@@ -133,6 +140,13 @@ public interface PlaceService {
      * @author Rostyslav Khasanov
      */
     PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable);
+
+    /**
+     * Get list of available statuses of {@link Place}.
+     *
+     * @return available {@link Place} statuses.
+     */
+    List<PlaceStatus> getStatuses();
 
     /**
      * Method for getting place information by id.
