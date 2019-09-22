@@ -20,11 +20,7 @@ import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -320,6 +316,11 @@ public class PlaceServiceImpl implements PlaceService {
         return placeInfoDto;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
+     */
     @Override
     public PlaceUpdateDto getInfoForUpdatingById(Long id) {
         Place place = placeRepo
