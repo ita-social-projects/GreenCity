@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
+/**
+ * Provides an interface to manage {@link Comment} entity.
+ */
 @Repository
 public interface PlaceCommentRepo extends JpaRepository<Comment, Long> {
     Page<Comment> findAllByPlaceId(Long placeId, Pageable pageable);
