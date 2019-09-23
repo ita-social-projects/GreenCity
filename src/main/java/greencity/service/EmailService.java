@@ -13,5 +13,5 @@ public interface EmailService {
      * @param updatable - updatable {@code Place}
      * @param status    - new {@code PlaceStatus}
      */
-    void sendChangePlaceStatusNotification(Place updatable, PlaceStatus status);
+    void sendChangePlaceStatusEmail(Place updatable, PlaceStatus status);
 }
