@@ -30,6 +30,12 @@ public class EmailServiceImpl implements EmailService {
     private String clientLink;
 
     /**
+     * This is server address. We send it to user email. And user can simply submit it.
+     */
+    @Value("${address}")
+    private String serverAddress;
+
+    /**
      * Constructor.
      *
      * @param javaMailSender {@link JavaMailSender} - use it for sending submits to users email
@@ -47,16 +53,29 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendChangePlaceStatusNotification(Place updatable, PlaceStatus status) {
-        new Thread(() -> {
-            Map<String, Object> model = new HashMap<>();
-            model.put("placeName", updatable.getName());
-            model.put("status", status.toString().toLowerCase());
-            model.put("user", updatable.getAuthor());
-            model.put("clientLink", clientLink);
+        Map<String, Object> model = new HashMap<>();
+        model.put("placeName", updatable.getName());
+        model.put("status", status.toString().toLowerCase());
+        model.put("user", updatable.getAuthor());
+        model.put("clientLink", clientLink);
 
-            String template = createEmailTemplate(model, "email-change-place-status");
-            sendEmail(updatable.getAuthor(), "GreenCity contributors", template);
-        }).start();
+        String template = createEmailTemplate(model, "email-change-place-status");
+        sendEmail(updatable.getAuthor(), "GreenCity contributors", template);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Stasyuk
+     */
+    @Override
+    public void sendVerificationEmail(User user, String token) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("clientLink", clientLink);
+        model.put("userFirstName", user.getFirstName());
+        model.put("verifyAddress", serverAddress + "/ownSecurity/verifyEmail?token=" + token);
+        String template = createEmailTemplate(model, "verify-email-page");
+        sendEmail(user, "Verify your email address", template);
     }
 
     private void sendEmail(User receiver, String subject, String text) {
@@ -67,8 +86,7 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setTo(receiver.getEmail());
             mimeMessageHelper.setSubject(subject);
             mimeMessage.setContent(text, EmailConstant.CONTENT_TYPE);
-
-            javaMailSender.send(mimeMessage);
+            new Thread(() -> javaMailSender.send(mimeMessage)).start();
         } catch (MessagingException e) {
             log.error(e.getMessage());
         }

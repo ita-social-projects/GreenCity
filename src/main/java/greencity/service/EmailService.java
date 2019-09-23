@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
 
 /**
@@ -14,4 +15,13 @@ public interface EmailService {
      * @param status    - new {@code PlaceStatus}
      */
     void sendChangePlaceStatusNotification(Place updatable, PlaceStatus status);
+
+
+    /**
+     * Method for sending verification email to {@link User}.
+     *
+     * @param user  - {@link User}
+     * @param token {@link String} - email verification token
+     */
+    void sendVerificationEmail(User user, String token);
 }
