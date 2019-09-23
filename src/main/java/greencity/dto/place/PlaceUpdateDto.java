@@ -5,10 +5,10 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountDtoForUpdatePlace;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.openhours.OpeningHoursUpdateDto;
-import java.util.HashSet;
 import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @Builder
 public class PlaceUpdateDto {
+    @NotNull
     private Long id;
 
     @NotBlank(message = ValidationConstants.EMPTY_PLACE_NAME)
