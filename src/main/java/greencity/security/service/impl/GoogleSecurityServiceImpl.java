@@ -1,5 +1,7 @@
 package greencity.security.service.impl;
 
+import static greencity.constant.AppConstant.GOOGLE_FAMILY_NAME;
+import static greencity.constant.AppConstant.GOOGLE_GIVEN_NAME;
 import static greencity.constant.ErrorMessage.BAD_GOOGLE_TOKEN;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -64,8 +66,8 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             if (googleIdToken != null) {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
-                String familyName = (String) payload.get("family_name");
-                String givenName = (String) payload.get("given_name");
+                String familyName = (String) payload.get(GOOGLE_FAMILY_NAME);
+                String givenName = (String) payload.get(GOOGLE_GIVEN_NAME);
                 Optional<User> byEmail = userService.findByEmail(email);
                 if (byEmail.isPresent()) {
                     User user = byEmail.get();

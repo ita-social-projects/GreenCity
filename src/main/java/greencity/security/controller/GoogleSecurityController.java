@@ -3,11 +3,10 @@ package greencity.security.controller;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.service.GoogleSecurityService;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller that provide google security logic.
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/googleSecurity")
 @AllArgsConstructor
+@Validated
 public class GoogleSecurityController {
     private GoogleSecurityService service;
 
@@ -27,8 +27,8 @@ public class GoogleSecurityController {
      * @param idToken {@link String} - google idToken
      * @return {@link SuccessSignInDto} if token valid
      */
-    @PostMapping
-    public SuccessSignInDto authenticate(@Valid @RequestBody String idToken) {
+    @GetMapping
+    public SuccessSignInDto authenticate(@RequestParam @NotBlank String idToken) {
         return service.authenticate(idToken);
     }
 }

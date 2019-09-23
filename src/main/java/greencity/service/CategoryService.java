@@ -65,7 +65,9 @@ public interface CategoryService {
     Category findByName(String name);
 
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Method for finding all CategoryDto.
+     *
+     * @return list of CategoryDto.
      */
     List<CategoryDto> findAllCategoryDto();
 }

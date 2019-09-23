@@ -2,9 +2,13 @@ package greencity.dto.place;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.discount.DiscountDtoForAddPlace;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.specification.SpecificationValueDto;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -29,5 +33,8 @@ public class PlaceAddDto {
     private CategoryDto category;
 
     @Valid
-    private List<OpeningHoursDto> openingHoursList;
+    private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
+
+    @Valid
+    private Set<DiscountDtoForAddPlace> discounts = new HashSet<>();
 }

@@ -4,11 +4,14 @@ import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
+import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -30,7 +33,7 @@ public class PlaceController {
     private ModelMapper modelMapper;
 
     /**
-     * The method which returns new proposed {@code Place} from user.
+     * The controller which returns new proposed {@code Place} from user.
      *
      * @param dto - Place dto for adding with all parameters.
      * @return new {@code Place}.
@@ -44,6 +47,20 @@ public class PlaceController {
                 modelMapper.map(
                     placeService.save(dto, principal.getName()),
                     PlaceWithUserDto.class));
+    }
+
+    /**
+     * The controller which returns new updated {@code Place}.
+     *
+     * @param dto - Place dto for updating with all parameters.
+     * @return new {@code Place}.
+     * @author Kateryna Horokh
+     */
+    @PutMapping("/update")
+    public ResponseEntity<PlaceUpdateDto> updatePlace(
+        @Valid @RequestBody PlaceUpdateDto dto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(modelMapper.map(placeService.update(dto.getId(), dto), PlaceUpdateDto.class));
     }
 
     /**
@@ -127,14 +144,14 @@ public class PlaceController {
     }
 
     /**
-     * The method which update place status.
+     * The method which update {@link Place} status.
      *
-     * @param dto - place dto with place id and updated place status.
-     * @return response object with dto and OK status if everything is ok.
+     * @param dto - {@link UpdatePlaceStatusDto} with place id and updated {@link PlaceStatus}.
+     * @return response object with {@link UpdatePlaceStatusDto} and OK status if everything is ok.
      * @author Nazar Vladyka
      */
     @PatchMapping("/status")
-    public ResponseEntity updateStatus(@Valid @RequestBody PlaceStatusDto dto) {
+    public ResponseEntity updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
@@ -153,5 +170,69 @@ public class PlaceController {
         @Valid @RequestBody FilterPlaceDto filterDto, Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.filterPlaceBySearchPredicate(filterDto, pageable));
+    }
+
+    /**
+     * Controller to get place info.
+     *
+     * @param id place
+     * @return  response {@link PlaceUpdateDto} object.
+     */
+    @GetMapping("/about/{id}")
+    public ResponseEntity<PlaceUpdateDto> getPlaceById(@NotNull @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeService.getInfoForUpdatingById(id));
+    }
+
+    /**
+     * The method which update array of {@link Place}'s from DB.
+     *
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with places id's and updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated places and {@link PlaceStatus}'s
+     * @author Nazar Vladyka
+     */
+    @PatchMapping("/statuses")
+    public ResponseEntity bulkUpdateStatuses(@Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            placeService.updateStatuses(dto));
+    }
+
+    /**
+     * The method which return array of {@link PlaceStatus}.
+     *
+     * @return array of statuses
+     * @author Nazar Vladyka
+     */
+    @GetMapping("/statuses")
+    public ResponseEntity getStatuses() {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getStatuses());
+    }
+
+    /**
+     * The method which delete {@link Place} from DB(change {@link PlaceStatus} to DELETED).
+     *
+     * @param id - {@link Place} id
+     * @return {@link UpdatePlaceStatusDto} of deleted {@link Place} and OK status if everything is ok.
+     * @author Nazar Vladyka
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@NotNull @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatus(id, PlaceStatus.DELETED));
+    }
+
+    /**
+     * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
+     *
+     * @param ids - id's of {@link Place}'s which need to be deleted
+     * @return list of {@link UpdatePlaceStatusDto} with deleted places
+     * @author Nazar Vladyka
+     */
+    @DeleteMapping
+    public ResponseEntity bulkDelete(@RequestParam String ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            placeService.updateStatuses(new BulkUpdatePlaceStatusDto(
+                Arrays.stream(ids.split(","))
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList()), PlaceStatus.DELETED)));
     }
 }

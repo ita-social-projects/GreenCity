@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/ownSecurity")
+@Validated
 public class OwnSecurityController {
     @Value("${client.address}")
     private String clientAddress;
@@ -84,8 +86,8 @@ public class OwnSecurityController {
      * @param refreshToken - {@link String} this is refresh token.
      * @return {@link ResponseEntity} - with new access token.
      */
-    @PostMapping("/updateAccessToken")
-    public ResponseEntity updateAccessToken(@RequestBody @NotBlank String refreshToken) {
+    @GetMapping("/updateAccessToken")
+    public ResponseEntity updateAccessToken(@RequestParam @NotBlank String refreshToken) {
         return ResponseEntity.ok().body(service.updateAccessToken(refreshToken));
     }
 }
