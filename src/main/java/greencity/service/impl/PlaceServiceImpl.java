@@ -93,27 +93,12 @@ public class PlaceServiceImpl implements PlaceService {
         return place;
     }
 
-    /**
-     * Method for setting {@code Location} with {@code Place} to database.
-     *
-     * @param place of {@link Place} entity.
-     * @param dto   of Location entity.
-     * @return Location entity.
-     * @author Kateryna Horokh
-     */
     private Location saveLocationWithPlace(LocationAddressAndGeoDto dto, Place place) {
         Location location = modelMapper.map(dto, Location.class);
         location.setPlace(place);
         return location;
     }
 
-    /**
-     * Method for setting {@code Discount} with {@code Place} and {@code Category} to database.
-     *
-     * @param place    of {@link Place} entity.
-     * @param category of {@link Category} entity.
-     * @author Kateryna Horokh
-     */
     private void setToDiscountPlaceAndCategoty(Category category, Place place) {
         log.info(LogMessage.SET_PLACE_TO_DISCOUNTS, place.getName(), category.getName());
 
@@ -127,12 +112,6 @@ public class PlaceServiceImpl implements PlaceService {
         });
     }
 
-    /**
-     * Method for setting {@code OpeningHours} with {@code Place} to database.
-     *
-     * @param place of {@link Place} entity.
-     * @author Kateryna Horokh
-     */
     private void setPlaceToOpeningHours(Place place) {
         log.info(LogMessage.SET_PLACE_TO_OPENING_HOURS, place.getName());
 
@@ -169,13 +148,6 @@ public class PlaceServiceImpl implements PlaceService {
         return updatedPlace;
     }
 
-    /**
-     * Method for updating Discount list for place.
-     *
-     * @param dto             - {@link Place} entity.
-     * @param updatedCategory - category updated place.
-     * @author Kateryna Horokh
-     */
     private void updateDiscountForUpdatedPlace(PlaceUpdateDto dto, Category updatedCategory, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE, dto.getName());
 
@@ -196,13 +168,6 @@ public class PlaceServiceImpl implements PlaceService {
         discountsOld.addAll(discounts);
     }
 
-    /**
-     * Method for updating OpeningHours list for place.
-     *
-     * @param dto          - dto for {@link Place} entity.
-     * @param updatedPlace - {@link Place} entity.
-     * @author Kateryna Horokh
-     */
     private void updateOpeningHoursForUpdatedPlace(PlaceUpdateDto dto, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE, dto.getName());
 
@@ -220,13 +185,6 @@ public class PlaceServiceImpl implements PlaceService {
         openingHoursSetOld.addAll(hours);
     }
 
-    /**
-     * Method for updating Location for place.
-     *
-     * @param dto          - dto for {@link Place} entity.
-     * @param updatedPlace - {@link Place} entity.
-     * @author Kateryna Horokh
-     */
     private void updateLocationOfUpdatedPlace(PlaceUpdateDto dto, Place updatedPlace) {
         Location location = locationService.findByPlaceId(updatedPlace.getId());
         modelMapper.map(dto.getLocation(), location);
