@@ -30,4 +30,6 @@ public class ErrorMessage {
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String NOT_IMPLEMENTED_METHOD = "Method hasn't implementation, please create it "
         + "before use this method again";
+    public static final String WRONG_DATE_TIME_FORMAT = "The date format is wrong. Should matches "
+        + AppConstant.DATE_FORMAT;
 }

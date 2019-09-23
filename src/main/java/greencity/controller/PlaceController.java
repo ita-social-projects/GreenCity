@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
