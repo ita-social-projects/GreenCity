@@ -11,7 +11,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountDtoForAddPlace;
 import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
@@ -158,8 +157,10 @@ public class PlaceServiceImplTest {
     @Test
     public void deleteByIdTest() {
         Place placeToDelete = new Place();
+
         Mockito.when(placeRepo.findById(1L)).thenReturn(Optional.of(placeToDelete));
-        Assert.assertEquals(true, placeService.deleteById(1L));
+
+        Assert.assertEquals(new Long(1), placeService.deleteById(1L));
     }
 
     @Test

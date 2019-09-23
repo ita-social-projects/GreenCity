@@ -1,6 +1,6 @@
 package greencity.service.impl;
 
-import greencity.constant.EmailConstant;
+import greencity.constant.AppConstant;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
@@ -52,13 +52,12 @@ public class EmailServiceImpl implements EmailService {
      * @author Nazar Vladyka
      */
     @Override
-    public void sendChangePlaceStatusNotification(Place updatable, PlaceStatus status) {
+    public void sendChangePlaceStatusEmail(Place updatable, PlaceStatus status) {
         Map<String, Object> model = new HashMap<>();
         model.put("placeName", updatable.getName());
         model.put("status", status.toString().toLowerCase());
         model.put("user", updatable.getAuthor());
         model.put("clientLink", clientLink);
-
         String template = createEmailTemplate(model, "email-change-place-status");
         sendEmail(updatable.getAuthor(), "GreenCity contributors", template);
     }
@@ -81,15 +80,14 @@ public class EmailServiceImpl implements EmailService {
     private void sendEmail(User receiver, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-
         try {
             mimeMessageHelper.setTo(receiver.getEmail());
             mimeMessageHelper.setSubject(subject);
-            mimeMessage.setContent(text, EmailConstant.CONTENT_TYPE);
-            new Thread(() -> javaMailSender.send(mimeMessage)).start();
+            mimeMessage.setContent(text, AppConstant.EMAIL_CONTENT_TYPE);
         } catch (MessagingException e) {
             log.error(e.getMessage());
         }
+        new Thread(() -> javaMailSender.send(mimeMessage)).start();
     }
 
     private String createEmailTemplate(Map<String, Object> vars, String templateName) {

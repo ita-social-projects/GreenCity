@@ -24,4 +24,5 @@ public interface EmailService {
      * @param token {@link String} - email verification token
      */
     void sendVerificationEmail(User user, String token);
+    void sendChangePlaceStatusEmail(Place updatable, PlaceStatus status);
 }

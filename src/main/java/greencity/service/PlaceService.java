@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
@@ -75,12 +74,20 @@ public interface PlaceService {
     List<Place> findAll();
 
     /**
-     * Delete entity from DB by id.
+     * Method for deleting place by id.
      *
-     * @param id - Place id.
-     * @return boolean.
+     * @param id - Long place's id
+     * @return id of deleted place
      */
-    Boolean deleteById(Long id);
+    Long deleteById(Long id);
+
+    /**
+     * Method for deleting places by ids.
+     *
+     * @param ids - List of id
+     * @return count of deleted places
+     */
+    Long bulkDelete(List<Long> ids);
 
     /**
      * Method for getting place information.
@@ -105,7 +112,7 @@ public interface PlaceService {
      * location depends on the map bounds.
      *
      * @param filterPlaceDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *                     state of map
+     *                       state of map
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */
@@ -134,8 +141,8 @@ public interface PlaceService {
      * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
      *
      * @param filterDto contains objects whose values determine
-     *                 the filter parameters of the returned list.
-     * @param pageable pageable configuration.
+     *                  the filter parameters of the returned list.
+     * @param pageable  pageable configuration.
      * @return a list of {@code PlaceByBoundsDto}
      * @author Rostyslav Khasanov
      */
