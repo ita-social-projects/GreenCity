@@ -11,7 +11,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountDtoForAddPlace;
 import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
@@ -149,21 +148,28 @@ public class PlaceServiceImplTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private PlaceServiceImpl placeService;
 
     @Test
     public void deleteByIdTest() {
         Place placeToDelete = new Place();
+
         Mockito.when(placeRepo.findById(1L)).thenReturn(Optional.of(placeToDelete));
-        Assert.assertEquals(true, placeService.deleteById(1L));
+
+        Assert.assertEquals(new Long(1), placeService.deleteById(1L));
     }
 
     @Test
     public void updateStatusTest() {
         Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
+
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
+
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
