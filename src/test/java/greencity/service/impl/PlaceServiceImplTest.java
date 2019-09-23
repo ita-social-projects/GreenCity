@@ -149,6 +149,9 @@ public class PlaceServiceImplTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private PlaceServiceImpl placeService;
 
@@ -162,8 +165,10 @@ public class PlaceServiceImplTest {
     @Test
     public void updateStatusTest() {
         Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
+
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
+
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }

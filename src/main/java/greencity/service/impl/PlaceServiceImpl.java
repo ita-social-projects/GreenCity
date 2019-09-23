@@ -48,6 +48,7 @@ public class PlaceServiceImpl implements PlaceService {
     private UserService userService;
     private SpecificationService specificationService;
     private DiscountService discountService;
+    private EmailService emailService;
 
     /**
      * {@inheritDoc}
@@ -227,6 +228,10 @@ public class PlaceServiceImpl implements PlaceService {
 
         Place updatable = findById(id);
         if (!updatable.getStatus().equals(status)) {
+            //if status was proposed and it's changes, means approve/declines by Admin
+            if (updatable.getStatus().equals(PlaceStatus.PROPOSED)) {
+                emailService.sendChangePlaceStatusNotification(updatable, status);
+            }
             updatable.setStatus(status);
             updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
         } else {

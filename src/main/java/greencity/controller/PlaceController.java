@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
@@ -152,7 +151,7 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @PatchMapping("/status")
-    public ResponseEntity updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
+    public ResponseEntity<UpdatePlaceStatusDto> updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
@@ -162,7 +161,7 @@ public class PlaceController {
      * contained in the incoming {@link FilterPlaceDto} object.
      *
      * @param filterDto contains all information about the filtering of the list.
-     * @param pageable pageable configuration.
+     * @param pageable  pageable configuration.
      * @return a list of {@code PlaceByBoundsDto}
      * @author Roman Zahorui
      */
@@ -193,7 +192,8 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @PatchMapping("/statuses")
-    public ResponseEntity bulkUpdateStatuses(@Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
+    public ResponseEntity<List<UpdatePlaceStatusDto>> bulkUpdateStatuses(
+        @Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(
             placeService.updateStatuses(dto));
     }
@@ -205,7 +205,7 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @GetMapping("/statuses")
-    public ResponseEntity getStatuses() {
+    public ResponseEntity<List<PlaceStatus>> getStatuses() {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getStatuses());
     }
 
@@ -229,7 +229,7 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @DeleteMapping
-    public ResponseEntity bulkDelete(@RequestParam String ids) {
+    public ResponseEntity<List<UpdatePlaceStatusDto>> bulkDelete(@RequestParam String ids) {
         return ResponseEntity.status(HttpStatus.OK).body(
             placeService.updateStatuses(new BulkUpdatePlaceStatusDto(
                 Arrays.stream(ids.split(","))
