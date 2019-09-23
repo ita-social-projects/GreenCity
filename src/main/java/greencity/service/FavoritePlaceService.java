@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
@@ -22,43 +21,43 @@ public interface FavoritePlaceService {
     /**
      * Update favorite place name for user.
      *
-     * @param favoritePlaceShowDto - dto with favorite place name, place id and user email
+     * @param favoritePlaceDto - dto with favorite place name, place id and user email
      * @param userEmail            - User email
      * @return FavoritePlaceDto instance
      * @author Zakhar Skaletskyi
      */
 
-    FavoritePlaceShowDto update(FavoritePlaceShowDto favoritePlaceShowDto, String userEmail);
+    FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, String userEmail);
 
     /**
      * Find all favorite places by user email.
      *
      * @param email - user's email
-     * @return list of FavoritePlaceShowDto
+     * @return list of FavoritePlaceDto
      * @author Zakhar Skaletskyi
      */
-    List<FavoritePlaceShowDto> findAllByUserEmail(String email);
+    List<FavoritePlaceDto> findAllByUserEmail(String email);
 
     /**
      * Delete favorite place by user email and place id or favorite place id.
      * If id>0 then delete by favorite place id. If id<0 then delete by place id.
      *
-     * @param id        - favorite place id
+     * @param placeId        - favorite place id
      * @param userEmail - user's email
      * @return -  id of deleted favorite place
      * @author Zakhar Skaletskyi
      */
     @Transactional
-    Long deleteByUserEmailAndFavoriteIdOrPlaceId(Long id, String userEmail);
+    Long deleteByUserEmailAndPlaceId(Long placeId, String userEmail);
 
     /**
      * FInd favorite place by id.
      *
-     * @param id - favorite place id
+     * @param placeId - place id
      * @return FavoritePlace entity
      * @author Zakhar Skaletskyi
      */
-    FavoritePlace findById(Long id);
+    FavoritePlace findByPlaceId(Long placeId);
 
     /**
      * Method for getting FavoritePlace as Place information.

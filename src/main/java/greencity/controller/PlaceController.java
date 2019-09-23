@@ -13,14 +13,12 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/place")
 @AllArgsConstructor
@@ -63,13 +61,13 @@ public class PlaceController {
     /**
      * Controller to get favorite place as place info.
      *
-     * @param id favorite place
+     * @param placeId - place id
      * @return info about place with name as in favorite place
      * @author Zakhar Skaletskyi
      */
-    @GetMapping("/info/favorite/{id}")
-    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(id));
+    @GetMapping("/info/favorite/{placeId}")
+    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @PathVariable Long placeId) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(placeId));
     }
 
 
@@ -97,7 +95,6 @@ public class PlaceController {
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
         @Valid @RequestBody MapBoundsDto mapBoundsDto) {
-        log.info("in getListPlaceLocationByMapsBounds");
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.findPlacesByMapsBounds(mapBoundsDto));
     }

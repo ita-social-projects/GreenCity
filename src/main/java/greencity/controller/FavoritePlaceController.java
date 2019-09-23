@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.service.FavoritePlaceService;
 import java.security.Principal;
@@ -22,16 +21,16 @@ public class FavoritePlaceController {
     /**
      * Update favorite place name for user.
      *
-     * @param favoritePlaceShowDto - dto for FavoritePlace entity
-     * @param principal            - Principal with user email
+     * @param favoritePlaceDto - dto for FavoritePlace entity
+     * @param principal        - Principal with user email
      * @return FavoritePlaceDto instance
      * @author Zakhar Skaletskyi
      */
     @PutMapping
-    public ResponseEntity<FavoritePlaceShowDto> update(@Valid @RequestBody FavoritePlaceShowDto favoritePlaceShowDto,
-                                                       Principal principal) {
+    public ResponseEntity<FavoritePlaceDto> update(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
+                                                   Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .update(favoritePlaceShowDto, principal.getName()));
+            .update(favoritePlaceDto, principal.getName()));
     }
 
     /**
@@ -43,7 +42,7 @@ public class FavoritePlaceController {
      */
 
     @GetMapping
-    public ResponseEntity<List<FavoritePlaceShowDto>> findAllByUserEmail(Principal principal) {
+    public ResponseEntity<List<FavoritePlaceDto>> findAllByUserEmail(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(principal.getName()));
     }
 
@@ -65,30 +64,30 @@ public class FavoritePlaceController {
      * Delete favorite place by user email and place id or favorite place id.
      * If id>0 then delete by favorite place id. If id<0 then delete by place id.
      *
-     * @param id        - favorite place
+     * @param placeId   - place id
      * @param principal - Principal with user email
      * @return id of deleted favorite place
      * @author Zakhar Skaletskyi
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteByUserEmailAndFavoriteIdOrPlaceId(@NotNull @PathVariable Long id,
-                                                       Principal principal) {
+    @DeleteMapping("/{placeId}")
+    public ResponseEntity<Long> deleteByUserEmailAndPlaceIdOrPlaceId(@NotNull @PathVariable Long placeId,
+                                                                     Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .deleteByUserEmailAndFavoriteIdOrPlaceId(id, principal.getName()));
+            .deleteByUserEmailAndPlaceId(placeId, principal.getName()));
     }
 
     /**
      * Controller to get favorite place coordinates, id and name.
      *
-     * @param id        favorite place
+     * @param placeId   favorite place
      * @param principal - Principal with user email
      * @return info about place with name from favorite place
      * @author Zakhar Skaletskyi
      */
-    @GetMapping("/favorite/{id}")
-    public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@NotNull @PathVariable Long id,
+    @GetMapping("/favorite/{placeId}")
+    public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@NotNull @PathVariable Long placeId,
                                                                            Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .getFavoritePlaceWithLocation(id, principal.getName()));
+            .getFavoritePlaceWithLocation(placeId, principal.getName()));
     }
 }
