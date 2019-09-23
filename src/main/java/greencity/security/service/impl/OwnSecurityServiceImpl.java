@@ -21,7 +21,6 @@ import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @AllArgsConstructor
-@Slf4j
 public class OwnSecurityServiceImpl implements OwnSecurityService {
     private OwnSecurityRepo repo;
     private UserService userService;
@@ -49,8 +47,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Transactional
     @Override
     public void signUp(OwnSignUpDto dto) {
-        log.info("begin");
-
         if (userService.findByEmail(dto.getEmail()).isPresent()) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
@@ -58,8 +54,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         User savedUser = userService.save(user);
         repo.save(createUserOwnSecurityToUser(dto, savedUser));
         verifyEmailService.save(savedUser);
-
-        log.info("end");
     }
 
     private OwnSecurity createUserOwnSecurityToUser(OwnSignUpDto dto, User user) {
@@ -86,12 +80,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public void delete(OwnSecurity userOwnSecurity) {
-        log.info("begin");
         if (!repo.existsById(userOwnSecurity.getId())) {
             throw new BadIdException(NO_ENY_USER_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
         }
         repo.delete(userOwnSecurity);
-        log.info("end");
     }
 
     /**
@@ -100,8 +92,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Scheduled(fixedRate = 86400000)
     @Override
     public void deleteNotActiveEmailUsers() {
-        // 86400000 - доба
-        log.info("begin");
         verifyEmailService
             .findAll()
             .forEach(
@@ -112,7 +102,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                         userService.deleteById(verifyEmail.getUser().getId());
                     }
                 });
-        log.info("end");
     }
 
     /**
@@ -120,14 +109,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public SuccessSignInDto signIn(OwnSignInDto dto) {
-        log.info("begin");
         manager.authenticate(
             new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         User byEmail = userService.findByEmail(dto.getEmail()).orElseThrow(
             () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
-        log.info("end");
         return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName());
     }
 

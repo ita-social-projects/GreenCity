@@ -6,9 +6,6 @@ import greencity.dto.breaktime.BreakTimeDto;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Set;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.*;
 
@@ -17,7 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(exclude = {"openTime", "closeTime"})
-public class OpeningHoursDto {
+public class OpeningHoursUpdateDto {
     @NotNull(message = ValidationConstants.EMPTY_OPEN_TIME_VALUE)
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
     @ApiModelProperty(dataType = "java.lang.String")

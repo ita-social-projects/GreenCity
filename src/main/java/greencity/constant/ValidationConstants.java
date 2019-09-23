@@ -61,4 +61,8 @@ public class ValidationConstants {
     public static final String LAT_MAX_VALIDATION = "Has to be lover or equals 90";
     public static final String LNG_MIN_VALIDATION = "Has to be greatest or equals -180";
     public static final String LNG_MAX_VALIDATION = "Has to be lover or equals 180";
+
+    public static final int DISCOUNT_VALUE_MIN = 1;
+    public static final int DISCOUNT_VALUE_MAX = 100;
+    public static final String EMPTY_SPECIFICATION_NAME = "The specification name can not be empty";
 }

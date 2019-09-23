@@ -33,7 +33,7 @@ public class PlaceController {
     private ModelMapper modelMapper;
 
     /**
-     * The method which returns new proposed {@code Place} from user.
+     * The controller which returns new proposed {@code Place} from user.
      *
      * @param dto - Place dto for adding with all parameters.
      * @return new {@code Place}.
@@ -47,6 +47,20 @@ public class PlaceController {
                 modelMapper.map(
                     placeService.save(dto, principal.getName()),
                     PlaceWithUserDto.class));
+    }
+
+    /**
+     * The controller which returns new updated {@code Place}.
+     *
+     * @param dto - Place dto for updating with all parameters.
+     * @return new {@code Place}.
+     * @author Kateryna Horokh
+     */
+    @PutMapping("/update")
+    public ResponseEntity<PlaceUpdateDto> updatePlace(
+        @Valid @RequestBody PlaceUpdateDto dto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(modelMapper.map(placeService.update(dto.getId(), dto), PlaceUpdateDto.class));
     }
 
     /**
@@ -156,6 +170,18 @@ public class PlaceController {
         @Valid @RequestBody FilterPlaceDto filterDto, Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.filterPlaceBySearchPredicate(filterDto, pageable));
+    }
+
+    /**
+     * Controller to get place info.
+     *
+     * @param id place
+     * @return  response {@link PlaceUpdateDto} object.
+     */
+    @GetMapping("/about/{id}")
+    public ResponseEntity<PlaceUpdateDto> getPlaceById(@NotNull @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeService.getInfoForUpdatingById(id));
     }
 
     /**

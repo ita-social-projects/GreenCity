@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class AccessTokenDto {
     private String accessToken;
 }
