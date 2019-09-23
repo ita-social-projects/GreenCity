@@ -84,7 +84,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/Info/{id}/**",
                 "/favorite_place/favorite/{id}",
                 "/place/info/favorite/**",
-                "/place/statuses/**"
+                "/place/statuses/**",
+                "/place/about/{id}/**",
+                "/specification/**"
+
             ).permitAll()
             .antMatchers(
                 "/place/propose/**",
@@ -118,6 +121,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole("ADMIN", "MODERATOR")
             .anyRequest()
             .hasAnyRole("ADMIN")
+            .antMatchers(HttpMethod.PUT,
+                "/place/update/**")
+            .hasAnyRole("ADMIN", "MODERATOR")
             .and()
             .apply(new JwtConfig(tool));
     }

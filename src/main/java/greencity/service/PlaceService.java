@@ -58,6 +58,16 @@ public interface PlaceService {
     Place save(PlaceAddDto dto, String email);
 
     /**
+     * Method for updating {@code Place}.
+     *
+     * @param id  - {@link Place} id
+     * @param dto - dto for Place entity
+     * @return place {@code Place}
+     * @author Kateryna Horokh
+     */
+    Place update(Long id, PlaceUpdateDto dto);
+
+    /**
      * Find all places from DB.
      *
      * @return List of places.
@@ -137,4 +147,13 @@ public interface PlaceService {
      * @return available {@link Place} statuses.
      */
     List<PlaceStatus> getStatuses();
+
+    /**
+     * Method for getting place information by id.
+     *
+     * @param id place
+     * @return PlaceUpdateDto with info about place
+     * @author Kateryna Horokh
+     */
+    PlaceUpdateDto getInfoForUpdatingById(Long id);
 }

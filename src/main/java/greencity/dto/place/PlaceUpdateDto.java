@@ -2,15 +2,13 @@ package greencity.dto.place;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountDtoForAddPlace;
-import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.specification.SpecificationValueDto;
-import java.util.HashSet;
-import java.util.List;
+import greencity.dto.discount.DiscountDtoForUpdatePlace;
+import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
+import greencity.dto.openhours.OpeningHoursUpdateDto;
 import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,20 +19,23 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlaceAddDto {
+public class PlaceUpdateDto {
+    @NotNull
+    private Long id;
+
     @NotBlank(message = ValidationConstants.EMPTY_PLACE_NAME)
     @Length(max = ValidationConstants.PLACE_NAME_MAX_LENGTH)
     private String name;
 
     @Valid
-    private LocationAddressAndGeoDto location;
+    private LocationAddressAndGeoForUpdateDto location;
 
     @Valid
     private CategoryDto category;
 
     @Valid
-    private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
+    private Set<OpeningHoursUpdateDto> openingHoursList;
 
     @Valid
-    private Set<DiscountDtoForAddPlace> discounts = new HashSet<>();
+    private Set<DiscountDtoForUpdatePlace> discounts;
 }
