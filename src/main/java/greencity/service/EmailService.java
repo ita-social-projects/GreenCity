@@ -14,8 +14,7 @@ public interface EmailService {
      * @param updatable - updatable {@code Place}
      * @param status    - new {@code PlaceStatus}
      */
-    void sendChangePlaceStatusNotification(Place updatable, PlaceStatus status);
-
+    void sendChangePlaceStatusEmail(Place updatable, PlaceStatus status);
 
     /**
      * Method for sending verification email to {@link User}.
@@ -24,5 +23,4 @@ public interface EmailService {
      * @param token {@link String} - email verification token
      */
     void sendVerificationEmail(User user, String token);
-    void sendChangePlaceStatusEmail(Place updatable, PlaceStatus status);
 }
