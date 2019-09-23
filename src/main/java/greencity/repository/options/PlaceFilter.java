@@ -94,7 +94,7 @@ public class PlaceFilter implements Specification<Place> {
 
     /**
      * Checks if {@link Place} is open at the time described in the {@code currentTime} string argument.
-     * The method can throws a {@link DateTimeParseException} if the {@code currentTime} string doesn't
+     * The method can throw a {@link DateTimeParseException} if the {@code currentTime} string doesn't
      * match a {@code AppConstant.DATE_FORMAT} format string.
      *
      * @param r           must not be {@literal null}.
