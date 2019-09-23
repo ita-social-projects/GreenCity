@@ -9,6 +9,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountDtoForUpdatePlace;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursUpdateDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
@@ -71,7 +72,8 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public Place save(PlaceAddDto dto, String email) {
-        log.info(LogMessage.IN_SAVE);
+        log.info(LogMessage.IN_SAVE, dto.getName(), email);
+
         Category category = categoryService.findByName(dto.getCategory().getName());
         Place place = modelMapper.map(dto, Place.class);
 
@@ -83,7 +85,8 @@ public class PlaceServiceImpl implements PlaceService {
         }
 
         place.setCategory(category);
-        setPlaceToLocation(dto, place);
+        Location locationWithPlace = saveLocationWithPlace(dto.getLocation(), place);
+        place.setLocation(locationWithPlace);
         placeRepo.save(place);
         setPlaceToOpeningHours(place);
         setToDiscountPlaceAndCategoty(category, place);
@@ -94,13 +97,14 @@ public class PlaceServiceImpl implements PlaceService {
      * Method for setting {@code Location} with {@code Place} to database.
      *
      * @param place of {@link Place} entity.
-     * @param dto   of Place entity.
+     * @param dto   of Location entity.
+     * @return Location entity.
      * @author Kateryna Horokh
      */
-    private void setPlaceToLocation(PlaceAddDto dto, Place place) {
-        Location location = modelMapper.map(dto.getLocation(), Location.class);
+    private Location saveLocationWithPlace(LocationAddressAndGeoDto dto, Place place) {
+        Location location = modelMapper.map(dto, Location.class);
         location.setPlace(place);
-        place.setLocation(location);
+        return location;
     }
 
     /**
@@ -111,6 +115,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private void setToDiscountPlaceAndCategoty(Category category, Place place) {
+        log.info(LogMessage.SET_PLACE_TO_DISCOUNTS, place.getName(), category.getName());
+
         Set<Discount> discounts = place.getDiscounts();
         discounts.forEach(val -> {
             Specification specification = specificationService.findByName(val.getSpecification().getName());
@@ -148,7 +154,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public Place update(Long id, PlaceUpdateDto dto) {
-        log.info(LogMessage.IN_UPDATE, dto);
+        log.info(LogMessage.IN_UPDATE, dto.getName());
 
         Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
         Place updatedPlace = findById(id);
@@ -171,6 +177,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private void updateDiscountForUpdatedPlace(PlaceUpdateDto dto, Category updatedCategory, Place updatedPlace) {
+        log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE, dto.getName());
+
         Set<DiscountDtoForUpdatePlace> discountList = dto.getDiscounts();
         Set<Discount> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
         discountService.deleteAllByPlaceId(updatedPlace.getId());
@@ -196,6 +204,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private void updateOpeningHoursForUpdatedPlace(PlaceUpdateDto dto, Place updatedPlace) {
+        log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE, dto.getName());
+
         Set<OpeningHoursUpdateDto> hoursUpdateDtoSet = dto.getOpeningHoursList();
         Set<OpeningHours> openingHoursSetOld = openingHoursService.findAllByPlaceId(updatedPlace.getId());
         openingHoursService.deleteAllByPlaceId(updatedPlace.getId());

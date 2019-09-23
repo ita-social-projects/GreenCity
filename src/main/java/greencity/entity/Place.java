@@ -13,14 +13,15 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(
     exclude = {"discounts", "author", "openingHoursList", "comments", "photos",
         "location", "favoritePlaces", "category", "rates", "webPages", "status"})
+@ToString(exclude = {"comments", "photos", "specificationValues", "favoritePlaces",
+    "webPages", "rates", "discounts", "openingHoursList"})
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,8 +8,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"openTime", "closeTime", "breakTime"})

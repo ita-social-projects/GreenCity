@@ -20,4 +20,7 @@ public class LogMessage {
     public static final String IN_GET_FAVORITE_PLACE_WITH_LOCATION = "in getFavoritePlaceWithLocation(), "
         + "favorite place id: {} and email: {}";
     public static final String IN_GET_FAVORITE_PLACE_WITH_PLACE_ID = "in getFavoritePlaceWithPlaceId email: {}";
+    public static final String SET_PLACE_TO_DISCOUNTS = "in setToDiscountPlaceAndCategoty()";
+    public static final String IN_UPDATE_DISCOUNT_FOR_PLACE = "in updateDiscountForUpdatedPlace()";
+    public static final String IN_UPDATE_OPENING_HOURS_FOR_PLACE = "in updateOpeningHoursForUpdatedPlace()";
 }

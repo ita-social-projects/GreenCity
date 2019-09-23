@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString(exclude = {"specificationValues"})
 public class Specification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
