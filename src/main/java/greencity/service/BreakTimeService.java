@@ -38,13 +38,4 @@ public interface BreakTimeService {
      * @return List of BreakTimes.
      */
     List<BreakTime> findAll();
-
-    /**
-     * Update BreakTime in DB.
-     *
-     * @param id           - BreakTime id.
-     * @param breakTime - BreakTime entity.
-     * @return BreakTime updated entity.
-     */
-    BreakTime update(Long id, BreakTime breakTime);
 }

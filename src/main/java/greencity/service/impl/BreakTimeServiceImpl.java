@@ -80,21 +80,4 @@ public class BreakTimeServiceImpl implements BreakTimeService {
 
         return repo.findAll();
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Kateryna Horokh
-     */
-    @Override
-    public BreakTime update(Long id, BreakTime breakTime) {
-        log.info(LogMessage.IN_UPDATE, breakTime);
-
-        BreakTime updatable = findById(id);
-
-        updatable.setStartTime(breakTime.getStartTime());
-        updatable.setEndTime(breakTime.getEndTime());
-
-        return repo.save(updatable);
-    }
 }

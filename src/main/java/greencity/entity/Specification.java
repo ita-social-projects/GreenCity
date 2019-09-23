@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"specificationValues"})
 @ToString(exclude = {"specificationValues"})
 public class Specification {
     @Id
