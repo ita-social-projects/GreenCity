@@ -1,9 +1,12 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/user")
@@ -23,7 +27,7 @@ public class UserController {
      *
      * @param userStatusDto - dto with updated filed.
      * @return {@code UserStatusDto}
-     * @author Rostyslav Khasnaov
+     * @author Rostyslav Khasanov
      */
     @PatchMapping("status")
     public ResponseEntity<?> updateStatus(@Valid @RequestBody UserStatusDto userStatusDto, Principal principal) {
@@ -38,7 +42,7 @@ public class UserController {
      *
      * @param userRoleDto - dto with updated filed.
      * @return {@code UserRoleDto}
-     * @author Rostyslav Khasnaov
+     * @author Rostyslav Khasanov
      */
     @PatchMapping("role")
     public ResponseEntity<?> updateRole(@Valid @RequestBody UserRoleDto userRoleDto, Principal principal) {
@@ -53,10 +57,13 @@ public class UserController {
      *
      * @param pageable - pageable configuration.
      * @return list of {@code UserPageableDto}
-     * @author Rostyslav Khasnaov
+     * @author Rostyslav Khasanov
      */
     @GetMapping
-    public ResponseEntity<?> getAllUsers(Pageable pageable) {
+    @ApiPageable
+    public ResponseEntity<?> getAllUsers(
+        @ApiIgnore("Ignored because swagger ui shows the wrong params, "
+        + "instead they are explained in the @ApiPageable") Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
 
@@ -64,7 +71,7 @@ public class UserController {
      * The method which return array of existing roles.
      *
      * @return array of roles
-     * @author Rostyslav Khasnaov
+     * @author Rostyslav Khasanov
      */
     @GetMapping("roles")
     public ResponseEntity<?> getRoles() {
@@ -77,10 +84,14 @@ public class UserController {
      * @param filterUserDto dto which contains fields with filter criteria.
      * @param pageable      - pageable configuration.
      * @return list of {@code UserPageableDto}
-     * @author Rostyslav Khasnaov
+     * @author Rostyslav Khasanov
      */
     @PostMapping("filter")
-    public ResponseEntity<?> getByReg(Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
+    @ApiPageable
+    public ResponseEntity<?> getByReg(
+        @ApiIgnore("Ignored because swagger ui shows the wrong params, "
+        + "instead they are explained in the @ApiPageable")
+            Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
 }
