@@ -1,7 +1,9 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
@@ -22,13 +24,15 @@ public class UserController {
 
     /**
      * The method which update user status.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
      * @param userStatusDto - dto with updated filed.
-     * @return {@code UserStatusDto}
+     * @return {@link UserStatusDto}
      * @author Rostyslav Khasanov
      */
     @PatchMapping("status")
-    public ResponseEntity<?> updateStatus(@Valid @RequestBody UserStatusDto userStatusDto, Principal principal) {
+    public ResponseEntity<UserStatusDto> updateStatus(
+        @Valid @RequestBody UserStatusDto userStatusDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 userService.updateStatus(
@@ -37,13 +41,15 @@ public class UserController {
 
     /**
      * The method which update user role.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param userRoleDto - dto with updated filed.
-     * @return {@code UserRoleDto}
+     * @param userRoleDto - dto with updated field.
+     * @return {@link UserRoleDto}
      * @author Rostyslav Khasanov
      */
     @PatchMapping("role")
-    public ResponseEntity<?> updateRole(@Valid @RequestBody UserRoleDto userRoleDto, Principal principal) {
+    public ResponseEntity<UserRoleDto> updateRole(
+        @Valid @RequestBody UserRoleDto userRoleDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 userService.updateRole(
@@ -52,39 +58,44 @@ public class UserController {
 
     /**
      * The method which return list of users by page.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param pageable - pageable configuration.
-     * @return list of {@code UserPageableDto}
+     * @return list of {@link PageableDto}
      * @author Rostyslav Khasanov
      */
     @GetMapping
     @ApiPageable
-    public ResponseEntity<?> getAllUsers(@ApiIgnore Pageable pageable) {
+    public ResponseEntity<PageableDto> getAllUsers(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
 
     /**
      * The method which return array of existing roles.
      *
-     * @return array of roles
+     * @return {@link RoleDto}
      * @author Rostyslav Khasanov
      */
     @GetMapping("roles")
-    public ResponseEntity<?> getRoles() {
+    public ResponseEntity<RoleDto> getRoles() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
     }
 
     /**
      * The method which return list of users by filter.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param filterUserDto dto which contains fields with filter criteria.
      * @param pageable      - pageable configuration.
-     * @return list of {@code UserPageableDto}
+     * @return {@link PageableDto}
      * @author Rostyslav Khasanov
      */
     @PostMapping("filter")
     @ApiPageable
-    public ResponseEntity<?> getByReg(@ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
+    public ResponseEntity<PageableDto> getByReg(
+        @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
 }

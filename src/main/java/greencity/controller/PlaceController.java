@@ -161,12 +161,14 @@ public class PlaceController {
     }
 
     /**
-     * The method which return a list {@code PageableDto} filtered by values
+     * The method which return a list {@link PageableDto} filtered by values
      * contained in the incoming {@link FilterPlaceDto} object.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param filterDto contains all information about the filtering of the list.
      * @param pageable  pageable configuration.
-     * @return a list of {@code PageableDto}
+     * @return a list of {@link PageableDto}
      * @author Rostyslav Khasanov
      */
     @PostMapping("/filter/predicate")
@@ -182,7 +184,7 @@ public class PlaceController {
      * Controller to get place info.
      *
      * @param id place
-     * @return  response {@link PlaceUpdateDto} object.
+     * @return response {@link PlaceUpdateDto} object.
      */
     @GetMapping("/about/{id}")
     public ResponseEntity<PlaceUpdateDto> getPlaceById(@NotNull @PathVariable Long id) {
