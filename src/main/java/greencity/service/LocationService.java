@@ -48,12 +48,10 @@ public interface LocationService {
     Location save(Location location);
 
     /**
-     * The method which return a {@code Location} depends on the map position.
+     * Finds {@code Location} records related to the specified {@code Place}.
      *
-     * @param lat latitude of point of the map
-     * @param lng longitude of point of the map
-     * @return a {@code Location}
-     * @author Kateryna Horokh.
+     * @param placeId to find by.
+     * @return a {@code Location} for the place by id.
      */
-    Location findByLatAndLng(Double lat, Double lng);
+    Location findByPlaceId(Long placeId);
 }

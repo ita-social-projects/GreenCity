@@ -10,11 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CategoryRepo extends JpaRepository<Category, Long> {
     /**
-     * Generated javadoc, must be replaced with real one.
-     */
-    Boolean existsByName(String name);
-
-    /**
      * Finds category by name.
      *
      * @param name to find by.
