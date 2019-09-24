@@ -126,8 +126,7 @@ public class PlaceController {
     @ApiPageable
     public ResponseEntity<PageableDto> getPlacesByStatus(
         @PathVariable String status,
-        @ApiIgnore("Ignored because swagger ui shows the wrong params, "
-        + "instead they are explained in the @ApiPageable") Pageable pageable) {
+        @ApiIgnore Pageable pageable) {
         PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.getPlacesByStatus(placeStatus, pageable));
@@ -174,8 +173,7 @@ public class PlaceController {
     @ApiPageable
     public ResponseEntity<PageableDto> filterPlaceBySearchPredicate(
         @Valid @RequestBody FilterPlaceDto filterDto,
-        @ApiIgnore("Ignored because swagger ui shows the wrong params, "
-        + "instead they are explained in the @ApiPageable") Pageable pageable) {
+        @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.filterPlaceBySearchPredicate(filterDto, pageable));
     }

@@ -5,8 +5,6 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -61,9 +59,7 @@ public class UserController {
      */
     @GetMapping
     @ApiPageable
-    public ResponseEntity<?> getAllUsers(
-        @ApiIgnore("Ignored because swagger ui shows the wrong params, "
-        + "instead they are explained in the @ApiPageable") Pageable pageable) {
+    public ResponseEntity<?> getAllUsers(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
 
@@ -88,10 +84,7 @@ public class UserController {
      */
     @PostMapping("filter")
     @ApiPageable
-    public ResponseEntity<?> getByReg(
-        @ApiIgnore("Ignored because swagger ui shows the wrong params, "
-        + "instead they are explained in the @ApiPageable")
-            Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
+    public ResponseEntity<?> getByReg(@ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
 }
