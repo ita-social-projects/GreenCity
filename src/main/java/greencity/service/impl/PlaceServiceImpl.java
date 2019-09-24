@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
     private static final PlaceStatus APPROVED_STATUS = PlaceStatus.APPROVED;
-
     private PlaceRepo placeRepo;
     private ModelMapper modelMapper;
     private CategoryService categoryService;
