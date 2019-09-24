@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Keteryna Horoh" id="dropForeignKeyConstraint-example">
+        <dropForeignKeyConstraint baseTableName="location" constraintName="FK11n0lglbc5iw6xn3seglinvpq"/>
+    </changeSet>
     <changeSet author="Kateryna Horokh" id="1567079888333-68">
-        <addColumn catalogName="greenCity"
-                   schemaName="greenCity"
-                   tableName="place">
-            <column name="location_id" type="BIGINT"/>
-        </addColumn>
+        <dropColumn catalogName="greenCity"
+                    columnName="place_id"
+                    schemaName="greenCity"
+                    tableName="location"/>
     </changeSet>
 </databaseChangeLog>

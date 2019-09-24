@@ -57,10 +57,10 @@ public class PlaceController {
      * @author Kateryna Horokh
      */
     @PutMapping("/update")
-    public ResponseEntity<PlaceWithUserDto> updatePlace(
-        @Valid @RequestBody PlaceUpdateDto dto, Principal principal) {
+    public ResponseEntity<PlaceUpdateDto> updatePlace(
+        @Valid @RequestBody PlaceUpdateDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(modelMapper.map(placeService.update(dto, principal.getName()), PlaceWithUserDto.class));
+            .body(modelMapper.map(placeService.update(dto), PlaceUpdateDto.class));
     }
 
     /**
@@ -176,7 +176,7 @@ public class PlaceController {
      * Controller to get place info.
      *
      * @param id place
-     * @return  response {@link PlaceUpdateDto} object.
+     * @return response {@link PlaceUpdateDto} object.
      */
     @GetMapping("/about/{id}")
     public ResponseEntity<PlaceUpdateDto> getPlaceById(@NotNull @PathVariable Long id) {

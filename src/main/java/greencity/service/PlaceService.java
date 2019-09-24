@@ -59,12 +59,11 @@ public interface PlaceService {
     /**
      * Method for updating {@link Place}.
      *
-     * @param dto   - dto for Place entity
-     * @param email - String, user's email.
+     * @param dto - dto for Place entity
      * @return place {@link Place}
      * @author Kateryna Horokh
      */
-    Place update(PlaceUpdateDto dto, String email);
+    Place update(PlaceUpdateDto dto);
 
     /**
      * Find all places from DB.

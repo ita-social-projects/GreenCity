@@ -6,8 +6,10 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.discount.DiscountDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
@@ -16,15 +18,9 @@ import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.CategoryService;
-import greencity.service.PlaceService;
-import greencity.service.SpecificationService;
-import greencity.service.UserService;
+import greencity.service.*;
 import greencity.util.DateTimeService;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -49,8 +45,10 @@ public class PlaceServiceImpl implements PlaceService {
     private CategoryService categoryService;
     private UserService userService;
     private SpecificationService specificationService;
-    private DiscountService discountService;
     private EmailService emailService;
+    private DiscountService discountService;
+    private OpenHoursService openingHoursService;
+    private LocationService locationService;
 
     /**
      * {@inheritDoc}
@@ -141,18 +139,68 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Transactional
     @Override
-    public Place update(PlaceUpdateDto dto, String email) {
+    public Place update(PlaceUpdateDto dto) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
 
         Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
-        Place updatedPlace = modelMapper.map(dto, Place.class);
+        Place updatedPlace = findById(dto.getId());
+        locationService.update(updatedPlace.getLocation().getId(), modelMapper.map(dto.getLocation(), Location.class));
+        updatedPlace.setName(dto.getName());
         updatedPlace.setCategory(updatedCategory);
-        getUserByEmailAndSetToPlace(email, updatedPlace);
-        updatedPlace.setLocation(modelMapper.map(dto.getLocation(), Location.class));
-        saveDiscountWithPlaceAndCategory(updatedPlace.getDiscounts(), updatedCategory, updatedPlace);
-        saveOpeningHoursWithPlace(updatedPlace.getOpeningHoursList(), updatedPlace);
+        placeRepo.save(updatedPlace);
 
-        return placeRepo.save(updatedPlace);
+        updateOpening(dto.getOpeningHoursList(), updatedPlace);
+        updateDiscount(dto.getDiscounts(), updatedCategory, updatedPlace);
+
+        return updatedPlace;
+    }
+
+    /**
+     * Method for updating set of {@link Discount} and save with new {@link Category} and {@link Place}.
+     *
+     * @param discountDtos    - set of {@link Discount}.
+     * @param updatedCategory - {@link Category} entity.
+     * @param updatedPlace    - {@link Place} entity.
+     * @author Kateryna Horokh
+     */
+    private void updateDiscount(Set<DiscountDto> discountDtos, Category updatedCategory, Place updatedPlace) {
+        log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
+
+        Set<Discount> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
+        discountService.deleteAllByPlaceId(updatedPlace.getId());
+        Set<Discount> discounts = new HashSet<>();
+        discountDtos.forEach(d -> {
+            Discount discount = modelMapper.map(d, Discount.class);
+            Specification specification = specificationService.findByName(d.getSpecification().getName());
+            discount.setPlace(updatedPlace);
+            discount.setCategory(updatedCategory);
+            discount.setSpecification(specification);
+            discountService.save(discount);
+            discounts.add(discount);
+        });
+        discountsOld.addAll(discounts);
+    }
+
+    /**
+     * Method for updating set of {@link OpeningHours} and save with new {@link Place}.
+     *
+     * @param hoursUpdateDtoSet - set of {@link Discount}.
+     * @param updatedPlace      - {@link Place} entity.
+     * @author Kateryna Horokh
+     */
+    private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
+        log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
+
+        Set<OpeningHours> openingHoursSetOld = openingHoursService.findAllByPlaceId(updatedPlace.getId());
+        openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
+        Set<OpeningHours> hours = new HashSet<>();
+        hoursUpdateDtoSet.forEach(h -> {
+            OpeningHours openingHours = modelMapper.map(h, OpeningHours.class);
+            openingHours.setPlace(updatedPlace);
+            openingHoursService.save(openingHours);
+            hours.add(openingHours);
+        });
+        openingHoursSetOld.addAll(hours);
     }
 
     /**
