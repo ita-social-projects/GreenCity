@@ -30,6 +30,12 @@ public class EmailServiceImpl implements EmailService {
     private String clientLink;
 
     /**
+     * This is server address. We send it to user email. And user can simply submit it.
+     */
+    @Value("${address}")
+    private String serverAddress;
+
+    /**
      * Constructor.
      *
      * @param javaMailSender {@link JavaMailSender} - use it for sending submits to users email
@@ -52,15 +58,28 @@ public class EmailServiceImpl implements EmailService {
         model.put("status", status.toString().toLowerCase());
         model.put("user", updatable.getAuthor());
         model.put("clientLink", clientLink);
-
         String template = createEmailTemplate(model, "email-change-place-status");
         sendEmail(updatable.getAuthor(), "GreenCity contributors", template);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Stasyuk
+     */
+    @Override
+    public void sendVerificationEmail(User user, String token) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("clientLink", clientLink);
+        model.put("userFirstName", user.getFirstName());
+        model.put("verifyAddress", serverAddress + "/ownSecurity/verifyEmail?token=" + token);
+        String template = createEmailTemplate(model, "verify-email-page");
+        sendEmail(user, "Verify your email address", template);
     }
 
     private void sendEmail(User receiver, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-
         try {
             mimeMessageHelper.setTo(receiver.getEmail());
             mimeMessageHelper.setSubject(subject);
@@ -68,10 +87,7 @@ public class EmailServiceImpl implements EmailService {
         } catch (MessagingException e) {
             log.error(e.getMessage());
         }
-
-        new Thread(() -> {
-            javaMailSender.send(mimeMessage);
-        }).start();
+        new Thread(() -> javaMailSender.send(mimeMessage)).start();
     }
 
     private String createEmailTemplate(Map<String, Object> vars, String templateName) {
