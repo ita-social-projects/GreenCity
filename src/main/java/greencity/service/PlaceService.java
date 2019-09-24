@@ -74,12 +74,20 @@ public interface PlaceService {
     List<Place> findAll();
 
     /**
-     * Delete entity from DB by id.
+     * Method for deleting place by id.
      *
-     * @param id - Place id.
-     * @return boolean.
+     * @param id - Long place's id
+     * @return id of deleted place
      */
-    Boolean deleteById(Long id);
+    Long deleteById(Long id);
+
+    /**
+     * Method for deleting places by ids.
+     *
+     * @param ids - List of id
+     * @return count of deleted places
+     */
+    Long bulkDelete(List<Long> ids);
 
     /**
      * Method for getting place information.

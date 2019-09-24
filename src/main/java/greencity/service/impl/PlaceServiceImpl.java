@@ -49,6 +49,8 @@ public class PlaceServiceImpl implements PlaceService {
     private CategoryService categoryService;
     private UserService userService;
     private SpecificationService specificationService;
+    private DiscountService discountService;
+    private EmailService emailService;
 
     /**
      * {@inheritDoc}
@@ -156,14 +158,28 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * {@inheritDoc}
      *
-     * @author Kateryna Horokh
+     * @author Nazar Vladyka
      */
     @Override
-    public Boolean deleteById(Long id) {
-        log.info(LogMessage.IN_DELETE_BY_ID);
-        Place place = findById(id);
-        placeRepo.delete(place);
-        return true;
+    public Long deleteById(Long id) {
+        log.info(LogMessage.IN_DELETE_BY_ID, id);
+
+        updateStatus(id, PlaceStatus.DELETED);
+
+        return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Override
+    public Long bulkDelete(List<Long> ids) {
+        List<UpdatePlaceStatusDto> deletedPlaces =
+            updateStatuses(new BulkUpdatePlaceStatusDto(ids, PlaceStatus.DELETED));
+
+        return (long) deletedPlaces.size();
     }
 
     /**
@@ -188,6 +204,10 @@ public class PlaceServiceImpl implements PlaceService {
 
         Place updatable = findById(id);
         if (!updatable.getStatus().equals(status)) {
+            //if status was proposed and it's changes, means approve/declines by Admin
+            if (updatable.getStatus().equals(PlaceStatus.PROPOSED)) {
+                emailService.sendChangePlaceStatusEmail(updatable, status);
+            }
             updatable.setStatus(status);
             updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
         } else {

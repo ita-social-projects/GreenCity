@@ -151,7 +151,7 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @PatchMapping("/status")
-    public ResponseEntity updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
+    public ResponseEntity<UpdatePlaceStatusDto> updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.updateStatus(dto.getId(), dto.getStatus()));
     }
@@ -161,7 +161,7 @@ public class PlaceController {
      * contained in the incoming {@link FilterPlaceDto} object.
      *
      * @param filterDto contains all information about the filtering of the list.
-     * @param pageable pageable configuration.
+     * @param pageable  pageable configuration.
      * @return a list of {@code PlaceByBoundsDto}
      * @author Roman Zahorui
      */
@@ -187,12 +187,13 @@ public class PlaceController {
     /**
      * The method which update array of {@link Place}'s from DB.
      *
-     * @param dto - {@link BulkUpdatePlaceStatusDto} with places id's and updated {@link PlaceStatus}
-     * @return list of {@link UpdatePlaceStatusDto} with updated places and {@link PlaceStatus}'s
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with {@link Place}'s id's and updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated {@link Place}'s and {@link PlaceStatus}'s
      * @author Nazar Vladyka
      */
     @PatchMapping("/statuses")
-    public ResponseEntity bulkUpdateStatuses(@Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
+    public ResponseEntity<List<UpdatePlaceStatusDto>> bulkUpdateStatuses(
+        @Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(
             placeService.updateStatuses(dto));
     }
@@ -204,7 +205,7 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @GetMapping("/statuses")
-    public ResponseEntity getStatuses() {
+    public ResponseEntity<List<PlaceStatus>> getStatuses() {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getStatuses());
     }
 
@@ -212,27 +213,26 @@ public class PlaceController {
      * The method which delete {@link Place} from DB(change {@link PlaceStatus} to DELETED).
      *
      * @param id - {@link Place} id
-     * @return {@link UpdatePlaceStatusDto} of deleted {@link Place} and OK status if everything is ok.
+     * @return id of deleted {@link Place}
      * @author Nazar Vladyka
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@NotNull @PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.updateStatus(id, PlaceStatus.DELETED));
+    public ResponseEntity<Long> delete(@NotNull @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.deleteById(id));
     }
 
     /**
      * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param ids - id's of {@link Place}'s which need to be deleted
-     * @return list of {@link UpdatePlaceStatusDto} with deleted places
+     * @param ids - list of id's of {@link Place}'s which need to be deleted
+     * @return count of deleted {@link Place}'s
      * @author Nazar Vladyka
      */
     @DeleteMapping
-    public ResponseEntity bulkDelete(@RequestParam String ids) {
+    public ResponseEntity<Long> bulkDelete(@RequestParam String ids) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            placeService.updateStatuses(new BulkUpdatePlaceStatusDto(
-                Arrays.stream(ids.split(","))
-                    .map(Long::valueOf)
-                    .collect(Collectors.toList()), PlaceStatus.DELETED)));
+            placeService.bulkDelete(Arrays.stream(ids.split(","))
+                .map(Long::valueOf)
+                .collect(Collectors.toList())));
     }
 }

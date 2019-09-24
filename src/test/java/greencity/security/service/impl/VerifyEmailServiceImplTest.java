@@ -9,18 +9,17 @@ import greencity.entity.VerifyEmail;
 import greencity.exception.BadIdException;
 import greencity.exception.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;
+import greencity.service.EmailService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,14 +28,11 @@ public class VerifyEmailServiceImplTest {
 
     @Mock
     private VerifyEmailRepo repo;
+    @Mock
+    private EmailService emailService;
 
+    @InjectMocks
     private VerifyEmailServiceImpl verifyEmailService;
-
-    @Before
-    public void init() {
-        JavaMailSender javaMailSender = new JavaMailSenderImpl();
-        verifyEmailService = new VerifyEmailServiceImpl(repo, javaMailSender);
-    }
 
 
     @Test
