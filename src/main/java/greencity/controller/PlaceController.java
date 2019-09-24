@@ -166,7 +166,7 @@ public class PlaceController {
      *
      * @param filterDto contains all information about the filtering of the list.
      * @param pageable  pageable configuration.
-     * @return a list of {@code PlaceByBoundsDto}
+     * @return a list of {@code PageableDto}
      * @author Rostyslav Khasanov
      */
     @PostMapping("/filter/predicate")
