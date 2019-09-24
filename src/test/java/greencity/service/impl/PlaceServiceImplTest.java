@@ -9,9 +9,8 @@ import static org.mockito.Mockito.*;
 
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountDtoForAddPlace;
+import greencity.dto.discount.DiscountDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
@@ -79,7 +78,7 @@ public class PlaceServiceImplTest {
 
     Set<Discount> discountEntities = new HashSet<>();
 
-    Set<DiscountDtoForAddPlace> discountDtos = new HashSet<>();
+    Set<DiscountDto> discountDtos = new HashSet<>();
 
     Set<OpeningHours> openingHoursListEntity = new HashSet<>();
 

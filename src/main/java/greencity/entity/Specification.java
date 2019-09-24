@@ -22,4 +22,7 @@ public class Specification {
 
     @OneToMany(mappedBy = "specification")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
+
+    @OneToMany(mappedBy = "specification", cascade = CascadeType.PERSIST)
+    private List<Discount> discounts = new ArrayList<>();
 }

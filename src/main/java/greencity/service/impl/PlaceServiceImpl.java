@@ -6,11 +6,8 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.discount.DiscountDtoForUpdatePlace;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.openhours.OpeningHoursUpdateDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
@@ -19,9 +16,15 @@ import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.*;
+import greencity.service.CategoryService;
+import greencity.service.PlaceService;
+import greencity.service.SpecificationService;
+import greencity.service.UserService;
 import greencity.util.DateTimeService;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -40,14 +43,12 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
     private static final PlaceStatus APPROVED_STATUS = PlaceStatus.APPROVED;
+
     private PlaceRepo placeRepo;
     private ModelMapper modelMapper;
     private CategoryService categoryService;
-    private LocationService locationService;
-    private OpenHoursService openingHoursService;
     private UserService userService;
     private SpecificationService specificationService;
-    private DiscountService discountService;
 
     /**
      * {@inheritDoc}
@@ -55,7 +56,6 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-
     public PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
         List<AdminPlaceDto> list = places.stream()
@@ -77,52 +77,59 @@ public class PlaceServiceImpl implements PlaceService {
         Category category = categoryService.findByName(dto.getCategory().getName());
         Place place = modelMapper.map(dto, Place.class);
 
-        place.setAuthor(userService.findByEmail(email).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL)));
+        getUserByEmailAndSetToPlace(email, place);
+        place.setCategory(category);
+        place.setLocation(modelMapper.map(dto.getLocation(), Location.class));
+        saveDiscountWithPlaceAndCategory(place.getDiscounts(), category, place);
+        saveOpeningHoursWithPlace(place.getOpeningHoursList(), place);
+        return placeRepo.save(place);
+    }
+
+    /**
+     * Method for getting {@link User} and set this {@link User} to place.
+     *
+     * @param email - String, user's email.
+     * @param place - {@link Place} entity.
+     * @return user - {@link User}.
+     * @author Kateryna Horokh
+     */
+    private User getUserByEmailAndSetToPlace(String email, Place place) {
+        User user = userService.findByEmail(email).orElseThrow(
+            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        place.setAuthor(user);
 
         if (place.getAuthor().getRole() == ROLE.ROLE_ADMIN || place.getAuthor().getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(APPROVED_STATUS);
         }
-
-        place.setCategory(category);
-        Location locationWithPlace = saveLocationWithPlace(dto.getLocation(), place);
-        place.setLocation(locationWithPlace);
-        placeRepo.save(place);
-        setPlaceToOpeningHours(place);
-        setToDiscountPlaceAndCategoty(category, place);
-        return place;
+        return user;
     }
 
-    private Location saveLocationWithPlace(LocationAddressAndGeoDto dto, Place place) {
-        Location location = modelMapper.map(dto, Location.class);
-        location.setPlace(place);
-        return location;
+    /**
+     * Method for setting {@link Place} to set of {@link OpeningHours}.
+     *
+     * @param openingHoursSet - set of {@link OpeningHours}.
+     * @param place           - {@link Place} entity.
+     * @author Kateryna Horokh
+     */
+    private void saveOpeningHoursWithPlace(Set<OpeningHours> openingHoursSet, Place place) {
+        openingHoursSet.forEach(h -> h.setPlace(place));
     }
 
-    private void setToDiscountPlaceAndCategoty(Category category, Place place) {
-        log.info(LogMessage.SET_PLACE_TO_DISCOUNTS, place.getName(), category.getName());
-
-        Set<Discount> discounts = place.getDiscounts();
-        discounts.forEach(val -> {
-            Specification specification = specificationService.findByName(val.getSpecification().getName());
-            val.setSpecification(specification);
-            val.setPlace(place);
-            val.setCategory(category);
-            discountService.save(val);
+    /**
+     * Method for setting {@link Place} to set of {@link Discount}.
+     *
+     * @param discounts - set of {@link Discount}.
+     * @param category  - {@link Category} entity.
+     * @param place     - {@link Place} entity.
+     * @author Kateryna Horokh
+     */
+    private void saveDiscountWithPlaceAndCategory(Set<Discount> discounts, Category category, Place place) {
+        discounts.forEach(disc -> {
+            Specification specification = specificationService.findByName(disc.getSpecification().getName());
+            disc.setSpecification(specification);
+            disc.setPlace(place);
+            disc.setCategory(category);
         });
-    }
-
-    private void setPlaceToOpeningHours(Place place) {
-        log.info(LogMessage.SET_PLACE_TO_OPENING_HOURS, place.getName());
-
-        Set<OpeningHours> hours = place.getOpeningHoursList();
-        hours.stream()
-            .distinct()
-            .forEach(
-                h -> {
-                    h.setPlace(place);
-                    openingHoursService.save(h);
-                });
     }
 
     /**
@@ -132,69 +139,23 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Transactional
     @Override
-    public Place update(Long id, PlaceUpdateDto dto) {
+    public Place update(PlaceUpdateDto dto, String email) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
 
         Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
-        Place updatedPlace = findById(id);
-        updatedPlace.setName(dto.getName());
+        Place updatedPlace = modelMapper.map(dto, Place.class);
         updatedPlace.setCategory(updatedCategory);
-        updateLocationOfUpdatedPlace(dto, updatedPlace);
-        placeRepo.save(updatedPlace);
+        getUserByEmailAndSetToPlace(email, updatedPlace);
+        updatedPlace.setLocation(modelMapper.map(dto.getLocation(), Location.class));
+        saveDiscountWithPlaceAndCategory(updatedPlace.getDiscounts(), updatedCategory, updatedPlace);
+        saveOpeningHoursWithPlace(updatedPlace.getOpeningHoursList(), updatedPlace);
 
-        updateOpeningHoursForUpdatedPlace(dto, updatedPlace);
-        updateDiscountForUpdatedPlace(dto, updatedCategory, updatedPlace);
-
-        return updatedPlace;
-    }
-
-    private void updateDiscountForUpdatedPlace(PlaceUpdateDto dto, Category updatedCategory, Place updatedPlace) {
-        log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE, dto.getName());
-
-        Set<DiscountDtoForUpdatePlace> discountList = dto.getDiscounts();
-        Set<Discount> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
-        discountService.deleteAllByPlaceId(updatedPlace.getId());
-        Set<Discount> discounts = new HashSet<>();
-        discountList.forEach(d -> {
-            Discount discount;
-            discount = modelMapper.map(d, Discount.class);
-            Specification specification = specificationService.findByName(d.getSpecification().getName());
-            discount.setPlace(updatedPlace);
-            discount.setCategory(updatedCategory);
-            discount.setSpecification(specification);
-            discountService.save(discount);
-            discounts.add(discount);
-        });
-        discountsOld.addAll(discounts);
-    }
-
-    private void updateOpeningHoursForUpdatedPlace(PlaceUpdateDto dto, Place updatedPlace) {
-        log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE, dto.getName());
-
-        Set<OpeningHoursUpdateDto> hoursUpdateDtoSet = dto.getOpeningHoursList();
-        Set<OpeningHours> openingHoursSetOld = openingHoursService.findAllByPlaceId(updatedPlace.getId());
-        openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
-        Set<OpeningHours> hours = new HashSet<>();
-        hoursUpdateDtoSet.forEach(h -> {
-            OpeningHours openingHours;
-            openingHours = modelMapper.map(h, OpeningHours.class);
-            openingHours.setPlace(updatedPlace);
-            openingHoursService.save(openingHours);
-            hours.add(openingHours);
-        });
-        openingHoursSetOld.addAll(hours);
-    }
-
-    private void updateLocationOfUpdatedPlace(PlaceUpdateDto dto, Place updatedPlace) {
-        Location location = locationService.findByPlaceId(updatedPlace.getId());
-        modelMapper.map(dto.getLocation(), location);
+        return placeRepo.save(updatedPlace);
     }
 
     /**
-     * Method for deleting place by id.
+     * {@inheritDoc}
      *
-     * @param id - Long place's id
-     * @return boolean
      * @author Kateryna Horokh
      */
     @Override

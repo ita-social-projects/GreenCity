@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
@@ -49,7 +48,7 @@ public interface PlaceService {
     Place findById(Long id);
 
     /**
-     * Method for saving proposed {@code Place} to database.
+     * Method for saving proposed {@link Place} to database.
      *
      * @param dto - dto for Place entity
      * @return place {@code Place}
@@ -58,14 +57,14 @@ public interface PlaceService {
     Place save(PlaceAddDto dto, String email);
 
     /**
-     * Method for updating {@code Place}.
+     * Method for updating {@link Place}.
      *
-     * @param id  - {@link Place} id
-     * @param dto - dto for Place entity
-     * @return place {@code Place}
+     * @param dto   - dto for Place entity
+     * @param email - String, user's email.
+     * @return place {@link Place}
      * @author Kateryna Horokh
      */
-    Place update(Long id, PlaceUpdateDto dto);
+    Place update(PlaceUpdateDto dto, String email);
 
     /**
      * Find all places from DB.
@@ -105,7 +104,7 @@ public interface PlaceService {
      * location depends on the map bounds.
      *
      * @param filterPlaceDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *                     state of map
+     *                       state of map
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */
@@ -134,8 +133,8 @@ public interface PlaceService {
      * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
      *
      * @param filterDto contains objects whose values determine
-     *                 the filter parameters of the returned list.
-     * @param pageable pageable configuration.
+     *                  the filter parameters of the returned list.
+     * @param pageable  pageable configuration.
      * @return a list of {@code PlaceByBoundsDto}
      * @author Rostyslav Khasanov
      */

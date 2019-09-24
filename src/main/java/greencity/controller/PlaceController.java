@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
@@ -58,10 +57,10 @@ public class PlaceController {
      * @author Kateryna Horokh
      */
     @PutMapping("/update")
-    public ResponseEntity<PlaceUpdateDto> updatePlace(
-        @Valid @RequestBody PlaceUpdateDto dto) {
+    public ResponseEntity<PlaceWithUserDto> updatePlace(
+        @Valid @RequestBody PlaceUpdateDto dto, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(modelMapper.map(placeService.update(dto.getId(), dto), PlaceUpdateDto.class));
+            .body(modelMapper.map(placeService.update(dto, principal.getName()), PlaceWithUserDto.class));
     }
 
     /**
