@@ -23,6 +23,7 @@ public class FavoritePlaceDtoMapper implements Mapper<FavoritePlace, FavoritePla
     public FavoritePlace convertToEntity(FavoritePlaceDto dto) {
         FavoritePlace favoritePlace = modelMapper.map(dto, FavoritePlace.class);
         favoritePlace.setPlace(Place.builder().id(dto.getPlaceId()).build());
+
         return favoritePlace;
     }
 

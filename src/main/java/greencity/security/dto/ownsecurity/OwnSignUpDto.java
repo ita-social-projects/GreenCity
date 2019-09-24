@@ -1,6 +1,7 @@
 package greencity.security.dto.ownsecurity;
 
 import static greencity.constant.ValidationConstants.INVALID_EMAIL;
+import static greencity.constant.ValidationConstants.INVALID_PASSWORD;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -29,6 +30,9 @@ public class OwnSignUpDto {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^[A-z0-9~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]{8,}$")
+    @Pattern(
+        regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]+).{8,}$",
+        message = INVALID_PASSWORD
+    )
     private String password;
 }

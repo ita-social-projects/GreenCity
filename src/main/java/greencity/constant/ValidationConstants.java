@@ -13,6 +13,11 @@ public class ValidationConstants {
 
     public static final String EMPTY_EMAIL = "The email field can not be empty";
     public static final String INVALID_EMAIL = "The email is invalid";
+    public static final String INVALID_PASSWORD = "Password has contain at least one character of "
+        + "Uppercase letter (A-Z), "
+        + "Lowercase letter (a-z), "
+        + "Digit (0-9), "
+        + "Special character (~`!@#$%^&*()+=_-{}[]|:;”’?/<>,.).";
 
     public static final String EMPTY_ID = "The id field can not be empty";
     public static final String EMPTY_STATUS = "The status field can not be empty";
@@ -51,4 +56,13 @@ public class ValidationConstants {
     public static final String N_E_LNG_CAN_NOT_BE_NULL = "North-east longitude can not be null";
     public static final String S_W_LAT_CAN_NOT_BE_NULL = "South-west latitude can not be null";
     public static final String S_W_LNG_CAN_NOT_BE_NULL = "South-west longitude can not be null";
+
+    public static final String LAT_MIN_VALIDATION = "Has to be greatest or equals -90";
+    public static final String LAT_MAX_VALIDATION = "Has to be lover or equals 90";
+    public static final String LNG_MIN_VALIDATION = "Has to be greatest or equals -180";
+    public static final String LNG_MAX_VALIDATION = "Has to be lover or equals 180";
+
+    public static final int DISCOUNT_VALUE_MIN = 1;
+    public static final int DISCOUNT_VALUE_MAX = 100;
+    public static final String EMPTY_SPECIFICATION_NAME = "The specification name can not be empty";
 }
