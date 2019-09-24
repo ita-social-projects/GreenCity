@@ -1,9 +1,11 @@
 package greencity.security.controller;
 
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.service.OwnSecurityService;
+import greencity.security.service.RestoreLogicService;
 import greencity.security.service.VerifyEmailService;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,6 +30,7 @@ public class OwnSecurityController {
     private String clientAddress;
     private OwnSecurityService service;
     private VerifyEmailService verifyEmailService;
+    private RestoreLogicService restoreLogicService;
 
     /**
      * Constructor.
@@ -36,9 +39,10 @@ public class OwnSecurityController {
      * @param verifyEmailService {@link VerifyEmailService} - service for verify email logic.
      */
     public OwnSecurityController(
-        OwnSecurityService service, VerifyEmailService verifyEmailService) {
+        OwnSecurityService service, VerifyEmailService verifyEmailService, RestoreLogicService restoreLogicService) {
         this.service = service;
         this.verifyEmailService = verifyEmailService;
+        this.restoreLogicService = restoreLogicService;
     }
 
     /**
@@ -87,5 +91,18 @@ public class OwnSecurityController {
     @PostMapping("/updateAccessToken")
     public ResponseEntity updateAccessToken(@RequestBody @NotBlank String refreshToken) {
         return ResponseEntity.ok().body(service.updateAccessToken(refreshToken));
+    }
+
+
+    @GetMapping("/restorePassword/")
+    public ResponseEntity restore(@RequestParam @NotBlank String email) {
+        restoreLogicService.sendEmailForRestore(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/changePassword/")
+    public ResponseEntity changePassword(@Valid @RequestBody OwnRestoreDto form) {
+        restoreLogicService.restoreByToken(form.getToken(), form.getPassword());
+        return ResponseEntity.ok().build();
     }
 }

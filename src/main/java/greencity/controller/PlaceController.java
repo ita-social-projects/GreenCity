@@ -52,8 +52,9 @@ public class PlaceController {
      *
      * @param id place
      * @return info about place
+     * @author Dmytro Dovhal
      */
-    @GetMapping("/Info/{id}")
+    @GetMapping("/info/{id}")
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getInfoById(id));
     }

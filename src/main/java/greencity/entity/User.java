@@ -64,6 +64,9 @@ public class User {
     @OneToOne(mappedBy = "user")
     private VerifyEmail verifyEmail;
 
+    @OneToOne(mappedBy = "user")
+    private RestorePasswordEmail restorePasswordEmail;
+
     @OneToMany(mappedBy = "user")
     private List<Rate> rates = new ArrayList<>();
 }
