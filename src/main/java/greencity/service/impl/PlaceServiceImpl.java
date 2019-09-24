@@ -76,7 +76,7 @@ public class PlaceServiceImpl implements PlaceService {
         Category category = categoryService.findByName(dto.getCategory().getName());
         Place place = modelMapper.map(dto, Place.class);
 
-        getUserByEmailAndSetToPlace(email, place);
+        setUserToPlaceByEmail(email, place);
         place.setCategory(category);
         place.setLocation(modelMapper.map(dto.getLocation(), Location.class));
         saveDiscountWithPlaceAndCategory(place.getDiscounts(), category, place);
@@ -92,7 +92,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @return user - {@link User}.
      * @author Kateryna Horokh
      */
-    private User getUserByEmailAndSetToPlace(String email, Place place) {
+    private User setUserToPlaceByEmail(String email, Place place) {
         User user = userService.findByEmail(email).orElseThrow(
             () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         place.setAuthor(user);
