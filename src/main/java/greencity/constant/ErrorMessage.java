@@ -40,4 +40,6 @@ public class ErrorMessage {
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
     public static final String NOT_IMPLEMENTED_METHOD = "Method hasn't implementation, please create it "
         + "before use this method again";
+    public static final String WRONG_DATE_TIME_FORMAT = "The date format is wrong. Should matches "
+        + AppConstant.DATE_FORMAT;
 }
