@@ -126,16 +126,24 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Find entity from DB by name.
+     * {@inheritDoc}
      *
-     * @param name - Category name.
      * @author Kateryna Horokh
      */
     @Override
     public Category findByName(String name) {
+        Category category = categoryRepo.findByName(name);
+        if (category == null) {
+            throw new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME + name);
+        }
         return categoryRepo.findByName(name);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
+     */
     @Override
     public List<CategoryDto> findAllCategoryDto() {
         List<Category> categories = findAll();

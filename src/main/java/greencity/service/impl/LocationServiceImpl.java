@@ -64,16 +64,6 @@ public class LocationServiceImpl implements LocationService {
     /**
      * {@inheritDoc}
      *
-     * @author Kateryna Horokh
-     */
-    @Override
-    public Location findByLatAndLng(Double lat, Double lng) {
-        return locationRepo.findByLatAndLng(lat, lng);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * @author Nazar Vladyka
      */
     @Override
@@ -101,5 +91,15 @@ public class LocationServiceImpl implements LocationService {
 
         locationRepo.delete(findById(id));
         return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kateryna Horokh
+     */
+    @Override
+    public Location findByPlaceId(Long placeId) {
+        return locationRepo.findByPlaceId(placeId);
     }
 }

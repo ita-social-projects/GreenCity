@@ -15,6 +15,7 @@ public class FilterPlaceDto {
     private MapBoundsDto mapBoundsDto;
     private FilterDiscountDto discountDto;
     private PlaceStatus status;
+    private String time;
     @Valid
     private FilterDistanceDto distanceFromUserDto;
     private String searchReg;
