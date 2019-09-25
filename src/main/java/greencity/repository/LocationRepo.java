@@ -18,4 +18,12 @@ public interface LocationRepo extends JpaRepository<Location, Long> {
      * @author Kateryna Horokh.
      */
     Location findByLatAndLng(Double lat, Double lng);
+
+    /**
+     * Finds {@code Location} records related to the specified {@code Place}.
+     *
+     * @param placeId to find by.
+     * @return a {@code Location} for the place by id.
+     */
+    Location findByPlaceId(Long placeId);
 }

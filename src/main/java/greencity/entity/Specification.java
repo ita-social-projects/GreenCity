@@ -3,16 +3,15 @@ package greencity.entity;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"specificationValues"})
+@ToString(exclude = {"specificationValues"})
 public class Specification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,4 +22,7 @@ public class Specification {
 
     @OneToMany(mappedBy = "specification")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
+
+    @OneToMany(mappedBy = "specification", cascade = CascadeType.PERSIST)
+    private List<Discount> discounts = new ArrayList<>();
 }

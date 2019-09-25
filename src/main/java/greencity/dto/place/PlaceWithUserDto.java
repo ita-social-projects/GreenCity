@@ -2,6 +2,7 @@ package greencity.dto.place;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.discount.DiscountDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.user.UserForListDto;
@@ -31,6 +32,9 @@ public class PlaceWithUserDto {
 
     @Valid
     private List<OpeningHoursDto> openingHoursList;
+
+    @Valid
+    private List<DiscountDto> discounts;
 
     @Valid
     private UserForListDto author;

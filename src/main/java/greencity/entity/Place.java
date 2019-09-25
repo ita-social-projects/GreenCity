@@ -5,18 +5,22 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.util.DateTimeService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(
-    exclude = {"comments", "photos", "location", "favoritePlaces", "category", "rates", "webPages", "status"})
+    exclude = {"discounts", "author", "openingHoursList", "comments", "photos",
+        "location", "favoritePlaces", "category", "rates", "webPages", "status"})
+@ToString(exclude = {"comments", "photos", "specificationValues", "favoritePlaces",
+    "webPages", "rates", "discounts", "openingHoursList", "location", "author"})
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +46,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
 
-    @OneToOne(mappedBy = "place", cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL})
     private Location location;
 
     @OneToMany(mappedBy = "place")
@@ -57,11 +61,11 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
 
-    @OneToMany(mappedBy = "place")
-    private List<Discount> discounts = new ArrayList<>();
+    @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Discount> discounts = new HashSet<>();
 
-    @OneToMany(mappedBy = "place")
-    private List<OpeningHours> openingHoursList = new ArrayList<>();
+    @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<OpeningHours> openingHoursList = new HashSet<>();
 
     @ManyToOne
     private User author;
