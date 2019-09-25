@@ -135,11 +135,10 @@ public class PlaceController {
     @GetMapping("/{status}")
     @ApiPageable
     public ResponseEntity<PageableDto> getPlacesByStatus(
-        @PathVariable String status,
+        @PathVariable PlaceStatus status,
         @ApiIgnore Pageable pageable) {
-        PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.getPlacesByStatus(placeStatus, pageable));
+            .body(placeService.getPlacesByStatus(status, pageable));
     }
 
     /**
