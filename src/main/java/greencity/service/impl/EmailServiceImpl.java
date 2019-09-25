@@ -77,6 +77,22 @@ public class EmailServiceImpl implements EmailService {
         sendEmail(user, "Verify your email address", template);
     }
 
+    /**
+     *{@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
+    @Override
+    public void sendRestoreEmail(User user, String token) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("clientLink", clientLink);
+        model.put("userFirstName", user.getFirstName());
+        model.put("restorePassword", clientLink + "/auth/restore/" + token);
+        String template = createEmailTemplate(model, "restore-email-page");
+        sendEmail(user, "Confirm restoring password", template);
+    }
+
+
     private void sendEmail(User receiver, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);

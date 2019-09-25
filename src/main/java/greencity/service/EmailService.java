@@ -23,4 +23,12 @@ public interface EmailService {
      * @param token {@link String} - email verification token
      */
     void sendVerificationEmail(User user, String token);
+
+    /**
+     * Method for sending email for restore.
+     *
+     * @param user - {@link User}
+     * @param token - {@link String}
+     */
+    void  sendRestoreEmail(User user, String token);
 }
