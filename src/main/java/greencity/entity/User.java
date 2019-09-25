@@ -15,6 +15,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Builder
 @Table(name = "user")
+@EqualsAndHashCode(
+    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity"})
+@ToString(
+    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
