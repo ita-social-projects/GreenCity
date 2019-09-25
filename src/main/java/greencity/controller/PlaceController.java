@@ -82,7 +82,7 @@ public class PlaceController {
      * @author Zakhar Skaletskyi
      */
     @GetMapping("/info/favorite/{placeId}")
-    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @PathVariable Long placeId) {
+    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@PathVariable Long placeId) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(placeId));
     }
 

@@ -57,7 +57,7 @@ public class FavoritePlaceController {
      * @author Zakhar Skaletskyi
      */
     @DeleteMapping("/{placeId}")
-    public ResponseEntity<Long> deleteByUserEmailAndPlaceId(@NotNull @PathVariable Long placeId,
+    public ResponseEntity<Long> deleteByUserEmailAndPlaceId(@PathVariable Long placeId,
                                                                      Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
             .deleteByUserEmailAndPlaceId(placeId, principal.getName()));
@@ -72,7 +72,7 @@ public class FavoritePlaceController {
      * @author Zakhar Skaletskyi
      */
     @GetMapping("/favorite/{placeId}")
-    public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@NotNull @PathVariable Long placeId,
+    public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@PathVariable Long placeId,
                                                                            Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
             .getFavoritePlaceWithLocation(placeId, principal.getName()));
