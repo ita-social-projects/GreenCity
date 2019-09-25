@@ -6,7 +6,6 @@ import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
-import greencity.util.DateTimeService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
