@@ -6,6 +6,7 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
@@ -66,7 +67,7 @@ public class PlaceController {
     }
 
     /**
-     * Controller to get place info.
+     * The method to get place info.
      *
      * @param id place
      * @return info about place
@@ -77,24 +78,29 @@ public class PlaceController {
     }
 
     /**
-     * Controller to get favorite place as place info.
+     * The method to get {@code FavoritePlace}. as {@code Place} info.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param id favorite place
-     * @return info about place with name as in favorite place
+     * @param placeId - {@code Place} id
+     * @return info about {@code Place} with name as in {@code FavoritePlace}
+     * @author Zakhar Skaletskyi
      */
-    @GetMapping("/info/favorite/{id}")
-    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(id));
+    @GetMapping("/info/favorite/{placeId}")
+    public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@PathVariable Long placeId) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(placeId));
     }
 
     /**
-     * Controller to save place to user's favorite list.
+     * The method to save {@link Place} to {@link User}'s favorite list.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @return favorite place name and place id
+     * @param favoritePlaceDto -{@link FavoritePlaceDto}
+     * @return principal - user e,ail
+     * @author Zakhar Skaletskyi
      */
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
-        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, Principal principal) {
+        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(favoritePlaceService.save(favoritePlaceDto, principal.getName()));
     }
@@ -109,6 +115,7 @@ public class PlaceController {
      */
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
+
         @Valid @RequestBody FilterPlaceDto filterPlaceDto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.findPlacesByMapsBounds(filterPlaceDto));

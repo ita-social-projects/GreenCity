@@ -1,11 +1,8 @@
 package greencity.repository;
 
 import greencity.entity.FavoritePlace;
-import greencity.entity.enums.PlaceStatus;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,17 +16,6 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
      */
     List<FavoritePlace> findAllByUserEmail(String email);
 
-
-    /**
-     * Find favorite place existing by id and user email.
-     *
-     * @param id        - favorite place
-     * @param userEmail - user's email
-     * @return FavoritePlace entity
-     * @author Zakhar Skaletskyi
-     */
-    FavoritePlace findByIdAndUserEmail(Long id, String userEmail);
-
     /**
      * Find favorite place existing by place id and user email.
      *
@@ -40,11 +26,12 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
      */
     FavoritePlace findByPlaceIdAndUserEmail(Long id, String userEmail);
 
-
     /**
-     * Testsatd ftstasftsat tfsattfa stfastsad sad.
+     * Find favorite place by place id.
      *
-     * @return a list of {@code Place}
+     * @param placeId        - favorite place
+     * @return FavoritePlace entity
+     * @author Zakhar Skaletskyi
      */
-    List<FavoritePlace> findAll();
+    FavoritePlace findByPlaceId(Long placeId);
 }

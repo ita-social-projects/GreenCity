@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.FavoritePlace;
