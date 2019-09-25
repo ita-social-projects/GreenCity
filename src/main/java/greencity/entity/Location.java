@@ -22,6 +22,6 @@ public class Location {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @OneToOne
+    @OneToOne(mappedBy = "location")
     private Place place;
 }
