@@ -62,7 +62,7 @@ public class PlaceController {
     public ResponseEntity<PlaceUpdateDto> updatePlace(
         @Valid @RequestBody PlaceUpdateDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(modelMapper.map(placeService.update(dto.getId(), dto), PlaceUpdateDto.class));
+            .body(modelMapper.map(placeService.update(dto), PlaceUpdateDto.class));
     }
 
     /**
