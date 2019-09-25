@@ -6,15 +6,13 @@ import greencity.entity.User;
 import greencity.exception.NotFoundException;
 import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.RestorePasswordEmailService;
+import greencity.service.EmailService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,12 +34,28 @@ public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailServ
 
     private JavaMailSender javaMailSender;
 
+    private EmailService emailService;
 
-    public RestorePasswordEmailServiceImpl(RestorePasswordEmailRepo repo, JavaMailSender javaMailSender) {
+
+    /**
+     * Constructor for RestorePasswordEmailServiceImpl class.
+     *
+     * @param repo           {@link RestorePasswordEmailRepo}
+     * @param javaMailSender {@link JavaMailSender}
+     * @param emailService   {@link EmailService}
+     */
+    public RestorePasswordEmailServiceImpl(RestorePasswordEmailRepo repo, JavaMailSender javaMailSender,
+                                           EmailService emailService) {
         this.javaMailSender = javaMailSender;
         this.repo = repo;
+        this.emailService = emailService;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
     @Override
     public void save(User user) {
         RestorePasswordEmail restorePasswordEmail =
@@ -51,19 +65,15 @@ public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailServ
                 .expiryDate(calculateExpiryDate(expireTime))
                 .build();
         repo.save(restorePasswordEmail);
-
-        new Thread(
-            () -> {
-                try {
-                    sendEmail(user, restorePasswordEmail.getToken());
-                } catch (MessagingException e) {
-                    log.error(e.getMessage());
-                }
-            })
-            .start();
+        emailService.sendRestoreEmail(user, restorePasswordEmail.getToken());
         log.info("end");
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
     @Override
     public void delete(RestorePasswordEmail restorePasswordEmail) {
         log.info("begin");
@@ -76,36 +86,24 @@ public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailServ
     }
 
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
     @Override
     public List<RestorePasswordEmail> findAll() {
         return repo.findAll();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
     @Override
     public boolean isDateValidate(LocalDateTime emailExpiredDate) {
         return LocalDateTime.now().isBefore(emailExpiredDate);
-    }
-
-    private void sendEmail(User user, String token) throws MessagingException {
-        log.info("begin");
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-        String subject = "Restore password";
-        String message =
-            "<b>For sendEmailForRestore your password, please follow next link.</b><br>"
-                + "Hi "
-                + user.getFirstName()
-                + "!\n"
-                + "Thanks for your interest in Green City!</b><br>";
-
-        mimeMessageHelper.setTo(user.getEmail());
-        mimeMessageHelper.setSubject(subject);
-        mimeMessage.setContent(
-            message + serverAddress + "/ownSecurity/changePassword?token=" + token,
-            "text/html; charset=utf-8");
-
-        javaMailSender.send(mimeMessage);
-        log.info("end");
     }
 
     private LocalDateTime calculateExpiryDate(Integer expiryTimeInHour) {

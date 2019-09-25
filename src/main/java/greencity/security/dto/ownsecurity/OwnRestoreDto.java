@@ -1,5 +1,7 @@
 package greencity.security.dto.ownsecurity;
 
+import static greencity.constant.ValidationConstants.INVALID_PASSWORD;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -11,11 +13,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OwnRestoreDto {
     @NotBlank
-    @Pattern(regexp = "^[A-z0-9~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]{8,}$")
+    @Pattern(
+        regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]+).{8,}$",
+        message = INVALID_PASSWORD
+    )
     private String password;
+
     @NotBlank
-    @Pattern(regexp = "^[A-z0-9~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]{8,}$")
+    @Pattern(
+        regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_{}|:;”’?/<>,.\\]\\[]+).{8,}$",
+        message = INVALID_PASSWORD
+    )
     private String confirmPassword;
+
     @NotBlank
     private String token;
 }

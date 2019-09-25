@@ -96,13 +96,29 @@ public class OwnSecurityController {
     }
 
 
-    @GetMapping("/restorePassword/")
+    /**
+     * Method for restoring password and sending email for restore.
+     *
+     * @param email - {@link String}
+     * @return - {@link ResponseEntity }
+     *
+     * @author Dmytro Dovhal
+     */
+    @GetMapping("/restorePassword")
     public ResponseEntity restore(@RequestParam @NotBlank String email) {
         restoreLogicService.sendEmailForRestore(email);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/changePassword/")
+    /**
+     * Method for changing password.
+     *
+     * @param form - {@link OwnRestoreDto}
+     * @return - {@link ResponseEntity}
+     *
+     * @author Dmytro Dovhal
+     */
+    @PostMapping("/changePassword")
     public ResponseEntity changePassword(@Valid @RequestBody OwnRestoreDto form) {
         restoreLogicService.restoreByToken(form.getToken(), form.getPassword());
         return ResponseEntity.ok().build();

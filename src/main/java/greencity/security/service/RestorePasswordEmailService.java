@@ -5,6 +5,12 @@ import greencity.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Provides the interface to manage {@link RestorePasswordEmailService}.
+ *
+ * @author Dmytro Dovhal
+ * @version 1.0
+ */
 public interface RestorePasswordEmailService {
     /**
      * Save method.

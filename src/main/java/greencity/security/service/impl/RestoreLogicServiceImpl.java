@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-@Transactional
 public class RestoreLogicServiceImpl implements RestoreLogicService {
     private RestorePasswordEmailService restorePasswordEmailService;
     private UserRepo userRepo;
@@ -30,6 +29,15 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
     private PasswordEncoder passwordEncoder;
     private OwnSecurityRepo ownSecurityRepo;
 
+    /**
+     * Constructor for RestoreLogicServiceImpl class.
+     *
+     * @param userRepo                    {@link UserRepo}
+     * @param repo                        {@link RestorePasswordEmailRepo}
+     * @param ownSecurityRepo             {@link OwnSecurityRepo}
+     * @param passwordEncoder             {@link PasswordEncoder}
+     * @param restorePasswordEmailService {@link RestorePasswordEmailService}
+     */
     public RestoreLogicServiceImpl(UserRepo userRepo,
                                    RestorePasswordEmailRepo repo,
                                    OwnSecurityRepo ownSecurityRepo,
@@ -42,6 +50,11 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
     @Override
     public void sendEmailForRestore(String email) {
         log.info("start");
@@ -52,8 +65,12 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
     }
 
 
+    /**
+     * Method to deleting expiry restore tokens.
+     *
+     * @author Dmytro Dovhal
+     */
     @Scheduled(fixedRate = 86400000)
-    @Override
     public void deleteExpiry() {
         log.info("begin");
         restorePasswordEmailService
@@ -67,6 +84,12 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
         log.info("end");
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
+    @Transactional
     @Override
     public void restoreByToken(String token, String password) {
         log.info("begin");
@@ -90,7 +113,7 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
     }
 
 
-    public void updatePassword(String pass, Long id) {
+    private void updatePassword(String pass, Long id) {
         String password = passwordEncoder.encode(pass);
         ownSecurityRepo.updatePassword(password, id);
     }
