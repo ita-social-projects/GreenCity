@@ -7,6 +7,9 @@ import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.service.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -30,6 +33,13 @@ public class UserController {
      * @return {@link UserStatusDto}
      * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Update status of user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "User status successfully updated"),
+        @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+        @ApiResponse(code = 403, message = "Accessing for this action  is forbidden"),
+        @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
     @PatchMapping("status")
     public ResponseEntity<UserStatusDto> updateStatus(
         @Valid @RequestBody UserStatusDto userStatusDto, @ApiIgnore Principal principal) {
@@ -47,6 +57,13 @@ public class UserController {
      * @return {@link UserRoleDto}
      * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Update role of user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "User role successfully updated"),
+        @ApiResponse(code = 401, message = "You are not authorized to this resource"),
+        @ApiResponse(code = 403, message = "Accessing for  is forbidden"),
+        @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
     @PatchMapping("role")
     public ResponseEntity<UserRoleDto> updateRole(
         @Valid @RequestBody UserRoleDto userRoleDto, @ApiIgnore Principal principal) {
