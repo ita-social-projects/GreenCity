@@ -48,7 +48,8 @@ values ('Food');
 INSERT INTO place (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
 values ('Forum', '0322 489 850', 'forum_lviv@gmail.com', '2004-05-23T14:25:10', 2, 1, 1, 'Shopping center', 1);
 INSERT INTO place (name, phone, email, modified_date, status, author_id, category_id, description, location_id) values
-  ('Victoria Gardens', '0322 590 202', 'victoria_gardens@gmail.com', '2005-05-23T14:25:10', 2, 1, 1, 'Shopping center', 2);
+  ('Victoria Gardens', '0322 590 202', 'victoria_gardens@gmail.com', '2005-05-23T14:25:10', 2, 1, 1, 'Shopping center',
+   2);
 INSERT INTO place (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
 values ('Pravda', '0322 157 694', 'pravda_lviv@gmail.com', '2016-09-23T14:25:10', 2, 1, 1, 'Restaurant', 3);
 INSERT INTO place (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
@@ -154,7 +155,6 @@ INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
 VALUES ('20:00:00', '06:00:00', 4, 5);
 
 
-
 INSERT INTO comment (date, text, place_id, user_id)
 values ('2019-08-11', 'cool place', 1, 1);
 INSERT INTO comment (date, text, place_id, user_id)
@@ -176,5 +176,7 @@ VALUES ('Проспект В''ячеслава Чорновола, 2, Львів
 INSERT INTO location (address, lat, lng)
 VALUES ('Площа Ринок, 14 (підвал), Львів, Львівська область, 79000', 49.841311, 24.03229);
 
+insert into discount
+values (1, 3, 1, 1, 2), (2, 13, 2, 1, 2), (3, 33, 3, 1, 2), (4, 63, 4, 1, 2), (5, 93, 5, 1, 2), (6, 50, 6, 1, 2);
 
 
