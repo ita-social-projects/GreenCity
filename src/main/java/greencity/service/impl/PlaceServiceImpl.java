@@ -251,7 +251,6 @@ public class PlaceServiceImpl implements PlaceService {
 
         Place updatable = findById(id);
         if (!updatable.getStatus().equals(status)) {
-            //if status was proposed and it's changes, means approve/declines by Admin
             if (updatable.getStatus().equals(PlaceStatus.PROPOSED)) {
                 emailService.sendChangePlaceStatusEmail(updatable, status);
             }
@@ -275,7 +274,6 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto) {
         List<UpdatePlaceStatusDto> updatedPlaces = new ArrayList<>();
-
         for (Long id : dto.getIds()) {
             updatedPlaces.add(updateStatus(id, dto.getStatus()));
         }
