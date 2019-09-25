@@ -89,7 +89,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     public Long deleteByUserEmailAndPlaceId(Long placeId, String userEmail) {
         log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL, userEmail, placeId);
         FavoritePlace favoritePlace = repo.findByPlaceIdAndUserEmail(placeId, userEmail);
-
         if (favoritePlace == null) {
             throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }

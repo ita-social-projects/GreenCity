@@ -240,7 +240,6 @@ public class PlaceServiceImpl implements PlaceService {
 
         Place updatable = findById(id);
         if (!updatable.getStatus().equals(status)) {
-            //if status was proposed and it's changes, means approve/declines by Admin
             if (updatable.getStatus().equals(PlaceStatus.PROPOSED)) {
                 emailService.sendChangePlaceStatusEmail(updatable, status);
             }
@@ -264,7 +263,6 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto) {
         List<UpdatePlaceStatusDto> updatedPlaces = new ArrayList<>();
-
         for (Long id : dto.getIds()) {
             updatedPlaces.add(updateStatus(id, dto.getStatus()));
         }
@@ -363,14 +361,8 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
-        log.info("in getPlacesByFilter()");
-        log.info("filter= " + filterDto.toString());
         List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
-        log.info("after placeRepo.findAll()");
-        log.info(list.toString());
         list = getPlacesByDistanceFromUser(filterDto, list);
-        log.info("after getPlacesByDistanceFromUser.findAll()");
-        log.info(list.toString());
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
