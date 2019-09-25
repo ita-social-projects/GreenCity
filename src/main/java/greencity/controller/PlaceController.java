@@ -75,10 +75,11 @@ public class PlaceController {
     }
 
     /**
-     * Controller to get favorite place as place info.
+     * Controller to get {@code FavoritePlace}. as {@code Place} info.
      *
-     * @param placeId - place id
-     * @return info about place with name as in favorite place
+     * @param placeId - {@code Place} id
+     * @return info about {@code Place} with name as in {@code FavoritePlace}
+     * @author Zakhar Skaletskyi
      */
     @GetMapping("/info/favorite/{placeId}")
     public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@NotNull @PathVariable Long placeId) {
@@ -87,8 +88,9 @@ public class PlaceController {
 
     /**
      * Controller to save place to user's favorite list.
-     *
-     * @return favorite place name and place id
+     * @param favoritePlaceDto -Favorite Place Dto
+     * @return principal - user e,ail
+     * @author Zakhar Skaletskyi
      */
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
