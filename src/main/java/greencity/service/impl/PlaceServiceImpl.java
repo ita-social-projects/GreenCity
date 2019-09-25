@@ -1,13 +1,18 @@
 package greencity.service.impl;
 
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
@@ -16,6 +21,7 @@ import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -156,7 +162,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Nazar Vladyka.
      */
     @Override
-    public PlaceStatusDto updateStatus(Long id, PlaceStatus status) {
+    public UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
@@ -166,10 +172,27 @@ public class PlaceServiceImpl implements PlaceService {
         } else {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
             throw new PlaceStatusException(
-                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
+                updatable.getId() + ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
         }
 
-        return modelMapper.map(placeRepo.save(updatable), PlaceStatusDto.class);
+        return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Transactional
+    @Override
+    public List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto) {
+        List<UpdatePlaceStatusDto> updatedPlaces = new ArrayList<>();
+
+        for (Long id : dto.getIds()) {
+            updatedPlaces.add(updateStatus(id, dto.getStatus()));
+        }
+
+        return updatedPlaces;
     }
 
     /**
@@ -207,8 +230,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Marian Milian
      */
     @Override
-    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid MapBoundsDto mapBoundsDto) {
-        List<Place> list = placeRepo.findAll(new PlaceFilter(mapBoundsDto));
+    public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid FilterPlaceDto filterPlaceDto) {
+        List<Place> list = placeRepo.findAll(new PlaceFilter(filterPlaceDto));
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
@@ -249,9 +272,76 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
+        log.info("in getPlacesByFilter()");
+        log.info("filter= " + filterDto.toString());
         List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
+        log.info("after placeRepo.findAll()");
+        log.info(list.toString());
+        list = getPlacesByDistanceFromUser(filterDto, list);
+        log.info("after getPlacesByDistanceFromUser.findAll()");
+        log.info(list.toString());
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Method that filtering places by distance.
+     *
+     * @param filterDto - {@link FilterPlaceDto} DTO.
+     * @param placeList - {@link List} of {@link Place} that will be filtered.
+     * @return {@link List} of {@link Place} - list of filtered {@link Place}s.
+     * @author Nazar Stasyuk
+     */
+    private List<Place> getPlacesByDistanceFromUser(FilterPlaceDto filterDto, List<Place> placeList) {
+        FilterDistanceDto distanceFromUserDto = filterDto.getDistanceFromUserDto();
+        if (distanceFromUserDto != null
+            && distanceFromUserDto.getLat() != null
+            && distanceFromUserDto.getLng() != null
+            && distanceFromUserDto.getDistance() != null) {
+            placeList = placeList.stream().filter(place -> {
+                double userLatRad = Math.toRadians(distanceFromUserDto.getLat());
+                double userLngRad = Math.toRadians(distanceFromUserDto.getLng());
+                double placeLatRad = Math.toRadians(place.getLocation().getLat());
+                double placeLngRad = Math.toRadians(place.getLocation().getLng());
+
+                double distance = CONSTANT_OF_FORMULA_HAVERSINE_KM * Math.acos(
+                    Math.cos(userLatRad)
+                        * Math.cos(placeLatRad)
+                        * Math.cos(placeLngRad - userLngRad)
+                        + Math.sin(userLatRad)
+                        * Math.sin(placeLatRad));
+                return distance <= distanceFromUserDto.getDistance();
+            }).collect(Collectors.toList());
+        }
+        return placeList;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
+    @Override
+    public PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable) {
+        Page<Place> list = placeRepo.findAll(new PlaceFilter(filterDto), pageable);
+        List<AdminPlaceDto> adminPlaceDtos =
+            list.getContent().stream()
+                .map(user -> modelMapper.map(user, AdminPlaceDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<AdminPlaceDto>(
+            adminPlaceDtos,
+            list.getTotalElements(),
+            list.getPageable().getPageNumber());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Override
+    public List<PlaceStatus> getStatuses() {
+        return Arrays.asList(PlaceStatus.class.getEnumConstants());
     }
 }

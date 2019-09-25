@@ -75,8 +75,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     @Override
     public List<FavoritePlaceDto> findAllByUserEmail(String email) {
         log.info(LogMessage.IN_FIND_ALL);
-        List<FavoritePlace> favoritePlaces = repo.findAllByUserEmail(email);
-        return favoritePlaces.stream().map(fp -> favoritePlaceDtoMapper.convertToDto(fp))
+        return repo.findAllByUserEmail(email).stream().map(fp -> favoritePlaceDtoMapper.convertToDto(fp))
             .collect(Collectors.toList());
     }
 
@@ -146,17 +145,5 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
             throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
         return favoritePlaceWithLocationMapper.convertToDto(repo.findByPlaceIdAndUserEmail(placeId, email));
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Zakhar Skaletskyi
-     */
-    @Override
-    public List<FavoritePlaceDto> getFavoritePlaceWithPlaceId(String email) {
-        log.info(LogMessage.IN_GET_FAVORITE_PLACE_WITH_PLACE_ID, email);
-        return repo.findAllByUserEmail(email).stream().map(res -> favoritePlaceDtoMapper.convertToDto(res))
-            .collect(Collectors.toList());
     }
 }

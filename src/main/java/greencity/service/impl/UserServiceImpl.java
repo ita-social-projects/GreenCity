@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserRoleDto;
@@ -12,6 +13,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.*;
 import greencity.repository.UserRepo;
+import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -149,6 +151,21 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable) {
+        Page<User> users = repo.findAll(new UserFilter(filterUserDto), pageable);
+        List<UserForListDto> userForListDtos =
+            users.getContent().stream()
+                .map(user -> modelMapper.map(user, UserForListDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<UserForListDto>(
+            userForListDtos,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber());
+    }
+
+    /**
      * Method which check that, if admin/moderator update role/status of himself, then throw exception.
      *
      * @param id    id of updatable user.
@@ -156,7 +173,8 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void checkUpdatableUser(Long id, String email) {
-        if (id == findIdByEmail(email)) {
+        User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        if (id == user.getId()) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
     }

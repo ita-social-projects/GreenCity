@@ -22,7 +22,7 @@ public interface FavoritePlaceService {
      * Update favorite place name for user.
      *
      * @param favoritePlaceDto - dto with favorite place name, place id and user email
-     * @param userEmail            - User email
+     * @param userEmail        - User email
      * @return FavoritePlaceDto instance
      * @author Zakhar Skaletskyi
      */
@@ -42,7 +42,7 @@ public interface FavoritePlaceService {
      * Delete favorite place by user email and place id or favorite place id.
      * If id>0 then delete by favorite place id. If id<0 then delete by place id.
      *
-     * @param placeId        - favorite place id
+     * @param placeId   - favorite place id
      * @param userEmail - user's email
      * @return -  id of deleted favorite place
      * @author Zakhar Skaletskyi
@@ -71,20 +71,10 @@ public interface FavoritePlaceService {
     /**
      * Get favorite place coordinates, id and name.
      *
-     * @param id        favorite place
+     * @param id    favorite place
      * @param email - user's email
      * @return PlaceByBoundsDto with name from favorite place
-     *
      * @author Zakhar Skaletskyi
      */
     PlaceByBoundsDto getFavoritePlaceWithLocation(Long id, String email);
-
-    /**
-     * Find all favorite places names with placeId by user email.
-     *
-     * @param email - user's email
-     * @return list of dto
-     * @author Zakhar Skaletskyi
-     */
-    List<FavoritePlaceDto> getFavoritePlaceWithPlaceId(String email);
 }

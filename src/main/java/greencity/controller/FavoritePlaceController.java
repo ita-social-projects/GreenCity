@@ -46,19 +46,6 @@ public class FavoritePlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(principal.getName()));
     }
 
-    /**
-     * Find all favorite places names with placeId by user email.
-     *
-     * @param principal - Principal with user email
-     * @return list of dto
-     * @author Zakhar Skaletskyi
-     */
-
-    @GetMapping("/with_place_id")
-    public ResponseEntity<List<FavoritePlaceDto>> findAllByUserEmailWithPlaceId(Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .getFavoritePlaceWithPlaceId(principal.getName()));
-    }
 
     /**
      * Delete favorite place by user email and place id or favorite place id.
@@ -70,7 +57,7 @@ public class FavoritePlaceController {
      * @author Zakhar Skaletskyi
      */
     @DeleteMapping("/{placeId}")
-    public ResponseEntity<Long> deleteByUserEmailAndPlaceIdOrPlaceId(@NotNull @PathVariable Long placeId,
+    public ResponseEntity<Long> deleteByUserEmailAndPlaceId(@NotNull @PathVariable Long placeId,
                                                                      Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
             .deleteByUserEmailAndPlaceId(placeId, principal.getName()));
