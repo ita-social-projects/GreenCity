@@ -116,6 +116,8 @@ public class PlaceController {
 
     /**
      * The method parse the string param to PlaceStatus value.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param status   a string represents {@link PlaceStatus} enum value.
      * @param pageable pageable configuration.
