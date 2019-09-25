@@ -42,6 +42,9 @@ INSERT INTO own_security (id, password, user_id)
 VALUES (9, '$2a$10$cgaNMFjdAFX6k810YSZDSuvKVlWFcq6/F7p2lcgLzK6sFB48dky2W', 9);
 
 
+INSERT INTO category (name)
+values ('Food');
+
 INSERT INTO location (address, lat, lng) VALUES ('вулиця Під Дубом', 49.84988, 24.022533);
 INSERT INTO location (address, lat, lng)
 VALUES ('Вулиця Кульпарківська, 226а, Львів, Львівська область, 79000', 49.807129, 23.977985);
@@ -51,9 +54,6 @@ INSERT INTO location (address, lat, lng)
 VALUES ('Проспект В''ячеслава Чорновола, 2, Львів, Львівська область, 79000', 49.847489, 24.025975);
 INSERT INTO location (address, lat, lng)
 VALUES ('Площа Ринок, 14 (підвал), Львів, Львівська область, 79000', 49.841311, 24.03229);
-
-INSERT INTO category (name)
-values ('Food');
 
 INSERT INTO place (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
 values ('Forum', '0322 489 850', 'forum_lviv@gmail.com', '2004-05-23T14:25:10', 2, 1, 1, 'Shopping center', 1);

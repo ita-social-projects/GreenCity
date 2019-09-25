@@ -76,12 +76,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity/**",
                 "/place/getListPlaceLocationByMapsBounds/**",
                 "/googleSecurity/**",
-                "/place/filter/**"
+                "/place/filter/**",
+                "/restorePassword/**",
+                "/updatePassword/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.GET,
                 "/category/**",
-                "/place/Info/{id}/**",
+                "/place/info/{id}/**",
                 "/favorite_place/favorite/{id}",
                 "/place/info/favorite/**",
                 "/place/statuses/**",
