@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
@@ -106,10 +105,9 @@ public class PlaceController {
      */
     @GetMapping("/{status}")
     public ResponseEntity<PageableDto> getPlacesByStatus(
-        @PathVariable String status, Pageable pageable) {
-        PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
+        @PathVariable PlaceStatus status, Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.getPlacesByStatus(placeStatus, pageable));
+            .body(placeService.getPlacesByStatus(status, pageable));
     }
 
     /**

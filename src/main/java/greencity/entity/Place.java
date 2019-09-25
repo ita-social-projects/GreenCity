@@ -1,6 +1,5 @@
 package greencity.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import greencity.constant.AppConstant;
 import greencity.entity.enums.PlaceStatus;
 import greencity.util.DateTimeService;
@@ -59,11 +58,9 @@ public class Place {
     private List<Rate> rates = new ArrayList<>();
 
     @OneToMany(mappedBy = "place")
-    @JsonManagedReference
     private List<Discount> discounts = new ArrayList<>();
 
     @OneToMany(mappedBy = "place")
-    @JsonManagedReference
     private List<OpeningHours> openingHoursList = new ArrayList<>();
 
     @ManyToOne
