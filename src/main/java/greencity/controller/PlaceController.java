@@ -5,6 +5,7 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/place")
@@ -64,7 +66,7 @@ public class PlaceController {
     }
 
     /**
-     * Controller to get place info.
+     * The method to get place info.
      *
      * @param id place
      * @return info about place
@@ -75,7 +77,8 @@ public class PlaceController {
     }
 
     /**
-     * Controller to get {@code FavoritePlace}. as {@code Place} info.
+     * The method to get {@code FavoritePlace}. as {@code Place} info.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
      * @param placeId - {@code Place} id
      * @return info about {@code Place} with name as in {@code FavoritePlace}
@@ -87,14 +90,16 @@ public class PlaceController {
     }
 
     /**
-     * Controller to save place to user's favorite list.
-     * @param favoritePlaceDto -Favorite Place Dto
+     * The method to save {@link Place} to {@link User}'s favorite list.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     *
+     * @param favoritePlaceDto -{@link FavoritePlaceDto}
      * @return principal - user e,ail
      * @author Zakhar Skaletskyi
      */
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
-        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, Principal principal) {
+        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(favoritePlaceService.save(favoritePlaceDto, principal.getName()));
     }
