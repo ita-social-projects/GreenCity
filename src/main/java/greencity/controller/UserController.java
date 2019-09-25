@@ -1,11 +1,13 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
+import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -35,10 +37,10 @@ public class UserController {
      */
     @ApiOperation(value = "Update status of user")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "User status successfully updated"),
-        @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-        @ApiResponse(code = 403, message = "Accessing for this action  is forbidden"),
-        @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserStatus.class),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("status")
     public ResponseEntity<UserStatusDto> updateStatus(
@@ -59,10 +61,10 @@ public class UserController {
      */
     @ApiOperation(value = "Update role of user")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "User role successfully updated"),
-        @ApiResponse(code = 401, message = "You are not authorized to this resource"),
-        @ApiResponse(code = 403, message = "Accessing for  is forbidden"),
-        @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("role")
     public ResponseEntity<UserRoleDto> updateRole(
@@ -82,8 +84,15 @@ public class UserController {
      * @return list of {@link PageableDto}
      * @author Rostyslav Khasanov
      */
-    @GetMapping
+    @ApiOperation(value = "Get all users by page")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @ApiPageable
+    @GetMapping
     public ResponseEntity<PageableDto> getAllUsers(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
@@ -94,6 +103,13 @@ public class UserController {
      * @return {@link RoleDto}
      * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Get all roles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = RoleDto.class),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @GetMapping("roles")
     public ResponseEntity<RoleDto> getRoles() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
@@ -109,8 +125,15 @@ public class UserController {
      * @return {@link PageableDto}
      * @author Rostyslav Khasanov
      */
-    @PostMapping("filter")
+    @ApiOperation(value = "filter all user by search predicate")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @ApiPageable
+    @PostMapping("filter")
     public ResponseEntity<PageableDto> getByReg(
         @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
