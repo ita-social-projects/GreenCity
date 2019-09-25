@@ -2,21 +2,13 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="Dmytro Dovhal" id="1567079888333-68">
-        <createTable tableName="restore_password_email">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="expiry_date" type="datetime(6)"/>
-            <column name="token" type="VARCHAR(255)"/>
-            <column name="user_id" type="BIGINT"/>
-        </createTable>
+    <changeSet author="Keteryna Horoh" id="dropForeignKeyConstraint-example">
+        <dropForeignKeyConstraint baseTableName="location" constraintName="FK11n0lglbc5iw6xn3seglinvpq"/>
     </changeSet>
-
-    <changeSet author="Dmytro Dovhal" id="1567079888333-69">
-        <addForeignKeyConstraint baseTableName="restore_password_email" baseColumnNames="user_id"
-                                 constraintName="fk_restore_pass_email"
-                                 referencedTableName="user"
-                                 referencedColumnNames="id"/>
+    <changeSet author="Kateryna Horokh" id="1567079888333-68">
+        <dropColumn catalogName="greenCity"
+                    columnName="place_id"
+                    schemaName="greenCity"
+                    tableName="location"/>
     </changeSet>
 </databaseChangeLog>

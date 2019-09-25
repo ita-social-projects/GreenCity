@@ -2,10 +2,9 @@ package greencity.dto.place;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountDtoForAddPlace;
+import greencity.dto.discount.DiscountDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.specification.SpecificationValueDto;
 import greencity.dto.user.UserForListDto;
 import java.util.List;
 import javax.validation.Valid;
@@ -35,7 +34,7 @@ public class PlaceWithUserDto {
     private List<OpeningHoursDto> openingHoursList;
 
     @Valid
-    private List<DiscountDtoForAddPlace> discounts;
+    private List<DiscountDto> discounts;
 
     @Valid
     private UserForListDto author;

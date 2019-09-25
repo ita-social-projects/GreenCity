@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"value", "place", "category"})
+@EqualsAndHashCode(exclude = {"value", "place", "category", "specification"})
 public class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +25,6 @@ public class Discount {
     @ManyToOne
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Specification specification;
 }

@@ -56,6 +56,18 @@ public class UserServiceImplTest {
             .dateOfRegistration(LocalDateTime.now())
             .build();
 
+    User user2 =
+        User.builder()
+            .id(2l)
+            .firstName("test")
+            .lastName("test")
+            .email("test@gmail.com")
+            .role(ROLE.ROLE_MODERATOR)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastVisit(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .build();
+
     @Test
     public void saveTest() {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
@@ -67,8 +79,7 @@ public class UserServiceImplTest {
     @Test
     public void updateUserStatusDeactivatedTest() {
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
-        when(userRepo.findIdByEmail(any())).thenReturn(Optional.of(2l));
-        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
@@ -79,9 +90,8 @@ public class UserServiceImplTest {
     @Test(expected = LowRoleLevelException.class)
     public void updateUserStatusLowRoleLevelException() {
         user.setRole(ROLE.ROLE_MODERATOR);
-        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
-        when(userRepo.findIdByEmail(any())).thenReturn(Optional.of(2l));
         userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, "email");
     }
 
@@ -89,7 +99,7 @@ public class UserServiceImplTest {
     public void updateRoleTest() {
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
-        when(userRepo.findIdByEmail(any())).thenReturn(Optional.of(2l));
+        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
         when(userRepo.save(any())).thenReturn(user);
         assertEquals(
             ROLE.ROLE_MODERATOR,
@@ -180,7 +190,7 @@ public class UserServiceImplTest {
 
     @Test
     public void updateLastVisit() {
-        LocalDateTime localDateTime = user.getLastVisit();
+        LocalDateTime localDateTime = user.getLastVisit().minusHours(1);
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         assertNotEquals(localDateTime, userService.updateLastVisit(user).getLastVisit());

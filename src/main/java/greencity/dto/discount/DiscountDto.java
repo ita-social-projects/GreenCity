@@ -13,7 +13,7 @@ import org.hibernate.validator.constraints.Range;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiscountDtoForUpdatePlace {
+public class DiscountDto {
     @Range(min = ValidationConstants.DISCOUNT_VALUE_MIN,
         max = ValidationConstants.DISCOUNT_VALUE_MAX)
     private int value;

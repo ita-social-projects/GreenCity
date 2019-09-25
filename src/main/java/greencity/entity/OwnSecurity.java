@@ -3,12 +3,12 @@ package greencity.entity;
 import javax.persistence.*;
 import lombok.*;
 
-
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = "user")
 public class OwnSecurity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
