@@ -10,6 +10,7 @@ import greencity.security.service.VerifyEmailService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -105,7 +106,7 @@ public class OwnSecurityController {
      * @author Dmytro Dovhal
      */
     @GetMapping("/restorePassword")
-    public ResponseEntity restore(@RequestParam @NotBlank String email) {
+    public ResponseEntity restore(@RequestParam @Email String email) {
         restoreLogicService.sendEmailForRestore(email);
         return ResponseEntity.ok().build();
     }

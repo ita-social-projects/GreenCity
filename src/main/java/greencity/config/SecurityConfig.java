@@ -78,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/googleSecurity/**",
                 "/place/filter/**",
                 "/restorePassword/**",
-                "/changePassword/**"
+                "/updatePassword/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.GET,
