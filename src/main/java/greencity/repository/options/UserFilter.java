@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Rostyslav Khasanov
  */
-public class UserFilter implements Specification<User> {
+public class  UserFilter implements Specification<User> {
     private FilterUserDto filterUserDto;
 
     /**
@@ -37,7 +37,9 @@ public class UserFilter implements Specification<User> {
     public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
-        predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getSearchReg()));
+        if (filterUserDto != null) {
+            predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getSearchReg()));
+        }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
@@ -51,6 +53,9 @@ public class UserFilter implements Specification<User> {
      * @return a {@link Predicate}, may be {@literal null}.
      */
     private Predicate hasFieldsLike(Root<User> r, CriteriaBuilder cb, String reg) {
+        if (filterUserDto.getSearchReg() == null) {
+            return cb.conjunction();
+        }
         return cb.or(
             cb.like(r.get("firstName"), reg),
             cb.like(r.get("lastName"), reg),
