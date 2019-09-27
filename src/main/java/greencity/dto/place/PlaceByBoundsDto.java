@@ -1,7 +1,6 @@
 package greencity.dto.place;
 
 import greencity.dto.location.LocationDto;
-import greencity.entity.Location;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
