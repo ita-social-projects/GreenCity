@@ -46,10 +46,7 @@ public class PlaceController {
     public ResponseEntity<PlaceWithUserDto> proposePlace(
         @Valid @RequestBody PlaceAddDto dto, Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(
-                modelMapper.map(
-                    placeService.save(dto, principal.getName()),
-                    PlaceWithUserDto.class));
+            .body(modelMapper.map(placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
     }
 
     /**

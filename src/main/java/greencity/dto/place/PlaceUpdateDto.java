@@ -2,7 +2,6 @@ package greencity.dto.place;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import java.util.Set;

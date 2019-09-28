@@ -1,4 +1,4 @@
-package greencity.dto.filter;
+package greencity.dto.discount;
 
 import greencity.dto.specification.SpecificationNameDto;
 import lombok.AllArgsConstructor;
@@ -6,10 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class FilterDiscountDto {
+@AllArgsConstructor
+public class DiscountValueDto {
+    private int value;
     private SpecificationNameDto specification;
-    private int discountMin;
-    private int discountMax;
 }
