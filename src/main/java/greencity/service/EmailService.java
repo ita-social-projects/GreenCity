@@ -27,8 +27,8 @@ public interface EmailService {
     /**
      * Method for sending email for restore.
      *
-     * @param user - {@link User}
+     * @param user  - {@link User}
      * @param token - {@link String}
      */
-    void  sendRestoreEmail(User user, String token);
+    void sendRestoreEmail(User user, String token);
 }

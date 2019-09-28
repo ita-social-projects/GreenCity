@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import greencity.constant.AppConstant;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
@@ -23,17 +22,35 @@ import org.thymeleaf.context.Context;
 @Service
 @Slf4j
 public class EmailServiceImpl implements EmailService {
+    private static final String EMAIL_CONTENT_TYPE = "text/html; charset=utf-8";
+    //subjects
+    private static final String GC_CONTRIBUTORS = "GreenCity contributors";
+    private static final String VERIFY_EMAIL = "Verify your email address";
+    private static final String CONFIRM_RESTORING_PASSWORD = "Confirm restoring password";
+    //params
+    private static final String CLIENT_LINK = "clientLink";
+    private static final String USER_NAME = "userFirstName";
+    private static final String PLACE_NAME = "placeName";
+    private static final String STATUS = "status";
+    private static final String VERIFY_ADDRESS = "verifyAddress";
+    private static final String RESTORE_PASSWORD = "restorePassword";
+    //template names
+    private static final String EMAIL_CHANGE_PLACE_STATUS = "email-change-place-status";
+    private static final String VERIFY_EMAIL_PAGE = "verify-email-page";
+    private static final String RESTORE_EMAIL_PAGE = "restore-email-page";
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
-
+    /**
+     * This is client address. We send it to user email. And user can simply moves to our site.
+     */
     @Value("${client.address}")
     private String clientLink;
-
     /**
      * This is server address. We send it to user email. And user can simply submit it.
      */
     @Value("${address}")
     private String serverAddress;
+    private Map<String, Object> model;
 
     /**
      * Constructor.
@@ -53,13 +70,13 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendChangePlaceStatusEmail(Place updatable, PlaceStatus status) {
-        Map<String, Object> model = new HashMap<>();
-        model.put("placeName", updatable.getName());
-        model.put("status", status.toString().toLowerCase());
-        model.put("user", updatable.getAuthor());
-        model.put("clientLink", clientLink);
-        String template = createEmailTemplate(model, "email-change-place-status");
-        sendEmail(updatable.getAuthor(), "GreenCity contributors", template);
+        model = new HashMap<>();
+        model.put(CLIENT_LINK, clientLink);
+        model.put(USER_NAME, updatable.getAuthor().getFirstName());
+        model.put(PLACE_NAME, updatable.getName());
+        model.put(STATUS, status.toString().toLowerCase());
+        String template = createEmailTemplate(model, EMAIL_CHANGE_PLACE_STATUS);
+        sendEmail(updatable.getAuthor(), GC_CONTRIBUTORS, template);
     }
 
     /**
@@ -69,40 +86,41 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendVerificationEmail(User user, String token) {
-        Map<String, Object> model = new HashMap<>();
-        model.put("clientLink", clientLink);
-        model.put("userFirstName", user.getFirstName());
-        model.put("verifyAddress", serverAddress + "/ownSecurity/verifyEmail?token=" + token);
-        String template = createEmailTemplate(model, "verify-email-page");
-        sendEmail(user, "Verify your email address", template);
+        model = new HashMap<>();
+        model.put(CLIENT_LINK, clientLink);
+        model.put(USER_NAME, user.getFirstName());
+        model.put(VERIFY_ADDRESS, serverAddress + "/ownSecurity/verifyEmail?token=" + token);
+        String template = createEmailTemplate(model, VERIFY_EMAIL_PAGE);
+        sendEmail(user, VERIFY_EMAIL, template);
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      *
      * @author Dmytro Dovhal
      */
     @Override
     public void sendRestoreEmail(User user, String token) {
-        Map<String, Object> model = new HashMap<>();
-        model.put("clientLink", clientLink);
-        model.put("userFirstName", user.getFirstName());
-        model.put("restorePassword", clientLink + "/auth/restore/" + token);
-        String template = createEmailTemplate(model, "restore-email-page");
-        sendEmail(user, "Confirm restoring password", template);
+        model = new HashMap<>();
+        model.put(CLIENT_LINK, clientLink);
+        model.put(USER_NAME, user.getFirstName());
+        model.put(RESTORE_PASSWORD, clientLink + "/auth/restore/" + token);
+        String template = createEmailTemplate(model, RESTORE_EMAIL_PAGE);
+        sendEmail(user, CONFIRM_RESTORING_PASSWORD, template);
     }
-
 
     private void sendEmail(User receiver, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+
         try {
             mimeMessageHelper.setTo(receiver.getEmail());
             mimeMessageHelper.setSubject(subject);
-            mimeMessage.setContent(text, AppConstant.EMAIL_CONTENT_TYPE);
+            mimeMessage.setContent(text, EMAIL_CONTENT_TYPE);
         } catch (MessagingException e) {
             log.error(e.getMessage());
         }
+
         new Thread(() -> javaMailSender.send(mimeMessage)).start();
     }
 
