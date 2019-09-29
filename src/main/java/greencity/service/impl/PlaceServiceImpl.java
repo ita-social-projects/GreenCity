@@ -254,16 +254,16 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
-        PlaceStatus currentStatus = updatable.getStatus();
+        PlaceStatus oldStatus = updatable.getStatus();
 
-        checkPlaceStatuses(currentStatus, status, id);
+        checkPlaceStatuses(oldStatus, status, id);
 
         updatable.setStatus(status);
         updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
 
         // if place had status PROPOSED and it changes, means APPROVEs or DECLINEs we send an email
-        if (currentStatus.equals(PlaceStatus.PROPOSED)) {
-            emailService.sendChangePlaceStatusEmail(updatable, status);
+        if (oldStatus.equals(PlaceStatus.PROPOSED)) {
+            emailService.sendChangePlaceStatusEmail(updatable);
         }
 
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);

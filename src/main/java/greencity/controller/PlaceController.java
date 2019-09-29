@@ -234,14 +234,14 @@ public class PlaceController {
      * @author Nazar Vladyka
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> delete(@NotNull @PathVariable Long id) {
+    public ResponseEntity<Long> delete(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.deleteById(id));
     }
 
     /**
      * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param ids - list of id's of {@link Place}'s which need to be deleted
+     * @param ids - list of id's of {@link Place}'s, splited by "," which need to be deleted
      * @return count of deleted {@link Place}'s
      * @author Nazar Vladyka
      */

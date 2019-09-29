@@ -25,4 +25,7 @@ public class LogMessage {
     public static final String SET_PLACE_TO_DISCOUNTS = "in setToDiscountPlaceAndCategoty()";
     public static final String IN_UPDATE_DISCOUNT_FOR_PLACE = "in updateDiscountForUpdatedPlace()";
     public static final String IN_UPDATE_OPENING_HOURS_FOR_PLACE = "in updateOpeningHoursForUpdatedPlace()";
+    public static final String IN_SEND_CHANGE_PLACE_STATUS_EMAIL = "in sendChangePlaceStatusEmail(), place: {}";
+    public static final String IN_SEND_EMAIL = "in sendEmail(), receiver: {}, subject: {}, content: {}";
+    public static final String IN_CREATE_TEMPLATE_NAME = "in createEmailTemplate(), vars: {}, templateName: {}";
 }
