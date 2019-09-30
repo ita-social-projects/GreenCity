@@ -48,7 +48,7 @@ public interface PlaceService {
     Place findById(Long id);
 
     /**
-     * Method for saving proposed {@code Place} to database.
+     * Method for saving proposed {@link Place} to database.
      *
      * @param dto - dto for Place entity
      * @return place {@code Place}
@@ -57,14 +57,13 @@ public interface PlaceService {
     Place save(PlaceAddDto dto, String email);
 
     /**
-     * Method for updating {@code Place}.
+     * Method for updating {@link Place}.
      *
-     * @param id  - {@link Place} id
      * @param dto - dto for Place entity
-     * @return place {@code Place}
+     * @return place {@link Place}
      * @author Kateryna Horokh
      */
-    Place update(Long id, PlaceUpdateDto dto);
+    Place update(PlaceUpdateDto dto);
 
     /**
      * Find all places from DB.
@@ -132,7 +131,7 @@ public interface PlaceService {
      *
      * @param filterDto contains objects whose values determine
      *                  the filter parameters of the returned list.
-     * @return a list of {@code PlaceByBoundsDto}
+     * @return a list of {@link PlaceByBoundsDto}
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);

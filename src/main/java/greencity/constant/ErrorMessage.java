@@ -42,4 +42,6 @@ public class ErrorMessage {
         + "before use this method again";
     public static final String WRONG_DATE_TIME_FORMAT = "The date format is wrong. Should matches "
         + AppConstant.DATE_FORMAT;
+    public static final String LINK_FOR_RESTORE_NOT_FOUND = "Link for sendEmailForRestore password by email not found";
+    public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
 }

@@ -47,4 +47,12 @@ public interface OwnSecurityService {
      * @return {@link AccessTokenDto} this is DTO with new access token
      */
     AccessTokenDto updateAccessToken(String refreshToken);
+
+    /**
+     * Method for updating password.
+     *
+     * @param pass {@link String}
+     * @param id   {@link Long}
+     */
+    void updatePassword(String pass, Long id);
 }

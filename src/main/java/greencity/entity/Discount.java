@@ -1,6 +1,5 @@
 package greencity.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import lombok.*;
 
@@ -9,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"value", "place", "category"})
+@EqualsAndHashCode(exclude = {"value", "place", "category", "specification"})
 public class Discount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,12 +18,11 @@ public class Discount {
     private int value;
 
     @ManyToOne
-    @JsonBackReference
     private Place place;
 
     @ManyToOne
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Specification specification;
 }

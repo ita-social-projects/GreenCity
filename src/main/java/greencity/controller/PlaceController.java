@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
@@ -62,7 +63,7 @@ public class PlaceController {
     public ResponseEntity<PlaceUpdateDto> updatePlace(
         @Valid @RequestBody PlaceUpdateDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(modelMapper.map(placeService.update(dto.getId(), dto), PlaceUpdateDto.class));
+            .body(modelMapper.map(placeService.update(dto), PlaceUpdateDto.class));
     }
 
     /**
@@ -70,8 +71,9 @@ public class PlaceController {
      *
      * @param id place
      * @return info about place
+     * @author Dmytro Dovhal
      */
-    @GetMapping("/Info/{id}")
+    @GetMapping("/info/{id}")
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getInfoById(id));
     }
@@ -122,6 +124,8 @@ public class PlaceController {
 
     /**
      * The method parse the string param to PlaceStatus value.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param status   a string represents {@link PlaceStatus} enum value.
      * @param pageable pageable configuration.
@@ -129,11 +133,12 @@ public class PlaceController {
      * @author Roman Zahorui
      */
     @GetMapping("/{status}")
+    @ApiPageable
     public ResponseEntity<PageableDto> getPlacesByStatus(
-        @PathVariable String status, Pageable pageable) {
-        PlaceStatus placeStatus = PlaceStatus.valueOf(status.toUpperCase());
+        @PathVariable PlaceStatus status,
+        @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(placeService.getPlacesByStatus(placeStatus, pageable));
+            .body(placeService.getPlacesByStatus(status, pageable));
     }
 
     /**
@@ -165,17 +170,21 @@ public class PlaceController {
     }
 
     /**
-     * The method which return a list {@code PlaceByBoundsDto} filtered by values
+     * The method which return a list {@link PageableDto} filtered by values
      * contained in the incoming {@link FilterPlaceDto} object.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param filterDto contains all information about the filtering of the list.
      * @param pageable  pageable configuration.
-     * @return a list of {@code PlaceByBoundsDto}
-     * @author Roman Zahorui
+     * @return a list of {@link PageableDto}
+     * @author Rostyslav Khasanov
      */
     @PostMapping("/filter/predicate")
+    @ApiPageable
     public ResponseEntity<PageableDto> filterPlaceBySearchPredicate(
-        @Valid @RequestBody FilterPlaceDto filterDto, Pageable pageable) {
+        @Valid @RequestBody FilterPlaceDto filterDto,
+        @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.filterPlaceBySearchPredicate(filterDto, pageable));
     }
@@ -184,7 +193,7 @@ public class PlaceController {
      * Controller to get place info.
      *
      * @param id place
-     * @return  response {@link PlaceUpdateDto} object.
+     * @return response {@link PlaceUpdateDto} object.
      */
     @GetMapping("/about/{id}")
     public ResponseEntity<PlaceUpdateDto> getPlaceById(@NotNull @PathVariable Long id) {

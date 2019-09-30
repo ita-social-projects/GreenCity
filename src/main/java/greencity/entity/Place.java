@@ -1,6 +1,5 @@
 package greencity.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import greencity.constant.AppConstant;
 import greencity.entity.enums.PlaceStatus;
 import greencity.util.DateTimeService;
@@ -21,7 +20,7 @@ import lombok.*;
     exclude = {"discounts", "author", "openingHoursList", "comments", "photos",
         "location", "favoritePlaces", "category", "rates", "webPages", "status"})
 @ToString(exclude = {"comments", "photos", "specificationValues", "favoritePlaces",
-    "webPages", "rates", "discounts", "openingHoursList"})
+    "webPages", "rates", "discounts", "openingHoursList", "location", "author"})
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +46,7 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<SpecificationValue> specificationValues = new ArrayList<>();
 
-    @OneToOne(mappedBy = "place", cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL})
     private Location location;
 
     @OneToMany(mappedBy = "place")
@@ -62,12 +61,10 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
 
-    @OneToMany(mappedBy = "place")
-    @JsonManagedReference
+    @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Discount> discounts = new HashSet<>();
 
-    @OneToMany(mappedBy = "place")
-    @JsonManagedReference
+    @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<OpeningHours> openingHoursList = new HashSet<>();
 
     @ManyToOne

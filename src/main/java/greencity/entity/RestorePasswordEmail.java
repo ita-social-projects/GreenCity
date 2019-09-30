@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.*;
 
@@ -8,15 +9,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = "user")
-public class OwnSecurity {
+@EqualsAndHashCode
+public class RestorePasswordEmail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String password;
-
     @OneToOne
     private User user;
+
+    private String token;
+
+    private LocalDateTime expiryDate;
 }

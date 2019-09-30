@@ -1,13 +1,16 @@
 package greencity.security.controller;
 
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.service.OwnSecurityService;
+import greencity.security.service.RestoreLogicService;
 import greencity.security.service.VerifyEmailService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +33,7 @@ public class OwnSecurityController {
     private String clientAddress;
     private OwnSecurityService service;
     private VerifyEmailService verifyEmailService;
+    private RestoreLogicService restoreLogicService;
 
     /**
      * Constructor.
@@ -38,9 +42,10 @@ public class OwnSecurityController {
      * @param verifyEmailService {@link VerifyEmailService} - service for verify email logic.
      */
     public OwnSecurityController(
-        OwnSecurityService service, VerifyEmailService verifyEmailService) {
+        OwnSecurityService service, VerifyEmailService verifyEmailService, RestoreLogicService restoreLogicService) {
         this.service = service;
         this.verifyEmailService = verifyEmailService;
+        this.restoreLogicService = restoreLogicService;
     }
 
     /**
@@ -89,5 +94,34 @@ public class OwnSecurityController {
     @GetMapping("/updateAccessToken")
     public ResponseEntity updateAccessToken(@RequestParam @NotBlank String refreshToken) {
         return ResponseEntity.ok().body(service.updateAccessToken(refreshToken));
+    }
+
+
+    /**
+     * Method for restoring password and sending email for restore.
+     *
+     * @param email - {@link String}
+     * @return - {@link ResponseEntity }
+     *
+     * @author Dmytro Dovhal
+     */
+    @GetMapping("/restorePassword")
+    public ResponseEntity restore(@RequestParam @Email String email) {
+        restoreLogicService.sendEmailForRestore(email);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method for changing password.
+     *
+     * @param form - {@link OwnRestoreDto}
+     * @return - {@link ResponseEntity}
+     *
+     * @author Dmytro Dovhal
+     */
+    @PostMapping("/changePassword")
+    public ResponseEntity changePassword(@Valid @RequestBody OwnRestoreDto form) {
+        restoreLogicService.restoreByToken(form.getToken(), form.getPassword());
+        return ResponseEntity.ok().build();
     }
 }

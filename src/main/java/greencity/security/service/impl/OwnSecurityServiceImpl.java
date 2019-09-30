@@ -131,4 +131,15 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         }
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dovhal
+     */
+    @Override
+    public void updatePassword(String pass, Long id) {
+        String password = passwordEncoder.encode(pass);
+        repo.updatePassword(password, id);
+    }
 }
