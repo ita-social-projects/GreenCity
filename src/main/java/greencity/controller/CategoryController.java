@@ -26,6 +26,7 @@ public class CategoryController {
      * @return new {@code Category}.
      * @author Kateryna Horokh
      */
+    @ApiOperation(value = "Save category")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
