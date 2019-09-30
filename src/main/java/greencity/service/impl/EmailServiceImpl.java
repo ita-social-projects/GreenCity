@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
     private static final String VERIFY_ADDRESS = "verifyAddress";
     private static final String RESTORE_PASS = "restorePassword";
     //template names
-    private static final String EMAIL_CHANGE_PLACE_STATUS = "email-change-place-status";
+    private static final String CHANGE_PLACE_STATUS_EMAIL_PAGE = "change-place-status-email-page";
     private static final String VERIFY_EMAIL_PAGE = "verify-email-page";
     private static final String RESTORE_EMAIL_PAGE = "restore-email-page";
     private final JavaMailSender javaMailSender;
@@ -75,7 +75,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(USER_NAME, place.getAuthor().getFirstName());
         model.put(PLACE_NAME, place.getName());
         model.put(STATUS, place.getStatus().toString().toLowerCase());
-        String template = createEmailTemplate(model, EMAIL_CHANGE_PLACE_STATUS);
+        String template = createEmailTemplate(model, CHANGE_PLACE_STATUS_EMAIL_PAGE);
         sendEmail(place.getAuthor(), GC_CONTRIBUTORS, template);
     }
 

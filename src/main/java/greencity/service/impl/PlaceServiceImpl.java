@@ -421,8 +421,8 @@ public class PlaceServiceImpl implements PlaceService {
     private void checkPlaceStatuses(PlaceStatus currentStatus, PlaceStatus updatedStatus, Long placeId) {
         if (currentStatus.equals(updatedStatus)) {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, updatedStatus);
-            throw new PlaceStatusException(
-                placeId + ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatedStatus);
+            throw new PlaceStatusException(String.format(
+                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, updatedStatus));
         }
     }
 
