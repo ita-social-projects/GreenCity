@@ -84,7 +84,7 @@ public class UserController {
      * @return list of {@link PageableDto}
      * @author Rostyslav Khasanov
      */
-    @ApiOperation(value = "Get all users by page")
+    @ApiOperation(value = "Get users by page")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
@@ -103,7 +103,7 @@ public class UserController {
      * @return {@link RoleDto}
      * @author Rostyslav Khasanov
      */
-    @ApiOperation(value = "Get all roles")
+    @ApiOperation(value = "Get all available roles")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = RoleDto.class),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
@@ -125,7 +125,7 @@ public class UserController {
      * @return {@link PageableDto}
      * @author Rostyslav Khasanov
      */
-    @ApiOperation(value = "filter all user by search predicate")
+    @ApiOperation(value = "Filter all user by search criteria")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
@@ -134,7 +134,7 @@ public class UserController {
     })
     @ApiPageable
     @PostMapping("filter")
-    public ResponseEntity<PageableDto> getByReg(
+    public ResponseEntity<PageableDto> getUserByFilter(
         @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
