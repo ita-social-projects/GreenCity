@@ -13,4 +13,5 @@
     <include file="db/changelog/db.changelog-output-1.0.7.xml"/>
     <include file="db/changelog/db.changelog-output-1.0.8.xml"/>
     <include file="db/changelog/db.changelog-output-1.0.9.xml"/>
+    <include file="db/changelog/db.changelog-output-1.0.10.xml"/>
 </databaseChangeLog>

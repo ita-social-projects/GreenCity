@@ -3,16 +3,13 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.User;
-import greencity.entity.enums.PlaceStatus;
 import greencity.exception.BadIdException;
 import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.mapping.FavoritePlaceWithLocationMapper;
-import greencity.mapping.FavoritePlaceWithPlaceIdMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
@@ -35,8 +32,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     FavoritePlaceDtoMapper favoritePlaceDtoMapper;
     FavoritePlaceWithLocationMapper favoritePlaceWithLocationMapper;
     ModelMapper modelMapper;
-    private static final PlaceStatus APPROVED_STATUS = PlaceStatus.APPROVED;
-    FavoritePlaceWithPlaceIdMapper favoritePlaceWithPlaceIdMapper;
 
     @Override
     /**
@@ -50,7 +45,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
             throw new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
-
         favoritePlace.setUser(User.builder().email(userEmail).id(userService.findIdByEmail(userEmail)).build());
         return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
     }
@@ -61,16 +55,17 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public FavoritePlaceShowDto update(FavoritePlaceShowDto favoritePlaceShowDto, String userEmail) {
+    public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceShowDto, String userEmail) {
         log.info(LogMessage.IN_UPDATE, favoritePlaceShowDto);
 
-        FavoritePlace favoritePlace = repo.findByIdAndUserEmail(favoritePlaceShowDto.getId(), userEmail);
+        FavoritePlace favoritePlace = repo.findByPlaceIdAndUserEmail(favoritePlaceShowDto.getPlaceId(), userEmail);
         if (favoritePlace == null) {
-            throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceShowDto.getId());
+            throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceShowDto.getPlaceId());
         }
         favoritePlace.setName(favoritePlaceShowDto.getName());
-        return modelMapper.map(repo.save(favoritePlace), FavoritePlaceShowDto.class);
+        return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
     }
+
 
     /**
      * {@inheritDoc}
@@ -78,10 +73,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public List<FavoritePlaceShowDto> findAllByUserEmail(String email) {
+    public List<FavoritePlaceDto> findAllByUserEmail(String email) {
         log.info(LogMessage.IN_FIND_ALL);
-        List<FavoritePlace> favoritePlaces = repo.findAllByUserEmail(email);
-        return favoritePlaces.stream().map(fp -> modelMapper.map(fp, FavoritePlaceShowDto.class))
+        return repo.findAllByUserEmail(email).stream().map(fp -> favoritePlaceDtoMapper.convertToDto(fp))
             .collect(Collectors.toList());
     }
 
@@ -92,16 +86,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      */
     @Override
     @Transactional
-    public Long deleteByUserEmailAndFavoriteIdOrPlaceId(Long id, String userEmail) {
-        log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL + "id=" + id + " email=" + userEmail);
-        FavoritePlace favoritePlace;
-        if (id > 0) {
-            favoritePlace = repo.findByIdAndUserEmail(id, userEmail);
-        } else {
-            id *= -1;
-            favoritePlace = repo.findByPlaceIdAndUserEmail(id, userEmail);
-        }
-
+    public Long deleteByUserEmailAndPlaceId(Long placeId, String userEmail) {
+        log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL, userEmail, placeId);
+        FavoritePlace favoritePlace = repo.findByPlaceIdAndUserEmail(placeId, userEmail);
         if (favoritePlace == null) {
             throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
@@ -115,9 +102,13 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public FavoritePlace findById(Long id) {
-        log.info(LogMessage.IN_FIND_BY_ID);
-        return repo.findById(id).orElseThrow(() -> new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND));
+    public FavoritePlace findByPlaceId(Long placeId) {
+        log.info(LogMessage.IN_FIND_BY_PLACE_ID, placeId);
+        FavoritePlace favoritePlace = repo.findByPlaceId(placeId);
+        if (favoritePlace == null) {
+            throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
+        }
+        return favoritePlace;
     }
 
     /**
@@ -127,9 +118,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      */
 
     @Override
-    public PlaceInfoDto getInfoFavoritePlace(Long favoritePlaceId) {
-        log.info(LogMessage.IN_GET_ACCESS_PLACE_AS_FAVORITE_PLACE, favoritePlaceId);
-        FavoritePlace favoritePlace = findById(favoritePlaceId);
+    public PlaceInfoDto getInfoFavoritePlace(Long placeId) {
+        log.info(LogMessage.IN_GET_ACCESS_PLACE_AS_FAVORITE_PLACE, placeId);
+        FavoritePlace favoritePlace = findByPlaceId(placeId);
         PlaceInfoDto placeInfoDto =
             modelMapper.map(
                 placeService
@@ -146,24 +137,12 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public PlaceByBoundsDto getFavoritePlaceWithLocation(Long id, String email) {
-        log.info(LogMessage.IN_GET_FAVORITE_PLACE_WITH_LOCATION, id, email);
-        FavoritePlace favoritePlace = repo.findByIdAndUserEmail(id, email);
+    public PlaceByBoundsDto getFavoritePlaceWithLocation(Long placeId, String email) {
+        log.info(LogMessage.IN_GET_FAVORITE_PLACE_WITH_LOCATION, placeId, email);
+        FavoritePlace favoritePlace = repo.findByPlaceIdAndUserEmail(placeId, email);
         if (favoritePlace == null) {
             throw new BadIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
-        return favoritePlaceWithLocationMapper.convertToDto(repo.findByIdAndUserEmail(id, email));
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Zakhar Skaletskyi
-     */
-    @Override
-    public List<FavoritePlaceDto> getFavoritePlaceWithPlaceId(String email) {
-        log.info(LogMessage.IN_GET_FAVORITE_PLACE_WITH_PLACE_ID, email);
-        return repo.findAllByUserEmail(email).stream().map(res -> favoritePlaceWithPlaceIdMapper.convertToDto(res))
-            .collect(Collectors.toList());
+        return favoritePlaceWithLocationMapper.convertToDto(repo.findByPlaceIdAndUserEmail(placeId, email));
     }
 }

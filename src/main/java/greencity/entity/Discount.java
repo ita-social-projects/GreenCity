@@ -1,6 +1,5 @@
 package greencity.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import lombok.*;
 
@@ -19,7 +18,6 @@ public class Discount {
     private int value;
 
     @ManyToOne
-    @JsonBackReference
     private Place place;
 
     @ManyToOne

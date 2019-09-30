@@ -1,20 +1,21 @@
 package greencity.service;
 
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
+import greencity.entity.Place;
+import greencity.entity.User;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface FavoritePlaceService {
     /**
-     * Save place as favorite for user.
+     * Save {@link Place} as {@link FavoritePlace} for user.
      *
-     * @param favoritePlaceDto - dto with favorite_place name, place id and user email
+     * @param favoritePlaceDto - dto with {@link FavoritePlace} name, {@link Place} id and {@link User} email
      * @param userEmail        - User email
-     * @return FavoritePlaceDto instance
+     * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
     FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail);
@@ -22,70 +23,59 @@ public interface FavoritePlaceService {
     /**
      * Update favorite place name for user.
      *
-     * @param favoritePlaceShowDto - dto with favorite place name, place id and user email
-     * @param userEmail            - User email
-     * @return FavoritePlaceDto instance
+     * @param favoritePlaceDto - dto with {@link FavoritePlace} name, {@link Place} id and {@link User} email
+     * @param userEmail        - {@link User} email
+     * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
 
-    FavoritePlaceShowDto update(FavoritePlaceShowDto favoritePlaceShowDto, String userEmail);
+    FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, String userEmail);
 
     /**
-     * Find all favorite places by user email.
+     * Find all {@link FavoritePlace} by {@link User} email.
      *
-     * @param email - user's email
-     * @return list of FavoritePlaceShowDto
+     * @param email - {@link User} email
+     * @return list of {@link FavoritePlaceDto}
      * @author Zakhar Skaletskyi
      */
-    List<FavoritePlaceShowDto> findAllByUserEmail(String email);
+    List<FavoritePlaceDto> findAllByUserEmail(String email);
 
     /**
-     * Delete favorite place by user email and place id or favorite place id.
-     * If id>0 then delete by favorite place id. If id<0 then delete by place id.
+     * Delete {@link FavoritePlace} by {@link User} email and {@link Place} id .
      *
-     * @param id        - favorite place id
-     * @param userEmail - user's email
-     * @return -  id of deleted favorite place
+     * @param placeId   - {@link Place} id
+     * @param userEmail - {@link User} email
+     * @return -  id of deleted {@link FavoritePlace}
      * @author Zakhar Skaletskyi
      */
     @Transactional
-    Long deleteByUserEmailAndFavoriteIdOrPlaceId(Long id, String userEmail);
+    Long deleteByUserEmailAndPlaceId(Long placeId, String userEmail);
 
     /**
-     * FInd favorite place by id.
+     * FInd {@link FavoritePlace} by id.
      *
-     * @param id - favorite place id
-     * @return FavoritePlace entity
+     * @param placeId - {@link Place} id
+     * @return {@link FavoritePlace} entity
      * @author Zakhar Skaletskyi
      */
-    FavoritePlace findById(Long id);
+    FavoritePlace findByPlaceId(Long placeId);
 
     /**
-     * Method for getting FavoritePlace as Place information.
+     * Method for getting {@link FavoritePlace} as {@link Place} information.
      *
-     * @param favoritePlaceId - favorite place id
-     * @return info about place with name from favorite place
-     * @author Dmytro Dovhal
+     * @param favoritePlaceId - {@link FavoritePlace} id
+     * @return info about place with name from {@link FavoritePlace}
+     * @author Zakhar Skaletskyi
      */
     PlaceInfoDto getInfoFavoritePlace(Long favoritePlaceId);
 
     /**
-     * Get favorite place coordinates, id and name.
+     * Get {@link FavoritePlace} coordinates, id and name.
      *
-     * @param id        favorite place
-     * @param email - user's email
-     * @return PlaceByBoundsDto with name from favorite place
-     *
+     * @param id    {@link FavoritePlace}
+     * @param email - {@link User} email
+     * @return {@link PlaceByBoundsDto} with name from favorite place
      * @author Zakhar Skaletskyi
      */
     PlaceByBoundsDto getFavoritePlaceWithLocation(Long id, String email);
-
-    /**
-     * Find all favorite places names with placeId by user email.
-     *
-     * @param email - user's email
-     * @return list of dto
-     * @author Zakhar Skaletskyi
-     */
-    List<FavoritePlaceDto> getFavoritePlaceWithPlaceId(String email);
 }
