@@ -1,4 +1,4 @@
 # GreenCity
 
-Deployment Process file link: https://github.com/SoftServe-Social-Projects/GreenCity/wiki/Deployment-Process
+Deployment process file link: https://github.com/SoftServe-Social-Projects/GreenCity/wiki/Deployment-Process
 
