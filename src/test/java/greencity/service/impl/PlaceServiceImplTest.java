@@ -77,7 +77,7 @@ public class PlaceServiceImplTest {
 
 //    Set<Discount> discountEntities = new HashSet<>();
 
-    Set<DiscountDto> discountDtos = new HashSet<>();
+    // Set<DiscountDto> discountDtos = new HashSet<>();
 
     Set<OpeningHours> openingHoursListEntity = new HashSet<>();
 

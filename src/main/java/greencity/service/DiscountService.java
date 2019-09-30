@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.entity.DiscountValue;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,7 +30,7 @@ public interface DiscountService {
      * @param placeId to find by.
      * @return a set of the {@code Discount} for the place by id.
      */
-    Set<DiscountValue> findAllByPlaceId(Long placeId);
+    List<DiscountValue> findAllByPlaceId(Long placeId);
 
     /**
      * Delete all {@code Discount} records related to the specified {@code Place}.

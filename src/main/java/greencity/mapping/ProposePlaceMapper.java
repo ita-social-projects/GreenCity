@@ -1,15 +1,23 @@
 package greencity.mapping;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.Specification;
+import greencity.exception.NotImplementedMethodException;
 import greencity.service.CategoryService;
 import greencity.service.SpecificationService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+/**
+ * The class uses other {@code Autowired} mappers to convert {@link Place} entity objects to {@link
+ * PlaceAddDto} dto objects and vise versa.
+ *
+ * @author Kateryna Horokh
+ */
 @AllArgsConstructor
 @Component
 public class ProposePlaceMapper implements Mapper<Place, PlaceAddDto> {
@@ -33,6 +41,6 @@ public class ProposePlaceMapper implements Mapper<Place, PlaceAddDto> {
 
     @Override
     public PlaceAddDto convertToDto(Place entity) {
-        return null;
+        throw new NotImplementedMethodException(ErrorMessage.NOT_IMPLEMENTED_METHOD);
     }
 }

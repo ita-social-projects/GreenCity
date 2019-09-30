@@ -16,6 +16,7 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
+import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.ProposePlaceMapper;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
@@ -44,11 +45,12 @@ public class PlaceServiceImpl implements PlaceService {
     private ModelMapper modelMapper;
     private ProposePlaceMapper placeMapper;
     private CategoryService categoryService;
+    private LocationService locationService;
+    private DiscountValueMapper discountValueMapper;
     private UserService userService;
-    private SpecificationService specificationService;
     private EmailService emailService;
     private OpenHoursService openingHoursService;
-    private LocationService locationService;
+    private DiscountService discountService;
 
     /**
      * {@inheritDoc}
@@ -73,6 +75,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place save(PlaceAddDto dto, String email) {
         log.info(LogMessage.IN_SAVE, dto.getName(), email);
+
         Place place = placeMapper.convertToEntity(dto);
         setUserToPlaceByEmail(email, place);
         return placeRepo.save(place);
@@ -98,17 +101,6 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for setting {@link Place} to set of {@link OpeningHours}.
-     *
-     * @param openingHoursSet - set of {@link OpeningHours}.
-     * @param place           - {@link Place} entity.
-     * @author Kateryna Horokh
-     */
-    private void saveOpeningHoursWithPlace(Set<OpeningHours> openingHoursSet, Place place) {
-        openingHoursSet.forEach(h -> h.setPlace(place));
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @author Kateryna Horokh
@@ -126,35 +118,31 @@ public class PlaceServiceImpl implements PlaceService {
         placeRepo.save(updatedPlace);
 
         updateOpening(dto.getOpeningHoursList(), updatedPlace);
-//        updateDiscount(dto.getDiscounts(), updatedCategory, updatedPlace);
+        updateDiscount(dto.getDiscounts(), updatedPlace);
 
         return updatedPlace;
     }
 
     /**
-     * Method for updating set of {@link Discount} and save with new {@link Category} and {@link Place}.
+     * Method for updating set of {@link DiscountValue} and save with new {@link Category} and {@link Place}.
      *
-     * @param discountDtos    - set of {@link Discount}.
-     * @param updatedCategory - {@link Category} entity.
-     * @param updatedPlace    - {@link Place} entity.
+     * @param discounts    - set of {@link DiscountValue}.
+     * @param updatedPlace - {@link Place} entity.
      * @author Kateryna Horokh
      */
-    private void updateDiscount(Set<DiscountValueDto> discounts, Category updatedCategory, Place updatedPlace) {
+    private void updateDiscount(List<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
-//        Set<Discount> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
-//        discountService.deleteAllByPlaceId(updatedPlace.getId());
-//        Set<Discount> discounts = new HashSet<>();
-//        discountDtos.forEach(d -> {
-//            Discount discount = modelMapper.map(d, Discount.class);
-//            Specification specification = specificationService.findByName(d.getSpecification().getName());
-//            discount.setPlace(updatedPlace);
-//            discount.setCategory(updatedCategory);
-//            discount.setSpecification(specification);
-//            discountService.save(discount);
-//            discounts.add(discount);
-//        });
-//        discountsOld.addAll(discounts);
+        List<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
+        discountService.deleteAllByPlaceId(updatedPlace.getId());
+        List<DiscountValue> newDiscounts = new ArrayList<>();
+        discounts.forEach(d -> {
+            DiscountValue discount = discountValueMapper.convertToEntity(d);
+            discount.setPlace(updatedPlace);
+            discountService.save(discount);
+            newDiscounts.add(discount);
+        });
+        discountsOld.addAll(newDiscounts);
     }
 
     /**

@@ -83,6 +83,10 @@ public class SpecificationServiceImpl implements SpecificationService {
      */
     @Override
     public Specification findByName(String name) {
+        Specification specification = specificationRepo.findByName(name);
+        if (specification == null) {
+            throw new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME + name);
+        }
         return specificationRepo.findByName(name);
     }
 
