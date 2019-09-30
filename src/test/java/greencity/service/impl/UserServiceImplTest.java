@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
 import greencity.entity.User;
@@ -32,6 +33,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,10 +42,6 @@ public class UserServiceImplTest {
 
     @Mock
     UserRepo userRepo;
-
-    @InjectMocks
-    private UserServiceImpl userService;
-
     User user =
         User.builder()
             .id(1l)
@@ -55,7 +53,6 @@ public class UserServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-
     User user2 =
         User.builder()
             .id(2l)
@@ -67,6 +64,8 @@ public class UserServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
+    @InjectMocks
+    private UserServiceImpl userService;
 
     @Test
     public void saveTest() {
@@ -194,5 +193,33 @@ public class UserServiceImplTest {
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         assertNotEquals(localDateTime, userService.updateLastVisit(user).getLastVisit());
+    }
+
+
+    @Test
+    public void getUsersByFilter() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        FilterUserDto filterUserDto = new FilterUserDto();
+
+        User user = new User();
+        user.setFirstName("Roman");
+
+        UserForListDto userForListDto = new UserForListDto();
+        userForListDto.setFirstName("Roman");
+
+        Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
+        List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
+
+        PageableDto<UserForListDto> userPageableDto =
+            new PageableDto<UserForListDto>(userForListDtos,
+                userForListDtos.size(), 0);
+
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+
+        when(userRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(usersPage);
+
+        assertEquals(userPageableDto, userService.getUsersByFilter(filterUserDto, pageable));
     }
 }
