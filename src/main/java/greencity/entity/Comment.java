@@ -1,9 +1,13 @@
 package greencity.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Data
@@ -11,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"comments", "photos"})
+@EntityListeners(AuditingEntityListener.class)
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,4 +41,12 @@ public class Comment {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Rate rate;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdDate;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime modifiedDate;
 }
