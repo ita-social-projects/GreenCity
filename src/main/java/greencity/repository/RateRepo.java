@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
  * Provides an interface to manage {@link Rate} entity.
  */
 @Repository
-public interface RateRepo extends JpaRepository<Rate,Long> {
+public interface RateRepo extends JpaRepository<Rate, Long> {
 }
