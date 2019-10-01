@@ -63,11 +63,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      */
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
-//        Comment comment1 = placeCommentRepo.findById(6L).orElseThrow(() -> new NotFoundException("nema"));
-//        comment1.setText(comment1.getText() + "54");
-//        placeCommentRepo.save(comment1);
-
-
         Place place = placeService.findById(placeId);
         User user = userService.findByEmail(email).orElseThrow(() -> new NotFoundException(""));
         Comment comment = modelMapper.map(addCommentDto, Comment.class);
