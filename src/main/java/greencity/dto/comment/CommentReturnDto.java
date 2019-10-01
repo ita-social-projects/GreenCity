@@ -3,13 +3,11 @@ package greencity.dto.comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.dto.photo.PhotoReturnDto;
 import greencity.dto.rate.RateAddDto;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @NoArgsConstructor
@@ -21,6 +19,4 @@ public class CommentReturnDto {
     private LocalDateTime createdDate;
     private List<PhotoReturnDto> photos;
     private RateAddDto rate;
-//    private Long placeId;
-//    private Long userId;
 }
