@@ -1,8 +1,10 @@
 package greencity.controller;
 
-import greencity.dto.comment.CommentDto;
+import greencity.constant.ErrorMessage;
+import greencity.dto.comment.AddCommentDto;
 import greencity.entity.Place;
 import greencity.entity.User;
+import greencity.entity.enums.UserStatus;
 import greencity.exception.NotFoundException;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
@@ -30,18 +32,22 @@ public class PlaceCommentController {
     }
 
     @PostMapping("/place/{placeId}/comments")
-    public ResponseEntity save(@PathVariable Long placeId, @RequestBody CommentDto commentDto, Principal principal) {
+    public ResponseEntity save(@PathVariable Long placeId,
+                               @RequestBody AddCommentDto addCommentDto, Principal principal) {
         User user = userService.findByEmail(principal.getName())
-            .orElseThrow(() -> new NotFoundException("" + principal.getName()));//todo add message
-        Place place = placeService.findByIdOptional(placeId)
-            .orElseThrow(() -> new NotFoundException("" + placeId));//todo add message
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
+        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
+            throw new NotFoundException(" ");
+        }
+        Place place = placeService.findById(placeId);
         return ResponseEntity
-            .status(HttpStatus.OK).body(placeCommentService.save(place.getId(), commentDto, user.getEmail()));
+            .status(HttpStatus.OK).body(placeCommentService.save(place.getId(), addCommentDto, user.getEmail()));
     }
 
     @GetMapping("comments/{id}")
     public ResponseEntity getCommentById(@PathVariable Long id) {
+        System.out.println("controller");
         return ResponseEntity.status(HttpStatus.OK)
-            .body(placeCommentService.findById(id).orElseThrow(() -> new NotFoundException("" + id)));
+            .body(placeCommentService.findById(id));
     }
 }

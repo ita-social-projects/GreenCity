@@ -24,4 +24,7 @@ public class Rate {
 
     @ManyToOne
     private Place place;
+
+    @OneToOne(mappedBy = "rate")
+    private Comment comment;
 }

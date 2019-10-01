@@ -1,7 +1,9 @@
 package greencity.service.impl;
 
+import greencity.entity.Photo;
 import greencity.repository.PhotoRepo;
 import greencity.service.PhotoService;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class  PhotoServiceImpl implements PhotoService {
+public class PhotoServiceImpl implements PhotoService {
     private PhotoRepo photoRepo;
+
+    @Override
+    public Optional<Photo> findByName(String name) {
+        return photoRepo.findByName(name);
+    }
 }

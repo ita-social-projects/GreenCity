@@ -18,6 +18,8 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode(
     exclude = {"comments", "photos", "location", "favoritePlaces", "category", "rates", "webPages", "status"})
+@ToString(exclude = {"comments", "photos", "specificationValues", "favoritePlaces", "location",
+    "webPages", "rates", "discounts", "openingHoursList"})
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +36,7 @@ public class Place {
     @Column(unique = true, length = 50)
     private String email;
 
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "place")
@@ -55,7 +57,7 @@ public class Place {
     @ManyToOne(cascade = {CascadeType.ALL})
     private Category category;
 
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", cascade = {CascadeType.ALL})
     private List<Rate> rates = new ArrayList<>();
 
     @OneToMany(mappedBy = "place")
