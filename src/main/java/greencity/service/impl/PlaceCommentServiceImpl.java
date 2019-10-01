@@ -1,19 +1,21 @@
 package greencity.service.impl;
 
 import greencity.dto.PageableDto;
-import greencity.dto.comment.CommentDto;
+import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
+import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.exception.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
-import greencity.service.PlaceCommentService;
-import greencity.service.PlaceService;
-import java.util.Optional;
+import greencity.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The class provides implementation of the {@code CommentService}.
@@ -25,8 +27,11 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class PlaceCommentServiceImpl implements PlaceCommentService {
+    private UserService userService;
     private PlaceCommentRepo placeCommentRepo;
     private PlaceService placeService;
+    private RateService rateService;
+    private PhotoService photoService;
     private ModelMapper modelMapper;
 
     /**
@@ -46,8 +51,9 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * @author Marian Milian
      */
     @Override
-    public Optional<Comment> findById(Long id) {
-        return placeCommentRepo.findById(id);
+    public CommentReturnDto findById(Long id) {
+        Comment comment = placeCommentRepo.findById(id).orElseThrow(() -> new NotFoundException(""));
+        return modelMapper.map(comment, CommentReturnDto.class);
     }
 
     /**
@@ -56,10 +62,28 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * @author Marian Milian
      */
     @Override
-    public Comment save(Long placeId, CommentDto commentDto, String email) {
-        Comment comment = modelMapper.map(commentDto, Comment.class);
-        comment.setPlace(placeService.findById(placeId));
-        return placeCommentRepo.save(comment);
+    public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
+//        Comment comment1 = placeCommentRepo.findById(6L).orElseThrow(() -> new NotFoundException("nema"));
+//        comment1.setText(comment1.getText() + "54");
+//        placeCommentRepo.save(comment1);
+
+
+        Place place = placeService.findById(placeId);
+        User user = userService.findByEmail(email).orElseThrow(() -> new NotFoundException(""));
+        Comment comment = modelMapper.map(addCommentDto, Comment.class);
+        comment.setPlace(place);
+        comment.setUser(user);
+        comment.getRate().setUser(user);
+        comment.getRate().setPlace(place);
+        comment.getPhotos().forEach(photo -> {
+            if (photoService.findByName(photo.getName()).isPresent()) {
+                throw new NotFoundException("");
+            }
+            photo.setUser(user);
+            photo.setComment(comment);
+        });
+
+        return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
     }
 
     /**
@@ -68,9 +92,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * @author Marian Milian
      */
     @Override
-    public Long deleteById(Long id) {
-        Comment comment = findById(id).orElseThrow(() -> new NotFoundException("" + id));
-        placeCommentRepo.delete(comment);
-        return id;
+    public void deleteById(Long id) {
+        placeCommentRepo.delete(placeCommentRepo.findById(id).orElseThrow(() -> new NotFoundException("")));
     }
 }
