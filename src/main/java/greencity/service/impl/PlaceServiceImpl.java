@@ -259,8 +259,9 @@ public class PlaceServiceImpl implements PlaceService {
         checkPlaceStatuses(oldStatus, status, id);
 
         updatable.setStatus(status);
-        updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
-
+        if (status.equals(PlaceStatus.APPROVED)) {
+            updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
+        }
         // if place had status PROPOSED and it changes, means APPROVEs or DECLINEs we send an email
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             emailService.sendChangePlaceStatusEmail(updatable);
