@@ -41,12 +41,11 @@ public class PlaceCommentController {
         }
         Place place = placeService.findById(placeId);
         return ResponseEntity
-            .status(HttpStatus.OK).body(placeCommentService.save(place.getId(), addCommentDto, user.getEmail()));
+            .status(HttpStatus.CREATED).body(placeCommentService.save(place.getId(), addCommentDto, user.getEmail()));
     }
 
     @GetMapping("comments/{id}")
     public ResponseEntity getCommentById(@PathVariable Long id) {
-        System.out.println("controller");
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.findById(id));
     }

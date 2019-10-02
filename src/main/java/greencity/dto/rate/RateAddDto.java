@@ -1,6 +1,9 @@
 package greencity.dto.rate;
 
+import greencity.constant.ValidationConstants;
 import greencity.entity.Rate;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RateAddDto {
+    @Min(value = 1, message = ValidationConstants.RATE_MIN_VALUE)
+    @Max(value = 5, message = ValidationConstants.RATE_MAX_VALUE)
     private Byte rate;
 }

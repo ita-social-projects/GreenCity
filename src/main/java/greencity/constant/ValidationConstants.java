@@ -46,11 +46,11 @@ public class ValidationConstants {
     public static final String MIN_VALUE_LATITUDE =
         "The '${validatedValue}' must be at least {value}";
     public static final String MAX_VALUE_LATITUDE =
-        "The '${validatedValue}' must be at least {value}";
+        "The '${validatedValue}' must be less than {value}";
     public static final String MIN_VALUE_LONGITUDE =
         "The '${validatedValue}' must be at least {value}";
     public static final String MAX_VALUE_LONGITUDE =
-        "The '${validatedValue}' must be at least {value}";
+        "The '${validatedValue}' must be less than {value}";
 
     public static final String N_E_LAT_CAN_NOT_BE_NULL = "North-east latitude can not be null";
     public static final String N_E_LNG_CAN_NOT_BE_NULL = "North-east longitude can not be null";
@@ -58,7 +58,15 @@ public class ValidationConstants {
     public static final String S_W_LNG_CAN_NOT_BE_NULL = "South-west longitude can not be null";
 
     public static final String LAT_MIN_VALIDATION = "Has to be greatest or equals -90";
-    public static final String LAT_MAX_VALIDATION = "Has to be lover or equals 90";
+    public static final String LAT_MAX_VALIDATION = "Has to be lower or equals 90";
     public static final String LNG_MIN_VALIDATION = "Has to be greatest or equals -180";
-    public static final String LNG_MAX_VALIDATION = "Has to be lover or equals 180";
+    public static final String LNG_MAX_VALIDATION = "Has to be lower or equals 180";
+
+    public static final String RATE_MIN_VALUE = "The '${validatedValue}' must be at least {value}";
+    public static final String RATE_MAX_VALUE = "The '${validatedValue}' must be less than {value}";
+
+    public static final String EMPTY_COMMENT = "The '${validatedValue}' of comment can not be empty";
+
+    public static final Integer COMMENT_MIN_LENGTH = 5;
+    public static final Integer COMMENT_MAX_LENGTH = 300;
 }
