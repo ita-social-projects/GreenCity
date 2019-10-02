@@ -129,8 +129,7 @@ public class JwtTokenTool {
      * @return {@link Authentication}
      */
     public Authentication getAuthentication(String token) {
-        String email = getEmailByToken(token);
-        Optional<User> optionalUser = userService.findByEmail(email);
+        Optional<User> optionalUser = userService.findByEmail(getEmailByToken(token));
         if (!optionalUser.isPresent()) {
             return null;
         }
