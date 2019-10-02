@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,6 +49,9 @@ public class JwtFilter extends GenericFilterBean {
             if (authentication != null) {
                 log.info("User successfully authenticate - {}", authentication.getPrincipal());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                ((HttpServletResponse) servletResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);
