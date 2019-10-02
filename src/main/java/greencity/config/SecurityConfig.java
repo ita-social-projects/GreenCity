@@ -1,5 +1,7 @@
 package greencity.config;
 
+import static greencity.constant.AppConstant.*;
+
 import greencity.security.jwt.JwtAuthenticationProvider;
 import greencity.security.jwt.JwtTokenTool;
 import greencity.service.UserService;
@@ -89,43 +91,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses/**",
                 "/place/about/{id}/**",
                 "/specification/**"
-
             ).permitAll()
             .antMatchers(
                 "/place/propose/**",
                 "/place/{status}/**",
                 "/favorite_place/**",
                 "/place/save/favorite"
-            ).hasAnyRole("USER", "ADMIN", "MODERATOR")
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
                 "/place/save/favorite/**"
-            ).hasAnyRole("USER", "ADMIN", "MODERATOR")
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate"
-            ).hasAnyRole("ADMIN", "MODERATOR")
+            ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",
                 "/place/statuses**",
                 "/user/update/status"
-            ).hasAnyRole("ADMIN", "MODERATOR")
+            ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/user/update/role"
-            ).hasRole("ADMIN")
+            ).hasRole(ADMIN)
             .antMatchers(HttpMethod.GET,
                 "/user",
                 "/user/roles"
-            ).hasAnyRole("ADMIN", "MODERATOR")
+            ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",
                 "/place/**"
-            ).hasAnyRole("ADMIN", "MODERATOR")
+            ).hasAnyRole(ADMIN, MODERATOR)
             .anyRequest()
-            .hasAnyRole("ADMIN")
+            .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.PUT,
                 "/place/update/**")
-            .hasAnyRole("ADMIN", "MODERATOR")
+            .hasAnyRole(ADMIN, MODERATOR)
             .and()
             .apply(new JwtConfig(tool));
     }

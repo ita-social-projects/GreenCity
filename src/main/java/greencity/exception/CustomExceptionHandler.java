@@ -63,7 +63,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
-
+    /**
+     * Missed java docs.
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public final ResponseEntity handleConversionFailedException(
         MethodArgumentTypeMismatchException ex, WebRequest request) {
