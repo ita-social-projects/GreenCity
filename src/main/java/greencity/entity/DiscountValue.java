@@ -15,7 +15,7 @@ public class DiscountValue {
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private int value;
+    private Integer value;
 
     @ManyToOne
     private Place place;
