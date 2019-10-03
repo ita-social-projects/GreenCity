@@ -12,8 +12,8 @@ import org.hibernate.validator.constraints.Range;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DiscountValueDto {
-    @Range(min = 0, message = ValidationConstants.DISCOUNT_VALUE_MIN_ERROR)
-    @Range(max = 100, message = ValidationConstants.DISCOUNT_VALUE_MAX_ERROR)
+    @Range(min = ValidationConstants.DISCOUNT_VALUE_MIN, max = ValidationConstants.DISCOUNT_VALUE_MAX,
+        message = ValidationConstants.DISCOUNT_VALUE_DOES_NOT_CORRECT)
     private int value = 0;
 
     @Valid
