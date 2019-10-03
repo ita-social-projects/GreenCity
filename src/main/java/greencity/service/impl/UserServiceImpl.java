@@ -1,13 +1,13 @@
 package greencity.service.impl;
 
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
+
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return repo.findById(id)
-            .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<UserForListDto>(
+        return new PageableDto<>(
             userForListDtos,
             users.getTotalElements(),
             users.getPageable().getPageNumber());
@@ -159,10 +159,32 @@ public class UserServiceImpl implements UserService {
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<UserForListDto>(
+        return new PageableDto<>(
             userForListDtos,
             users.getTotalElements(),
             users.getPageable().getPageNumber());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserInitialsDto getUserInitialsByPrincipal(String email) {
+        return modelMapper.map(
+            findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
+            UserInitialsDto.class
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public User updateInitials(UserInitialsDto dto, String email) {
+        User user = findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        return repo.save(user);
     }
 
     /**
