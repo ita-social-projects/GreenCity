@@ -12,6 +12,7 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
@@ -212,6 +213,12 @@ public class PlaceController {
      * @return response object with {@link UpdatePlaceStatusDto} and OK status if everything is ok.
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Update status of place")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UpdatePlaceStatusDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @PatchMapping("/status")
     public ResponseEntity<UpdatePlaceStatusDto> updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -271,6 +278,12 @@ public class PlaceController {
      * @return list of {@link UpdatePlaceStatusDto} with updated {@link Place}'s and {@link PlaceStatus}'s
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Bulk update place statuses")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UpdatePlaceStatusDto[].class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @PatchMapping("/statuses")
     public ResponseEntity<List<UpdatePlaceStatusDto>> bulkUpdateStatuses(
         @Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
@@ -284,6 +297,12 @@ public class PlaceController {
      * @return array of statuses
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Get array of available place statuses")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceStatus[].class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @GetMapping("/statuses")
     public ResponseEntity<List<PlaceStatus>> getStatuses() {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getStatuses());
@@ -296,23 +315,36 @@ public class PlaceController {
      * @return id of deleted {@link Place}
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Delete place")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> delete(@NotNull @PathVariable Long id) {
+    public ResponseEntity<Long> delete(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.deleteById(id));
     }
 
     /**
      * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param ids - list of id's of {@link Place}'s which need to be deleted
+     * @param ids - list of id's of {@link Place}'s, splited by "," which need to be deleted
      * @return count of deleted {@link Place}'s
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Bulk delete places")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @DeleteMapping
-    public ResponseEntity<Long> bulkDelete(@RequestParam String ids) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            placeService.bulkDelete(Arrays.stream(ids.split(","))
-                .map(Long::valueOf)
-                .collect(Collectors.toList())));
+    public ResponseEntity<Long> bulkDelete(
+        @ApiParam(value = "Ids of places separated by a comma \n e.g. 1,2", required = true)
+        @RequestParam String ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.bulkDelete(Arrays.stream(ids.split(","))
+            .map(Long::valueOf)
+            .collect(Collectors.toList())));
     }
 }

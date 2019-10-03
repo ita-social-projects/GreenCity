@@ -34,7 +34,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
-
     /**
      * Method intercept exception {@link RuntimeException}.
      *

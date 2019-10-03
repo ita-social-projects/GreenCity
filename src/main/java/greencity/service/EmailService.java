@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.entity.enums.PlaceStatus;
 
 /**
  * Provides the interface to manage sending emails to {@code User}.
@@ -11,10 +10,9 @@ public interface EmailService {
     /**
      * Method for sending simple notification to {@code User} about change status.
      *
-     * @param updatable - updatable {@code Place}
-     * @param status    - new {@code PlaceStatus}
+     * @param updatable - updated {@code Place}
      */
-    void sendChangePlaceStatusEmail(Place updatable, PlaceStatus status);
+    void sendChangePlaceStatusEmail(Place updatable);
 
     /**
      * Method for sending verification email to {@link User}.
@@ -27,8 +25,8 @@ public interface EmailService {
     /**
      * Method for sending email for restore.
      *
-     * @param user - {@link User}
+     * @param user  - {@link User}
      * @param token - {@link String}
      */
-    void  sendRestoreEmail(User user, String token);
+    void sendRestoreEmail(User user, String token);
 }

@@ -208,7 +208,6 @@ public class PlaceServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void updateStatusGivenPlaceIdNullThenThrowException() {
-        Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
         placeService.updateStatus(null, PlaceStatus.PROPOSED);
     }
 
@@ -264,24 +263,21 @@ public class PlaceServiceImplTest {
     @Test
     public void updateStatusesTest() {
         BulkUpdatePlaceStatusDto requestDto = new BulkUpdatePlaceStatusDto(
-            Arrays.asList(1L, 2L, 3L),
-            PlaceStatus.DELETED
+            Arrays.asList(1L, 2L),
+            PlaceStatus.DECLINED
         );
 
         List<UpdatePlaceStatusDto> expected = Arrays.asList(
-            new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED),
-            new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED),
-            new UpdatePlaceStatusDto(3L, PlaceStatus.DELETED)
+            new UpdatePlaceStatusDto(1L, PlaceStatus.DECLINED),
+            new UpdatePlaceStatusDto(2L, PlaceStatus.DECLINED)
         );
 
         when(placeRepo.findById(anyLong()))
             .thenReturn(Optional.of(new Place()))
-            .thenReturn(Optional.of(new Place()))
             .thenReturn(Optional.of(new Place()));
         when(modelMapper.map(any(), any()))
-            .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED))
-            .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED))
-            .thenReturn(new UpdatePlaceStatusDto(3L, PlaceStatus.DELETED));
+            .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DECLINED))
+            .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DECLINED));
 
         assertEquals(expected, placeService.updateStatuses(requestDto));
     }
@@ -292,5 +288,28 @@ public class PlaceServiceImplTest {
             Arrays.asList(PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED);
 
         assertEquals(placeStatuses, placeService.getStatuses());
+    }
+
+    @Test
+    public void bulkDelete() {
+        List<Long> request = Arrays.asList(1L, 2L);
+
+        when(placeRepo.findById(anyLong()))
+            .thenReturn(Optional.of(new Place()))
+            .thenReturn(Optional.of(new Place()));
+        when(modelMapper.map(any(), any()))
+            .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED))
+            .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED));
+
+        assertEquals(new Long(2), placeService.bulkDelete(request));
+    }
+
+    @Test
+    public void findAllTest() {
+        List<Place> expectedList = Arrays.asList(new Place(), new Place());
+
+        when(placeRepo.findAll()).thenReturn(expectedList);
+
+        assertEquals(expectedList, placeService.findAll());
     }
 }

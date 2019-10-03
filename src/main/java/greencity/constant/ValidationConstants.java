@@ -20,6 +20,7 @@ public class ValidationConstants {
         + "Special character (~`!@#$%^&*()+=_-{}[]|:;”’?/<>,.).";
 
     public static final String EMPTY_ID = "The id field can not be empty";
+    public static final String NEGATIVE_ID = "The id should be positive number";
     public static final String EMPTY_STATUS = "The status field can not be empty";
 
     public static final int PLACE_NAME_MAX_LENGTH = 30;
