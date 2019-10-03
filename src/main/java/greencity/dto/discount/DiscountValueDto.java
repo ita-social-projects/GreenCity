@@ -1,5 +1,6 @@
 package greencity.dto.discount;
 
+import greencity.constant.ValidationConstants;
 import greencity.dto.specification.SpecificationNameDto;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -11,8 +12,8 @@ import org.hibernate.validator.constraints.Range;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DiscountValueDto {
-    @Range(min = 0, message = "min value is 0.")
-    @Range(max = 100, message = "max value is 100.")
+    @Range(min = 0, message = ValidationConstants.DISCOUNT_VALUE_MIN_ERROR)
+    @Range(max = 100, message = ValidationConstants.DISCOUNT_VALUE_MAX_ERROR)
     private int value = 0;
 
     @Valid
