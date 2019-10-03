@@ -130,7 +130,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @param updatedPlace - {@link Place} entity.
      * @author Kateryna Horokh
      */
-    private void updateDiscount(List<DiscountValueDto> discounts, Place updatedPlace) {
+    private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
         List<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());

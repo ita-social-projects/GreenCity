@@ -38,5 +38,5 @@ public class PlaceUpdateDto {
     private Set<OpeningHoursDto> openingHoursList;
 
     @Valid
-    private List<DiscountValueDto> discounts;
+    private Set<DiscountValueDto> discounts;
 }

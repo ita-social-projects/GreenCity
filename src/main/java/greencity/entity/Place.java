@@ -18,7 +18,7 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode(
     exclude = {"discountValues", "author", "openingHoursList", "comments", "photos",
-        "location", "favoritePlaces", "category", "rates", "webPages", "status"})
+        "location", "favoritePlaces", "category", "rates", "webPages", "status", "discountValues"})
 @ToString(exclude = {"comments", "photos", "favoritePlaces",
     "webPages", "rates", "discountValues", "openingHoursList", "location", "author"})
 public class Place {
@@ -44,7 +44,7 @@ public class Place {
     private List<Photo> photos = new ArrayList<>();
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
-    private List<DiscountValue> discountValues = new ArrayList<>();
+    private Set<DiscountValue> discountValues = new HashSet<>();
 
     @OneToOne(cascade = {CascadeType.ALL})
     private Location location;

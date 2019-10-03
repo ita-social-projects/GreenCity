@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"value"})
 public class DiscountValue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
