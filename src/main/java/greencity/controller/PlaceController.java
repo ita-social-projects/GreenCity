@@ -47,7 +47,7 @@ public class PlaceController {
      * @return new {@code Place}.
      * @author Kateryna Horokh
      */
-    @ApiOperation(value = "Propose new place")
+    @ApiOperation(value = "Propose new place.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = PlaceWithUserDto.class),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
