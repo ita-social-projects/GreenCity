@@ -221,8 +221,11 @@ public class PlaceServiceImpl implements PlaceService {
      *
      * @author Nazar Vladyka
      */
+    @Transactional
     @Override
     public Long bulkDelete(List<Long> ids) {
+        log.info(LogMessage.IN_BULK_DELETE, ids);
+
         List<UpdatePlaceStatusDto> deletedPlaces =
             updateStatuses(new BulkUpdatePlaceStatusDto(ids, PlaceStatus.DELETED));
 
@@ -237,29 +240,30 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<Place> findAll() {
         log.info(LogMessage.IN_FIND_ALL);
+
         return placeRepo.findAll();
     }
 
     /**
      * {@inheritDoc}
      *
-     * @author Nazar Vladyka.
+     * @author Nazar Vladyka
      */
     @Override
     public UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
 
         Place updatable = findById(id);
-        if (!updatable.getStatus().equals(status)) {
-            if (updatable.getStatus().equals(PlaceStatus.PROPOSED)) {
-                emailService.sendChangePlaceStatusEmail(updatable, status);
-            }
-            updatable.setStatus(status);
-            updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
-        } else {
-            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, id, status);
-            throw new PlaceStatusException(
-                updatable.getId() + ErrorMessage.PLACE_STATUS_NOT_DIFFERENT + updatable.getStatus());
+        PlaceStatus oldStatus = updatable.getStatus();
+
+        checkPlaceStatuses(oldStatus, status, id);
+
+        updatable.setStatus(status);
+        updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
+
+        // if place had status PROPOSED and it changes, means APPROVEs or DECLINEs we send an email
+        if (oldStatus.equals(PlaceStatus.PROPOSED)) {
+            emailService.sendChangePlaceStatusEmail(updatable);
         }
 
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
@@ -273,6 +277,8 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto) {
+        log.info(LogMessage.IN_UPDATE_PLACE_STATUSES, dto);
+
         List<UpdatePlaceStatusDto> updatedPlaces = new ArrayList<>();
         for (Long id : dto.getIds()) {
             updatedPlaces.add(updateStatus(id, dto.getStatus()));
@@ -289,6 +295,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
+
         return placeRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
@@ -409,6 +416,14 @@ public class PlaceServiceImpl implements PlaceService {
             }).collect(Collectors.toList());
         }
         return placeList;
+    }
+
+    private void checkPlaceStatuses(PlaceStatus currentStatus, PlaceStatus updatedStatus, Long placeId) {
+        if (currentStatus.equals(updatedStatus)) {
+            log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, updatedStatus);
+            throw new PlaceStatusException(String.format(
+                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, updatedStatus));
+        }
     }
 
     /**
