@@ -36,5 +36,5 @@ public class PlaceAddDto {
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
     @Valid
-    private List<DiscountValueDto> discountValues = new ArrayList<>();
+    private Set<DiscountValueDto> discountValues = new HashSet<>();
 }
