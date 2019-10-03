@@ -6,7 +6,7 @@ import greencity.entity.DiscountValue;
 import greencity.exception.NotFoundException;
 import greencity.repository.DiscountValuesRepo;
 import greencity.service.DiscountService;
-import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class DiscountServiceImpl implements DiscountService {
      * @author Kateryna Horokh
      */
     @Override
-    public List<DiscountValue> findAllByPlaceId(Long placeId) {
+    public Set<DiscountValue> findAllByPlaceId(Long placeId) {
         return repo.findAllByPlaceId(placeId);
     }
 

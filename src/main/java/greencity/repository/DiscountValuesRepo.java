@@ -1,7 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.DiscountValue;
-import java.util.List;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ public interface DiscountValuesRepo extends JpaRepository<DiscountValue, Long> {
      * @param placeId to find by.
      * @return a list of the {@code DiscountValue} for the place by id.
      */
-    List<DiscountValue> findAllByPlaceId(Long placeId);
+    Set<DiscountValue> findAllByPlaceId(Long placeId);
 
     /**
      * Delete all {@code DiscountValue} records related to the specified {@code Place}.
