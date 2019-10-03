@@ -27,7 +27,7 @@ public class ErrorMessage {
     public static final String USER_NOT_VERIFIED = "User not verified";
     public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
     public static final String REFRESH_TOKEN_NOT_VALID = "Refresh token not valid!";
-    public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No eny email to verify by this token";
+    public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No any email to verify by this token";
     public static final String NO_ANY_VERIFY_EMAIL_TO_DELETE = "No any VerifyEmail to delete with this id: ";
     public static final String REPEATING_VALUE_OF_WEEKDAY_VALUE = "Value of week day repeating";
     public static final String USER_DEACTIVATED = "User is deactivated";
