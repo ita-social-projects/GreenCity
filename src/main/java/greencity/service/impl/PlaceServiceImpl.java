@@ -345,7 +345,6 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
         List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
-        log.error(list.toString());
         list = getPlacesByDistanceFromUser(filterDto, list);
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))

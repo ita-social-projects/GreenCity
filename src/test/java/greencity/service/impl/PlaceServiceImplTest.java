@@ -75,10 +75,6 @@ public class PlaceServiceImplTest {
 
     Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
-//    Set<Discount> discountEntities = new HashSet<>();
-
-    // Set<DiscountDto> discountDtos = new HashSet<>();
-
     Set<OpeningHours> openingHoursListEntity = new HashSet<>();
 
     OpeningHours openingHoursEntity = OpeningHours.builder()
@@ -89,12 +85,6 @@ public class PlaceServiceImplTest {
         .build();
 
     Specification specificationEntity = new Specification();
-
-//    Discount discountEntity = Discount.builder()
-//        .id(1L)
-//        .category(category)
-//        .specification(specificationEntity)
-//        .build();
 
     Place place = Place.builder()
         .id(1L)
@@ -137,9 +127,6 @@ public class PlaceServiceImplTest {
 
     @Mock
     private SpecificationService specificationService;
-
-//    @Mock
-//    private DiscountService discountService;
 
     @Mock
     private ModelMapper modelMapper;

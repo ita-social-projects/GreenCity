@@ -5,6 +5,7 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.Specification;
+import greencity.exception.NotFoundException;
 import greencity.exception.NotImplementedMethodException;
 import greencity.service.CategoryService;
 import greencity.service.SpecificationService;
@@ -32,7 +33,9 @@ public class ProposePlaceMapper implements Mapper<Place, PlaceAddDto> {
         place.setCategory(category);
         place.getOpeningHoursList().forEach(h -> h.setPlace(place));
         place.getDiscountValues().forEach(disc -> {
-            Specification specification = specService.findByName(disc.getSpecification().getName());
+            Specification specification = specService.findByName(disc.getSpecification().getName())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME
+                    + disc.getSpecification().getName()));
             disc.setSpecification(specification);
             disc.setPlace(place);
         });

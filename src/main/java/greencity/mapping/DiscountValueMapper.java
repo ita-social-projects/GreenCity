@@ -4,6 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.entity.DiscountValue;
 import greencity.entity.Specification;
+import greencity.exception.NotFoundException;
 import greencity.exception.NotImplementedMethodException;
 import greencity.service.SpecificationService;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,8 @@ public class DiscountValueMapper implements Mapper<DiscountValue, DiscountValueD
     @Override
     public DiscountValue convertToEntity(DiscountValueDto dto) {
         DiscountValue discount = modelMapper.map(dto, DiscountValue.class);
-        Specification specification = specificationService.findByName(dto.getSpecification().getName());
+        Specification specification = specificationService.findByName(dto.getSpecification().getName())
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME));
         discount.setSpecification(specification);
         return discount;
     }
