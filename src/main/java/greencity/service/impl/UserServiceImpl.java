@@ -169,9 +169,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserInitialsDto getUserInitialsByPrincipal(String email) {
+    public UserInitialsDto getUserInitialsByEmail(String email) {
         return modelMapper.map(
-            findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
+            repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
             UserInitialsDto.class
         );
     }
@@ -181,7 +181,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User updateInitials(UserInitialsDto dto, String email) {
-        User user = findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         return repo.save(user);

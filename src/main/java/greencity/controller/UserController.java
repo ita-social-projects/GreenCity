@@ -150,7 +150,7 @@ public class UserController {
     @GetMapping("initials")
     public ResponseEntity<UserInitialsDto> getUserInitialsByPrincipal() {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInitialsByPrincipal(email));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInitialsByEmail(email));
     }
 
     /**

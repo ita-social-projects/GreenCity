@@ -116,7 +116,7 @@ public interface UserService {
      * @return {@link UserInitialsDto}.
      * @author Nazar Stasyuk
      */
-    UserInitialsDto getUserInitialsByPrincipal(String email);
+    UserInitialsDto getUserInitialsByEmail(String email);
 
     /**
      * Update {@link User} initials.
