@@ -30,7 +30,7 @@ public interface DiscountService {
      * @param placeId to find by.
      * @return a set of the {@code Discount} for the place by id.
      */
-    List<DiscountValue> findAllByPlaceId(Long placeId);
+    Set<DiscountValue> findAllByPlaceId(Long placeId);
 
     /**
      * Delete all {@code Discount} records related to the specified {@code Place}.

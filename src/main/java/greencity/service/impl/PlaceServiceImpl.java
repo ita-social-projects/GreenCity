@@ -133,9 +133,9 @@ public class PlaceServiceImpl implements PlaceService {
     private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
-        List<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
+        Set<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
         discountService.deleteAllByPlaceId(updatedPlace.getId());
-        List<DiscountValue> newDiscounts = new ArrayList<>();
+        Set<DiscountValue> newDiscounts = new HashSet<>();
         discounts.forEach(d -> {
             DiscountValue discount = discountValueMapper.convertToEntity(d);
             discount.setPlace(updatedPlace);
