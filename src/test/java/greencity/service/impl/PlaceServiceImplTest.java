@@ -9,7 +9,6 @@ import static org.mockito.Mockito.*;
 
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.*;
@@ -76,10 +75,6 @@ public class PlaceServiceImplTest {
 
     Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
-    Set<Discount> discountEntities = new HashSet<>();
-
-    Set<DiscountDto> discountDtos = new HashSet<>();
-
     Set<OpeningHours> openingHoursListEntity = new HashSet<>();
 
     OpeningHours openingHoursEntity = OpeningHours.builder()
@@ -91,12 +86,6 @@ public class PlaceServiceImplTest {
 
     Specification specificationEntity = new Specification();
 
-    Discount discountEntity = Discount.builder()
-        .id(1L)
-        .category(category)
-        .specification(specificationEntity)
-        .build();
-
     Place place = Place.builder()
         .id(1L)
         .name("Test")
@@ -104,7 +93,7 @@ public class PlaceServiceImplTest {
         .author(user)
         .location(location)
         .openingHoursList(openingHoursListEntity)
-        .discounts(discountEntities)
+//        .discounts(discountEntities)
         .status(PlaceStatus.PROPOSED)
         .build();
 
@@ -114,7 +103,7 @@ public class PlaceServiceImplTest {
         .category(categoryDto)
         .location(locationDto)
         .openingHoursList(openingHoursList)
-        .discounts(discountDtos)
+//        .discounts(discountDtos)
         .build();
 
 
@@ -138,9 +127,6 @@ public class PlaceServiceImplTest {
 
     @Mock
     private SpecificationService specificationService;
-
-    @Mock
-    private DiscountService discountService;
 
     @Mock
     private ModelMapper modelMapper;

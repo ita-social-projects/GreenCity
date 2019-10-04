@@ -6,9 +6,7 @@
         <dropForeignKeyConstraint baseTableName="location" constraintName="FK11n0lglbc5iw6xn3seglinvpq"/>
     </changeSet>
     <changeSet author="Kateryna Horokh" id="1567079888333-68">
-        <dropColumn catalogName="greenCity"
-                    columnName="place_id"
-                    schemaName="greenCity"
+        <dropColumn columnName="place_id"
                     tableName="location"/>
     </changeSet>
 </databaseChangeLog>

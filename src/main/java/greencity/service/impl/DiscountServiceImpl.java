@@ -2,9 +2,9 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.entity.Discount;
+import greencity.entity.DiscountValue;
 import greencity.exception.NotFoundException;
-import greencity.repository.DiscountRepo;
+import greencity.repository.DiscountValuesRepo;
 import greencity.service.DiscountService;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Slf4j
 public class DiscountServiceImpl implements DiscountService {
-    private DiscountRepo repo;
+    private DiscountValuesRepo repo;
 
     /**
      * {@inheritDoc}
@@ -28,8 +28,8 @@ public class DiscountServiceImpl implements DiscountService {
      * @author Kateryna Horokh
      */
     @Override
-    public Discount save(Discount discount) {
-        return repo.save(discount);
+    public DiscountValue save(DiscountValue discountValue) {
+        return repo.save(discountValue);
     }
 
     /**
@@ -38,7 +38,7 @@ public class DiscountServiceImpl implements DiscountService {
      * @author Kateryna Horokh
      */
     @Override
-    public Discount findById(Long id) {
+    public DiscountValue findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return repo
@@ -53,7 +53,7 @@ public class DiscountServiceImpl implements DiscountService {
      * @author Kateryna Horokh
      */
     @Override
-    public Set<Discount> findAllByPlaceId(Long placeId) {
+    public Set<DiscountValue> findAllByPlaceId(Long placeId) {
         return repo.findAllByPlaceId(placeId);
     }
 

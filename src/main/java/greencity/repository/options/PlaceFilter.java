@@ -126,11 +126,9 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(
-            cb.equal(r.join("discounts").join("category").get("name"),
-                discount.getCategory().getName()),
-            cb.equal(r.join("discounts").join("specification").get("name"),
+            cb.equal(r.join("discountValues").join("specification").get("name"),
                 discount.getSpecification().getName()),
-            cb.between(r.join("discounts").get("value"),
+            cb.between(r.join("discountValues").get("value"),
                 discount.getDiscountMin(), discount.getDiscountMax()));
     }
 
