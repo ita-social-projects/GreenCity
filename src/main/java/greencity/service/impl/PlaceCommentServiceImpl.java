@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
@@ -12,10 +11,7 @@ import greencity.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The class provides implementation of the {@code CommentService}.
@@ -33,17 +29,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private RateService rateService;
     private PhotoService photoService;
     private ModelMapper modelMapper;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Marian Milian
-     */
-    @Override
-    public PageableDto<Comment> findAllByPlaceId(Long placeId, Pageable pageable) {
-        Page<Comment> comments = placeCommentRepo.findAllByPlaceId(placeService.findById(placeId).getId(), pageable);
-        return null;
-    }
 
     /**
      * {@inheritDoc}

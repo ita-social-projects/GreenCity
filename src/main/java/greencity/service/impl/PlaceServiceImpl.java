@@ -191,6 +191,11 @@ public class PlaceServiceImpl implements PlaceService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Marian Milian
+     */
     @Override
     public Optional<Place> findByIdOptional(Long id) {
         return placeRepo.findById(id);

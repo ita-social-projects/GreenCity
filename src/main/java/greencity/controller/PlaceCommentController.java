@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @AllArgsConstructor
 public class PlaceCommentController {
@@ -27,11 +28,14 @@ public class PlaceCommentController {
     private UserService userService;
     private PlaceService placeService;
 
-    @GetMapping("/place/{placeId}/comments")
-    public ResponseEntity getAllByPlaceId(@PathVariable Long placeId, Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeCommentService.findAllByPlaceId(placeId, pageable));
-    }
 
+    /**
+     * Method witch save comment by Place Id.
+     *
+     * @param placeId Id of place to witch related comment.
+     * @param addCommentDto DTO with contain data od Comment.
+     * @return CommentDTO
+     */
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity save(@PathVariable Long placeId,
                                @Valid @RequestBody AddCommentDto addCommentDto, Principal principal) {
@@ -45,6 +49,13 @@ public class PlaceCommentController {
             .status(HttpStatus.CREATED).body(placeCommentService.save(place.getId(), addCommentDto, user.getEmail()));
     }
 
+    /**
+     * Method return comment by id.
+     *
+     * @param id Comment id
+     * @return CommentDto
+     * @author Marian Milian
+     */
     @GetMapping("comments/{id}")
     public ResponseEntity getCommentById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)

@@ -16,11 +16,4 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class RateServiceImpl implements RateService {
-    private RateRepo rateRepo;
-
-
-    @Override
-    public Rate save(Rate rate) {
-        return rateRepo.save(rate);
-    }
 }

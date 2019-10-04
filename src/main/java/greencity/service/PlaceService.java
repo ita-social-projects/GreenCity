@@ -4,6 +4,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
+import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -41,6 +42,14 @@ public interface PlaceService {
      */
     Place findById(Long id);
 
+
+    /**
+     * Method with return {@link Optional} of {@link Place} by comment id.
+     *
+     * @param  id of {@link Place}.
+     * @return {@link Optional} of {@link Place} .
+     * @author Marian Milian
+     */
     Optional<Place> findByIdOptional(Long id);
 
     /**

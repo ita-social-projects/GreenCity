@@ -10,5 +10,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PhotoRepo extends JpaRepository<Photo, Long> {
+    /**
+     * Method with return {@link Optional} of {@link Photo} by comment id.
+     *
+     * @param name of {@link Photo}.
+     * @return {@link Optional} of {@link Photo} .
+     * @author Marian Milian
+     */
     Optional<Photo> findByName(String name);
 }

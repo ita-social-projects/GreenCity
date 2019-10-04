@@ -2,8 +2,6 @@ package greencity.repository;
 
 import greencity.entity.Comment;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,9 +10,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PlaceCommentRepo extends JpaRepository<Comment, Long> {
-    Page<Comment> findAllByPlaceId(Long placeId, Pageable pageable);
-
-    Optional<Comment> findByPlaceIdAndUserId(Long placeId, Long userId);
-
+    /**
+     * Method with return {@link Optional} of {@link Comment} by comment id.
+     *
+     * @param  id of {@link Comment}.
+     * @return {@link Optional} of {@link Comment} .
+     * @author Marian Milian
+     */
     Optional<Comment> findById(Long id);
 }
