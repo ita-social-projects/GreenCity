@@ -10,6 +10,7 @@ import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
 import java.security.Principal;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class PlaceCommentController {
 
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity save(@PathVariable Long placeId,
-                               @RequestBody AddCommentDto addCommentDto, Principal principal) {
+                               @Valid @RequestBody AddCommentDto addCommentDto, Principal principal) {
         User user = userService.findByEmail(principal.getName())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
