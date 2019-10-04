@@ -1,13 +1,12 @@
 package greencity.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import greencity.constant.AppConstant;
 import greencity.entity.enums.PlaceStatus;
 import greencity.util.DateTimeService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.*;
 import lombok.*;
 
@@ -37,7 +36,7 @@ public class Place {
     @Column(unique = true, length = 50)
     private String email;
 
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "place")
@@ -58,7 +57,7 @@ public class Place {
     @ManyToOne(cascade = {CascadeType.ALL})
     private Category category;
 
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", cascade = {CascadeType.ALL})
     private List<Rate> rates = new ArrayList<>();
 
     @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

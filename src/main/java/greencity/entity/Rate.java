@@ -24,4 +24,7 @@ public class Rate {
 
     @ManyToOne
     private Place place;
+
+    @OneToOne
+    private Comment comment;
 }

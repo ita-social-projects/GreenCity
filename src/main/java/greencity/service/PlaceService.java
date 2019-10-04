@@ -3,9 +3,11 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
+import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -46,6 +48,16 @@ public interface PlaceService {
      * @return Place entity.
      */
     Place findById(Long id);
+
+
+    /**
+     * Method with return {@link Optional} of {@link Place} by comment id.
+     *
+     * @param  id of {@link Place}.
+     * @return {@link Optional} of {@link Place} .
+     * @author Marian Milian
+     */
+    Optional<Place> findByIdOptional(Long id);
 
     /**
      * Method for saving proposed {@link Place} to database.
