@@ -3,6 +3,7 @@ package greencity.dto.place;
 import greencity.constant.ValidationConstants;
 import greencity.entity.enums.PlaceStatus;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +11,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlaceStatusDto {
+public class UpdatePlaceStatusDto {
+    @Positive(message = ValidationConstants.NEGATIVE_ID)
     @NotNull(message = ValidationConstants.EMPTY_ID)
-    Long id;
+    private Long id;
 
     @NotNull(message = ValidationConstants.EMPTY_STATUS)
-    PlaceStatus status;
+    private PlaceStatus status;
 }

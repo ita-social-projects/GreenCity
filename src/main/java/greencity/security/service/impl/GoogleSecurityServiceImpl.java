@@ -1,6 +1,9 @@
 package greencity.security.service.impl;
 
+import static greencity.constant.AppConstant.GOOGLE_FAMILY_NAME;
+import static greencity.constant.AppConstant.GOOGLE_GIVEN_NAME;
 import static greencity.constant.ErrorMessage.BAD_GOOGLE_TOKEN;
+import static greencity.constant.ErrorMessage.USER_DEACTIVATED;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -9,6 +12,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.jwt.JwtTokenTool;
 import greencity.security.service.GoogleSecurityService;
@@ -64,11 +68,14 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             if (googleIdToken != null) {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
-                String familyName = (String) payload.get("family_name");
-                String givenName = (String) payload.get("given_name");
+                String familyName = (String) payload.get(GOOGLE_FAMILY_NAME);
+                String givenName = (String) payload.get(GOOGLE_GIVEN_NAME);
                 Optional<User> byEmail = userService.findByEmail(email);
                 if (byEmail.isPresent()) {
                     User user = byEmail.get();
+                    if (user.getUserStatus() == UserStatus.DEACTIVATED) {
+                        throw new UserDeactivatedException(USER_DEACTIVATED);
+                    }
                     log.info("Google sign-in exist user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 } else {

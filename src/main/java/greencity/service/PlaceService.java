@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.*;
 import greencity.entity.Comment;
 import greencity.entity.Place;
@@ -26,13 +25,21 @@ public interface PlaceService {
     PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
 
     /**
-     * Update status for the Place and set the time of modification.
+     * Update status for the {@link Place} and set the time of modification.
      *
-     * @param id     - place id.
-     * @param status - place status.
-     * @return saved PlaceStatusDto entity.
+     * @param id     - {@link Place} id.
+     * @param status - {@link Place} status.
+     * @return saved {@link UpdatePlaceStatusDto} entity.
      */
-    PlaceStatusDto updateStatus(Long id, PlaceStatus status);
+    UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status);
+
+    /**
+     * Update statuses for the {@link Place}'s and set the time of modification.
+     *
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with places id's and updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated places and statuses.
+     */
+    List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto);
 
     /**
      * Find place by it's id.
@@ -53,13 +60,22 @@ public interface PlaceService {
     Optional<Place> findByIdOptional(Long id);
 
     /**
-     * Method for saving proposed {@code Place} to database.
+     * Method for saving proposed {@link Place} to database.
      *
      * @param dto - dto for Place entity
      * @return place {@code Place}
      * @author Kateryna Horokh
      */
     Place save(PlaceAddDto dto, String email);
+
+    /**
+     * Method for updating {@link Place}.
+     *
+     * @param dto - dto for Place entity
+     * @return place {@link Place}
+     * @author Kateryna Horokh
+     */
+    Place update(PlaceUpdateDto dto);
 
     /**
      * Find all places from DB.
@@ -69,12 +85,20 @@ public interface PlaceService {
     List<Place> findAll();
 
     /**
-     * Delete entity from DB by id.
+     * Method for deleting place by id.
      *
-     * @param id - Place id.
-     * @return boolean.
+     * @param id - Long place's id
+     * @return id of deleted place
      */
-    Boolean deleteById(Long id);
+    Long deleteById(Long id);
+
+    /**
+     * Method for deleting places by ids.
+     *
+     * @param ids - List of id
+     * @return count of deleted places
+     */
+    Long bulkDelete(List<Long> ids);
 
     /**
      * Method for getting place information.
@@ -99,7 +123,7 @@ public interface PlaceService {
      * location depends on the map bounds.
      *
      * @param filterPlaceDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *                     state of map
+     *                       state of map
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */
@@ -114,13 +138,12 @@ public interface PlaceService {
      */
     Double averageRate(Long id);
 
-
     /**
      * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
      *
      * @param filterDto contains objects whose values determine
-     *                 the filter parameters of the returned list.
-     * @return a list of {@code PlaceByBoundsDto}
+     *                  the filter parameters of the returned list.
+     * @return a list of {@link PlaceByBoundsDto}
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
@@ -129,10 +152,26 @@ public interface PlaceService {
      * The method finds all {@link Place}'s filtered by the parameters contained in {@param filterDto} object.
      *
      * @param filterDto contains objects whose values determine
-     *                 the filter parameters of the returned list.
-     * @param pageable pageable configuration.
+     *                  the filter parameters of the returned list.
+     * @param pageable  pageable configuration.
      * @return a list of {@code PlaceByBoundsDto}
      * @author Rostyslav Khasanov
      */
     PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable);
+
+    /**
+     * Get list of available statuses of {@link Place}.
+     *
+     * @return available {@link Place} statuses.
+     */
+    List<PlaceStatus> getStatuses();
+
+    /**
+     * Method for getting place information by id.
+     *
+     * @param id place
+     * @return PlaceUpdateDto with info about place
+     * @author Kateryna Horokh
+     */
+    PlaceUpdateDto getInfoForUpdatingById(Long id);
 }

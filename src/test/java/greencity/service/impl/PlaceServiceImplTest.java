@@ -3,17 +3,15 @@ package greencity.service.impl;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
@@ -21,10 +19,7 @@ import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
-import greencity.service.CategoryService;
-import greencity.service.LocationService;
-import greencity.service.OpenHoursService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -78,9 +73,9 @@ public class PlaceServiceImplTest {
         .lng(46.456)
         .build();
 
-    List<OpeningHoursDto> openingHoursList = new ArrayList<>();
+    Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
-    List<OpeningHours> openingHoursListEntity = new ArrayList<>();
+    Set<OpeningHours> openingHoursListEntity = new HashSet<>();
 
     OpeningHours openingHoursEntity = OpeningHours.builder()
         .id(1L)
@@ -89,6 +84,8 @@ public class PlaceServiceImplTest {
         .weekDay(DayOfWeek.MONDAY)
         .build();
 
+    Specification specificationEntity = new Specification();
+
     Place place = Place.builder()
         .id(1L)
         .name("Test")
@@ -96,6 +93,7 @@ public class PlaceServiceImplTest {
         .author(user)
         .location(location)
         .openingHoursList(openingHoursListEntity)
+//        .discounts(discountEntities)
         .status(PlaceStatus.PROPOSED)
         .build();
 
@@ -105,6 +103,7 @@ public class PlaceServiceImplTest {
         .category(categoryDto)
         .location(locationDto)
         .openingHoursList(openingHoursList)
+//        .discounts(discountDtos)
         .build();
 
 
@@ -127,38 +126,36 @@ public class PlaceServiceImplTest {
     private OpenHoursService openingHoursService;
 
     @Mock
+    private SpecificationService specificationService;
+
+    @Mock
     private ModelMapper modelMapper;
 
     @Mock
     private UserService userService;
 
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private PlaceServiceImpl placeService;
 
     @Test
-    public void savePlaceWithVerificationAllParametersTest() throws Exception {
-        when(modelMapper.map(any(), any())).thenReturn(place);
-        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
-        place.setAuthor(user);
-        place.setCategory(category);
-        openingHoursEntity.setPlace(place);
-        location.setPlace(place);
-        when(placeRepo.save(place)).thenReturn(place);
-        assertEquals(place, placeService.save(dto, user.getEmail()));
-    }
-
-    @Test
     public void deleteByIdTest() {
         Place placeToDelete = new Place();
+
         Mockito.when(placeRepo.findById(1L)).thenReturn(Optional.of(placeToDelete));
-        Assert.assertEquals(true, placeService.deleteById(1L));
+
+        Assert.assertEquals(new Long(1), placeService.deleteById(1L));
     }
 
     @Test
     public void updateStatusTest() {
         Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
+
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
+
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
@@ -198,7 +195,6 @@ public class PlaceServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void updateStatusGivenPlaceIdNullThenThrowException() {
-        Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
         placeService.updateStatus(null, PlaceStatus.PROPOSED);
     }
 
@@ -251,4 +247,56 @@ public class PlaceServiceImplTest {
         assertEquals(averageRate, placeService.averageRate(2L));
     }
 
+    @Test
+    public void updateStatusesTest() {
+        BulkUpdatePlaceStatusDto requestDto = new BulkUpdatePlaceStatusDto(
+            Arrays.asList(1L, 2L),
+            PlaceStatus.DECLINED
+        );
+
+        List<UpdatePlaceStatusDto> expected = Arrays.asList(
+            new UpdatePlaceStatusDto(1L, PlaceStatus.DECLINED),
+            new UpdatePlaceStatusDto(2L, PlaceStatus.DECLINED)
+        );
+
+        when(placeRepo.findById(anyLong()))
+            .thenReturn(Optional.of(new Place()))
+            .thenReturn(Optional.of(new Place()));
+        when(modelMapper.map(any(), any()))
+            .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DECLINED))
+            .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DECLINED));
+
+        assertEquals(expected, placeService.updateStatuses(requestDto));
+    }
+
+    @Test
+    public void getStatusesTest() {
+        List<PlaceStatus> placeStatuses =
+            Arrays.asList(PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED);
+
+        assertEquals(placeStatuses, placeService.getStatuses());
+    }
+
+    @Test
+    public void bulkDelete() {
+        List<Long> request = Arrays.asList(1L, 2L);
+
+        when(placeRepo.findById(anyLong()))
+            .thenReturn(Optional.of(new Place()))
+            .thenReturn(Optional.of(new Place()));
+        when(modelMapper.map(any(), any()))
+            .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED))
+            .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED));
+
+        assertEquals(new Long(2), placeService.bulkDelete(request));
+    }
+
+    @Test
+    public void findAllTest() {
+        List<Place> expectedList = Arrays.asList(new Place(), new Place());
+
+        when(placeRepo.findAll()).thenReturn(expectedList);
+
+        assertEquals(expectedList, placeService.findAll());
+    }
 }

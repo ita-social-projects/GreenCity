@@ -15,18 +15,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     /**
-     * Find {@code User} by email.
+     * Find {@link User} by email.
      *
      * @param email user email.
-     * @return {@code User}
+     * @return {@link User}
      */
     Optional<User> findByEmail(String email);
 
     /**
-     * Find {@code User} by page.
+     * Find {@link User} by page.
      *
      * @param pageable pageable configuration.
-     * @return {@code Page<User>}
+     * @return {@link Page}
      * @author Rostyslav Khasanov
      */
     Page<User> findAll(Pageable pageable);

@@ -1,25 +1,26 @@
 package greencity.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import greencity.constant.AppConstant;
 import greencity.entity.enums.PlaceStatus;
 import greencity.util.DateTimeService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(
-    exclude = {"comments", "photos", "location", "favoritePlaces", "category", "rates", "webPages", "status"})
-@ToString(exclude = {"comments", "photos", "specificationValues", "favoritePlaces", "location",
-    "webPages", "rates", "discounts", "openingHoursList"})
+    exclude = {"discountValues", "author", "openingHoursList", "comments", "photos",
+        "location", "favoritePlaces", "category", "rates", "webPages", "status", "discountValues"})
+@ToString(exclude = {"comments", "photos", "favoritePlaces",
+    "webPages", "rates", "discountValues", "openingHoursList", "location", "author"})
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,10 +43,10 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<Photo> photos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "place")
-    private List<SpecificationValue> specificationValues = new ArrayList<>();
+    @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
+    private Set<DiscountValue> discountValues = new HashSet<>();
 
-    @OneToOne(mappedBy = "place", cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL})
     private Location location;
 
     @OneToMany(mappedBy = "place")
@@ -57,16 +58,11 @@ public class Place {
     @ManyToOne(cascade = {CascadeType.ALL})
     private Category category;
 
-    @OneToMany(mappedBy = "place", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
 
-    @OneToMany(mappedBy = "place")
-    @JsonManagedReference
-    private List<Discount> discounts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "place")
-    @JsonManagedReference
-    private List<OpeningHours> openingHoursList = new ArrayList<>();
+    @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<OpeningHours> openingHoursList = new HashSet<>();
 
     @ManyToOne
     private User author;

@@ -1,17 +1,19 @@
 package greencity.controller;
 
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.favoriteplace.FavoritePlaceShowDto;
 import greencity.dto.place.PlaceByBoundsDto;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.service.FavoritePlaceService;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/favorite_place/")
@@ -20,75 +22,65 @@ public class FavoritePlaceController {
     private final FavoritePlaceService favoritePlaceService;
 
     /**
-     * Update favorite place name for user.
+     * Update {@link FavoritePlace} name for {@link User}.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param favoritePlaceShowDto - dto for FavoritePlace entity
-     * @param principal            - Principal with user email
-     * @return FavoritePlaceDto instance
+     * @param favoritePlaceDto - dto for {@link FavoritePlace} entity
+     * @param principal        - Principal with user email
+     * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
     @PutMapping
-    public ResponseEntity<FavoritePlaceShowDto> update(@Valid @RequestBody FavoritePlaceShowDto favoritePlaceShowDto,
-                                                       Principal principal) {
+    public ResponseEntity<FavoritePlaceDto> update(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
+                                                   @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .update(favoritePlaceShowDto, principal.getName()));
+            .update(favoritePlaceDto, principal.getName()));
     }
 
     /**
-     * Find all favorite places by user email.
-     *
-     * @param principal - Principal with user email
-     * @return list of dto
+     * Find all {@link FavoritePlace} by {@link User} email.
+     * Parameter principal are ignored because Spring automatically provide the Principal object
+     * .
+     * @param principal - Principal with {@link User} email
+     * @return list of {@link FavoritePlaceDto}
      * @author Zakhar Skaletskyi
      */
 
     @GetMapping
-    public ResponseEntity<List<FavoritePlaceShowDto>> findAllByUserEmail(Principal principal) {
+    public ResponseEntity<List<FavoritePlaceDto>> findAllByUserEmail(@ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(principal.getName()));
     }
 
+
     /**
-     * Find all favorite places names with placeId by user email.
+     * Delete {@link FavoritePlace} by {@link User} email and {@link Place} id
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param principal - Principal with user email
-     * @return list of dto
+     * @param placeId   - {@link Place} id
+     * @param principal - Principal with {@link User} email
+     * @return id of deleted {@link FavoritePlace}
      * @author Zakhar Skaletskyi
      */
-
-    @GetMapping("/with_place_id")
-    public ResponseEntity<List<FavoritePlaceDto>> findAllByUserEmailWithPlaceId(Principal principal) {
+    @DeleteMapping("/{placeId}")
+    public ResponseEntity<Long> deleteByUserEmailAndPlaceId(@PathVariable Long placeId,
+                                                            @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .getFavoritePlaceWithPlaceId(principal.getName()));
+            .deleteByUserEmailAndPlaceId(placeId, principal.getName()));
     }
 
     /**
-     * Delete favorite place by user email and place id or favorite place id.
-     * If id>0 then delete by favorite place id. If id<0 then delete by place id.
+     * Controller to get {@link FavoritePlace} coordinates, id and name.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param id        - favorite place
-     * @param principal - Principal with user email
-     * @return id of deleted favorite place
+     * @param placeId   - {@link Place} id
+     * @param principal - Principal with {@link User} email
+     * @return info about {@link Place} with name from {@link FavoritePlace}
      * @author Zakhar Skaletskyi
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteByUserEmailAndFavoriteIdOrPlaceId(@NotNull @PathVariable Long id,
-                                                       Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .deleteByUserEmailAndFavoriteIdOrPlaceId(id, principal.getName()));
-    }
-
-    /**
-     * Controller to get favorite place coordinates, id and name.
-     *
-     * @param id        favorite place
-     * @param principal - Principal with user email
-     * @return info about place with name from favorite place
-     * @author Zakhar Skaletskyi
-     */
-    @GetMapping("/favorite/{id}")
-    public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@NotNull @PathVariable Long id,
+    @GetMapping("/favorite/{placeId}")
+    public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@PathVariable Long placeId, @ApiIgnore
                                                                            Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .getFavoritePlaceWithLocation(id, principal.getName()));
+            .getFavoritePlaceWithLocation(placeId, principal.getName()));
     }
 }

@@ -1,9 +1,17 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
+import greencity.constant.HttpStatuses;
+import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
+import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -11,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/user")
@@ -20,13 +29,21 @@ public class UserController {
 
     /**
      * The method which update user status.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
      * @param userStatusDto - dto with updated filed.
-     * @return {@code UserStatusDto}
-     * @author Rostyslav Khasnaov
+     * @return {@link UserStatusDto}
+     * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Update status of user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserStatus.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
     @PatchMapping("status")
-    public ResponseEntity<?> updateStatus(@Valid @RequestBody UserStatusDto userStatusDto, Principal principal) {
+    public ResponseEntity<UserStatusDto> updateStatus(
+        @Valid @RequestBody UserStatusDto userStatusDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 userService.updateStatus(
@@ -35,13 +52,21 @@ public class UserController {
 
     /**
      * The method which update user role.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param userRoleDto - dto with updated filed.
-     * @return {@code UserRoleDto}
-     * @author Rostyslav Khasnaov
+     * @param userRoleDto - dto with updated field.
+     * @return {@link UserRoleDto}
+     * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Update role of user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
     @PatchMapping("role")
-    public ResponseEntity<?> updateRole(@Valid @RequestBody UserRoleDto userRoleDto, Principal principal) {
+    public ResponseEntity<UserRoleDto> updateRole(
+        @Valid @RequestBody UserRoleDto userRoleDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 userService.updateRole(
@@ -50,37 +75,60 @@ public class UserController {
 
     /**
      * The method which return list of users by page.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param pageable - pageable configuration.
-     * @return list of {@code UserPageableDto}
-     * @author Rostyslav Khasnaov
+     * @return list of {@link PageableDto}
+     * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Get users by page")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @ApiPageable
     @GetMapping
-    public ResponseEntity<?> getAllUsers(Pageable pageable) {
+    public ResponseEntity<PageableDto> getAllUsers(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
 
     /**
      * The method which return array of existing roles.
      *
-     * @return array of roles
-     * @author Rostyslav Khasnaov
+     * @return {@link RoleDto}
+     * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Get all available roles")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = RoleDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
     @GetMapping("roles")
-    public ResponseEntity<?> getRoles() {
+    public ResponseEntity<RoleDto> getRoles() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
     }
 
     /**
      * The method which return list of users by filter.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param filterUserDto dto which contains fields with filter criteria.
      * @param pageable      - pageable configuration.
-     * @return list of {@code UserPageableDto}
-     * @author Rostyslav Khasnaov
+     * @return {@link PageableDto}
+     * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Filter all user by search criteria")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @ApiPageable
     @PostMapping("filter")
-    public ResponseEntity<?> getByReg(Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
+    public ResponseEntity<PageableDto> getUsersByFilter(
+        @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
 }

@@ -1,12 +1,16 @@
 package greencity.dto.openhours;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import greencity.constant.ValidationConstants;
+import greencity.dto.breaktime.BreakTimeDto;
+import greencity.entity.Place;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.*;
 
@@ -28,4 +32,6 @@ public class OpeningHoursDto {
 
     @NotNull(message = ValidationConstants.EMPTY_WEEK_DAY_VALUE)
     private DayOfWeek weekDay;
+
+    private BreakTimeDto breakTime;
 }

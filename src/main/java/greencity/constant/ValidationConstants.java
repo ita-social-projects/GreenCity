@@ -20,6 +20,7 @@ public class ValidationConstants {
         + "Special character (~`!@#$%^&*()+=_-{}[]|:;”’?/<>,.).";
 
     public static final String EMPTY_ID = "The id field can not be empty";
+    public static final String NEGATIVE_ID = "The id should be positive number";
     public static final String EMPTY_STATUS = "The status field can not be empty";
 
     public static final int PLACE_NAME_MAX_LENGTH = 30;
@@ -64,9 +65,13 @@ public class ValidationConstants {
 
     public static final String RATE_MIN_VALUE = "The rate must be at least {value}";
     public static final String RATE_MAX_VALUE = "The rate must be less than {value}";
-
     public static final String EMPTY_COMMENT = "The text of comment can not be empty";
 
     public static final int COMMENT_MIN_LENGTH = 5;
     public static final int COMMENT_MAX_LENGTH = 300;
+
+    public static final int DISCOUNT_VALUE_MIN = 0;
+    public static final String DISCOUNT_VALUE_DOES_NOT_CORRECT = "Min discount value is 0, max discount value is 100";
+    public static final int DISCOUNT_VALUE_MAX = 100;
+    public static final String EMPTY_SPECIFICATION_NAME = "The specification name can not be empty";
 }
