@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
 import greencity.entity.Place;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 
 @RestController
@@ -64,13 +66,16 @@ public class PlaceCommentController {
 
     /**
      * Method return comment by id.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
      *
      * @param pageable pageable configuration
      * @return PageableDto
      * @author Rostyslav Khasanov
      */
+    @ApiPageable
     @GetMapping("comments")
-    public ResponseEntity getAllComments(Pageable pageable) {
+    public ResponseEntity getAllComments(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.getAllComments(pageable));
     }
