@@ -59,7 +59,7 @@ public class Place {
     @ManyToOne(cascade = {CascadeType.ALL})
     private Category category;
 
-    @OneToMany(mappedBy = "place", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
 
     @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

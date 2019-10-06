@@ -41,6 +41,16 @@ VALUES (9, '2019-09-04 14:04:14.931000', 'rostuk.khasanov@gmail.com', 'Rostyslav
         '2019-09-04 14:04:14.931000', 1, 2);
 INSERT INTO own_security (id, password, user_id)
 VALUES (9, '$2a$10$cgaNMFjdAFX6k810YSZDSuvKVlWFcq6/F7p2lcgLzK6sFB48dky2W', 9);
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+(10,	'2019-10-01 19:22:25.209000','milanmarian@mail.ru',	'Marian', 'Milian',	'2019-10-01 19:22:25.209000',1,	2);
+INSERT INTO own_security (id, password, user_id)
+VALUES (10,'$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS',10);
+
+INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status) VALUES
+(11,	'2019-10-01 19:22:25.209000','milan@mail.ru',	'M', 'M',	'2019-10-01 19:22:25.209000',1,	2);
+INSERT INTO own_security (id, password, user_id)
+VALUES (11,'$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS',11);
+
 
 
 INSERT INTO category (name)
@@ -166,16 +176,6 @@ INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
 VALUES ('20:00:00', '06:00:00', 4, 5);
 
 
-INSERT INTO comment (date, text, place_id, user_id)
-values ('2019-08-11', 'cool place', 1, 1);
-INSERT INTO comment (date, text, place_id, user_id)
-values ('2019-02-11', 'great', 2, 1);
-INSERT INTO comment (date, text, place_id, user_id)
-values ('2019-03-11', 'nice', 3, 1);
-INSERT INTO comment (date, text, place_id, user_id)
-values ('2019-05-11', 'good', 4, 1);
-INSERT INTO comment (date, text, place_id, user_id)
-values ('2019-08-11', 'well', 5, 1);
 
 insert into discount
 values (1, 3, 1, 1, 2), (2, 13, 2, 1, 2), (3, 33, 3, 1, 2), (4, 63, 4, 1, 2), (5, 93, 5, 1, 2), (6, 50, 6, 1, 2);
