@@ -90,7 +90,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/info/favorite/**",
                 "/place/statuses/**",
                 "/place/about/{id}/**",
-                "/specification/**"
+                "/specification/**",
+                "/comments"
             ).permitAll()
             .antMatchers(
                 "/place/propose/**",

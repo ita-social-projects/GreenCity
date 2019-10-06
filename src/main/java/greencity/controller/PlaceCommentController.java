@@ -32,7 +32,7 @@ public class PlaceCommentController {
     /**
      * Method witch save comment by Place Id.
      *
-     * @param placeId Id of place to witch related comment.
+     * @param placeId       Id of place to witch related comment.
      * @param addCommentDto DTO with contain data od Comment.
      * @return CommentDTO
      */
@@ -60,5 +60,18 @@ public class PlaceCommentController {
     public ResponseEntity getCommentById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.findById(id));
+    }
+
+    /**
+     * Method return comment by id.
+     *
+     * @param pageable pageable configuration
+     * @return PageableDto
+     * @author Rostyslav Khasanov
+     */
+    @GetMapping("comments")
+    public ResponseEntity getAllComments(Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeCommentService.getAllComments(pageable));
     }
 }

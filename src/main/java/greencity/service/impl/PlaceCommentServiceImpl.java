@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
@@ -8,9 +9,13 @@ import greencity.entity.User;
 import greencity.exception.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
 import greencity.service.*;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -74,5 +79,25 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     @Override
     public void deleteById(Long id) {
         placeCommentRepo.delete(placeCommentRepo.findById(id).orElseThrow(() -> new NotFoundException("")));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Rostyslav Khasanov
+     */
+    @Override
+    public PageableDto getAllComments(Pageable pageable) {
+        Page<Comment> comments = placeCommentRepo.findAll(pageable);
+        List<CommentReturnDto> commentList =
+            comments.getContent()
+                .stream().map(comment -> modelMapper.map(comment, CommentReturnDto.class))
+                .collect(Collectors.toList());
+        PageableDto<CommentReturnDto> pageableCommentDto = new PageableDto<>(
+            commentList,
+            comments.getTotalElements(),
+            comments.getPageable().getPageNumber()
+        );
+        return pageableCommentDto;
     }
 }
