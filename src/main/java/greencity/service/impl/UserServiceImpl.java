@@ -184,6 +184,7 @@ public class UserServiceImpl implements UserService {
         User user = repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
+        user.setEmailNotification(dto.getEmailNotification());
         return repo.save(user);
     }
 
