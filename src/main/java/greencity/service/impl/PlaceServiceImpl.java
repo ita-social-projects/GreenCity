@@ -48,6 +48,7 @@ public class PlaceServiceImpl implements PlaceService {
     private DiscountService discountService;
     private OpenHoursService openingHoursService;
     private LocationService locationService;
+    private NotificationService notificationService;
 
     /**
      * {@inheritDoc}
@@ -99,6 +100,7 @@ public class PlaceServiceImpl implements PlaceService {
 
         if (place.getAuthor().getRole() == ROLE.ROLE_ADMIN || place.getAuthor().getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(APPROVED_STATUS);
+            notificationService.sendImmediatelyReport(place);
         }
         return user;
     }
@@ -261,8 +263,9 @@ public class PlaceServiceImpl implements PlaceService {
         updatable.setStatus(status);
         if (status.equals(PlaceStatus.APPROVED)) {
             updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
+            notificationService.sendImmediatelyReport(updatable);
         }
-        // if place had status PROPOSED and it changes, means APPROVEs or DECLINEs we send an email
+        // if place had status PROPOSED and it changes, means APPROVEs or DECLINEs - we send an email
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             emailService.sendChangePlaceStatusEmail(updatable);
         }

@@ -4,6 +4,7 @@ import static greencity.constant.ErrorMessage.*;
 
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
@@ -72,6 +73,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
             .build();
     }
 

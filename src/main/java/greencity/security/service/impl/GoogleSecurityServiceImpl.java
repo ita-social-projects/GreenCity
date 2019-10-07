@@ -9,6 +9,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.security.dto.SuccessSignInDto;
@@ -95,6 +96,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             .dateOfRegistration(LocalDateTime.now())
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
             .build();
     }
 

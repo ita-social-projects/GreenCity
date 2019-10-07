@@ -70,10 +70,8 @@ public class Place {
     @ManyToOne
     private User author;
 
-    @Column(name = "modified_date")
     private LocalDateTime modifiedDate = DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE);
 
     @Enumerated(value = EnumType.ORDINAL)
-    @Column(name = "status")
     private PlaceStatus status = PlaceStatus.PROPOSED;
 }
