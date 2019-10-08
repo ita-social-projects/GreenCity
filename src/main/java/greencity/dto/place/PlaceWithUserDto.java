@@ -2,13 +2,15 @@ package greencity.dto.place;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountDto;
+import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.user.UserForListDto;
+import greencity.dto.user.PlaceAuthorDto;
+import greencity.entity.enums.PlaceStatus;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,8 +36,11 @@ public class PlaceWithUserDto {
     private List<OpeningHoursDto> openingHoursList;
 
     @Valid
-    private List<DiscountDto> discounts;
+    private List<DiscountValueDto> discountValues;
+
+    @NotNull
+    private PlaceStatus status;
 
     @Valid
-    private UserForListDto author;
+    private PlaceAuthorDto author;
 }

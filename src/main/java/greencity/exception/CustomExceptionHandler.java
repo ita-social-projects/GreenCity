@@ -34,7 +34,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
-
     /**
      * Method intercept exception {@link RuntimeException}.
      *
@@ -64,7 +63,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Missed java docs.
+     * Method intercept exception {@link MethodArgumentTypeMismatchException}.
+     *
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @author Roman Zahorui
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public final ResponseEntity handleConversionFailedException(

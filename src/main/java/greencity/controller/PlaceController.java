@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
@@ -10,6 +11,10 @@ import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -42,14 +47,16 @@ public class PlaceController {
      * @return new {@code Place}.
      * @author Kateryna Horokh
      */
+    @ApiOperation(value = "Propose new place.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = PlaceWithUserDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @PostMapping("/propose")
     public ResponseEntity<PlaceWithUserDto> proposePlace(
         @Valid @RequestBody PlaceAddDto dto, Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(
-                modelMapper.map(
-                    placeService.save(dto, principal.getName()),
-                    PlaceWithUserDto.class));
+            .body(modelMapper.map(placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
     }
 
     /**
@@ -59,6 +66,12 @@ public class PlaceController {
      * @return new {@code Place}.
      * @author Kateryna Horokh
      */
+    @ApiOperation(value = "Update place")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceUpdateDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @PutMapping("/update")
     public ResponseEntity<PlaceUpdateDto> updatePlace(
         @Valid @RequestBody PlaceUpdateDto dto) {
@@ -73,6 +86,12 @@ public class PlaceController {
      * @return info about place
      * @author Dmytro Dovhal
      */
+    @ApiOperation(value = "Get info about place")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @GetMapping("/info/{id}")
     public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getInfoById(id));
@@ -86,6 +105,12 @@ public class PlaceController {
      * @return info about {@code Place} with name as in {@code FavoritePlace}
      * @author Zakhar Skaletskyi
      */
+    @ApiOperation(value = "Get info about favourite place")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @GetMapping("/info/favorite/{placeId}")
     public ResponseEntity<PlaceInfoDto> getFavoritePlaceInfo(@PathVariable Long placeId) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.getInfoFavoritePlace(placeId));
@@ -99,6 +124,12 @@ public class PlaceController {
      * @return principal - user e,ail
      * @author Zakhar Skaletskyi
      */
+    @ApiOperation(value = "Save place as favourite.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = FavoritePlaceDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
         @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @ApiIgnore Principal principal) {
@@ -114,6 +145,12 @@ public class PlaceController {
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian
      */
+    @ApiOperation(value = "Get list of places by Map Bounds.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceByBoundsDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
 
@@ -132,6 +169,12 @@ public class PlaceController {
      * @return response {@link PageableDto} object. Contains a list of {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
+    @ApiOperation(value = "Get places by status(APPROVED, PROPOSED, DECLINED, DELETED).")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @GetMapping("/{status}")
     @ApiPageable
     public ResponseEntity<PageableDto> getPlacesByStatus(
@@ -149,6 +192,13 @@ public class PlaceController {
      * @return a list of {@code PlaceByBoundsDto}
      * @author Roman Zahorui
      */
+    @ApiOperation(value = "Return a list places filtered by values contained "
+        + "in the incoming FilterPlaceDto object")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = FilterPlaceDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
         @Valid @RequestBody FilterPlaceDto filterDto) {
@@ -163,6 +213,12 @@ public class PlaceController {
      * @return response object with {@link UpdatePlaceStatusDto} and OK status if everything is ok.
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Update status of place")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UpdatePlaceStatusDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @PatchMapping("/status")
     public ResponseEntity<UpdatePlaceStatusDto> updateStatus(@Valid @RequestBody UpdatePlaceStatusDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -180,6 +236,13 @@ public class PlaceController {
      * @return a list of {@link PageableDto}
      * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Return a list places filtered by values contained "
+        + "in the incoming FilterPlaceDto object")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @PostMapping("/filter/predicate")
     @ApiPageable
     public ResponseEntity<PageableDto> filterPlaceBySearchPredicate(
@@ -194,7 +257,14 @@ public class PlaceController {
      *
      * @param id place
      * @return response {@link PlaceUpdateDto} object.
+     * @author Kateryna Horokh
      */
+    @ApiOperation(value = "Get place by id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceUpdateDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @GetMapping("/about/{id}")
     public ResponseEntity<PlaceUpdateDto> getPlaceById(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -208,6 +278,12 @@ public class PlaceController {
      * @return list of {@link UpdatePlaceStatusDto} with updated {@link Place}'s and {@link PlaceStatus}'s
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Bulk update place statuses")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UpdatePlaceStatusDto[].class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @PatchMapping("/statuses")
     public ResponseEntity<List<UpdatePlaceStatusDto>> bulkUpdateStatuses(
         @Valid @RequestBody BulkUpdatePlaceStatusDto dto) {
@@ -221,6 +297,12 @@ public class PlaceController {
      * @return array of statuses
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Get array of available place statuses")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceStatus[].class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @GetMapping("/statuses")
     public ResponseEntity<List<PlaceStatus>> getStatuses() {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getStatuses());
@@ -233,23 +315,36 @@ public class PlaceController {
      * @return id of deleted {@link Place}
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Delete place")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> delete(@NotNull @PathVariable Long id) {
+    public ResponseEntity<Long> delete(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.deleteById(id));
     }
 
     /**
      * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param ids - list of id's of {@link Place}'s which need to be deleted
+     * @param ids - list of id's of {@link Place}'s, splited by "," which need to be deleted
      * @return count of deleted {@link Place}'s
      * @author Nazar Vladyka
      */
+    @ApiOperation(value = "Bulk delete places")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @DeleteMapping
-    public ResponseEntity<Long> bulkDelete(@RequestParam String ids) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            placeService.bulkDelete(Arrays.stream(ids.split(","))
-                .map(Long::valueOf)
-                .collect(Collectors.toList())));
+    public ResponseEntity<Long> bulkDelete(
+        @ApiParam(value = "Ids of places separated by a comma \n e.g. 1,2", required = true)
+        @RequestParam String ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.bulkDelete(Arrays.stream(ids.split(","))
+            .map(Long::valueOf)
+            .collect(Collectors.toList())));
     }
 }

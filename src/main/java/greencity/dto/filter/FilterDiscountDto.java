@@ -1,7 +1,6 @@
 package greencity.dto.filter;
 
-import greencity.dto.category.CategoryDto;
-import greencity.dto.specification.SpecificationDto;
+import greencity.dto.specification.SpecificationNameDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FilterDiscountDto {
-    private CategoryDto category;
-    private SpecificationDto specification;
+    private SpecificationNameDto specification;
     private int discountMin;
     private int discountMax;
 }
