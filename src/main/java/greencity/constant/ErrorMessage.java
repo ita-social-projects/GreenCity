@@ -20,7 +20,7 @@ public class ErrorMessage {
     public static final String CATEGORY_ALREADY_EXISTS_BY_THIS_NAME = "Category by this name already exists.";
     public static final String SPECIFICATION_ALREADY_EXISTS_BY_THIS_NAME = "Specification by this name already exists.";
     public static final String SPECIFICATION_VALUE_ALREADY_EXISTS_BY_THIS_NAME = "Specification value by this name already exists.";
-    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email are already registered";
+    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email is already registered";
     public static final String NO_ENY_OWN_SECURITY_TO_DELETE = "No any ownSecurity to delete with this id: ";
     public static final String LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES = "Location by this coordinates already exists.";
     public static final String BAD_EMAIL_OR_PASSWORD = "Bad email or password";
