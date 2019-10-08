@@ -79,4 +79,16 @@ public class PlaceCommentController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.getAllComments(pageable));
     }
+
+    /**
+     * Method that delete comment by id.
+     *
+     * @param id comment id
+     * @author Rostyslav Khasanov
+     */
+    @DeleteMapping
+    public ResponseEntity delete(Long id) {
+        placeService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 }
