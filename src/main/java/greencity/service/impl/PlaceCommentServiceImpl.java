@@ -1,7 +1,9 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
 import greencity.entity.Place;
@@ -73,27 +75,24 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Marian Milian
      */
     @Override
     public void deleteById(Long id) {
-        placeCommentRepo.delete(placeCommentRepo.findById(id).orElseThrow(() -> new NotFoundException("")));
+        placeCommentRepo.delete(placeCommentRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
      */
     @Override
     public PageableDto getAllComments(Pageable pageable) {
         Page<Comment> comments = placeCommentRepo.findAll(pageable);
-        List<CommentReturnDto> commentList =
+        List<CommentAdminDto> commentList =
             comments.getContent()
-                .stream().map(comment -> modelMapper.map(comment, CommentReturnDto.class))
+                .stream().map(comment -> modelMapper.map(comment, CommentAdminDto.class))
                 .collect(Collectors.toList());
-        PageableDto<CommentReturnDto> pageableCommentDto = new PageableDto<>(
+        PageableDto<CommentAdminDto> pageableCommentDto = new PageableDto<>(
             commentList,
             comments.getTotalElements(),
             comments.getPageable().getPageNumber()

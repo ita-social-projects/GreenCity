@@ -34,10 +34,10 @@ public interface PlaceCommentService {
     CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email);
 
     /**
-     * Method witch delete Comment by Id.
+     * Method witch delete {@link Comment} by Id.
      *
      * @param id of delete comment.
-     * @author Marian Milian.
+     * @author Rostyslav Khasanov.
      */
     void deleteById(Long id);
 
