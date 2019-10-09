@@ -21,7 +21,7 @@ public class ErrorMessage {
     public static final String SPECIFICATION_ALREADY_EXISTS_BY_THIS_NAME = "Specification by this name already exists.";
     public static final String SPECIFICATION_VALUE_ALREADY_EXISTS_BY_THIS_NAME = "Specification value by this name already exists.";
     public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email are already registered";
-    public static final String NO_ENY_USER_OWN_SECURITY_TO_DELETE = "No any ownSecurity to delete with this id: ";
+    public static final String NO_ENY_OWN_SECURITY_TO_DELETE = "No any ownSecurity to delete with this id: ";
     public static final String LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES = "Location by this coordinates already exists.";
     public static final String BAD_EMAIL_OR_PASSWORD = "Bad email or password";
     public static final String USER_NOT_VERIFIED = "User not verified";
@@ -44,4 +44,7 @@ public class ErrorMessage {
         + AppConstant.DATE_FORMAT;
     public static final String LINK_FOR_RESTORE_NOT_FOUND = "Link for sendEmailForRestore password by email not found";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
+
+    private ErrorMessage() {
+    }
 }

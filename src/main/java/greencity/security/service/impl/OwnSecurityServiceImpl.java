@@ -83,7 +83,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void delete(OwnSecurity userOwnSecurity) {
         if (!repo.existsById(userOwnSecurity.getId())) {
-            throw new BadIdException(NO_ENY_USER_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
+            throw new BadIdException(NO_ENY_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
         }
         repo.delete(userOwnSecurity);
     }
