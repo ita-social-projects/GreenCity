@@ -17,10 +17,10 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(
-    exclude = {"discounts", "author", "openingHoursList", "comments", "photos",
-        "location", "favoritePlaces", "category", "rates", "webPages", "status"})
-@ToString(exclude = {"comments", "photos", "specificationValues", "favoritePlaces",
-    "webPages", "rates", "discounts", "openingHoursList", "location", "author"})
+    exclude = {"discountValues", "author", "openingHoursList", "comments", "photos",
+        "location", "favoritePlaces", "category", "rates", "webPages", "status", "discountValues"})
+@ToString(exclude = {"comments", "photos", "favoritePlaces",
+    "webPages", "rates", "discountValues", "openingHoursList", "location", "author"})
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,8 +43,8 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private List<Photo> photos = new ArrayList<>();
 
-    @OneToMany(mappedBy = "place")
-    private List<SpecificationValue> specificationValues = new ArrayList<>();
+    @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
+    private Set<DiscountValue> discountValues = new HashSet<>();
 
     @OneToOne(cascade = {CascadeType.ALL})
     private Location location;
@@ -60,9 +60,6 @@ public class Place {
 
     @OneToMany(mappedBy = "place")
     private List<Rate> rates = new ArrayList<>();
-
-    @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Discount> discounts = new HashSet<>();
 
     @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<OpeningHours> openingHoursList = new HashSet<>();

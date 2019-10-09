@@ -1,7 +1,7 @@
 package greencity.repository;
 
-import greencity.entity.Place;
 import greencity.entity.Specification;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +16,5 @@ public interface SpecificationRepo extends JpaRepository<Specification, Long> {
      * @param name to find by.
      * @return a Specification by name.
      */
-    Specification findByName(String name);
+    Optional<Specification> findByName(String name);
 }

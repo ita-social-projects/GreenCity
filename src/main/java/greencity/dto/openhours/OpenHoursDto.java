@@ -1,6 +1,7 @@
 package greencity.dto.openhours;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import greencity.dto.breaktime.BreakTimeDto;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
@@ -17,4 +18,5 @@ public class OpenHoursDto {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime closeTime;
     private DayOfWeek weekDay;
+    private BreakTimeDto breakTime;
 }
