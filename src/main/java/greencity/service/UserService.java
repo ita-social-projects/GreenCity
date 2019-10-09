@@ -110,21 +110,21 @@ public interface UserService {
     PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable);
 
     /**
-     * Get {@link User} initials dto by principal (email).
+     * Get {@link User} dto by principal (email).
      *
      * @param email - email of user.
-     * @return {@link UserInitialsDto}.
+     * @return {@link UserUpdateDto}.
      * @author Nazar Stasyuk
      */
-    UserInitialsDto getUserInitialsByEmail(String email);
+    UserUpdateDto getUserUpdateDtoByEmail(String email);
 
     /**
-     * Update {@link User} initials.
+     * Update {@link User}.
      *
-     * @param dto {@link UserInitialsDto} - dto with new initials.
+     * @param dto {@link UserUpdateDto} - dto with new {@link User} params.
      * @param email {@link String} - email of user that need to update.
      * @return {@link User}.
      * @author Nazar Stasyuk
      */
-    User updateInitials(UserInitialsDto dto, String email);
+    User update(UserUpdateDto dto, String email);
 }

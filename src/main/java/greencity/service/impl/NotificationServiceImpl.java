@@ -28,16 +28,13 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserRepo userRepo;
     private final PlaceRepo placeRepo;
     private final EmailService emailService;
-    private LocalDateTime startDate;
-    private List<User> subscribers;
-    private Map<Category, List<Place>> categoriesWithPlacesMap = new HashMap<>();
 
     @Override
     public void sendImmediatelyReport(Place newPlace) {
         log.info(LogMessage.IN_SEND_IMMEDIATELY_REPORT, new Place());
         EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
-        subscribers = getSubscribers(emailNotification);
-        categoriesWithPlacesMap = new HashMap<>();
+        List<User> subscribers = getSubscribers(emailNotification);
+        Map<Category, List<Place>> categoriesWithPlacesMap = new HashMap<>();
         categoriesWithPlacesMap.put(newPlace.getCategory(), Collections.singletonList(newPlace));
 
         emailService.sendAddedNewPlacesReportEmail(subscribers, categoriesWithPlacesMap, emailNotification);
@@ -52,8 +49,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendDailyReport() {
         log.info(LogMessage.IN_SEND_DAILY_REPORT, LocalDateTime.now(ZONE_ID));
-        startDate = LocalDateTime.now(ZONE_ID).minusDays(1);
-        sendReport(EmailNotification.DAILY);
+        LocalDateTime startDate = LocalDateTime.now(ZONE_ID).minusDays(1);
+        sendReport(EmailNotification.DAILY, startDate);
     }
 
     /**
@@ -65,8 +62,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendWeeklyReport() {
         log.info(LogMessage.IN_SEND_WEEKLY_REPORT, LocalDateTime.now(ZONE_ID));
-        startDate = LocalDateTime.now(ZONE_ID).minusWeeks(1);
-        sendReport(EmailNotification.WEEKLY);
+        LocalDateTime startDate = LocalDateTime.now(ZONE_ID).minusWeeks(1);
+        sendReport(EmailNotification.WEEKLY, startDate);
     }
 
     /**
@@ -78,14 +75,16 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendMonthlyReport() {
         log.info(LogMessage.IN_SEND_MONTHLY_REPORT, LocalDateTime.now(ZONE_ID));
-        startDate = LocalDateTime.now(ZONE_ID).minusMonths(1);
-        sendReport(EmailNotification.MONTHLY);
+        LocalDateTime startDate = LocalDateTime.now(ZONE_ID).minusMonths(1);
+        sendReport(EmailNotification.MONTHLY, startDate);
     }
 
-    private void sendReport(EmailNotification emailNotification) {
+    private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {
         log.info(LogMessage.IN_SEND_REPORT, emailNotification);
+        List<User> subscribers = getSubscribers(emailNotification);
+        Map<Category, List<Place>> categoriesWithPlacesMap = new HashMap<>();
         LocalDateTime endDate = LocalDateTime.now(ZONE_ID);
-        subscribers = getSubscribers(emailNotification);
+
         if (!subscribers.isEmpty()) {
             List<Place> places = placeRepo.findAllByModifiedDateBetweenAndStatus(
                 startDate, endDate, PlaceStatus.APPROVED);
@@ -102,13 +101,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     private List<User> getSubscribers(EmailNotification emailNotification) {
         log.info(LogMessage.IN_GET_SUBSCRIBERS, emailNotification);
-        subscribers = userRepo.findAllByEmailNotification(emailNotification);
-        return subscribers;
+        return userRepo.findAllByEmailNotification(emailNotification);
     }
 
     private Map<Category, List<Place>> getCategoriesWithPlacesMap(List<Place> places) {
         log.info(LogMessage.IN_GET_CATEGORIES_WITH_PLACES_MAP, places);
-        categoriesWithPlacesMap = new HashMap<>();
+        Map<Category, List<Place>> categoriesWithPlacesMap = new HashMap<>();
         List<Category> categories = getUniqueCategoriesFromPlaces(places);
         List<Place> placesByCategory;
         for (Category category : categories) {

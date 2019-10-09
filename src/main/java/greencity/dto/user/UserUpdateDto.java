@@ -8,7 +8,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-public class UserInitialsDto {
+public class UserUpdateDto {
     @NotBlank
     @Length(max = 20)
     private String firstName;

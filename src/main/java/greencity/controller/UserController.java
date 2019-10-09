@@ -5,9 +5,9 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserInitialsDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserUpdateDto;
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
@@ -91,7 +91,7 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ApiPageable
-    @GetMapping
+    @GetMapping("all")
     public ResponseEntity<PageableDto> getAllUsers(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
@@ -136,39 +136,39 @@ public class UserController {
     }
 
     /**
-     * Get {@link User} initials dto by principal (email) from access token.
+     * Get {@link User} dto by principal (email) from access token.
      *
-     * @return {@link UserInitialsDto}.
+     * @return {@link UserUpdateDto}.
      * @author Nazar Stasyuk
      */
-    @ApiOperation(value = "Get User initials dto by principal (email) from access token")
+    @ApiOperation(value = "Get User dto by principal (email) from access token")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserInitialsDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserUpdateDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @GetMapping("initials")
-    public ResponseEntity<UserInitialsDto> getUserInitialsByPrincipal() {
+    @GetMapping
+    public ResponseEntity<UserUpdateDto> getUserByPrincipal() {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInitialsByEmail(email));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserUpdateDtoByEmail(email));
     }
 
     /**
-     * Update {@link User} initials.
+     * Update {@link User}.
      *
      * @return {@link ResponseEntity}.
      * @author Nazar Stasyuk
      */
-    @ApiOperation(value = "Update User initials")
+    @ApiOperation(value = "Update User")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PutMapping("initials")
-    public ResponseEntity updateUserInitials(@Valid @RequestBody UserInitialsDto dto) {
+    @PutMapping
+    public ResponseEntity updateUser(@Valid @RequestBody UserUpdateDto dto) {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userService.updateInitials(dto, email);
+        userService.update(dto, email);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

@@ -10,8 +10,9 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserInitialsDto;
+import greencity.dto.user.UserUpdateDto;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
@@ -23,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.apache.maven.model.Build;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -52,6 +52,7 @@ public class UserServiceImplTest {
             .email("test@gmail.com")
             .role(ROLE.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
@@ -63,6 +64,7 @@ public class UserServiceImplTest {
             .email("test@gmail.com")
             .role(ROLE.ROLE_MODERATOR)
             .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
@@ -229,27 +231,31 @@ public class UserServiceImplTest {
 
 
     @Test
-    public void getUserInitialsByEmail() {
+    public void getUserUpdateDtoByEmail() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
-        UserInitialsDto userInitialsDto = new UserInitialsDto();
-        userInitialsDto.setFirstName(user.getFirstName());
-        userInitialsDto.setLastName(user.getLastName());
-        when(modelMapper.map(any(), any())).thenReturn(userInitialsDto);
-        UserInitialsDto userInitialsByEmail = userService.getUserInitialsByEmail("");
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        userUpdateDto.setFirstName(user.getFirstName());
+        userUpdateDto.setLastName(user.getLastName());
+        userUpdateDto.setEmailNotification(user.getEmailNotification());
+        when(modelMapper.map(any(), any())).thenReturn(userUpdateDto);
+        UserUpdateDto userInitialsByEmail = userService.getUserUpdateDtoByEmail("");
         assertEquals(userInitialsByEmail.getFirstName(), user.getFirstName());
         assertEquals(userInitialsByEmail.getLastName(), user.getLastName());
+        assertEquals(userInitialsByEmail.getEmailNotification(), user.getEmailNotification());
     }
 
     @Test
     public void updateInitials() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        UserInitialsDto userInitialsDto = new UserInitialsDto();
-        userInitialsDto.setFirstName(user.getFirstName());
-        userInitialsDto.setLastName(user.getLastName());
-        User user = userService.updateInitials(userInitialsDto, "");
-        assertEquals(userInitialsDto.getFirstName(), user.getFirstName());
-        assertEquals(userInitialsDto.getLastName(), user.getLastName());
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        userUpdateDto.setFirstName(user.getFirstName());
+        userUpdateDto.setLastName(user.getLastName());
+        userUpdateDto.setEmailNotification(user.getEmailNotification());
+        User user = userService.update(userUpdateDto, "");
+        assertEquals(userUpdateDto.getFirstName(), user.getFirstName());
+        assertEquals(userUpdateDto.getLastName(), user.getLastName());
+        assertEquals(userUpdateDto.getEmailNotification(), user.getEmailNotification());
         verify(userRepo, times(1)).save(any());
     }
 }

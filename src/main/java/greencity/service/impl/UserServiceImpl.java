@@ -169,10 +169,10 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserInitialsDto getUserInitialsByEmail(String email) {
+    public UserUpdateDto getUserUpdateDtoByEmail(String email) {
         return modelMapper.map(
             repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
-            UserInitialsDto.class
+            UserUpdateDto.class
         );
     }
 
@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User updateInitials(UserInitialsDto dto, String email) {
+    public User update(UserUpdateDto dto, String email) {
         User user = repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
