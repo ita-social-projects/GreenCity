@@ -245,7 +245,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void updateInitials() {
+    public void update() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         UserUpdateDto userUpdateDto = new UserUpdateDto();

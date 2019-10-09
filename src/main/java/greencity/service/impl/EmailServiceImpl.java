@@ -120,7 +120,7 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> model = new HashMap<>();
         model.put(CLIENT_LINK, clientLink);
         model.put(USER_NAME, user.getFirstName());
-        model.put(RESTORE_PASS, serverLink + "/auth/restore/" + token);
+        model.put(RESTORE_PASS, clientLink + "/auth/restore/" + token);
         String template = createEmailTemplate(model, RESTORE_EMAIL_PAGE);
         sendEmail(user, CONFIRM_RESTORING_PASS, template);
     }
