@@ -96,7 +96,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/propose/**",
                 "/place/{status}/**",
                 "/favorite_place/**",
-                "/place/save/favorite"
+                "/place/save/favorite",
+                "/user/initials/**"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
@@ -137,7 +138,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param web {@link WebSecurity}
      */
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/v2/api-docs/**");
         web.ignoring().antMatchers("/swagger.json");
         web.ignoring().antMatchers("/swagger-ui.html");
@@ -152,7 +153,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param auth {@link AuthenticationManagerBuilder}
      */
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(new JwtAuthenticationProvider(userService, passwordEncoder()));
     }
 

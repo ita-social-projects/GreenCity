@@ -10,6 +10,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserInitialsDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.apache.maven.model.Build;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -66,6 +68,8 @@ public class UserServiceImplTest {
             .build();
     @InjectMocks
     private UserServiceImpl userService;
+    @Mock
+    private ModelMapper modelMapper;
 
     @Test
     public void saveTest() {
@@ -221,5 +225,31 @@ public class UserServiceImplTest {
         when(userRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(usersPage);
 
         assertEquals(userPageableDto, userService.getUsersByFilter(filterUserDto, pageable));
+    }
+
+
+    @Test
+    public void getUserInitialsByEmail() {
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        UserInitialsDto userInitialsDto = new UserInitialsDto();
+        userInitialsDto.setFirstName(user.getFirstName());
+        userInitialsDto.setLastName(user.getLastName());
+        when(modelMapper.map(any(), any())).thenReturn(userInitialsDto);
+        UserInitialsDto userInitialsByEmail = userService.getUserInitialsByEmail("");
+        assertEquals(userInitialsByEmail.getFirstName(), user.getFirstName());
+        assertEquals(userInitialsByEmail.getLastName(), user.getLastName());
+    }
+
+    @Test
+    public void updateInitials() {
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepo.save(any())).thenReturn(user);
+        UserInitialsDto userInitialsDto = new UserInitialsDto();
+        userInitialsDto.setFirstName(user.getFirstName());
+        userInitialsDto.setLastName(user.getLastName());
+        User user = userService.updateInitials(userInitialsDto, "");
+        assertEquals(userInitialsDto.getFirstName(), user.getFirstName());
+        assertEquals(userInitialsDto.getLastName(), user.getLastName());
+        verify(userRepo, times(1)).save(any());
     }
 }
