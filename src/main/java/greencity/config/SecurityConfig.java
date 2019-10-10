@@ -89,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/favorite/{id}",
                 "/place/info/favorite/**",
                 "/place/statuses/**",
+                "/user/emailNotifications/**",
                 "/place/about/{id}/**",
                 "/specification/**"
             ).permitAll()

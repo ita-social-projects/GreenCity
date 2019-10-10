@@ -21,9 +21,11 @@ import greencity.exception.LowRoleLevelException;
 import greencity.exception.UserAlreadyRegisteredException;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -191,6 +193,14 @@ public class UserServiceImplTest {
     public void getRoles() {
         RoleDto roleDto = new RoleDto(ROLE.class.getEnumConstants());
         assertEquals(roleDto, userService.getRoles());
+    }
+
+    @Test
+    public void getEmailStatusesTest() {
+        List<EmailNotification> placeStatuses =
+            Arrays.asList(EmailNotification.class.getEnumConstants());
+
+        TestCase.assertEquals(placeStatuses, userService.getEmailNotificationsStatuses());
     }
 
     @Test

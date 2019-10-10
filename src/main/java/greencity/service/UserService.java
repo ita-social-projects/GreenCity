@@ -4,8 +4,10 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
@@ -91,6 +93,13 @@ public interface UserService {
      * @author Rostyslav Khasanov
      */
     RoleDto getRoles();
+
+    /**
+     * Get list of available {@link EmailNotification} statuses for {@link User}.
+     *
+     * @return available {@link EmailNotification}  statuses.
+     */
+    List<EmailNotification> getEmailNotificationsStatuses();
 
     /**
      * Update last visit of user.

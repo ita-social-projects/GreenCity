@@ -9,12 +9,14 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -110,6 +112,22 @@ public class UserController {
     @GetMapping("roles")
     public ResponseEntity<RoleDto> getRoles() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getRoles());
+    }
+
+    /**
+     * The method which return array of existing {@link EmailNotification}.
+     *
+     * @return {@link EmailNotification} array
+     * @author Nazar Vladyka
+     */
+    @ApiOperation(value = "Get all available email notifications statuses")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = EmailNotification[].class),
+         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+    })
+    @GetMapping("emailNotifications")
+    public ResponseEntity<List<EmailNotification>> getEmailNotifications() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getEmailNotificationsStatuses());
     }
 
     /**

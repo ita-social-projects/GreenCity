@@ -9,6 +9,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.*;
@@ -16,6 +17,7 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -137,6 +139,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public RoleDto getRoles() {
         return new RoleDto(ROLE.class.getEnumConstants());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Override
+    public List<EmailNotification> getEmailNotificationsStatuses() {
+        return Arrays.asList(EmailNotification.class.getEnumConstants());
     }
 
     /**
