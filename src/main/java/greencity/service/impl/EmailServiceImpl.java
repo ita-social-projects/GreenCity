@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
 import greencity.entity.Category;
 import greencity.entity.Place;
@@ -27,27 +28,6 @@ import org.thymeleaf.context.Context;
 @RequiredArgsConstructor
 @Slf4j
 public class EmailServiceImpl implements EmailService {
-    private static final String EMAIL_CONTENT_TYPE = "text/html; charset=utf-8";
-    // subjects
-    private static final String GC_CONTRIBUTORS = "GreenCity contributors";
-    private static final String NEW_PLACES = "New places";
-    private static final String VERIFY_EMAIL = "Verify your email address";
-    private static final String CONFIRM_RESTORING_PASS = "Confirm restoring password";
-    // params
-    private static final String CLIENT_LINK = "clientLink";
-    private static final String USER_NAME = "userFirstName";
-    private static final String PLACE_NAME = "placeName";
-    private static final String STATUS = "status";
-    private static final String VERIFY_ADDRESS = "verifyAddress";
-    private static final String RESTORE_PASS = "restorePassword";
-    private static final String RESULT = "result";
-    private static final String REPORT_TYPE = "reportType";
-    // templates
-    private static final String CHANGE_PLACE_STATUS_EMAIL_PAGE = "change-place-status-email-page";
-    private static final String VERIFY_EMAIL_PAGE = "verify-email-page";
-    private static final String RESTORE_EMAIL_PAGE = "restore-email-page";
-    private static final String NEW_PLACES_REPORT_EMAIL_PAGE = "new-places-report-email-page";
-    // autowired objects
     private final JavaMailSender javaMailSender;
     private final ITemplateEngine templateEngine;
     @Value("${client.address}")
@@ -64,13 +44,13 @@ public class EmailServiceImpl implements EmailService {
     public void sendChangePlaceStatusEmail(Place place) {
         log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, place);
         Map<String, Object> model = new HashMap<>();
-        model.put(CLIENT_LINK, clientLink);
-        model.put(USER_NAME, place.getAuthor().getFirstName());
-        model.put(PLACE_NAME, place.getName());
-        model.put(STATUS, place.getStatus().toString().toLowerCase());
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.USER_NAME, place.getAuthor().getFirstName());
+        model.put(EmailConstants.PLACE_NAME, place.getName());
+        model.put(EmailConstants.STATUS, place.getStatus().toString().toLowerCase());
 
-        String template = createEmailTemplate(model, CHANGE_PLACE_STATUS_EMAIL_PAGE);
-        sendEmail(place.getAuthor(), GC_CONTRIBUTORS, template);
+        String template = createEmailTemplate(model, EmailConstants.CHANGE_PLACE_STATUS_EMAIL_PAGE);
+        sendEmail(place.getAuthor(), EmailConstants.GC_CONTRIBUTORS, template);
     }
 
     /**
@@ -84,14 +64,14 @@ public class EmailServiceImpl implements EmailService {
                                               EmailNotification notification) {
         log.info(LogMessage.IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL, subscribers, categoriesWithPlaces, notification);
         Map<String, Object> model = new HashMap<>();
-        model.put(CLIENT_LINK, clientLink);
-        model.put(RESULT, categoriesWithPlaces);
-        model.put(REPORT_TYPE, notification);
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.RESULT, categoriesWithPlaces);
+        model.put(EmailConstants.REPORT_TYPE, notification);
 
         for (User user : subscribers) {
-            model.put(USER_NAME, user.getFirstName());
-            String template = createEmailTemplate(model, NEW_PLACES_REPORT_EMAIL_PAGE);
-            sendEmail(user, NEW_PLACES, template);
+            model.put(EmailConstants.USER_NAME, user.getFirstName());
+            String template = createEmailTemplate(model, EmailConstants.NEW_PLACES_REPORT_EMAIL_PAGE);
+            sendEmail(user, EmailConstants.NEW_PLACES, template);
         }
     }
 
@@ -103,11 +83,11 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendVerificationEmail(User user, String token) {
         Map<String, Object> model = new HashMap<>();
-        model.put(CLIENT_LINK, clientLink);
-        model.put(USER_NAME, user.getFirstName());
-        model.put(VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token=" + token);
-        String template = createEmailTemplate(model, VERIFY_EMAIL_PAGE);
-        sendEmail(user, VERIFY_EMAIL, template);
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.USER_NAME, user.getFirstName());
+        model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token=" + token);
+        String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
+        sendEmail(user, EmailConstants.VERIFY_EMAIL, template);
     }
 
     /**
@@ -118,11 +98,11 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendRestoreEmail(User user, String token) {
         Map<String, Object> model = new HashMap<>();
-        model.put(CLIENT_LINK, clientLink);
-        model.put(USER_NAME, user.getFirstName());
-        model.put(RESTORE_PASS, clientLink + "/auth/restore/" + token);
-        String template = createEmailTemplate(model, RESTORE_EMAIL_PAGE);
-        sendEmail(user, CONFIRM_RESTORING_PASS, template);
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.USER_NAME, user.getFirstName());
+        model.put(EmailConstants.RESTORE_PASS, clientLink + "/auth/restore/" + token);
+        String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);
+        sendEmail(user, EmailConstants.CONFIRM_RESTORING_PASS, template);
     }
 
     private String createEmailTemplate(Map<String, Object> vars, String templateName) {
@@ -139,7 +119,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             mimeMessageHelper.setTo(receiver.getEmail());
             mimeMessageHelper.setSubject(subject);
-            mimeMessage.setContent(content, EMAIL_CONTENT_TYPE);
+            mimeMessage.setContent(content, EmailConstants.EMAIL_CONTENT_TYPE);
         } catch (MessagingException e) {
             log.error(e.getMessage());
         }
