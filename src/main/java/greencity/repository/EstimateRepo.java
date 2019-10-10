@@ -1,12 +1,12 @@
 package greencity.repository;
 
-import greencity.entity.Rate;
+import greencity.entity.Estimate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * Provides an interface to manage {@link Rate} entity.
+ * Provides an interface to manage {@link Estimate} entity.
  */
 @Repository
-public interface RateRepo extends JpaRepository<Rate, Long> {
+public interface EstimateRepo extends JpaRepository<Estimate, Long> {
 }

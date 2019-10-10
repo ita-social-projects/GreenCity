@@ -69,5 +69,5 @@ public class User {
     private RestorePasswordEmail restorePasswordEmail;
 
     @OneToMany(mappedBy = "user")
-    private List<Rate> rates = new ArrayList<>();
+    private List<Estimate> estimates = new ArrayList<>();
 }

@@ -12,7 +12,6 @@ import greencity.service.UserService;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +31,14 @@ public class PlaceCommentController {
     /**
      * Method witch save comment by Place Id.
      *
-     * @param placeId Id of place to witch related comment.
+     * @param placeId       Id of place to witch related comment.
      * @param addCommentDto DTO with contain data od Comment.
      * @return CommentDTO
      */
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity save(@PathVariable Long placeId,
                                @Valid @RequestBody AddCommentDto addCommentDto, Principal principal) {
+        System.out.println(addCommentDto);
         User user = userService.findByEmail(principal.getName())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {

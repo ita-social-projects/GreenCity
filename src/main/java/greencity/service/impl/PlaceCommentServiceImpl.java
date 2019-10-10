@@ -26,7 +26,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private UserService userService;
     private PlaceCommentRepo placeCommentRepo;
     private PlaceService placeService;
-    private RateService rateService;
     private PhotoService photoService;
     private ModelMapper modelMapper;
 
@@ -53,8 +52,10 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         Comment comment = modelMapper.map(addCommentDto, Comment.class);
         comment.setPlace(place);
         comment.setUser(user);
-        comment.getRate().setUser(user);
-        comment.getRate().setPlace(place);
+        if (comment.getEstimate() != null) {
+            comment.getEstimate().setUser(user);
+            comment.getEstimate().setPlace(place);
+        }
         comment.getPhotos().forEach(photo -> {
             if (photoService.findByName(photo.getName()).isPresent()) {
                 throw new NotFoundException("");
