@@ -11,6 +11,9 @@ public class RepoConstants {
     public static final String SPECIFICATION = "specification";
     public static final String DISCOUNT_VALUES = "discountValues";
     public static final String MODIFIED_DATE = "modifiedDate";
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+    public static final String REGISTRATION_DATE = "dateOfRegistration";
     public static final String CATEGORY = "category";
     public static final String STATUS = "status";
     public static final String ADDRESS = "address";
