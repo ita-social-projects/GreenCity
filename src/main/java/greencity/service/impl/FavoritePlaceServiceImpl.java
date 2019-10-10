@@ -46,9 +46,8 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
             throw new BadIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
         if (repo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail) == null) {
-            throw new BadIdException(ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS
-                + String.format("for this placeId:  %d and user with email: %s", favoritePlaceDto.getPlaceId(),
-                favoritePlaceDto.getName()));
+            throw new BadIdException(String.format(
+                ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS, favoritePlaceDto.getPlaceId(), favoritePlaceDto.getName()));
         }
         favoritePlace.setUser(User.builder().email(userEmail).id(userService.findIdByEmail(userEmail)).build());
         return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));

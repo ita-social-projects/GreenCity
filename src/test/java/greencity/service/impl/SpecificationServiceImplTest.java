@@ -82,9 +82,9 @@ public class SpecificationServiceImplTest {
     public void findByNameTest() {
         Specification genericEntity = new Specification();
 
-        when(specificationRepo.findByName(anyString())).thenReturn(genericEntity);
+        when(specificationRepo.findByName(anyString())).thenReturn(Optional.of(genericEntity));
 
-        Specification foundEntity = specificationService.findByName(anyString());
+        Optional<Specification> foundEntity = specificationService.findByName(anyString());
 
         assertEquals(genericEntity, foundEntity);
     }

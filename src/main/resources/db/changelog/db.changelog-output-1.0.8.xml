@@ -3,9 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet author="Kateryna Horokh" id="1567079888333-69">
-        <addColumn catalogName="greenCity"
-                   schemaName="greenCity"
-                   tableName="place">
+        <addColumn tableName="place">
             <column name="location_id" type="BIGINT"/>
         </addColumn>
     </changeSet>

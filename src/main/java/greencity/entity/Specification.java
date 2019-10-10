@@ -10,8 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"specificationValues"})
-@ToString(exclude = {"specificationValues"})
+@EqualsAndHashCode(exclude = {"discountValues"})
+@ToString(exclude = {"discountValues"})
 public class Specification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +21,5 @@ public class Specification {
     private String name;
 
     @OneToMany(mappedBy = "specification")
-    private List<SpecificationValue> specificationValues = new ArrayList<>();
-
-    @OneToMany(mappedBy = "specification", cascade = CascadeType.PERSIST)
-    private List<Discount> discounts = new ArrayList<>();
+    private List<DiscountValue> discountValues = new ArrayList<>();
 }

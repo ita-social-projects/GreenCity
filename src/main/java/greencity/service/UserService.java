@@ -2,10 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -111,4 +108,23 @@ public interface UserService {
      * @author Rostyslav Khasanov.
      */
     PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable);
+
+    /**
+     * Get {@link User} initials dto by principal (email).
+     *
+     * @param email - email of user.
+     * @return {@link UserInitialsDto}.
+     * @author Nazar Stasyuk
+     */
+    UserInitialsDto getUserInitialsByEmail(String email);
+
+    /**
+     * Update {@link User} initials.
+     *
+     * @param dto {@link UserInitialsDto} - dto with new initials.
+     * @param email {@link String} - email of user that need to update.
+     * @return {@link User}.
+     * @author Nazar Stasyuk
+     */
+    User updateInitials(UserInitialsDto dto, String email);
 }
