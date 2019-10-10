@@ -1,6 +1,7 @@
 package greencity.repository.options;
 
 import greencity.constant.AppConstant;
+import greencity.constant.RepoConstants;
 import greencity.dto.filter.FilterDiscountDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.MapBoundsDto;
@@ -43,7 +44,7 @@ public class PlaceFilter implements Specification<Place> {
      */
     @Override
     public Predicate toPredicate(Root<Place> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        query.groupBy(root.get("id"));
+        query.groupBy(root.get(RepoConstants.ID));
         List<Predicate> predicates = new ArrayList<>();
         if (null != filterPlaceDto) {
             predicates.add(hasStatus(root, cb, filterPlaceDto.getStatus()));
@@ -69,7 +70,7 @@ public class PlaceFilter implements Specification<Place> {
         if (status == null) {
             status = PlaceStatus.APPROVED;
         }
-        return cb.equal(r.get("status"), status);
+        return cb.equal(r.get(RepoConstants.STATUS), status);
     }
 
     /**
@@ -87,8 +88,8 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(
-            cb.between(r.join("location").get("lat"), bounds.getSouthWestLat(), bounds.getNorthEastLat()),
-            cb.between(r.join("location").get("lng"), bounds.getSouthWestLng(), bounds.getNorthEastLng()));
+            cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LAT), bounds.getSouthWestLat(), bounds.getNorthEastLat()),
+            cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LNG), bounds.getSouthWestLng(), bounds.getNorthEastLng()));
     }
 
     /**
@@ -106,9 +107,9 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         LocalDateTime time = LocalDateTime.parse(currentTime, DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT));
-        return cb.and(cb.equal(r.join("openingHoursList").get("weekDay"), time.getDayOfWeek()),
-            cb.lessThan(r.join("openingHoursList").get("openTime"), time.toLocalTime()),
-            cb.greaterThan(r.join("openingHoursList").get("closeTime"), time.toLocalTime()));
+        return cb.and(cb.equal(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_DAY), time.getDayOfWeek()),
+            cb.lessThan(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_OPEN), time.toLocalTime()),
+            cb.greaterThan(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_CLOSE), time.toLocalTime()));
     }
 
     /**
@@ -126,9 +127,9 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(
-            cb.equal(r.join("discountValues").join("specification").get("name"),
+            cb.equal(r.join(RepoConstants.DISCOUNT_VALUES).join(RepoConstants.SPECIFICATION).get(RepoConstants.NAME),
                 discount.getSpecification().getName()),
-            cb.between(r.join("discountValues").get("value"),
+            cb.between(r.join(RepoConstants.DISCOUNT_VALUES).get(RepoConstants.VALUE),
                 discount.getDiscountMin(), discount.getDiscountMax()));
     }
 
@@ -146,10 +147,11 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(cb.or(
-            cb.like(r.join("author").get("email"), reg),
-            cb.like(r.join("category").get("name"), reg),
-            cb.like(r.get("name"), reg),
-            cb.like(r.join("location").get("address"), reg),
-            cb.like(r.get("modifiedDate").as(String.class), reg)), cb.equal(r.get("status"), status));
+            cb.like(r.join(RepoConstants.AUTHOR).get(RepoConstants.EMAIL), reg),
+            cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), reg),
+            cb.like(r.get(RepoConstants.NAME), reg),
+            cb.like(r.join(RepoConstants.LOCATION).get(RepoConstants.ADDRESS), reg),
+            cb.like(r.get(RepoConstants.MODIFIED_DATE).as(String.class), reg)),
+            cb.equal(r.get(RepoConstants.STATUS), status));
     }
 }
