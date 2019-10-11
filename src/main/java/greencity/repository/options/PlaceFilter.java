@@ -16,7 +16,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -26,7 +25,6 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Roman Zahouri, Nazar Stasyuk
  */
-@Slf4j
 public class PlaceFilter implements Specification<Place> {
     private FilterPlaceDto filterPlaceDto;
 
