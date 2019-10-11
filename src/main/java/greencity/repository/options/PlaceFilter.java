@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -25,6 +26,7 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Roman Zahouri, Nazar Stasyuk
  */
+@Slf4j
 public class PlaceFilter implements Specification<Place> {
     private FilterPlaceDto filterPlaceDto;
 
@@ -88,8 +90,10 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(
-            cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LAT), bounds.getSouthWestLat(), bounds.getNorthEastLat()),
-            cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LNG), bounds.getSouthWestLng(), bounds.getNorthEastLng()));
+            cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LAT),
+                bounds.getSouthWestLat(), bounds.getNorthEastLat()),
+            cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LNG),
+                bounds.getSouthWestLng(), bounds.getNorthEastLng()));
     }
 
     /**
@@ -126,11 +130,15 @@ public class PlaceFilter implements Specification<Place> {
         if (discount == null) {
             return cb.conjunction();
         }
+        int minValue = discount.getDiscountMin();
+        int maxValue = discount.getDiscountMax();
+        if (minValue == 0 && maxValue == 100) {
+            return cb.conjunction();
+        }
         return cb.and(
             cb.equal(r.join(RepoConstants.DISCOUNT_VALUES).join(RepoConstants.SPECIFICATION).get(RepoConstants.NAME),
                 discount.getSpecification().getName()),
-            cb.between(r.join(RepoConstants.DISCOUNT_VALUES).get(RepoConstants.VALUE),
-                discount.getDiscountMin(), discount.getDiscountMax()));
+            cb.between(r.join(RepoConstants.DISCOUNT_VALUES).get(RepoConstants.VALUE), minValue, maxValue));
     }
 
     /**

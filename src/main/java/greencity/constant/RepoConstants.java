@@ -5,7 +5,7 @@ public class RepoConstants {
     public static final String LOCATION_LAT = "lat";
     public static final String LOCATION_LNG = "lng";
     public static final String HOURS_LIST = "openingHoursList";
-    public static final String HOURS_DAY = "weedDay";
+    public static final String HOURS_DAY = "weekDay";
     public static final String HOURS_OPEN = "openTime";
     public static final String HOURS_CLOSE = "closeTime";
     public static final String SPECIFICATION = "specification";
