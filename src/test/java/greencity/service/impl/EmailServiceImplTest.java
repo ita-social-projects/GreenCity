@@ -3,10 +3,13 @@ package greencity.service.impl;
 import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
+import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.EmailService;
+import java.util.*;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import org.junit.Before;
@@ -17,7 +20,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.context.Context;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
@@ -42,6 +44,21 @@ public class EmailServiceImplTest {
         Place generatedEntity = Place.builder().author(user).name("TestPlace").status(PlaceStatus.APPROVED).build();
         service.sendChangePlaceStatusEmail(generatedEntity);
 
-        verify(javaMailSender, times(1)).createMimeMessage();
+        verify(javaMailSender).createMimeMessage();
+    }
+
+
+    @Test
+    public void sendAddedNewPlacesReportEmailTest() {
+        Category testCategory = Category.builder().name("CategoryName").build();
+        Place testPlace1 = Place.builder().name("PlaceName1").category(testCategory).build();
+        Place testPlace2 = Place.builder().name("PlaceName2").category(testCategory).build();
+        Map<Category, List<Place>> categoriesWithPlacesTest = new HashMap<>();
+        categoriesWithPlacesTest.put(testCategory, Arrays.asList(testPlace1, testPlace2));
+
+        service.sendAddedNewPlacesReportEmail(
+            Collections.singletonList(user), categoriesWithPlacesTest, EmailNotification.DAILY);
+
+        verify(javaMailSender).createMimeMessage();
     }
 }
