@@ -23,9 +23,6 @@ import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -81,6 +78,8 @@ public class PlaceServiceImpl implements PlaceService {
 
         Place place = placeMapper.convertToEntity(dto);
         setUserToPlaceByEmail(email, place);
+        place.getPhotos().forEach(photo -> photo.setUser(place.getAuthor()));
+
         return placeRepo.save(place);
     }
 
@@ -121,7 +120,7 @@ public class PlaceServiceImpl implements PlaceService {
         placeRepo.save(updatedPlace);
 
         updateOpening(dto.getOpeningHoursList(), updatedPlace);
-        updateDiscount(dto.getDiscounts(), updatedPlace);
+        updateDiscount(dto.getDiscountValues(), updatedPlace);
 
         return updatedPlace;
     }

@@ -5,9 +5,11 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.Specification;
+import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.exception.NotImplementedMethodException;
 import greencity.service.CategoryService;
+import greencity.service.PhotoService;
 import greencity.service.SpecificationService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,6 +27,7 @@ public class ProposePlaceMapper implements Mapper<Place, PlaceAddDto> {
     private ModelMapper mapper;
     private CategoryService categoryService;
     private SpecificationService specService;
+    private PhotoService photoService;
 
     @Override
     public Place convertToEntity(PlaceAddDto dto) {
@@ -38,6 +41,12 @@ public class ProposePlaceMapper implements Mapper<Place, PlaceAddDto> {
                     + disc.getSpecification().getName()));
             disc.setSpecification(specification);
             disc.setPlace(place);
+        });
+        place.getPhotos().forEach(photo -> {
+            if (photoService.findByName(photo.getName()).isPresent()) {
+                throw new BadRequestException(ErrorMessage.PHOTO_IS_PRESENT);
+            }
+            photo.setPlace(place);
         });
         return place;
     }

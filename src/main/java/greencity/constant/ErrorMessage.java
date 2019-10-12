@@ -45,4 +45,6 @@ public class ErrorMessage {
     public static final String LINK_FOR_RESTORE_NOT_FOUND = "Link for sendEmailForRestore password by email not found";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
     public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
+    public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
+    public static final String PHOTO_IS_PRESENT = "Photo is present.";
 }
