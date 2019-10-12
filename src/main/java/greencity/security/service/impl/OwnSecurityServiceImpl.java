@@ -4,6 +4,7 @@ import static greencity.constant.ErrorMessage.*;
 
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
@@ -72,6 +73,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
             .build();
     }
 
@@ -81,7 +83,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void delete(OwnSecurity userOwnSecurity) {
         if (!repo.existsById(userOwnSecurity.getId())) {
-            throw new BadIdException(NO_ENY_USER_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
+            throw new BadIdException(NO_ENY_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
         }
         repo.delete(userOwnSecurity);
     }
