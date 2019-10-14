@@ -103,11 +103,11 @@ INSERT INTO specification_value (value, place_id, specification_id)
 VALUES ('disc', 5, 5);
 
 INSERT INTO favorite_place (place_id, user_id, name)
-values (1, 1, 'My best place');
+values (1, 1, 'Forum');
 INSERT INTO favorite_place (place_id, user_id, name)
-values (2, 2, 'My best place');
+values (2, 2, 'Victoria Gardens');
 INSERT INTO favorite_place (place_id, user_id, name)
-values (3, 3, 'My best place');
+values (3, 3, 'Pravda');
 
 INSERT INTO rate (rate, place_id, user_id)
 values (5, 1, 1);

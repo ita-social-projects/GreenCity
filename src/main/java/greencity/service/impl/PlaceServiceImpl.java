@@ -304,8 +304,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = placeRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
-        PlaceUpdateDto placeUpdateDto = modelMapper.map(place, PlaceUpdateDto.class);
-        return placeUpdateDto;
+        return modelMapper.map(place, PlaceUpdateDto.class);
     }
 
     /**
