@@ -92,11 +92,10 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             comments.getContent()
                 .stream().map(comment -> modelMapper.map(comment, CommentAdminDto.class))
                 .collect(Collectors.toList());
-        PageableDto<CommentAdminDto> pageableCommentDto = new PageableDto<>(
+        return new PageableDto<CommentAdminDto>(
             commentList,
             comments.getTotalElements(),
             comments.getPageable().getPageNumber()
         );
-        return pageableCommentDto;
     }
 }
