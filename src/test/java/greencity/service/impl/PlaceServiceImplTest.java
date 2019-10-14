@@ -20,12 +20,10 @@ import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.ProposePlaceMapper;
+import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
-import greencity.service.LocationService;
-import greencity.service.UserService;
-import java.time.DayOfWeek;
+import greencity.service.*;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -115,16 +113,38 @@ public class PlaceServiceImplTest {
     private PlaceRepo placeRepo;
 
     @Mock
+    private CategoryRepo categoryRepo;
+
+    @Mock
+    private CategoryService categoryService;
+
+    @Mock
+    private LocationServiceImpl locationService;
+
+    @Mock
+    private LocationService service;
+
+    @Mock
+    private OpenHoursService openingHoursService;
+
+    @Mock
+    private SpecificationService specificationService;
+
+    @Mock
     private ModelMapper modelMapper;
 
     @Mock
     private UserService userService;
 
     @Mock
+    private EmailService emailService;
+
+    @Mock
     private ProposePlaceMapper proposePlaceMapper;
 
     @InjectMocks
     private PlaceServiceImpl placeService;
+
 
     @Test
     public void saveTest() {
@@ -206,15 +226,15 @@ public class PlaceServiceImplTest {
         placeService.findById(null);
     }
 
-    // @Test
-    // public void getInfoByIdTest() {
-    //     PlaceInfoDto gen = new PlaceInfoDto();
-    //     when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
-    //     when(modelMapper.map(any(), any())).thenReturn(gen);
-    //     when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
-    //     PlaceInfoDto res = placeService.getInfoById(anyLong());
-    //     assertEquals(gen, res);
-    // }
+    @Test
+    public void getInfoByIdTest() {
+        PlaceInfoDto gen = new PlaceInfoDto();
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
+        when(modelMapper.map(any(), any())).thenReturn(gen);
+        when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
+        PlaceInfoDto res = placeService.getInfoById(anyLong());
+        assertEquals(gen, res);
+    }
 
     @Test(expected = NotFoundException.class)
     public void getInfoByIdNotFoundTest() {
