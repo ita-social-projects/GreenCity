@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,4 +69,15 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
         @Param("southWestLng") Double southWestLng,
         @Param("status") PlaceStatus status
     );
+
+    /**
+     * The method to find all {@link Place}'s which was added between 2 dates and has {@link PlaceStatus}.
+     *
+     * @param startDate - start date of search
+     * @param endDate   - end date of search
+     * @param status    - {@link PlaceStatus} of places
+     * @return list of {@link Place}'s
+     */
+    List<Place> findAllByModifiedDateBetweenAndStatus(
+        LocalDateTime startDate, LocalDateTime endDate, PlaceStatus status);
 }

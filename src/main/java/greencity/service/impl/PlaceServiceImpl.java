@@ -51,6 +51,7 @@ public class PlaceServiceImpl implements PlaceService {
     private EmailService emailService;
     private OpenHoursService openingHoursService;
     private DiscountService discountService;
+    private NotificationService notificationService;
 
     /**
      * {@inheritDoc}
@@ -96,6 +97,7 @@ public class PlaceServiceImpl implements PlaceService {
 
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(APPROVED_STATUS);
+            notificationService.sendImmediatelyReport(place);
         }
         return user;
     }
@@ -217,20 +219,17 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
-
         Place updatable = findById(id);
         PlaceStatus oldStatus = updatable.getStatus();
-
         checkPlaceStatuses(oldStatus, status, id);
-
         updatable.setStatus(status);
         updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
-
-        // if place had status PROPOSED and it changes, means APPROVEs or DECLINEs we send an email
+        if (status.equals(PlaceStatus.APPROVED)) {
+            notificationService.sendImmediatelyReport(updatable);
+        }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             emailService.sendChangePlaceStatusEmail(updatable);
         }
-
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
 

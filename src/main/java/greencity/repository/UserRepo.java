@@ -1,6 +1,8 @@
 package greencity.repository;
 
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,4 +42,12 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query("SELECT id from User where email=:email")
     Optional<Long> findIdByEmail(String email);
+
+    /**
+     * Find all {@link User}'s with {@link EmailNotification} type.
+     *
+     * @param emailNotification - type of {@link EmailNotification}
+     * @return list of {@link User}'s
+     */
+    List<User> findAllByEmailNotification(EmailNotification emailNotification);
 }

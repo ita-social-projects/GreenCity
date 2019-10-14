@@ -4,8 +4,10 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
@@ -93,6 +95,13 @@ public interface UserService {
     RoleDto getRoles();
 
     /**
+     * Get list of available {@link EmailNotification} statuses for {@link User}.
+     *
+     * @return available {@link EmailNotification}  statuses.
+     */
+    List<EmailNotification> getEmailNotificationsStatuses();
+
+    /**
      * Update last visit of user.
      *
      * @return {@link User}.
@@ -110,21 +119,21 @@ public interface UserService {
     PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable);
 
     /**
-     * Get {@link User} initials dto by principal (email).
+     * Get {@link User} dto by principal (email).
      *
      * @param email - email of user.
-     * @return {@link UserInitialsDto}.
+     * @return {@link UserUpdateDto}.
      * @author Nazar Stasyuk
      */
-    UserInitialsDto getUserInitialsByEmail(String email);
+    UserUpdateDto getUserUpdateDtoByEmail(String email);
 
     /**
-     * Update {@link User} initials.
+     * Update {@link User}.
      *
-     * @param dto {@link UserInitialsDto} - dto with new initials.
+     * @param dto {@link UserUpdateDto} - dto with new {@link User} params.
      * @param email {@link String} - email of user that need to update.
      * @return {@link User}.
      * @author Nazar Stasyuk
      */
-    User updateInitials(UserInitialsDto dto, String email);
+    User update(UserUpdateDto dto, String email);
 }
