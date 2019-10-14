@@ -11,7 +11,7 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.NotFoundException;
+import greencity.exception.BadEmailException;
 import greencity.exception.UserBlockedException;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
@@ -62,7 +62,7 @@ public class PlaceController {
     public ResponseEntity<PlaceWithUserDto> proposePlace(
         @Valid @RequestBody PlaceAddDto dto, Principal principal) {
         User user = userService.findByEmail(principal.getName())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
+            .orElseThrow(() -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
