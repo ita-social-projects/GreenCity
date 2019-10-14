@@ -9,20 +9,21 @@ import static org.mockito.Mockito.*;
 
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
+import greencity.mapping.ProposePlaceMapper;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -77,14 +78,13 @@ public class PlaceServiceImplTest {
 
     Set<OpeningHours> openingHoursListEntity = new HashSet<>();
 
-    OpeningHours openingHoursEntity = OpeningHours.builder()
-        .id(1L)
-        .openTime(LocalTime.parse("10:30"))
-        .closeTime(LocalTime.parse("20:30"))
-        .weekDay(DayOfWeek.MONDAY)
-        .build();
+    Set<DiscountValue> discountValues = new HashSet<>();
 
-    Specification specificationEntity = new Specification();
+    Set<DiscountValueDto> discountValuesDto = new HashSet<>();
+
+    List<PhotoAddDto> photoDtos = new ArrayList<>();
+
+    List<Photo> photos = new ArrayList<>();
 
     Place place = Place.builder()
         .id(1L)
@@ -93,19 +93,21 @@ public class PlaceServiceImplTest {
         .author(user)
         .location(location)
         .openingHoursList(openingHoursListEntity)
-//        .discounts(discountEntities)
+        .discountValues(discountValues)
+        .photos(photos)
         .status(PlaceStatus.PROPOSED)
         .build();
 
-    PlaceAddDto dto = PlaceAddDto.
+
+    PlaceAddDto placeAddDto = PlaceAddDto.
         builder()
-        .name(place.getName())
+        .name("Test")
         .category(categoryDto)
         .location(locationDto)
         .openingHoursList(openingHoursList)
-//        .discounts(discountDtos)
+        .discountValues(discountValuesDto)
+        .photos(photoDtos)
         .build();
-
 
     @Mock
     private PlaceRepo placeRepo;
@@ -137,8 +139,20 @@ public class PlaceServiceImplTest {
     @Mock
     private EmailService emailService;
 
+    @Mock
+    private ProposePlaceMapper proposePlaceMapper;
+
     @InjectMocks
     private PlaceServiceImpl placeService;
+
+    @Test
+    public void saveTest() {
+        when(proposePlaceMapper.convertToEntity(any())).thenReturn(place);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(placeRepo.save(place)).thenReturn(place);
+
+        assertEquals(place, placeService.save(placeAddDto, user.getEmail()));
+    }
 
     @Test
     public void deleteByIdTest() {

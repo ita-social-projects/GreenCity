@@ -5,6 +5,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -43,4 +44,7 @@ public class PlaceWithUserDto {
 
     @Valid
     private PlaceAuthorDto author;
+
+    @Valid
+    private List<PhotoAddDto> photos;
 }

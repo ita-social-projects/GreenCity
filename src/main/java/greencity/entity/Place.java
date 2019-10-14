@@ -40,7 +40,7 @@ public class Place {
     @OneToMany(mappedBy = "place", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
     private List<Photo> photos = new ArrayList<>();
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
