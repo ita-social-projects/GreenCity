@@ -1,7 +1,9 @@
 package greencity.controller;
 
 import greencity.constant.ErrorMessage;
+import greencity.constant.HttpStatuses;
 import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
@@ -10,6 +12,9 @@ import greencity.exception.UserBlockedException;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -36,10 +41,14 @@ public class PlaceCommentController {
      * @param addCommentDto DTO with contain data od Comment.
      * @return CommentDTO
      */
+    @ApiOperation(value = "Add comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CommentReturnDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity save(@PathVariable Long placeId,
                                @Valid @RequestBody AddCommentDto addCommentDto, Principal principal) {
-        System.out.println(addCommentDto);
         User user = userService.findByEmail(principal.getName())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
