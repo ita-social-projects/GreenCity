@@ -2,7 +2,7 @@ package greencity.dto.comment;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.photo.PhotoAddDto;
-import greencity.dto.rate.RateAddDto;
+import greencity.dto.rate.EstimateAddDto;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -20,7 +20,7 @@ public class AddCommentDto {
     @Length(min = ValidationConstants.COMMENT_MIN_LENGTH, max = ValidationConstants.COMMENT_MAX_LENGTH)
     private String text;
     @Valid
-    private RateAddDto rate;
+    private EstimateAddDto estimate;
     @Valid
     @Size(max = 3, message = ValidationConstants.BAD_PHOTO_LIST_REQUEST)
     private List<PhotoAddDto> photos;

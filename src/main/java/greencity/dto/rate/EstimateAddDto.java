@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RateAddDto {
+public class EstimateAddDto {
     @Min(value = 1, message = ValidationConstants.RATE_MIN_VALUE)
     @Max(value = 5, message = ValidationConstants.RATE_MAX_VALUE)
     private Byte rate;
