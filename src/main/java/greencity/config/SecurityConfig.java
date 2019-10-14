@@ -89,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/favorite/{id}",
                 "/place/info/favorite/**",
                 "/place/statuses/**",
+                "/user/emailNotifications/**",
                 "/place/about/{id}/**",
                 "/specification/**"
             ).permitAll()
@@ -97,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/{status}/**",
                 "/favorite_place/**",
                 "/place/save/favorite",
-                "/user/initials/**"
+                "/user/**"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
@@ -116,13 +117,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/update/role"
             ).hasRole(ADMIN)
             .antMatchers(HttpMethod.GET,
-                "/user",
+                "/user/all/",
                 "/user/roles"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",
                 "/place/**"
             ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PUT,
+                "/user/**")
+            .hasAnyRole(USER, ADMIN, MODERATOR)
             .anyRequest()
             .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.PUT,

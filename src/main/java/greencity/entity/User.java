@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
@@ -70,4 +71,6 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Estimate> estimates = new ArrayList<>();
+    @Enumerated(value = EnumType.ORDINAL)
+    private EmailNotification emailNotification;
 }
