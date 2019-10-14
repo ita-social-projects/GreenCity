@@ -1,13 +1,18 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.User;
+import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
-import greencity.service.*;
+import greencity.service.PhotoService;
+import greencity.service.PlaceCommentService;
+import greencity.service.PlaceService;
+import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -48,7 +53,8 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
         Place place = placeService.findById(placeId);
-        User user = userService.findByEmail(email).orElseThrow(() -> new NotFoundException(""));
+        User user = userService.findByEmail(email).orElseThrow(() ->
+            new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         Comment comment = modelMapper.map(addCommentDto, Comment.class);
         comment.setPlace(place);
         comment.setUser(user);
@@ -58,7 +64,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         }
         comment.getPhotos().forEach(photo -> {
             if (photoService.findByName(photo.getName()).isPresent()) {
-                throw new NotFoundException("");
+                throw new BadRequestException(ErrorMessage.PHOTO_IS_PRESENT);
             }
             photo.setUser(user);
             photo.setComment(comment);
