@@ -22,4 +22,7 @@ public class RepoConstants {
     public static final String NAME = "name";
     public static final String AUTHOR = "author";
     public static final String ID = "id";
+
+    RepoConstants() {
+    }
 }

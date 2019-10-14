@@ -68,4 +68,7 @@ public class ValidationConstants {
     public static final String DISCOUNT_VALUE_DOES_NOT_CORRECT = "Min discount value is 0, max discount value is 100";
     public static final int DISCOUNT_VALUE_MAX = 100;
     public static final String EMPTY_SPECIFICATION_NAME = "The specification name can not be empty";
+
+    private ValidationConstants() {
+    }
 }

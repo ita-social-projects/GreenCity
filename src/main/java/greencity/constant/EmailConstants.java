@@ -21,4 +21,7 @@ public class EmailConstants {
     public static final String VERIFY_EMAIL_PAGE = "verify-email-page";
     public static final String RESTORE_EMAIL_PAGE = "restore-email-page";
     public static final String NEW_PLACES_REPORT_EMAIL_PAGE = "new-places-report-email-page";
+
+    private EmailConstants() {
+    }
 }

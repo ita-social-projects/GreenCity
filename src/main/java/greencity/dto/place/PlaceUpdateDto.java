@@ -5,7 +5,6 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import java.util.List;
 import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
