@@ -6,6 +6,7 @@ import greencity.dto.rate.RateAddDto;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,5 +22,6 @@ public class AddCommentDto {
     @Valid
     private RateAddDto rate;
     @Valid
+    @Size(max = 3, message = ValidationConstants.BAD_PHOTO_LIST_REQUEST)
     private List<PhotoAddDto> photos;
 }
