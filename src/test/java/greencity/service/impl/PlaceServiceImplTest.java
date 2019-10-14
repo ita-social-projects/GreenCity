@@ -145,7 +145,6 @@ public class PlaceServiceImplTest {
     @InjectMocks
     private PlaceServiceImpl placeService;
 
-
     @Test
     public void saveTest() {
         when(proposePlaceMapper.convertToEntity(any())).thenReturn(place);
