@@ -1,5 +1,6 @@
 package greencity.repository.options;
 
+import greencity.constant.RepoConstants;
 import greencity.dto.filter.FilterUserDto;
 import greencity.entity.User;
 import java.util.ArrayList;
@@ -52,10 +53,10 @@ public class UserFilter implements Specification<User> {
      */
     private Predicate hasFieldsLike(Root<User> r, CriteriaBuilder cb, String reg) {
         return cb.or(
-            cb.like(r.get("firstName"), reg),
-            cb.like(r.get("lastName"), reg),
-            cb.like(r.get("email"), reg),
-            cb.like(r.get("dateOfRegistration").as(String.class), reg)
+            cb.like(r.get(RepoConstants.FIRST_NAME), reg),
+            cb.like(r.get(RepoConstants.LAST_NAME), reg),
+            cb.like(r.get(RepoConstants.EMAIL), reg),
+            cb.like(r.get(RepoConstants.REGISTRATION_DATE).as(String.class), reg)
         );
     }
 }

@@ -86,6 +86,6 @@ public class SpecificationServiceImplTest {
 
         Optional<Specification> foundEntity = specificationService.findByName(anyString());
 
-        assertEquals(genericEntity, foundEntity);
+        assertEquals(Optional.of(genericEntity), foundEntity);
     }
 }

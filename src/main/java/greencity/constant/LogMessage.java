@@ -5,7 +5,6 @@ public class LogMessage {
     public static final String IN_FIND_BY_ID = "in findById(), id: {}";
     public static final String IN_UPDATE = "in update(), updated entity: {}";
     public static final String IN_DELETE_BY_ID = "in deleteById(), id: {}";
-
     public static final String IN_FIND_ALL = "in findAll()";
     public static final String IN_FIND_BY_PLACE_ID = "in findById(), placeId: {}";
     public static final String IN_FIND_ID_BY_EMAIL = "in findIdByEmail(), email: {}";
@@ -26,6 +25,18 @@ public class LogMessage {
     public static final String IN_UPDATE_DISCOUNT_FOR_PLACE = "in updateDiscountForUpdatedPlace()";
     public static final String IN_UPDATE_OPENING_HOURS_FOR_PLACE = "in updateOpeningHoursForUpdatedPlace()";
     public static final String IN_SEND_CHANGE_PLACE_STATUS_EMAIL = "in sendChangePlaceStatusEmail(), place: {}";
-    public static final String IN_SEND_EMAIL = "in sendEmail(), receiver: {}, subject: {}, content: {}";
+    public static final String IN_SEND_EMAIL = "in sendEmail(), receiver: {}, subject: {}";
     public static final String IN_CREATE_TEMPLATE_NAME = "in createEmailTemplate(), vars: {}, templateName: {}";
+    public static final String IN_SEND_IMMEDIATELY_REPORT = "in sendImmediatelyReport(), newPlace: {}";
+    public static final String IN_SEND_DAILY_REPORT = "in sendDailyReport(), time: {}";
+    public static final String IN_SEND_WEEKLY_REPORT = "in sendWeeklyReport(), time: {}";
+    public static final String IN_SEND_MONTHLY_REPORT = "in sendMonthlyReport(), time: {}";
+    public static final String IN_SEND_REPORT = "in sendReport(), notificationType: {}";
+    public static final String IN_GET_SUBSCRIBERS = "in getSubscribers(), notificationType: {}";
+    public static final String IN_GET_CATEGORIES_WITH_PLACES_MAP = "in getCategoriesWithPlacesMap(), places: {}";
+    public static final String IN_GET_UNIQUE_CATEGORIES_FROM_PLACES = "in getUniqueCategoriesFromPlaces(), places: {}";
+    public static final String IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL = "in sendAddedNewPlacesReportEmail(), subscribers: {}, categories: {}, notificationType: {}";
+
+    private LogMessage() {
+    }
 }

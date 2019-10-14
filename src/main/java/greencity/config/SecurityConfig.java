@@ -89,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/favorite/{id}",
                 "/place/info/favorite/**",
                 "/place/statuses/**",
+                "/user/emailNotifications/**",
                 "/place/about/{id}/**",
                 "/specification/**",
                 "/comments"
@@ -97,7 +98,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/propose/**",
                 "/place/{status}/**",
                 "/favorite_place/**",
-                "/place/save/favorite"
+                "/place/save/favorite",
+                "/user/**"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
@@ -116,13 +118,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/update/role"
             ).hasRole(ADMIN)
             .antMatchers(HttpMethod.GET,
-                "/user",
+                "/user/all/",
                 "/user/roles"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",
                 "/place/**"
             ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PUT,
+                "/user/**")
+            .hasAnyRole(USER, ADMIN, MODERATOR)
             .anyRequest()
             .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.PUT,
@@ -138,7 +143,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param web {@link WebSecurity}
      */
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/v2/api-docs/**");
         web.ignoring().antMatchers("/swagger.json");
         web.ignoring().antMatchers("/swagger-ui.html");
@@ -153,7 +158,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param auth {@link AuthenticationManagerBuilder}
      */
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(new JwtAuthenticationProvider(userService, passwordEncoder()));
     }
 

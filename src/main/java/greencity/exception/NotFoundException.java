@@ -1,7 +1,8 @@
 package greencity.exception;
 
 /**
- * Exception that we get when user trying to verify email with bad token.
+ * Exception that we get when we send request(for e.x. to findById) and there is no record with this id,
+ * then we get {@link NotFoundException}.
  *
  * @author Nazar Vladyka
  * @version 1.0
