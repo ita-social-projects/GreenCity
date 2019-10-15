@@ -5,7 +5,6 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.entity.DiscountValue;
 import greencity.entity.Specification;
 import greencity.exception.NotFoundException;
-import greencity.exception.NotImplementedMethodException;
 import greencity.service.SpecificationService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Component;
  */
 @AllArgsConstructor
 @Component
-public class DiscountValueMapper implements Mapper<DiscountValue, DiscountValueDto> {
+public class DiscountValueMapper implements MapperToEntity<DiscountValueDto, DiscountValue> {
     private ModelMapper modelMapper;
     private SpecificationService specificationService;
 
@@ -30,10 +29,5 @@ public class DiscountValueMapper implements Mapper<DiscountValue, DiscountValueD
             .orElseThrow(() -> new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME));
         discount.setSpecification(specification);
         return discount;
-    }
-
-    @Override
-    public DiscountValueDto convertToDto(DiscountValue entity) {
-        throw new NotImplementedMethodException(ErrorMessage.NOT_IMPLEMENTED_METHOD);
     }
 }
