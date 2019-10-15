@@ -43,6 +43,7 @@ public class ProposePlaceMapper implements Mapper<Place, PlaceAddDto> {
         place.getOpeningHoursList().forEach(h -> h.setPlace(place));
         saveDiscountValuesWithPlace(place.getDiscountValues(), place);
         savePhotosWithPlace(place.getPhotos(), place);
+
         return place;
     }
 
