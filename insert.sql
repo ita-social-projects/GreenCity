@@ -81,16 +81,7 @@ VALUES ('Ukrainian food');
 INSERT INTO specification (name)
 VALUES ('Dance');
 
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 1, 4);
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 2, 2);
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 3, 3);
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 4, 6);
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 5, 5);
+
 
 INSERT INTO favorite_place (place_id, user_id, name)
 values (1, 1, 'My best place');
@@ -177,7 +168,6 @@ values ('2019-05-11', 'good', 4, 1);
 INSERT INTO comment (date, text, place_id, user_id)
 values ('2019-08-11', 'well', 5, 1);
 
-insert into discount
-values (1, 3, 1, 1, 2), (2, 13, 2, 1, 2), (3, 33, 3, 1, 2), (4, 63, 4, 1, 2), (5, 93, 5, 1, 2), (6, 50, 6, 1, 2);
+
 
 

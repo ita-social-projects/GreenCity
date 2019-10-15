@@ -80,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/googleSecurity/**",
                 "/place/filter/**",
                 "/restorePassword/**",
-                "/updatePassword/**"
+                "/changePassword/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.GET,
@@ -98,7 +98,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/**",
                 "/place/save/favorite",
                 "/user/initials/**"
-            ).hasAnyRole(USER, ADMIN, MODERATOR)
+                ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PUT, "/ownSecurity/updatePassword")
+            .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
                 "/place/save/favorite/**"

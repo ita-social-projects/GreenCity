@@ -45,6 +45,8 @@ public class ErrorMessage {
     public static final String LINK_FOR_RESTORE_NOT_FOUND = "Link for sendEmailForRestore password by email not found";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
     public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
+    public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
+    public static final String PASSWORD_DO_NOT_MATCH = "The password doesn't match with actual";
 
     private ErrorMessage() {
     }

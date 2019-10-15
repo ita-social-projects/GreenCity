@@ -6,14 +6,12 @@ import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdException;
-import greencity.exception.BadRefreshTokenException;
-import greencity.exception.UserAlreadyRegisteredException;
+import greencity.exception.*;
 import greencity.security.dto.AccessTokenDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
+import greencity.security.dto.ownsecurity.OwnUpdateDto;
 import greencity.security.jwt.JwtTokenTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
@@ -115,7 +113,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
-        return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName());
+        return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName(), true);
     }
 
     /**
@@ -141,5 +139,23 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public void updatePassword(String pass, Long id) {
         String password = passwordEncoder.encode(pass);
         repo.updatePassword(password, id);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateCurrentPassword(OwnUpdateDto ownUpdateDto, String email) {
+        User user = userService.findByEmail(email).orElseThrow(
+            () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        OwnSecurity ownSecurity = repo.findByUser(user);
+        if (!ownUpdateDto.getPassword().equals(ownUpdateDto.getConfirmPassword())) {
+            throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
+        }
+        if (!passwordEncoder.encode(ownUpdateDto.getCurrentPassword()).equals(ownSecurity.getPassword())) {
+            throw new PasswordsDoNotMatchesException(PASSWORD_DO_NOT_MATCH);
+        }
+        updatePassword(ownUpdateDto.getPassword(), user.getId());
     }
 }

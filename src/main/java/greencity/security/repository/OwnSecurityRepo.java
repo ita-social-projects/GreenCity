@@ -1,6 +1,7 @@
 package greencity.security.repository;
 
 import greencity.entity.OwnSecurity;
+import greencity.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,12 @@ public interface OwnSecurityRepo extends JpaRepository<OwnSecurity, Long> {
     @Modifying
     @Query("update OwnSecurity o set o.password = :password where o.user.id = :id")
     void updatePassword(@Param("password") String password, @Param("id") Long id);
+
+    /**
+     * Method for finding user password.
+     *
+     * @param user - {@link User}
+     * @return
+     */
+    OwnSecurity findByUser(User user);
 }
