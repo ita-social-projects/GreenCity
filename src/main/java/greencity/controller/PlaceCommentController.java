@@ -99,7 +99,7 @@ public class PlaceCommentController {
      * @param id comment id
      * @author Rostyslav Khasanov
      */
-    @DeleteMapping("comments/delete")
+    @DeleteMapping("comments")
     public ResponseEntity delete(Long id) {
         placeCommentService.deleteById(id);
         return ResponseEntity.ok().build();
