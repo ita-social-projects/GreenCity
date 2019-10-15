@@ -64,8 +64,7 @@ public class ValidationConstants {
     public static final String LNG_MIN_VALIDATION = "Has to be greatest or equals -180";
     public static final String LNG_MAX_VALIDATION = "Has to be lower or equals 180";
 
-    public static final String RATE_MIN_VALUE = "The rate must be at least {value}";
-    public static final String RATE_MAX_VALUE = "The rate must be less than {value}";
+    public static final String RATE_MAX_VALUE = "The rate must bigger than {min} and lover then {max}.";
     public static final String EMPTY_COMMENT = "The text of comment can not be empty";
 
     public static final int COMMENT_MIN_LENGTH = 5;
