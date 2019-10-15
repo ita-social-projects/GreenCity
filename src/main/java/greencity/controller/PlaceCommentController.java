@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Place;
@@ -87,6 +88,11 @@ public class PlaceCommentController {
      * @author Rostyslav Khasanov
      */
     @ApiPageable
+    @ApiOperation(value = "Get comments by page")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
     @GetMapping("comments")
     public ResponseEntity getAllComments(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -99,6 +105,12 @@ public class PlaceCommentController {
      * @param id comment id
      * @author Rostyslav Khasanov
      */
+    @ApiOperation(value = "Delete comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @DeleteMapping("comments")
     public ResponseEntity delete(Long id) {
         placeCommentService.deleteById(id);
