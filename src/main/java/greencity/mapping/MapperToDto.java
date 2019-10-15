@@ -8,7 +8,6 @@ package greencity.mapping;
  * @param <D> dto class type
  */
 public interface MapperToDto<E, D> {
-
     /**
      * Converts an entity object to dto object.
      *
