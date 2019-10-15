@@ -1,7 +1,9 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Place;
@@ -18,10 +20,12 @@ import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 
 @RestController
@@ -72,5 +76,44 @@ public class PlaceCommentController {
     public ResponseEntity getCommentById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.findById(id));
+    }
+
+    /**
+     * Method return comment by id.
+     * Parameter pageable ignored because swagger ui shows the wrong params,
+     * instead they are explained in the {@link ApiPageable}.
+     *
+     * @param pageable pageable configuration
+     * @return PageableDto
+     * @author Rostyslav Khasanov
+     */
+    @ApiPageable
+    @ApiOperation(value = "Get comments by page")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("comments")
+    public ResponseEntity getAllComments(@ApiIgnore Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(placeCommentService.getAllComments(pageable));
+    }
+
+    /**
+     * Method that delete comment by id.
+     *
+     * @param id comment id
+     * @author Rostyslav Khasanov
+     */
+    @ApiOperation(value = "Delete comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("comments")
+    public ResponseEntity delete(Long id) {
+        placeCommentService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -22,11 +22,6 @@ public class JPAAuditConfig {
      */
     @Bean
     public AuditorAware<User> auditorProvider() {
-        return new AuditorAware<User>() {
-            @Override
-            public Optional<User> getCurrentAuditor() {
-                return Optional.empty();
-            }
-        };
+        return Optional::empty;
     }
 }

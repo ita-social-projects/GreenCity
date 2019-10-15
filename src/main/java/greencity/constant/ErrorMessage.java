@@ -47,6 +47,7 @@ public class ErrorMessage {
     public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
     public static final String PHOTO_IS_PRESENT = "Photo is present.";
     public static final String LOCATION_IS_PRESENT = "Location is present.";
+    public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
 
     private ErrorMessage() {
     }
