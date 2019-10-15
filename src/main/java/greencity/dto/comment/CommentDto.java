@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
+    private Long place;
     private Long id;
     private String text;
     private LocalDate date;

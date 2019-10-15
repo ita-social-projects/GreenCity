@@ -14,6 +14,7 @@ import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
+import greencity.exception.BadEmailException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.DiscountValueMapper;
@@ -51,6 +52,7 @@ public class PlaceServiceImpl implements PlaceService {
     private EmailService emailService;
     private OpenHoursService openingHoursService;
     private DiscountService discountService;
+    private NotificationService notificationService;
 
     /**
      * {@inheritDoc}
@@ -78,6 +80,8 @@ public class PlaceServiceImpl implements PlaceService {
 
         Place place = placeMapper.convertToEntity(dto);
         setUserToPlaceByEmail(email, place);
+        place.getPhotos().forEach(photo -> photo.setUser(place.getAuthor()));
+
         return placeRepo.save(place);
     }
 
@@ -91,11 +95,12 @@ public class PlaceServiceImpl implements PlaceService {
      */
     private User setUserToPlaceByEmail(String email, Place place) {
         User user = userService.findByEmail(email).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+            () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         place.setAuthor(user);
 
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(APPROVED_STATUS);
+            notificationService.sendImmediatelyReport(place);
         }
         return user;
     }
@@ -118,7 +123,7 @@ public class PlaceServiceImpl implements PlaceService {
         placeRepo.save(updatedPlace);
 
         updateOpening(dto.getOpeningHoursList(), updatedPlace);
-        updateDiscount(dto.getDiscounts(), updatedPlace);
+        updateDiscount(dto.getDiscountValues(), updatedPlace);
 
         return updatedPlace;
     }
@@ -217,20 +222,17 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
-
         Place updatable = findById(id);
         PlaceStatus oldStatus = updatable.getStatus();
-
         checkPlaceStatuses(oldStatus, status, id);
-
         updatable.setStatus(status);
         updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
-
-        // if place had status PROPOSED and it changes, means APPROVEs or DECLINEs we send an email
+        if (status.equals(PlaceStatus.APPROVED)) {
+            notificationService.sendImmediatelyReport(updatable);
+        }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             emailService.sendChangePlaceStatusEmail(updatable);
         }
-
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
 
@@ -269,6 +271,16 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * {@inheritDoc}
      *
+     * @author Marian Milian
+     */
+    @Override
+    public Optional<Place> findByIdOptional(Long id) {
+        return placeRepo.findById(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Dmytro Dovhal
      */
     @Override
@@ -292,8 +304,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = placeRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
-        PlaceUpdateDto placeUpdateDto = modelMapper.map(place, PlaceUpdateDto.class);
-        return placeUpdateDto;
+        return modelMapper.map(place, PlaceUpdateDto.class);
     }
 
     /**

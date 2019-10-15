@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
@@ -47,10 +48,10 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime dateOfRegistration;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author",fetch = FetchType.LAZY)
     private List<Place> places = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
@@ -69,5 +70,7 @@ public class User {
     private RestorePasswordEmail restorePasswordEmail;
 
     @OneToMany(mappedBy = "user")
-    private List<Rate> rates = new ArrayList<>();
+    private List<Estimate> estimates = new ArrayList<>();
+    @Enumerated(value = EnumType.ORDINAL)
+    private EmailNotification emailNotification;
 }

@@ -2,8 +2,8 @@ package greencity.repository;
 
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,7 +33,7 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      * @param id place
      * @return average rate
      */
-    @Query(value = "select avg(r.rate) FROM Rate r " + "where place_id = :id")
+    @Query(value = "select avg(r.rate) FROM Estimate r " + "where place_id = :id")
     Double getAverageRate(@Param("id") Long id);
 
     /**
@@ -69,4 +69,15 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
         @Param("southWestLng") Double southWestLng,
         @Param("status") PlaceStatus status
     );
+
+    /**
+     * The method to find all {@link Place}'s which was added between 2 dates and has {@link PlaceStatus}.
+     *
+     * @param startDate - start date of search
+     * @param endDate   - end date of search
+     * @param status    - {@link PlaceStatus} of places
+     * @return list of {@link Place}'s
+     */
+    List<Place> findAllByModifiedDateBetweenAndStatus(
+        LocalDateTime startDate, LocalDateTime endDate, PlaceStatus status);
 }

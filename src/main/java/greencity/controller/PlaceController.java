@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -9,8 +10,12 @@ import greencity.dto.place.*;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
+import greencity.entity.enums.UserStatus;
+import greencity.exception.BadEmailException;
+import greencity.exception.UserBlockedException;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
+import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -34,6 +39,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @AllArgsConstructor
 public class PlaceController {
     private final FavoritePlaceService favoritePlaceService;
+    private UserService userService;
     /**
      * Autowired PlaceService instance.
      */
@@ -55,6 +61,11 @@ public class PlaceController {
     @PostMapping("/propose")
     public ResponseEntity<PlaceWithUserDto> proposePlace(
         @Valid @RequestBody PlaceAddDto dto, Principal principal) {
+        User user = userService.findByEmail(principal.getName())
+            .orElseThrow(() -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
+        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
+            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
+        }
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(modelMapper.map(placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
     }

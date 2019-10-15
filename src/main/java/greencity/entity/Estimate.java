@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Rate {
+public class Estimate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private Byte rate;
 
     @ManyToOne
@@ -24,4 +24,7 @@ public class Rate {
 
     @ManyToOne
     private Place place;
+
+    @OneToOne
+    private Comment comment;
 }

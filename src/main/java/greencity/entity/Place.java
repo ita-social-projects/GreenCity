@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import greencity.constant.AppConstant;
 import greencity.entity.enums.PlaceStatus;
 import greencity.util.DateTimeService;
@@ -37,10 +38,10 @@ public class Place {
     @Column(unique = true, length = 50)
     private String email;
 
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "place")
+    @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
     private List<Photo> photos = new ArrayList<>();
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
@@ -59,7 +60,7 @@ public class Place {
     private Category category;
 
     @OneToMany(mappedBy = "place")
-    private List<Rate> rates = new ArrayList<>();
+    private List<Estimate> estimates = new ArrayList<>();
 
     @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<OpeningHours> openingHoursList = new HashSet<>();
