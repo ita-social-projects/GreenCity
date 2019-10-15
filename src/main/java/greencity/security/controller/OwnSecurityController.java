@@ -173,9 +173,9 @@ public class OwnSecurityController {
     @ApiOperation("Updating current password.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = PASSWORD_DO_NOT_MATCH)
+        @ApiResponse(code = 400, message = PASSWORD_DOES_NOT_MATCH)
     })
-    @PutMapping("/updatePassword")
+    @PutMapping
     public ResponseEntity updatePassword(@Valid @RequestBody OwnUpdateDto updateDto) {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         service.updateCurrentPassword(updateDto, email);

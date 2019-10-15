@@ -100,10 +100,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/save/favorite",
                 "/user/**"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
-                "/user/initials/**"
-                ).hasAnyRole(USER, ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.PUT, "/ownSecurity/updatePassword")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
                 "/place/save/favorite/**"
@@ -131,7 +127,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/comments"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
-                "/user/**")
+                "/user/**",
+                "/ownSecurity/**")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .anyRequest()
             .hasAnyRole(ADMIN)

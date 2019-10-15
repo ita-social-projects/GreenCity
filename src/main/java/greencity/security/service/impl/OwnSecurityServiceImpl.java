@@ -20,6 +20,7 @@ import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OwnSecurityServiceImpl implements OwnSecurityService {
     private OwnSecurityRepo repo;
     private UserService userService;
@@ -148,16 +150,18 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void updateCurrentPassword(OwnUpdateDto ownUpdateDto, String email) {
+        log.info("Updating user password start");
         User user = userService.findByEmail(email).orElseThrow(
             () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
-        OwnSecurity ownSecurity = repo.findByUser(user);
         if (!ownUpdateDto.getPassword().equals(ownUpdateDto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
         }
-        if (!passwordEncoder.encode(ownUpdateDto.getCurrentPassword()).equals(ownSecurity.getPassword())) {
-            throw new PasswordsDoNotMatchesException(PASSWORD_DO_NOT_MATCH);
+        if (!passwordEncoder.matches(ownUpdateDto.getCurrentPassword(), repo.findByUser(user).getPassword())) {
+            throw new PasswordsDoNotMatchesException(PASSWORD_DOES_NOT_MATCH);
         }
         updatePassword(ownUpdateDto.getPassword(), user.getId());
+        log.info("Updating user password end");
     }
 }
