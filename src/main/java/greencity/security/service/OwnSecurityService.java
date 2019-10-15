@@ -61,7 +61,8 @@ public interface OwnSecurityService {
      * Method for updating current password.
      *
      * @param ownUpdateDto {@link OwnUpdateDto}
-     * @param email {@link String} - user email.
+     * @param email        {@link String} - user email.
+     * @author Dmytro Dovhal
      */
     void updateCurrentPassword(OwnUpdateDto ownUpdateDto, String email);
 }
