@@ -26,7 +26,7 @@ public interface PlaceCommentRepo extends JpaRepository<Comment, Long> {
      *
      * @param  pageable pageable configuration.
      * @return {@link Page}.
-     * @author Marian Milian
+     * @author Rostyslav Khasanov
      */
     Page<Comment> findAll(Pageable pageable);
 }
