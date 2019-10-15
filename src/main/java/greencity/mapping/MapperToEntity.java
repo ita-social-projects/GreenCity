@@ -7,7 +7,7 @@ package greencity.mapping;
  * @param <E> entity class type
  * @param <D> dto class type
  */
-public interface Mapper<E, D> {
+public interface MapperToEntity<D, E> {
     /**
      * Maps a dto object to an entity object.
      *
@@ -15,12 +15,4 @@ public interface Mapper<E, D> {
      * @return a mapped object with type {@code E}
      */
     E convertToEntity(D dto);
-
-    /**
-     * Converts an entity object to dto object.
-     *
-     * @param entity to map from
-     * @return a mapped object with type {@code D}
-     */
-    D convertToDto(E entity);
 }
