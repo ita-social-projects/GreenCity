@@ -45,6 +45,7 @@ public interface PlaceCommentService {
      * Method witch return all comments by page.
      *
      * @param pageable pageable configuration.
+     * @return {@link PageableDto}
      * @author Rostyslav Khasanov.
      */
     PageableDto getAllComments(Pageable pageable);
