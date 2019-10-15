@@ -54,7 +54,7 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
         log.info("start");
         User user = userRepo.findByEmail(email).orElseThrow(
             () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-        RestorePasswordEmail restorePasswordEmail = repo.findByUser(user);
+        RestorePasswordEmail restorePasswordEmail = user.getRestorePasswordEmail();
         if (restorePasswordEmail != null) {
             throw new BadEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
         }

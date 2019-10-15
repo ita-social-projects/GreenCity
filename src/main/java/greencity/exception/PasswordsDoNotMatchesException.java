@@ -1,7 +1,7 @@
 package greencity.exception;
 
 /**
- * Exception that we get when user trying to verify email with bad token.
+ * Exception that we get when user whan passwords don't matches.
  *
  * @author Dmytro Dovhal
  * @version 1.0

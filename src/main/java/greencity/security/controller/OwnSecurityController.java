@@ -7,7 +7,7 @@ import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.dto.ownsecurity.OwnUpdateDto;
+import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.service.OwnSecurityService;
 import greencity.security.service.RestoreLogicService;
 import greencity.security.service.VerifyEmailService;
@@ -166,7 +166,7 @@ public class OwnSecurityController {
     /**
      * Method for updating current password.
      *
-     * @param updateDto - {@link OwnUpdateDto}
+     * @param updateDto - {@link UpdatePasswordDto}
      * @return - {@link ResponseEntity}
      * @author Dmytro Dovhal
      */
@@ -176,7 +176,7 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = PASSWORD_DOES_NOT_MATCH)
     })
     @PutMapping
-    public ResponseEntity updatePassword(@Valid @RequestBody OwnUpdateDto updateDto) {
+    public ResponseEntity updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto) {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         service.updateCurrentPassword(updateDto, email);
         return ResponseEntity.ok().build();

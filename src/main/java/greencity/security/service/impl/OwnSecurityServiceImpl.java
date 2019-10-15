@@ -12,7 +12,7 @@ import greencity.security.dto.AccessTokenDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.dto.ownsecurity.OwnUpdateDto;
+import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTokenTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
@@ -151,17 +151,17 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     @Transactional
-    public void updateCurrentPassword(OwnUpdateDto ownUpdateDto, String email) {
+    public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
         log.info("Updating user password start");
         User user = userService.findByEmail(email).orElseThrow(
             () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
-        if (!ownUpdateDto.getPassword().equals(ownUpdateDto.getConfirmPassword())) {
+        if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
         }
-        if (!passwordEncoder.matches(ownUpdateDto.getCurrentPassword(), repo.findByUser(user).getPassword())) {
+        if (!passwordEncoder.matches(updatePasswordDto.getCurrentPassword(), user.getOwnSecurity().getPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORD_DOES_NOT_MATCH);
         }
-        updatePassword(ownUpdateDto.getPassword(), user.getId());
+        updatePassword(updatePasswordDto.getPassword(), user.getId());
         log.info("Updating user password end");
     }
 }

@@ -5,7 +5,7 @@ import greencity.security.dto.AccessTokenDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.dto.ownsecurity.OwnUpdateDto;
+import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 
 /**
  * Provides the interface to manage {@link OwnSecurityService} entity.
@@ -60,9 +60,9 @@ public interface OwnSecurityService {
     /**
      * Method for updating current password.
      *
-     * @param ownUpdateDto {@link OwnUpdateDto}
+     * @param updatePasswordDto {@link UpdatePasswordDto}
      * @param email        {@link String} - user email.
      * @author Dmytro Dovhal
      */
-    void updateCurrentPassword(OwnUpdateDto ownUpdateDto, String email);
+    void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email);
 }
