@@ -1,9 +1,11 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
 import greencity.entity.Place;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Provides the interface to manage {@code Comment} entity.
@@ -32,10 +34,19 @@ public interface PlaceCommentService {
     CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email);
 
     /**
-     * Method witch delete Comment by Id.
+     * Method witch delete {@link Comment} by Id.
      *
      * @param id of delete comment.
-     * @author Marian Milian.
+     * @author Rostyslav Khasanov.
      */
     void deleteById(Long id);
+
+    /**
+     * Method witch return all comments by page.
+     *
+     * @param pageable pageable configuration.
+     * @return {@link PageableDto}
+     * @author Rostyslav Khasanov.
+     */
+    PageableDto getAllComments(Pageable pageable);
 }

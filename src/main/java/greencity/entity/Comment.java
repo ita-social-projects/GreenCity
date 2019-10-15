@@ -33,10 +33,10 @@ public class Comment {
     @ManyToOne
     private Comment parentComment;
 
-    @OneToMany(mappedBy = "parentComment",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.ALL})
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "comment",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "comment", cascade = {CascadeType.ALL})
     private List<Photo> photos = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
