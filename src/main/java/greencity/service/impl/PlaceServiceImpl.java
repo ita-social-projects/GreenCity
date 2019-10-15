@@ -14,6 +14,7 @@ import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
+import greencity.exception.BadEmailException;
 import greencity.exception.NotFoundException;
 import greencity.exception.PlaceStatusException;
 import greencity.mapping.DiscountValueMapper;
@@ -23,9 +24,6 @@ import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import greencity.util.DateTimeService;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -82,6 +80,8 @@ public class PlaceServiceImpl implements PlaceService {
 
         Place place = placeMapper.convertToEntity(dto);
         setUserToPlaceByEmail(email, place);
+        place.getPhotos().forEach(photo -> photo.setUser(place.getAuthor()));
+
         return placeRepo.save(place);
     }
 
@@ -95,7 +95,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     private User setUserToPlaceByEmail(String email, Place place) {
         User user = userService.findByEmail(email).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+            () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         place.setAuthor(user);
 
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
@@ -123,7 +123,7 @@ public class PlaceServiceImpl implements PlaceService {
         placeRepo.save(updatedPlace);
 
         updateOpening(dto.getOpeningHoursList(), updatedPlace);
-        updateDiscount(dto.getDiscounts(), updatedPlace);
+        updateDiscount(dto.getDiscountValues(), updatedPlace);
 
         return updatedPlace;
     }

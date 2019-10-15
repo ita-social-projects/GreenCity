@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RateDto {
+public class EstimateDto {
     private Long id;
     private Byte rate;
     private UserForListDto user;

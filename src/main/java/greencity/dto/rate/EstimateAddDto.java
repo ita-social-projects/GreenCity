@@ -1,7 +1,7 @@
 package greencity.dto.rate;
 
 import greencity.constant.ValidationConstants;
-import greencity.entity.Rate;
+import greencity.entity.Estimate;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The data transfer object of the {@link Rate}.
+ * The data transfer object of the {@link Estimate}.
  *
  * @author Marian Milian
  * @version 1.0
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RateAddDto {
+public class EstimateAddDto {
     @Min(value = 1, message = ValidationConstants.RATE_MIN_VALUE)
     @Max(value = 5, message = ValidationConstants.RATE_MAX_VALUE)
     private Byte rate;

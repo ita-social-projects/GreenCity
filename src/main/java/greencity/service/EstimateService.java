@@ -5,5 +5,5 @@ package greencity.service;
  * @author Marian Milian
  * @version 1.0
  */
-public interface RateService {
+public interface EstimateService {
 }

@@ -48,11 +48,11 @@ public class ValidationConstants {
     public static final String MIN_VALUE_LATITUDE =
         "The '${validatedValue}' must be at least {value}";
     public static final String MAX_VALUE_LATITUDE =
-        "The '${validatedValue}' must be less than {value}";
+        "The '${validatedValue}' must be at least {value}";
     public static final String MIN_VALUE_LONGITUDE =
         "The '${validatedValue}' must be at least {value}";
     public static final String MAX_VALUE_LONGITUDE =
-        "The '${validatedValue}' must be less than {value}";
+        "The '${validatedValue}' must be at least {value}";
 
     public static final String N_E_LAT_CAN_NOT_BE_NULL = "North-east latitude can not be null";
     public static final String N_E_LNG_CAN_NOT_BE_NULL = "North-east longitude can not be null";
@@ -75,6 +75,11 @@ public class ValidationConstants {
     public static final String DISCOUNT_VALUE_DOES_NOT_CORRECT = "Min discount value is 0, max discount value is 100";
     public static final int DISCOUNT_VALUE_MAX = 100;
     public static final String EMPTY_SPECIFICATION_NAME = "The specification name can not be empty";
+
+    public static final String BAD_PHOTO_LIST_REQUEST = "Length of photos list can not be more than {max}.";
+    public static final String BAD_OPENING_HOURS_LIST_REQUEST = "Length of opening hours list can not be less than 1.";
+    public static final String BAD_DISCOUNT_VALUES_LIST_REQUEST = "Length of discount values list can not be less than 1.";
+    public static final String EMPTY_PHOTO_NAME = "The name of photo field can not be empty";
 
     private ValidationConstants() {
     }

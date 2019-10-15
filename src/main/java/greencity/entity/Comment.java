@@ -42,7 +42,7 @@ public class Comment {
     private List<Photo> photos = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Rate rate;
+    private Estimate estimate;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

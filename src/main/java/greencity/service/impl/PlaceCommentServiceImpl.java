@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentAdminDto;
@@ -8,11 +9,16 @@ import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.User;
+import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
 import greencity.service.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import greencity.service.PhotoService;
+import greencity.service.PlaceCommentService;
+import greencity.service.PlaceService;
+import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -33,7 +39,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private UserService userService;
     private PlaceCommentRepo placeCommentRepo;
     private PlaceService placeService;
-    private RateService rateService;
     private PhotoService photoService;
     private ModelMapper modelMapper;
 
@@ -56,15 +61,18 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
         Place place = placeService.findById(placeId);
-        User user = userService.findByEmail(email).orElseThrow(() -> new NotFoundException(""));
+        User user = userService.findByEmail(email).orElseThrow(() ->
+            new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         Comment comment = modelMapper.map(addCommentDto, Comment.class);
         comment.setPlace(place);
         comment.setUser(user);
-        comment.getRate().setUser(user);
-        comment.getRate().setPlace(place);
+        if (comment.getEstimate() != null) {
+            comment.getEstimate().setUser(user);
+            comment.getEstimate().setPlace(place);
+        }
         comment.getPhotos().forEach(photo -> {
             if (photoService.findByName(photo.getName()).isPresent()) {
-                throw new NotFoundException("");
+                throw new BadRequestException(ErrorMessage.PHOTO_IS_PRESENT);
             }
             photo.setUser(user);
             photo.setComment(comment);
@@ -75,6 +83,8 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
 
     /**
      * {@inheritDoc}
+     *
+     * @author Marian Milian
      */
     @Override
     public void deleteById(Long id) {

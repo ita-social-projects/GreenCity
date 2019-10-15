@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PhotoReturnDto {
-    private Long id;
     private String name;
 }

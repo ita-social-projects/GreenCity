@@ -91,16 +91,16 @@ VALUES ('Ukrainian food');
 INSERT INTO specification (name)
 VALUES ('Dance');
 
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 1, 4);
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 2, 2);
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 3, 3);
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 4, 6);
-INSERT INTO specification_value (value, place_id, specification_id)
-VALUES ('disc', 5, 5);
+# INSERT INTO specification (value, place_id, specification_id)
+# VALUES ('disc', 1, 4);
+# INSERT INTO specification (value, place_id, specification_id)
+# VALUES ('disc', 2, 2);
+# INSERT INTO specification (value, place_id, specification_id)
+# VALUES ('disc', 3, 3);
+# INSERT INTO specification (value, place_id, specification_id)
+# VALUES ('disc', 4, 6);
+# INSERT INTO specification (value, place_id, specification_id)
+# VALUES ('disc', 5, 5);
 
 INSERT INTO favorite_place (place_id, user_id, name)
 values (1, 1, 'Forum');
@@ -109,15 +109,15 @@ values (2, 2, 'Victoria Gardens');
 INSERT INTO favorite_place (place_id, user_id, name)
 values (3, 3, 'Pravda');
 
-INSERT INTO rate (rate, place_id, user_id)
+INSERT INTO estimate (rate, place_id, user_id)
 values (5, 1, 1);
-INSERT INTO rate (rate, place_id, user_id)
+INSERT INTO estimate (rate, place_id, user_id)
 values (4, 2, 2);
-INSERT INTO rate (rate, place_id, user_id)
+INSERT INTO estimate (rate, place_id, user_id)
 values (2, 3, 1);
-INSERT INTO rate (rate, place_id, user_id)
+INSERT INTO estimate (rate, place_id, user_id)
 values (3, 4, 2);
-INSERT INTO rate (rate, place_id, user_id)
+INSERT INTO estimate (rate, place_id, user_id)
 values (5, 5, 1);
 
 INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
@@ -177,7 +177,7 @@ VALUES ('20:00:00', '06:00:00', 4, 5);
 
 
 
-insert into discount
-values (1, 3, 1, 1, 2), (2, 13, 2, 1, 2), (3, 33, 3, 1, 2), (4, 63, 4, 1, 2), (5, 93, 5, 1, 2), (6, 50, 6, 1, 2);
+insert into discount_value(id, value, place_id, specification_id)
+values (1, 3, 1, 1), (2, 13, 2, 2), (3, 33, 3, 3), (4, 63, 4, 4), (5, 93, 5, 5), (6, 50, 5, 6);
 
 
