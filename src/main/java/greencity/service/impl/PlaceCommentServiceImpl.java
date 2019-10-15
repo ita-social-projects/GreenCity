@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentAdminDto;
@@ -15,10 +14,6 @@ import greencity.repository.PlaceCommentRepo;
 import greencity.service.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import greencity.service.PhotoService;
-import greencity.service.PlaceCommentService;
-import greencity.service.PlaceService;
-import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

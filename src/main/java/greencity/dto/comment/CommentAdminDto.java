@@ -3,8 +3,6 @@ package greencity.dto.comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.dto.photo.PhotoReturnDto;
 import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.rate.RateAddDto;
-import greencity.entity.Place;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
