@@ -20,6 +20,7 @@ import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -48,7 +49,8 @@ public class PlaceCommentController {
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity save(@PathVariable Long placeId,
-                               @Valid @RequestBody AddCommentDto addCommentDto, Principal principal) {
+                               @Valid @RequestBody AddCommentDto addCommentDto) {
+        Principal principal = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findByEmail(principal.getName())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
