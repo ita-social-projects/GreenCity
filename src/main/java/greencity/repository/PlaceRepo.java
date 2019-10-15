@@ -33,7 +33,7 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      * @param id place
      * @return average rate
      */
-    @Query(value = "select avg(r.rate) FROM Rate r " + "where place_id = :id")
+    @Query(value = "select avg(r.rate) FROM Estimate r " + "where place_id = :id")
     Double getAverageRate(@Param("id") Long id);
 
     /**

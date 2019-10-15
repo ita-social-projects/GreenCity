@@ -7,6 +7,7 @@ import greencity.exception.NotFoundException;
 import greencity.repository.LocationRepo;
 import greencity.service.LocationService;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -99,7 +100,7 @@ public class LocationServiceImpl implements LocationService {
      * @author Kateryna Horokh
      */
     @Override
-    public Location findByPlaceId(Long placeId) {
-        return locationRepo.findByPlaceId(placeId);
+    public Optional<Location> findByLatAndLng(Double lat, Double lng) {
+        return locationRepo.findByLatAndLng(lat, lng);
     }
 }
