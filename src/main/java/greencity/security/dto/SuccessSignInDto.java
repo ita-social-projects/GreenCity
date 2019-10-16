@@ -13,4 +13,5 @@ public class SuccessSignInDto {
     private String accessToken;
     private String refreshToken;
     private String firstName;
+    private boolean ownRegistrations;
 }

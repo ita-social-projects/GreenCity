@@ -7,6 +7,7 @@ import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
+import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.service.OwnSecurityService;
 import greencity.security.service.RestoreLogicService;
 import greencity.security.service.VerifyEmailService;
@@ -18,10 +19,12 @@ import java.net.URISyntaxException;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/ownSecurity")
 @Validated
+@Slf4j
 public class OwnSecurityController {
     @Value("${client.address}")
     private String clientAddress;
@@ -130,6 +134,11 @@ public class OwnSecurityController {
      * @return - {@link ResponseEntity }
      * @author Dmytro Dovhal
      */
+    @ApiOperation("Sending email for restore password.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = USER_NOT_FOUND_BY_EMAIL)
+    })
     @GetMapping("/restorePassword")
     public ResponseEntity restore(@RequestParam @Email String email) {
         restoreLogicService.sendEmailForRestore(email);
@@ -143,9 +152,33 @@ public class OwnSecurityController {
      * @return - {@link ResponseEntity}
      * @author Dmytro Dovhal
      */
+    @ApiOperation("Updating password for restore password option.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = TOKEN_FOR_RESTORE_IS_INVALID)
+    })
     @PostMapping("/changePassword")
     public ResponseEntity changePassword(@Valid @RequestBody OwnRestoreDto form) {
         restoreLogicService.restoreByToken(form.getToken(), form.getPassword());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method for updating current password.
+     *
+     * @param updateDto - {@link UpdatePasswordDto}
+     * @return - {@link ResponseEntity}
+     * @author Dmytro Dovhal
+     */
+    @ApiOperation("Updating current password.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = PASSWORD_DOES_NOT_MATCH)
+    })
+    @PutMapping
+    public ResponseEntity updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto) {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        service.updateCurrentPassword(updateDto, email);
         return ResponseEntity.ok().build();
     }
 }

@@ -34,7 +34,7 @@ public class UserForListDto {
         message = ValidationConstants.INVALID_LASTNAME_LENGTH)
     private String lastName;
 
-    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime dateOfRegistration;
 
     @Email(message = ValidationConstants.INVALID_EMAIL)

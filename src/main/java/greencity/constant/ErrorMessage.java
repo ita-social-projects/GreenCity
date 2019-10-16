@@ -47,6 +47,10 @@ public class ErrorMessage {
     public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
     public static final String PHOTO_IS_PRESENT = "Photo is present.";
     public static final String LOCATION_IS_PRESENT = "Location is present.";
+    public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
+    public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
+    public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
+    public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT = "Password restore link already sent, please check your email: ";
 
     private ErrorMessage() {
     }

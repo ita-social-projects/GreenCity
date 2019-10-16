@@ -7,7 +7,6 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.entity.*;
 import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
-import greencity.exception.NotImplementedMethodException;
 import greencity.service.CategoryService;
 import greencity.service.LocationService;
 import greencity.service.PhotoService;
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Component;
  */
 @AllArgsConstructor
 @Component
-public class ProposePlaceMapper implements Mapper<Place, PlaceAddDto> {
+public class ProposePlaceMapper implements MapperToEntity<PlaceAddDto, Place> {
     private ModelMapper mapper;
     private CategoryService categoryService;
     private SpecificationService specService;
@@ -84,10 +83,5 @@ public class ProposePlaceMapper implements Mapper<Place, PlaceAddDto> {
                 }
             }
         });
-    }
-
-    @Override
-    public PlaceAddDto convertToDto(Place entity) {
-        throw new NotImplementedMethodException(ErrorMessage.NOT_IMPLEMENTED_METHOD);
     }
 }
