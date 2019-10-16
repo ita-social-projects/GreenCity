@@ -12,6 +12,7 @@ public interface RestorePasswordEmailRepo extends JpaRepository<RestorePasswordE
      *
      * @param token - {@link String}
      * @return {@link Optional}
+     * @author Dmytro Dovhal
      */
     Optional<RestorePasswordEmail> findByToken(String token);
 }
