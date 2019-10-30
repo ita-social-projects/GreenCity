@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="dovga (generated)" id="1567079888333-1">
+    <changeSet author="Marian (generated)" id="1571227598316-1">
+        <createTable tableName="break_time">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="end_time" type="time">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_time" type="time">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-2">
         <createTable tableName="category">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -11,32 +24,62 @@
             <column name="parent_category_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-2">
+    <changeSet author="Marian (generated)" id="1571227598316-3">
         <createTable tableName="comment">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="date" type="date">
+            <column name="created_date" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime(6)">
                 <constraints nullable="false"/>
             </column>
             <column name="text" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="estimate_id" type="BIGINT"/>
             <column name="parent_comment_id" type="BIGINT"/>
             <column name="place_id" type="BIGINT"/>
             <column name="user_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-3">
+    <changeSet author="Marian (generated)" id="1571227598316-4">
+        <createTable tableName="discount_value">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="value" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="place_id" type="BIGINT"/>
+            <column name="specification_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-5">
+        <createTable tableName="estimate">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="rate" type="TINYINT"/>
+            <column name="comment_id" type="BIGINT"/>
+            <column name="place_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-6">
         <createTable tableName="favorite_place">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(30)">
+                <constraints nullable="false"/>
             </column>
             <column name="place_id" type="BIGINT"/>
             <column name="user_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-4">
+    <changeSet author="Marian (generated)" id="1571227598316-7">
         <createTable tableName="location">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -50,10 +93,9 @@
             <column name="lng" type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="place_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-5">
+    <changeSet author="Marian (generated)" id="1571227598316-8">
         <createTable tableName="opening_hours">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -65,10 +107,22 @@
                 <constraints nullable="false"/>
             </column>
             <column name="week_day" type="INT"/>
+            <column name="break_time_id" type="BIGINT"/>
             <column name="place_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-6">
+    <changeSet author="Marian (generated)" id="1571227598316-9">
+        <createTable tableName="own_security">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-10">
         <createTable tableName="photo">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -76,11 +130,12 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="comment_id" type="BIGINT"/>
             <column name="place_id" type="BIGINT"/>
             <column name="user_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-7">
+    <changeSet author="Marian (generated)" id="1571227598316-11">
         <createTable tableName="place">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -95,21 +150,20 @@
             <column name="status" type="INT"/>
             <column name="author_id" type="BIGINT"/>
             <column name="category_id" type="BIGINT"/>
+            <column name="location_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-8">
-        <createTable tableName="rate">
+    <changeSet author="Marian (generated)" id="1571227598316-12">
+        <createTable tableName="restore_password_email">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="rate" type="TINYINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="place_id" type="BIGINT"/>
+            <column name="expiry_date" type="datetime(6)"/>
+            <column name="token" type="VARCHAR(255)"/>
             <column name="user_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-9">
+    <changeSet author="Marian (generated)" id="1571227598316-13">
         <createTable tableName="specification">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -119,19 +173,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-10">
-        <createTable tableName="specification_value">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="value" type="VARCHAR(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="place_id" type="BIGINT"/>
-            <column name="specification_id" type="BIGINT"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-11">
+    <changeSet author="Marian (generated)" id="1571227598316-14">
         <createTable tableName="user">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -142,6 +184,7 @@
             <column name="email" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="email_notification" type="INT"/>
             <column name="first_name" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
@@ -157,18 +200,7 @@
             <column name="user_status" type="INT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-12">
-        <createTable tableName="user_own_security">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="password" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="user_id" type="BIGINT"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-13">
+    <changeSet author="Marian (generated)" id="1571227598316-15">
         <createTable tableName="verify_email">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -178,7 +210,7 @@
             <column name="user_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-14">
+    <changeSet author="Marian (generated)" id="1571227598316-16">
         <createTable tableName="web_page">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -188,7 +220,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-15">
+    <changeSet author="Marian (generated)" id="1571227598316-17">
         <createTable tableName="web_page_places">
             <column name="web_pages_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -198,185 +230,225 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-16">
+    <changeSet author="Marian (generated)" id="1571227598316-18">
         <addUniqueConstraint columnNames="phone" constraintName="UK_1c8hn389trq38f63p3r4mpy33" tableName="place"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-17">
+    <changeSet author="Marian (generated)" id="1571227598316-19">
         <addUniqueConstraint columnNames="name" constraintName="UK_46ccwnsi9409t36lurvtyljak" tableName="category"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-18">
+    <changeSet author="Marian (generated)" id="1571227598316-20">
         <addUniqueConstraint columnNames="web_page" constraintName="UK_663ftdbracrebppaa1smemex8" tableName="web_page"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-19">
+    <changeSet author="Marian (generated)" id="1571227598316-21">
         <addUniqueConstraint columnNames="name" constraintName="UK_88inhvpybxm6bqnsthcolx838" tableName="photo"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-20">
+    <changeSet author="Marian (generated)" id="1571227598316-22">
         <addUniqueConstraint columnNames="email" constraintName="UK_9cbyl8faff3immm5ehnelt18n" tableName="place"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-21">
+    <changeSet author="Marian (generated)" id="1571227598316-23">
         <addUniqueConstraint columnNames="name" constraintName="UK_bdpr10axwx0a7ogp5ax531n9f" tableName="specification"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-22">
+    <changeSet author="Marian (generated)" id="1571227598316-24">
         <addUniqueConstraint columnNames="email" constraintName="UK_ob8kqyqqgmefl0aco34akdtpe" tableName="user"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-23">
-        <createIndex indexName="FK11n0lglbc5iw6xn3seglinvpq" tableName="location">
-            <column name="place_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-24">
+    <changeSet author="Marian (generated)" id="1571227598316-25">
         <createIndex indexName="FK1faffy1p9x95n6v18m5urdkfc" tableName="verify_email">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-25">
+    <changeSet author="Marian (generated)" id="1571227598316-26">
         <createIndex indexName="FK3297dq7rblawjc9n4kx9htui4" tableName="place">
             <column name="category_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-26">
+    <changeSet author="Marian (generated)" id="1571227598316-27">
+        <createIndex indexName="FK4ybp1p4b8005qrgccsrookt9p" tableName="estimate">
+            <column name="comment_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-28">
+        <createIndex indexName="FK6n25a2qft5y6fb21karg1obh5" tableName="estimate">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-29">
         <createIndex indexName="FK74l2uk5a5nrjvi94rd9qaviu1" tableName="place">
             <column name="author_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-27">
+    <changeSet author="Marian (generated)" id="1571227598316-30">
+        <createIndex indexName="FK84jlf1nvnb2duww5bi10j5kwy" tableName="restore_password_email">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-31">
         <createIndex indexName="FK8kcum44fvpupyw6f5baccx25c" tableName="comment">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-28">
-        <createIndex indexName="FK8l8vmsceuom04aiyco0tiuwbg" tableName="specification_value">
-            <column name="specification_id"/>
+    <changeSet author="Marian (generated)" id="1571227598316-32">
+        <createIndex indexName="FK9ygkma6mdptstvup90n9ewptc" tableName="opening_hours">
+            <column name="break_time_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-29">
-        <createIndex indexName="FK9h5qwgsv7a311c5u5qbhpq1gx" tableName="user_own_security">
-            <column name="user_id"/>
+    <changeSet author="Marian (generated)" id="1571227598316-33">
+        <createIndex indexName="FKaxtbydhvr0oeed7oruruf0hn" tableName="place">
+            <column name="location_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-30">
+    <changeSet author="Marian (generated)" id="1571227598316-34">
         <createIndex indexName="FKch8bkgqt3v8yjo230lysj668h" tableName="comment">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-31">
+    <changeSet author="Marian (generated)" id="1571227598316-35">
         <createIndex indexName="FKhvh0e2ybgg16bpu229a5teje7" tableName="comment">
             <column name="parent_comment_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-32">
+    <changeSet author="Marian (generated)" id="1571227598316-36">
         <createIndex indexName="FKio191h2kf8y7k7mumqjn1fn1v" tableName="opening_hours">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-33">
-        <createIndex indexName="FKir37t17oc7isqh8itjaeyctab" tableName="rate">
-            <column name="place_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-34">
+    <changeSet author="Marian (generated)" id="1571227598316-37">
         <createIndex indexName="FKmon8uughpdrxt7vskx5k2prji" tableName="favorite_place">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-35">
+    <changeSet author="Marian (generated)" id="1571227598316-38">
+        <createIndex indexName="FKmpd2wxnn6fldh4pilqnkpaqv9" tableName="discount_value">
+            <column name="place_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-39">
         <createIndex indexName="FKmrghmp8nq6diqqcjxtq3nudfs" tableName="web_page_places">
             <column name="places_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-36">
+    <changeSet author="Marian (generated)" id="1571227598316-40">
+        <createIndex indexName="FKn3innaybpdkeovqui6o4dsxb0" tableName="estimate">
+            <column name="place_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-41">
         <createIndex indexName="FKncp190mcvd1kd21cmnibcm19s" tableName="photo">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-37">
-        <createIndex indexName="FKpimpy4bp24kks40d8imrh57cf" tableName="specification_value">
-            <column name="place_id"/>
+    <changeSet author="Marian (generated)" id="1571227598316-42">
+        <createIndex indexName="FKnj78c83w4xmw23jp8etxgcqc5" tableName="discount_value">
+            <column name="specification_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-38">
-        <createIndex indexName="FKqa3bu60wco5ipgfi8rhmxr6aq" tableName="rate">
-            <column name="user_id"/>
+    <changeSet author="Marian (generated)" id="1571227598316-43">
+        <createIndex indexName="FKpeyqdepr1vru2tsghm3sxwhrr" tableName="comment">
+            <column name="estimate_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-39">
+    <changeSet author="Marian (generated)" id="1571227598316-44">
         <createIndex indexName="FKrm26v5rrc5t54lhcd04dcwkw8" tableName="web_page_places">
             <column name="web_pages_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-40">
+    <changeSet author="Marian (generated)" id="1571227598316-45">
         <createIndex indexName="FKrtlnhb40rfqhkna5ijgoykgyl" tableName="favorite_place">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-41">
+    <changeSet author="Marian (generated)" id="1571227598316-46">
+        <createIndex indexName="FKs084ey5e475cqp4w0hsgisjpd" tableName="own_security">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-47">
         <createIndex indexName="FKs2ride9gvilxy2tcuv7witnxc" tableName="category">
             <column name="parent_category_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-42">
+    <changeSet author="Marian (generated)" id="1571227598316-48">
+        <createIndex indexName="FKsm3nsiqunp5ke6cmkundcw4a1" tableName="photo">
+            <column name="comment_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-49">
         <createIndex indexName="FKsv2aa83c398y2xp3j01yi92rh" tableName="photo">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-43">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="location" constraintName="FK11n0lglbc5iw6xn3seglinvpq" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
-    </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-44">
+    <changeSet author="Marian (generated)" id="1571227598316-50">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="verify_email" constraintName="FK1faffy1p9x95n6v18m5urdkfc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-45">
+    <changeSet author="Marian (generated)" id="1571227598316-51">
         <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="place" constraintName="FK3297dq7rblawjc9n4kx9htui4" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="category"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-46">
+    <changeSet author="Marian (generated)" id="1571227598316-52">
+        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="estimate" constraintName="FK4ybp1p4b8005qrgccsrookt9p" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comment"/>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-53">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="estimate" constraintName="FK6n25a2qft5y6fb21karg1obh5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-54">
         <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="place" constraintName="FK74l2uk5a5nrjvi94rd9qaviu1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-47">
+    <changeSet author="Marian (generated)" id="1571227598316-55">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="restore_password_email" constraintName="FK84jlf1nvnb2duww5bi10j5kwy" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-56">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comment" constraintName="FK8kcum44fvpupyw6f5baccx25c" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-48">
-        <addForeignKeyConstraint baseColumnNames="specification_id" baseTableName="specification_value" constraintName="FK8l8vmsceuom04aiyco0tiuwbg" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="specification"/>
+    <changeSet author="Marian (generated)" id="1571227598316-57">
+        <addForeignKeyConstraint baseColumnNames="break_time_id" baseTableName="opening_hours" constraintName="FK9ygkma6mdptstvup90n9ewptc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="break_time"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-49">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_own_security" constraintName="FK9h5qwgsv7a311c5u5qbhpq1gx" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+    <changeSet author="Marian (generated)" id="1571227598316-58">
+        <addForeignKeyConstraint baseColumnNames="location_id" baseTableName="place" constraintName="FKaxtbydhvr0oeed7oruruf0hn" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="location"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-50">
+    <changeSet author="Marian (generated)" id="1571227598316-59">
         <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="comment" constraintName="FKch8bkgqt3v8yjo230lysj668h" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-51">
+    <changeSet author="Marian (generated)" id="1571227598316-60">
         <addForeignKeyConstraint baseColumnNames="parent_comment_id" baseTableName="comment" constraintName="FKhvh0e2ybgg16bpu229a5teje7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comment"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-52">
+    <changeSet author="Marian (generated)" id="1571227598316-61">
         <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="opening_hours" constraintName="FKio191h2kf8y7k7mumqjn1fn1v" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-53">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="rate" constraintName="FKir37t17oc7isqh8itjaeyctab" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
-    </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-54">
+    <changeSet author="Marian (generated)" id="1571227598316-62">
         <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="favorite_place" constraintName="FKmon8uughpdrxt7vskx5k2prji" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-55">
+    <changeSet author="Marian (generated)" id="1571227598316-63">
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="discount_value" constraintName="FKmpd2wxnn6fldh4pilqnkpaqv9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-64">
         <addForeignKeyConstraint baseColumnNames="places_id" baseTableName="web_page_places" constraintName="FKmrghmp8nq6diqqcjxtq3nudfs" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-56">
+    <changeSet author="Marian (generated)" id="1571227598316-65">
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="estimate" constraintName="FKn3innaybpdkeovqui6o4dsxb0" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-66">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="photo" constraintName="FKncp190mcvd1kd21cmnibcm19s" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-57">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="specification_value" constraintName="FKpimpy4bp24kks40d8imrh57cf" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
+    <changeSet author="Marian (generated)" id="1571227598316-67">
+        <addForeignKeyConstraint baseColumnNames="specification_id" baseTableName="discount_value" constraintName="FKnj78c83w4xmw23jp8etxgcqc5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="specification"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-58">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="rate" constraintName="FKqa3bu60wco5ipgfi8rhmxr6aq" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+    <changeSet author="Marian (generated)" id="1571227598316-68">
+        <addForeignKeyConstraint baseColumnNames="estimate_id" baseTableName="comment" constraintName="FKpeyqdepr1vru2tsghm3sxwhrr" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="estimate"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-59">
+    <changeSet author="Marian (generated)" id="1571227598316-69">
         <addForeignKeyConstraint baseColumnNames="web_pages_id" baseTableName="web_page_places" constraintName="FKrm26v5rrc5t54lhcd04dcwkw8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="web_page"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-60">
+    <changeSet author="Marian (generated)" id="1571227598316-70">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="favorite_place" constraintName="FKrtlnhb40rfqhkna5ijgoykgyl" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-61">
+    <changeSet author="Marian (generated)" id="1571227598316-71">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="own_security" constraintName="FKs084ey5e475cqp4w0hsgisjpd" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-72">
         <addForeignKeyConstraint baseColumnNames="parent_category_id" baseTableName="category" constraintName="FKs2ride9gvilxy2tcuv7witnxc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="category"/>
     </changeSet>
-    <changeSet author="dovga (generated)" id="1567079888333-62">
+    <changeSet author="Marian (generated)" id="1571227598316-73">
+        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="photo" constraintName="FKsm3nsiqunp5ke6cmkundcw4a1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="comment"/>
+    </changeSet>
+    <changeSet author="Marian (generated)" id="1571227598316-74">
         <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="photo" constraintName="FKsv2aa83c398y2xp3j01yi92rh" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="place"/>
     </changeSet>
 </databaseChangeLog>

@@ -1,4 +1,5 @@
 USE GreenCity;
+
 INSERT INTO user (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status, email_notification)
 VALUES (1, '2019-09-03 11:42:37.823000', 'nazar.stasyuk@gmail.com', 'Назар', 'Стасюк', '2019-09-03 11:42:37.823000', 0,
         2, 0);
