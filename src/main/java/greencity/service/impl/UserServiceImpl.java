@@ -1,14 +1,15 @@
 package greencity.service.impl;
 
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
+
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.*;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.*;
@@ -16,6 +17,7 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return repo.findById(id)
-            .orElseThrow(() -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -73,7 +75,7 @@ public class UserServiceImpl implements UserService {
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<UserForListDto>(
+        return new PageableDto<>(
             userForListDtos,
             users.getTotalElements(),
             users.getPageable().getPageNumber());
@@ -141,6 +143,16 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
+     *
+     * @author Nazar Vladyka
+     */
+    @Override
+    public List<EmailNotification> getEmailNotificationsStatuses() {
+        return Arrays.asList(EmailNotification.class.getEnumConstants());
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public User updateLastVisit(User user) {
@@ -159,10 +171,33 @@ public class UserServiceImpl implements UserService {
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<UserForListDto>(
+        return new PageableDto<>(
             userForListDtos,
             users.getTotalElements(),
             users.getPageable().getPageNumber());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserUpdateDto getUserUpdateDtoByEmail(String email) {
+        return modelMapper.map(
+            repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
+            UserUpdateDto.class
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public User update(UserUpdateDto dto, String email) {
+        User user = repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmailNotification(dto.getEmailNotification());
+        return repo.save(user);
     }
 
     /**

@@ -1,10 +1,8 @@
 package greencity.mapping;
 
-import greencity.constant.ErrorMessage;
 import greencity.dto.location.LocationDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.FavoritePlace;
-import greencity.exception.NotImplementedMethodException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -18,13 +16,8 @@ import org.springframework.stereotype.Component;
  */
 @AllArgsConstructor
 @Component
-public class FavoritePlaceWithLocationMapper implements Mapper<FavoritePlace, PlaceByBoundsDto> {
+public class FavoritePlaceWithLocationMapper implements MapperToDto<FavoritePlace, PlaceByBoundsDto> {
     private ModelMapper modelMapper;
-
-    @Override
-    public FavoritePlace convertToEntity(PlaceByBoundsDto dto) {
-        throw new NotImplementedMethodException(ErrorMessage.NOT_IMPLEMENTED_METHOD);
-    }
 
     @Override
     public PlaceByBoundsDto convertToDto(FavoritePlace entity) {

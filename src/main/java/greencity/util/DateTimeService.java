@@ -18,4 +18,7 @@ public class DateTimeService {
     public static LocalDateTime getDateTime(String zoneId) {
         return LocalDateTime.now(ZoneId.of(zoneId)).withSecond(0).withNano(0);
     }
+
+    DateTimeService() {
+    }
 }

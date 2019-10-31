@@ -1,18 +1,13 @@
 package greencity.security.jwt;
 
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
-
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
-import greencity.exception.BadEmailException;
+import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -134,8 +129,14 @@ public class JwtTokenTool {
      * @return {@link Authentication}
      */
     public Authentication getAuthentication(String token) {
-        User user = userService.findByEmail(getEmailByToken(token)).orElseThrow(
-            () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + getEmailByToken(token)));
+        Optional<User> optionalUser = userService.findByEmail(getEmailByToken(token));
+        if (!optionalUser.isPresent()) {
+            return null;
+        }
+        User user = optionalUser.get();
+        if (user.getUserStatus() == UserStatus.DEACTIVATED) {
+            return null;
+        }
         userService.updateLastVisit(user);
         return new UsernamePasswordAuthenticationToken(
             user.getEmail(), "", Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));

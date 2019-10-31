@@ -7,9 +7,12 @@ import static org.mockito.Mockito.*;
 
 import greencity.GreenCityApplication;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterUserDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserUpdateDto;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
@@ -18,9 +21,11 @@ import greencity.exception.LowRoleLevelException;
 import greencity.exception.UserAlreadyRegisteredException;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,10 +46,6 @@ public class UserServiceImplTest {
 
     @Mock
     UserRepo userRepo;
-
-    @InjectMocks
-    private UserServiceImpl userService;
-
     User user =
         User.builder()
             .id(1l)
@@ -52,10 +54,10 @@ public class UserServiceImplTest {
             .email("test@gmail.com")
             .role(ROLE.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-
     User user2 =
         User.builder()
             .id(2l)
@@ -64,9 +66,14 @@ public class UserServiceImplTest {
             .email("test@gmail.com")
             .role(ROLE.ROLE_MODERATOR)
             .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
+    @InjectMocks
+    private UserServiceImpl userService;
+    @Mock
+    private ModelMapper modelMapper;
 
     @Test
     public void saveTest() {
@@ -189,10 +196,76 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void getEmailStatusesTest() {
+        List<EmailNotification> placeStatuses =
+            Arrays.asList(EmailNotification.class.getEnumConstants());
+
+        TestCase.assertEquals(placeStatuses, userService.getEmailNotificationsStatuses());
+    }
+
+    @Test
     public void updateLastVisit() {
         LocalDateTime localDateTime = user.getLastVisit().minusHours(1);
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         assertNotEquals(localDateTime, userService.updateLastVisit(user).getLastVisit());
+    }
+
+
+    @Test
+    public void getUsersByFilter() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        FilterUserDto filterUserDto = new FilterUserDto();
+
+        User user = new User();
+        user.setFirstName("Roman");
+
+        UserForListDto userForListDto = new UserForListDto();
+        userForListDto.setFirstName("Roman");
+
+        Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
+        List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
+
+        PageableDto<UserForListDto> userPageableDto =
+            new PageableDto<UserForListDto>(userForListDtos,
+                userForListDtos.size(), 0);
+
+        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+
+        when(userRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(usersPage);
+
+        assertEquals(userPageableDto, userService.getUsersByFilter(filterUserDto, pageable));
+    }
+
+
+    @Test
+    public void getUserUpdateDtoByEmail() {
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        userUpdateDto.setFirstName(user.getFirstName());
+        userUpdateDto.setLastName(user.getLastName());
+        userUpdateDto.setEmailNotification(user.getEmailNotification());
+        when(modelMapper.map(any(), any())).thenReturn(userUpdateDto);
+        UserUpdateDto userInitialsByEmail = userService.getUserUpdateDtoByEmail("");
+        assertEquals(userInitialsByEmail.getFirstName(), user.getFirstName());
+        assertEquals(userInitialsByEmail.getLastName(), user.getLastName());
+        assertEquals(userInitialsByEmail.getEmailNotification(), user.getEmailNotification());
+    }
+
+    @Test
+    public void update() {
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepo.save(any())).thenReturn(user);
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        userUpdateDto.setFirstName(user.getFirstName());
+        userUpdateDto.setLastName(user.getLastName());
+        userUpdateDto.setEmailNotification(user.getEmailNotification());
+        User user = userService.update(userUpdateDto, "");
+        assertEquals(userUpdateDto.getFirstName(), user.getFirstName());
+        assertEquals(userUpdateDto.getLastName(), user.getLastName());
+        assertEquals(userUpdateDto.getEmailNotification(), user.getEmailNotification());
+        verify(userRepo, times(1)).save(any());
     }
 }

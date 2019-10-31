@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.entity.Location;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides the interface to manage {@code Location} entity.
@@ -48,10 +49,12 @@ public interface LocationService {
     Location save(Location location);
 
     /**
-     * Finds {@code Location} records related to the specified {@code Place}.
+     * Method return a location {@code Location} which has not a {@code Place}.
      *
-     * @param placeId to find by.
-     * @return a {@code Location} for the place by id.
+     * @param lat latitude of point of the map
+     * @param lng longitude of point of the map
+     * @return a {@link Optional} of {@code Location}
+     * @author Kateryna Horokh.
      */
-    Location findByPlaceId(Long placeId);
+    Optional<Location> findByLatAndLng(Double lat, Double lng);
 }

@@ -1,11 +1,11 @@
 package greencity.security.service.impl;
 
-import static greencity.constant.ErrorMessage.EMAIL_TOKEN_EXPIRED;
-import static greencity.constant.ErrorMessage.NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN;
+import static greencity.constant.ErrorMessage.*;
 
 import greencity.constant.ErrorMessage;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
+import greencity.exception.BadEmailException;
 import greencity.exception.BadVerifyEmailTokenException;
 import greencity.exception.NotFoundException;
 import greencity.exception.UserActivationEmailTokenExpiredException;
@@ -54,6 +54,10 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
         log.info("start");
         User user = userRepo.findByEmail(email).orElseThrow(
             () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        RestorePasswordEmail restorePasswordEmail = user.getRestorePasswordEmail();
+        if (restorePasswordEmail != null) {
+            throw new BadEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
+        }
         restorePasswordEmailService.save(user);
         log.info("end");
     }

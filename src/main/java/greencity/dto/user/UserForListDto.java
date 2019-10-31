@@ -9,9 +9,13 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserForListDto {
     @NotNull
     private Long id;
@@ -30,7 +34,7 @@ public class UserForListDto {
         message = ValidationConstants.INVALID_LASTNAME_LENGTH)
     private String lastName;
 
-    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime dateOfRegistration;
 
     @Email(message = ValidationConstants.INVALID_EMAIL)
