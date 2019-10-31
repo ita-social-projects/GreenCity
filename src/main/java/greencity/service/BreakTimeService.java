@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.entity.BreakTime;
-import greencity.entity.Place;
 import java.util.List;
 
 /**

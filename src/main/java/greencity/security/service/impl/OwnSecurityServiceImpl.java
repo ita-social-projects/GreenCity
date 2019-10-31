@@ -4,16 +4,15 @@ import static greencity.constant.ErrorMessage.*;
 
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
+import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdException;
-import greencity.exception.BadRefreshTokenException;
-import greencity.exception.UserAlreadyRegisteredException;
+import greencity.exception.*;
 import greencity.security.dto.AccessTokenDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
+import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTokenTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
@@ -21,6 +20,7 @@ import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OwnSecurityServiceImpl implements OwnSecurityService {
     private OwnSecurityRepo repo;
     private UserService userService;
@@ -72,6 +73,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
             .build();
     }
 
@@ -81,7 +83,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void delete(OwnSecurity userOwnSecurity) {
         if (!repo.existsById(userOwnSecurity.getId())) {
-            throw new BadIdException(NO_ENY_USER_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
+            throw new BadIdException(NO_ENY_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
         }
         repo.delete(userOwnSecurity);
     }
@@ -115,7 +117,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
-        return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName());
+        return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName(), true);
     }
 
     /**
@@ -141,5 +143,25 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public void updatePassword(String pass, Long id) {
         String password = passwordEncoder.encode(pass);
         repo.updatePassword(password, id);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
+        log.info("Updating user password start");
+        User user = userService.findByEmail(email).orElseThrow(
+            () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
+            throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
+        }
+        if (!passwordEncoder.matches(updatePasswordDto.getCurrentPassword(), user.getOwnSecurity().getPassword())) {
+            throw new PasswordsDoNotMatchesException(PASSWORD_DOES_NOT_MATCH);
+        }
+        updatePassword(updatePasswordDto.getPassword(), user.getId());
+        log.info("Updating user password end");
     }
 }

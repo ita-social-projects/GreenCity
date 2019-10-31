@@ -19,9 +19,12 @@ public class Photo {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToOne
+    @ManyToOne
     private User user;
 
     @ManyToOne
     private Place place;
+
+    @ManyToOne
+    private Comment comment;
 }
