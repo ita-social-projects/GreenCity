@@ -1,27 +1,31 @@
 package greencity.service.impl;
 
+import static com.sun.javaws.JnlpxArgs.verify;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
 import greencity.entity.BreakTime;
 import greencity.entity.OpeningHours;
+import greencity.entity.Place;
 import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.OpenHoursRepo;
 import greencity.service.BreakTimeService;
+
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import org.apache.maven.model.Build;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -38,9 +42,9 @@ public class OpenHoursServiceImplTest {
     @Test
     public void saveTestWOBreakTime() {
         OpeningHours openingHours = OpeningHours.builder()
-            .openTime(LocalTime.of(9, 0))
-            .closeTime(LocalTime.of(20, 0))
-            .build();
+                .openTime(LocalTime.of(9, 0))
+                .closeTime(LocalTime.of(20, 0))
+                .build();
 
         when(openHoursRepo.save(openingHours)).thenReturn(openingHours);
 
@@ -49,16 +53,16 @@ public class OpenHoursServiceImplTest {
 
     @Test
     public void saveTestWithBreakTime() {
-         BreakTime breakTime = BreakTime.builder()
-            .startTime(LocalTime.of(13, 0))
-            .endTime(LocalTime.of(14, 0))
-            .build();
+        BreakTime breakTime = BreakTime.builder()
+                .startTime(LocalTime.of(13, 0))
+                .endTime(LocalTime.of(14, 0))
+                .build();
 
         OpeningHours openingHours = OpeningHours.builder()
-            .openTime(LocalTime.of(9, 0))
-            .closeTime(LocalTime.of(20, 0))
-            .breakTime(breakTime)
-            .build();
+                .openTime(LocalTime.of(9, 0))
+                .closeTime(LocalTime.of(20, 0))
+                .breakTime(breakTime)
+                .build();
 
         when(openHoursRepo.save(openingHours)).thenReturn(openingHours);
         when(breakTimeService.save(any(BreakTime.class))).thenReturn(breakTime);
@@ -69,27 +73,27 @@ public class OpenHoursServiceImplTest {
     @Test(expected = BadRequestException.class)
     public void saveTestWithOpeningHoursBiggerThanEndOpeningHours_ThrowException() {
         OpeningHours openingHours = OpeningHours.builder()
-            .openTime(LocalTime.of(20, 0))
-            .closeTime(LocalTime.of(9, 0))
-            .build();
+                .openTime(LocalTime.of(20, 0))
+                .closeTime(LocalTime.of(9, 0))
+                .build();
 
         openHoursService.save(openingHours);
     }
 
     @Test(expected = BadRequestException.class)
     public void saveTestWithStartBreakTimeBiggerThanEndBreakTime_ThrowException() {
-         BreakTime breakTime = BreakTime.builder()
-            .startTime(LocalTime.of(13, 0))
-            .endTime(LocalTime.of(21, 0))
-            .build();
+        BreakTime breakTime = BreakTime.builder()
+                .startTime(LocalTime.of(13, 0))
+                .endTime(LocalTime.of(21, 0))
+                .build();
 
         OpeningHours openingHours = OpeningHours.builder()
-            .openTime(LocalTime.of(9, 0))
-            .closeTime(LocalTime.of(20, 0))
-            .breakTime(breakTime)
-            .build();
+                .openTime(LocalTime.of(9, 0))
+                .closeTime(LocalTime.of(20, 0))
+                .breakTime(breakTime)
+                .build();
 
-       openHoursService.save(openingHours);
+        openHoursService.save(openingHours);
     }
 
     @Test
@@ -141,7 +145,7 @@ public class OpenHoursServiceImplTest {
     @Test
     public void findAllTest() {
         List<OpeningHours> genericEntities =
-            new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
+                new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
 
         when(openHoursRepo.findAll()).thenReturn(genericEntities);
 
@@ -149,4 +153,35 @@ public class OpenHoursServiceImplTest {
 
         assertEquals(genericEntities, foundEntities);
     }
+
+    @Test
+    public void getOpenHoursByPlaceTest() {
+        Place place = Place.builder().build();
+
+        List<OpeningHours> genericOpeningHours =
+                new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
+
+        when(openHoursRepo.findAllByPlace(any())).thenReturn(genericOpeningHours);
+
+        List<OpeningHours> foundOpeningHours = openHoursService.getOpenHoursByPlace(place);
+
+        assertEquals(genericOpeningHours, foundOpeningHours);
+        Mockito.verify(openHoursRepo, times(1)).findAllByPlace(any());
+    }
+
+    @Test
+    public void findAllByPlaceIdTest() {
+        Set<OpeningHours> genericOpeningHours = new HashSet<>();
+
+        genericOpeningHours.add(new OpeningHours());
+        genericOpeningHours.add(new OpeningHours());
+
+        when(openHoursRepo.findAllByPlaceId(anyLong())).thenReturn(genericOpeningHours);
+
+        Set<OpeningHours> foundOpeningHours = openHoursService.findAllByPlaceId(anyLong());
+
+        assertEquals(foundOpeningHours, genericOpeningHours);
+        Mockito.verify(openHoursRepo, times(1)).findAllByPlaceId(any());
+    }
+
 }
