@@ -62,7 +62,7 @@ public class UserFilter implements Specification<User> {
     }
 
     /**
-     * Returns a String criteria for search
+     * Returns a String criteria for search.
      *
      * @param criteria  must not be {@literal null}.
      * @return String creteria  may be {@literal null}.
