@@ -1,8 +1,8 @@
 package greencity.service.impl;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import greencity.GreenCityApplication;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -17,12 +17,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.ITemplateEngine;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
 public class EmailServiceImplTest {
     private EmailService service;
     private User user;
@@ -59,6 +57,18 @@ public class EmailServiceImplTest {
         service.sendAddedNewPlacesReportEmail(
             Collections.singletonList(user), categoriesWithPlacesTest, EmailNotification.DAILY);
 
+        verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    public void sendVerificationEmailTest() {
+        service.sendVerificationEmail(user, "");
+        verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    public void sendRestoreEmailTest() {
+        service.sendRestoreEmail(user, "");
         verify(javaMailSender).createMimeMessage();
     }
 }
