@@ -71,8 +71,9 @@ public class UserFilter implements Specification<User> {
         criteria = criteria.trim();
         criteria = criteria.replace("_", "\\_");
         criteria = criteria.replace("%", "\\%");
+        criteria = criteria.replace("\\", "\\\\");
+        criteria = criteria.replace("'", "\\'");
         criteria = "%" + criteria + "%";
         return criteria;
-
     }
 }
