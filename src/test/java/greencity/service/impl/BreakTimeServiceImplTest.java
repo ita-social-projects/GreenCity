@@ -1,10 +1,19 @@
 package greencity.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+
 import greencity.GreenCityApplication;
 import greencity.entity.BreakTime;
 import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.BreakTimeRepo;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,19 +21,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 public class BreakTimeServiceImplTest {
-
     @Mock
     private BreakTimeRepo breakTimeRepo;
 
@@ -32,16 +31,16 @@ public class BreakTimeServiceImplTest {
     private BreakTimeServiceImpl breakTimeService;
 
     private BreakTime validBreakTime = BreakTime.builder()
-            .id(13L)
-            .startTime(LocalTime.of(8, 0))
-            .endTime(LocalTime.of(19, 0))
-            .build();
+        .id(13L)
+        .startTime(LocalTime.of(8, 0))
+        .endTime(LocalTime.of(19, 0))
+        .build();
 
     private BreakTime notValidBreakTime = BreakTime.builder()
-            .id(13L)
-            .startTime(LocalTime.of(12, 0))
-            .endTime(LocalTime.of(10, 30))
-            .build();
+        .id(13L)
+        .startTime(LocalTime.of(12, 0))
+        .endTime(LocalTime.of(10, 30))
+        .build();
 
     @Test
     public void saveValidBreakTime() {
