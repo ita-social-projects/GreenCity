@@ -1,6 +1,9 @@
 package greencity.service.impl;
 
-import greencity.GreenCityApplication;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
+
 import greencity.dto.category.CategoryDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
@@ -8,6 +11,8 @@ import greencity.exception.BadCategoryRequestException;
 import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.repository.CategoryRepo;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,18 +20,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
-@SpringBootTest(classes = GreenCityApplication.class)
 public class CategoryServiceImplTest {
     @Mock
     CategoryRepo categoryRepo;
@@ -78,18 +73,18 @@ public class CategoryServiceImplTest {
     public void findAllCategoryDtoTest() {
         MockitoAnnotations.initMocks(this);
         List<Category> genericEntityList = Arrays.asList(
-                Category.builder()
-                        .name("Test")
-                        .build()
-                , Category.builder()
-                        .name("Test1")
-                        .build());
+            Category.builder()
+                .name("Test")
+                .build()
+            , Category.builder()
+                .name("Test1")
+                .build());
         when(modelMapper.map(genericEntityList, CategoryDto.class)).thenReturn(new CategoryDto());
         when(categoryService.findAll()).thenReturn(genericEntityList);
         List<CategoryDto> mappedList = genericEntityList
-                .stream()
-                .map(category -> modelMapper.map(category, CategoryDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(category -> modelMapper.map(category, CategoryDto.class))
+            .collect(Collectors.toList());
         List<CategoryDto> allCategoryDto = categoryService.findAllCategoryDto();
         assertEquals(mappedList, allCategoryDto);
 
@@ -154,7 +149,7 @@ public class CategoryServiceImplTest {
     @Test
     public void findAllTest() {
         List<Category> genericEntities =
-                new ArrayList<>(Arrays.asList(new Category(), new Category()));
+            new ArrayList<>(Arrays.asList(new Category(), new Category()));
 
         when(categoryRepo.findAll()).thenReturn(genericEntities);
 
