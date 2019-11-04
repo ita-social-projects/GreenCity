@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
 public class PhotoServiceImplTest {
 
     @Mock
