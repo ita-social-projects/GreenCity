@@ -70,7 +70,6 @@ public class BreakTimeServiceImplTest {
         when(breakTimeRepo.findById(validBreakTime.getId())).thenReturn(Optional.of(validBreakTime));
 
         assertEquals(validBreakTime.getId(), breakTimeService.deleteById(validBreakTime.getId()));
-
         verify(breakTimeRepo, times(1)).delete(validBreakTime);
     }
 
@@ -86,7 +85,6 @@ public class BreakTimeServiceImplTest {
         List<BreakTime> expected = Arrays.asList(validBreakTime, notValidBreakTime);
 
         when(breakTimeRepo.findAll()).thenReturn(expected);
-
         assertEquals(expected, breakTimeService.findAll());
     }
 
@@ -95,7 +93,6 @@ public class BreakTimeServiceImplTest {
         List<BreakTime> expected = Collections.emptyList();
 
         when(breakTimeRepo.findAll()).thenReturn(expected);
-
         assertEquals(expected, breakTimeService.findAll());
     }
 }
