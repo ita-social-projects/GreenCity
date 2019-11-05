@@ -52,11 +52,28 @@ public class UserFilter implements Specification<User> {
      * @return a {@link Predicate}, may be {@literal null}.
      */
     private Predicate hasFieldsLike(Root<User> r, CriteriaBuilder cb, String reg) {
+        reg = replaceCriteria(reg);
         return cb.or(
             cb.like(r.get(RepoConstants.FIRST_NAME), reg),
             cb.like(r.get(RepoConstants.LAST_NAME), reg),
             cb.like(r.get(RepoConstants.EMAIL), reg),
             cb.like(r.get(RepoConstants.REGISTRATION_DATE).as(String.class), reg)
         );
+    }
+
+    /**
+     * Returns a String criteria for search.
+     *
+     * @param criteria  must not be {@literal null}.
+     * @return String creteria  may be {@literal null}.
+     */
+    private String replaceCriteria(String criteria) {
+        criteria = criteria.trim();
+        criteria = criteria.replace("_", "\\_");
+        criteria = criteria.replace("%", "\\%");
+        criteria = criteria.replace("\\", "\\\\");
+        criteria = criteria.replace("'", "\\'");
+        criteria = "%" + criteria + "%";
+        return criteria;
     }
 }
