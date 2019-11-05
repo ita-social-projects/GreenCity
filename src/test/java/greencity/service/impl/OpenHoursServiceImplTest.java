@@ -149,8 +149,7 @@ public class OpenHoursServiceImplTest {
     @Test
     public void getOpenHoursByPlaceTest() {
         Place place = new Place();
-        List<OpeningHours> genericOpeningHours =
-            new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
+        List<OpeningHours> genericOpeningHours = Arrays.asList(new OpeningHours(), new OpeningHours());
 
         when(openHoursRepo.findAllByPlace(any())).thenReturn(genericOpeningHours);
 
