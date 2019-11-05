@@ -17,11 +17,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CategoryServiceImplTest {
     @Mock
     private CategoryRepo categoryRepo;
@@ -67,7 +66,6 @@ public class CategoryServiceImplTest {
 
     @Test
     public void findAllCategoryDtoTest() {
-        MockitoAnnotations.initMocks(this);
         List<Category> genericEntityList = Arrays.asList(
             Category.builder()
                 .name("Test")
@@ -75,7 +73,6 @@ public class CategoryServiceImplTest {
             , Category.builder()
                 .name("Test1")
                 .build());
-        when(modelMapper.map(genericEntityList, CategoryDto.class)).thenReturn(new CategoryDto());
         when(categoryService.findAll()).thenReturn(genericEntityList);
         List<CategoryDto> mappedList = genericEntityList
             .stream()
