@@ -148,14 +148,11 @@ public class OpenHoursServiceImplTest {
 
     @Test
     public void getOpenHoursByPlaceTest() {
-        Place place = Place.builder().build();
-
-        List<OpeningHours> genericOpeningHours =
-            new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
+        Place place = new Place();
+        List<OpeningHours> genericOpeningHours = Arrays.asList(new OpeningHours(), new OpeningHours());
+        List<OpeningHours> foundOpeningHours = openHoursService.getOpenHoursByPlace(place);
 
         when(openHoursRepo.findAllByPlace(any())).thenReturn(genericOpeningHours);
-
-        List<OpeningHours> foundOpeningHours = openHoursService.getOpenHoursByPlace(place);
 
         assertEquals(genericOpeningHours, foundOpeningHours);
         Mockito.verify(openHoursRepo, times(1)).findAllByPlace(any());
@@ -164,16 +161,13 @@ public class OpenHoursServiceImplTest {
     @Test
     public void findAllByPlaceIdTest() {
         Set<OpeningHours> genericOpeningHours = new HashSet<>();
-
+        Set<OpeningHours> foundOpeningHours = openHoursService.findAllByPlaceId(anyLong());
         genericOpeningHours.add(new OpeningHours());
         genericOpeningHours.add(new OpeningHours());
 
         when(openHoursRepo.findAllByPlaceId(anyLong())).thenReturn(genericOpeningHours);
 
-        Set<OpeningHours> foundOpeningHours = openHoursService.findAllByPlaceId(anyLong());
-
         assertEquals(foundOpeningHours, genericOpeningHours);
         Mockito.verify(openHoursRepo, times(1)).findAllByPlaceId(any());
     }
-
 }
