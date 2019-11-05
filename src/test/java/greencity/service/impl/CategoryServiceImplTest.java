@@ -24,20 +24,16 @@ import org.modelmapper.ModelMapper;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class CategoryServiceImplTest {
     @Mock
-    CategoryRepo categoryRepo;
-
+    private CategoryRepo categoryRepo;
     @Mock
-    ModelMapper modelMapper;
-
+    private ModelMapper modelMapper;
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
     @Test
     public void saveTest() {
         Category genericEntity = new Category();
-
         when(categoryRepo.save(genericEntity)).thenReturn(genericEntity);
-
         assertEquals(genericEntity, categoryService.save(genericEntity));
     }
 
@@ -94,11 +90,8 @@ public class CategoryServiceImplTest {
     @Test
     public void findByIdTest() {
         Category genericEntity = new Category();
-
         when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-
         Category foundEntity = categoryService.findById(anyLong());
-
         assertEquals(genericEntity, foundEntity);
     }
 
@@ -110,13 +103,10 @@ public class CategoryServiceImplTest {
     @Test
     public void updateTest() {
         Category updated = new Category();
-
         when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(updated));
         when(categoryRepo.save(any())).thenReturn(updated);
-
         categoryService.update(anyLong(), updated);
         Category foundEntity = categoryService.findById(anyLong());
-
         assertEquals(updated, foundEntity);
     }
 
@@ -128,7 +118,6 @@ public class CategoryServiceImplTest {
     @Test
     public void deleteByIdTest() {
         when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(new Category()));
-
         assertEquals(new Long(1), categoryService.deleteById(1L));
     }
 
@@ -140,9 +129,7 @@ public class CategoryServiceImplTest {
     @Test(expected = BadRequestException.class)
     public void deleteByIdGivenCategoryRelatedToExistencePlaceThrowException() {
         Category generatedEntity = Category.builder().places(Collections.singletonList(new Place())).build();
-
         when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(generatedEntity));
-
         categoryService.deleteById(1L);
     }
 
@@ -150,11 +137,8 @@ public class CategoryServiceImplTest {
     public void findAllTest() {
         List<Category> genericEntities =
             new ArrayList<>(Arrays.asList(new Category(), new Category()));
-
         when(categoryRepo.findAll()).thenReturn(genericEntities);
-
         List<Category> foundEntities = categoryService.findAll();
-
         assertEquals(genericEntities, foundEntities);
     }
 }
