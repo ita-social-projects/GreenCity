@@ -1,27 +1,23 @@
 package greencity.service.impl;
 
-import greencity.GreenCityApplication;
-import greencity.entity.DiscountValue;
-import greencity.exception.NotFoundException;
-import greencity.repository.DiscountValuesRepo;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+import greencity.entity.DiscountValue;
+import greencity.exception.NotFoundException;
+import greencity.repository.DiscountValuesRepo;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
 public class DiscountServiceImplTest {
 
     @Mock
