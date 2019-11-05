@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-import greencity.GreenCityApplication;
 import greencity.entity.BreakTime;
 import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
@@ -19,10 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
 public class BreakTimeServiceImplTest {
     @Mock
     private BreakTimeRepo breakTimeRepo;
