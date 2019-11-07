@@ -27,7 +27,7 @@ public class UserFilter implements Specification<User> {
      *
      * @param filterUserDto object contains fields to filter by.
      */
-    public      UserFilter(FilterUserDto filterUserDto) {
+    public UserFilter(FilterUserDto filterUserDto) {
         this.filterUserDto = filterUserDto;
     }
 
