@@ -69,7 +69,9 @@ public class UserFilter implements Specification<User> {
      * @return String creteria  may be {@literal null}.
      */
     private String replaceCriteria(String criteria) {
-        criteria = Optional.of(criteria).orElse("");
+        if (criteria == null) {
+            criteria = "";
+        }
         criteria = criteria.trim();
         criteria = criteria.replace("_", "\\_");
         criteria = criteria.replace("%", "\\%");
