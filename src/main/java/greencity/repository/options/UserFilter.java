@@ -5,6 +5,7 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.entity.User;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -26,7 +27,7 @@ public class UserFilter implements Specification<User> {
      *
      * @param filterUserDto object contains fields to filter by.
      */
-    public UserFilter(FilterUserDto filterUserDto) {
+    public      UserFilter(FilterUserDto filterUserDto) {
         this.filterUserDto = filterUserDto;
     }
 
@@ -68,6 +69,7 @@ public class UserFilter implements Specification<User> {
      * @return String creteria  may be {@literal null}.
      */
     private String replaceCriteria(String criteria) {
+        criteria = Optional.of(criteria).orElse("");
         criteria = criteria.trim();
         criteria = criteria.replace("_", "\\_");
         criteria = criteria.replace("%", "\\%");
