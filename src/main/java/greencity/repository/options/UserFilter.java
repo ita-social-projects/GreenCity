@@ -65,13 +65,11 @@ public class UserFilter implements Specification<User> {
     /**
      * Returns a String criteria for search.
      *
-     * @param criteria  must not be {@literal null}.
-     * @return String creteria  may be {@literal null}.
+     * @param criteria  String for search.
+     * @return String creteria  not be {@literal null}.
      */
     private String replaceCriteria(String criteria) {
-        if (criteria == null) {
-            criteria = "";
-        }
+        criteria = Optional.ofNullable(criteria).orElseGet(() -> "");
         criteria = criteria.trim();
         criteria = criteria.replace("_", "\\_");
         criteria = criteria.replace("%", "\\%");
