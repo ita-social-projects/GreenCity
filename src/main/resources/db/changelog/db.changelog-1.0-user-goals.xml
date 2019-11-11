@@ -24,9 +24,7 @@
             <column name="status" type="varchar(12)">
                 <constraints nullable="false" />
             </column>
-            <column name="date_completed" type="datetime(6)">
-                <constraints nullable="false" />
-            </column>
+            <column name="date_completed" type="datetime(6)" />
         </createTable>
     </changeSet>
     <changeSet id="1571227598316-103" author="Vitalii S.">
