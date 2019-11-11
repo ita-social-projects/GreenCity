@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(exclude = {"value"})
+@Table(name = "DiscountValues")
 public class DiscountValue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 @ToString(exclude = {"comments", "photos"})
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
