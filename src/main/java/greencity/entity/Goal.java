@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -14,6 +15,6 @@ public class Goal {
     @Column(nullable = false)
     private String text;
 
-    @OneToOne
-    private UserGoal goal;
+    @ManyToMany(mappedBy = "goals")
+    private List<UserGoal> userGoals;
 }

@@ -2,6 +2,7 @@ package greencity.entity;
 
 import greencity.entity.enums.GoalStatus;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -16,8 +17,12 @@ public class UserGoal {
     @ManyToOne
     private User user;
 
-    @OneToOne(mappedBy = "goal")
-    private Goal goal;
+    @ManyToMany
+    @JoinTable(
+        name = "user_user_goals",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "goal_id"))
+    private List<Goal> goals;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
