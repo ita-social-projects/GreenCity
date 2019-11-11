@@ -73,4 +73,7 @@ public class User {
     private List<Estimate> estimates = new ArrayList<>();
     @Enumerated(value = EnumType.ORDINAL)
     private EmailNotification emailNotification;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private List<UserGoal> goals = new ArrayList<>();
 }
