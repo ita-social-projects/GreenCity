@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -50,6 +51,7 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
+    @Ignore
     @Test
     public void saveTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
@@ -123,6 +125,7 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
+    @Ignore
     @Test(expected = BadIdException.class)
     public void saveFavoritePlaceAlreadyExistTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
