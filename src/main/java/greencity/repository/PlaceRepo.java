@@ -33,13 +33,13 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      * @param id place
      * @return average rate
      */
-    @Query(value = "select avg(r.rate) FROM Estimate r " + "where place_id = :id")
+    @Query(value = "SELECT AVG(r.rate) FROM Estimate r " + "WHERE place_id = :id")
     Double getAverageRate(@Param("id") Long id);
 
     /**
      * Generated javadoc, must be replaced with real one.
      */
-    @Query("from Place p where p.status = :status")
+    @Query("FROM Place p WHERE p.status = :status")
     List<Place> getPlacesByStatus(@Param("status") PlaceStatus status);
 
     /**
@@ -56,11 +56,11 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
     @Query(
         value =
             "FROM Place p "
-                + " left join"
-                + " Location l  on p.location.id =l.id "
-                + " where l.lat > :southWestLat  and l.lat< :northEastLat"
-                + " AND l.lng >:southWestLng and l.lng<:northEastLng "
-                + " and p.status = :status"
+                + " LEFT JOIN"
+                + " Location l  ON p.location.id = l.id "
+                + " WHERE l.lat > :southWestLat  AND l.lat< :northEastLat"
+                + " AND l.lng >:southWestLng AND l.lng<:northEastLng "
+                + " AND p.status = :status"
                 + " ORDER BY p.name")
     List<Place> findPlacesByMapsBounds(
         @Param("northEastLat") Double northEastLat,

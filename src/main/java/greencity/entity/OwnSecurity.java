@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = "user")
+@Table(name = "own_security")
 public class OwnSecurity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

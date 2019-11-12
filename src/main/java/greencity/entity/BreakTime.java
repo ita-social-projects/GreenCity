@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "break_time")
 public class BreakTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
