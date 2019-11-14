@@ -51,6 +51,11 @@ public class ErrorMessage {
     public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
     public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
     public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT = "Password restore link already sent, please check your email: ";
+    public static final String INVALID_HABIT_ID = "Invalid habit id ";
+    public static final String INVALID_HABIT_NAME = "Invalid habit name ";
+    public static final String ADVICE_NOT_FOUND_BY_ID = "The advice does not exist by this id: ";
+    public static final String ADVICE_NOT_FOUND_BY_NAME = "The advice does not exist by this name: ";
+    public static final String ADVICE_NOT_SAVED_BY_NAME = "The advice with such name already exist: ";
 
     private ErrorMessage() {
     }
