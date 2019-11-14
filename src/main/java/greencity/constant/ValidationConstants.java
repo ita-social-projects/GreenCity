@@ -71,8 +71,8 @@ public class ValidationConstants {
     public static final int COMMENT_MIN_LENGTH = 5;
     public static final int COMMENT_MAX_LENGTH = 300;
 
-    public static final String EMPTY_ADVICE = "The text of advice can not be empty";
-    public static final String INVALID_ADVICE_LENGTH = "Invalid length of advice";
+    public static final String EMPTY_ADVICE = "The text of name can not be empty";
+    public static final String INVALID_ADVICE_LENGTH = "Invalid length of name";
 
     public static final int ADVICE_MIN_LENGTH = 3;
     public static final int ADVICE_MAX_LENGTH = 300;
