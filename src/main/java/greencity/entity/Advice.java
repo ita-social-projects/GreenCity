@@ -1,7 +1,6 @@
 package greencity.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import greencity.dto.advice.AdvicePostDTO;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "advice")
+@Table(name = "advices")
 public class Advice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +21,17 @@ public class Advice {
     @Column(nullable = false, unique = true, length = 300)
     private String name;
 
-    @OneToMany(mappedBy = "advice", cascade = {CascadeType.ALL})
-    private List<HabitDictionary> habitDictionaries = new ArrayList<>();
+    @ManyToOne
+    private HabitDictionary habitDictionary;
+
+    /**
+     * The constructor takes {@link Advice} parameter.
+     *
+     * @param advicePostDTO {@link AdvicePostDTO}
+     * @author Vitaliy Dzen
+     */
+    public Advice(AdvicePostDTO advicePostDTO) {
+        this.name = advicePostDTO.getName();
+        this.habitDictionary = new HabitDictionary(advicePostDTO.getHabitDictionaryId(), "", null);
+    }
 }
