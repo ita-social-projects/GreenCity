@@ -19,8 +19,10 @@ import greencity.security.service.OwnSecurityService;
 import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
+import java.util.function.Function;
+
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,15 +34,35 @@ import org.springframework.transaction.annotation.Transactional;
  * {@inheritDoc}
  */
 @Service
-@AllArgsConstructor
 @Slf4j
 public class OwnSecurityServiceImpl implements OwnSecurityService {
-    private OwnSecurityRepo ownSecurityRepo;
-    private UserService userService;
-    private VerifyEmailService verifyEmailService;
-    private PasswordEncoder passwordEncoder;
-    private AuthenticationManager authManager;
-    private JwtTool jwtTool;
+    private final OwnSecurityRepo ownSecurityRepo;
+    private final UserService userService;
+    private final VerifyEmailService verifyEmailService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authManager;
+    private final JwtTool jwtTool;
+    private final Function<String, String> tokenToEmailParser;
+
+    /**
+     * Constructor.
+     */
+    @Autowired
+    public OwnSecurityServiceImpl(OwnSecurityRepo ownSecurityRepo,
+                                  UserService userService,
+                                  VerifyEmailService verifyEmailService,
+                                  PasswordEncoder passwordEncoder,
+                                  AuthenticationManager authManager,
+                                  JwtTool jwtTool,
+                                  Function<String, String> tokenToEmailParser) {
+        this.ownSecurityRepo = ownSecurityRepo;
+        this.userService = userService;
+        this.verifyEmailService = verifyEmailService;
+        this.passwordEncoder = passwordEncoder;
+        this.authManager = authManager;
+        this.jwtTool = jwtTool;
+        this.tokenToEmailParser = tokenToEmailParser;
+    }
 
     /**
      * {@inheritDoc}
@@ -126,7 +148,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public AccessTokenDto updateAccessToken(String refreshToken) {
         if (jwtTool.isTokenValid(refreshToken)) {
-            String email = jwtTool.getEmailByToken(refreshToken);
+            String email = tokenToEmailParser.apply(refreshToken);
             User user = userService
                     .findByEmail(email)
                     .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));

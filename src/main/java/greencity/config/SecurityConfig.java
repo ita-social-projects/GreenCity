@@ -5,8 +5,10 @@ import static greencity.constant.AppConstant.*;
 import greencity.security.jwt.JwtAuthenticationProvider;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
+
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

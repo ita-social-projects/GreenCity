@@ -1,6 +1,5 @@
 package greencity.security.jwt;
 
-import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
@@ -8,9 +7,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.*;
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,24 +30,18 @@ public class JwtTool {
 
     @Value("${refreshTokenValidTimeInMinutes}")
     private Integer refreshTokenValidTimeInMinutes;
-
-    @Value("${tokenKey}")
-    private String tokenKey;
-
-    private UserService userService;
+    private final UserService userService;
+    private final Function<String, String> tokenToEmailParser;
+    private final String tokenKey;
 
     /**
      * Constructor.
-     *
-     * @param userService {@link UserService} - service for {@link User}
      */
-    public JwtTool(UserService userService) {
+    @Autowired
+    public JwtTool(UserService userService, Function<String, String> tokenToEmailParser, String tokenKey) {
         this.userService = userService;
-    }
-
-    @PostConstruct
-    void init() {
-        tokenKey = Base64.getEncoder().encodeToString(tokenKey.getBytes());
+        this.tokenToEmailParser = tokenToEmailParser;
+        this.tokenKey = tokenKey;
     }
 
     /**
@@ -97,7 +90,7 @@ public class JwtTool {
      * @param token this is token.
      * @return {@link Boolean}
      */
-    public boolean isTokenValid(String token) {
+    public boolean isTokenValid(String token) { // TODO - should be factored out of this class
         boolean isValid = false;
         try {
             Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token);
@@ -109,48 +102,21 @@ public class JwtTool {
     }
 
     /**
-     * Method that get token by body request.
-     *
-     * @param servletRequest this is your request.
-     * @return {@link String} of token or null.
-     */
-    public String getTokenFromHttpServletRequest(HttpServletRequest servletRequest) {
-        String token = servletRequest.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            return token.substring(7);
-        }
-        return null;
-    }
-
-    /**
      * Method that create authentication.
      *
-     * @param token token from request
+     * @param token token from request.
      * @return {@link Authentication}
      */
     public Authentication getAuthentication(String token) {
-        Optional<User> optionalUser = userService.findByEmail(getEmailByToken(token));
-        if (!optionalUser.isPresent()) {
-            return null;
-        }
-        User user = optionalUser.get();
-        if (user.getUserStatus() == UserStatus.DEACTIVATED) {
-            return null;
-        }
-        userService.updateLastVisit(user);
-        return new UsernamePasswordAuthenticationToken(
-                user.getEmail(),
-                "",
-                Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
-    }
-
-    /**
-     * Method that get email from token.
-     *
-     * @param token token from request.
-     * @return {@link String} of email.
-     */
-    public String getEmailByToken(String token) {
-        return Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token).getBody().getSubject();
+        return userService
+                .findByEmail(tokenToEmailParser.apply(token))
+                .filter(user -> user.getUserStatus() != UserStatus.DEACTIVATED) // TODO - what if user is BLOCKED ????
+                .map(userService::updateLastVisit)
+                .map(user -> new UsernamePasswordAuthenticationToken(
+                        user.getEmail(),
+                        "",
+                        Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()))
+                ))
+                .orElse(null);
     }
 }

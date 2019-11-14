@@ -1,13 +1,17 @@
 package greencity.security.jwt;
 
 import java.io.IOException;
+import java.util.Optional;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -42,7 +46,7 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-        String token = jwtTool.getTokenFromHttpServletRequest((HttpServletRequest) servletRequest);
+        String token = this.getTokenFromHttpServletRequest((HttpServletRequest) servletRequest);
         if (token != null && jwtTool.isTokenValid(token)) {
             Authentication authentication = jwtTool.getAuthentication(token);
             if (authentication != null) {
@@ -54,5 +58,18 @@ public class JwtFilter extends GenericFilterBean {
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    /**
+     * Method that get token by body request.
+     *
+     * @param servletRequest this is your request.
+     * @return {@link String} of token or null.
+     */
+    private String getTokenFromHttpServletRequest(HttpServletRequest servletRequest) {
+        return Optional
+                .ofNullable(servletRequest.getHeader("Authorization"))
+                .map(token -> token.substring(7))
+                .orElse(null);
     }
 }
