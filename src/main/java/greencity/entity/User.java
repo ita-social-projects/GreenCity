@@ -19,7 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @EqualsAndHashCode(
     exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "habits"})
 @ToString(
-    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity" , "habits"})
+    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "habits"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
