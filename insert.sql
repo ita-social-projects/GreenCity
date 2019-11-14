@@ -181,4 +181,12 @@ VALUES ('20:00:00', '06:00:00', 4, 5);
 insert into discount_value(id, value, place_id, specification_id)
 values (1, 3, 1, 1), (2, 13, 2, 2), (3, 33, 3, 3), (4, 63, 4, 4), (5, 93, 5, 5), (6, 50, 5, 6);
 
+INSERT INTO habit_dictionary (name)
+VALUES ("bag");
+INSERT INTO habit_dictionary (name)
+VALUES ("cap");
 
+INSERT INTO habits (user_id, habit_dictionary_id, status, date)
+VALUES (2, 1, 1,'2019-11-12 14:31:03.234000');
+INSERT INTO habits (user_id, habit_dictionary_id, status, date)
+VALUES (1, 2, 1,'2019-11-12 14:31:03.234000');

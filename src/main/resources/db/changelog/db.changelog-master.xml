@@ -6,4 +6,5 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <include file="db/changelog/liquibase-outputChangeLog.xml"/>
     <include file="db/changelog/db.changelog-1.0-habit-dictionary.xml"/>
+    <include file="db/changelog/liquibase-habit.xml"/>
 </databaseChangeLog>
