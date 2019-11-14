@@ -52,8 +52,9 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
     @Override
     public void sendEmailForRestore(String email) {
         log.info("start");
-        User user = userRepo.findByEmail(email).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userRepo
+                .findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         RestorePasswordEmail restorePasswordEmail = user.getRestorePasswordEmail();
         if (restorePasswordEmail != null) {
             throw new BadEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
@@ -69,7 +70,7 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
      * @author Dmytro Dovhal
      */
     @Scheduled(fixedRate = 86400000)
-    public void deleteExpiry() {
+    public void deleteExpiry() { // TODO - move it to the DB
         log.info("begin");
         restorePasswordEmailService
             .findAll()
@@ -91,14 +92,15 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
     @Override
     public void restoreByToken(String token, String password) {
         log.info("begin");
-        RestorePasswordEmail restorePasswordEmail =
-            repo.findByToken(token)
+        RestorePasswordEmail restorePasswordEmail = repo
+                .findByToken(token)
+                .orElseThrow(() -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
+        User user = userRepo
+                .findById(restorePasswordEmail.getUser().getId())
                 .orElseThrow(
-                    () -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
-        User user =
-            userRepo.findById(restorePasswordEmail.getUser().getId())
-                .orElseThrow(() -> new NotFoundException(
-                    ErrorMessage.USER_NOT_FOUND_BY_ID + restorePasswordEmail.getUser().getId()));
+                        () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID
+                                + restorePasswordEmail.getUser().getId())
+                );
         if (restorePasswordEmailService.isDateValidate(restorePasswordEmail.getExpiryDate())) {
             log.info("Date of user email is valid and user was found.");
             ownSecurityService.updatePassword(password, user.getId());

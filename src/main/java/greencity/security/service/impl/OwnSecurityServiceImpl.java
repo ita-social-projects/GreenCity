@@ -13,7 +13,7 @@ import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
-import greencity.security.jwt.JwtTokenTool;
+import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
 import greencity.security.service.VerifyEmailService;
@@ -35,12 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @Slf4j
 public class OwnSecurityServiceImpl implements OwnSecurityService {
-    private OwnSecurityRepo repo;
+    private OwnSecurityRepo ownSecurityRepo;
     private UserService userService;
     private VerifyEmailService verifyEmailService;
     private PasswordEncoder passwordEncoder;
-    private AuthenticationManager manager;
-    private JwtTokenTool jwtTokenTool;
+    private AuthenticationManager authManager;
+    private JwtTool jwtTool;
 
     /**
      * {@inheritDoc}
@@ -53,7 +53,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         }
         User user = createNewRegisteredUser(dto);
         User savedUser = userService.save(user);
-        repo.save(createUserOwnSecurityToUser(dto, savedUser));
+        ownSecurityRepo.save(createUserOwnSecurityToUser(dto, savedUser));
         verifyEmailService.save(savedUser);
     }
 
@@ -82,10 +82,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public void delete(OwnSecurity userOwnSecurity) {
-        if (!repo.existsById(userOwnSecurity.getId())) {
+        if (!ownSecurityRepo.existsById(userOwnSecurity.getId())) {
             throw new BadIdException(NO_ENY_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
         }
-        repo.delete(userOwnSecurity);
+        ownSecurityRepo.delete(userOwnSecurity);
     }
 
     /**
@@ -93,7 +93,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Scheduled(fixedRate = 86400000)
     @Override
-    public void deleteNotActiveEmailUsers() {
+    public void deleteNotActiveEmailUsers() { //TODO - do not drag all of the users
         verifyEmailService
             .findAll()
             .forEach(
@@ -111,12 +111,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public SuccessSignInDto signIn(OwnSignInDto dto) {
-        manager.authenticate(
-            new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-        User byEmail = userService.findByEmail(dto.getEmail()).orElseThrow(
-            () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
-        String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
-        String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
+        authManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+        User byEmail = userService
+                .findByEmail(dto.getEmail())
+                .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
+        String accessToken = jwtTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
+        String refreshToken = jwtTool.createRefreshToken(byEmail.getEmail());
         return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName(), true);
     }
 
@@ -125,11 +125,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public AccessTokenDto updateAccessToken(String refreshToken) {
-        if (jwtTokenTool.isTokenValid(refreshToken)) {
-            String email = jwtTokenTool.getEmailByToken(refreshToken);
-            User user = userService.findByEmail(email).orElseThrow(
-                () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
-            return new AccessTokenDto(jwtTokenTool.createAccessToken(user.getEmail(), user.getRole()));
+        if (jwtTool.isTokenValid(refreshToken)) {
+            String email = jwtTool.getEmailByToken(refreshToken);
+            User user = userService
+                    .findByEmail(email)
+                    .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            return new AccessTokenDto(jwtTool.createAccessToken(user.getEmail(), user.getRole()));
         }
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
     }
@@ -142,7 +143,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void updatePassword(String pass, Long id) {
         String password = passwordEncoder.encode(pass);
-        repo.updatePassword(password, id);
+        ownSecurityRepo.updatePassword(password, id);
     }
 
 
@@ -153,8 +154,9 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
         log.info("Updating user password start");
-        User user = userService.findByEmail(email).orElseThrow(
-            () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userService
+                .findByEmail(email)
+                .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
         }

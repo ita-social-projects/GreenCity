@@ -15,7 +15,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
-import greencity.security.jwt.JwtTokenTool;
+import greencity.security.jwt.JwtTool;
 import greencity.security.service.GoogleSecurityService;
 import greencity.service.UserService;
 import java.io.IOException;
@@ -36,17 +36,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private UserService userService;
     private GoogleIdTokenVerifier verifier;
-    private JwtTokenTool tokenTool;
+    private JwtTool tokenTool;
 
     /**
      * Constructor.
      *
      * @param userService {@link UserService} - service of {@link User} logic.
-     * @param tokenTool   {@link JwtTokenTool} - tool for jwt logic.
+     * @param tokenTool   {@link JwtTool} - tool for jwt logic.
      * @param clientId    {@link String} - google client id.
      */
     public GoogleSecurityServiceImpl(UserService userService,
-                                     JwtTokenTool tokenTool,
+                                     JwtTool tokenTool,
                                      @Value("${google.clientId}") String clientId
     ) {
         this.userService = userService;

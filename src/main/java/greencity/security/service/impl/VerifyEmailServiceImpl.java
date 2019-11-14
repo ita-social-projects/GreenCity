@@ -33,7 +33,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     @Value("${address}")
     private String serverAddress;
 
-    private VerifyEmailRepo repo;
+    private VerifyEmailRepo verifyEmailRepo;
 
     private EmailService emailService;
 
@@ -41,11 +41,11 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     /**
      * Constructor.
      *
-     * @param repo         {@link VerifyEmailRepo} - this is repository for {@link VerifyEmail}
+     * @param verifyEmailRepo         {@link VerifyEmailRepo} - this is repository for {@link VerifyEmail}
      * @param emailService {@link EmailService} - service for sending email
      */
-    public VerifyEmailServiceImpl(VerifyEmailRepo repo, EmailService emailService) {
-        this.repo = repo;
+    public VerifyEmailServiceImpl(VerifyEmailRepo verifyEmailRepo, EmailService emailService) {
+        this.verifyEmailRepo = verifyEmailRepo;
         this.emailService = emailService;
     }
 
@@ -60,7 +60,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
                 .token(UUID.randomUUID().toString())
                 .expiryDate(calculateExpiryDate(expireTime))
                 .build();
-        repo.save(verifyEmail);
+        verifyEmailRepo.save(verifyEmail);
         emailService.sendVerificationEmail(user, verifyEmail.getToken());
     }
 
@@ -69,10 +69,9 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
      */
     @Override
     public void verifyByToken(String token) {
-        VerifyEmail verifyEmail =
-            repo.findByToken(token)
-                .orElseThrow(
-                    () -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
+        VerifyEmail verifyEmail = verifyEmailRepo
+                .findByToken(token)
+                .orElseThrow(() -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
         if (isDateValidate(verifyEmail.getExpiryDate())) {
             log.info("Date of user email is valid.");
             delete(verifyEmail);
@@ -87,7 +86,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
      */
     @Override
     public List<VerifyEmail> findAll() {
-        return repo.findAll();
+        return verifyEmailRepo.findAll();
     }
 
     private LocalDateTime calculateExpiryDate(Integer expiryTimeInHour) {
@@ -108,9 +107,9 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
      */
     @Override
     public void delete(VerifyEmail verifyEmail) {
-        if (!repo.existsById(verifyEmail.getId())) {
+        if (!verifyEmailRepo.existsById(verifyEmail.getId())) {
             throw new BadIdException(NO_ANY_VERIFY_EMAIL_TO_DELETE + verifyEmail.getId());
         }
-        repo.delete(verifyEmail);
+        verifyEmailRepo.delete(verifyEmail);
     }
 }

@@ -13,7 +13,7 @@ import greencity.exception.BadRefreshTokenException;
 import greencity.exception.UserAlreadyRegisteredException;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.jwt.JwtTokenTool;
+import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.service.impl.UserServiceImpl;
 import java.time.LocalDateTime;
@@ -63,7 +63,7 @@ public class OwnSecurityServiceImplTest {
     @Mock
     private AuthenticationManager manager;
     @Mock
-    private JwtTokenTool tokenTool;
+    private JwtTool tokenTool;
 
     @Test
     public void signUp() {

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class JwtTokenTool {
+public class JwtTool {
     @Value("${accessTokenValidTimeInMinutes}")
     private Integer accessTokenValidTimeInMinutes;
 
@@ -42,7 +42,7 @@ public class JwtTokenTool {
      *
      * @param userService {@link UserService} - service for {@link User}
      */
-    public JwtTokenTool(UserService userService) {
+    public JwtTool(UserService userService) {
         this.userService = userService;
     }
 
@@ -114,7 +114,7 @@ public class JwtTokenTool {
      * @param servletRequest this is your request.
      * @return {@link String} of token or null.
      */
-    public String getTokenByBody(HttpServletRequest servletRequest) {
+    public String getTokenFromHttpServletRequest(HttpServletRequest servletRequest) {
         String token = servletRequest.getHeader("Authorization");
         if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7);
@@ -139,7 +139,9 @@ public class JwtTokenTool {
         }
         userService.updateLastVisit(user);
         return new UsernamePasswordAuthenticationToken(
-            user.getEmail(), "", Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
+                user.getEmail(),
+                "",
+                Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
     }
 
     /**

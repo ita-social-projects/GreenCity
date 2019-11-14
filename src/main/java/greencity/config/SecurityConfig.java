@@ -3,7 +3,7 @@ package greencity.config;
 import static greencity.constant.AppConstant.*;
 
 import greencity.security.jwt.JwtAuthenticationProvider;
-import greencity.security.jwt.JwtTokenTool;
+import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,16 +31,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private JwtTokenTool tool;
+    private JwtTool tool;
     private UserService userService;
 
     /**
      * Constructor.
      *
-     * @param tool        {@link JwtTokenTool} - tool for JWT
+     * @param tool        {@link JwtTool} - tool for JWT
      * @param userService {@link UserService} - user service.
      */
-    public SecurityConfig(JwtTokenTool tool, UserService userService) {
+    public SecurityConfig(JwtTool tool, UserService userService) {
         this.tool = tool;
         this.userService = userService;
     }

@@ -11,7 +11,7 @@ public class JwtFilterTest {
     private JwtFilter filter;
 
     @Mock
-    private JwtTokenTool tool;
+    private JwtTool tool;
 
     @Test
     public void doFilter() {

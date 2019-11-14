@@ -4,7 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
-import greencity.security.jwt.JwtTokenTool;
+import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class GoogleSecurityServiceImplTest {
     private UserService userService;
 
     @Mock
-    private JwtTokenTool tokenTool;
+    private JwtTool tokenTool;
     @Mock
     private GoogleIdTokenVerifier verifier;
     @InjectMocks

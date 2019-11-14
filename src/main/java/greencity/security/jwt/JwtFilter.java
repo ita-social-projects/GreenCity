@@ -20,15 +20,15 @@ import org.springframework.web.filter.GenericFilterBean;
  */
 @Slf4j
 public class JwtFilter extends GenericFilterBean {
-    private JwtTokenTool tool;
+    private JwtTool jwtTool;
 
     /**
      * Constructor.
      *
-     * @param tool {@link JwtTokenTool} - tool for JWT
+     * @param jwtTool {@link JwtTool} - tool for JWT
      */
-    public JwtFilter(JwtTokenTool tool) {
-        this.tool = tool;
+    public JwtFilter(JwtTool jwtTool) {
+        this.jwtTool = jwtTool;
     }
 
     /**
@@ -40,12 +40,11 @@ public class JwtFilter extends GenericFilterBean {
      * @param filterChain     this is filter of chain
      */
     @Override
-    public void doFilter(
-        ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-        throws IOException, ServletException {
-        String token = tool.getTokenByBody((HttpServletRequest) servletRequest);
-        if (token != null && tool.isTokenValid(token)) {
-            Authentication authentication = tool.getAuthentication(token);
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
+        String token = jwtTool.getTokenFromHttpServletRequest((HttpServletRequest) servletRequest);
+        if (token != null && jwtTool.isTokenValid(token)) {
+            Authentication authentication = jwtTool.getAuthentication(token);
             if (authentication != null) {
                 log.info("User successfully authenticate - {}", authentication.getPrincipal());
                 SecurityContextHolder.getContext().setAuthentication(authentication);

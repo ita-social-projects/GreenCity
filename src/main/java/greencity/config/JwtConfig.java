@@ -1,7 +1,7 @@
 package greencity.config;
 
 import greencity.security.jwt.JwtFilter;
-import greencity.security.jwt.JwtTokenTool;
+import greencity.security.jwt.JwtTool;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -14,14 +14,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @version 1.0
  */
 public class JwtConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
-    private JwtTokenTool tool;
+    private JwtTool tool;
 
     /**
      * Constructor.
      *
-     * @param tool {@link JwtTokenTool} - tool for JWT
+     * @param tool {@link JwtTool} - tool for JWT
      */
-    public JwtConfig(JwtTokenTool tool) {
+    public JwtConfig(JwtTool tool) {
         this.tool = tool;
     }
 

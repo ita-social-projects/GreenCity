@@ -20,8 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 /**
  * Class that provide authentication logic.
  *
- * @author Nazar Stasyuk
- * @version 1.0
+ * @author Nazar Stasyuk and Yurii Koval
+ * @version 1.1
  */
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     private UserService userService;
@@ -48,29 +48,22 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
-
-        User byEmail = userService.findByEmail(email).orElseThrow(
-            () -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD)
-        );
-
+        User byEmail = userService
+                .findByEmail(email)
+                .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
         OwnSecurity ownSecurity = byEmail.getOwnSecurity();
-
         if (ownSecurity == null) {
             throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
         }
-
         if (!passwordEncoder.matches(password, ownSecurity.getPassword())) {
             throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
         }
-
         if (byEmail.getVerifyEmail() != null) {
             throw new UserUnverifiedException(USER_NOT_VERIFIED);
         }
-
         if (byEmail.getUserStatus() == UserStatus.DEACTIVATED) {
             throw new UserDeactivatedException(USER_DEACTIVATED);
         }
-
         return new UsernamePasswordAuthenticationToken(
             email,
             "",
