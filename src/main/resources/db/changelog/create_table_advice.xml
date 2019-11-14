@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet author="Vitaliy Dzen" id="4652326844-1">
+    <changeSet author="Vitaliy Dzen" id="4651326844-1">
         <createTable tableName="advices">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -20,7 +20,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet author="Vitaliy Dzen" id="4652326844-2">
+    <changeSet author="Vitaliy Dzen" id="4651326844-2">
         <addForeignKeyConstraint baseColumnNames="habit_dictionary_id"
                                  baseTableName="advices"
                                  constraintName="FK_habit_advices"
