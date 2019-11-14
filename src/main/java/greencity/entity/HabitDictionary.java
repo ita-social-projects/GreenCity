@@ -1,14 +1,16 @@
 package greencity.entity;
 
 import javax.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@EqualsAndHashCode(exclude = "name")
+@EqualsAndHashCode(exclude = "habit")
 @Table(name = "habit_dictionary")
 public class HabitDictionary {
     @Id
