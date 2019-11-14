@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.util.List;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,5 +22,5 @@ public class HabitDictionary {
     private String name;
 
     @OneToMany
-    private Habit habit;
+    private List<Habit> habit;
 }
