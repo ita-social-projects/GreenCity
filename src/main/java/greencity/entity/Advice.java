@@ -30,8 +30,8 @@ public class Advice {
      * @param advicePostDTO {@link AdvicePostDTO}
      * @author Vitaliy Dzen
      */
-    public Advice(AdvicePostDTO advicePostDTO) {
+    public Advice(AdvicePostDTO advicePostDTO, HabitDictionary habitDictionary) {
         this.name = advicePostDTO.getName();
-        this.habitDictionary = new HabitDictionary(advicePostDTO.getHabitDictionaryId(), "", null);
+        this.habitDictionary = new HabitDictionary(habitDictionary.getId(), habitDictionary.getName(), null);
     }
 }
