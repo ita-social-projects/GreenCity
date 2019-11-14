@@ -12,9 +12,9 @@ import lombok.*;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"userId", "habitDictionaryId"})
+    exclude = {"user", "habitDictionary"})
 @ToString(
-    exclude = {"userId", "habitDictionaryId"})
+    exclude = {"user", "habitDictionary"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class Habit {
     private Long id;
 
     @ManyToOne
-    private HabitDictionary habitDictionaryId;
+    private HabitDictionary habitDictionary;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
