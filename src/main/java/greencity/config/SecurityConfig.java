@@ -102,7 +102,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
-                "/place/save/favorite/**"
+                "/place/save/favorite/**",
+                "/user/goals/**"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
