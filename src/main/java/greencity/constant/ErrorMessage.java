@@ -51,6 +51,11 @@ public class ErrorMessage {
     public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
     public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
     public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT = "Password restore link already sent, please check your email: ";
+    public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
+    public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
+    public static final String USER_GOAL_STATUS_NOT_UPDATED = "User goal status was not updated";
+    public static final String USER_HAS_NO_SUCH_GOAL = "This user has no goal with id: ";
+    public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
 
     private ErrorMessage() {
     }
