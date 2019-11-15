@@ -1,18 +1,21 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserUpdateDto;
+import greencity.dto.goal.GoalDto;
+import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.BadEmailException;
+import greencity.exception.UserBlockedException;
 import greencity.service.UserService;
+import greencity.service.UserValidationService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
@@ -31,6 +34,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @AllArgsConstructor
 public class UserController {
     private UserService userService;
+    private UserValidationService userValidationService;
 
     /**
      * The method which update user status.
@@ -189,5 +193,101 @@ public class UserController {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userService.update(dto, email);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * Method returns list of user goals.
+     *
+     * @param principal - authentication principal
+     * @return {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Get user goals.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/goals")
+    public ResponseEntity<List<UserGoalDto>> getUserGoals(
+        @ApiParam("Id of current user. Cannot be empty.")
+        Principal principal,
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getUserGoals(userValidationService.userValidForActions(principal, userId)));
+    }
+
+    /**
+     * Method returns list of available (not ACTIVE) goals for user.
+     *
+     * @param principal - authentication principal
+     * @return {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Get available goals for user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/goals/available")
+    public ResponseEntity<List<GoalDto>> getAvailableGoals(
+        Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getAvailableGoals(userValidationService.userValidForActions(principal, userId)));
+    }
+
+
+    /**
+     * Method updates goal status.
+     *
+     * @return new {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Update goal status.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PatchMapping("/{userId}/goals/{goalId}")
+    public ResponseEntity<UserGoalDto> updateUserGoalStatus(
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId,
+        @ApiParam("Id of the goal that belongs to current user. Cannot be empty.")
+        @PathVariable Long goalId,
+        Principal principal) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(userService
+                .updateUserGoalStatus(userValidationService.userValidForActions(principal, userId), goalId));
+    }
+
+    /**
+     * Method saves goals, chosen by user.
+     *
+     * @param dto - dto with goals, chosen by user.
+     * @return new {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Save user goals.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/goals")
+    public ResponseEntity<List<UserGoalDto>> saveUserGoals(
+        @Valid @RequestBody BulkSaveUserGoalDto dto,
+        Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(userService.saveUserGoals(userValidationService.userValidForActions(principal, userId), dto));
     }
 }
