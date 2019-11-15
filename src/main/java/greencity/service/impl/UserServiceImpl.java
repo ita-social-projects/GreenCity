@@ -1,29 +1,36 @@
 package greencity.service.impl;
 
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.*;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.user.*;
+import greencity.entity.Goal;
 import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
+import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.*;
+import greencity.repository.GoalRepo;
+import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
+import greencity.service.UserValidationService;
+import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,7 +45,9 @@ public class UserServiceImpl implements UserService {
     /**
      * Autowired repository.
      */
-    private UserRepo repo;
+    private final UserRepo repo;
+    private final UserGoalRepo userGoalRepo;
+    private final GoalRepo goalRepo;
 
     /**
      * Autowired mapper.
@@ -198,6 +207,73 @@ public class UserServiceImpl implements UserService {
         user.setLastName(dto.getLastName());
         user.setEmailNotification(dto.getEmailNotification());
         return repo.save(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserGoalDto> getUserGoals(User user) {
+        List<UserGoalDto> userGoalsDto = userGoalRepo
+            .findAllByUserId(user.getId())
+            .stream()
+            .map(userGoal -> modelMapper.map(userGoal, UserGoalDto.class))
+            .collect(Collectors.toList());
+        if (userGoalsDto.isEmpty()) {
+            throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
+        }
+        return userGoalsDto;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<GoalDto> getAvailableGoals(User user) {
+        List<Goal> availableGoals = goalRepo.findAvailableGoalsByUser(user);
+        return modelMapper.map(availableGoals, new TypeToken<List<GoalDto>>(){}.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserGoalDto> saveUserGoals(User user, BulkSaveUserGoalDto bulkDto) {
+        List<UserGoalDto> dto = bulkDto.getUserGoalDtos();
+        List<String> errorMessages = new ArrayList<>();
+        for (UserGoalDto el : dto) {
+            UserGoal userGoal = modelMapper.map(el, UserGoal.class);
+            userGoal.setUser(user);
+            List<UserGoal> duplicates =
+                user.getUserGoals().stream().filter(o -> o.equals(userGoal)).collect(Collectors.toList());
+            if (!duplicates.isEmpty()) {
+                errorMessages.add(userGoal.getGoal().getText());
+            } else {
+                user.getUserGoals().add(userGoal);
+            }
+        }
+        userGoalRepo.saveAll(user.getUserGoals());
+        if (!errorMessages.isEmpty()) {
+            throw new UserGoalNotSavedException(USER_GOAL_WHERE_NOT_SAVED + errorMessages.toString());
+        }
+        return dto;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserGoalDto updateUserGoalStatus(User user, Long goalId) {
+        UserGoal userGoal;
+        if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
+            userGoal = userGoalRepo.getOne(goalId);
+            userGoal.setStatus(GoalStatus.DISABLED);
+            userGoal.setDateCompleted(LocalDateTime.now());
+            userGoalRepo.save(userGoal);
+        } else {
+            throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
+        }
+        return modelMapper.map(userGoal, UserGoalDto.class);
     }
 
     /**

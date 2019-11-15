@@ -2,11 +2,14 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -136,4 +139,37 @@ public interface UserService {
      * @author Nazar Stasyuk
      */
     User update(UserUpdateDto dto, String email);
+
+    /**
+     * Method returns list of user goals.
+     *
+     * @param user {@link User} current user.
+     * @return List of {@link UserGoalDto}.
+     */
+    List<UserGoalDto> getUserGoals(User user);
+
+    /**
+     * Method returns list of available (not ACTIVE) goals for user.
+     *
+     * @param user {@link User} current user.
+     * @return List of {@link GoalDto}.
+     */
+    List<GoalDto> getAvailableGoals(User user);
+
+    /**
+     * Method saves list of user goals.
+     *
+     * @param user {@link User} current user.
+     * @return List of saved {@link UserGoalDto}.
+     */
+    List<UserGoalDto> saveUserGoals(User user, BulkSaveUserGoalDto dto);
+
+    /**
+     * Method update status of user goal.
+     *
+     * @param user {@link User} current user.
+     * @param goalId - {@link UserGoal}'s id that should be updated.
+     * @return {@link UserGoalDto}
+     */
+    UserGoalDto updateUserGoalStatus(User user, Long goalId);
 }

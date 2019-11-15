@@ -75,5 +75,5 @@ public class User {
     private EmailNotification emailNotification;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    private List<UserGoal> goals = new ArrayList<>();
+    private List<UserGoal> userGoals = new ArrayList<>();
 }
