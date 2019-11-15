@@ -31,7 +31,7 @@ public interface OwnSecurityService {
     /**
      * Method that delete {@link greencity.entity.VerifyEmail} when user not submit email.
      */
-    void deleteNotActiveEmailUsers();
+    void deleteNotActivatedEmails();
 
     /**
      * Method that allow you sign-in user.

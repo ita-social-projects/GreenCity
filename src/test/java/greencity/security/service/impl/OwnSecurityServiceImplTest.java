@@ -108,32 +108,6 @@ public class OwnSecurityServiceImplTest {
     }
 
     @Test
-    public void deleteNotActiveEmailUsers() {
-        when(verifyEmailService.findAll())
-            .thenReturn(
-                Collections.singletonList(
-                    VerifyEmail.builder()
-                        .id(1L)
-                        .expiryDate(LocalDateTime.now().plusHours(2))
-                        .token("some token")
-                        .user(
-                            User.builder()
-                                .id(2L)
-                                .ownSecurity(new OwnSecurity())
-                                .build())
-                        .build()));
-        when(verifyEmailService.isDateValidate(any())).thenReturn(true);
-        when(repo.existsById(any())).thenReturn(true);
-        doNothing().when(repo).delete(any());
-        doNothing().when(verifyEmailService).delete(any(VerifyEmail.class));
-        doNothing().when(userService).deleteById(anyLong());
-        service.deleteNotActiveEmailUsers();
-        verify(verifyEmailService, times(1)).findAll();
-        verify(verifyEmailService, times(1)).delete(any());
-        verify(userService, times(1)).deleteById(any());
-    }
-
-    @Test
     public void signIn() {
         when(manager.authenticate(any()))
             .thenReturn(

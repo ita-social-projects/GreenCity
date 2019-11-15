@@ -115,17 +115,9 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Scheduled(fixedRate = 86400000)
     @Override
-    public void deleteNotActiveEmailUsers() { //TODO - do not drag all of the users
-        verifyEmailService
-            .findAll()
-            .forEach(
-                verifyEmail -> {
-                    if (verifyEmailService.isDateValidate(verifyEmail.getExpiryDate())) {
-                        delete(verifyEmail.getUser().getOwnSecurity());
-                        verifyEmailService.delete(verifyEmail);
-                        userService.deleteById(verifyEmail.getUser().getId());
-                    }
-                });
+    public void deleteNotActivatedEmails() {
+        int rows = verifyEmailService.deleteAllExpiredEmailVerificationTokens();
+        log.info(rows + " email verification tokens were deleted.");
     }
 
     /**

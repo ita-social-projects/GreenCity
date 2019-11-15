@@ -72,7 +72,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
         VerifyEmail verifyEmail = verifyEmailRepo
                 .findByToken(token)
                 .orElseThrow(() -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
-        if (isDateValidate(verifyEmail.getExpiryDate())) {
+        if (isNotExpired(verifyEmail.getExpiryDate())) {
             log.info("Date of user email is valid.");
             delete(verifyEmail);
         } else {
@@ -98,7 +98,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isDateValidate(LocalDateTime emailExpiredDate) {
+    public boolean isNotExpired(LocalDateTime emailExpiredDate) {
         return LocalDateTime.now().isBefore(emailExpiredDate);
     }
 
@@ -111,5 +111,12 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
             throw new BadIdException(NO_ANY_VERIFY_EMAIL_TO_DELETE + verifyEmail.getId());
         }
         verifyEmailRepo.delete(verifyEmail);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int deleteAllExpiredEmailVerificationTokens() {
+        return verifyEmailRepo.deleteAllExpiredEmailVerificationTokens();
     }
 }

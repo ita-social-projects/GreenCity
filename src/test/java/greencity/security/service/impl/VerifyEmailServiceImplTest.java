@@ -65,8 +65,8 @@ public class VerifyEmailServiceImplTest {
 
     @Test
     public void isDateValidate() {
-        assertTrue(verifyEmailService.isDateValidate(LocalDateTime.now().plusHours(24)));
-        assertFalse(verifyEmailService.isDateValidate(LocalDateTime.now().minusHours(48)));
+        assertTrue(verifyEmailService.isNotExpired(LocalDateTime.now().plusHours(24)));
+        assertFalse(verifyEmailService.isNotExpired(LocalDateTime.now().minusHours(48)));
     }
 
 
