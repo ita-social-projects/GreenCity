@@ -157,6 +157,67 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Method intercept exception {@link NotCurrentUserException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     */
+    @ExceptionHandler(NotCurrentUserException.class)
+    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(NotCurrentUserException ex,
+                                                                              WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercept exception {@link UserGoalNotSavedException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     */
+    @ExceptionHandler(UserGoalNotSavedException.class)
+    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(UserGoalNotSavedException ex,
+                                                                              WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercept exception {@link UserHasNoGoalsException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     */
+    @ExceptionHandler(UserHasNoGoalsException.class)
+    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(UserHasNoGoalsException ex,
+                                                                              WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+
+    /**
+     * Method intercept exception {@link UserGoalStatusNotUpdatedException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     */
+    @ExceptionHandler(UserGoalStatusNotUpdatedException.class)
+    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(UserGoalStatusNotUpdatedException ex,
+                                                                              WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
      * Customize the response for HttpMessageNotReadableException.
      *
      * @param ex the exception
