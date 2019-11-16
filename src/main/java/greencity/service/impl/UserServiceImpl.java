@@ -231,6 +231,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<GoalDto> getAvailableGoals(User user) {
         List<Goal> availableGoals = goalRepo.findAvailableGoalsByUser(user);
+        if (availableGoals.isEmpty()) {
+            throw new UserHasNoAvailableGoalsException(USER_HAS_NO_AVAILABLE_GOALS);
+        }
         return modelMapper.map(availableGoals, new TypeToken<List<GoalDto>>(){}.getType());
     }
 
