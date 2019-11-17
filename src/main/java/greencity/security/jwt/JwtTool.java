@@ -110,7 +110,7 @@ public class JwtTool {
     public Authentication getAuthentication(String token) {
         return userService
                 .findByEmail(tokenToEmailParser.apply(token))
-                .filter(user -> user.getUserStatus() != UserStatus.DEACTIVATED) // TODO - what if user is BLOCKED ????
+                .filter(user -> user.getUserStatus() == UserStatus.ACTIVATED)
                 .map(userService::updateLastVisit)
                 .map(user -> new UsernamePasswordAuthenticationToken(
                         user.getEmail(),
