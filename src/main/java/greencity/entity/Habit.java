@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.*;
@@ -31,8 +32,8 @@ public class Habit {
     private Boolean statusHabit;
 
     @Column(name = "create_date", nullable = false)
-    private LocalDateTime createDate;
+    private LocalDate createDate;
 
-    @OneToMany(cascade = {CascadeType.ALL})
-    private List<HabitStatistics> habitStatistics;
+    @OneToMany(mappedBy = "habit", cascade = {CascadeType.ALL})
+    private List<HabitStatistic> habitStatistics;
 }

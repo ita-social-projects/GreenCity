@@ -52,7 +52,9 @@ public class ErrorMessage {
     public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
     public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT = "Password restore link already sent, please check your email: ";
     public static final String HABIT_EXIST = "The Habit is already exist by this date:  ";
-    public static final String HABIT_NOT_FOUND_BY_NAME = "The Habit does not exist by this id :  ";
+    public static final String HABIT_NOT_FOUND_BY_ID = "The Habit does not exist by this id : ";
+    public static final String WRONG_DATE = "Can't create habit statistic for such date";
+    public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "The Habit statistic does not exist by this id : ";
 
     private ErrorMessage() {
     }

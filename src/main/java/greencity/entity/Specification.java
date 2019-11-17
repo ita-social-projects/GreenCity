@@ -12,6 +12,7 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode(exclude = {"discountValues"})
 @ToString(exclude = {"discountValues"})
+@Table(name = "specifications")
 public class Specification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

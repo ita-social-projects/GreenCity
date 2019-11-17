@@ -40,7 +40,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return User id
      * @author Zakhar Skaletskyi
      */
-    @Query("SELECT id from User where email=:email")
+    @Query("SELECT id FROM User WHERE email=:email")
     Optional<Long> findIdByEmail(String email);
 
     /**

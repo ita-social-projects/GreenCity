@@ -21,6 +21,6 @@ public class HabitDictionary {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany
+    @OneToMany(mappedBy = "habitDictionary")
     private List<Habit> habit;
 }

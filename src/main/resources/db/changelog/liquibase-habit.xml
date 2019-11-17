@@ -15,7 +15,7 @@
             <column name="status" type="TINYINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="date" type="datetime(6)">
+            <column name="create_date" type="datetime(6)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -23,7 +23,7 @@
     <changeSet author="Volodymyr" id="1571227598316-77">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habits" constraintName="fk_habits_user"
                                  deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="user"/>
+                                 referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
     <changeSet author="Volodymyr" id="1571227598316-78">
         <addForeignKeyConstraint baseColumnNames="habit_dictionary_id" baseTableName="habits"
