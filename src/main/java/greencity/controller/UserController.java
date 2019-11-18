@@ -221,7 +221,7 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/goals")
-    public ResponseEntity<List<UserGoalDto>> getUserGoals(
+    public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
         Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {

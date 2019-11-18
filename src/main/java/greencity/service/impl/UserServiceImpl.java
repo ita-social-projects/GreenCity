@@ -16,6 +16,7 @@ import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.*;
+import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.GoalRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService {
      * Autowired mapper.
      */
     private ModelMapper modelMapper;
+    private UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
 
     /**
      * {@inheritDoc}
@@ -213,16 +215,16 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserGoalDto> getUserGoals(User user) {
-        List<UserGoalDto> userGoalsDto = userGoalRepo
+    public List<UserGoalResponseDto> getUserGoals(User user) {
+        List<UserGoalResponseDto> userGoalResponseDto = userGoalRepo
             .findAllByUserId(user.getId())
             .stream()
-            .map(userGoal -> modelMapper.map(userGoal, UserGoalDto.class))
+            .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
             .collect(Collectors.toList());
-        if (userGoalsDto.isEmpty()) {
+        if (userGoalResponseDto.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
         }
-        return userGoalsDto;
+        return userGoalResponseDto;
     }
 
     /**
