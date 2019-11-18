@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CalendarUsefulHabits {
+public class CalendarUsefulHabitsDto {
     private LocalDate creationDate;
     private Map<String, Integer> amountUnTakenItemsPerMonth;
     private Map<String, Integer> differenceUnTakenItemsWithPreviousMonth;

@@ -40,9 +40,17 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @param habitId dsa.
      * @return
      */
-    @Query(nativeQuery = true, value = "SELECT amount_of_items - (SELECT amount_of_items FROM habit_statistics\n"
-        + " WHERE habit_statistics.date = CURRENT_DATE - INTERVAL 1 MONTH AND habit_id=?1)  "
-        + " FROM habit_statistics\n"
-        + " WHERE habit_statistics.date = CURRENT_DATE AND habit_id=?1")
+    @Query(nativeQuery = true, value = "SELECT amount_of_items FROM habit_statistics\n"
+        + " WHERE habit_statistics.date = CURRENT_DATE - INTERVAL 1 MONTH AND habit_id =:habitId")
     Optional<Integer> getDifferenceItemsWithPreviousMonth(@Param("habitId") Long habitId);
+
+    /**
+     * dsadas.
+     *
+     * @param habitId dasdas.
+     * @return
+     */
+    @Query (nativeQuery = true, value = "SELECT amount_of_items FROM habit_statistics\n"
+        + " WHERE habit_statistics.date = CURRENT_DATE AND habit_id =:habitId")
+    Optional<Integer> getUntakenItemsToday(@Param("habitId") Long habitId);
 }

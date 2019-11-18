@@ -94,9 +94,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     /**
-     *dasdasfgsskfa.
+     * dasdasfgsskfa.
      *
-     * @param email dasdas.
+     * @param email  dasdas.
      * @param status asdas.
      * @return
      */
@@ -113,7 +113,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      *
      * @return
      */
-    public CalendarUsefulHabits findAllStatistic(String email) {
+    public CalendarUsefulHabitsDto findAllStatistic(String email) {
         List<Habit> allHabitsByUserId = findAllHabitsByUserEmail(email);
 
         Map<String, Integer> statisticByHabitsPerMonth =
@@ -122,13 +122,21 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         Map<String, Integer> statisticUnTakenItemsWithPrevMonth =
             getDifferenceItemsWithPrevMonth(allHabitsByUserId);
 
-        CalendarUsefulHabits dto = new CalendarUsefulHabits();
+        CalendarUsefulHabitsDto dto = new CalendarUsefulHabitsDto();
 
         dto.setCreationDate(allHabitsByUserId.get(0).getCreateDate());
         dto.setAmountUnTakenItemsPerMonth(statisticByHabitsPerMonth);
         dto.setDifferenceUnTakenItemsWithPreviousMonth(statisticUnTakenItemsWithPrevMonth);
 
         return dto;
+    }
+
+    private Integer getItemsForPreviousMonth(Long habitId) {
+        return habitStatisticRepo.getDifferenceItemsWithPreviousMonth(habitId).orElse(0);
+    }
+
+    private Integer getItemsTakenToday(Long habitId) {
+        return habitStatisticRepo.getUntakenItemsToday(habitId).orElse(0);
     }
 
     private Map<String, Integer> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
@@ -146,8 +154,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             .stream()
             .collect(Collectors
                 .toMap(habit -> habit.getHabitDictionary().getName(),
-                    habit -> habitStatisticRepo
-                        .getDifferenceItemsWithPreviousMonth(habit.getId()).orElse(0)
+                    habit -> getItemsTakenToday(habit.getId()) - getItemsForPreviousMonth(habit.getId())
                 ));
     }
 

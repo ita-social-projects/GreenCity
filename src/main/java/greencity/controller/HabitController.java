@@ -2,7 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.CalendarUsefulHabits;
+import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.HabitStatistic;
@@ -57,7 +57,7 @@ public class HabitController {
     })
     @PatchMapping("/statistic/{habitStatisticId}")
     public ResponseEntity<UpdateHabitStatisticDto> update(@PathVariable Long habitStatisticId,
-        @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
+                                                          @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticServiceImpl
             .update(habitStatisticId, habitStatisticForUpdateDto));
     }
@@ -70,13 +70,13 @@ public class HabitController {
      */
     @ApiOperation(value = "Find user statistic")
     @GetMapping("/statistic")
-    public ResponseEntity<CalendarUsefulHabits> findAllByUserEmail(@ApiIgnore Principal principal) {
+    public ResponseEntity<CalendarUsefulHabitsDto> findAllBy(@ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitStatisticServiceImpl.findAllStatistic(principal.getName()));
     }
 
     /**
-     *dasdasdas.
+     * dasdasdas.
      *
      * @param habitId dsadasdas.
      * @return
