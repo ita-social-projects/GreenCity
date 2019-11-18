@@ -87,6 +87,9 @@ public class ValidationConstants {
     public static final String BAD_DISCOUNT_VALUES_LIST_REQUEST = "Length of discount values list can not be less than 1.";
     public static final String EMPTY_PHOTO_NAME = "The name of photo field can not be empty";
 
+    public static final int MIN_AMOUNT_OF_ITEMS = 0;
+    public static final int MAX_AMOUNT_OF_ITEMS = 16;
+
     private ValidationConstants() {
     }
 }
