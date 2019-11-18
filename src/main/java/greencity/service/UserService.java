@@ -171,5 +171,5 @@ public interface UserService {
      * @param goalId - {@link UserGoal}'s id that should be updated.
      * @return {@link UserGoalDto}
      */
-    UserGoalDto updateUserGoalStatus(User user, Long goalId);
+    UserGoalResponseDto updateUserGoalStatus(User user, Long goalId);
 }
