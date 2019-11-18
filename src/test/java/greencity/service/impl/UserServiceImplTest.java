@@ -8,30 +8,35 @@ import static org.mockito.Mockito.*;
 import greencity.GreenCityApplication;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserGoalDto;
 import greencity.dto.user.UserUpdateDto;
+import greencity.entity.Goal;
 import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
+import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdException;
-import greencity.exception.LowRoleLevelException;
-import greencity.exception.UserAlreadyRegisteredException;
+import greencity.exception.*;
+import greencity.repository.GoalRepo;
+import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.OngoingStubbing;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -41,11 +46,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
 public class UserServiceImplTest {
 
     @Mock
     UserRepo userRepo;
+
+    @Mock
+    UserGoalRepo userGoalRepo;
+
+    @Mock
+    GoalRepo goalRepo;
+
     User user =
         User.builder()
             .id(1l)
