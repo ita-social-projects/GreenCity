@@ -8,10 +8,7 @@ import static org.mockito.Mockito.*;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserGoalDto;
-import greencity.dto.user.UserUpdateDto;
+import greencity.dto.user.*;
 import greencity.entity.Goal;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
@@ -19,6 +16,7 @@ import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.*;
+import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.GoalRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
@@ -51,6 +49,9 @@ public class UserServiceImplTest {
 
     @Mock
     GoalRepo goalRepo;
+
+    @Mock
+    UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
 
     User user =
         User.builder()
@@ -278,9 +279,9 @@ public class UserServiceImplTest {
     @Test
     public void getUserGoalsTest() {
         List<UserGoal> userGoals = new ArrayList<>(Arrays.asList(new UserGoal(), new UserGoal()));
-        List<UserGoalDto> userGoalDto = userGoals
+        List<UserGoalResponseDto> userGoalDto = userGoals
             .stream()
-            .map(userGoal -> modelMapper.map(userGoal, UserGoalDto.class))
+            .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
             .collect(Collectors.toList());
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
         assertEquals(userService.getUserGoals(user), userGoalDto);
