@@ -9,10 +9,7 @@ import greencity.GreenCityApplication;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserGoalDto;
-import greencity.dto.user.UserUpdateDto;
+import greencity.dto.user.*;
 import greencity.entity.Goal;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
@@ -279,4 +276,36 @@ public class UserServiceImplTest {
         assertEquals(userUpdateDto.getEmailNotification(), user.getEmailNotification());
         verify(userRepo, times(1)).save(any());
     }
+
+    @Test
+    public void getUserGoalsTest() {
+        List<UserGoal> userGoals = new ArrayList<>(Arrays.asList(new UserGoal(), new UserGoal()));
+        List<UserGoalDto> userGoalDto = userGoals
+            .stream()
+            .map(userGoal -> modelMapper.map(userGoal, UserGoalDto.class))
+            .collect(Collectors.toList());
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
+        assertEquals(userService.getUserGoals(user), userGoalDto);
+    }
+
+    @Test(expected = UserHasNoGoalsException.class)
+    public void getUserGoalsUserHasNoGoalTest() {
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
+        userService.getUserGoals(user);
+    }
+
+    @Test
+    public void getAvailableGoalsTest() {
+        List<Goal> goals = new ArrayList<>(Arrays.asList(new Goal(), new Goal()));
+        List<GoalDto> goalDto = modelMapper.map(goals, new TypeToken<List<GoalDto>>(){}.getType());
+        when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(goals);
+        assertEquals(userService.getAvailableGoals(user), goalDto);
+    }
+
+    @Test(expected = UserHasNoAvailableGoalsException.class)
+    public void getAvailableGoalsNoAvailableGoalsTest() {
+        when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(Collections.emptyList());
+        userService.getAvailableGoals(user);
+    }
+
 }
