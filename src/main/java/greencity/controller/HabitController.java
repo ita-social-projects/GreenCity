@@ -56,8 +56,9 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("/statistic/{habitStatisticId}")
-    public ResponseEntity<UpdateHabitStatisticDto> update(@PathVariable Long habitStatisticId,
-                                                          @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
+    public ResponseEntity<UpdateHabitStatisticDto> update(
+        @PathVariable Long habitStatisticId,
+        @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticServiceImpl
             .update(habitStatisticId, habitStatisticForUpdateDto));
     }
