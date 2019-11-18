@@ -146,7 +146,7 @@ public interface UserService {
      * @param user {@link User} current user.
      * @return List of {@link UserGoalDto}.
      */
-    List<UserGoalDto> getUserGoals(User user);
+    List<UserGoalResponseDto> getUserGoals(User user);
 
     /**
      * Method returns list of available (not ACTIVE) goals for user.
