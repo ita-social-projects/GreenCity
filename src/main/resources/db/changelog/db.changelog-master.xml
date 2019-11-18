@@ -7,4 +7,5 @@
     <include file="db/changelog/liquibase-outputChangeLog.xml"/>
     <include file="db/changelog/gc-1.xml"/>
     <include file="db/changelog/db.changelog-1.0-user-goals.xml"/>
+    <include file="db/changelog/create_table_advice.xml"/>
 </databaseChangeLog>

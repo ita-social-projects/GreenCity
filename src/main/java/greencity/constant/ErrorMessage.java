@@ -57,6 +57,11 @@ public class ErrorMessage {
     public static final String USER_GOAL_STATUS_NOT_UPDATED = "User goal status was not updated";
     public static final String USER_HAS_NO_SUCH_GOAL = "This user has no goal with id: ";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
+    public static final String INVALID_HABIT_ID = "Invalid habit id ";
+    public static final String INVALID_HABIT_NAME = "Invalid habit name ";
+    public static final String ADVICE_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
+    public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
+    public static final String ADVICE_NOT_SAVED_BY_NAME = "The name with such name already exist: ";
 
     private ErrorMessage() {
     }
