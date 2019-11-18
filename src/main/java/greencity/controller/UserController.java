@@ -210,8 +210,8 @@ public class UserController {
     })
     @GetMapping("/{userId}/goals")
     public ResponseEntity<List<UserGoalDto>> getUserGoals(
-        @ApiParam("Id of current user. Cannot be empty.")
         Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
