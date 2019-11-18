@@ -1,7 +1,7 @@
 package greencity.service;
 
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticForUpdateDto;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 
@@ -9,18 +9,18 @@ public interface HabitStatisticService {
     /**
      * Method for creating new Habit statistic to database.
      *
-     * @param habitStatisticDto - dto with {@link HabitStatistic} rate, amount of items, date and {@link Habit} id.
-     * @return {@link HabitStatisticDto} instance.
+     * @param addHabitStatisticDto - dto with {@link HabitStatistic} rate, amount of items, date and {@link Habit} id.
+     * @return {@link AddHabitStatisticDto} instance.
      */
-    HabitStatisticDto save(HabitStatisticDto habitStatisticDto);
+    AddHabitStatisticDto save(AddHabitStatisticDto addHabitStatisticDto);
 
     /**
      * Method for updating Habit statistic in database.
      *
      * @param dto - dto with {@link HabitStatistic} id, rate and amount of items.
-     * @return {@link HabitStatisticDto} instance.
+     * @return {@link AddHabitStatisticDto} instance.
      */
-    HabitStatisticForUpdateDto update(HabitStatisticForUpdateDto dto);
+    UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto);
 
     /**
      * Method for finding a Habit Statistic by its id.

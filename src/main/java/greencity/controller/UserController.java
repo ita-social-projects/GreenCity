@@ -4,14 +4,18 @@ import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.habitstatistic.HabitDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
+import greencity.entity.HabitStatistic;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
+import greencity.service.impl.HabitStatisticServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -31,6 +35,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @AllArgsConstructor
 public class UserController {
     private UserService userService;
+    private HabitStatisticServiceImpl habitStatisticServiceImpl;
 
     /**
      * The method which update user status.
@@ -124,7 +129,7 @@ public class UserController {
     @ApiOperation(value = "Get all available email notifications statuses")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = EmailNotification[].class),
-         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("emailNotifications")
     public ResponseEntity<List<EmailNotification>> getEmailNotifications() {
@@ -189,5 +194,17 @@ public class UserController {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userService.update(dto, email);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * dsasdasdas.
+     * @param id dasdasa.
+     * @param principal asdasdas.
+     * @return
+     */
+    @GetMapping("/{id}/habits")
+    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long id, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(habitStatisticServiceImpl.findAllHabitsByStatus(principal.getName(), true));
     }
 }

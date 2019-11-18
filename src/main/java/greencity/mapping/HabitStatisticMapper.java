@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.habitstatistic.HabitStatisticDto;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import greencity.exception.NotFoundException;
@@ -12,27 +12,25 @@ import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
-public class HabitStatisticMapper implements MapperToDto<HabitStatistic, HabitStatisticDto>,
-    MapperToEntity<HabitStatisticDto, HabitStatistic> {
+public class HabitStatisticMapper implements MapperToDto<HabitStatistic, AddHabitStatisticDto>,
+    MapperToEntity<AddHabitStatisticDto, HabitStatistic> {
     private ModelMapper modelMapper;
     private HabitRepo habitRepo;
 
     @Override
-    public HabitStatistic convertToEntity(HabitStatisticDto dto) {
+    public HabitStatistic convertToEntity(AddHabitStatisticDto dto) {
         Habit habit = habitRepo.findById(dto.getHabitId())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + dto.getHabitId()));
 
         HabitStatistic habitStatistic = modelMapper.map(dto, HabitStatistic.class);
         habitStatistic.setHabit(habit);
-        habitStatistic.setCreatedOn(dto.getDate());
         return habitStatistic;
     }
 
     @Override
-    public HabitStatisticDto convertToDto(HabitStatistic entity) {
-        HabitStatisticDto habitStatisticDto = modelMapper.map(entity, HabitStatisticDto.class);
-        habitStatisticDto.setHabitId(entity.getHabit().getId());
-        habitStatisticDto.setDate(entity.getCreatedOn());
-        return habitStatisticDto;
+    public AddHabitStatisticDto convertToDto(HabitStatistic entity) {
+        AddHabitStatisticDto addHabitStatisticDto = modelMapper.map(entity, AddHabitStatisticDto.class);
+        addHabitStatisticDto.setHabitId(entity.getHabit().getId());
+        return addHabitStatisticDto;
     }
 }

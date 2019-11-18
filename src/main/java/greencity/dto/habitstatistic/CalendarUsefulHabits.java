@@ -1,7 +1,7 @@
 package greencity.dto.habitstatistic;
 
-import greencity.entity.enums.HabitRate;
 import java.time.LocalDate;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HabitStatisticDto {
-    private Long id;
-    private HabitRate habitRate;
-    private LocalDate createdOn;
-    private Integer amountOfItems;
+public class CalendarUsefulHabits {
+    private LocalDate creationDate;
+    private Map<String, Integer> amountUnTakenItemsPerMonth;
+    private Map<String, Integer> differenceUnTakenItemsWithPreviousMonth;
 }
