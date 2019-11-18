@@ -104,7 +104,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return findAllHabitsByUserEmail(email)
             .stream()
             .filter(habit -> habit.getStatusHabit().equals(status))
-            .map(habit -> new HabitDto(habit.getId(), habit.getHabitDictionary().getName()))
+            .map(habit -> new HabitDto(habit.getId(), habit.getHabitDictionary().getName(), habit.getCreateDate()))
             .collect(Collectors.toList());
     }
 
