@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"openTime", "closeTime", "breakTime"})
 @Builder
+@Table(name = "opening_hours")
 public class OpeningHours {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

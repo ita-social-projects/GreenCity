@@ -21,6 +21,7 @@ import lombok.*;
         "location", "favoritePlaces", "category", "rates", "webPages", "status", "discountValues"})
 @ToString(exclude = {"comments", "photos", "favoritePlaces",
     "webPages", "rates", "discountValues", "openingHoursList", "location", "author"})
+@Table(name = "places")
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

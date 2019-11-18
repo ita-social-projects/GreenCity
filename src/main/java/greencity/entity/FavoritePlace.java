@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(exclude = "name")
+@Table(name = "favorite_places")
 public class FavoritePlace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

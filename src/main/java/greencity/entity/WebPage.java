@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "web_pages")
 public class WebPage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

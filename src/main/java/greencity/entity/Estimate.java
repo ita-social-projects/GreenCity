@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "estimates")
 public class Estimate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

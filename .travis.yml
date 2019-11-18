@@ -12,4 +12,5 @@ jdk:
 
 script:
   # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=SoftServe-Social-Projects_GreenCity -DskipTests=true
+  - git fetch --unshallow
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.login=f3b8179f9f5659ebd4be99410d38f8770f7859c2 -Dsonar.projectKey=SoftServe-Social-Projects_GreenCity -DskipTests=true

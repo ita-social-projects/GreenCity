@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@Table(name = "restore_password_email")
 public class RestorePasswordEmail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
