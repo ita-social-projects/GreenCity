@@ -4,7 +4,6 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdviceAdminDTO;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDTO;
-import greencity.dto.advice.AllAdvicesDTO;
 import greencity.entity.Advice;
 import greencity.exception.NotDeletedException;
 import greencity.exception.NotFoundException;
@@ -36,8 +35,8 @@ public class AdviceServiceImpl implements AdviceService {
      * @author Vitaliy Dzen
      */
     @Override
-    public List<AllAdvicesDTO> getAllAdvices() {
-        return adviceRepo.findAll().stream().map(AllAdvicesDTO::new).collect(Collectors.toList());
+    public List<AdviceAdminDTO> getAllAdvices() {
+        return adviceRepo.findAll().stream().map(AdviceAdminDTO::new).collect(Collectors.toList());
     }
 
     /**
@@ -66,7 +65,7 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method find {@link Advice} by name.
+     * Method find {@link Advice} by advice.
      *
      * @param name of {@link Advice}
      * @return {@link AdviceAdminDTO}
@@ -81,13 +80,13 @@ public class AdviceServiceImpl implements AdviceService {
     /**
      * Method saves new {@link Advice}.
      *
-     * @param advice {@link AdviceDto}
+     * @param advice {@link AdviceAdminDTO}
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
     @Override
     public Advice save(AdvicePostDTO advice) {
-        if (adviceRepo.findAdviceByName(advice.getName()).isPresent()) {
+        if (adviceRepo.findAdviceByName(advice.getAdvice()).isPresent()) {
             throw new NotSavedException(ErrorMessage.ADVICE_NOT_SAVED_BY_NAME);
         }
         return adviceRepo.save(new Advice(advice, habitDictionaryRepo.findById(advice.getHabitDictionaryId())
@@ -103,11 +102,11 @@ public class AdviceServiceImpl implements AdviceService {
      * @author Vitaliy Dzen
      */
     @Override
-    public Advice update(AdviceAdminDTO advice, Long id) {
+    public Advice update(AdvicePostDTO advice, Long id) {
         return adviceRepo.findById(id)
             .map(employee -> {
                 employee.setHabitDictionary(habitDictionaryRepo.findById(advice.getHabitDictionaryId()).get());
-                employee.setName(advice.getName());
+                employee.setName(advice.getAdvice());
                 return adviceRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));

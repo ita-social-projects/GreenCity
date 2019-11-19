@@ -8,7 +8,6 @@ import static org.mockito.Mockito.*;
 import greencity.dto.advice.AdviceAdminDTO;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDTO;
-import greencity.dto.advice.AllAdvicesDTO;
 import greencity.entity.Advice;
 import greencity.entity.HabitDictionary;
 import greencity.exception.NotDeletedException;
@@ -44,8 +43,8 @@ public class AdviceServiceImplTest {
 
     @Test
     public void getAllAdvicesFailed() {
-        List<AllAdvicesDTO> expected = Collections.emptyList();
-        when(adviceRepo.findAll().stream().map(AllAdvicesDTO::new).collect(Collectors.toList())).thenReturn(expected);
+        List<AdviceAdminDTO> expected = Collections.emptyList();
+        when(adviceRepo.findAll().stream().map(AdviceAdminDTO::new).collect(Collectors.toList())).thenReturn(expected);
         assertEquals(expected, adviceService.getAllAdvices());
     }
 
@@ -101,7 +100,7 @@ public class AdviceServiceImplTest {
 
     @Test
     public void update() {
-        AdviceAdminDTO adviceAdminDTO = new AdviceAdminDTO(advice);
+        AdvicePostDTO adviceAdminDTO = new AdvicePostDTO(advice);
         when(habitDictionaryRepo.findById(anyLong())).thenReturn(Optional.of(habitDictionary));
         when(adviceRepo.findById(anyLong())).thenReturn(Optional.of(advice));
         when(adviceRepo.save(advice)).thenReturn(advice);
@@ -111,7 +110,7 @@ public class AdviceServiceImplTest {
 
     @Test(expected = NotUpdatedException.class)
     public void updateFailed() {
-        AdviceAdminDTO adviceAdminDTO = new AdviceAdminDTO(advice);
+        AdvicePostDTO adviceAdminDTO = new AdvicePostDTO(advice);
         adviceService.update(adviceAdminDTO, 1L);
 
     }

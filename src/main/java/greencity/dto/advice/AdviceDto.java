@@ -12,7 +12,7 @@ public class AdviceDto {
     @Length(min = ValidationConstants.ADVICE_MIN_LENGTH,
         max = ValidationConstants.ADVICE_MAX_LENGTH,
         message = ValidationConstants.INVALID_ADVICE_LENGTH)
-    private String name;
+    private String advice;
 
     /**
      * The constructor takes {@link Advice} parameter.
@@ -21,6 +21,6 @@ public class AdviceDto {
      * @author Vitaliy Dzen
      */
     public AdviceDto(Advice advice) {
-        this.name = advice.getName();
+        this.advice = advice.getName();
     }
 }

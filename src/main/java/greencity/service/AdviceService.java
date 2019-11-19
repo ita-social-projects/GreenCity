@@ -38,7 +38,7 @@ public interface AdviceService {
     AdviceAdminDTO getAdviceById(Long id);
 
     /**
-     * Method find {@link Advice} by name.
+     * Method find {@link Advice} by advice.
      *
      * @param name of {@link Advice}
      * @return {@link AdviceAdminDTO}
@@ -49,7 +49,7 @@ public interface AdviceService {
     /**
      * Method saves new {@link Advice}.
      *
-     * @param advice {@link AdviceDto}
+     * @param advice {@link AdviceAdminDTO}
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
@@ -62,7 +62,7 @@ public interface AdviceService {
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
-    Advice update(AdviceAdminDTO advice, Long id);
+    Advice update(AdvicePostDTO advice, Long id);
 
     /**
      * Method delete {@link Advice} by id.
