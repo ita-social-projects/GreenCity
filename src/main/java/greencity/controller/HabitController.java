@@ -64,12 +64,6 @@ public class HabitController {
             .update(habitStatisticId, habitStatisticForUpdateDto));
     }
 
-    /**
-     * Method for finding some statistics by {@link User} email.
-     *
-     * @param email {@link User} email.
-     * @return {@link CalendarUsefulHabitsDto} instance.
-     */
 
     /**
      * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.

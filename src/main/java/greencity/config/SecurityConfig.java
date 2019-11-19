@@ -103,10 +103,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST,
                 "/category/**",
                 "/place/save/favorite/**",
-                "/user/goals/**"
+                "/user/goals/**",
+                "/habit/statistic/*"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,
-                "/advices/random/*"
+                "/advices/random/*",
+                "/habit/**"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
@@ -126,6 +128,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.PATCH,
                 "/user/update/role"
             ).hasRole(ADMIN)
+            .antMatchers(HttpMethod.PATCH,
+                "/habit/statistic/*"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,
                 "/user/all/",
                 "/user/roles",

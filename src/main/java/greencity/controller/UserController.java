@@ -195,14 +195,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+
     /**
-     * dsasdasdas.
-     * @param id dasdasa.
-     * @param principal asdasdas.
-     * @return
+     * Method for finding all {@link User} habits.
+     *
+     * @param userId {@link User} id.
+     * @param principal Principal with {@link User} email..
+     * @return list of {@link HabitDto}
      */
-    @GetMapping("/{id}/habits")
-    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long id, @ApiIgnore Principal principal) {
+    @GetMapping("/{userId}/habits")
+    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitStatisticServiceImpl.findAllHabitsByStatus(principal.getName(), true));
     }
