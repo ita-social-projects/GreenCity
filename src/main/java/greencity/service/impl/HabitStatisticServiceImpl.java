@@ -82,10 +82,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     /**
-     * Method for finding all habits by user email.
+     * {@inheritDoc}
      *
-     * @param email - user email.
-     * @return list of user's habits.
+     * @author Yuriy Olkhovskyi
      */
     public List<Habit> findAllHabitsByUserEmail(String email) {
         User user = userRepo.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage
@@ -94,11 +93,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     /**
-     * dasdasfgsskfa.
+     * {@inheritDoc}
      *
-     * @param email  dasdas.
-     * @param status asdas.
-     * @return
+     * @author Yuriy Olkhovskyi
      */
     public List<HabitDto> findAllHabitsByStatus(String email, Boolean status) {
         return findAllHabitsByUserEmail(email)
@@ -109,11 +106,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     /**
-     * Method for finding general info about user habits.
+     * {@inheritDoc}
      *
-     * @return
+     * @author Yuriy Olkhovskyi
      */
-    public CalendarUsefulHabitsDto findAllStatistic(String email) {
+    public CalendarUsefulHabitsDto getInfoAboutUserHabits(String email) {
         List<Habit> allHabitsByUserId = findAllHabitsByUserEmail(email);
 
         Map<String, Integer> statisticByHabitsPerMonth =
@@ -123,20 +120,19 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             getDifferenceItemsWithPrevMonth(allHabitsByUserId);
 
         CalendarUsefulHabitsDto dto = new CalendarUsefulHabitsDto();
-
         dto.setCreationDate(allHabitsByUserId.get(0).getCreateDate());
-        dto.setAmountUnTakenItemsPerMonth(statisticByHabitsPerMonth);
+        dto.setAllItemsPerMonth(statisticByHabitsPerMonth);
         dto.setDifferenceUnTakenItemsWithPreviousMonth(statisticUnTakenItemsWithPrevMonth);
 
         return dto;
     }
 
     private Integer getItemsForPreviousMonth(Long habitId) {
-        return habitStatisticRepo.getDifferenceItemsWithPreviousMonth(habitId).orElse(0);
+        return habitStatisticRepo.getAmountOfItemsInPreviousMonth(habitId).orElse(0);
     }
 
     private Integer getItemsTakenToday(Long habitId) {
-        return habitStatisticRepo.getUntakenItemsToday(habitId).orElse(0);
+        return habitStatisticRepo.getAmountOfItemsToday(habitId).orElse(0);
     }
 
     private Map<String, Integer> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
@@ -159,13 +155,12 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     /**
-     * dasdas.
+     * {@inheritDoc}
      *
-     * @param id dsadas.
-     * @return
+     * @author Yuriy Olkovskyi
      */
-    public List<HabitStatisticDto> findAllByHabitId(Long id) {
-        return habitStatisticRepo.findAllByHabitId(id)
+    public List<HabitStatisticDto> findAllByHabitId(Long habitId) {
+        return habitStatisticRepo.findAllByHabitId(habitId)
             .stream()
             .map(ft -> new HabitStatisticDto(ft.getId(), ft.getHabitRate(), ft.getCreatedOn(), ft.getAmountOfItems()))
             .collect(Collectors.toList());

@@ -5,7 +5,9 @@ import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
+import greencity.entity.User;
 import greencity.service.impl.HabitStatisticServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -26,29 +28,29 @@ public class HabitController {
     private final HabitStatisticServiceImpl habitStatisticServiceImpl;
 
     /**
-     * The method which saves new statistic by Habit id.
+     * Method for creating {@link HabitStatistic} by {@link Habit} id.
      *
      * @param addHabitStatisticDto - dto for {@link HabitStatistic} entity.
      * @returndto {@link AddHabitStatisticDto} instance.
      * @author Yuriy Olkhovskyi.
      */
-    @ApiOperation(value = "Add HabitStatistic.")
+    @ApiOperation(value = "Add habit statistic.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddHabitStatisticDto.class),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PostMapping("/statistic")
+    @PostMapping("/statistic/")
     public ResponseEntity saveHabitStatistic(@Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitStatisticServiceImpl.save(addHabitStatisticDto));
     }
 
     /**
-     * The method which updates {@link HabitStatistic}.
+     * Method for updating {@link HabitStatistic} by its id.
      *
      * @param habitStatisticForUpdateDto - {@link UpdateHabitStatisticDto} with habit statistic id and
      *                                   updated rate and amount of items.
-     * @return response object with {@link UpdateHabitStatisticDto}.
+     * @return {@link UpdateHabitStatisticDto} instance.
      */
     @ApiOperation(value = "Update habit statistic.")
     @ApiResponses(value = {
@@ -57,34 +59,41 @@ public class HabitController {
     })
     @PatchMapping("/statistic/{habitStatisticId}")
     public ResponseEntity<UpdateHabitStatisticDto> update(
-        @PathVariable Long habitStatisticId,
-        @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
+        @PathVariable Long habitStatisticId, @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticServiceImpl
             .update(habitStatisticId, habitStatisticForUpdateDto));
     }
 
     /**
-     * dsad.
+     * Method for finding some statistics by {@link User} email.
      *
-     * @param principal dasdas.
-     * @return
+     * @param email {@link User} email.
+     * @return {@link CalendarUsefulHabitsDto} instance.
      */
-    @ApiOperation(value = "Find user statistic")
+
+    /**
+     * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     *
+     * @param principal - Principal with {@link User} email.
+     * @return {@link CalendarUsefulHabitsDto} instance.
+     */
+    @ApiOperation(value = "Find some information about user habits.")
     @GetMapping("/statistic")
-    public ResponseEntity<CalendarUsefulHabitsDto> findAllBy(@ApiIgnore Principal principal) {
+    public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(@ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticServiceImpl.findAllStatistic(principal.getName()));
+            .body(habitStatisticServiceImpl.getInfoAboutUserHabits(principal.getName()));
     }
 
     /**
-     * dasdasdas.
+     * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
      *
-     * @param habitId dsadasdas.
-     * @return
+     * @param habitId {@link Habit} id.
+     * @return list of {@link HabitStatisticDto} instances.
      */
-    @ApiOperation(value = "Find statistic by its id.")
+    @ApiOperation(value = "Find statistic by habit id.")
     @GetMapping("/statistic/{habitId}")
-    public ResponseEntity<List<HabitStatisticDto>> findAllByUserEmail(
+    public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitStatisticServiceImpl.findAllByHabitId(habitId));

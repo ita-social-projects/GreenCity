@@ -1,5 +1,7 @@
 package greencity.repository;
 
+import greencity.dto.habitstatistic.HabitStatisticDto;
+import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import java.util.List;
 import java.util.Optional;
@@ -16,41 +18,42 @@ import org.springframework.stereotype.Repository;
 public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     JpaSpecificationExecutor<HabitStatistic> {
     /**
-     * dsadspa.
+     * Method for finding sum of all untaken items per month.
      *
-     * @param id dasda.
-     * @return
+     * @param habitId {@link Habit} id.
+     * @return sum of items per month.
      */
-    @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs WHERE habit_id=:id"
+    @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs WHERE habit_id=:habitId"
         + " AND MONTH(createdOn) = MONTH(CURRENT_DATE())\n"
         + " AND YEAR(createdOn) = YEAR(CURRENT_DATE())")
-    Optional<Integer> getSumOfAllItems(@Param("id") Long id);
+    Optional<Integer> getSumOfAllItems(@Param("habitId") Long habitId);
 
     /**
-     * Find all statistics by habit id.
+     * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
      *
-     * @param id .
-     * @return addsadsa
+     * @param habitId {@link Habit} id.
+     * @return list of {@link HabitStatisticDto} instances.
      */
-    List<HabitStatistic> findAllByHabitId(Long id);
+    List<HabitStatistic> findAllByHabitId(Long habitId);
 
     /**
-     * adsdas.
+     * Method for finding amount of items for the same day as now but in
+     * previous month.
      *
-     * @param habitId dsa.
-     * @return
+     * @param habitId {@link Habit} id.
+     * @return amount of items in Optional in case of absence such info.
      */
     @Query(nativeQuery = true, value = "SELECT amount_of_items FROM habit_statistics\n"
         + " WHERE habit_statistics.date = CURRENT_DATE - INTERVAL 1 MONTH AND habit_id =:habitId")
-    Optional<Integer> getDifferenceItemsWithPreviousMonth(@Param("habitId") Long habitId);
+    Optional<Integer> getAmountOfItemsInPreviousMonth(@Param("habitId") Long habitId);
 
     /**
-     * dsadas.
+     * Method for finding amount of items for the current day.
      *
-     * @param habitId dasdas.
-     * @return
+     * @param habitId {@link Habit} id.
+     * @return amount of items in Optional in case of absence such info.
      */
     @Query (nativeQuery = true, value = "SELECT amount_of_items FROM habit_statistics\n"
         + " WHERE habit_statistics.date = CURRENT_DATE AND habit_id =:habitId")
-    Optional<Integer> getUntakenItemsToday(@Param("habitId") Long habitId);
+    Optional<Integer> getAmountOfItemsToday(@Param("habitId") Long habitId);
 }

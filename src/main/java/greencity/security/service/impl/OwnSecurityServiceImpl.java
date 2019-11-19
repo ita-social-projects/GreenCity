@@ -117,7 +117,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             () -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
         String accessToken = jwtTokenTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
         String refreshToken = jwtTokenTool.createRefreshToken(byEmail.getEmail());
-        return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName(), true);
+        return new SuccessSignInDto(byEmail.getId(), accessToken, refreshToken, byEmail.getFirstName(), true);
     }
 
     /**
