@@ -6,8 +6,10 @@ import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.advice.AllAdvicesDTO;
 import greencity.entity.Advice;
+import greencity.exception.NotDeletedException;
 import greencity.exception.NotFoundException;
 import greencity.exception.NotSavedException;
+import greencity.exception.NotUpdatedException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.HabitDictionaryRepo;
 import greencity.service.AdviceService;
@@ -108,7 +110,7 @@ public class AdviceServiceImpl implements AdviceService {
                 employee.setName(advice.getName());
                 return adviceRepo.save(employee);
             })
-            .orElseThrow(() -> new NotSavedException(ErrorMessage.ADVICE_NOT_SAVED_BY_NAME));
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
     }
 
     /**
@@ -121,7 +123,7 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public Long delete(Long id) {
         if (!(adviceRepo.findById(id).isPresent())) {
-            throw new NotSavedException(ErrorMessage.ADVICE_NOT_SAVED_BY_NAME);
+            throw new NotDeletedException(ErrorMessage.ADVICE_NOT_DELETED);
         }
         adviceRepo.deleteById(id);
         return id;

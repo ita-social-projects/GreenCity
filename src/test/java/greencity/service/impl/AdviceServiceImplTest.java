@@ -11,8 +11,10 @@ import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.advice.AllAdvicesDTO;
 import greencity.entity.Advice;
 import greencity.entity.HabitDictionary;
+import greencity.exception.NotDeletedException;
 import greencity.exception.NotFoundException;
 import greencity.exception.NotSavedException;
+import greencity.exception.NotUpdatedException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.HabitDictionaryRepo;
 import java.util.Collections;
@@ -107,7 +109,7 @@ public class AdviceServiceImplTest {
         assertEquals(advice, adviceService.update(adviceAdminDTO, 1L));
     }
 
-    @Test(expected = NotSavedException.class)
+    @Test(expected = NotUpdatedException.class)
     public void updateFailed() {
         AdviceAdminDTO adviceAdminDTO = new AdviceAdminDTO(advice);
         adviceService.update(adviceAdminDTO, 1L);
@@ -121,7 +123,7 @@ public class AdviceServiceImplTest {
         verify(adviceRepo, times(1)).deleteById(anyLong());
     }
 
-    @Test(expected = NotSavedException.class)
+    @Test(expected = NotDeletedException.class)
     public void deleteFailed() {
         adviceService.delete(advice.getId());
     }
