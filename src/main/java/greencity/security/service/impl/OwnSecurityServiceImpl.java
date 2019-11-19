@@ -1,14 +1,13 @@
 package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
-
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.*;
-import greencity.security.dto.AccessTokenDto;
+import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
@@ -19,13 +18,10 @@ import greencity.security.service.OwnSecurityService;
 import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.function.Function;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +36,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final UserService userService;
     private final VerifyEmailService verifyEmailService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authManager;
     private final JwtTool jwtTool;
-    private final Function<String, String> tokenToEmailParser;
 
     /**
      * Constructor.
@@ -53,15 +47,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   VerifyEmailService verifyEmailService,
                                   PasswordEncoder passwordEncoder,
                                   AuthenticationManager authManager,
-                                  JwtTool jwtTool,
-                                  Function<String, String> tokenToEmailParser) {
+                                  JwtTool jwtTool) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.verifyEmailService = verifyEmailService;
         this.passwordEncoder = passwordEncoder;
-        this.authManager = authManager;
         this.jwtTool = jwtTool;
-        this.tokenToEmailParser = tokenToEmailParser;
     }
 
     /**
@@ -74,6 +65,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
         User user = createNewRegisteredUser(dto);
+        user.setRefreshTokenKey(jwtTool.generateRefreshTokenKey());
         User savedUser = userService.save(user);
         ownSecurityRepo.save(createUserOwnSecurityToUser(dto, savedUser));
         verifyEmailService.save(savedUser);
@@ -124,27 +116,38 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      * {@inheritDoc}
      */
     @Override
-    public SuccessSignInDto signIn(OwnSignInDto dto) {
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-        User byEmail = userService
-                .findByEmail(dto.getEmail())
-                .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail()));
-        String accessToken = jwtTool.createAccessToken(byEmail.getEmail(), byEmail.getRole());
-        String refreshToken = jwtTool.createRefreshToken(byEmail.getEmail());
-        return new SuccessSignInDto(accessToken, refreshToken, byEmail.getFirstName(), true);
+    public SuccessSignInDto signIn(final OwnSignInDto dto) {
+        User user = userService
+            .findByEmail(dto.getEmail())
+            .filter(u -> isPasswordCorrect(dto, u))
+            .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
+        String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
+        String refreshToken = jwtTool.createRefreshToken(user);
+        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), true);
+    }
+
+    private boolean isPasswordCorrect(OwnSignInDto signInDto, User user) {
+        return passwordEncoder.matches(signInDto.getPassword(), user.getOwnSecurity().getPassword());
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
-    public AccessTokenDto updateAccessToken(String refreshToken) {
-        if (jwtTool.isTokenValid(refreshToken)) {
-            String email = tokenToEmailParser.apply(refreshToken);
-            User user = userService
-                    .findByEmail(email)
-                    .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
-            return new AccessTokenDto(jwtTool.createAccessToken(user.getEmail(), user.getRole()));
+    public AccessRefreshTokensDto updateAccessTokens(String refreshToken) {
+        String email = jwtTool.getEmailOutOfAccessToken(refreshToken);
+        User user = userService
+            .findByEmail(email)
+            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        String newRefreshTokenKey = jwtTool.generateRefreshTokenKey();
+        userService.updateUserRefreshToken(newRefreshTokenKey, user.getId());
+        if (jwtTool.isTokenValid(refreshToken, user.getRefreshTokenKey())) {
+            user.setRefreshTokenKey(newRefreshTokenKey);
+            return new AccessRefreshTokensDto(
+                jwtTool.createAccessToken(user.getEmail(), user.getRole()),
+                jwtTool.createRefreshToken(user)
+            );
         }
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
     }

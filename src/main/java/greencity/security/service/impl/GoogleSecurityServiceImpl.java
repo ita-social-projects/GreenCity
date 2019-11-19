@@ -107,7 +107,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
 
     private SuccessSignInDto getSuccessSignInDto(User user) {
         String accessToken = tokenTool.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = tokenTool.createRefreshToken(user.getEmail());
-        return new SuccessSignInDto(accessToken, refreshToken, user.getFirstName(), false);
+        String refreshToken = tokenTool.createRefreshToken(user);
+        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), false);
     }
 }

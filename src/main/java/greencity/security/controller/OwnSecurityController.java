@@ -123,7 +123,7 @@ public class OwnSecurityController {
     })
     @GetMapping("/updateAccessToken")
     public ResponseEntity updateAccessToken(@RequestParam @NotBlank String refreshToken) {
-        return ResponseEntity.ok().body(service.updateAccessToken(refreshToken));
+        return ResponseEntity.ok().body(service.updateAccessTokens(refreshToken));
     }
 
 

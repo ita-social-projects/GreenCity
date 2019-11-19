@@ -1,7 +1,7 @@
 package greencity.security.service;
 
 import greencity.entity.OwnSecurity;
-import greencity.security.dto.AccessTokenDto;
+import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
@@ -45,9 +45,9 @@ public interface OwnSecurityService {
      * Method that update your access token by refresh token.
      *
      * @param refreshToken a value of {@link String}
-     * @return {@link AccessTokenDto} this is DTO with new access token
+     * @return {@link AccessRefreshTokensDto} this is DTO with new access token
      */
-    AccessTokenDto updateAccessToken(String refreshToken);
+    AccessRefreshTokensDto updateAccessTokens(String refreshToken);
 
     /**
      * Method for updating password.

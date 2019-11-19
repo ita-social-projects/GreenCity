@@ -1,15 +1,12 @@
 package greencity.security.jwt;
 
+import greencity.entity.User;
 import greencity.entity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
-import greencity.service.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.impl.DefaultJwtParser;
 import java.util.*;
-import java.util.function.Function;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,23 +22,19 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class JwtTool {
-    @Value("${accessTokenValidTimeInMinutes}")
-    private Integer accessTokenValidTimeInMinutes;
-
-    @Value("${refreshTokenValidTimeInMinutes}")
-    private Integer refreshTokenValidTimeInMinutes;
-    private final UserService userService;
-    private final Function<String, String> tokenToEmailParser;
-    private final String tokenKey;
+    private final Integer accessTokenValidTimeInMinutes;
+    private final Integer refreshTokenValidTimeInMinutes;
+    private final String accessTokenKey;
 
     /**
      * Constructor.
      */
-    @Autowired
-    public JwtTool(UserService userService, Function<String, String> tokenToEmailParser, String tokenKey) {
-        this.userService = userService;
-        this.tokenToEmailParser = tokenToEmailParser;
-        this.tokenKey = tokenKey;
+    public JwtTool(@Value("${accessTokenValidTimeInMinutes}") Integer accessTokenValidTimeInMinutes,
+                   @Value("${refreshTokenValidTimeInMinutes}") Integer refreshTokenValidTimeInMinutes,
+                   @Value("${tokenKey}") String accessTokenKey) {
+        this.accessTokenValidTimeInMinutes = accessTokenValidTimeInMinutes;
+        this.refreshTokenValidTimeInMinutes = refreshTokenValidTimeInMinutes;
+        this.accessTokenKey = accessTokenKey;
     }
 
     /**
@@ -61,17 +54,18 @@ public class JwtTool {
             .setClaims(claims)
             .setIssuedAt(now)
             .setExpiration(calendar.getTime())
-            .signWith(SignatureAlgorithm.HS256, tokenKey)
+            .signWith(SignatureAlgorithm.HS256, accessTokenKey)
             .compact();
     }
 
     /**
-     * Method for creating refresh token.
+     * Method for creating access token.
      *
-     * @param email this is email of user.
+     * @param user - entity {@link User}
      */
-    public String createRefreshToken(String email) {
-        Claims claims = Jwts.claims().setSubject(email);
+    public String createRefreshToken(User user) {
+        Claims claims = Jwts.claims().setSubject(user.getEmail());
+        claims.put("roles", Collections.singleton(user.getRole().name()));
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
@@ -80,8 +74,46 @@ public class JwtTool {
             .setClaims(claims)
             .setIssuedAt(now)
             .setExpiration(calendar.getTime())
-            .signWith(SignatureAlgorithm.HS256, tokenKey)
+            .signWith(SignatureAlgorithm.HS256, user.getRefreshTokenKey())
             .compact();
+    }
+
+    /**
+     * Gets email from token.
+     *
+     * @param token - access token
+     * @return - user's email
+     */
+    public String getEmailOutOfAccessToken(String token) {
+        String[] splitToken = token.split("\\.");
+        String unsignedToken = splitToken[0] + "." + splitToken[1] + ".";
+        DefaultJwtParser parser = new DefaultJwtParser();
+        Jwt<?, ?> jwt = parser.parse(unsignedToken);
+        return ((Claims) jwt.getBody()).getSubject();
+    }
+
+    /**
+     * Gets Authentication from token.
+     *
+     * @param token - access token.
+     * @return - Authentication
+     */
+    public Authentication getAuthenticationOutOfAccessToken(String token) {
+        String email = Jwts.parser()
+            .setSigningKey(accessTokenKey)
+            .parseClaimsJws(token)
+            .getBody()
+            .getSubject();
+        List authorities = Jwts.parser()
+            .setSigningKey(accessTokenKey)
+            .parseClaimsJws(token)
+            .getBody()
+            .get("roles", List.class);
+        return new UsernamePasswordAuthenticationToken(
+            email,
+            "",
+            Collections.singleton(new SimpleGrantedAuthority((String) authorities.get(0)))
+        );
     }
 
     /**
@@ -90,33 +122,46 @@ public class JwtTool {
      * @param token this is token.
      * @return {@link Boolean}
      */
-    public boolean isTokenValid(String token) { // TODO - should be factored out of this class
+    public boolean isTokenValid(String token, String tokenKey) {
         boolean isValid = false;
         try {
             Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token);
             isValid = true;
         } catch (Exception e) {
-            //if can't parse token
+            log.info("Given token is not valid: " + e.getMessage());
         }
         return isValid;
     }
 
     /**
-     * Method that create authentication.
+     * Returns access token key.
      *
-     * @param token token from request.
-     * @return {@link Authentication}
+     * @return accessTokenKey
      */
-    public Authentication getAuthentication(String token) {
-        return userService
-                .findByEmail(tokenToEmailParser.apply(token))
-                .filter(user -> user.getUserStatus() == UserStatus.ACTIVATED)
-                .map(userService::updateLastVisit)
-                .map(user -> new UsernamePasswordAuthenticationToken(
-                        user.getEmail(),
-                        "",
-                        Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()))
-                ))
-                .orElse(null);
+    public String getAccessTokenKey() {
+        return accessTokenKey;
+    }
+
+    /**
+     * Method that get token by body request.
+     *
+     * @param servletRequest this is your request.
+     * @return {@link String} of token or null.
+     */
+    public String getTokenFromHttpServletRequest(HttpServletRequest servletRequest) {
+        return Optional
+            .ofNullable(servletRequest.getHeader("Authorization"))
+            .filter(authHeader -> authHeader.startsWith("Bearer "))
+            .map(token -> token.substring(7))
+            .orElse(null);
+    }
+
+    /**
+     * Generates random string.
+     *
+     * @return random generated token key
+     */
+    public String generateRefreshTokenKey() {
+        return UUID.randomUUID().toString();
     }
 }

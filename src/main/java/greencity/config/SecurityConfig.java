@@ -1,14 +1,12 @@
 package greencity.config;
 
 import static greencity.constant.AppConstant.*;
-
+import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtAuthenticationProvider;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
-
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,8 +16,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,18 +33,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private JwtTool tool;
-    private UserService userService;
+    private final UserService userService;
+    private final JwtTool jwtTool;
 
     /**
      * Constructor.
-     *
-     * @param tool        {@link JwtTool} - tool for JWT
      * @param userService {@link UserService} - user service.
      */
-    public SecurityConfig(JwtTool tool, UserService userService) {
-        this.tool = tool;
+    public SecurityConfig(UserService userService, JwtTool jwtTool) {
         this.userService = userService;
+        this.jwtTool = jwtTool;
     }
 
     /**
@@ -75,6 +73,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .csrf()
             .disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
             .authorizeRequests()
             .antMatchers(
                 "/ownSecurity/**",
@@ -100,11 +100,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/{status}/**",
                 "/favorite_place/**",
                 "/place/save/favorite",
-                "/user/**"
+                "/user"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
                 "/place/save/favorite/**"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PUT,
+                "/user/**",
+                "/ownSecurity/**"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
@@ -115,9 +119,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses**",
                 "/user/update/status"
             ).hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.PATCH,
-                "/user/update/role"
-            ).hasRole(ADMIN)
             .antMatchers(HttpMethod.GET,
                 "/user/all/",
                 "/user/roles",
@@ -129,16 +130,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/comments"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
-                "/user/**",
-                "/ownSecurity/**")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
-            .anyRequest()
-            .hasAnyRole(ADMIN)
-            .antMatchers(HttpMethod.PUT,
                 "/place/update/**")
             .hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PATCH,
+                "/user/update/role"
+            ).hasRole(ADMIN)
+            .anyRequest()
+            .hasAnyRole(ADMIN)
             .and()
-            .apply(new JwtConfig(tool));
+            .addFilterBefore(
+                new AccessTokenAuthenticationFilter(authenticationManagerBean(), jwtTool),
+                UsernamePasswordAuthenticationFilter.class
+            );
     }
 
     /**

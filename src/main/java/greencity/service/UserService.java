@@ -136,4 +136,13 @@ public interface UserService {
      * @author Nazar Stasyuk
      */
     User update(UserUpdateDto dto, String email);
+
+    /**
+     * Updates refresh token for a given user.
+     *
+     * @param refreshTokenKey - new refresh token key
+     * @param id - user's id
+     * @return - number of updated rows
+     */
+    int updateUserRefreshToken(String refreshTokenKey, Long id);
 }

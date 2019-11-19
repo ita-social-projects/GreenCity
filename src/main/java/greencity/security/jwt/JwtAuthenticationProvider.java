@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 /**
  * Class that provide authentication logic.
@@ -23,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author Nazar Stasyuk and Yurii Koval
  * @version 1.1
  */
+@Service
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     private UserService userService;
     private PasswordEncoder passwordEncoder;
@@ -46,29 +48,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = (String) authentication.getPrincipal();
-        String password = (String) authentication.getCredentials();
-        User byEmail = userService
-                .findByEmail(email)
-                .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
-        OwnSecurity ownSecurity = byEmail.getOwnSecurity();
-        if (ownSecurity == null) {
-            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
-        }
-        if (!passwordEncoder.matches(password, ownSecurity.getPassword())) {
-            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
-        }
-        if (byEmail.getVerifyEmail() != null) {
-            throw new UserUnverifiedException(USER_NOT_VERIFIED);
-        }
-        if (byEmail.getUserStatus() == UserStatus.DEACTIVATED) {
-            throw new UserDeactivatedException(USER_DEACTIVATED);
-        }
-        return new UsernamePasswordAuthenticationToken(
-            email,
-            "",
-            Collections.singleton(new SimpleGrantedAuthority(byEmail.getRole().name()))
-        );
+        return authentication;
     }
 
     /**

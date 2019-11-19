@@ -43,70 +43,30 @@ public class JwtToolTest {
     public void init() {
         ReflectionTestUtils.setField(jwtTool, "accessTokenValidTimeInMinutes", 15);
         ReflectionTestUtils.setField(jwtTool, "refreshTokenValidTimeInMinutes", 15);
-        ReflectionTestUtils.setField(jwtTool, "tokenKey", "123123");
+        ReflectionTestUtils.setField(jwtTool, "accessTokenKey", "123123");
     }
 
     @Test
     public void createAccessToken() {
         String accessToken =
             jwtTool.createAccessToken("nazar.stasyuk@gmail.com", ROLE.ROLE_USER);
-        assertTrue(jwtTool.isTokenValid(accessToken));
-    }
-
-    @Test
-    public void createRefreshToken() {
-        String accessToken = jwtTool.createRefreshToken("nazar.stasyuk@gmail.com");
-        assertTrue(jwtTool.isTokenValid(accessToken));
+        assertTrue(jwtTool.isTokenValid(accessToken, jwtTool.getAccessTokenKey()));
     }
 
     @Test
     public void isTokenValid() {
         String random = UUID.randomUUID().toString();
-        assertFalse(jwtTool.isTokenValid(random));
+        assertFalse(jwtTool.isTokenValid(random, jwtTool.getAccessTokenKey()));
     }
 
-    /**
-     * Tests getAuthentication method.
-     * When given token is not valid OR its user is deactivated.
-     */
     @Test
-    public void getAuthenticationRefuse() {
-        when(tokenToEmailParser.apply(anyString())).thenReturn("test.email@gmail.com");
-        when(userService.findByEmail(anyString())).thenReturn(Optional.empty());
-        assertNull(jwtTool.getAuthentication("a token"));
-
-        User blockedUser = new User();
-        blockedUser.setUserStatus(UserStatus.DEACTIVATED);
-        when(userService.findByEmail(anyString())).thenReturn(Optional.of(blockedUser));
-        assertNull(jwtTool.getAuthentication("a token"));
-
-        Mockito.verify(userService, times(2)).findByEmail(anyString());
-        Mockito.verify(userService, never()).updateLastVisit(any());
-    }
-
-    /**
-     * Tests getAuthentication method.
-     * When
-     */
-    @Test
-    public void getAuthenticationOfUser() {
-        when(tokenToEmailParser.apply(anyString())).thenReturn("test.email@gmail.com");
-
-        User activatedUser = new User();
-        activatedUser.setUserStatus(UserStatus.ACTIVATED);
-        activatedUser.setEmail("test.email@gmail.com");
-        activatedUser.setRole(ROLE.ROLE_USER);
-        when(userService.findByEmail(anyString())).thenReturn(Optional.of(activatedUser));
-        when(userService.updateLastVisit(any())).thenReturn(activatedUser);
-        assertNotNull(jwtTool.getAuthentication("a token"));
-
-        new UsernamePasswordAuthenticationToken(
-                activatedUser.getEmail(),
-                "",
-                Collections.singleton(new SimpleGrantedAuthority(activatedUser.getRole().name())));
-        assertEquals(0, 0);
-
-        Mockito.verify(userService, times(1)).findByEmail(anyString());
-        Mockito.verify(userService, times(1)).updateLastVisit(any());
+    public void createRefreshToken() {
+        String s = UUID.randomUUID().toString();
+        User user = new User();
+        user.setEmail("test@gmail.com");
+        user.setRole(ROLE.ROLE_USER);
+        user.setRefreshTokenKey(s);
+        String token = jwtTool.createRefreshToken(user);
+        assertNotNull(token);
     }
 }
