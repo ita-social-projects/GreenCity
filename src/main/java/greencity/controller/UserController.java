@@ -267,7 +267,7 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PatchMapping("/{userId}/goals/{goalId}")
-    public ResponseEntity<UserGoalDto> updateUserGoalStatus(
+    public ResponseEntity<UserGoalResponseDto> updateUserGoalStatus(
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId,
         @ApiParam("Id of the goal that belongs to current user. Cannot be empty.")

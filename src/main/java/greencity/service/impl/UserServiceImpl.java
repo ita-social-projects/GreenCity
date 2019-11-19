@@ -268,17 +268,17 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserGoalDto updateUserGoalStatus(User user, Long goalId) {
+    public UserGoalResponseDto updateUserGoalStatus(User user, Long goalId) {
         UserGoal userGoal;
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
-            userGoal.setStatus(GoalStatus.DISABLED);
+            userGoal.setStatus(GoalStatus.DONE);
             userGoal.setDateCompleted(LocalDateTime.now());
             userGoalRepo.save(userGoal);
         } else {
             throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
         }
-        return modelMapper.map(userGoal, UserGoalDto.class);
+        return userGoalToResponseDtoMapper.convertToDto(userGoal);
     }
 
     /**

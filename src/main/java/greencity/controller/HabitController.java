@@ -93,7 +93,7 @@ public class HabitController {
      */
     @ApiOperation(value = "Find statistic by habit id.")
     @GetMapping("/statistic/{habitId}")
-    public ResponseEntity<List<HabitStatisticDto>> findAllByUserEmail(
+    public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitStatisticServiceImpl.findAllByHabitId(habitId));
