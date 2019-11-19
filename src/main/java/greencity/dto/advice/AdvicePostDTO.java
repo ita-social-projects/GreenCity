@@ -2,6 +2,7 @@ package greencity.dto.advice;
 
 import greencity.constant.ValidationConstants;
 import greencity.entity.Advice;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
@@ -14,9 +15,9 @@ public class AdvicePostDTO {
     @NotBlank(message = ValidationConstants.EMPTY_ADVICE)
     @Length(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH,
         message = ValidationConstants.INVALID_ADVICE_LENGTH)
-    private String name;
+    private String advice;
 
-    @NotNull
+    @Min(1)
     private Long habitDictionaryId;
 
     /**
@@ -26,7 +27,7 @@ public class AdvicePostDTO {
      * @author Vitaliy Dzen
      */
     public AdvicePostDTO(Advice advice) {
-        this.name = advice.getName();
+        this.advice = advice.getName();
         this.habitDictionaryId = advice.getHabitDictionary().getId();
     }
 }

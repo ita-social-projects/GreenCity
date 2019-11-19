@@ -4,9 +4,7 @@ import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.advice.AdviceAdminDTO;
-import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDTO;
-import greencity.dto.advice.AllAdvicesDTO;
 import greencity.entity.Advice;
 import greencity.service.impl.AdviceServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -31,42 +29,42 @@ public class AdviceController {
      * The controller which returns random {@link Advice} by HabitDictionary id.
      *
      * @param habitId HabitDictionary
-     * @return {@link AdviceDto}
+     * @return {@link AdviceAdminDTO}
      * @author Vitaliy Dzen
      */
-    @ApiOperation("Get random name by habit id")
+    @ApiOperation("Get random advice by habit id")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = INVALID_HABIT_ID)
     })
     @GetMapping("/random/{habitId}")
-    public AdviceDto getRandomAdviceByHabitId(@PathVariable Long habitId) {
+    public AdviceAdminDTO getRandomAdviceByHabitId(@PathVariable Long habitId) {
         return adviceService.getRandomAdviceByHabitId(habitId);
     }
 
     /**
      * The controller which returns all {@link Advice}.
      *
-     * @return List of {@link AdviceDto}
+     * @return List of {@link AdviceAdminDTO}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get all advices")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
-    @GetMapping("/all")
-    public List<AllAdvicesDTO> getAllAdvices() {
+    @GetMapping
+    public List<AdviceAdminDTO> getAllAdvices() {
         return adviceService.getAllAdvices();
     }
 
     /**
      * The controller which save {@link Advice}.
      *
-     * @param dto {@link AdviceDto}
+     * @param dto {@link AdviceAdminDTO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
-    @ApiOperation(value = "Save name")
+    @ApiOperation(value = "Save advice")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
@@ -83,16 +81,16 @@ public class AdviceController {
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
-    @ApiOperation(value = "Update name")
+    @ApiOperation(value = "Update advice")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<AdviceAdminDTO> updateAdvice(
-        @Valid @RequestBody AdviceAdminDTO dto, @PathVariable Long id) {
+    public ResponseEntity<AdvicePostDTO> updateAdvice(
+        @Valid @RequestBody AdvicePostDTO dto, @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(adviceService.update(dto, id), AdviceAdminDTO.class));
+            .body(mapper.map(adviceService.update(dto, id), AdvicePostDTO.class));
     }
 
     /**
@@ -102,7 +100,7 @@ public class AdviceController {
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
-    @ApiOperation(value = "Delete name")
+    @ApiOperation(value = "Delete advice")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

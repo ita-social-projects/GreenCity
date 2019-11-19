@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.dto.advice.AdviceAdminDTO;
 import greencity.dto.advice.AdvicePostDTO;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,11 +28,11 @@ public class Advice {
     /**
      * The constructor takes {@link Advice} parameter.
      *
-     * @param advicePostDTO {@link AdvicePostDTO}
+     * @param advicePostDTO {@link AdviceAdminDTO}
      * @author Vitaliy Dzen
      */
     public Advice(AdvicePostDTO advicePostDTO, HabitDictionary habitDictionary) {
-        this.name = advicePostDTO.getName();
+        this.name = advicePostDTO.getAdvice();
         this.habitDictionary = new HabitDictionary(habitDictionary.getId(), habitDictionary.getName(), null);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AdviceRepo extends JpaRepository<Advice, Long> {
     /**
-     * Method for getting random name by habit id.
+     * Method for getting random advice by habit id.
      * This method use native SQL query to reduce the load on the backend
      *
      * @param habitId Id of HabitDictionary
@@ -20,7 +20,7 @@ public interface AdviceRepo extends JpaRepository<Advice, Long> {
     Optional<Advice> getRandomAdviceByHabitId(Long habitId);
 
     /**
-     * Method find {@link Advice} by name.
+     * Method find {@link Advice} by advice.
      *
      * @param name of {@link Advice}
      * @return {@link Advice} in Optional

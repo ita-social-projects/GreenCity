@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.advice.AdviceAdminDTO;
-import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.entity.Advice;
 import java.util.List;
@@ -26,7 +25,7 @@ public interface AdviceService {
      * @return random {@link Advice}
      * @author Vitaliy Dzen
      */
-    AdviceDto getRandomAdviceByHabitId(Long id);
+    AdviceAdminDTO getRandomAdviceByHabitId(Long id);
 
     /**
      * Method find {@link Advice} by id.
@@ -38,7 +37,7 @@ public interface AdviceService {
     AdviceAdminDTO getAdviceById(Long id);
 
     /**
-     * Method find {@link Advice} by name.
+     * Method find {@link Advice} by advice.
      *
      * @param name of {@link Advice}
      * @return {@link AdviceAdminDTO}
@@ -49,7 +48,7 @@ public interface AdviceService {
     /**
      * Method saves new {@link Advice}.
      *
-     * @param advice {@link AdviceDto}
+     * @param advice {@link AdviceAdminDTO}
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
@@ -62,7 +61,7 @@ public interface AdviceService {
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
-    Advice update(AdviceAdminDTO advice, Long id);
+    Advice update(AdvicePostDTO advice, Long id);
 
     /**
      * Method delete {@link Advice} by id.
