@@ -197,26 +197,38 @@ values (1, 3, 1, 1),
        (5, 93, 5, 5),
        (6, 50, 5, 6);
 
+# INSERT INTO advices(habit_dictionary_id, name)
+# VALUES (1, 'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
+#        (2, 'Не візьми стакан - збережи природу.'),
+#        (1, 'Після переходу на багаторазові сумки вам більше не доведеться постійно купувати пакети для товарів і продуктів. Екосумки мають більший термін служби і повільно зношуються.'),
+#        (1, 'Щоб зменшити побутові відходи, почніть із того, щоб відмовитися від пластикових пакетів.'),
+#        (1, 'Всі багаторазові сумки дуже просто чистити. Немає необхідності турбуватися про те, що варення, мед або крихти потрапляють у куточки. Просто покладіть потім сумку в пральну або посудомийну машину.'),
+#        (1, 'Екосумки дуже популярні серед спортсменів і всіх, хто веде здоровий спосіб життя.');
+
 INSERT INTO habit_dictionary (name)
-VALUES ('bag');
-INSERT INTO habit_dictionary (name)
-VALUES ('cap');
+VALUES ('bag'),
+       ('cap');
 
 INSERT INTO habits (user_id, habit_dictionary_id, status, create_date)
-VALUES (1, 1, 1, '2019-11-12'),
-       (1, 2, 1, '2019-11-12'),
-       (2, 1, 1, '2019-11-14'),
-       (2, 2, 1, '2019-11-15'),
-       (3, 1, 1, '2019-11-15'),
-       (3, 2, 1, '2019-11-16');
+VALUES (1, 1, 1, '2019-11-12 19:03:33'),
+       (1, 2, 1, '2019-11-12 15:12:59'),
+       (2, 1, 1, '2019-11-14 11:33:01'),
+       (2, 2, 1, '2019-11-15 20:01:19'),
+       (3, 1, 1, '2019-11-15 10:21:11'),
+       (3, 2, 1, '2019-11-16 17:01:09'),
+       (4, 1, 1, '2019-11-20 19:11:51'),
+       (4, 2, 1, '2019-11-20 21:12:52');
 
 INSERT INTO habit_statistics(rate, date, amount_of_items, habit_id)
 VALUES ('GOOD', '2019-11-13', 12, 1),
-        ('NORMAL', '2019-11-14', 9, 2),
-        ('BAD', '2019-11-14', 2, 3),
-        ('NORMAL', '2019-11-15', 5, 4),
-        ('NORMAL', '2019-11-15', 7, 5),
-        ('GOOD', '2019-11-16', 14, 6);
+       ('NORMAL', '2019-11-14', 9, 2),
+       ('BAD', '2019-11-14', 2, 3),
+       ('NORMAL', '2019-11-15', 5, 4),
+       ('NORMAL', '2019-11-15', 7, 5),
+       ('GOOD', '2019-11-16', 14, 6),
+       ('NORMAL', '2019-11-16', 7, 7),
+       ('GOOD', '2019-11-16', 15, 8);
+
 
 INSERT INTO goals(text)
 VALUES ('Buy a bamboo brush'),
@@ -226,9 +238,17 @@ VALUES ('Buy a bamboo brush'),
        ('Finish book about vegans');
 
 INSERT INTO advices(habit_dictionary_id, name)
-VALUES (1, 'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
-       (2, 'Не візьми стакан - збережи природу.'),
-       (1, 'Після переходу на багаторазові сумки вам більше не доведеться постійно купувати пакети для товарів і продуктів. Екосумки мають більший термін служби і повільно зношуються.'),
-       (1, 'Щоб зменшити побутові відходи, почніть із того, щоб відмовитися від пластикових пакетів.'),
-       (1, 'Всі багаторазові сумки дуже просто чистити. Немає необхідності турбуватися про те, що варення, мед або крихти потрапляють у куточки. Просто покладіть потім сумку в пральну або посудомийну машину.'),
-       (1, 'Екосумки дуже популярні серед спортсменів і всіх, хто веде здоровий спосіб життя.');
+VALUES (1, 'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
+       (2, 'Don''t take a glass - protect nature.'),
+       (1, 'After switching to reusable bags, you no longer have to constantly buy packages for goods and products. Eco bags have a longer life and wear out slowly.'),
+       (1, 'To reduce household waste, start by giving up plastic bags.'),
+       (1, 'All reusable bags are very easy to clean. There is no need to worry about jam, honey or crumbs falling into the corners. Just put the bag in the washing machine or dishwasher.'),
+       (1, 'Eco Bags are very popular with athletes and anyone who leads a healthy lifestyle.');
+
+INSERT INTO user_goals(user_id, goal_id, status, date_completed)
+VALUES (1, 1, 'ACTIVE', null),
+       (1, 2, 'DONE', '2019-11-15 12:44:36'),
+       (2, 3, 'ACTIVE', null),
+       (2, 4, 'DONE', '2019-11-14 19:04:51'),
+       (3, 5, 'ACTIVE', null),
+       (3, 4, 'DONE', '2019-11-11 13:55:13');

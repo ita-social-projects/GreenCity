@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.Habit;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -15,5 +16,5 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      * @return List Habit's.
      * @author Volodymyr Turko
      */
-    List<Habit> findAllByUserId(Long userId);
+    Optional<List<Habit>> findAllByUserId(Long userId);
 }

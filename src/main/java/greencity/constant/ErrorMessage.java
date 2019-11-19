@@ -68,6 +68,8 @@ public class ErrorMessage {
     public static final String ADVICE_NOT_SAVED_BY_NAME = "The name with such name already exist: ";
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
+    public static final String USER_HAS_NOT_ANY_HABITS = "There is no habits for such user.";
+    public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS = "There is no active habits for such user with such status ";
 
     private ErrorMessage() {
     }

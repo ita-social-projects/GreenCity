@@ -89,7 +89,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public List<Habit> findAllHabitsByUserEmail(String email) {
         User user = userRepo.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage
             .USER_NOT_FOUND_BY_EMAIL));
-        return habitRepo.findAllByUserId(user.getId());
+        return habitRepo.findAllByUserId(user.getId())
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_HAS_NOT_ANY_HABITS));
     }
 
     /**
@@ -98,11 +99,15 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * @author Yuriy Olkhovskyi
      */
     public List<HabitDto> findAllHabitsByStatus(String email, Boolean status) {
-        return findAllHabitsByUserEmail(email)
+        List<HabitDto> habitDtoList = findAllHabitsByUserEmail(email)
             .stream()
             .filter(habit -> habit.getStatusHabit().equals(status))
             .map(habit -> new HabitDto(habit.getId(), habit.getHabitDictionary().getName(), habit.getCreateDate()))
             .collect(Collectors.toList());
+        if (habitDtoList.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.USER_HAS_NOT_HABITS_WITH_SUCH_STATUS + status);
+        }
+        return habitDtoList;
     }
 
     /**
