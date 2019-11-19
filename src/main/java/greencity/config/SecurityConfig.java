@@ -106,14 +106,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/goals/**"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,
-                "/name/RandomAdvice/*"
+                "/advices/random/*"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,
-                "/name/**"
+                "/advices/**"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",
@@ -121,7 +121,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/update/status"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
-                "/name/**"
+                "/advices/**"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/user/update/role"
@@ -133,15 +133,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",
-                "/name/**",
+                "/advices/**",
                 "/place/**",
                 "/comments"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/user/**",
-                "/name/**",
-                "/ownSecurity/**")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
+                "/advices/**",
+                "/ownSecurity/**"
+            ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PUT,
+                "/user/**",
+                "/ownSecurity/**"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .anyRequest()
             .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.PUT,
