@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import greencity.dto.advice.AdviceAdminDTO;
-import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.entity.Advice;
 import greencity.entity.HabitDictionary;
@@ -50,7 +49,7 @@ public class AdviceServiceImplTest {
 
     @Test
     public void getRandomAdviceByHabitId() {
-        AdviceDto expected = new AdviceDto(advice);
+        AdviceAdminDTO expected = new AdviceAdminDTO(advice);
         when(adviceRepo.getRandomAdviceByHabitId(anyLong())).thenReturn(Optional.of(advice));
         assertEquals(expected, adviceService.getRandomAdviceByHabitId(anyLong()));
     }

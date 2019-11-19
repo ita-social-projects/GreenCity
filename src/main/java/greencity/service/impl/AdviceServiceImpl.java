@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdviceAdminDTO;
-import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.entity.Advice;
 import greencity.exception.NotDeletedException;
@@ -46,8 +45,8 @@ public class AdviceServiceImpl implements AdviceService {
      * @author Vitaliy Dzen
      */
     @Override
-    public AdviceDto getRandomAdviceByHabitId(Long id) {
-        return new AdviceDto(adviceRepo.getRandomAdviceByHabitId(id).orElseThrow(()
+    public AdviceAdminDTO getRandomAdviceByHabitId(Long id) {
+        return new AdviceAdminDTO(adviceRepo.getRandomAdviceByHabitId(id).orElseThrow(()
             -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)));
     }
 

@@ -4,7 +4,6 @@ import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.advice.AdviceAdminDTO;
-import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.entity.Advice;
 import greencity.service.impl.AdviceServiceImpl;
@@ -30,7 +29,7 @@ public class AdviceController {
      * The controller which returns random {@link Advice} by HabitDictionary id.
      *
      * @param habitId HabitDictionary
-     * @return {@link AdviceDto}
+     * @return {@link AdviceAdminDTO}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get random advice by habit id")
@@ -39,14 +38,14 @@ public class AdviceController {
         @ApiResponse(code = 400, message = INVALID_HABIT_ID)
     })
     @GetMapping("/random/{habitId}")
-    public AdviceDto getRandomAdviceByHabitId(@PathVariable Long habitId) {
+    public AdviceAdminDTO getRandomAdviceByHabitId(@PathVariable Long habitId) {
         return adviceService.getRandomAdviceByHabitId(habitId);
     }
 
     /**
      * The controller which returns all {@link Advice}.
      *
-     * @return List of {@link AdviceDto}
+     * @return List of {@link AdviceAdminDTO}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get all advices")
@@ -61,7 +60,7 @@ public class AdviceController {
     /**
      * The controller which save {@link Advice}.
      *
-     * @param dto {@link AdviceDto}
+     * @param dto {@link AdviceAdminDTO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
