@@ -9,86 +9,62 @@
 
     <changeSet author="Yuriy"
                id="1">
-        <renameTable catalogName="GreenCity"
-                     newTableName="users"
-                     oldTableName="user"
-                     schemaName="greencity"/>
+        <renameTable newTableName="users"
+                     oldTableName="user"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="2">
-        <renameTable catalogName="GreenCity"
-                     newTableName="categories"
-                     oldTableName="category"
-                     schemaName="greencity"/>
+        <renameTable newTableName="categories"
+                     oldTableName="category"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="3">
-        <renameTable catalogName="GreenCity"
-                     newTableName="comments"
-                     oldTableName="comment"
-                     schemaName="greencity"/>
+        <renameTable newTableName="comments"
+                     oldTableName="comment"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="4">
-        <renameTable catalogName="GreenCity"
-                     newTableName="discount_values"
-                     oldTableName="discount_value"
-                     schemaName="greencity"/>
+        <renameTable newTableName="discount_values"
+                     oldTableName="discount_value"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="5">
-        <renameTable catalogName="GreenCity"
-                     newTableName="estimates"
-                     oldTableName="estimate"
-                     schemaName="greencity"/>
+        <renameTable newTableName="estimates"
+                     oldTableName="estimate"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="6">
-        <renameTable catalogName="GreenCity"
-                     newTableName="favorite_places"
-                     oldTableName="favorite_place"
-                     schemaName="greencity"/>
+        <renameTable newTableName="favorite_places"
+                     oldTableName="favorite_place"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="7">
-        <renameTable catalogName="GreenCity"
-                     newTableName="locations"
-                     oldTableName="location"
-                     schemaName="greencity"/>
+        <renameTable newTableName="locations"
+                     oldTableName="location"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="8">
-        <renameTable catalogName="GreenCity"
-                     newTableName="photos"
-                     oldTableName="photo"
-                     schemaName="greencity"/>
+        <renameTable newTableName="photos"
+                     oldTableName="photo"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="9">
-        <renameTable catalogName="GreenCity"
-                     newTableName="places"
-                     oldTableName="place"
-                     schemaName="greencity"/>
+        <renameTable newTableName="places"
+                     oldTableName="place"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="10">
-        <renameTable catalogName="GreenCity"
-                     newTableName="specifications"
-                     oldTableName="specification"
-                     schemaName="greencity"/>
+        <renameTable newTableName="specifications"
+                     oldTableName="specification"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="11">
-        <renameTable catalogName="GreenCity"
-                     newTableName="verify_emails"
-                     oldTableName="verify_email"
-                     schemaName="greencity"/>
+        <renameTable newTableName="verify_emails"
+                     oldTableName="verify_email"/>
     </changeSet>
     <changeSet author="Yuriy"
                id="12">
-        <renameTable catalogName="GreenCity"
-                     newTableName="web_pages"
-                     oldTableName="web_page"
-                     schemaName="greencity"/>
+        <renameTable newTableName="web_pages"
+                     oldTableName="web_page"/>
     </changeSet>
 </databaseChangeLog>
