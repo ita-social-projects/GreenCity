@@ -9,6 +9,6 @@
     <include file="db/changelog/db.changelog-1.0-habit-dictionary.xml"/>
     <include file="db/changelog/liquibase-habit.xml"/>
     <include file="db/changelog/habit_statistic.xml"/>
-    <include file="db/changelog/db.changelog-1.0-user-goals.xml"/>
+    <include file="db/changelog/ch-vitalii-skolozdra-1-user-goals.xml"/>
     <include file="db/changelog/create_table_advice.xml"/>
 </databaseChangeLog>
