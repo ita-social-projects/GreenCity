@@ -216,7 +216,7 @@ public class UserController {
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
-    @ApiOperation(value = "Get user goals.")
+    @ApiOperation(value = "Get goals of current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -224,6 +224,7 @@ public class UserController {
     })
     @GetMapping("/{userId}/goals")
     public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
+        @ApiIgnore
         Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
@@ -239,7 +240,7 @@ public class UserController {
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
-    @ApiOperation(value = "Get available goals for user.")
+    @ApiOperation(value = "Get available goals for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -247,6 +248,7 @@ public class UserController {
     })
     @GetMapping("/{userId}/goals/available")
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
+        @ApiIgnore
         Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
@@ -262,7 +264,7 @@ public class UserController {
      * @return new {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
-    @ApiOperation(value = "Update goal status.")
+    @ApiOperation(value = "Change status of one of the goals for current user to DONE.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -272,8 +274,9 @@ public class UserController {
     public ResponseEntity<UserGoalResponseDto> updateUserGoalStatus(
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId,
-        @ApiParam("Id of the goal that belongs to current user. Cannot be empty.")
+        @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
         @PathVariable Long goalId,
+        @ApiIgnore
         Principal principal) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -288,15 +291,16 @@ public class UserController {
      * @return new {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
-    @ApiOperation(value = "Save user goals.")
+    @ApiOperation(value = "Save one or multiple goals for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/{userId}/goals")
-    public ResponseEntity<List<UserGoalDto>> saveUserGoals(
+    public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
         @Valid @RequestBody BulkSaveUserGoalDto dto,
+        @ApiIgnore
         Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
