@@ -64,21 +64,6 @@ public class HabitController {
             .update(habitStatisticId, habitStatisticForUpdateDto));
     }
 
-
-    /**
-     * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
-     *
-     * @param principal - Principal with {@link User} email.
-     * @return {@link CalendarUsefulHabitsDto} instance.
-     */
-    @ApiOperation(value = "Find some information about user habits.")
-    @GetMapping("/statistic")
-    public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(@ApiIgnore Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticServiceImpl.getInfoAboutUserHabits(principal.getName()));
-    }
-
     /**
      * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
      *

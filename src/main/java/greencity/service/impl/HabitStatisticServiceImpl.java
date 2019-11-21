@@ -4,7 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatistic.*;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
-import greencity.entity.User;
+import greencity.entity.enums.HabitRate;
 import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
 import greencity.mapping.HabitStatisticMapper;
@@ -21,23 +21,25 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class HabitStatisticServiceImpl implements HabitStatisticService {
     private HabitStatisticRepo habitStatisticRepo;
-    private UserRepo userRepo;
     private HabitRepo habitRepo;
     private HabitStatisticMapper habitStatisticMapper;
     private ModelMapper modelMapper;
 
-    @Override
+
     /**
      * {@inheritDoc}
      *
      * @author Yuriy Olkhovskyi
      */
+    @Transactional
+    @Override
     public AddHabitStatisticDto save(AddHabitStatisticDto dto) {
         if (checkDate(dto.getCreatedOn())) {
             HabitStatistic habitStatistic = habitStatisticMapper.convertToEntity(dto);
@@ -53,12 +55,14 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             || LocalDate.now().compareTo(date) == 1;
     }
 
-    @Override
+
     /**
      * {@inheritDoc}
      *
      * @author Yuriy Olkhovskyi
      */
+    @Transactional
+    @Override
     public UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto) {
         HabitStatistic updatable = findById(habitStatisticId);
 
@@ -87,10 +91,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      *
      * @author Yuriy Olkhovskyi
      */
-    public List<Habit> findAllHabitsByUserEmail(String email) {
-        User user = userRepo.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage
-            .USER_NOT_FOUND_BY_EMAIL));
-        return habitRepo.findAllByUserId(user.getId())
+    @Override
+    public List<Habit> findAllHabitsByUserId(Long userId) {
+        return habitRepo.findAllByUserId(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_HAS_NOT_ANY_HABITS));
     }
 
@@ -99,8 +102,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      *
      * @author Yuriy Olkhovskyi
      */
-    public List<Habit> findAllHabitsByStatus(String email, Boolean status) {
-        List<Habit> habitList = findAllHabitsByUserEmail(email)
+    @Override
+    public List<Habit> findAllHabitsByStatus(Long userId, Boolean status) {
+        List<Habit> habitList = findAllHabitsByUserId(userId)
             .stream()
             .filter(habit -> habit.getStatusHabit().equals(status))
             .collect(Collectors.toList());
@@ -111,14 +115,13 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     /**
-     * Method for finding all habits by status with.
+     * {@inheritDoc}
      *
-     * @param email  user's email.
-     * @param status status of habit.
-     * @return list of {@link HabitDto} instances.
+     * @author Yuriy Olkhovskyi
      */
-    public List<HabitDto> findAllHabits(String email, Boolean status) {
-        return findAllHabitsByStatus(email, status)
+    @Override
+    public List<HabitDto> findAllHabitsAndTheirStatistics(Long id, Boolean status) {
+        return findAllHabitsByStatus(id, status)
             .stream()
             .map(this::convertHabitToHabitDto)
             .collect(Collectors.toList());
@@ -129,8 +132,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      *
      * @author Yuriy Olkhovskyi
      */
-    public CalendarUsefulHabitsDto getInfoAboutUserHabits(String email) {
-        List<Habit> allHabitsByUserId = findAllHabitsByStatus(email, true);
+    @Override
+    public CalendarUsefulHabitsDto getInfoAboutUserHabits(Long userId) {
+        List<Habit> allHabitsByUserId = findAllHabitsByStatus(userId, true);
 
         Map<String, Integer> statisticByHabitsPerMonth =
             getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
@@ -178,6 +182,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      *
      * @author Yuriy Olkovskyi
      */
+    @Override
     public List<HabitStatisticDto> findAllByHabitId(Long habitId) {
         return habitStatisticRepo.findAllByHabitId(habitId)
             .stream()
@@ -195,7 +200,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
                 result.add(new HabitStatisticDto(habit.getHabitStatistics().get(counter)));
                 counter++;
             } else {
-                result.add(HabitStatisticDto.builder().createdOn(localDate).build());
+                result.add(new HabitStatisticDto(null, HabitRate.DEFAULT, localDate, 0));
             }
             localDate = localDate.plusDays(1);
         }
