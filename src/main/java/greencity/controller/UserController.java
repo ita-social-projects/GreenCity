@@ -200,13 +200,13 @@ public class UserController {
      * Method for finding all {@link User} habits.
      *
      * @param userId {@link User} id.
-     * @param principal Principal with {@link User} email..
+     * @param principal Principal with {@link User} email.
      * @return list of {@link HabitDto}
      */
     @GetMapping("/{userId}/habits")
     public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticServiceImpl.findAllHabitsByStatus(principal.getName(), true));
+            .body(habitStatisticServiceImpl.findAllHabits(principal.getName(), true));
     }
 
     /**

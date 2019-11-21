@@ -13,6 +13,7 @@ import greencity.repository.HabitStatisticRepo;
 import greencity.repository.UserRepo;
 import greencity.service.HabitStatisticService;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -98,16 +99,29 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      *
      * @author Yuriy Olkhovskyi
      */
-    public List<HabitDto> findAllHabitsByStatus(String email, Boolean status) {
-        List<HabitDto> habitDtoList = findAllHabitsByUserEmail(email)
+    public List<Habit> findAllHabitsByStatus(String email, Boolean status) {
+        List<Habit> habitList = findAllHabitsByUserEmail(email)
             .stream()
             .filter(habit -> habit.getStatusHabit().equals(status))
-            .map(habit -> new HabitDto(habit.getId(), habit.getHabitDictionary().getName(), habit.getCreateDate()))
             .collect(Collectors.toList());
-        if (habitDtoList.isEmpty()) {
+        if (habitList.isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_HAS_NOT_HABITS_WITH_SUCH_STATUS + status);
         }
-        return habitDtoList;
+        return habitList;
+    }
+
+    /**
+     * Method for finding all habits by status with.
+     *
+     * @param email  user's email.
+     * @param status status of habit.
+     * @return list of {@link HabitDto} instances.
+     */
+    public List<HabitDto> findAllHabits(String email, Boolean status) {
+        return findAllHabitsByStatus(email, status)
+            .stream()
+            .map(this::convertHabitToHabitDto)
+            .collect(Collectors.toList());
     }
 
     /**
@@ -116,7 +130,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * @author Yuriy Olkhovskyi
      */
     public CalendarUsefulHabitsDto getInfoAboutUserHabits(String email) {
-        List<Habit> allHabitsByUserId = findAllHabitsByUserEmail(email);
+        List<Habit> allHabitsByUserId = findAllHabitsByStatus(email, true);
 
         Map<String, Integer> statisticByHabitsPerMonth =
             getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
@@ -167,7 +181,24 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public List<HabitStatisticDto> findAllByHabitId(Long habitId) {
         return habitStatisticRepo.findAllByHabitId(habitId)
             .stream()
-            .map(ft -> new HabitStatisticDto(ft.getId(), ft.getHabitRate(), ft.getCreatedOn(), ft.getAmountOfItems()))
+            .map(HabitStatisticDto::new)
             .collect(Collectors.toList());
+    }
+
+    private HabitDto convertHabitToHabitDto(Habit habit) {
+        List<HabitStatisticDto> result = new ArrayList<>();
+        List<HabitStatistic> habitStatistics = habit.getHabitStatistics();
+        LocalDate localDate = habit.getCreateDate();
+        int counter = 0;
+        for (int i = 0; i < 21; i++) {
+            if (counter < habitStatistics.size() && localDate.equals(habitStatistics.get(counter).getCreatedOn())) {
+                result.add(new HabitStatisticDto(habit.getHabitStatistics().get(counter)));
+                counter++;
+            } else {
+                result.add(HabitStatisticDto.builder().createdOn(localDate).build());
+            }
+            localDate = localDate.plusDays(1);
+        }
+        return new HabitDto(habit.getId(), habit.getHabitDictionary().getName(), result);
     }
 }

@@ -46,12 +46,12 @@ public interface HabitStatisticService {
      * @param status {@link Habit} status.
      * @return list of {@link HabitDto}
      */
-    List<HabitDto> findAllHabitsByStatus(String email, Boolean status);
+    List<Habit> findAllHabitsByStatus(String email, Boolean status);
 
     /**
      * Method for finding some statistics by {@link User} email.
      *
-     * @param email {@link User} email.
+     * @param email {@link User}  email.
      * @return {@link CalendarUsefulHabitsDto} instance.
      */
     CalendarUsefulHabitsDto getInfoAboutUserHabits(String email);
