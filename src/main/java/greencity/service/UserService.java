@@ -162,7 +162,7 @@ public interface UserService {
      * @param user {@link User} current user.
      * @return List of saved {@link UserGoalDto}.
      */
-    List<UserGoalDto> saveUserGoals(User user, BulkSaveUserGoalDto dto);
+    List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto dto);
 
     /**
      * Method update status of user goal.

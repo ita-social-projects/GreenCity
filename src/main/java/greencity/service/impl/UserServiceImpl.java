@@ -247,8 +247,8 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<UserGoalDto> saveUserGoals(User user, BulkSaveUserGoalDto bulkDto) {
-        List<UserGoalDto> dto = bulkDto.getUserGoalDtos();
+    public List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto bulkDto) {
+        List<UserGoalDto> dto = bulkDto.getUserGoals();
         List<String> errorMessages = new ArrayList<>();
         for (UserGoalDto el : dto) {
             UserGoal userGoal = modelMapper.map(el, UserGoal.class);
@@ -265,7 +265,10 @@ public class UserServiceImpl implements UserService {
         if (!errorMessages.isEmpty()) {
             throw new UserGoalNotSavedException(USER_GOAL_WHERE_NOT_SAVED + errorMessages.toString());
         }
-        return modelMapper.map(user.getUserGoals(), new TypeToken<List<UserGoalDto>>(){}.getType());
+        return user.getUserGoals()
+            .stream()
+            .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
+            .collect(Collectors.toList());
     }
 
     /**

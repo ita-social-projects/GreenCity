@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BulkSaveUserGoalDto {
-    @Valid List<@Valid UserGoalDto> userGoalDtos;
+    @Valid List<@Valid UserGoalDto> userGoals;
 }
