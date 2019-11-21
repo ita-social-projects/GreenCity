@@ -35,6 +35,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -214,6 +215,7 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public List<UserGoalResponseDto> getUserGoals(User user) {
         List<UserGoalResponseDto> userGoalResponseDto = userGoalRepo
@@ -230,6 +232,7 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public List<GoalDto> getAvailableGoals(User user) {
         List<Goal> availableGoals = goalRepo.findAvailableGoalsByUser(user);
@@ -242,6 +245,7 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public List<UserGoalDto> saveUserGoals(User user, BulkSaveUserGoalDto bulkDto) {
         List<UserGoalDto> dto = bulkDto.getUserGoalDtos();
@@ -267,6 +271,7 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public UserGoalResponseDto updateUserGoalStatus(User user, Long goalId) {
         UserGoal userGoal;
