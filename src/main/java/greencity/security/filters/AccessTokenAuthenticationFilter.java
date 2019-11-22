@@ -53,7 +53,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (ExpiredJwtException e) {
                 log.info("Token has expired: " + token);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Access token has expired!");
+                response.setStatus(HttpServletResponse.SC_SEE_OTHER);
                 return;
             } catch (Exception e) {
                 log.info("Access denied with token: " + e.getMessage());

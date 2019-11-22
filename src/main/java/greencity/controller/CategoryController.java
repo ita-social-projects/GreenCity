@@ -29,6 +29,7 @@ public class CategoryController {
     @ApiOperation(value = "Save category")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping
@@ -43,7 +44,10 @@ public class CategoryController {
      * @author Kateryna Horokh
      */
     @ApiOperation(value = "View a list of available categories")
-    @ApiResponse(code = 200, message = "Successfully retrieved list")
+    @ApiResponses(value = {
+        @ApiResponse( code = 200, message = "Successfully retrieved list"),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER)
+    })
     @GetMapping
     public ResponseEntity<List<CategoryDto>> findAllCategory() {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.findAllCategoryDto());

@@ -43,6 +43,7 @@ public class UserController {
     @ApiOperation(value = "Update status of user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserStatus.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -66,6 +67,7 @@ public class UserController {
     @ApiOperation(value = "Update role of user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -90,6 +92,7 @@ public class UserController {
     @ApiOperation(value = "Get users by page")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -108,6 +111,7 @@ public class UserController {
     @ApiOperation(value = "Get all available roles")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = RoleDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("roles")
@@ -124,6 +128,7 @@ public class UserController {
     @ApiOperation(value = "Get all available email notifications statuses")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = EmailNotification[].class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
          @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("emailNotifications")
@@ -144,6 +149,7 @@ public class UserController {
     @ApiOperation(value = "Filter all user by search criteria")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -163,6 +169,7 @@ public class UserController {
     @ApiOperation(value = "Get User dto by principal (email) from access token")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserUpdateDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -181,6 +188,7 @@ public class UserController {
     @ApiOperation(value = "Update User")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })

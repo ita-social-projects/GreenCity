@@ -49,6 +49,7 @@ public class PlaceCommentController {
     @ApiOperation(value = "Add comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CommentReturnDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/place/{placeId}/comments")
@@ -91,6 +92,7 @@ public class PlaceCommentController {
     @ApiOperation(value = "Get comments by page")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("comments")
@@ -108,6 +110,7 @@ public class PlaceCommentController {
     @ApiOperation(value = "Delete comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
