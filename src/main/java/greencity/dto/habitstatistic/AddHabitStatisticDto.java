@@ -18,11 +18,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 public class AddHabitStatisticDto {
     @Range(min = ValidationConstants.MIN_AMOUNT_OF_ITEMS, max = ValidationConstants.MAX_AMOUNT_OF_ITEMS)
+    @NotNull(message = "Amount of items can not be null.")
     private Integer amountOfItems;
     @NotNull(message = "Rate of the day can not be null")
     private HabitRate habitRate;
     @Min(0)
+    @NotNull(message = "Habit id can not be null")
     private Long habitId;
+    @NotNull(message = "Date of creation can not be null")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdOn;
 }

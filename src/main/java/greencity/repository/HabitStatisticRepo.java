@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     JpaSpecificationExecutor<HabitStatistic> {
+    /**
+     * Method for finding statistic for current date.
+     *
+     *
+     * @return {@link HabitStatistic} instance, if it doesn't exist returns Optional.
+     */
+    @Query(value = "SELECT hs FROM HabitStatistic hs WHERE hs.createdOn =:localDate")
+    Optional<HabitStatistic> findHabitStatByDate(@Param("localDate") LocalDate localDate);
+
     /**
      * Method for finding sum of all untaken items per month.
      *
@@ -53,7 +63,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @param habitId {@link Habit} id.
      * @return amount of items in Optional in case of absence such info.
      */
-    @Query (nativeQuery = true, value = "SELECT amount_of_items FROM habit_statistics\n"
+    @Query(nativeQuery = true, value = "SELECT amount_of_items FROM habit_statistics\n"
         + " WHERE habit_statistics.date = CURRENT_DATE AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsToday(@Param("habitId") Long habitId);
 }

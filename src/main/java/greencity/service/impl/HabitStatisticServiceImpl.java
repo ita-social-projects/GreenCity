@@ -7,10 +7,10 @@ import greencity.entity.HabitStatistic;
 import greencity.entity.enums.HabitRate;
 import greencity.exception.BadRequestException;
 import greencity.exception.NotFoundException;
+import greencity.exception.NotSavedException;
 import greencity.mapping.HabitStatisticMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
-import greencity.repository.UserRepo;
 import greencity.service.HabitStatisticService;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,6 +41,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Transactional
     @Override
     public AddHabitStatisticDto save(AddHabitStatisticDto dto) {
+        if (habitStatisticRepo.findHabitStatByDate(dto.getCreatedOn()).isPresent()) {
+            throw new NotSavedException(ErrorMessage.HABIT_STATISTIC_ALREADY_EXISTS);
+        }
         if (checkDate(dto.getCreatedOn())) {
             HabitStatistic habitStatistic = habitStatisticMapper.convertToEntity(dto);
 
@@ -68,7 +71,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
 
         updatable.setAmountOfItems(dto.getAmountOfItems());
         updatable.setHabitRate(dto.getHabitRate());
-
         return modelMapper.map(habitStatisticRepo.save(updatable),
             UpdateHabitStatisticDto.class);
     }

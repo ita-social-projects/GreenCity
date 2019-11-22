@@ -18,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 public class UpdateHabitStatisticDto {
     @Range(min = ValidationConstants.MIN_AMOUNT_OF_ITEMS, max = ValidationConstants.MAX_AMOUNT_OF_ITEMS)
+    @NotNull(message = "Amount of items can not be null.")
     private Integer amountOfItems;
     @NotNull(message = "Rate of the day can not be null")
     private HabitRate habitRate;

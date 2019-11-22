@@ -3,7 +3,7 @@ package greencity.constant;
 public class ErrorMessage {
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
-    public static final String USER_WITH_EMAIL_EXIST = "The user is already exist by this email: ";
+    public static final String USER_WITH_EMAIL_EXIST = "The user already exists by this email: ";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS = "Favorite place already exist for this placeId:  %d and user with email: %s";
@@ -70,6 +70,7 @@ public class ErrorMessage {
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
     public static final String USER_HAS_NOT_ANY_HABITS = "There is no habits for such user.";
     public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS = "There is no active habits for such user with such status ";
+    public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
 
     private ErrorMessage() {
     }
