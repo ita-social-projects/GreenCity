@@ -141,6 +141,16 @@ public interface UserService {
     User update(UserUpdateDto dto, String email);
 
     /**
+     * Updates refresh token for a given user.
+     *
+     * @param refreshTokenKey - new refresh token key
+     * @param id - user's id
+     * @return - number of updated rows
+     */
+    int updateUserRefreshToken(String refreshTokenKey, Long id);
+}
+
+    /**
      * Method returns list of user goals.
      *
      * @param user {@link User} current user.

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RestorePasswordEmailRepo extends JpaRepository<RestorePasswordEmail, Long> {
     /**
-     * Method that allow you find {@link RestorePasswordEmail} by token.
+     * Method that allows you find {@link RestorePasswordEmail} by token.
      *
      * @param token - {@link String}
      * @return {@link Optional}

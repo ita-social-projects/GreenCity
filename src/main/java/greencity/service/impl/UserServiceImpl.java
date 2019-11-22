@@ -294,6 +294,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int updateUserRefreshToken(String refreshTokenKey, Long id) {
+        return repo.updateUserRefreshToken(refreshTokenKey, id);
+    }
+
+    /**
      * Method which check that, if admin/moderator update role/status of himself, then throw exception.
      *
      * @param id    id of updatable user.
@@ -302,7 +310,7 @@ public class UserServiceImpl implements UserService {
      */
     private void checkUpdatableUser(Long id, String email) {
         User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
-        if (id == user.getId()) {
+        if (id.equals(user.getId())) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
     }

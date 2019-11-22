@@ -34,7 +34,7 @@ public interface RestorePasswordEmailService {
     List<RestorePasswordEmail> findAll();
 
     /**
-     * Method that check if user not late with restoring of his email.
+     * Method that check if user is not late with restoring of his email.
      *
      * @return {@code boolean}
      */

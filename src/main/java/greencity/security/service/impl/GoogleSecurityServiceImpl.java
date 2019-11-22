@@ -15,7 +15,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
-import greencity.security.jwt.JwtTokenTool;
+import greencity.security.jwt.JwtTool;
 import greencity.security.service.GoogleSecurityService;
 import greencity.service.UserService;
 import java.io.IOException;
@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,22 +32,23 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * {@inheritDoc}
  */
-@Service
 @Slf4j
+@Service
 public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private UserService userService;
     private GoogleIdTokenVerifier verifier;
-    private JwtTokenTool tokenTool;
+    private JwtTool tokenTool;
 
     /**
      * Constructor.
      *
      * @param userService {@link UserService} - service of {@link User} logic.
-     * @param tokenTool   {@link JwtTokenTool} - tool for jwt logic.
+     * @param tokenTool   {@link JwtTool} - tool for jwt logic.
      * @param clientId    {@link String} - google client id.
      */
+    @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
-                                     JwtTokenTool tokenTool,
+                                     JwtTool tokenTool,
                                      @Value("${google.clientId}") String clientId
     ) {
         this.userService = userService;
@@ -107,7 +109,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
 
     private SuccessSignInDto getSuccessSignInDto(User user) {
         String accessToken = tokenTool.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = tokenTool.createRefreshToken(user.getEmail());
+        String refreshToken = tokenTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), false);
     }
 }
