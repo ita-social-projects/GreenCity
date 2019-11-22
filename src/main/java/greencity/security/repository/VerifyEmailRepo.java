@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Repository for {@link VerifyEmail}.
  *
- * @author Nazar Stasyuk
- * @version 1.0
+ * @author Nazar Stasyuk && Yurii Koval
+ * @version 1.1
  */
 @Repository
 public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
@@ -37,6 +37,6 @@ public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
      **/
     @Transactional
     @Modifying
-    @Query("DELETE FROM VerifyEmail WHERE id <> -1 AND expiryDate < CURRENT_TIMESTAMP")//TODO - pass date as a parameter
+    @Query("DELETE FROM VerifyEmail WHERE id <> -1 AND expiryDate < CURRENT_TIMESTAMP")
     int deleteAllExpiredEmailVerificationTokens();
 }

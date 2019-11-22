@@ -2,9 +2,8 @@ package greencity.config;
 
 import static greencity.constant.AppConstant.*;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
-import greencity.security.jwt.JwtAuthenticationProvider;
 import greencity.security.jwt.JwtTool;
-import greencity.service.UserService;
+import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
@@ -27,21 +26,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 /**
  * Config for security.
  *
- * @author Nazar Stasyuk
+ * @author Nazar Stasyuk && Yurii Koval
  * @version 1.0
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserService userService;
     private final JwtTool jwtTool;
 
     /**
      * Constructor.
-     * @param userService {@link UserService} - user service.
      */
-    public SecurityConfig(UserService userService, JwtTool jwtTool) {
-        this.userService = userService;
+    public SecurityConfig(JwtTool jwtTool) {
         this.jwtTool = jwtTool;
     }
 
@@ -51,15 +47,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    /**
-     * Bean {@link AuthenticationManager} that uses in authentication managing.
-     */
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
     }
 
     /**
@@ -75,6 +62,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
+            .exceptionHandling()
+            .and()
+            .addFilterBefore(
+                new AccessTokenAuthenticationFilter(jwtTool, super.authenticationManagerBean()),
+                UsernamePasswordAuthenticationFilter.class
+            )
             .authorizeRequests()
             .antMatchers(
                 "/ownSecurity/**",
@@ -136,12 +129,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/update/role"
             ).hasRole(ADMIN)
             .anyRequest()
-            .hasAnyRole(ADMIN)
-            .and()
-            .addFilterBefore(
-                new AccessTokenAuthenticationFilter(authenticationManagerBean(), jwtTool),
-                UsernamePasswordAuthenticationFilter.class
-            );
+            .hasAnyRole(ADMIN);
     }
 
     /**
@@ -166,7 +154,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(new JwtAuthenticationProvider(userService, passwordEncoder()));
+        auth.authenticationProvider(new JwtAuthenticationProvider(jwtTool));
+    }
+
+    /**
+     * Provides AuthenticationManager.
+     *
+     * @return {@link AuthenticationManager}
+     */
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
     }
 
     /**

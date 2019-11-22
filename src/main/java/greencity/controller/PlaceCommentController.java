@@ -10,7 +10,6 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.BadEmailException;
-import greencity.exception.NotFoundException;
 import greencity.exception.UserBlockedException;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
@@ -24,7 +23,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -54,8 +53,8 @@ public class PlaceCommentController {
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity save(@PathVariable Long placeId,
-                               @Valid @RequestBody AddCommentDto addCommentDto) {
-        Principal principal = SecurityContextHolder.getContext().getAuthentication();
+                               @Valid @RequestBody AddCommentDto addCommentDto,
+                               @ApiIgnore @AuthenticationPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getName())
             .orElseThrow(() -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {

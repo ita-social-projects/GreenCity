@@ -1,7 +1,5 @@
 package greencity.config;
 
-import static springfox.documentation.builders.PathSelectors.regex;
-
 import com.google.common.collect.Lists;
 import java.awt.print.Pageable;
 import java.util.Date;
@@ -33,7 +31,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Slf4j
 public class SwaggerConfig {
     private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String DEFAULT_INCLUDE_PATTERN = "/.*";
 
     /**
      * Customizing the Docket bean.
@@ -70,15 +67,19 @@ public class SwaggerConfig {
     private SecurityContext securityContext() {
         return SecurityContext.builder()
             .securityReferences(defaultAuth())
-            .forPaths(regex(DEFAULT_INCLUDE_PATTERN))
+            .forPaths(this::include)
             .build();
     }
 
-    List<SecurityReference> defaultAuth() {
+    private List<SecurityReference> defaultAuth() {
         AuthorizationScope authorizationScope =
             new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
         return Lists.newArrayList(new SecurityReference("JWT", authorizationScopes));
+    }
+
+    private boolean include(String path) {
+        return !path.startsWith("/ownSecurity");
     }
 }

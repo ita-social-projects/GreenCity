@@ -16,13 +16,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OwnSecurityRepo extends JpaRepository<OwnSecurity, Long> {
     /**
-     * Method for updating password.
+     * Updates a password.
      *
      * @param password {@link String}
      * @param id       {@link Long}
      * @author Dmytro Dovhal
      */
     @Modifying
-    @Query("update OwnSecurity o set o.password = :password where o.user.id = :id")
+    @Query("UPDATE OwnSecurity o SET o.password = :password WHERE o.user.id = :id")
     void updatePassword(@Param("password") String password, @Param("id") Long id);
 }

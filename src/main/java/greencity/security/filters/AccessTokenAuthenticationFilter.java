@@ -1,59 +1,64 @@
 package greencity.security.filters;
 
 import greencity.security.jwt.JwtTool;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * Class that provide Authentication object based on JWT.
+ *
+ * @author Yurii Koval.
+ * @version 1.0
+ */
 @Slf4j
-public class AccessTokenAuthenticationFilter extends BasicAuthenticationFilter {
+public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTool jwtTool;
+    private final AuthenticationManager authenticationManager;
 
     /**
      * Constructor.
      */
-    public AccessTokenAuthenticationFilter(AuthenticationManager authenticationManager, JwtTool jwtTool) {
-        super(authenticationManager);
+    public AccessTokenAuthenticationFilter(JwtTool jwtTool, AuthenticationManager authenticationManager) {
         this.jwtTool = jwtTool;
+        this.authenticationManager = authenticationManager;
     }
 
     /**
-     * Method that check if request has token in body, if this token still valid, and set
+     * Checks if request has token in header, if this token still valid, and set
      * authentication for spring.
      *
-     * @param request  this is servlet that take request
+     * @param request this is servlet that take request
      * @param response this is response servlet
-     * @param chain     this is filter of chain
+     * @param chain this is filter of chain
      */
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         String token = jwtTool.getTokenFromHttpServletRequest(request);
         if (token != null) {
-            if (jwtTool.isTokenValid(token, jwtTool.getAccessTokenKey())) {
-                // TODO - move to Provider
-                Authentication authentication = jwtTool.getAuthenticationOutOfAccessToken(token);
+            try {
+                Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(token, null));
                 log.info("User successfully authenticate - {}", authentication.getPrincipal());
-                getAuthenticationManager().authenticate(authentication);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            } catch (ExpiredJwtException e) {
+                log.info("Token has expired: " + token);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Access token has expired!");
+                return;
+            } catch (Exception e) {
+                log.info("Access denied with token: " + e.getMessage());
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Access token is not valid!");
+                SecurityContextHolder.clearContext();
                 return;
             }
         }

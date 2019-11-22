@@ -29,7 +29,7 @@ public interface OwnSecurityService {
     void delete(OwnSecurity userOwnSecurity);
 
     /**
-     * Method that delete {@link greencity.entity.VerifyEmail} when user not submit email.
+     * Deletes {@link greencity.entity.VerifyEmail} when user did not submit email.
      */
     void deleteNotActivatedEmails();
 

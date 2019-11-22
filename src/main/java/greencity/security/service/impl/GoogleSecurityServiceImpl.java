@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * {@inheritDoc}
  */
-@Service
 @Slf4j
+@Service
 public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private UserService userService;
     private GoogleIdTokenVerifier verifier;
@@ -45,6 +46,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
      * @param tokenTool   {@link JwtTool} - tool for jwt logic.
      * @param clientId    {@link String} - google client id.
      */
+    @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
                                      JwtTool tokenTool,
                                      @Value("${google.clientId}") String clientId

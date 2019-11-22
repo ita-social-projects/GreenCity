@@ -1,26 +1,27 @@
 package greencity.security.jwt;
 
+import static greencity.constant.AppConstant.AUTHORITIES;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultJwtParser;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that provide Jwt token logic.
+ * Class that provides methods for working with JWT.
  *
- * @author Nazar Stasyuk
- * @version 1.0
+ * @author Nazar Stasyuk && Yurii Koval.
+ * @version 2.0
  */
-@Component
 @Slf4j
+@Component
 public class JwtTool {
     private final Integer accessTokenValidTimeInMinutes;
     private final Integer refreshTokenValidTimeInMinutes;
@@ -45,7 +46,7 @@ public class JwtTool {
      */
     public String createAccessToken(String email, ROLE role) {
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put("roles", Collections.singleton(role.name()));
+        claims.put(AUTHORITIES, Collections.singleton(role.name()));
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
@@ -65,7 +66,7 @@ public class JwtTool {
      */
     public String createRefreshToken(User user) {
         Claims claims = Jwts.claims().setSubject(user.getEmail());
-        claims.put("roles", Collections.singleton(user.getRole().name()));
+        claims.put(AUTHORITIES, Collections.singleton(user.getRole().name()));
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
@@ -80,6 +81,7 @@ public class JwtTool {
 
     /**
      * Gets email from token.
+     * WARNING: The method DOESN'T CHECK whether the given token is valid. It simply parses the token.
      *
      * @param token - access token
      * @return - user's email
@@ -90,30 +92,6 @@ public class JwtTool {
         DefaultJwtParser parser = new DefaultJwtParser();
         Jwt<?, ?> jwt = parser.parse(unsignedToken);
         return ((Claims) jwt.getBody()).getSubject();
-    }
-
-    /**
-     * Gets Authentication from token.
-     *
-     * @param token - access token.
-     * @return - Authentication
-     */
-    public Authentication getAuthenticationOutOfAccessToken(String token) {
-        String email = Jwts.parser()
-            .setSigningKey(accessTokenKey)
-            .parseClaimsJws(token)
-            .getBody()
-            .getSubject();
-        List authorities = Jwts.parser()
-            .setSigningKey(accessTokenKey)
-            .parseClaimsJws(token)
-            .getBody()
-            .get("roles", List.class);
-        return new UsernamePasswordAuthenticationToken(
-            email,
-            "",
-            Collections.singleton(new SimpleGrantedAuthority((String) authorities.get(0)))
-        );
     }
 
     /**
@@ -143,7 +121,7 @@ public class JwtTool {
     }
 
     /**
-     * Method that get token by body request.
+     * Method that get token from {@link HttpServletRequest}.
      *
      * @param servletRequest this is your request.
      * @return {@link String} of token or null.
@@ -157,7 +135,7 @@ public class JwtTool {
     }
 
     /**
-     * Generates random string.
+     * Generates a random string that can be used as refresh token key.
      *
      * @return random generated token key
      */
