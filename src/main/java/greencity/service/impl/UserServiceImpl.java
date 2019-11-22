@@ -280,9 +280,13 @@ public class UserServiceImpl implements UserService {
         UserGoal userGoal;
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
-            userGoal.setStatus(GoalStatus.DONE);
-            userGoal.setDateCompleted(LocalDateTime.now());
-            userGoalRepo.save(userGoal);
+            if (userGoal.getStatus().equals(GoalStatus.DONE)) {
+                throw new UserGoalStatusNotUpdatedException(USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
+            } else {
+                userGoal.setStatus(GoalStatus.DONE);
+                userGoal.setDateCompleted(LocalDateTime.now());
+                userGoalRepo.save(userGoal);
+            }
         } else {
             throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
         }

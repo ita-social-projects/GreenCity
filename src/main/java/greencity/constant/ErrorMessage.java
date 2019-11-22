@@ -70,6 +70,7 @@ public class ErrorMessage {
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
     public static final String USER_HAS_NOT_ANY_HABITS = "There is no habits for such user.";
     public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS = "There is no active habits for such user with such status ";
+    public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
 
     private ErrorMessage() {
     }
