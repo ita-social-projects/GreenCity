@@ -4,7 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;

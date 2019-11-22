@@ -3,7 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.entity.Location;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.LocationRepo;
 import greencity.service.LocationService;
 import java.util.List;

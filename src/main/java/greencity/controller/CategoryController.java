@@ -45,8 +45,7 @@ public class CategoryController {
      */
     @ApiOperation(value = "View a list of available categories")
     @ApiResponses(value = {
-        @ApiResponse( code = 200, message = "Successfully retrieved list"),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER)
+        @ApiResponse(code = 200, message = "Successfully retrieved list"),
     })
     @GetMapping
     public ResponseEntity<List<CategoryDto>> findAllCategory() {

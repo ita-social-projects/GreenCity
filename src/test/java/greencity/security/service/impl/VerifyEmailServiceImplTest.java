@@ -6,8 +6,8 @@ import static org.mockito.Mockito.*;
 
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
-import greencity.exception.BadIdException;
-import greencity.exception.UserActivationEmailTokenExpiredException;
+import greencity.exception.exceptions.BadIdException;
+import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;
 import greencity.service.EmailService;
 import java.time.LocalDateTime;

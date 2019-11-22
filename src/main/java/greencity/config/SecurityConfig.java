@@ -62,10 +62,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .exceptionHandling()
-            .and()
             .addFilterBefore(
-                new AccessTokenAuthenticationFilter(jwtTool, super.authenticationManagerBean()),
+                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager()),
                 UsernamePasswordAuthenticationFilter.class
             )
             .authorizeRequests()
@@ -88,6 +86,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/about/{id}/**",
                 "/specification/**"
             ).permitAll()
+            .antMatchers(HttpMethod.GET,
+                "/advices/random/*",
+                "/habit/statistic/*",
+                "/user/*/habits", //TODO
+                "/user/*/habits/statistic"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
                 "/place/{status}/**",
@@ -95,24 +99,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/save/favorite",
                 "/user"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PATCH,
+                "/habit/statistic/*"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
-                "/place/save/favorite/**"
+                "/place/save/favorite/**",
+                "/habit/statistic/"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate"
             ).hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.GET,
-                "/advices/**"
-            ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers("/advices/*").hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",
                 "/place/statuses**",
                 "/user/update/status"
-            ).hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.POST,
-                "/advices/**"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/user/update/role"
@@ -124,24 +127,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",
-                "/advices/**",
                 "/place/**",
                 "/comments"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/user/**",
-                "/ownSecurity/**")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
-            .anyRequest()
-            .hasAnyRole(ADMIN)
+                "/ownSecurity/**"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
-                "/place/update/**")
-            .hasAnyRole(ADMIN, MODERATOR)
+                "/place/update/**"
+            ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/user/update/role"
             ).hasRole(ADMIN)
-            .anyRequest()
-            .hasAnyRole(ADMIN);
+            .anyRequest().hasAnyRole(ADMIN);
     }
 
     /**

@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
 import greencity.entity.Location;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.LocationRepo;
 import java.util.ArrayList;
 import java.util.Arrays;

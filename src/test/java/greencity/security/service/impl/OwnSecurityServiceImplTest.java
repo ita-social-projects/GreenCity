@@ -8,9 +8,9 @@
 //import greencity.entity.User;
 //import greencity.entity.VerifyEmail;
 //import greencity.entity.enums.ROLE;
-//import greencity.exception.BadIdException;
-//import greencity.exception.BadRefreshTokenException;
-//import greencity.exception.UserAlreadyRegisteredException;
+//import greencity.exception.exceptions.BadIdException;
+//import greencity.exception.exceptions.BadRefreshTokenException;
+//import greencity.exception.exceptions.UserAlreadyRegisteredException;
 //import greencity.security.dto.ownsecurity.OwnSignInDto;
 //import greencity.security.dto.ownsecurity.OwnSignUpDto;
 //import greencity.security.jwt.JwtTool;

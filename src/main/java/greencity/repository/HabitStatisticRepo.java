@@ -24,8 +24,9 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      *
      * @return {@link HabitStatistic} instance, if it doesn't exist returns Optional.
      */
-    @Query(value = "SELECT hs FROM HabitStatistic hs WHERE hs.createdOn =:localDate")
-    Optional<HabitStatistic> findHabitStatByDate(@Param("localDate") LocalDate localDate);
+    @Query(value = "SELECT hs FROM HabitStatistic hs WHERE hs.createdOn=:localDate AND habit_id=:habitId")
+    Optional<HabitStatistic> findHabitStatByDate(@Param("localDate") LocalDate localDate,
+                                                 @Param("habitId") Long habitId);
 
     /**
      * Method for finding sum of all untaken items per month.

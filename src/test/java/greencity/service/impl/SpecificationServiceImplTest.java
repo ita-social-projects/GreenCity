@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
 import greencity.entity.Specification;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SpecificationRepo;
 import java.util.ArrayList;
 import java.util.Arrays;

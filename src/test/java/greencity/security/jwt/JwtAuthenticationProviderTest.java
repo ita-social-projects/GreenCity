@@ -10,9 +10,9 @@
 //import greencity.entity.VerifyEmail;
 //import greencity.entity.enums.ROLE;
 //import greencity.entity.enums.UserStatus;
-//import greencity.exception.BadEmailOrPasswordException;
-//import greencity.exception.UserDeactivatedException;
-//import greencity.exception.UserUnverifiedException;
+//import greencity.exception.exceptions.BadEmailOrPasswordException;
+//import greencity.exception.exceptions.UserDeactivatedException;
+//import greencity.exception.exceptions.UserUnverifiedException;
 //import greencity.service.UserService;
 //import java.util.Optional;
 //import org.junit.Test;

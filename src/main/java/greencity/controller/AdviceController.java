@@ -26,15 +26,16 @@ public class AdviceController {
     private ModelMapper mapper;
 
     /**
-     * The controller which returns random {@link Advice} by HabitDictionary id.
+     * The controller which returns random {@link Advice} by HabitDictionary adviceId.
      *
      * @param habitId HabitDictionary
      * @return {@link AdviceAdminDTO}
      * @author Vitaliy Dzen
      */
-    @ApiOperation("Get random advice by habit id")
+    @ApiOperation("Get random advice by habit adviceId")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = INVALID_HABIT_ID),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -52,6 +53,7 @@ public class AdviceController {
     @ApiOperation("Get all advices")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -63,19 +65,20 @@ public class AdviceController {
     /**
      * The controller which save {@link Advice}.
      *
-     * @param dto {@link AdviceAdminDTO}
+     * @param advice {@link AdviceAdminDTO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
     @ApiOperation(value = "Save advice")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody AdvicePostDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adviceService.save(dto));
+    public ResponseEntity save(@Valid @RequestBody AdvicePostDTO advice) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adviceService.save(advice));
     }
 
     /**
@@ -88,32 +91,34 @@ public class AdviceController {
     @ApiOperation(value = "Update advice")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PutMapping("/{id}")
+    @PutMapping("/{adviceId}")
     public ResponseEntity<AdvicePostDTO> update(
-        @Valid @RequestBody AdvicePostDTO dto, @PathVariable Long id) {
+        @Valid @RequestBody AdvicePostDTO dto, @PathVariable Long adviceId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(adviceService.update(dto, id), AdvicePostDTO.class));
+            .body(mapper.map(adviceService.update(dto, adviceId), AdvicePostDTO.class));
     }
 
     /**
      * The controller which delete {@link Advice}.
      *
-     * @param id of {@link Advice}
+     * @param adviceId of {@link Advice}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
     @ApiOperation(value = "Delete advice")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        adviceService.delete(id);
+    @DeleteMapping("/{adviceId}")
+    public ResponseEntity delete(@PathVariable Long adviceId) {
+        adviceService.delete(adviceId);
         return ResponseEntity.ok().build();
     }
 }

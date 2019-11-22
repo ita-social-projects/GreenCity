@@ -9,7 +9,6 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -148,7 +147,6 @@ public interface UserService {
      * @return - number of updated rows
      */
     int updateUserRefreshToken(String refreshTokenKey, Long id);
-}
 
     /**
      * Method returns list of user goals.

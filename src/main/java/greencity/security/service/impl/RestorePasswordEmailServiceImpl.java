@@ -3,7 +3,7 @@ package greencity.security.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.RestorePasswordEmailService;
 import greencity.service.EmailService;

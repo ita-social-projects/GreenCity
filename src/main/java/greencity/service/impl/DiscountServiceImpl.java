@@ -3,7 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.entity.DiscountValue;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.DiscountValuesRepo;
 import greencity.service.DiscountService;
 import java.util.Set;

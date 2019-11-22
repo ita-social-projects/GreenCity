@@ -4,9 +4,9 @@ import static greencity.constant.ErrorMessage.*;
 
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
-import greencity.exception.BadIdException;
-import greencity.exception.BadVerifyEmailTokenException;
-import greencity.exception.UserActivationEmailTokenExpiredException;
+import greencity.exception.exceptions.BadIdException;
+import greencity.exception.exceptions.BadVerifyEmailTokenException;
+import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;
 import greencity.security.service.VerifyEmailService;
 import greencity.service.EmailService;

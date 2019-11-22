@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.exception.exceptions.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,7 +16,6 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.*;
 import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.GoalRepo;
 import greencity.repository.UserGoalRepo;

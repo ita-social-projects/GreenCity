@@ -5,9 +5,9 @@ import greencity.dto.habitstatistic.*;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import greencity.entity.enums.HabitRate;
-import greencity.exception.BadRequestException;
-import greencity.exception.NotFoundException;
-import greencity.exception.NotSavedException;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.NotSavedException;
 import greencity.mapping.HabitStatisticMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
@@ -41,7 +41,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Transactional
     @Override
     public AddHabitStatisticDto save(AddHabitStatisticDto dto) {
-        if (habitStatisticRepo.findHabitStatByDate(dto.getCreatedOn()).isPresent()) {
+        if (habitStatisticRepo.findHabitStatByDate(dto.getCreatedOn(), dto.getHabitId()).isPresent()) {
             throw new NotSavedException(ErrorMessage.HABIT_STATISTIC_ALREADY_EXISTS);
         }
         if (checkDate(dto.getCreatedOn())) {
