@@ -5,6 +5,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
 import greencity.dto.habitstatistic.HabitDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
@@ -200,13 +201,31 @@ public class UserController {
      * Method for finding all {@link User} habits.
      *
      * @param userId {@link User} id.
-     * @param principal Principal with {@link User} email..
+     * @param principal Principal with {@link User} email.
      * @return list of {@link HabitDto}
      */
     @GetMapping("/{userId}/habits")
     public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticServiceImpl.findAllHabitsByStatus(principal.getName(), true));
+            .body(habitStatisticServiceImpl.findAllHabitsAndTheirStatistics(
+                userValidationService.userValidForActions(principal, userId).getId(), true));
+    }
+
+    /**
+     * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     *
+     * @param userId {@link User} id.
+     * @param principal - Principal with {@link User} email.
+     * @return {@link CalendarUsefulHabitsDto} instance.
+     */
+    @ApiOperation(value = "Find statistic about user habits.")
+    @GetMapping("/{userId}/habits/statistic")
+    public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(
+        @PathVariable Long userId, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitStatisticServiceImpl.getInfoAboutUserHabits(
+                userValidationService.userValidForActions(principal, userId).getId()));
     }
 
     /**
