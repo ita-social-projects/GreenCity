@@ -140,6 +140,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         User user = userService
             .findByEmail(email)
             .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        checkUserStatus(user);
         String newRefreshTokenKey = jwtTool.generateRefreshTokenKey();
         userService.updateUserRefreshToken(newRefreshTokenKey, user.getId());
         if (jwtTool.isTokenValid(refreshToken, user.getRefreshTokenKey())) {
@@ -150,6 +151,15 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             );
         }
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
+    }
+
+    private void checkUserStatus(User user) {
+        UserStatus status = user.getUserStatus();
+        if (status == UserStatus.BLOCKED) {
+            throw new UserBlockedException(USER_DEACTIVATED);
+        } else if (status == UserStatus.DEACTIVATED) {
+            throw new UserDeactivatedException(USER_DEACTIVATED);
+        }
     }
 
     /**
