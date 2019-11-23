@@ -6,6 +6,8 @@ import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -66,6 +68,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 new AccessTokenAuthenticationFilter(jwtTool, authenticationManager()),
                 UsernamePasswordAuthenticationFilter.class
             )
+            .exceptionHandling()
+            .authenticationEntryPoint((req, resp, exc) -> resp.sendError(SC_UNAUTHORIZED, "Authorize first."))
+            .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
+            .and()
             .authorizeRequests()
             .antMatchers(
                 "/ownSecurity/**",
@@ -89,7 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
                 "/habit/statistic/*",
-                "/user/*/habits", //TODO
+                "/user/*/habits",
                 "/user/*/habits/statistic"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(

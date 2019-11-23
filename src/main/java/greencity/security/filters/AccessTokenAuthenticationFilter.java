@@ -42,7 +42,9 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      * @param chain this is filter of chain
      */
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    public void doFilterInternal(@SuppressWarnings("NullableProblems") HttpServletRequest request,
+                                 @SuppressWarnings("NullableProblems") HttpServletResponse response,
+                                 @SuppressWarnings("NullableProblems") FilterChain chain)
         throws IOException, ServletException {
         String token = jwtTool.getTokenFromHttpServletRequest(request);
         if (token != null) {
@@ -53,13 +55,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (ExpiredJwtException e) {
                 log.info("Token has expired: " + token);
-                response.setStatus(HttpServletResponse.SC_SEE_OTHER);
-                return;
             } catch (Exception e) {
                 log.info("Access denied with token: " + e.getMessage());
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Access token is not valid!");
-                SecurityContextHolder.clearContext();
-                return;
             }
         }
         chain.doFilter(request, response);
