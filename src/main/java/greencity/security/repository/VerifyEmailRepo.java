@@ -34,6 +34,7 @@ public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
      *          Some DBMS do permit specifying IDENTITY function to generate PRIMARY KEY.
      *
      * @return number of deleted rows
+     * @author Yurii Koval
      **/
     @Transactional
     @Modifying

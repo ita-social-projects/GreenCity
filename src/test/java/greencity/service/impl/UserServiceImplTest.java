@@ -1,21 +1,19 @@
 package greencity.service.impl;
 
-import greencity.exception.exceptions.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.user.*;
+import greencity.dto.user.RoleDto;
+import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserGoalResponseDto;
+import greencity.dto.user.UserUpdateDto;
 import greencity.entity.Goal;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.exceptions.*;
 import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.GoalRepo;
 import greencity.repository.UserGoalRepo;
@@ -24,10 +22,14 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -38,7 +40,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class UserServiceImplTest {
 
     @Mock
@@ -53,9 +55,9 @@ public class UserServiceImplTest {
     @Mock
     UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
 
-    User user =
+    private User user =
         User.builder()
-            .id(1l)
+            .id(1L)
             .firstName("test")
             .lastName("test")
             .email("test@gmail.com")
@@ -65,9 +67,9 @@ public class UserServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-    User user2 =
+    private User user2 =
         User.builder()
-            .id(2l)
+            .id(2L)
             .firstName("test")
             .lastName("test")
             .email("test@gmail.com")
@@ -123,10 +125,10 @@ public class UserServiceImplTest {
 
     @Test
     public void findByIdTest() {
-        Long id = 1l;
+        Long id = 1L;
 
         User user = new User();
-        user.setId(1l);
+        user.setId(1L);
 
         when(userRepo.findById(id)).thenReturn(Optional.of(user));
 
@@ -137,18 +139,12 @@ public class UserServiceImplTest {
     @Test(expected = BadIdException.class)
     public void findByIdBadIdTest() {
         when(userRepo.findById(any())).thenThrow(BadIdException.class);
-        userService.findById(1l);
-    }
-
-    @Test(expected = UserAlreadyRegisteredException.class)
-    public void saveExceptionTest() {
-        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
-        userService.save(new User());
+        userService.findById(1L);
     }
 
     @Test(expected = BadIdException.class)
     public void deleteByIdExceptionBadIdTest() {
-        userService.deleteById(1l);
+        userService.deleteById(1L);
     }
 
     /**
@@ -185,7 +181,7 @@ public class UserServiceImplTest {
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
 
         PageableDto<UserForListDto> userPageableDto =
-            new PageableDto<UserForListDto>(userForListDtos,
+            new PageableDto<>(userForListDtos,
                 userForListDtos.size(), 0);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
@@ -236,7 +232,7 @@ public class UserServiceImplTest {
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
 
         PageableDto<UserForListDto> userPageableDto =
-            new PageableDto<UserForListDto>(userForListDtos,
+            new PageableDto<>(userForListDtos,
                 userForListDtos.size(), 0);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());

@@ -59,6 +59,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param refreshTokenKey - new refresh token key
      * @param id - user's id
      * @return - number of updated rows
+     * @author Yurii Koval
      */
     @Modifying
     @Query(value = "UPDATE User SET refreshTokenKey=:refreshTokenKey WHERE id=:id")

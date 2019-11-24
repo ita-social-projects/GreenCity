@@ -86,6 +86,13 @@ public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailServ
         log.info("end");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int deleteAllExpiredPasswordResetTokens() {
+        return restorePasswordEmailRepo.deleteAllExpiredPasswordResetTokens();
+    }
 
     /**
      * {@inheritDoc}
@@ -100,10 +107,10 @@ public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailServ
     /**
      * {@inheritDoc}
      *
-     * @author Dmytro Dovhal
+     * @author Yurii Koval
      */
     @Override
-    public boolean isDateValidate(LocalDateTime emailExpiredDate) {
+    public boolean isNotExpired(LocalDateTime emailExpiredDate) {
         return LocalDateTime.now().isBefore(emailExpiredDate);
     }
 

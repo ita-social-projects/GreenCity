@@ -65,22 +65,15 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
 
 
     /**
-     * Method to deleting expiry restore tokens.
+     * Deletes expiry reset tokens.
      *
-     * @author Dmytro Dovhal
+     * @author Yurii Koval
      */
+    @Override
     @Scheduled(fixedRate = 86400000)
-    public void deleteExpiry() { // TODO - move it to the DB
-        log.info("begin");
-        restorePasswordEmailService
-            .findAll()
-            .forEach(
-                restore -> {
-                    if (!restorePasswordEmailService.isDateValidate(restore.getExpiryDate())) {
-                        restorePasswordEmailService.delete(restore);
-                    }
-                });
-        log.info("end");
+    public void deleteExpiry() {
+        int n = restorePasswordEmailService.deleteAllExpiredPasswordResetTokens();
+        log.info(n + " password reset tokens were deleted.");
     }
 
     /**
@@ -101,7 +94,7 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
                         () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID
                                 + restorePasswordEmail.getUser().getId())
                 );
-        if (restorePasswordEmailService.isDateValidate(restorePasswordEmail.getExpiryDate())) {
+        if (restorePasswordEmailService.isNotExpired(restorePasswordEmail.getExpiryDate())) {
             log.info("Date of user email is valid and user was found.");
             ownSecurityService.updatePassword(password, user.getId());
             restorePasswordEmailService.delete(restorePasswordEmail);

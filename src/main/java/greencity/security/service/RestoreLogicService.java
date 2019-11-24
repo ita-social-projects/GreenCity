@@ -1,5 +1,7 @@
 package greencity.security.service;
 
+import org.springframework.scheduling.annotation.Scheduled;
+
 /**
  * Provides the interface to manage {@link RestoreLogicService}.
  *
@@ -13,6 +15,14 @@ public interface RestoreLogicService {
      * @param email - {@link String}
      */
     void sendEmailForRestore(String email);
+
+    /**
+     * Deletes expiry reset tokens.
+     *
+     * @author Yurii Koval
+     */
+    @Scheduled(fixedRate = 86400000)
+    void deleteExpiry();
 
     /**
      * Method for restore password by token.

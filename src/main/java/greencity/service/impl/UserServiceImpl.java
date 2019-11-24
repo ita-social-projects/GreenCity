@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Autowired repository.
      */
-    private final UserRepo repo;
+    private final UserRepo userRepo;
     private final UserGoalRepo userGoalRepo;
     private final GoalRepo goalRepo;
 
@@ -59,10 +59,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User save(User user) {
-        if (findByEmail(user.getEmail()).isPresent()) {
-            throw new UserAlreadyRegisteredException(ErrorMessage.USER_WITH_EMAIL_EXIST + user.getEmail());
-        }
-        return repo.save(user);
+        return userRepo.save(user);
     }
 
     /**
@@ -70,7 +67,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User findById(Long id) {
-        return repo.findById(id)
+        return userRepo.findById(id)
             .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + id));
     }
 
@@ -79,7 +76,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageableDto<UserForListDto> findByPage(Pageable pageable) {
-        Page<User> users = repo.findAll(pageable);
+        Page<User> users = userRepo.findAll(pageable);
         List<UserForListDto> userForListDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
@@ -96,7 +93,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(Long id) {
         User user = findById(id);
-        repo.delete(user);
+        userRepo.delete(user);
     }
 
     /**
@@ -104,7 +101,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Optional<User> findByEmail(String email) {
-        return repo.findByEmail(email);
+        return userRepo.findByEmail(email);
     }
 
     /**
@@ -115,7 +112,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long findIdByEmail(String email) {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
-        return repo.findIdByEmail(email).orElseThrow(
+        return userRepo.findIdByEmail(email).orElseThrow(
             () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
     }
 
@@ -127,7 +124,7 @@ public class UserServiceImpl implements UserService {
         checkUpdatableUser(id, email);
         User user = findById(id);
         user.setRole(role);
-        return modelMapper.map(repo.save(user), UserRoleDto.class);
+        return modelMapper.map(userRepo.save(user), UserRoleDto.class);
     }
 
     /**
@@ -139,7 +136,7 @@ public class UserServiceImpl implements UserService {
         accessForUpdateUserStatus(id, email);
         User user = findById(id);
         user.setUserStatus(userStatus);
-        return modelMapper.map(repo.save(user), UserStatusDto.class);
+        return modelMapper.map(userRepo.save(user), UserStatusDto.class);
     }
 
     /**
@@ -168,14 +165,14 @@ public class UserServiceImpl implements UserService {
         User updatable = findById(user.getId());
         log.info(updatable.getLastVisit() + "s");
         updatable.setLastVisit(LocalDateTime.now());
-        return repo.save(updatable);
+        return userRepo.save(updatable);
     }
 
     /**
      * {@inheritDoc}
      */
     public PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable) {
-        Page<User> users = repo.findAll(new UserFilter(filterUserDto), pageable);
+        Page<User> users = userRepo.findAll(new UserFilter(filterUserDto), pageable);
         List<UserForListDto> userForListDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserForListDto.class))
@@ -192,7 +189,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserUpdateDto getUserUpdateDtoByEmail(String email) {
         return modelMapper.map(
-            repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
+            userRepo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
             UserUpdateDto.class
         );
     }
@@ -202,11 +199,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User update(UserUpdateDto dto, String email) {
-        User user = repo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userRepo
+            .findByEmail(email)
+            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmailNotification(dto.getEmailNotification());
-        return repo.save(user);
+        return userRepo.save(user);
     }
 
     /**
@@ -295,7 +294,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public int updateUserRefreshToken(String refreshTokenKey, Long id) {
-        return repo.updateUserRefreshToken(refreshTokenKey, id);
+        return userRepo.updateUserRefreshToken(refreshTokenKey, id);
     }
 
     /**

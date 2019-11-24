@@ -16,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 /**
  * Provides the interface to manage {@link User} entity.
  *
- * @author Nazar Stasyuk and Rostyslav .....
+ * @author Nazar Stasyuk and Rostyslav && Yurii Koval
  * @version 1.0
  */
 public interface UserService {
@@ -24,6 +24,7 @@ public interface UserService {
      * Method that allow you to save new {@link User}.
      *
      * @param user a value of {@link User}
+     * @author Yurii Koval
      */
     User save(User user);
 

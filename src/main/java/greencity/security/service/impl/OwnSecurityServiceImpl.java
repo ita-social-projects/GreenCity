@@ -20,8 +20,8 @@ import greencity.service.UserService;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +46,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   UserService userService,
                                   VerifyEmailService verifyEmailService,
                                   PasswordEncoder passwordEncoder,
-                                  AuthenticationManager authManager,
                                   JwtTool jwtTool) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
@@ -61,14 +60,15 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Transactional
     @Override
     public void signUp(OwnSignUpDto dto) {
-        if (userService.findByEmail(dto.getEmail()).isPresent()) {
-            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
-        }
         User user = createNewRegisteredUser(dto);
         user.setRefreshTokenKey(jwtTool.generateRefreshTokenKey());
-        User savedUser = userService.save(user);
-        ownSecurityRepo.save(createUserOwnSecurityToUser(dto, savedUser));
-        verifyEmailService.save(savedUser);
+        try {
+            User savedUser = userService.save(user);
+            ownSecurityRepo.save(createUserOwnSecurityToUser(dto, savedUser));
+            verifyEmailService.save(savedUser);
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
+        }
     }
 
     private OwnSecurity createUserOwnSecurityToUser(OwnSignUpDto dto, User user) {

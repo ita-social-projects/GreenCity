@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Service that provide {@link VerifyEmail} logic.
  *
- * @author Nazar Stasyuk
+ * @author Nazar Stasyuk && Yurii Koval
  * @version 1.0
  */
 public interface VerifyEmailService {
@@ -52,6 +52,7 @@ public interface VerifyEmailService {
      * Deletes email verification tokens that are expired.
      *
      * @return - number of deleted tokens
+     * @author Yurii Koval
      */
     int deleteAllExpiredEmailVerificationTokens();
 }
