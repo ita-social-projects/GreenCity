@@ -1,5 +1,3 @@
-USE GreenCity;
-
 INSERT INTO users (id, date_of_registration, email, first_name, last_name, last_visit, role, user_status,
                    email_notification)
 VALUES (1, '2019-09-03 11:42:37.823000', 'nazar.stasyuk@gmail.com', 'Назар', 'Стасюк', '2019-09-03 11:42:37.823000', 0,
@@ -105,16 +103,16 @@ VALUES ('Ukrainian food');
 INSERT INTO specifications (name)
 VALUES ('Dance');
 
-# INSERT INTO specifications (value, place_id, specification_id)
-# VALUES ('disc', 1, 4);
-# INSERT INTO specifications (value, place_id, specification_id)
-# VALUES ('disc', 2, 2);
-# INSERT INTO specifications (value, place_id, specification_id)
-# VALUES ('disc', 3, 3);
-# INSERT INTO specifications (value, place_id, specification_id)
-# VALUES ('disc', 4, 6);
-# INSERT INTO specifications (value, place_id, specification_id)
-# VALUES ('disc', 5, 5);
+-- # INSERT INTO specifications (value, place_id, specification_id)
+-- # VALUES ('disc', 1, 4);
+-- # INSERT INTO specifications (value, place_id, specification_id)
+-- # VALUES ('disc', 2, 2);
+-- # INSERT INTO specifications (value, place_id, specification_id)
+-- # VALUES ('disc', 3, 3);
+-- # INSERT INTO specifications (value, place_id, specification_id)
+-- # VALUES ('disc', 4, 6);
+-- # INSERT INTO specifications (value, place_id, specification_id)
+-- # VALUES ('disc', 5, 5);
 
 INSERT INTO favorite_places (place_id, user_id, name)
 values (1, 1, 'Forum');
@@ -197,13 +195,13 @@ values (1, 3, 1, 1),
        (5, 93, 5, 5),
        (6, 50, 5, 6);
 
-# INSERT INTO advices(habit_dictionary_id, name)
-# VALUES (1, 'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
-#        (2, 'Не візьми стакан - збережи природу.'),
-#        (1, 'Після переходу на багаторазові сумки вам більше не доведеться постійно купувати пакети для товарів і продуктів. Екосумки мають більший термін служби і повільно зношуються.'),
-#        (1, 'Щоб зменшити побутові відходи, почніть із того, щоб відмовитися від пластикових пакетів.'),
-#        (1, 'Всі багаторазові сумки дуже просто чистити. Немає необхідності турбуватися про те, що варення, мед або крихти потрапляють у куточки. Просто покладіть потім сумку в пральну або посудомийну машину.'),
-#        (1, 'Екосумки дуже популярні серед спортсменів і всіх, хто веде здоровий спосіб життя.');
+--  INSERT INTO advices(habit_dictionary_id, name)
+--  VALUES (1, 'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
+--         (2, 'Не візьми стакан - збережи природу.'),
+--         (1, 'Після переходу на багаторазові сумки вам більше не доведеться постійно купувати пакети для товарів і продуктів. Екосумки мають більший термін служби і повільно зношуються.'),
+--         (1, 'Щоб зменшити побутові відходи, почніть із того, щоб відмовитися від пластикових пакетів.'),
+--         (1, 'Всі багаторазові сумки дуже просто чистити. Немає необхідності турбуватися про те, що варення, мед або крихти потрапляють у куточки. Просто покладіть потім сумку в пральну або посудомийну машину.'),
+--         (1, 'Екосумки дуже популярні серед спортсменів і всіх, хто веде здоровий спосіб життя.');
 
 INSERT INTO habit_dictionary (name)
 VALUES ('bag'),
