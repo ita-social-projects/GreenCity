@@ -45,7 +45,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Marian Milian
      */
     @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity handleRuntimeException(RuntimeException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -59,7 +59,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Nazar Stasyuk
      */
     @ExceptionHandler(AuthenticationException.class)
-    public final ResponseEntity authenticationException(WebRequest request) {
+    public final ResponseEntity<Object> authenticationException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
@@ -72,7 +72,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Roman Zahorui
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public final ResponseEntity handleConversionFailedException(
+    public final ResponseEntity<Object> handleConversionFailedException(
         MethodArgumentTypeMismatchException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         String propName = ex.getName();
@@ -94,7 +94,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Nazar Stasyuk
      */
     @ExceptionHandler(BadRefreshTokenException.class)
-    public final ResponseEntity handleBadRefreshTokenException(WebRequest request) {
+    public final ResponseEntity<Object> handleBadRefreshTokenException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
@@ -107,7 +107,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Nazar Stasyuk
      */
     @ExceptionHandler(UserAlreadyRegisteredException.class)
-    public final ResponseEntity handleBadEmailException(UserAlreadyRegisteredException ex) {
+    public final ResponseEntity<Object> handleBadEmailException(UserAlreadyRegisteredException ex) {
         ValidationExceptionDto validationExceptionDto =
             new ValidationExceptionDto(AppConstant.REGISTRATION_EMAIL_FIELD_NAME, ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -122,7 +122,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
     @ExceptionHandler(BadPlaceRequestException.class)
-    public final ResponseEntity handleBadPlaceRequestException(BadPlaceRequestException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleBadPlaceRequestException(BadPlaceRequestException ex,
+                                                                       WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -136,7 +137,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
     @ExceptionHandler(DateTimeParseException.class)
-    public final ResponseEntity handleDateTimeParseException(DateTimeParseException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleDateTimeParseException(DateTimeParseException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ErrorMessage.WRONG_DATE_TIME_FORMAT);
         log.trace(ex.getMessage(), ex);
@@ -151,7 +152,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
     @ExceptionHandler(BadCategoryRequestException.class)
-    public final ResponseEntity handleBadCategoryRequestException(BadCategoryRequestException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleBadCategoryRequestException(BadCategoryRequestException ex,
+                                                                          WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -216,6 +218,20 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor exception {@link EmailNotVerified}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     */
+    @ExceptionHandler(EmailNotVerified.class)
+    public final ResponseEntity<Object> handleEmailNotVerified(EmailNotVerified ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
 
     /**
