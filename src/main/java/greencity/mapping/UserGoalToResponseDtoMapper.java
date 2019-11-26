@@ -5,7 +5,6 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
 import greencity.exception.exceptions.GoalNotFoundException;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.GoalRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
