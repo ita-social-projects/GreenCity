@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 public class CalendarUsefulHabitsDto {
     private LocalDate creationDate;
     private Map<String, Integer> allItemsPerMonth;
-    private Map<String, Integer> differenceUnTakenItemsWithPreviousMonth;
+    private Map<String, Integer> differenceUnTakenItemsWithPreviousDay;
 }
