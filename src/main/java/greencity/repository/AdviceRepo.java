@@ -16,7 +16,8 @@ public interface AdviceRepo extends JpaRepository<Advice, Long> {
      * @return Advice Object in Optional
      * @author Vitaliy Dzen
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM advices WHERE habit_dictionary_id = ?1 ORDER BY RAND() LIMIT 1;")
+    @Query(nativeQuery = true, value = "SELECT * FROM advices WHERE habit_dictionary_id = ?1 "
+        + "ORDER BY RANDOM() LIMIT 1;")
     Optional<Advice> getRandomAdviceByHabitId(Long habitId);
 
     /**
