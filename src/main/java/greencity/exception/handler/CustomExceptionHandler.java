@@ -179,6 +179,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @param request contain  detail about occur exception
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
+    @ExceptionHandler(GoalNotFoundException.class)
+    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(GoalNotFoundException ex,
+                                                                              WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercept exception {@link UserGoalNotSavedException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     */
     @ExceptionHandler(UserGoalNotSavedException.class)
     public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(UserGoalNotSavedException ex,
                                                                               WebRequest request) {

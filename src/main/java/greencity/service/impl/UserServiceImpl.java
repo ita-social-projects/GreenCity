@@ -261,7 +261,7 @@ public class UserServiceImpl implements UserService {
         if (!errorMessages.isEmpty()) {
             throw new UserGoalNotSavedException(USER_GOAL_WHERE_NOT_SAVED + errorMessages.toString());
         }
-        return userGoalRepo.findAllByUserId(user.getId()).stream()
+        return user.getUserGoals().stream()
             .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
             .collect(Collectors.toList());
     }

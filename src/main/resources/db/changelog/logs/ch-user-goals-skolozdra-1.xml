@@ -30,7 +30,4 @@
     <changeSet id="1571227598316-103" author="Vitalii S.">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_goals" constraintName="FK_user_user_goals" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="users"/>
     </changeSet>
-    <changeSet id="1571227598316-104" author="Vitalii S.">
-        <addForeignKeyConstraint baseColumnNames="goal_id" baseTableName="user_goals" constraintName="FK_user_goals_goals" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="goals"/>
-    </changeSet>
 </databaseChangeLog>

@@ -72,6 +72,7 @@ public class ErrorMessage {
     public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS = "There is no active habits for such user with such status ";
     public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
+    public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
 
     private ErrorMessage() {
     }

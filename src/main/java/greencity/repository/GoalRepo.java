@@ -14,6 +14,7 @@ public interface GoalRepo extends JpaRepository<Goal, Long> {
      *
      * @return List of available {@link Goal}'s.
      */
+
     @Query("SELECT g from Goal g WHERE g.id NOT IN "
         + "(SELECT ug.goal FROM UserGoal ug WHERE ug.user = ?1 AND ug.status = 'ACTIVE')")
     List<Goal> findAvailableGoalsByUser(User user);
