@@ -27,10 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @Slf4j
 public class HabitStatisticServiceImpl implements HabitStatisticService {
+    private static final Integer DAY_DIFFERENCE = 1;
     private HabitStatisticRepo habitStatisticRepo;
     private HabitRepo habitRepo;
     private HabitStatisticMapper habitStatisticMapper;
     private ModelMapper modelMapper;
+
 
 
     /**
@@ -55,7 +57,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
 
     private boolean checkDate(LocalDate date) {
         return LocalDate.now().compareTo(date) == 0
-            || LocalDate.now().compareTo(date) == 1;
+            || LocalDate.now().compareTo(date) == DAY_DIFFERENCE;
     }
 
 
@@ -142,7 +144,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
 
         Map<String, Integer> statisticUnTakenItemsWithPrevMonth =
-            getDifferenceItemsWithPrevMonth(allHabitsByUserId);
+            getDifferenceItemsWithPrevDay(allHabitsByUserId);
 
         CalendarUsefulHabitsDto dto = new CalendarUsefulHabitsDto();
         dto.setCreationDate(allHabitsByUserId.get(0).getCreateDate());
@@ -152,8 +154,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return dto;
     }
 
-    private Integer getItemsForPreviousMonth(Long habitId) {
-        return habitStatisticRepo.getAmountOfItemsInPreviousMonth(habitId).orElse(0);
+    private Integer getItemsForPreviousDay(Long habitId) {
+        return habitStatisticRepo.getAmountOfItemsInPreviousDay(habitId).orElse(0);
     }
 
     private Integer getItemsTakenToday(Long habitId) {
@@ -161,21 +163,22 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     private Map<String, Integer> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
+        LocalDate firstDayOfMonth = LocalDate.now();
         return allHabitsByUserId
             .stream()
             .collect(Collectors
                 .toMap(habit -> habit.getHabitDictionary().getName(),
                     habit -> habitStatisticRepo
-                        .getSumOfAllItems(habit.getId()).orElse(0)
+                        .getSumOfAllItemsPerMonth(habit.getId(), firstDayOfMonth.withDayOfMonth(1)).orElse(0)
                 ));
     }
 
-    private Map<String, Integer> getDifferenceItemsWithPrevMonth(List<Habit> allHabitsByUserId) {
+    private Map<String, Integer> getDifferenceItemsWithPrevDay(List<Habit> allHabitsByUserId) {
         return allHabitsByUserId
             .stream()
             .collect(Collectors
                 .toMap(habit -> habit.getHabitDictionary().getName(),
-                    habit -> getItemsTakenToday(habit.getId()) - getItemsForPreviousMonth(habit.getId())
+                    habit -> getItemsTakenToday(habit.getId()) - getItemsForPreviousDay(habit.getId())
                 ));
     }
 

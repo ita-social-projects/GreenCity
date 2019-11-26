@@ -29,15 +29,16 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
                                                  @Param("habitId") Long habitId);
 
     /**
-     * Method for finding sum of all untaken items per month.
+     * Method for finding the sum of all untaken items for current month.
      *
      * @param habitId {@link Habit} id.
+     * @param firstDay first day of current month.
      * @return sum of items per month.
      */
-    @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs WHERE habit_id=:habitId"
-        + " AND MONTH(createdOn) = MONTH(CURRENT_DATE())\n"
-        + " AND YEAR(createdOn) = YEAR(CURRENT_DATE())")
-    Optional<Integer> getSumOfAllItems(@Param("habitId") Long habitId);
+    @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs\n"
+        + " WHERE hs.id =:habitId AND hs.createdOn <= CURRENT_DATE AND hs.createdOn >=:firstDayOfMonth")
+    Optional<Integer> getSumOfAllItemsPerMonth(@Param("habitId") Long habitId,
+                                               @Param("firstDayOfMonth") LocalDate firstDay);
 
     /**
      * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
@@ -48,15 +49,14 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     List<HabitStatistic> findAllByHabitId(Long habitId);
 
     /**
-     * Method for finding amount of items for the same day as now but in
-     * previous month.
+     * Method for finding amount of items for the previous day.
      *
      * @param habitId {@link Habit} id.
      * @return amount of items in Optional in case of absence such info.
      */
-    @Query(nativeQuery = true, value = "SELECT amount_of_items FROM habit_statistics\n"
-        + " WHERE habit_statistics.date = CURRENT_DATE - INTERVAL 1 MONTH AND habit_id =:habitId")
-    Optional<Integer> getAmountOfItemsInPreviousMonth(@Param("habitId") Long habitId);
+    @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
+        + " WHERE hs.createdOn = CURRENT_DATE - 1 AND habit_id =:habitId")
+    Optional<Integer> getAmountOfItemsInPreviousDay(@Param("habitId") Long habitId);
 
     /**
      * Method for finding amount of items for the current day.
@@ -64,7 +64,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @param habitId {@link Habit} id.
      * @return amount of items in Optional in case of absence such info.
      */
-    @Query(nativeQuery = true, value = "SELECT amount_of_items FROM habit_statistics\n"
-        + " WHERE habit_statistics.date = CURRENT_DATE AND habit_id =:habitId")
+    @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
+        + " WHERE hs.createdOn = CURRENT_DATE AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsToday(@Param("habitId") Long habitId);
 }

@@ -6,7 +6,7 @@ import greencity.entity.HabitStatistic;
 import greencity.entity.User;
 import java.util.List;
 
-public interface    HabitStatisticService {
+public interface HabitStatisticService {
     /**
      * Method for creating {@link HabitStatistic} to database.
      *
