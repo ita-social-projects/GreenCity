@@ -17,6 +17,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Builder
 public class AddHabitStatisticDto {
+    @Min(0)
+    private Long id;
     @Range(min = ValidationConstants.MIN_AMOUNT_OF_ITEMS, max = ValidationConstants.MAX_AMOUNT_OF_ITEMS)
     @NotNull(message = "Amount of items can not be null.")
     private Integer amountOfItems;

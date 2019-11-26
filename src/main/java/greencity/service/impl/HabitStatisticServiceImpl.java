@@ -149,7 +149,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         CalendarUsefulHabitsDto dto = new CalendarUsefulHabitsDto();
         dto.setCreationDate(allHabitsByUserId.get(0).getCreateDate());
         dto.setAllItemsPerMonth(statisticByHabitsPerMonth);
-        dto.setDifferenceUnTakenItemsWithPreviousMonth(statisticUnTakenItemsWithPrevMonth);
+        dto.setDifferenceUnTakenItemsWithPreviousDay(statisticUnTakenItemsWithPrevMonth);
 
         return dto;
     }
