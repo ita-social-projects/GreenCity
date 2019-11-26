@@ -121,6 +121,9 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .findByEmail(dto.getEmail())
             .filter(u -> isPasswordCorrect(dto, u))
             .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
+        if (user.getVerifyEmail() != null) {
+            throw new EmailNotVerified("You should verify the email first, check your email box!");
+        }
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), true);
