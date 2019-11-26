@@ -2,7 +2,6 @@ package greencity.dto.goal;
 
 import javax.validation.constraints.*;
 import lombok.Data;
-import org.springframework.validation.annotation.Validated;
 
 @Data
 public class GoalDto {
