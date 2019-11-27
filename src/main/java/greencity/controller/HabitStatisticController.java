@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/habit")
 @AllArgsConstructor
-public class HabitController {
+public class HabitStatisticController {
     private final HabitStatisticServiceImpl habitStatisticServiceImpl;
 
     /**
