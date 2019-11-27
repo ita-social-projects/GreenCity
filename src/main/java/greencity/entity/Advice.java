@@ -33,6 +33,7 @@ public class Advice {
      */
     public Advice(AdvicePostDTO advicePostDTO, HabitDictionary habitDictionary) {
         this.name = advicePostDTO.getAdvice();
-        this.habitDictionary = new HabitDictionary(habitDictionary.getId(), habitDictionary.getName(), null);
+        this.habitDictionary = new HabitDictionary(habitDictionary.getId(), habitDictionary.getName(),
+            habitDictionary.getDescription(), null);
     }
 }

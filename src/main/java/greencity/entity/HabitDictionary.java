@@ -21,6 +21,9 @@ public class HabitDictionary {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String description;
+
     @OneToMany(mappedBy = "habitDictionary")
     private List<Habit> habit;
 }
