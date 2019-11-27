@@ -57,6 +57,7 @@ public class ErrorMessage {
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "The Habit statistic does not exist by this id : ";
     public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
     public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
+    public static final String USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY = "This user is tracking all available habit dictionary";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
     public static final String USER_GOAL_STATUS_NOT_UPDATED = "User goal status was not updated";
     public static final String USER_HAS_NO_SUCH_GOAL = "This user has no goal with id: ";

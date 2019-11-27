@@ -209,7 +209,7 @@ public class UserController {
     /**
      * Method for finding all {@link User} habits.
      *
-     * @param userId {@link User} id.
+     * @param userId    {@link User} id.
      * @param principal Principal with {@link User} email.
      * @return list of {@link HabitDto}
      */
@@ -224,7 +224,7 @@ public class UserController {
      * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
      * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param userId {@link User} id.
+     * @param userId    {@link User} id.
      * @param principal - Principal with {@link User} email.
      * @return {@link CalendarUsefulHabitsDto} instance.
      */
@@ -253,7 +253,7 @@ public class UserController {
     @GetMapping("/{userId}/goals")
     public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
         @ApiIgnore
-        Principal principal,
+            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
         return ResponseEntity
@@ -277,7 +277,7 @@ public class UserController {
     @GetMapping("/{userId}/goals/available")
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
         @ApiIgnore
-        Principal principal,
+            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
         return ResponseEntity
@@ -305,7 +305,7 @@ public class UserController {
         @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
         @PathVariable Long goalId,
         @ApiIgnore
-        Principal principal) {
+            Principal principal) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService
@@ -329,11 +329,36 @@ public class UserController {
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
         @Valid @RequestBody BulkSaveUserGoalDto dto,
         @ApiIgnore
-        Principal principal,
+            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService.saveUserGoals(userValidationService.userValidForActions(principal, userId), dto));
+    }
+
+    /**
+     * Method returns list of available (not ACTIVE) goals for user.
+     *
+     * @param principal - authentication principal
+     * @return {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Get available goals for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/habit/dictionary/available")
+    public ResponseEntity<List<HabitDictionaryDto>> getAvailableHabitDictionary(
+        @ApiIgnore
+            Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getAvailableHabitDictionary(
+                userValidationService.userValidForActions(principal, userId)));
     }
 }

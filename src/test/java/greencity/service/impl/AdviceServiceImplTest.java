@@ -37,7 +37,7 @@ public class AdviceServiceImplTest {
     @Mock
     private HabitDictionaryRepo habitDictionaryRepo;
 
-    private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", null);
+    private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", "test1",null);
     private Advice advice = new Advice(4L, "test", habitDictionary);
 
     @Test

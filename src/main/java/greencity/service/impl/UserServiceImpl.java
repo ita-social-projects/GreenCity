@@ -9,6 +9,7 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.user.*;
 import greencity.entity.Goal;
+import greencity.entity.HabitDictionary;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
@@ -18,6 +19,7 @@ import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.GoalRepo;
+import greencity.repository.HabitDictionaryRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
@@ -50,6 +52,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final UserGoalRepo userGoalRepo;
     private final GoalRepo goalRepo;
+    private final HabitDictionaryRepo habitDictionaryRepo;
 
     /**
      * Autowired mapper.
@@ -331,5 +334,19 @@ public class UserServiceImpl implements UserService {
                 throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public List<HabitDictionaryDto> getAvailableHabitDictionary(User user) {
+        List<HabitDictionary> availableHabitDictionary = habitDictionaryRepo.findAvailableHabitDictionaryByUser(user);
+        if (availableHabitDictionary.isEmpty()) {
+            throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
+        }
+        return modelMapper.map(availableHabitDictionary, new TypeToken<List<HabitDictionaryDto>>() {
+        }.getType());
     }
 }

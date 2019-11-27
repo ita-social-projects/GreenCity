@@ -98,7 +98,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/*/habits",
                 "/user/*/habits/statistic",
                 "/user/{userId}/goals",
-                "/user/{userId}/goals/*"
+                "/user/{userId}/goals/*",
+                "/user/{userId}/habit/dictionary/available"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",

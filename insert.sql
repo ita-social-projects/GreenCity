@@ -203,9 +203,9 @@ values (1, 3, 1, 1),
 --         (1, 'Всі багаторазові сумки дуже просто чистити. Немає необхідності турбуватися про те, що варення, мед або крихти потрапляють у куточки. Просто покладіть потім сумку в пральну або посудомийну машину.'),
 --         (1, 'Екосумки дуже популярні серед спортсменів і всіх, хто веде здоровий спосіб життя.');
 
-INSERT INTO habit_dictionary (name)
-VALUES ('bag'),
-       ('cap');
+INSERT INTO habit_dictionary (name, description)
+VALUES ('bag', 'test bag'),
+       ('cap', 'test cup');
 
 INSERT INTO habits (user_id, habit_dictionary_id, status, create_date)
 VALUES (1, 1, 1, '2019-11-12 19:03:33'),
