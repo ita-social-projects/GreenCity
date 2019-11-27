@@ -23,7 +23,10 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -235,7 +238,8 @@ public class UserServiceImpl implements UserService {
         if (availableGoals.isEmpty()) {
             throw new UserHasNoAvailableGoalsException(USER_HAS_NO_AVAILABLE_GOALS);
         }
-        return modelMapper.map(availableGoals, new TypeToken<List<GoalDto>>(){}.getType());
+        return modelMapper.map(availableGoals, new TypeToken<List<GoalDto>>() {
+        }.getType());
     }
 
     /**
@@ -276,8 +280,10 @@ public class UserServiceImpl implements UserService {
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
             if (userGoal.getStatus().equals(GoalStatus.DONE)) {
-                throw new UserGoalStatusNotUpdatedException(USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
-            } else {
+                userGoal.setStatus(GoalStatus.ACTIVE);
+                userGoal.setDateCompleted(null);
+                userGoalRepo.save(userGoal);
+            } else if (userGoal.getStatus().equals(GoalStatus.ACTIVE)) {
                 userGoal.setStatus(GoalStatus.DONE);
                 userGoal.setDateCompleted(LocalDateTime.now());
                 userGoalRepo.save(userGoal);
