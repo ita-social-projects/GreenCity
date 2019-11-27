@@ -338,13 +338,13 @@ public class UserController {
     }
 
     /**
-     * Method returns list of available (not ACTIVE) goals for user.
+     * Method returns list of available (not ACTIVE) habit dictionary for user.
      *
      * @param principal - authentication principal
      * @return {@link ResponseEntity}.
-     * @author Vitalii Skolozdra
+     * @author Kuzenko Bogdan
      */
-    @ApiOperation(value = "Get available goals for current user.")
+    @ApiOperation(value = "Get available habit dictionary for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
