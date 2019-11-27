@@ -4,7 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.entity.DiscountValue;
 import greencity.entity.Specification;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.service.SpecificationService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;

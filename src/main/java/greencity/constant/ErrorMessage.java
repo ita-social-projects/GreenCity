@@ -3,7 +3,7 @@ package greencity.constant;
 public class ErrorMessage {
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
-    public static final String USER_WITH_EMAIL_EXIST = "The user is already exist by this email: ";
+    public static final String USER_WITH_EMAIL_EXIST = "The user already exists by this email: ";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS = "Favorite place already exist for this placeId:  %d and user with email: %s";
@@ -51,6 +51,28 @@ public class ErrorMessage {
     public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
     public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
     public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT = "Password restore link already sent, please check your email: ";
+    public static final String HABIT_EXIST = "The Habit is already exist by this date:  ";
+    public static final String HABIT_NOT_FOUND_BY_ID = "The Habit does not exist by this id : ";
+    public static final String WRONG_DATE = "Can't create habit statistic for such date";
+    public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "The Habit statistic does not exist by this id : ";
+    public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
+    public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
+    public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
+    public static final String USER_GOAL_STATUS_NOT_UPDATED = "User goal status was not updated";
+    public static final String USER_HAS_NO_SUCH_GOAL = "This user has no goal with id: ";
+    public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
+    public static final String INVALID_HABIT_ID = "Invalid habit id ";
+    public static final String INVALID_HABIT_NAME = "Invalid habit name ";
+    public static final String ADVICE_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
+    public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
+    public static final String ADVICE_NOT_SAVED_BY_NAME = "The name with such name already exist: ";
+    public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
+    public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
+    public static final String USER_HAS_NOT_ANY_HABITS = "There is no habits for such user.";
+    public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS = "There is no active habits for such user with such status ";
+    public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
+    public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
+    public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
 
     private ErrorMessage() {
     }

@@ -4,6 +4,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
-    <include file="db/changelog/liquibase-outputChangeLog.xml"/>
-    <include file="db/changelog/gc-1.xml"/>
+    <include file="db/changelog/logs/liquibase-outputChangeLog.xml"/>
+    <include file="db/changelog/logs/ch-change-tables-names-1.xml"/>
+    <include file="db/changelog/logs/ch-add-column-Koval-1.xml"/>
+    <include file="db/changelog/logs/ch-habit-dictionary-kuzenko-1.xml"/>
+    <include file="db/changelog/logs/ch-habits-turko-1.xml"/>
+    <include file="db/changelog/logs/ch-habit-statistics-olkhovskyi-1.xml"/>
+    <include file="db/changelog/logs/ch-user-goals-skolozdra-1.xml"/>
+    <include file="db/changelog/logs/ch-advice-dzen-1.xml"/>
 </databaseChangeLog>

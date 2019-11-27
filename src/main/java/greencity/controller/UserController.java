@@ -4,15 +4,18 @@ import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserUpdateDto;
+import greencity.dto.goal.GoalDto;
+import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
+import greencity.dto.habitstatistic.HabitDto;
+import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 import greencity.service.UserService;
+import greencity.service.UserValidationService;
+import greencity.service.impl.HabitStatisticServiceImpl;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
@@ -22,7 +25,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -31,6 +34,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @AllArgsConstructor
 public class UserController {
     private UserService userService;
+    private UserValidationService userValidationService;
+    private HabitStatisticServiceImpl habitStatisticServiceImpl;
 
     /**
      * The method which update user status.
@@ -43,6 +48,7 @@ public class UserController {
     @ApiOperation(value = "Update status of user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserStatus.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -66,6 +72,7 @@ public class UserController {
     @ApiOperation(value = "Update role of user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -90,6 +97,7 @@ public class UserController {
     @ApiOperation(value = "Get users by page")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -108,6 +116,7 @@ public class UserController {
     @ApiOperation(value = "Get all available roles")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = RoleDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("roles")
@@ -124,7 +133,8 @@ public class UserController {
     @ApiOperation(value = "Get all available email notifications statuses")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = EmailNotification[].class),
-         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("emailNotifications")
     public ResponseEntity<List<EmailNotification>> getEmailNotifications() {
@@ -144,6 +154,7 @@ public class UserController {
     @ApiOperation(value = "Filter all user by search criteria")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
@@ -163,12 +174,13 @@ public class UserController {
     @ApiOperation(value = "Get User dto by principal (email) from access token")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserUpdateDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public ResponseEntity<UserUpdateDto> getUserByPrincipal() {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<UserUpdateDto> getUserByPrincipal(@ApiIgnore @AuthenticationPrincipal Principal principal) {
+        String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserUpdateDtoByEmail(email));
     }
 
@@ -181,13 +193,147 @@ public class UserController {
     @ApiOperation(value = "Update User")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PutMapping
-    public ResponseEntity updateUser(@Valid @RequestBody UserUpdateDto dto) {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity updateUser(@Valid @RequestBody UserUpdateDto dto,
+                                     @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        String email = principal.getName();
         userService.update(dto, email);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
+    /**
+     * Method for finding all {@link User} habits.
+     *
+     * @param userId {@link User} id.
+     * @param principal Principal with {@link User} email.
+     * @return list of {@link HabitDto}
+     */
+    @GetMapping("/{userId}/habits")
+    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(habitStatisticServiceImpl.findAllHabitsAndTheirStatistics(
+                userValidationService.userValidForActions(principal, userId).getId(), true));
+    }
+
+    /**
+     * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     *
+     * @param userId {@link User} id.
+     * @param principal - Principal with {@link User} email.
+     * @return {@link CalendarUsefulHabitsDto} instance.
+     */
+    @ApiOperation(value = "Find statistic about user habits.")
+    @GetMapping("/{userId}/habits/statistic")
+    public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(
+        @PathVariable Long userId, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitStatisticServiceImpl.getInfoAboutUserHabits(
+                userValidationService.userValidForActions(principal, userId).getId()));
+    }
+
+    /**
+     * Method returns list of user goals.
+     *
+     * @param principal - authentication principal
+     * @return {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Get goals of current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/goals")
+    public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
+        @ApiIgnore
+        Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getUserGoals(userValidationService.userValidForActions(principal, userId)));
+    }
+
+    /**
+     * Method returns list of available (not ACTIVE) goals for user.
+     *
+     * @param principal - authentication principal
+     * @return {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Get available goals for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/goals/available")
+    public ResponseEntity<List<GoalDto>> getAvailableGoals(
+        @ApiIgnore
+        Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getAvailableGoals(userValidationService.userValidForActions(principal, userId)));
+    }
+
+
+    /**
+     * Method updates goal status.
+     *
+     * @return new {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Change status of one of the goals for current user to DONE.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PatchMapping("/{userId}/goals/{goalId}")
+    public ResponseEntity<UserGoalResponseDto> updateUserGoalStatus(
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId,
+        @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
+        @PathVariable Long goalId,
+        @ApiIgnore
+        Principal principal) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(userService
+                .updateUserGoalStatus(userValidationService.userValidForActions(principal, userId), goalId));
+    }
+
+    /**
+     * Method saves goals, chosen by user.
+     *
+     * @param dto - dto with goals, chosen by user.
+     * @return new {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Save one or multiple goals for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/goals")
+    public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
+        @Valid @RequestBody BulkSaveUserGoalDto dto,
+        @ApiIgnore
+        Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(userService.saveUserGoals(userValidationService.userValidForActions(principal, userId), dto));
     }
 }

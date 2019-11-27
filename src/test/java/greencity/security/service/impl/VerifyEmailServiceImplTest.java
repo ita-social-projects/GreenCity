@@ -6,8 +6,8 @@ import static org.mockito.Mockito.*;
 
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
-import greencity.exception.BadIdException;
-import greencity.exception.UserActivationEmailTokenExpiredException;
+import greencity.exception.exceptions.BadIdException;
+import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;
 import greencity.service.EmailService;
 import java.time.LocalDateTime;
@@ -65,8 +65,8 @@ public class VerifyEmailServiceImplTest {
 
     @Test
     public void isDateValidate() {
-        assertTrue(verifyEmailService.isDateValidate(LocalDateTime.now().plusHours(24)));
-        assertFalse(verifyEmailService.isDateValidate(LocalDateTime.now().minusHours(48)));
+        assertTrue(verifyEmailService.isNotExpired(LocalDateTime.now().plusHours(24)));
+        assertFalse(verifyEmailService.isNotExpired(LocalDateTime.now().minusHours(48)));
     }
 
 

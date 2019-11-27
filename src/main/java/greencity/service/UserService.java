@@ -2,8 +2,10 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -14,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 /**
  * Provides the interface to manage {@link User} entity.
  *
- * @author Nazar Stasyuk and Rostyslav .....
+ * @author Nazar Stasyuk and Rostyslav && Yurii Koval
  * @version 1.0
  */
 public interface UserService {
@@ -22,6 +24,7 @@ public interface UserService {
      * Method that allow you to save new {@link User}.
      *
      * @param user a value of {@link User}
+     * @author Yurii Koval
      */
     User save(User user);
 
@@ -136,4 +139,46 @@ public interface UserService {
      * @author Nazar Stasyuk
      */
     User update(UserUpdateDto dto, String email);
+
+    /**
+     * Updates refresh token for a given user.
+     *
+     * @param refreshTokenKey - new refresh token key
+     * @param id - user's id
+     * @return - number of updated rows
+     */
+    int updateUserRefreshToken(String refreshTokenKey, Long id);
+
+    /**
+     * Method returns list of user goals.
+     *
+     * @param user {@link User} current user.
+     * @return List of {@link UserGoalDto}.
+     */
+    List<UserGoalResponseDto> getUserGoals(User user);
+
+    /**
+     * Method returns list of available (not ACTIVE) goals for user.
+     *
+     * @param user {@link User} current user.
+     * @return List of {@link GoalDto}.
+     */
+    List<GoalDto> getAvailableGoals(User user);
+
+    /**
+     * Method saves list of user goals.
+     *
+     * @param user {@link User} current user.
+     * @return List of saved {@link UserGoalDto}.
+     */
+    List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto dto);
+
+    /**
+     * Method update status of user goal.
+     *
+     * @param user {@link User} current user.
+     * @param goalId - {@link UserGoal}'s id that should be updated.
+     * @return {@link UserGoalDto}
+     */
+    UserGoalResponseDto updateUserGoalStatus(User user, Long goalId);
 }

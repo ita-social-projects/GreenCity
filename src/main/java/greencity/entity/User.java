@@ -17,9 +17,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity"})
+    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
+        "refreshTokenKey"})
 @ToString(
-    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity"})
+    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
+        "refreshTokenKey"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,4 +75,13 @@ public class User {
     private List<Estimate> estimates = new ArrayList<>();
     @Enumerated(value = EnumType.ORDINAL)
     private EmailNotification emailNotification;
+
+    @Column(name = "refresh_token_key", nullable = false)
+    private String refreshTokenKey;
+
+    @OneToMany(mappedBy = "user")
+    private List<Habit> habits = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private List<UserGoal> userGoals = new ArrayList<>();
 }

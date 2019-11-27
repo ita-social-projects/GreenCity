@@ -71,6 +71,12 @@ public class ValidationConstants {
     public static final int COMMENT_MIN_LENGTH = 5;
     public static final int COMMENT_MAX_LENGTH = 300;
 
+    public static final String EMPTY_ADVICE = "The text of name can not be empty";
+    public static final String INVALID_ADVICE_LENGTH = "Invalid length of name";
+
+    public static final int ADVICE_MIN_LENGTH = 3;
+    public static final int ADVICE_MAX_LENGTH = 300;
+
     public static final int DISCOUNT_VALUE_MIN = 0;
     public static final String DISCOUNT_VALUE_DOES_NOT_CORRECT = "Min discount value is 0, max discount value is 100";
     public static final int DISCOUNT_VALUE_MAX = 100;
@@ -80,6 +86,9 @@ public class ValidationConstants {
     public static final String BAD_OPENING_HOURS_LIST_REQUEST = "Length of opening hours list can not be less than 1.";
     public static final String BAD_DISCOUNT_VALUES_LIST_REQUEST = "Length of discount values list can not be less than 1.";
     public static final String EMPTY_PHOTO_NAME = "The name of photo field can not be empty";
+
+    public static final int MIN_AMOUNT_OF_ITEMS = 0;
+    public static final int MAX_AMOUNT_OF_ITEMS = 16;
 
     private ValidationConstants() {
     }

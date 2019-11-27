@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import javax.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +24,19 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/googleSecurity")
-@AllArgsConstructor
 @Validated
 public class GoogleSecurityController {
-    private GoogleSecurityService service;
+    private final GoogleSecurityService googleSecurityService;
+
+    /**
+     * Constructor.
+     *
+     * @param googleSecurityService {@link GoogleSecurityService}
+     */
+    @Autowired
+    public GoogleSecurityController(GoogleSecurityService googleSecurityService) {
+        this.googleSecurityService = googleSecurityService;
+    }
 
     /**
      * Method that provide authenticate with google token.
@@ -42,6 +51,6 @@ public class GoogleSecurityController {
     })
     @GetMapping
     public SuccessSignInDto authenticate(@RequestParam @NotBlank String idToken) {
-        return service.authenticate(idToken);
+        return googleSecurityService.authenticate(idToken);
     }
 }

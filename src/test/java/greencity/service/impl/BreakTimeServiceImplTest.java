@@ -5,8 +5,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import greencity.entity.BreakTime;
-import greencity.exception.BadRequestException;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.BreakTimeRepo;
 import java.time.LocalTime;
 import java.util.Arrays;

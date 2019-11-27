@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -50,4 +51,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return list of {@link User}'s
      */
     List<User> findAllByEmailNotification(EmailNotification emailNotification);
+
+    /**
+     * Updates refresh token for a given user.
+     *
+     * @param refreshTokenKey - new refresh token key
+     * @param id - user's id
+     * @return - number of updated rows
+     * @author Yurii Koval
+     */
+    @Modifying
+    @Query(value = "UPDATE User SET refreshTokenKey=:refreshTokenKey WHERE id=:id")
+    int updateUserRefreshToken(String refreshTokenKey, Long id);
 }

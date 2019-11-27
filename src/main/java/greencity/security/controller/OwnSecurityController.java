@@ -16,20 +16,23 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
- * Controller that provide our sign-up and sign-in logic.
+ * Controller that provides our sign-up and sign-in logic.
  *
  * @author Nazar Stasyuk
  * @version 1.0
@@ -39,20 +42,24 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @Slf4j
 public class OwnSecurityController {
-    @Value("${client.address}")
-    private String clientAddress;
-    private OwnSecurityService service;
-    private VerifyEmailService verifyEmailService;
-    private RestoreLogicService restoreLogicService;
+    private final String clientAddress;
+    private final OwnSecurityService service;
+    private final VerifyEmailService verifyEmailService;
+    private final RestoreLogicService restoreLogicService;
 
     /**
      * Constructor.
      *
+     * @param clientAddress - Google client address.
      * @param service            - {@link OwnSecurityService} - service for security logic.
-     * @param verifyEmailService {@link VerifyEmailService} - service for verify email logic.
+     * @param verifyEmailService {@link VerifyEmailService} - service for email verification.
      */
-    public OwnSecurityController(
-        OwnSecurityService service, VerifyEmailService verifyEmailService, RestoreLogicService restoreLogicService) {
+    @Autowired
+    public OwnSecurityController(@Value("${client.address}") String clientAddress,
+                                 OwnSecurityService service,
+                                 VerifyEmailService verifyEmailService,
+                                 RestoreLogicService restoreLogicService) {
+        this.clientAddress = clientAddress;
         this.service = service;
         this.verifyEmailService = verifyEmailService;
         this.restoreLogicService = restoreLogicService;
@@ -123,7 +130,7 @@ public class OwnSecurityController {
     })
     @GetMapping("/updateAccessToken")
     public ResponseEntity updateAccessToken(@RequestParam @NotBlank String refreshToken) {
-        return ResponseEntity.ok().body(service.updateAccessToken(refreshToken));
+        return ResponseEntity.ok().body(service.updateAccessTokens(refreshToken));
     }
 
 
@@ -176,8 +183,9 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = PASSWORD_DOES_NOT_MATCH)
     })
     @PutMapping
-    public ResponseEntity updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto) {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto,
+                                         @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        String email = principal.getName();
         service.updateCurrentPassword(updateDto, email);
         return ResponseEntity.ok().build();
     }

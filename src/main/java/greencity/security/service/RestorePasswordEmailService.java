@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Provides the interface to manage {@link RestorePasswordEmailService}.
  *
- * @author Dmytro Dovhal
+ * @author Dmytro Dovhal && Yurii Koval
  * @version 1.0
  */
 public interface RestorePasswordEmailService {
@@ -27,6 +27,12 @@ public interface RestorePasswordEmailService {
     void delete(RestorePasswordEmail restorePasswordEmail);
 
     /**
+     * Deletes from the database password reset tokens that are expired.
+     * @author Yurii Koval
+     */
+    int deleteAllExpiredPasswordResetTokens();
+
+    /**
      * Find all method.
      *
      * @return {@link List}
@@ -34,9 +40,9 @@ public interface RestorePasswordEmailService {
     List<RestorePasswordEmail> findAll();
 
     /**
-     * Method that check if user not late with restoring of his email.
+     * Method that check if user is not late with restoring of his email.
      *
      * @return {@code boolean}
      */
-    boolean isDateValidate(LocalDateTime emailExpiredDate);
+    boolean isNotExpired(LocalDateTime emailExpiredDate);
 }

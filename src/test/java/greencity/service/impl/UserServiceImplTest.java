@@ -1,38 +1,38 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import greencity.GreenCityApplication;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserUpdateDto;
+import greencity.entity.Goal;
 import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.BadIdException;
-import greencity.exception.LowRoleLevelException;
-import greencity.exception.UserAlreadyRegisteredException;
+import greencity.exception.exceptions.*;
+import greencity.mapping.UserGoalToResponseDtoMapper;
+import greencity.repository.GoalRepo;
+import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -40,15 +40,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class UserServiceImplTest {
 
     @Mock
     UserRepo userRepo;
-    User user =
+
+    @Mock
+    UserGoalRepo userGoalRepo;
+
+    @Mock
+    GoalRepo goalRepo;
+
+    @Mock
+    UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
+
+    private User user =
         User.builder()
-            .id(1l)
+            .id(1L)
             .firstName("test")
             .lastName("test")
             .email("test@gmail.com")
@@ -58,9 +67,9 @@ public class UserServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-    User user2 =
+    private User user2 =
         User.builder()
-            .id(2l)
+            .id(2L)
             .firstName("test")
             .lastName("test")
             .email("test@gmail.com")
@@ -116,10 +125,10 @@ public class UserServiceImplTest {
 
     @Test
     public void findByIdTest() {
-        Long id = 1l;
+        Long id = 1L;
 
         User user = new User();
-        user.setId(1l);
+        user.setId(1L);
 
         when(userRepo.findById(id)).thenReturn(Optional.of(user));
 
@@ -130,18 +139,12 @@ public class UserServiceImplTest {
     @Test(expected = BadIdException.class)
     public void findByIdBadIdTest() {
         when(userRepo.findById(any())).thenThrow(BadIdException.class);
-        userService.findById(1l);
-    }
-
-    @Test(expected = UserAlreadyRegisteredException.class)
-    public void saveExceptionTest() {
-        when(userRepo.findByEmail(any())).thenReturn(Optional.of(user));
-        userService.save(new User());
+        userService.findById(1L);
     }
 
     @Test(expected = BadIdException.class)
     public void deleteByIdExceptionBadIdTest() {
-        userService.deleteById(1l);
+        userService.deleteById(1L);
     }
 
     /**
@@ -178,7 +181,7 @@ public class UserServiceImplTest {
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
 
         PageableDto<UserForListDto> userPageableDto =
-            new PageableDto<UserForListDto>(userForListDtos,
+            new PageableDto<>(userForListDtos,
                 userForListDtos.size(), 0);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
@@ -229,7 +232,7 @@ public class UserServiceImplTest {
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
 
         PageableDto<UserForListDto> userPageableDto =
-            new PageableDto<UserForListDto>(userForListDtos,
+            new PageableDto<>(userForListDtos,
                 userForListDtos.size(), 0);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
@@ -268,4 +271,36 @@ public class UserServiceImplTest {
         assertEquals(userUpdateDto.getEmailNotification(), user.getEmailNotification());
         verify(userRepo, times(1)).save(any());
     }
+
+    @Test
+    public void getUserGoalsTest() {
+        List<UserGoal> userGoals = new ArrayList<>(Arrays.asList(new UserGoal(), new UserGoal()));
+        List<UserGoalResponseDto> userGoalDto = userGoals
+            .stream()
+            .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
+            .collect(Collectors.toList());
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
+        assertEquals(userService.getUserGoals(user), userGoalDto);
+    }
+
+    @Test(expected = UserHasNoGoalsException.class)
+    public void getUserGoalsUserHasNoGoalTest() {
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
+        userService.getUserGoals(user);
+    }
+
+    @Test
+    public void getAvailableGoalsTest() {
+        List<Goal> goals = new ArrayList<>(Arrays.asList(new Goal(), new Goal()));
+        List<GoalDto> goalDto = modelMapper.map(goals, new TypeToken<List<GoalDto>>(){}.getType());
+        when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(goals);
+        assertEquals(userService.getAvailableGoals(user), goalDto);
+    }
+
+    @Test(expected = UserHasNoAvailableGoalsException.class)
+    public void getAvailableGoalsNoAvailableGoalsTest() {
+        when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(Collections.emptyList());
+        userService.getAvailableGoals(user);
+    }
+
 }
