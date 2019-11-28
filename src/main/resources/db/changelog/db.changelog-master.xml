@@ -12,4 +12,5 @@
     <include file="db/changelog/logs/ch-habit-statistics-olkhovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-user-goals-skolozdra-1.xml"/>
     <include file="db/changelog/logs/ch-advice-dzen-1.xml"/>
+    <include file="db/changelog/logs/ch-add-constrain-Koval-2.xml"/>
 </databaseChangeLog>
