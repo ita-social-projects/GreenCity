@@ -350,7 +350,7 @@ public class UserController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @GetMapping("/{userId}/habit/dictionary/available")
+    @GetMapping("/{userId}/habit-dictionary/available")
     public ResponseEntity<List<HabitDictionaryDto>> getAvailableHabitDictionary(
         @ApiIgnore
             Principal principal,

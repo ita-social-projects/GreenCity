@@ -1,13 +1,16 @@
 package greencity.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserUpdateDto;
+import greencity.dto.user.*;
 import greencity.entity.Goal;
+import greencity.entity.HabitDictionary;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
@@ -16,20 +19,17 @@ import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.GoalRepo;
+import greencity.repository.HabitDictionaryRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import junit.framework.TestCase;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -51,6 +51,9 @@ public class UserServiceImplTest {
 
     @Mock
     GoalRepo goalRepo;
+
+    @Mock
+    HabitDictionaryRepo habitDictionaryRepo;
 
     @Mock
     UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
@@ -301,6 +304,21 @@ public class UserServiceImplTest {
     public void getAvailableGoalsNoAvailableGoalsTest() {
         when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(Collections.emptyList());
         userService.getAvailableGoals(user);
+    }
+
+    @Test
+    public void getAvailableHabitDictionaryTest() {
+        List<HabitDictionary> habitDictionaries = new ArrayList<>(Arrays.asList(new HabitDictionary(), new HabitDictionary()));
+        List<HabitDictionaryDto> habitDictionaryDtos = modelMapper.map(habitDictionaries, new TypeToken<List<HabitDictionaryDto>>() {
+        }.getType());
+        when(habitDictionaryRepo.findAvailableHabitDictionaryByUser(user)).thenReturn(habitDictionaries);
+        assertEquals(userService.getAvailableHabitDictionary(user), habitDictionaryDtos);
+    }
+
+    @Test(expected = UserHasNoAvailableHabitDictionaryException.class)
+    public void getAvailableHabitDictionaryNoAvailable() {
+        when(habitDictionaryRepo.findAvailableHabitDictionaryByUser(user)).thenReturn(Collections.emptyList());
+        userService.getAvailableHabitDictionary(user);
     }
 
 }
