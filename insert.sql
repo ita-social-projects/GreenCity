@@ -195,9 +195,9 @@ values (1, 3, 1, 1),
        (5, 93, 5, 5),
        (6, 50, 5, 6);
 
-INSERT INTO habit_dictionary (name, description)
-VALUES ('Пакети', 'Економити пакети'),
-       ('Стаканчики', 'Відмовитись від одноразових стаканчиків');
+INSERT INTO habit_dictionary (name, habit_item)
+VALUES ('Економити пакети', 'bag'),
+       ('Відмовитись від одноразових стаканчиків', 'cap');
 
 INSERT INTO habits (user_id, habit_dictionary_id, status, create_date)
 VALUES (1, 1, 1, '2019-11-12 19:03:33'),

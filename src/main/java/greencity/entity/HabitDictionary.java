@@ -22,7 +22,7 @@ public class HabitDictionary {
     private String name;
 
     @Column(nullable = false, unique = true)
-    private String description;
+    private String habitItem;
 
     @OneToMany(mappedBy = "habitDictionary")
     private List<Habit> habit;

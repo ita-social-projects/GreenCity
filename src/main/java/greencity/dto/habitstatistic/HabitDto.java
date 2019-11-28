@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class HabitDto {
     private Long id;
     private String habitName;
-    private String habitDescription;
+    private String habitItem;
     private List<HabitStatisticDto> habitStatistics;
 }

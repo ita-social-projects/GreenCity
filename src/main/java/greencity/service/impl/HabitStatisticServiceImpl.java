@@ -210,6 +210,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             localDate = localDate.plusDays(1);
         }
         return new HabitDto(habit.getId(), habit.getHabitDictionary().getName(),
-            habit.getHabitDictionary().getDescription(), result);
+            habit.getHabitDictionary().getHabitItem(), result);
     }
 }

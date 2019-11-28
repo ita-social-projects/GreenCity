@@ -5,9 +5,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet author="Vitaliy Dzen"
-               id="4651326844-4">
+               id="4651326844-5">
         <addColumn tableName="habit_dictionary">
-            <column name="description" type="varchar(255)">
+            <column name="habit_item" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
