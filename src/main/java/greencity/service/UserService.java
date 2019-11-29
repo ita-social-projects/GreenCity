@@ -3,6 +3,8 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
@@ -181,4 +183,6 @@ public interface UserService {
      * @return {@link UserGoalDto}
      */
     UserGoalResponseDto updateUserGoalStatus(User user, Long goalId);
+
+    List<HabitCreateDto> createUserHabit(User user, HabitIdDto habitIdDto);
 }

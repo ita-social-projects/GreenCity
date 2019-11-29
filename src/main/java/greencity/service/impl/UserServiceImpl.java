@@ -7,8 +7,11 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.Goal;
+import greencity.entity.Habit;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
@@ -16,8 +19,10 @@ import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
+import greencity.mapping.HabitMapper;
 import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.GoalRepo;
+import greencity.repository.HabitRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
@@ -50,12 +55,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final UserGoalRepo userGoalRepo;
     private final GoalRepo goalRepo;
+    private final HabitRepo habitRepo;
 
     /**
      * Autowired mapper.
      */
     private ModelMapper modelMapper;
     private UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
+    private HabitMapper habitMapper;
 
     /**
      * {@inheritDoc}
@@ -331,5 +338,26 @@ public class UserServiceImpl implements UserService {
                 throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);
             }
         }
+    }
+
+    @Override
+    public List<HabitCreateDto> createUserHabit(User user, HabitIdDto habitIdDto) {
+        List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
+        return convertToHabitCreateDto(habits);
+    }
+
+    private List<Habit> convertToHabit(HabitIdDto habitIdDtos, final User user) {
+        return habitIdDtos
+            .getHabitDictionaryId()
+            .stream()
+            .map(id -> habitMapper.convertToEntity(id, user))
+            .collect(Collectors.toList());
+    }
+
+    private List<HabitCreateDto> convertToHabitCreateDto(List<Habit> habits) {
+        return habits
+            .stream()
+            .map(habitMapper::convertToDto)
+            .collect(Collectors.toList());
     }
 }
