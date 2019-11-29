@@ -77,6 +77,12 @@ public class ValidationConstants {
     public static final int ADVICE_MIN_LENGTH = 3;
     public static final int ADVICE_MAX_LENGTH = 300;
 
+    public static final String EMPTY_HABIT_FACT = "The text of fact can't be empty";
+    public static final String INVALID_HABIT_FACT_LENGTH = "Invalid length of fact";
+
+    public static final int HABIT_FACT_MIN_LENGTH = 3;
+    public static final int HABIT_FACT_MAX_LENGTH = 300;
+
     public static final int DISCOUNT_VALUE_MIN = 0;
     public static final String DISCOUNT_VALUE_DOES_NOT_CORRECT = "Min discount value is 0, max discount value is 100";
     public static final int DISCOUNT_VALUE_MAX = 100;

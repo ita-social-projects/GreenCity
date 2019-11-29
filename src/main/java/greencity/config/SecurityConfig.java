@@ -1,13 +1,14 @@
 package greencity.config;
 
 import static greencity.constant.AppConstant.*;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -94,6 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
+                "/fact/random/*",
                 "/habit/statistic/*",
                 "/user/*/habits",
                 "/user/*/habits/statistic",

@@ -1,7 +1,7 @@
 package greencity.entity;
 
 import greencity.dto.advice.AdviceAdminDTO;
-import greencity.dto.advice.AdvicePostDTO;
+import greencity.dto.fact.HabitFactDTO;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,26 +13,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "advices")
-public class Advice {
+@Table(name = "fact")
+public class HabitFact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 300)
-    private String name;
+    @Column(name = "name", nullable = false, unique = true, length = 300)
+    private String fact;
 
     @ManyToOne
     private HabitDictionary habitDictionary;
 
     /**
-     * The constructor takes {@link Advice} parameter.
+     * The constructor takes {@link HabitFact} parameter.
      *
-     * @param advicePostDTO {@link AdviceAdminDTO}
+     * @param habitFactDTO {@link AdviceAdminDTO}
      * @author Vitaliy Dzen
      */
-    public Advice(AdvicePostDTO advicePostDTO, HabitDictionary habitDictionary) {
-        this.name = advicePostDTO.getAdvice();
+    public HabitFact(HabitFactDTO habitFactDTO, HabitDictionary habitDictionary) {
+        this.fact = habitFactDTO.getFact();
         this.habitDictionary = habitDictionary;
     }
 }
