@@ -3,6 +3,8 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
@@ -189,4 +191,13 @@ public interface UserService {
      * @return List of {@link HabitDictionaryDto}
      */
     List<HabitDictionaryDto> getAvailableHabitDictionary(User user);
+
+    /**
+     * Method returns list.
+     *
+     * @param user ddjjd
+     * @param habitIdDto r-r-r
+     * @return t-t-t
+     */
+    List<HabitCreateDto> createUserHabit(User user, HabitIdDto habitIdDto);
 }

@@ -6,7 +6,9 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
@@ -360,5 +362,30 @@ public class UserController {
             .status(HttpStatus.OK)
             .body(userService.getAvailableHabitDictionary(
                 userValidationService.userValidForActions(principal, userId)));
+    }
+
+    /**
+     * Method saves goals, chosen by user.
+     *
+     * @param dto - dto with goals, chosen by user.
+     * @return new {@link ResponseEntity}.
+     * @author Volodymyr Turko
+     */
+    @ApiOperation(value = "Save one or multiple habits for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/habit")
+    public ResponseEntity<List<HabitCreateDto>> saveUserHabits(
+        @RequestBody HabitIdDto dto,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId,
+        @ApiIgnore
+            Principal principal) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(userService.createUserHabit(userValidationService.userValidForActions(principal, userId), dto));
     }
 }
