@@ -35,9 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class GoogleSecurityServiceImpl implements GoogleSecurityService {
-    private UserService userService;
-    private GoogleIdTokenVerifier verifier;
-    private JwtTool tokenTool;
+    private final UserService userService;
+    private final GoogleIdTokenVerifier verifier;
+    private final JwtTool tokenTool;
 
     /**
      * Constructor.
