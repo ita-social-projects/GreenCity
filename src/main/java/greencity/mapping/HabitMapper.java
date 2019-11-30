@@ -27,6 +27,12 @@ public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
         return habitCreateDto;
     }
 
+    /**
+     * Convert to habit entity.
+     * @param id t-t.
+     * @param user t-t.
+     * @return Habit entity.
+     */
     public Habit convertToEntity(Long id, User user) {
         HabitDictionary dictionary = habitDictionaryRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
