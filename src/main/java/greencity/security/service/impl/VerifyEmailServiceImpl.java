@@ -112,7 +112,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     /**
      * {@inheritDoc}
      */
-    public int deleteAllExpiredEmailVerificationTokens() {
-        return verifyEmailRepo.deleteAllExpiredEmailVerificationTokens();
+    public int deleteAllUsersThatDidNotVerifyEmail() {
+        return verifyEmailRepo.deleteAllUsersThatDidNotVerifyEmail();
     }
 }
