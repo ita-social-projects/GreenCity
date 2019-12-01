@@ -34,7 +34,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private ModelMapper modelMapper;
 
 
-
     /**
      * {@inheritDoc}
      *
@@ -210,6 +209,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             localDate = localDate.plusDays(1);
         }
         return new HabitDto(habit.getId(), habit.getHabitDictionary().getName(),
-            habit.getHabitDictionary().getHabitItem(), result);
+            habit.getHabitDictionary().getHabitItem(), habit.getCreateDate(), result);
     }
 }
