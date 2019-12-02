@@ -1,6 +1,8 @@
 package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
+
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
@@ -18,6 +20,7 @@ import greencity.security.service.OwnSecurityService;
 import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -121,6 +124,9 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .findByEmail(dto.getEmail())
             .filter(u -> isPasswordCorrect(dto, u))
             .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
+        HabitIdDto habitIdDto = new HabitIdDto();
+        habitIdDto.setHabitDictionaryId(Arrays.<Long>asList(1L));
+        userService.createUserHabit(user,  habitIdDto);
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
