@@ -427,6 +427,8 @@ public class UserServiceImpl implements UserService {
                 habitRepo.updateHabitStatusById(habit.getId(),((byte)0));
             } else if (countHabit > 1) {
                 habitRepo.deleteById(habit.getId());
+            } else {
+                throw new NotDeletedException(ErrorMessage.NOT_DELETE_LAST_HABIT);
             }
         }
     }

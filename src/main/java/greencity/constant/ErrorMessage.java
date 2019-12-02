@@ -77,6 +77,7 @@ public class ErrorMessage {
     public static final String HABIT_IS_SAVED = "This habit is saved to user";
     public static final String HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID = "Habit with such userId and habitDictionaryId does not exist";
     public static final String DELETE_LIST_ID_CANNOT_BE_EMPTY = "List with id cann`t be empty.";
+    public static final String NOT_DELETE_LAST_HABIT = "Can`t delete last habit.";
 
     private ErrorMessage() {
     }
