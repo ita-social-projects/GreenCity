@@ -432,4 +432,16 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addDefaultHabit(User user) {
+        if (!habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L).isPresent()) {
+            HabitIdDto habitIdDto = new HabitIdDto();
+            habitIdDto.setHabitDictionaryId(Arrays.<Long>asList(1L));
+            createUserHabit(user,  habitIdDto);
+        }
+    }
 }

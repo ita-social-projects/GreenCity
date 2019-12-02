@@ -208,4 +208,10 @@ public interface UserService {
      * @param habitIdDtos {@link HabitIdDto}
      */
     void deleteHabitByUserIdAndHabitDictionary(Long userId, HabitIdDto habitIdDtos);
+
+    /**
+     *  Method add default habit.
+     * @param user current user
+     */
+    void addDefaultHabit(User user);
 }
