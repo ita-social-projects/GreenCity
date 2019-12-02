@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     private final GoalRepo goalRepo;
     private final HabitDictionaryRepo habitDictionaryRepo;
     private final HabitRepo habitRepo;
-
+    private final HabitStatisticRepo habitStatisticRepo;
 
     /**
      * Autowired mapper.
@@ -355,10 +355,21 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<HabitCreateDto> createUserHabit(User user, HabitIdDto habitIdDto) {
-        List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
-        return convertToHabitCreateDto(habits);
+        if (checkHabitId(user.getId(), habitIdDto.getHabitDictionaryId())) {
+            List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
+            return convertToHabitCreateDto(habits);
+        } else {
+            throw new BadIdException(ErrorMessage.HABIT_IS_SAVED);
+        }
     }
 
+    /**
+     * Method convert HabitIdDto to Habit.
+     *
+     * @param habitIdDtos {@link HabitIdDto}
+     * @param user current user.
+     * @return list habits.
+     */
     private List<Habit> convertToHabit(HabitIdDto habitIdDtos, final User user) {
         return habitIdDtos
             .getHabitDictionaryId()
@@ -367,10 +378,56 @@ public class UserServiceImpl implements UserService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Method convert {@link Habit} in list {@link HabitCreateDto}.
+     *
+     * @param habits - list {@link Habit}.
+     * @return List {@link HabitCreateDto}
+     */
     private List<HabitCreateDto> convertToHabitCreateDto(List<Habit> habits) {
         return habits
             .stream()
             .map(habitMapper::convertToDto)
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Method check is in user habit.
+     *
+     * @param userId Id current user.
+     * @param habitIdDtos {@link HabitIdDto}
+     * @return Boolean
+     */
+    private Boolean checkHabitId(Long userId, List<Long> habitIdDtos) {
+        Optional<List<Habit>> habits = habitRepo.findByUserIdAndStatusHabit(userId);
+        if (habits.isPresent()) {
+            for (Habit habit : habits.get()) {
+                if (habitIdDtos.contains(habit.getHabitDictionary().getId())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteHabitByUserIdAndHabitDictionary(Long userId, HabitIdDto  habitIdDto) {
+        if (habitIdDto.getHabitDictionaryId().size() == 0) {
+            throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);
+        }
+        for (Long habitDictionaryId : habitIdDto.getHabitDictionaryId()) {
+            Habit habit = habitRepo.findByUserIdAndHabitDictionaryId(userId, habitDictionaryId)
+                .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
+            int countHabit = habitRepo.countHabitByUserId(userId);
+            if (habitStatisticRepo.findAllByHabitId(habit.getId()).size() > 0 && countHabit > 1) {
+                habitRepo.updateHabitStatusById(habit.getId(),((byte)0));
+            } else if (countHabit > 1) {
+                habitRepo.deleteById(habit.getId());
+            }
+        }
     }
 }

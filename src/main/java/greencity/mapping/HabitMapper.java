@@ -9,15 +9,17 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitDictionaryRepo;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
 public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
-    private ModelMapper modelMapper;
+    /**
+     * Autowired.
+     */
     private HabitDictionaryRepo habitDictionaryRepo;
     private HabitDictionaryMapper habitDictionaryMapper;
+
 
     @Override
     public HabitCreateDto convertToDto(Habit entity) {
@@ -29,9 +31,9 @@ public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
 
     /**
      * Convert to habit entity.
-     * @param id t-t.
-     * @param user t-t.
-     * @return Habit entity.
+     * @param id {@link HabitDictionary}
+     * @param user {@link User} current user.
+     * @return {@link Habit}
      */
     public Habit convertToEntity(Long id, User user) {
         HabitDictionary dictionary = habitDictionaryRepo.findById(id)

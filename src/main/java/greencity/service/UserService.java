@@ -193,11 +193,19 @@ public interface UserService {
     List<HabitDictionaryDto> getAvailableHabitDictionary(User user);
 
     /**
-     * Method returns list.
+     * Method returns list of available habit for user.
      *
-     * @param user ddjjd
-     * @param habitIdDto r-r-r
-     * @return t-t-t
+     * @param user {@link User} current user.
+     * @param habitIdDto {@link HabitIdDto}
+     * @return List of {@link HabitCreateDto}
      */
     List<HabitCreateDto> createUserHabit(User user, HabitIdDto habitIdDto);
+
+    /**
+     *  Method delete habit fot user.
+     *
+     * @param userId id current user.
+     * @param habitIdDtos {@link HabitIdDto}
+     */
+    void deleteHabitByUserIdAndHabitDictionary(Long userId, HabitIdDto habitIdDtos);
 }

@@ -365,11 +365,12 @@ public class UserController {
     }
 
     /**
-     * Method saves goals, chosen by user.
+     * Method saves habit, chosen by user.
      *
-     * @param dto - dto with goals, chosen by user.
-     * @return new {@link ResponseEntity}.
-     * @author Volodymyr Turko
+     * @param dto - dto with habits, chosen by user.
+     * @param userId id current user.
+     * @param principal authentication principal.
+     * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Save one or multiple habits for current user.")
     @ApiResponses(value = {
@@ -379,7 +380,7 @@ public class UserController {
     })
     @PostMapping("/{userId}/habit")
     public ResponseEntity<List<HabitCreateDto>> saveUserHabits(
-        @RequestBody HabitIdDto dto,
+        @Valid @RequestBody HabitIdDto dto,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId,
         @ApiIgnore
@@ -387,5 +388,30 @@ public class UserController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService.createUserHabit(userValidationService.userValidForActions(principal, userId), dto));
+    }
+
+    /**
+     * Method delete habit, chosen by user.
+     *
+     * @param dto dto with habits, chosen by user.
+     * @param userId id current user.
+     * @param principal authentication principal.
+     */
+    @ApiOperation(value = "Delete habit")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @DeleteMapping("/{userId}/habit")
+    public void deleteHabit(
+        @RequestBody HabitIdDto dto,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId,
+        @ApiIgnore
+            Principal principal) {
+        userService.deleteHabitByUserIdAndHabitDictionary(userId, dto);
+        ResponseEntity.status(HttpStatus.OK);
     }
 }

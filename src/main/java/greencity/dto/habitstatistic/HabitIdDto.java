@@ -1,6 +1,7 @@
 package greencity.dto.habitstatistic;
 
 import java.util.List;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HabitIdDto {
-    private List<Long> habitDictionaryId;
+    @Valid List<@Valid Long> habitDictionaryId;
 }
 
