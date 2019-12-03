@@ -27,7 +27,7 @@ public interface HabitDictionaryRepo extends JpaRepository<HabitDictionary, Long
      * @return List of available {@link HabitDictionary}`s.
      */
     @Query("SELECT hd FROM HabitDictionary hd WHERE hd.id NOT IN (SELECT h.habitDictionary\n"
-        + "FROM Habit h WHERE h.user =:user AND h.statusHabit = 1)")
+        + "FROM Habit h WHERE h.user =:user AND h.statusHabit = true)")
     List<HabitDictionary> findAvailableHabitDictionaryByUser(@Param("user") User user);
 }
 
