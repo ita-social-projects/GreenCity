@@ -42,7 +42,7 @@ public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
         habit.setUser(user);
         habit.setCreateDate(LocalDate.now());
         habit.setHabitDictionary(dictionary);
-        habit.setStatusHabit((byte)1);
+        habit.setStatusHabit(true);
         return habit;
     }
 }

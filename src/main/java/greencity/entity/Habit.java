@@ -28,7 +28,7 @@ public class Habit {
     private User user;
 
     @Column(name = "status", nullable = false)
-    private Byte statusHabit;
+    private Boolean statusHabit;
 
     @Column(name = "create_date", nullable = false)
     private LocalDate createDate;

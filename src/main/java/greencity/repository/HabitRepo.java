@@ -28,7 +28,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      * @param userId id current user.
      * @return List {@link Habit}
      */
-    @Query("FROM Habit WHERE user.id = ?1 AND statusHabit > 0")
+    @Query("FROM Habit WHERE user.id = ?1 AND statusHabit = true")
     Optional<List<Habit>> findByUserIdAndStatusHabit(Long userId);
 
     /**
@@ -38,7 +38,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      * @param habitDictionaryId id {@link HabitDictionary}
      * @return {@link Habit}
      */
-    @Query("FROM Habit WHERE user.id = ?1 AND habitDictionary.id = ?2 AND statusHabit > 0")
+    @Query("FROM Habit WHERE user.id = ?1 AND habitDictionary.id = ?2 AND statusHabit = true")
     Optional<Habit> findByUserIdAndHabitDictionaryId(Long userId, Long habitDictionaryId);
 
     /**
@@ -49,13 +49,13 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      */
     @Modifying
     @Query("UPDATE Habit SET statusHabit = ?2 WHERE id = ?1")
-    void updateHabitStatusById(Long id, byte status);
+    void updateHabitStatusById(Long id, boolean status);
 
     /**
      * method count user habits.
      * @param userId id current user
      * @return count habits by user
      */
-    @Query("SELECT COUNT(h) FROM Habit h WHERE h.user.id = ?1 AND h.statusHabit > 0")
+    @Query("SELECT COUNT(h) FROM Habit h WHERE h.user.id = ?1 AND h.statusHabit = true")
     int countHabitByUserId(Long userId);
 }

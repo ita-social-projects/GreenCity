@@ -95,8 +95,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
                 "/habit/statistic/*",
-                "/user/*/habits",
-                "/user/*/habits/statistic",
+                "/user/{userId}/habits",
+                "/user/{userId}/habits/statistic",
                 "/user/{userId}/goals",
                 "/user/{userId}/goals/*",
                 "/user/{userId}/habit-dictionary/available"
@@ -116,8 +116,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/category/**",
                 "/place/save/favorite/**",
                 "/habit/statistic/",
-                "/user/{userId}/goals"
+                "/user/{userId}/goals",
+                "/user/{userId}/habits",
+                "/user/{userId}/habit",
+                "/user/{userId}/habits/statistic",
+                "/user/{userId}/goals/*",
+                "/user/{userId}/habit-dictionary/available"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.DELETE,
+                "/user/{userId}/habit"
+            ).hasAnyRole(USER,ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate"

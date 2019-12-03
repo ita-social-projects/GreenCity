@@ -17,5 +17,5 @@ public class HabitCreateDto {
     @NotEmpty(message = "HabitDictionary object must not be null")
     private HabitDictionaryDto habitDictionary;
     @NotEmpty(message = "Status integer must not be null")
-    private Byte status;
+    private Boolean status;
 }

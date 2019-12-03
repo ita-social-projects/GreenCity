@@ -424,7 +424,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
             int countHabit = habitRepo.countHabitByUserId(userId);
             if (habitStatisticRepo.findAllByHabitId(habit.getId()).size() > 0 && countHabit > 1) {
-                habitRepo.updateHabitStatusById(habit.getId(),((byte)0));
+                habitRepo.updateHabitStatusById(habit.getId(),false);
             } else if (countHabit > 1) {
                 habitRepo.deleteById(habit.getId());
             } else {
