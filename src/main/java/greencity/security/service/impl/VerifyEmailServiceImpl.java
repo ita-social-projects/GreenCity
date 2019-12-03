@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,27 +25,22 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class VerifyEmailServiceImpl implements VerifyEmailService {
-    /**
-     * Time for validation email token.
-     */
-    @Value("${verifyEmailTimeHour}")
-    private Integer expireTime;
-
-    @Value("${address}")
-    private String serverAddress;
-
-    private VerifyEmailRepo verifyEmailRepo;
-
-    private EmailService emailService;
-
+    private final Integer expireTime;
+    private final VerifyEmailRepo verifyEmailRepo;
+    private final EmailService emailService;
 
     /**
      * Constructor.
      *
-     * @param verifyEmailRepo         {@link VerifyEmailRepo} - this is repository for {@link VerifyEmail}
+     * @param expireTime - how many hours a token will live.
+     * @param verifyEmailRepo {@link VerifyEmailRepo} - this is repository for {@link VerifyEmail}
      * @param emailService {@link EmailService} - service for sending email
      */
-    public VerifyEmailServiceImpl(VerifyEmailRepo verifyEmailRepo, EmailService emailService) {
+    @Autowired
+    public VerifyEmailServiceImpl(@Value("${verifyEmailTimeHour}") Integer expireTime,
+                                  VerifyEmailRepo verifyEmailRepo,
+                                  EmailService emailService) {
+        this.expireTime = expireTime;
         this.verifyEmailRepo = verifyEmailRepo;
         this.emailService = emailService;
     }
@@ -116,7 +112,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     /**
      * {@inheritDoc}
      */
-    public int deleteAllExpiredEmailVerificationTokens() {
-        return verifyEmailRepo.deleteAllExpiredEmailVerificationTokens();
+    public int deleteAllUsersThatDidNotVerifyEmail() {
+        return verifyEmailRepo.deleteAllUsersThatDidNotVerifyEmail();
     }
 }

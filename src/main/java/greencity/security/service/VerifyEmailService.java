@@ -54,5 +54,5 @@ public interface VerifyEmailService {
      * @return - number of deleted tokens
      * @author Yurii Koval
      */
-    int deleteAllExpiredEmailVerificationTokens();
+    int deleteAllUsersThatDidNotVerifyEmail();
 }

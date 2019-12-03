@@ -15,19 +15,28 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
+@Service
 public class NotificationServiceImpl implements NotificationService {
     private static final ZoneId ZONE_ID = ZoneId.of(AppConstant.UKRAINE_TIMEZONE);
     private final UserRepo userRepo;
     private final PlaceRepo placeRepo;
     private final EmailService emailService;
+
+    /**
+     * Constructor.
+     */
+    @Autowired
+    public NotificationServiceImpl(UserRepo userRepo, PlaceRepo placeRepo, EmailService emailService) {
+        this.userRepo = userRepo;
+        this.placeRepo = placeRepo;
+        this.emailService = emailService;
+    }
 
     @Override
     public void sendImmediatelyReport(Place newPlace) {

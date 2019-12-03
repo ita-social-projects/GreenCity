@@ -35,7 +35,7 @@ public interface OwnSecurityService {
      * @author Yurii Koval
      */
     @Scheduled(fixedRate = 86400000)
-    void deleteNotActivatedEmails();
+    void deleteAllUsersThatDidNotVerifyEmail();
 
     /**
      * Method that allow you sign-in user.
