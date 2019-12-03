@@ -2,39 +2,19 @@ package greencity.security.jwt;
 
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
-import greencity.service.UserService;
+import java.util.UUID;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @RunWith(value = MockitoJUnitRunner.class)
 @SpringBootTest
 public class JwtToolTest {
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private Function<String, String> tokenToEmailParser;
 
     @InjectMocks
     private JwtTool jwtTool;
@@ -48,8 +28,7 @@ public class JwtToolTest {
 
     @Test
     public void createAccessToken() {
-        String accessToken =
-            jwtTool.createAccessToken("nazar.stasyuk@gmail.com", ROLE.ROLE_USER);
+        String accessToken = jwtTool.createAccessToken("nazar.stasyuk@gmail.com", ROLE.ROLE_USER);
         assertTrue(jwtTool.isTokenValid(accessToken, jwtTool.getAccessTokenKey()));
     }
 
