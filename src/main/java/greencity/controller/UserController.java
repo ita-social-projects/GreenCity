@@ -380,7 +380,7 @@ public class UserController {
     })
     @PostMapping("/{userId}/habit")
     public ResponseEntity<List<HabitCreateDto>> saveUserHabits(
-        @Valid @RequestBody HabitIdDto dto,
+        @Valid @RequestBody List<HabitIdDto> dto,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId,
         @ApiIgnore
@@ -393,7 +393,7 @@ public class UserController {
     /**
      * Method delete habit, chosen by user.
      *
-     * @param dto dto with habits, chosen by user.
+     * @param habitId id with habits, chosen by user.
      * @param userId id current user.
      * @param principal authentication principal.
      */
@@ -404,14 +404,15 @@ public class UserController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @DeleteMapping("/{userId}/habit")
+    @DeleteMapping("/{userId}/habit/{habitId}")
     public void deleteHabit(
-        @RequestBody HabitIdDto dto,
+        @ApiParam("Id habit of current user. Cannot be empty.")
+        @PathVariable Long habitId,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId,
         @ApiIgnore
             Principal principal) {
-        userService.deleteHabitByUserIdAndHabitDictionary(userId, dto);
+        userService.deleteHabitByUserIdAndHabitDictionary(userId, habitId);
         ResponseEntity.status(HttpStatus.OK);
     }
 }

@@ -354,8 +354,8 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitCreateDto> createUserHabit(User user, HabitIdDto habitIdDto) {
-        if (checkHabitId(user.getId(), habitIdDto.getHabitDictionaryId())) {
+    public List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto) {
+        if (checkHabitId(user.getId(), habitIdDto)) {
             List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
             return convertToHabitCreateDto(habits);
         } else {
@@ -370,10 +370,9 @@ public class UserServiceImpl implements UserService {
      * @param user current user.
      * @return list habits.
      */
-    private List<Habit> convertToHabit(HabitIdDto habitIdDtos, final User user) {
-        return habitIdDtos
-            .getHabitDictionaryId()
-            .stream()
+    private List<Habit> convertToHabit(List<HabitIdDto> habitIdDtos, final User user) {
+        return habitIdDtos.stream()
+            .map(HabitIdDto::getHabitDictionaryId)
             .map(id -> habitMapper.convertToEntity(id, user))
             .collect(Collectors.toList());
     }
@@ -398,12 +397,14 @@ public class UserServiceImpl implements UserService {
      * @param habitIdDtos {@link HabitIdDto}
      * @return Boolean
      */
-    private Boolean checkHabitId(Long userId, List<Long> habitIdDtos) {
+    private Boolean checkHabitId(Long userId, List<HabitIdDto> habitIdDtos) {
         Optional<List<Habit>> habits = habitRepo.findByUserIdAndStatusHabit(userId);
         if (habits.isPresent()) {
             for (Habit habit : habits.get()) {
-                if (habitIdDtos.contains(habit.getHabitDictionary().getId())) {
-                    return false;
+                for (HabitIdDto habitIdDto : habitIdDtos) {
+                    if (habitIdDto.getHabitDictionaryId().equals(habit.getHabitDictionary().getId())) {
+                        return false;
+                    }
                 }
             }
         }
@@ -415,21 +416,19 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public void deleteHabitByUserIdAndHabitDictionary(Long userId, HabitIdDto  habitIdDto) {
-        if (habitIdDto.getHabitDictionaryId().size() == 0) {
+    public void deleteHabitByUserIdAndHabitDictionary(Long userId, Long habitId) {
+        if (habitId == null) {
             throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);
         }
-        for (Long habitDictionaryId : habitIdDto.getHabitDictionaryId()) {
-            Habit habit = habitRepo.findByUserIdAndHabitDictionaryId(userId, habitDictionaryId)
-                .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
-            int countHabit = habitRepo.countHabitByUserId(userId);
-            if (habitStatisticRepo.findAllByHabitId(habit.getId()).size() > 0 && countHabit > 1) {
-                habitRepo.updateHabitStatusById(habit.getId(),false);
-            } else if (countHabit > 1) {
-                habitRepo.deleteById(habit.getId());
-            } else {
-                throw new NotDeletedException(ErrorMessage.NOT_DELETE_LAST_HABIT);
-            }
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
+        int countHabit = habitRepo.countHabitByUserId(userId);
+        if (habitStatisticRepo.findAllByHabitId(habit.getId()).size() > 0 && countHabit > 1) {
+            habitRepo.updateHabitStatusById(habit.getId(),false);
+        } else if (countHabit > 1) {
+            habitRepo.deleteById(habit.getId());
+        } else {
+            throw new NotDeletedException(ErrorMessage.NOT_DELETE_LAST_HABIT);
         }
     }
 
@@ -440,8 +439,8 @@ public class UserServiceImpl implements UserService {
     public void addDefaultHabit(User user) {
         if (!habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L).isPresent()) {
             HabitIdDto habitIdDto = new HabitIdDto();
-            habitIdDto.setHabitDictionaryId(Arrays.<Long>asList(1L));
-            createUserHabit(user,  habitIdDto);
+            habitIdDto.setHabitDictionaryId(1L);
+            createUserHabit(user,  Arrays.asList(habitIdDto));
         }
     }
 }

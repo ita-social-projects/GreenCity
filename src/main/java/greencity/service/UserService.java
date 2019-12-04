@@ -199,7 +199,7 @@ public interface UserService {
      * @param habitIdDto {@link HabitIdDto}
      * @return List of {@link HabitCreateDto}
      */
-    List<HabitCreateDto> createUserHabit(User user, HabitIdDto habitIdDto);
+    List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto);
 
     /**
      *  Method delete habit fot user.
@@ -207,7 +207,7 @@ public interface UserService {
      * @param userId id current user.
      * @param habitIdDtos {@link HabitIdDto}
      */
-    void deleteHabitByUserIdAndHabitDictionary(Long userId, HabitIdDto habitIdDtos);
+    void deleteHabitByUserIdAndHabitDictionary(Long userId, Long habitIdDtos);
 
     /**
      *  Method add default habit.

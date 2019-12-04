@@ -124,7 +124,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit-dictionary/available"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
-                "/user/{userId}/habit"
+                "/user/{userId}/habit/{habitId}"
             ).hasAnyRole(USER,ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
