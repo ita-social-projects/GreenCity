@@ -24,6 +24,7 @@ public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
     @Override
     public HabitCreateDto convertToDto(Habit entity) {
         HabitCreateDto habitCreateDto = new HabitCreateDto();
+        habitCreateDto.setId(entity.getId());
         habitCreateDto.setStatus(entity.getStatusHabit());
         habitCreateDto.setHabitDictionary(habitDictionaryMapper.convertToDto(entity.getHabitDictionary()));
         return habitCreateDto;

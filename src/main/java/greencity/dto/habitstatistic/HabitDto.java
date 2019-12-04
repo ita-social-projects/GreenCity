@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class HabitDto {
     private Long id;
-    private String habitName;
+    private String name;
+    private Boolean status;
+    private String description;
     private List<HabitStatisticDto> habitStatistics;
 }
