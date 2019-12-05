@@ -19,4 +19,13 @@ public interface HabitFactRepo extends JpaRepository<HabitFact, Long> {
     @Query(nativeQuery = true, value = "SELECT * FROM habit_facts WHERE habit_dictionary_id = ?1 "
         + "ORDER BY RANDOM() LIMIT 1;")
     Optional<HabitFact> getRandomHabitFactByHabitId(Long habitId);
+
+    /**
+     * Method find {@link HabitFact} by fact.
+     *
+     * @param fact of {@link HabitFact}
+     * @return {@link HabitFact} in Optional
+     * @author Vitaliy Dzen
+     */
+    Optional<HabitFact> findHabitFactByFact(String fact);
 }

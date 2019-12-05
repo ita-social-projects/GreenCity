@@ -65,6 +65,9 @@ public class ErrorMessage {
     public static final String INVALID_HABIT_NAME = "Invalid habit name ";
     public static final String ADVICE_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
     public static final String HABIT_FACT_NOT_FOUND_BY_ID = "The fact does not exist by id: ";
+    public static final String HABIT_FACT_NOT_SAVED_BY_NAME = "The fact does not saved by name: ";
+    public static final String HABIT_FACT_NOT_UPDATED_BY_ID = "The fact does not updated by id: ";
+    public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The fact does not deleted by id: ";
     public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
     public static final String ADVICE_NOT_SAVED_BY_NAME = "The name with such name already exist: ";
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";

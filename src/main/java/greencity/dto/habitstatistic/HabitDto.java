@@ -1,5 +1,6 @@
 package greencity.dto.habitstatistic;
 
+import greencity.dto.user.HabitDictionaryDto;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -17,4 +18,5 @@ public class HabitDto {
     private String habitItem;
     private LocalDate createDate;
     private List<HabitStatisticDto> habitStatistics;
+    private HabitDictionaryDto habitDictionary;
 }

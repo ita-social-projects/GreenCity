@@ -23,9 +23,9 @@ public interface AdviceRepo extends JpaRepository<Advice, Long> {
     /**
      * Method find {@link Advice} by advice.
      *
-     * @param name of {@link Advice}
+     * @param advice of {@link Advice}
      * @return {@link Advice} in Optional
      * @author Vitaliy Dzen
      */
-    Optional<Advice> findAdviceByName(String name);
+    Optional<Advice> findAdviceByAdvice(String advice);
 }

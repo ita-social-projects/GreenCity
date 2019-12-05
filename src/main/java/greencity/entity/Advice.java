@@ -1,7 +1,5 @@
 package greencity.entity;
 
-import greencity.dto.advice.AdviceAdminDTO;
-import greencity.dto.advice.AdvicePostDTO;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,20 +17,9 @@ public class Advice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 300)
-    private String name;
+    @Column(name = "name", nullable = false, unique = true, length = 300)
+    private String advice;
 
     @ManyToOne
     private HabitDictionary habitDictionary;
-
-    /**
-     * The constructor takes {@link Advice} parameter.
-     *
-     * @param advicePostDTO {@link AdviceAdminDTO}
-     * @author Vitaliy Dzen
-     */
-    public Advice(AdvicePostDTO advicePostDTO, HabitDictionary habitDictionary) {
-        this.name = advicePostDTO.getAdvice();
-        this.habitDictionary = habitDictionary;
-    }
 }

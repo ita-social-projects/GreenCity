@@ -95,7 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
-                "/fact/random/*",
+                "/facts/random/*",
                 "/habit/statistic/*",
                 "/user/*/habits",
                 "/user/*/habits/statistic",
@@ -123,7 +123,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/filter",
                 "/place/filter/predicate"
             ).hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers("/advices/*").hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers("/advices/*", "/facts/*").hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",
                 "/place/statuses**",

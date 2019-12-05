@@ -1,4 +1,4 @@
-package greencity.dto.advice;
+package greencity.dto.fact;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.user.HabitDictionaryIdDto;
@@ -12,12 +12,12 @@ import org.hibernate.validator.constraints.Length;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdvicePostDTO {
-    @NotBlank(message = ValidationConstants.EMPTY_ADVICE)
-    @Length(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH,
-        message = ValidationConstants.INVALID_ADVICE_LENGTH)
-    private String advice;
+public class HabitFactPostDTO {
+    @NotBlank(message = ValidationConstants.EMPTY_HABIT_FACT)
+    @Length(min = ValidationConstants.HABIT_FACT_MIN_LENGTH, max = ValidationConstants.HABIT_FACT_MAX_LENGTH,
+        message = ValidationConstants.INVALID_HABIT_FACT_LENGTH)
+    private String fact;
 
-    @NotNull
+    @NotNull(message = "habitDictionary can not be null")
     private HabitDictionaryIdDto habitDictionary;
 }

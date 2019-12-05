@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatistic.*;
+import greencity.dto.user.HabitDictionaryDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import greencity.entity.enums.HabitRate;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +33,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private HabitStatisticRepo habitStatisticRepo;
     private HabitRepo habitRepo;
     private HabitStatisticMapper habitStatisticMapper;
-    private ModelMapper modelMapper;
+
+    @Autowired
+    private final ModelMapper modelMapper;
 
 
     /**
@@ -209,6 +213,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             localDate = localDate.plusDays(1);
         }
         return new HabitDto(habit.getId(), habit.getHabitDictionary().getName(),
-            habit.getHabitDictionary().getHabitItem(), habit.getCreateDate(), result);
+            habit.getHabitDictionary().getHabitItem(), habit.getCreateDate(), result, modelMapper
+            .map(habit.getHabitDictionary(), HabitDictionaryDto.class));
     }
 }
