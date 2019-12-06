@@ -11,6 +11,7 @@ import io.jsonwebtoken.impl.DefaultJwtParser;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,7 @@ public class JwtTool {
     /**
      * Constructor.
      */
+    @Autowired
     public JwtTool(@Value("${accessTokenValidTimeInMinutes}") Integer accessTokenValidTimeInMinutes,
                    @Value("${refreshTokenValidTimeInMinutes}") Integer refreshTokenValidTimeInMinutes,
                    @Value("${tokenKey}") String accessTokenKey) {

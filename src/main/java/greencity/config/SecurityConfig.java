@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * Constructor.
      */
+    @Autowired
     public SecurityConfig(JwtTool jwtTool) {
         this.jwtTool = jwtTool;
     }
