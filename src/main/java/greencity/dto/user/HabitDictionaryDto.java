@@ -11,4 +11,5 @@ public class HabitDictionaryDto {
     private Long id;
     private String name;
     private String habitItem;
+    private String description;
 }

@@ -11,42 +11,30 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-@Service
 @Slf4j
+@Service
 public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailService {
-    /**
-     * Time for validation email token.
-     */
-    @Value("${verifyEmailTimeHour}")
-    private Integer expireTime;
-
-    /**
-     * This is server address. We send it to user email. And user can simply submit it.
-     */
-    @Value("${address}")
-    private String serverAddress;
-
-    private RestorePasswordEmailRepo restorePasswordEmailRepo;
-
-    private JavaMailSender javaMailSender;
-
-    private EmailService emailService;
+    private final Integer expireTime;
+    private final RestorePasswordEmailRepo restorePasswordEmailRepo;
+    private final EmailService emailService;
 
 
     /**
      * Constructor for RestorePasswordEmailServiceImpl class.
      *
+     * @param expireTime server address
      * @param repo           {@link RestorePasswordEmailRepo}
-     * @param javaMailSender {@link JavaMailSender}
      * @param emailService   {@link EmailService}
      */
-    public RestorePasswordEmailServiceImpl(RestorePasswordEmailRepo repo, JavaMailSender javaMailSender,
+    @Autowired
+    public RestorePasswordEmailServiceImpl(@Value("${verifyEmailTimeHour}") Integer expireTime,
+                                           RestorePasswordEmailRepo repo,
                                            EmailService emailService) {
-        this.javaMailSender = javaMailSender;
+        this.expireTime = expireTime;
         this.restorePasswordEmailRepo = repo;
         this.emailService = emailService;
     }

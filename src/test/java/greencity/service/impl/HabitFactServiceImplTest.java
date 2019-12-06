@@ -43,7 +43,7 @@ public class HabitFactServiceImplTest {
     @Mock
     private HabitDictionaryRepo habitDictionaryRepo;
 
-    private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", "test", null);
+    private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", "test", "test", null);
     private HabitFact habitFact = new HabitFact(1L, "test", habitDictionary);
     private HabitFactDTO habitFactDTO = new HabitFactDTO(1L, "fact", null);
     private HabitFactPostDTO habitFactPostDTO = new HabitFactPostDTO("fact", new HabitDictionaryIdDto(1L));

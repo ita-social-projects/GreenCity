@@ -236,6 +236,20 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Method intercept exception {@link NotDeleteLastHabit}.
+     * @param ex  Exception witch should be intercepted.
+     * @param request contain  detail about occur exception.
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     */
+    @ExceptionHandler(NotDeleteLastHabit.class)
+    public final ResponseEntity<Object> handleUserHabitWhereNotDeleteException(NotDeleteLastHabit ex,
+                                                                              WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.OK).body(exceptionResponse);
+    }
+
+    /**
      * Method interceptor exception {@link EmailNotVerified}.
      *
      * @param ex      Exception witch should be intercepted.

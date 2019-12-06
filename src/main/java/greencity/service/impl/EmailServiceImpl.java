@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -24,16 +24,27 @@ import org.thymeleaf.context.Context;
 /**
  * {@inheritDoc}
  */
-@Service
-@RequiredArgsConstructor
 @Slf4j
+@Service
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     private final ITemplateEngine templateEngine;
-    @Value("${client.address}")
-    private String clientLink;
-    @Value("${address}")
-    private String serverLink;
+    private final String clientLink;
+    private final String serverLink;
+
+    /**
+     * Constructor.
+     */
+    @Autowired
+    public EmailServiceImpl(JavaMailSender javaMailSender,
+                            ITemplateEngine templateEngine,
+                            @Value("${client.address}") String clientLink,
+                            @Value("${address}") String serverLink) {
+        this.javaMailSender = javaMailSender;
+        this.templateEngine = templateEngine;
+        this.clientLink = clientLink;
+        this.serverLink = serverLink;
+    }
 
     /**
      * {@inheritDoc}

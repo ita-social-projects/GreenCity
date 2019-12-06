@@ -212,8 +212,15 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             }
             localDate = localDate.plusDays(1);
         }
-        return new HabitDto(habit.getId(), habit.getHabitDictionary().getName(),
-            habit.getHabitDictionary().getHabitItem(), habit.getCreateDate(), result, modelMapper
-            .map(habit.getHabitDictionary(), HabitDictionaryDto.class));
+        return new HabitDto(habit.getId(),
+            habit.getHabitDictionary().getName(),
+            habit.getStatusHabit(),
+habit.getHabitDictionary().getDescription(),
+            habit.getHabitDictionary().getName(),
+            habit.getHabitDictionary().getHabitItem(),
+            habit.getCreateDate(),
+            result,
+            modelMapper.map(habit.getHabitDictionary(), HabitDictionaryDto.class)
+            );
     }
 }

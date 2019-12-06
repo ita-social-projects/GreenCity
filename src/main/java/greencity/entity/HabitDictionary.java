@@ -2,17 +2,16 @@ package greencity.entity;
 
 import java.util.List;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "habit")
 @EqualsAndHashCode(exclude = "habit")
 @Table(name = "habit_dictionary")
+@Builder
 public class HabitDictionary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +22,9 @@ public class HabitDictionary {
 
     @Column(nullable = false, unique = true)
     private String habitItem;
+
+    @Column(nullable = false)
+    private String description;
 
     @OneToMany(mappedBy = "habitDictionary")
     private List<Habit> habit;

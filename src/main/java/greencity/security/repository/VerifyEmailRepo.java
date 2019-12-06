@@ -26,18 +26,15 @@ public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
 
 
     /**
-     * Deletes from the database email verification tokens that are expired.
-     *
-     * @apiNote WARNING: MySQL doesn't allow to delete/update records without specifying PRIMARY KEY.
-     *          `id <> -1` is a trick to make MySQL DB execute this query.
-     *          However, this WON'T WORK if there is a possibility of having negative PRIMARY KEYs.
-     *          Some DBMS do permit specifying IDENTITY function to generate PRIMARY KEY.
-     *
+     * Deletes from the database users that did not verify their emails on time.
      * @return number of deleted rows
      * @author Yurii Koval
      **/
     @Transactional
     @Modifying
-    @Query("DELETE FROM VerifyEmail WHERE id <> -1 AND expiryDate < CURRENT_TIMESTAMP")
-    int deleteAllExpiredEmailVerificationTokens();
+    @Query(
+        value = "DELETE FROM users WHERE id IN "
+            + "(SELECT user_id FROM verify_emails WHERE expiry_date < CURRENT_TIMESTAMP)",
+        nativeQuery = true)
+    int deleteAllUsersThatDidNotVerifyEmail();
 }

@@ -7,26 +7,22 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
-import greencity.entity.Goal;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
+import greencity.mapping.HabitMapper;
 import greencity.mapping.UserGoalToResponseDtoMapper;
-import greencity.repository.GoalRepo;
-import greencity.repository.UserGoalRepo;
-import greencity.repository.UserRepo;
+import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,12 +46,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final UserGoalRepo userGoalRepo;
     private final GoalRepo goalRepo;
+    private final HabitDictionaryRepo habitDictionaryRepo;
+    private final HabitRepo habitRepo;
+    private final HabitStatisticRepo habitStatisticRepo;
 
     /**
      * Autowired mapper.
      */
     private ModelMapper modelMapper;
     private UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
+    private HabitMapper habitMapper;
 
     /**
      * {@inheritDoc}
@@ -330,6 +330,114 @@ public class UserServiceImpl implements UserService {
             if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
                 throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);
             }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public List<HabitDictionaryDto> getAvailableHabitDictionary(User user) {
+        List<HabitDictionary> availableHabitDictionary = habitDictionaryRepo.findAvailableHabitDictionaryByUser(user);
+        if (availableHabitDictionary.isEmpty()) {
+            throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
+        }
+        return modelMapper.map(availableHabitDictionary, new TypeToken<List<HabitDictionaryDto>>() {
+        }.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto) {
+        if (checkHabitId(user.getId(), habitIdDto)) {
+            List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
+            return convertToHabitCreateDto(habits);
+        } else {
+            throw new BadIdException(ErrorMessage.HABIT_IS_SAVED);
+        }
+    }
+
+    /**
+     * Method convert HabitIdDto to Habit.
+     *
+     * @param habitIdDtos {@link HabitIdDto}
+     * @param user current user.
+     * @return list habits.
+     */
+    private List<Habit> convertToHabit(List<HabitIdDto> habitIdDtos, final User user) {
+        return habitIdDtos.stream()
+            .map(HabitIdDto::getHabitDictionaryId)
+            .map(id -> habitMapper.convertToEntity(id, user))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Method convert {@link Habit} in list {@link HabitCreateDto}.
+     *
+     * @param habits - list {@link Habit}.
+     * @return List {@link HabitCreateDto}
+     */
+    private List<HabitCreateDto> convertToHabitCreateDto(List<Habit> habits) {
+        return habits
+            .stream()
+            .map(habitMapper::convertToDto)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Method check is in user habit.
+     *
+     * @param userId Id current user.
+     * @param habitIdDtos {@link HabitIdDto}
+     * @return Boolean
+     */
+    private Boolean checkHabitId(Long userId, List<HabitIdDto> habitIdDtos) {
+        Optional<List<Habit>> habits = habitRepo.findByUserIdAndStatusHabit(userId);
+        if (habits.isPresent()) {
+            for (Habit habit : habits.get()) {
+                for (HabitIdDto habitIdDto : habitIdDtos) {
+                    if (habitIdDto.getHabitDictionaryId().equals(habit.getHabitDictionary().getId())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteHabitByUserIdAndHabitDictionary(Long userId, Long habitId) {
+        if (habitId == null) {
+            throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);
+        }
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
+        int countHabit = habitRepo.countHabitByUserId(userId);
+        if (habitStatisticRepo.findAllByHabitId(habit.getId()).size() > 0 && countHabit > 1) {
+            habitRepo.updateHabitStatusById(habit.getId(),false);
+        } else if (countHabit > 1) {
+            habitRepo.deleteById(habit.getId());
+        } else {
+            throw new NotDeletedException(ErrorMessage.NOT_DELETE_LAST_HABIT);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addDefaultHabit(User user) {
+        if (!habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L).isPresent()) {
+            HabitIdDto habitIdDto = new HabitIdDto();
+            habitIdDto.setHabitDictionaryId(1L);
+            createUserHabit(user, Collections.singletonList(habitIdDto));
         }
     }
 }

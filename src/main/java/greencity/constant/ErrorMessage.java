@@ -57,6 +57,7 @@ public class ErrorMessage {
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "The Habit statistic does not exist by this id : ";
     public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
     public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
+    public static final String USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY = "This user is tracking all available habit dictionary";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
     public static final String USER_GOAL_STATUS_NOT_UPDATED = "User goal status was not updated";
     public static final String USER_HAS_NO_SUCH_GOAL = "This user has no goal with id: ";
@@ -77,6 +78,10 @@ public class ErrorMessage {
     public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
+    public static final String HABIT_IS_SAVED = "This habit is saved to user";
+    public static final String HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID = "Habit with such userId and habitDictionaryId does not exist";
+    public static final String DELETE_LIST_ID_CANNOT_BE_EMPTY = "List with id cann`t be empty.";
+    public static final String NOT_DELETE_LAST_HABIT = "Can`t delete last habit.";
 
     private ErrorMessage() {
     }

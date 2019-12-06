@@ -17,11 +17,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
-        "refreshTokenKey"})
+    exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
+    "verifyEmail"})
 @ToString(
-    exclude = {"places", "comments", "rates", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
-        "refreshTokenKey"})
+    exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
+    "verifyEmail"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
