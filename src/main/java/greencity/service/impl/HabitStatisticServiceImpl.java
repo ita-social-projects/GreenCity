@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatistic.*;
 import greencity.dto.user.HabitDictionaryDto;
+import greencity.dto.user.HabitLogItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import greencity.entity.enums.HabitRate;
@@ -143,10 +144,10 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public CalendarUsefulHabitsDto getInfoAboutUserHabits(Long userId) {
         List<Habit> allHabitsByUserId = findAllHabitsByStatus(userId, true);
 
-        Map<String, Integer> statisticByHabitsPerMonth =
+        List<HabitLogItemDto> statisticByHabitsPerMonth =
             getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
 
-        Map<String, Integer> statisticUnTakenItemsWithPrevMonth =
+        List<HabitLogItemDto> statisticUnTakenItemsWithPrevMonth =
             getDifferenceItemsWithPrevDay(allHabitsByUserId);
 
         CalendarUsefulHabitsDto dto = new CalendarUsefulHabitsDto();
@@ -165,24 +166,24 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return habitStatisticRepo.getAmountOfItemsToday(habitId).orElse(0);
     }
 
-    private Map<String, Integer> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
+    private List<HabitLogItemDto> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
         LocalDate firstDayOfMonth = LocalDate.now();
         return allHabitsByUserId
             .stream()
-            .collect(Collectors
-                .toMap(habit -> habit.getHabitDictionary().getName(),
-                    habit -> habitStatisticRepo
-                        .getSumOfAllItemsPerMonth(habit.getId(), firstDayOfMonth.withDayOfMonth(1)).orElse(0)
-                ));
+            .map(habit -> new HabitLogItemDto(
+                habit.getHabitDictionary().getName(),
+                habitStatisticRepo
+                    .getSumOfAllItemsPerMonth(habit.getId(),
+                        firstDayOfMonth.withDayOfMonth(1)).orElse(0))).collect(Collectors.toList());
     }
 
-    private Map<String, Integer> getDifferenceItemsWithPrevDay(List<Habit> allHabitsByUserId) {
+    private List<HabitLogItemDto> getDifferenceItemsWithPrevDay(List<Habit> allHabitsByUserId) {
         return allHabitsByUserId
             .stream()
-            .collect(Collectors
-                .toMap(habit -> habit.getHabitDictionary().getName(),
-                    habit -> getItemsTakenToday(habit.getId()) - getItemsForPreviousDay(habit.getId())
-                ));
+            .map(habit -> new HabitLogItemDto(
+                habit.getHabitDictionary().getName(),
+                getItemsTakenToday(habit.getId()) - getItemsForPreviousDay(habit.getId())
+            )).collect(Collectors.toList());
     }
 
     /**
