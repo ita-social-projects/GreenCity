@@ -22,10 +22,7 @@ import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -440,7 +437,7 @@ public class UserServiceImpl implements UserService {
         if (!habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L).isPresent()) {
             HabitIdDto habitIdDto = new HabitIdDto();
             habitIdDto.setHabitDictionaryId(1L);
-            createUserHabit(user,  Arrays.asList(habitIdDto));
+            createUserHabit(user, Collections.singletonList(habitIdDto));
         }
     }
 }
