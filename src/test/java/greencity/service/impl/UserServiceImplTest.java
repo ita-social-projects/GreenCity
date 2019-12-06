@@ -4,24 +4,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.powermock.api.support.membermodification.MemberMatcher.method;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
-import greencity.entity.Goal;
-import greencity.entity.HabitDictionary;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
+import greencity.mapping.HabitMapper;
 import greencity.mapping.UserGoalToResponseDtoMapper;
-import greencity.repository.GoalRepo;
-import greencity.repository.HabitDictionaryRepo;
-import greencity.repository.UserGoalRepo;
-import greencity.repository.UserRepo;
+import greencity.repository.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,6 +39,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
+
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UserServiceImplTest {
 
@@ -57,6 +57,12 @@ public class UserServiceImplTest {
 
     @Mock
     UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
+
+    @Mock
+    HabitRepo habitRepo;
+
+    @Mock
+    HabitStatisticRepo habitStatisticRepo;
 
     private User user =
         User.builder()
@@ -82,10 +88,21 @@ public class UserServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
+    private Habit habit =
+        Habit.builder()
+            .id(1L)
+            .habitDictionary(new HabitDictionary())
+            .user(user)
+            .statusHabit(true)
+            .createDate(LocalDate.now())
+            .build();
+
     @InjectMocks
     private UserServiceImpl userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private HabitMapper habitMapper;
 
     @Test
     public void saveTest() {
@@ -321,4 +338,53 @@ public class UserServiceImplTest {
         userService.getAvailableHabitDictionary(user);
     }
 
+    @Test
+    public void createUserHabitTest() {
+        when(habitMapper.convertToDto(new Habit())).thenReturn(new HabitCreateDto());
+        when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
+        when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
+        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Optional.of(Collections.emptyList()));
+        assertEquals(userService.createUserHabit(user, Collections.emptyList()), Collections.emptyList());
+    }
+
+    @Test
+    public void addDefaultHabitTest() {
+        when(habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L)).thenReturn(Optional.empty());
+        when(habitMapper.convertToDto(new Habit())).thenReturn(new HabitCreateDto());
+        when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
+        when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
+        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Optional.of(Collections.emptyList()));
+        when(userService.createUserHabit(user, Collections.singletonList(new HabitIdDto())))
+            .thenReturn(Collections.singletonList(new HabitCreateDto()));
+        userService.addDefaultHabit(user);
+        verify(habitRepo, times(1)).saveAll(Collections.singletonList(new Habit()));
+    }
+
+    @Test(expected = BadIdException.class)
+    public void deleteHabitByUserIdAndHabitDictionaryEmptyHabitTest() {
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
+        userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L);
+    }
+
+    @Test(expected = NotDeletedException.class)
+    public void deleteHabitByUserIdAndHabitDictionaryNotDeletedExceptionTest() {
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(new Habit()));
+        when(habitRepo.countHabitByUserId(user.getId())).thenReturn(1);
+        when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(Collections.emptyList());
+        userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L);
+    }
+
+    @Test(expected = BadIdException.class)
+    public void deleteHabitByUserIdAndHabitDictionaryExceptionTest() {
+        userService.deleteHabitByUserIdAndHabitDictionary(null, 1L);
+    }
+
+    @Test
+    public void deleteHabitByUserIdAndHabitDictionaryTest() {
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+        when(habitRepo.countHabitByUserId(1L)).thenReturn(2);
+        when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(Collections.emptyList());
+        userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), habit.getId());
+        verify(habitRepo, times(1)).deleteById(habit.getId());
+    }
 }
