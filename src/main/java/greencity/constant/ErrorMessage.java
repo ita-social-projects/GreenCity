@@ -58,8 +58,11 @@ public class ErrorMessage {
     public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
     public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
     public static final String USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY = "This user is tracking all available habit dictionary";
+    public static final String USER_HAS_NO_AVAILABLE_CUSTOM_GOALS = "This user is tracking all available custom goals";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
+    public static final String USER_GOAL_NOT_FOUND = "UserGoal(s) with this id not found: ";
     public static final String USER_GOAL_STATUS_NOT_UPDATED = "User goal status was not updated";
+    public static final String CUSTOM_GOAL_WHERE_NOT_SAVED = "This CustomGoal(s) already exist(s): ";
     public static final String USER_HAS_NO_SUCH_GOAL = "This user has no goal with id: ";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
@@ -74,6 +77,9 @@ public class ErrorMessage {
     public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
+    public static final String CUSTOM_GOAL_FOR_THIS_USER_ALREADY_EXIST = "Custom goal with same text for this user already exist.";
+    public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
+    public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
 
     private ErrorMessage() {
     }

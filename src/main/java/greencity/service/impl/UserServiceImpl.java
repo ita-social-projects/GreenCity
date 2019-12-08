@@ -6,22 +6,17 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.user.*;
-import greencity.entity.Goal;
-import greencity.entity.HabitDictionary;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.mapping.UserGoalToResponseDtoMapper;
-import greencity.repository.GoalRepo;
-import greencity.repository.HabitDictionaryRepo;
-import greencity.repository.UserGoalRepo;
-import greencity.repository.UserRepo;
+import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
@@ -53,6 +48,7 @@ public class UserServiceImpl implements UserService {
     private final UserGoalRepo userGoalRepo;
     private final GoalRepo goalRepo;
     private final HabitDictionaryRepo habitDictionaryRepo;
+    private final CustomGoalRepo customGoalRepo;
 
     /**
      * Autowired mapper.
@@ -251,26 +247,82 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto bulkDto) {
-        List<UserGoalDto> dto = bulkDto.getUserGoals();
-        List<String> errorMessages = new ArrayList<>();
-        for (UserGoalDto el : dto) {
-            UserGoal userGoal = modelMapper.map(el, UserGoal.class);
-            userGoal.setUser(user);
-            List<UserGoal> duplicates =
-                user.getUserGoals().stream().filter(o -> o.equals(userGoal)).collect(Collectors.toList());
-            if (!duplicates.isEmpty()) {
-                errorMessages.add(userGoal.getGoal().getText());
-            } else {
-                user.getUserGoals().add(userGoal);
-            }
+        List<UserGoalDto> goals = bulkDto.getUserGoals();
+        List<UserCustomGoalDto> customGoals = bulkDto.getUserCustomGoal();
+        if (goals == null && customGoals != null) {
+            saveCustomGoalsForUserGoals(user, customGoals);
         }
-        userGoalRepo.saveAll(user.getUserGoals());
-        if (!errorMessages.isEmpty()) {
-            throw new UserGoalNotSavedException(USER_GOAL_WHERE_NOT_SAVED + errorMessages.toString());
+        if (goals != null && customGoals == null) {
+            saveGoalForUserGoal(user, goals);
+        }
+        if (goals != null && customGoals != null) {
+            saveGoalForUserGoal(user, goals);
+            saveCustomGoalsForUserGoals(user, customGoals);
         }
         return user.getUserGoals().stream()
             .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Method save user goals with goal dictionary.
+     *
+     * @param user  {@link User} current user
+     * @param goals list {@link UserGoalDto} for saving
+     * @author Bogdan Kuzenko
+     */
+    private void saveGoalForUserGoal(User user, List<UserGoalDto> goals) {
+        for (UserGoalDto el : goals) {
+            UserGoal userGoal = modelMapper.map(el, UserGoal.class);
+            userGoal.setUser(user);
+            user.getUserGoals().add(userGoal);
+            userGoalRepo.saveAll(user.getUserGoals());
+        }
+    }
+
+    /**
+     * Metgod save user goals with custom goal dictionary.
+     *
+     * @param user        {@link User} current user
+     * @param customGoals list {@link UserCustomGoalDto} for saving
+     * @author Bogdan Kuzenko
+     */
+    private void saveCustomGoalsForUserGoals(User user, List<UserCustomGoalDto> customGoals) {
+        for (UserCustomGoalDto el1 : customGoals) {
+            UserGoal userGoal = modelMapper.map(el1, UserGoal.class);
+            userGoal.setUser(user);
+            user.getUserGoals().add(userGoal);
+        }
+        userGoalRepo.saveAll(user.getUserGoals());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Bogdan Kuzenko
+     */
+    @Override
+    public List<Long> deleteUserGoals(BulkUserGoalDto dto) {
+        List<UserGoalRequestDto> userGoals = dto.getUserGoal();
+        List<Long> deleted = new ArrayList<>();
+        for (UserGoalRequestDto el : userGoals) {
+            deleted.add(delete(el.getId()));
+        }
+        return deleted;
+    }
+
+    /**
+     * Method for deleting user goal by id.
+     *
+     * @param id {@link UserGoal} id.
+     * @return id of deleted {@link UserGoal}
+     * @author Bogdan Kuzenko
+     */
+    private Long delete(Long id) {
+        UserGoal userGoal = userGoalRepo
+            .findById(id).orElseThrow(() -> new NotFoundException(USER_GOAL_NOT_FOUND + id));
+        userGoalRepo.delete(userGoal);
+        return id;
     }
 
     /**
@@ -338,6 +390,8 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
+     *
+     * @author Bogdan Kuzenko
      */
     @Transactional
     @Override
@@ -347,6 +401,22 @@ public class UserServiceImpl implements UserService {
             throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
         }
         return modelMapper.map(availableHabitDictionary, new TypeToken<List<HabitDictionaryDto>>() {
+        }.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Bogdan Kuzenko
+     */
+    @Transactional
+    @Override
+    public List<CustomGoalResponseDto> getAvailableCustomGoals(User user) {
+        List<CustomGoal> allAvailableCustomGoalsForUser = customGoalRepo.findAllAvailableCustomGoalsForUser(user);
+        if (allAvailableCustomGoalsForUser.isEmpty()) {
+            throw new UserHasNoAvailableCustomGoalsException(USER_HAS_NO_AVAILABLE_CUSTOM_GOALS);
+        }
+        return modelMapper.map(allAvailableCustomGoalsForUser, new TypeToken<List<CustomGoalResponseDto>>() {
         }.getType());
     }
 }

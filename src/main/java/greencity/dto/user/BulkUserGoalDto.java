@@ -7,9 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class BulkSaveUserGoalDto {
-    @Valid List<@Valid UserGoalDto> userGoals;
-    @Valid List<@Valid UserCustomGoalDto> userCustomGoal;
+@NoArgsConstructor
+public class BulkUserGoalDto {
+    @Valid List<@Valid UserGoalRequestDto> userGoal;
 }

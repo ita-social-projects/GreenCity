@@ -234,19 +234,28 @@ VALUES ('Buy a bamboo brush'),
        ('Start sorting trash'),
        ('Start recycling batteries'),
        ('Finish book about vegans');
+INSERT INTO custom_goals(text, user_id)
+VALUES ('Buy a bamboo brush', 1),
+       ('Buy composter', 1),
+       ('Start sorting trash', 2),
+       ('Start recycling batteries', 2),
+       ('Finish book about vegans', 3);
 
 INSERT INTO advices(habit_dictionary_id, name)
-VALUES (1, 'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
+VALUES (1,
+        'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
        (2, 'Don''t take a glass - protect nature.'),
-       (1, 'After switching to reusable bags, you no longer have to constantly buy packages for goods and products. Eco bags have a longer life and wear out slowly.'),
+       (1,
+        'After switching to reusable bags, you no longer have to constantly buy packages for goods and products. Eco bags have a longer life and wear out slowly.'),
        (1, 'To reduce household waste, start by giving up plastic bags.'),
-       (1, 'All reusable bags are very easy to clean. There is no need to worry about jam, honey or crumbs falling into the corners. Just put the bag in the washing machine or dishwasher.'),
+       (1,
+        'All reusable bags are very easy to clean. There is no need to worry about jam, honey or crumbs falling into the corners. Just put the bag in the washing machine or dishwasher.'),
        (1, 'Eco Bags are very popular with athletes and anyone who leads a healthy lifestyle.');
 
-INSERT INTO user_goals(user_id, goal_id, status, date_completed)
-VALUES (1, 1, 'ACTIVE', null),
-       (1, 2, 'DONE', '2019-11-15 12:44:36'),
-       (2, 3, 'ACTIVE', null),
-       (2, 4, 'DONE', '2019-11-14 19:04:51'),
-       (3, 5, 'ACTIVE', null),
-       (3, 4, 'DONE', '2019-11-11 13:55:13');
+INSERT INTO user_goals(user_id, goal_id, custom_goal_id, status, date_completed)
+VALUES (1, 1, null, 'ACTIVE', null),
+       (2, 3, null, 'ACTIVE', null),
+       (2, 4, null, 'DONE', '2019-11-14 19:04:51'),
+       (1, null, 1, 'DONE', '2019-11-15 12:44:36'),
+       (3, null, 2, 'ACTIVE', null),
+       (3, null, 3, 'DONE', '2019-11-11 13:55:13');

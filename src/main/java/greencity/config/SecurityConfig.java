@@ -1,13 +1,14 @@
 package greencity.config;
 
 import static greencity.constant.AppConstant.*;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -99,7 +100,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/*/habits/statistic",
                 "/user/{userId}/goals",
                 "/user/{userId}/goals/*",
-                "/user/{userId}/habit-dictionary/available"
+                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/customGoals",
+                "/user/{userId}/customGoals/*"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -110,13 +113,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/habit/statistic/*",
-                "/user/{userId}/goals/*"
+                "/user/{userId}/goals/*",
+                "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
                 "/place/save/favorite/**",
                 "/habit/statistic/",
-                "/user/{userId}/goals"
+                "/user/{userId}/goals",
+                "/user/{userId}/customGoals"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.DELETE,
+                "/user/{userId}/customGoals",
+                "/user/{userId}/userGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
