@@ -5,7 +5,7 @@ import greencity.security.dto.SuccessSignInDto;
 /**
  * Provides the google social logic.
  *
- * @author Nazar Stasyuk
+ * @author Nazar Stasyuk && Yurii Koval
  * @version 1.0
  */
 

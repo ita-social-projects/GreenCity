@@ -126,12 +126,18 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
+        if (user.getUserStatus() == UserStatus.DEACTIVATED) {
+            throw new UserDeactivatedException(USER_DEACTIVATED);
+        }
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), true);
     }
 
     private boolean isPasswordCorrect(OwnSignInDto signInDto, User user) {
+        if (user.getOwnSecurity() == null) {
+            return false;
+        }
         return passwordEncoder.matches(signInDto.getPassword(), user.getOwnSecurity().getPassword());
     }
 
