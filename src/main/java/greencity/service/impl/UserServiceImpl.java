@@ -434,7 +434,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void addDefaultHabit(User user) {
-        if (!habitRepo.findAllByUserId(user.getId()).isPresent()) {
+        if (habitRepo.findByUserIdAndStatusHabit(user.getId()).isEmpty()) {
             HabitIdDto habitIdDto = new HabitIdDto();
             habitIdDto.setHabitDictionaryId(1L);
             createUserHabit(user, Collections.singletonList(habitIdDto));
