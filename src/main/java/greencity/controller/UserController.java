@@ -4,7 +4,10 @@ import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.goal.*;
+import greencity.dto.goal.BulkCustomGoalDto;
+import greencity.dto.goal.BulkSaveCustomGoalDto;
+import greencity.dto.goal.CustomGoalResponseDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
 import greencity.dto.habitstatistic.HabitDto;
 import greencity.dto.user.*;
@@ -340,7 +343,7 @@ public class UserController {
     /**
      * Method for delete user custom goals.
      *
-     * @param dtos      {@link BulkDeleteCustomGoalDto} with list objects for delete.
+     * @param ids       string with objects id for deleting.
      * @param userId    {@link User} id
      * @param principal - authentication principal
      * @return new {@link ResponseEntity}
@@ -353,11 +356,13 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{userId}/customGoals")
-    public ResponseEntity<List<Long>> bulkDelete(@RequestBody BulkDeleteCustomGoalDto dtos,
-                                                 @PathVariable Long userId,
-                                                 @ApiIgnore Principal principal) {
+    public ResponseEntity<List<Long>> bulkDeleteCustomGoals(
+        @ApiParam(value = "Ids of custom goals separated by a comma \n e.g. 1,2", required = true)
+        @RequestParam String ids,
+        @PathVariable Long userId,
+        @ApiIgnore Principal principal) {
         userValidationService.userValidForActions(principal, userId);
-        return ResponseEntity.status(HttpStatus.OK).body(customGoalService.bulkDelete(dtos));
+        return ResponseEntity.status(HttpStatus.OK).body(customGoalService.bulkDelete(ids));
     }
 
     /**
@@ -375,8 +380,7 @@ public class UserController {
     })
     @GetMapping("/{userId}/goals/available")
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
-        @ApiIgnore
-            Principal principal,
+        @ApiIgnore Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
         return ResponseEntity
@@ -488,7 +492,7 @@ public class UserController {
     /**
      * Method for delete user goals.
      *
-     * @param dto       {@link BulkUserGoalDto} with objects for delete
+     * @param ids       string with objects id for deleting.
      * @param userId    {@link User} id
      * @param principal - authentication principal
      * @return new {@link ResponseEntity}
@@ -502,10 +506,13 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{userId}/userGoals")
-    public ResponseEntity<List<Long>> deleteUserGoals(@RequestBody BulkUserGoalDto dto,
-                                                      @PathVariable Long userId,
-                                                      @ApiIgnore Principal principal) {
+    public ResponseEntity<List<Long>> bulkDeleteUserGoals(
+        @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true)
+        @RequestParam String ids,
+        @PathVariable Long userId,
+        @ApiIgnore Principal principal) {
         userValidationService.userValidForActions(principal, userId);
-        return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUserGoals(dto));
+        return ResponseEntity.status(HttpStatus.OK).body(userService
+            .deleteUserGoals(ids));
     }
 }

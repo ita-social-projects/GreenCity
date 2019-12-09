@@ -177,11 +177,11 @@ public interface UserService {
     /**
      * Method for deleted list of user goals.
      *
-     * @param dto {@link BulkUserGoalDto} with objects list for deleting.
+     * @param ids string with ids object for deleting.
      * @return list ids of deleted {@link UserGoal}
      * @author Bogdan Kuzenko
      */
-    List<Long> deleteUserGoals(BulkUserGoalDto dto);
+    List<Long> deleteUserGoals(String ids);
 
     /**
      * Method update status of user goal.

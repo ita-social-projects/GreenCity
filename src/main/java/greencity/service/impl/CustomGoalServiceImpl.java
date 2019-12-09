@@ -2,7 +2,10 @@ package greencity.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
 
-import greencity.dto.goal.*;
+import greencity.dto.goal.BulkCustomGoalDto;
+import greencity.dto.goal.BulkSaveCustomGoalDto;
+import greencity.dto.goal.CustomGoalResponseDto;
+import greencity.dto.goal.CustomGoalSaveRequestDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.User;
 import greencity.exception.exceptions.CustomGoalNotSavedException;
@@ -10,6 +13,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomGoalRepo;
 import greencity.service.CustomGoalService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -130,11 +134,15 @@ public class CustomGoalServiceImpl implements CustomGoalService {
      */
     @Transactional
     @Override
-    public List<Long> bulkDelete(BulkDeleteCustomGoalDto dto) {
-        List<CustomGoalRequestDto> cgDto = dto.getCustomGoals();
+    public List<Long> bulkDelete(String ids) {
+        List<Long> arrayIds = Arrays
+            .stream(ids.split(","))
+            .map(Long::valueOf)
+            .collect(Collectors.toList());
+
         List<Long> deleted = new ArrayList<>();
-        for (CustomGoalRequestDto el : cgDto) {
-            deleted.add(delete(el.getId()));
+        for (Long id : arrayIds) {
+            deleted.add(delete(id));
         }
         return deleted;
     }

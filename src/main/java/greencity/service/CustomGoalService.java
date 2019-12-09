@@ -1,9 +1,8 @@
 package greencity.service;
 
-import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.BulkCustomGoalDto;
-import greencity.dto.goal.BulkDeleteCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
+import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.User;
 import java.util.List;
@@ -57,8 +56,8 @@ public interface CustomGoalService {
     /**
      * Method for deleted list of custom goals.
      *
-     * @param dto {@link BulkCustomGoalDto} with objects list for deleting.
+     * @param ids string with objects id for deleting.
      * @return list ids of deleted {@link CustomGoal}
      */
-    List<Long> bulkDelete(BulkDeleteCustomGoalDto dto);
+    List<Long> bulkDelete(String ids);
 }

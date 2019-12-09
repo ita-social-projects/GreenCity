@@ -302,11 +302,14 @@ public class UserServiceImpl implements UserService {
      * @author Bogdan Kuzenko
      */
     @Override
-    public List<Long> deleteUserGoals(BulkUserGoalDto dto) {
-        List<UserGoalRequestDto> userGoals = dto.getUserGoal();
+    public List<Long> deleteUserGoals(String ids) {
+        List<Long> arrayId = Arrays.stream(ids.split(","))
+            .map(Long::valueOf)
+            .collect(Collectors.toList());
+
         List<Long> deleted = new ArrayList<>();
-        for (UserGoalRequestDto el : userGoals) {
-            deleted.add(delete(el.getId()));
+        for (Long id : arrayId) {
+            deleted.add(delete(id));
         }
         return deleted;
     }
