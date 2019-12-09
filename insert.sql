@@ -103,16 +103,6 @@ VALUES ('Ukrainian food');
 INSERT INTO specifications (name)
 VALUES ('Dance');
 
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 1, 4);
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 2, 2);
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 3, 3);
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 4, 6);
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 5, 5);
 
 INSERT INTO favorite_places (place_id, user_id, name)
 values (1, 1, 'Forum');

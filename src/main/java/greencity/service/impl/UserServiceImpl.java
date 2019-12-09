@@ -465,7 +465,6 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(allAvailableCustomGoalsForUser, new TypeToken<List<CustomGoalResponseDto>>() {
         }.getType());
     }
-}
 
     /**
      * Method check is in user habit.

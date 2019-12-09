@@ -9,8 +9,6 @@ import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -130,17 +128,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit",
                 "/user/{userId}/habits/statistic",
                 "/user/{userId}/goals/*",
-                "/user/{userId}/habit-dictionary/available"
+                "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/goals",
                 "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
-                "/user/{userId}/userGoals"
-            ).hasAnyRole(USER, ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.DELETE,
+                "/user/{userId}/userGoals",
                 "/user/{userId}/habit/{habitId}"
-            ).hasAnyRole(USER,ADMIN, MODERATOR)
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate"
