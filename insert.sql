@@ -261,3 +261,13 @@ VALUES (1, 'Покладіть  до кожної сумки чи рюкзаку
        (2, 'За даними ООН, приблизно 5 трильйонів поліетиленових пакетів споживаються у світі щороку, або близько 10 мільйонів - щохвилини.'),
        (2, 'Наразі, близько 60 країн світу почали боротьбу із пластиком на законодавчому рівні.');
 
+INSERT INTO achievements(title, description, message)
+VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!'),
+       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
+       ('Сonscious', 'Made first habit', 'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
+       ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!'),
+       ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!'),
+       ('ach6', 'get ach 6', 'info'),
+       ('ach7', 'get ach 7', 'info'),
+       ('ach8', 'get ach 8', 'info'),
+       ('ach9', 'get ach 9', 'info');
