@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitIdDto;
@@ -176,6 +177,15 @@ public interface UserService {
     List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto dto);
 
     /**
+     * Method for deleted list of user goals.
+     *
+     * @param ids string with ids object for deleting.
+     * @return list ids of deleted {@link UserGoal}
+     * @author Bogdan Kuzenko
+     */
+    List<Long> deleteUserGoals(String ids);
+
+    /**
      * Method update status of user goal.
      *
      * @param user   {@link User} current user.
@@ -189,6 +199,7 @@ public interface UserService {
      *
      * @param user {@link User} current user.
      * @return List of {@link HabitDictionaryDto}
+     * @author Bogdan Kuzenko
      */
     List<HabitDictionaryDto> getAvailableHabitDictionary(User user);
 
@@ -214,4 +225,13 @@ public interface UserService {
      * @param user current user
      */
     void addDefaultHabit(User user);
+
+    /**
+     * Method returns list of available (not ACTIVE) customGoals for user.
+     *
+     * @param user {@link User} current user.
+     * @return List of {@link CustomGoalResponseDto}
+     * @author Bogdan Kuzenko
+     */
+    List<CustomGoalResponseDto> getAvailableCustomGoals(User user);
 }

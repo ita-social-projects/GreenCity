@@ -105,7 +105,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habits/statistic",
                 "/user/{userId}/goals",
                 "/user/{userId}/goals/*",
-                "/user/{userId}/habit-dictionary/available"
+                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/customGoals",
+                "/user/{userId}/customGoals/*"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -116,7 +118,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/habit/statistic/*",
-                "/user/{userId}/goals/*"
+                "/user/{userId}/goals/*",
+                "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
@@ -128,6 +131,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habits/statistic",
                 "/user/{userId}/goals/*",
                 "/user/{userId}/habit-dictionary/available"
+                "/user/{userId}/goals",
+                "/user/{userId}/customGoals"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.DELETE,
+                "/user/{userId}/customGoals",
+                "/user/{userId}/userGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/habit/{habitId}"

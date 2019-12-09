@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 /**
  * Provides an interface to manage {@link HabitDictionary} entity.
+ * @author Bogdan Kuzenko
  */
 public interface HabitDictionaryRepo extends JpaRepository<HabitDictionary, Long> {
     /**

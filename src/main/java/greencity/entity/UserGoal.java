@@ -4,7 +4,10 @@ import greencity.entity.enums.GoalStatus;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -13,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(
-    exclude = {"goal", "user"})
+    exclude = {"user"})
 public class UserGoal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +27,9 @@ public class UserGoal {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Goal goal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private CustomGoal customGoal;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -37,18 +43,20 @@ public class UserGoal {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof UserGoal)) {
             return false;
         }
         UserGoal userGoal = (UserGoal) o;
-        return Objects.equals(user.getId(), userGoal.user.getId())
-            && Objects.equals(goal.getId(), userGoal.goal.getId())
+        return id.equals(userGoal.id)
+            && user.equals(userGoal.user)
+            && Objects.equals(goal, userGoal.goal)
+            && Objects.equals(customGoal, userGoal.customGoal)
             && status == userGoal.status
             && Objects.equals(dateCompleted, userGoal.dateCompleted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user.getId(), goal.getId(), status, dateCompleted);
+        return Objects.hash(id, user, goal, customGoal, status, dateCompleted);
     }
 }
