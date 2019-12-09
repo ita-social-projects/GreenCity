@@ -395,9 +395,9 @@ public class UserServiceImpl implements UserService {
      * @return Boolean
      */
     private Boolean checkHabitId(Long userId, List<HabitIdDto> habitIdDtos) {
-        Optional<List<Habit>> habits = habitRepo.findByUserIdAndStatusHabit(userId);
-        if (habits.isPresent()) {
-            for (Habit habit : habits.get()) {
+        List<Habit> habits = habitRepo.findByUserIdAndStatusHabit(userId);
+        if (!habits.isEmpty()) {
+            for (Habit habit : habits) {
                 for (HabitIdDto habitIdDto : habitIdDtos) {
                     if (habitIdDto.getHabitDictionaryId().equals(habit.getHabitDictionary().getId())) {
                         return false;
@@ -434,7 +434,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void addDefaultHabit(User user) {
-        if (!habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L).isPresent()) {
+        if (!habitRepo.findAllByUserId(user.getId()).isPresent()) {
             HabitIdDto habitIdDto = new HabitIdDto();
             habitIdDto.setHabitDictionaryId(1L);
             createUserHabit(user, Collections.singletonList(habitIdDto));

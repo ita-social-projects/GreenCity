@@ -343,7 +343,7 @@ public class UserServiceImplTest {
         when(habitMapper.convertToDto(new Habit())).thenReturn(new HabitCreateDto());
         when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
         when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
-        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Optional.of(Collections.emptyList()));
+        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
         assertEquals(userService.createUserHabit(user, Collections.emptyList()), Collections.emptyList());
     }
 
@@ -353,7 +353,7 @@ public class UserServiceImplTest {
         when(habitMapper.convertToDto(new Habit())).thenReturn(new HabitCreateDto());
         when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
         when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
-        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Optional.of(Collections.emptyList()));
+        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
         when(userService.createUserHabit(user, Collections.singletonList(new HabitIdDto())))
             .thenReturn(Collections.singletonList(new HabitCreateDto()));
         userService.addDefaultHabit(user);

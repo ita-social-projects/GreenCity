@@ -29,7 +29,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      * @return List {@link Habit}
      */
     @Query("FROM Habit WHERE user.id = ?1 AND statusHabit = true")
-    Optional<List<Habit>> findByUserIdAndStatusHabit(Long userId);
+    List<Habit> findByUserIdAndStatusHabit(Long userId);
 
     /**
      * Find habits by userId and HabitDictionary.id.
