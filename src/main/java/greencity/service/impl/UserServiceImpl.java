@@ -458,12 +458,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<CustomGoalResponseDto> getAvailableCustomGoals(User user) {
-        List<CustomGoal> allAvailableCustomGoalsForUser = customGoalRepo.findAllAvailableCustomGoalsForUser(user);
-        if (allAvailableCustomGoalsForUser.isEmpty()) {
-            throw new UserHasNoAvailableCustomGoalsException(USER_HAS_NO_AVAILABLE_CUSTOM_GOALS);
-        }
-        return modelMapper.map(allAvailableCustomGoalsForUser, new TypeToken<List<CustomGoalResponseDto>>() {
-        }.getType());
+        return modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUser(user),
+            new TypeToken<List<CustomGoalResponseDto>>() {}.getType());
     }
 
     /**
