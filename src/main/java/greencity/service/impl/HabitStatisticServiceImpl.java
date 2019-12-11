@@ -224,12 +224,12 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return new HabitDto(habit.getId(),
             habit.getHabitDictionary().getName(),
             habit.getStatusHabit(),
-habit.getHabitDictionary().getDescription(),
+            habit.getHabitDictionary().getDescription(),
             habit.getHabitDictionary().getName(),
             habit.getHabitDictionary().getHabitItem(),
             habit.getCreateDate(),
             result,
             modelMapper.map(habit.getHabitDictionary(), HabitDictionaryDto.class)
-            );
+        );
     }
 }
