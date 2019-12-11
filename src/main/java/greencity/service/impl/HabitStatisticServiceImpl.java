@@ -33,6 +33,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private HabitStatisticMapper habitStatisticMapper;
     private final ModelMapper modelMapper;
 
+    /**
+     * Constructor with parameters.
+     */
     @Autowired
     public HabitStatisticServiceImpl(HabitStatisticRepo habitStatisticRepo,
                                      HabitRepo habitRepo,
