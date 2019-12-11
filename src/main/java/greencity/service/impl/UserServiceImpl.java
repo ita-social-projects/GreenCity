@@ -467,9 +467,9 @@ public class UserServiceImpl implements UserService {
      *
      * @param userId Id current user.
      * @param habitIdDtos {@link HabitIdDto}
-     * @return Boolean
+     * @return boolean
      */
-    private Boolean checkHabitId(Long userId, List<HabitIdDto> habitIdDtos) {
+    private boolean checkHabitId(Long userId, List<HabitIdDto> habitIdDtos) {
         List<Habit> habits = habitRepo.findByUserIdAndStatusHabit(userId);
         if (!habits.isEmpty()) {
             for (Habit habit : habits) {
@@ -495,7 +495,7 @@ public class UserServiceImpl implements UserService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
         int countHabit = habitRepo.countHabitByUserId(userId);
-        if (habitStatisticRepo.findAllByHabitId(habit.getId()).size() > 0 && countHabit > 1) {
+        if (!habitStatisticRepo.findAllByHabitId(habit.getId()).isEmpty() && countHabit > 1) {
             habitRepo.updateHabitStatusById(habit.getId(),false);
         } else if (countHabit > 1) {
             habitRepo.deleteById(habit.getId());
