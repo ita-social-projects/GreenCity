@@ -15,10 +15,10 @@ public class AchievementServiceImpl implements AchievementService {
     private AchievementRepo achievementRepo;
     private ModelMapper modelMapper;
 
-
     /**
-     * dsa.
-     * @return
+     * {@inheritDoc}
+     *
+     * @author Yuriy Olkhovskyi
      */
     @Override
     public List<AchievementDTO> findAll() {

@@ -15,11 +15,10 @@ import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitStatisticService;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +26,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class HabitStatisticServiceImpl implements HabitStatisticService {
-    private static final Integer DAY_DIFFERENCE = 1;
     private HabitStatisticRepo habitStatisticRepo;
     private HabitRepo habitRepo;
     private HabitStatisticMapper habitStatisticMapper;
-
-    @Autowired
     private final ModelMapper modelMapper;
 
+    @Autowired
+    public HabitStatisticServiceImpl(HabitStatisticRepo habitStatisticRepo,
+                                     HabitRepo habitRepo,
+                                     HabitStatisticMapper habitStatisticMapper,
+                                     ModelMapper modelMapper) {
+        this.habitStatisticRepo = habitStatisticRepo;
+        this.habitRepo = habitRepo;
+        this.habitStatisticMapper = habitStatisticMapper;
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * {@inheritDoc}
@@ -60,8 +65,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     private boolean checkDate(LocalDate date) {
-        return LocalDate.now().compareTo(date) == 0
-            || LocalDate.now().compareTo(date) == DAY_DIFFERENCE;
+        int diff = Period.between(LocalDate.now(), date).getDays();
+        return diff == 0 || diff == -1;
     }
 
 
