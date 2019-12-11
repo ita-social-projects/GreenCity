@@ -4,13 +4,19 @@ import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.BulkCustomGoalDto;
+import greencity.dto.goal.BulkSaveCustomGoalDto;
+import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
+import greencity.service.CustomGoalService;
 import greencity.service.UserService;
 import greencity.service.UserValidationService;
 import greencity.service.impl.HabitStatisticServiceImpl;
@@ -36,6 +42,7 @@ public class UserController {
     private UserService userService;
     private UserValidationService userValidationService;
     private HabitStatisticServiceImpl habitStatisticServiceImpl;
+    private CustomGoalService customGoalService;
 
     /**
      * The method which update user status.
@@ -209,7 +216,7 @@ public class UserController {
     /**
      * Method for finding all {@link User} habits.
      *
-     * @param userId {@link User} id.
+     * @param userId    {@link User} id.
      * @param principal Principal with {@link User} email.
      * @return list of {@link HabitDto}
      */
@@ -224,7 +231,7 @@ public class UserController {
      * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
      * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param userId {@link User} id.
+     * @param userId    {@link User} id.
      * @param principal - Principal with {@link User} email.
      * @return {@link CalendarUsefulHabitsDto} instance.
      */
@@ -253,12 +260,110 @@ public class UserController {
     @GetMapping("/{userId}/goals")
     public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
         @ApiIgnore
-        Principal principal,
+            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getUserGoals(userValidationService.userValidForActions(principal, userId)));
+    }
+
+    /**
+     * Method returns list user custom goals.
+     *
+     * @param userId    {@link User} id
+     * @param principal - authentication principal
+     * @return list of {@link ResponseEntity}
+     * @author Bogdan Kuzenko
+     */
+    @ApiOperation(value = "Get all user custom goals.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/{userId}/customGoals")
+    public ResponseEntity<List<CustomGoalResponseDto>> findAllByUser(@PathVariable Long userId,
+                                                                     @ApiIgnore Principal principal) {
+        userValidationService.userValidForActions(principal, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(customGoalService.findAllByUser(userId));
+    }
+
+    /**
+     * Method saves custom goals for user.
+     *
+     * @param dto       {@link BulkSaveUserGoalDto} with list objects to save
+     * @param principal - authentication principal
+     * @param userId    {@link User} id
+     * @return new {@link ResponseEntity}
+     * @author Bogdan Kuzenko
+     */
+    @ApiOperation(value = "Save one or multiple custom goals for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/customGoals")
+    public ResponseEntity<List<CustomGoalResponseDto>> saveUserCustomGoals(
+        @Valid @RequestBody BulkSaveCustomGoalDto dto,
+        @ApiIgnore Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        userValidationService.userValidForActions(principal, userId);
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(customGoalService.save(dto, userService.findById(userId)));
+    }
+
+    /**
+     * Method updated user custom goals.
+     *
+     * @param userId    {@link User} id
+     * @param dto       {@link BulkCustomGoalDto} with list objects for update
+     * @param principal - authentication principal
+     * @return new {@link ResponseEntity}
+     * @author Bogdan Kuzenko
+     */
+    @ApiOperation(value = "Update user custom goals")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping("/{userId}/customGoals")
+    public ResponseEntity<List<CustomGoalResponseDto>> updateBulk(@PathVariable Long userId,
+                                                                  @Valid @RequestBody BulkCustomGoalDto dto,
+                                                                  @ApiIgnore Principal principal) {
+        userValidationService.userValidForActions(principal, userId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(customGoalService.updateBulk(dto));
+    }
+
+    /**
+     * Method for delete user custom goals.
+     *
+     * @param ids       string with objects id for deleting.
+     * @param userId    {@link User} id
+     * @param principal - authentication principal
+     * @return new {@link ResponseEntity}
+     */
+    @ApiOperation(value = "Delete user custom goals")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{userId}/customGoals")
+    public ResponseEntity<List<Long>> bulkDeleteCustomGoals(
+        @ApiParam(value = "Ids of custom goals separated by a comma \n e.g. 1,2", required = true)
+        @RequestParam String ids,
+        @PathVariable Long userId,
+        @ApiIgnore Principal principal) {
+        userValidationService.userValidForActions(principal, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(customGoalService.bulkDelete(ids));
     }
 
     /**
@@ -276,13 +381,36 @@ public class UserController {
     })
     @GetMapping("/{userId}/goals/available")
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
-        @ApiIgnore
-        Principal principal,
+        @ApiIgnore Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getAvailableGoals(userValidationService.userValidForActions(principal, userId)));
+    }
+
+    /**
+     * Method returns list of available (not ACTIVE) custom goals for user.
+     *
+     * @param principal - authentication principal
+     * @return {@link ResponseEntity}.
+     * @author Vitalii Skolozdra
+     */
+    @ApiOperation(value = "Get available custom goals for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/customGoals/available")
+    public ResponseEntity<List<CustomGoalResponseDto>> getAvailableCustomGoals(
+        @ApiIgnore
+            Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getAvailableCustomGoals(userValidationService.userValidForActions(principal, userId)));
     }
 
 
@@ -305,7 +433,7 @@ public class UserController {
         @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
         @PathVariable Long goalId,
         @ApiIgnore
-        Principal principal) {
+            Principal principal) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService
@@ -329,11 +457,115 @@ public class UserController {
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
         @Valid @RequestBody BulkSaveUserGoalDto dto,
         @ApiIgnore
-        Principal principal,
+            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService.saveUserGoals(userValidationService.userValidForActions(principal, userId), dto));
+    }
+
+    /**
+     * Method returns list of available (not ACTIVE) habit dictionary for user.
+     *
+     * @param principal - authentication principal
+     * @return {@link ResponseEntity}.
+     * @author Kuzenko Bogdan
+     */
+    @ApiOperation(value = "Get available habit dictionary for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/habit-dictionary/available")
+    public ResponseEntity<List<HabitDictionaryDto>> getAvailableHabitDictionary(
+        @ApiIgnore
+            Principal principal,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getAvailableHabitDictionary(
+                userValidationService.userValidForActions(principal, userId)));
+    }
+
+    /**
+     * Method saves habit, chosen by user.
+     *
+     * @param dto - dto with habits, chosen by user.
+     * @param userId id current user.
+     * @param principal authentication principal.
+     * @return {@link ResponseEntity}
+     */
+    @ApiOperation(value = "Save one or multiple habits for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/habit")
+    public ResponseEntity<List<HabitCreateDto>> saveUserHabits(
+        @Valid @RequestBody List<HabitIdDto> dto,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId,
+        @ApiIgnore
+            Principal principal) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(userService.createUserHabit(userValidationService.userValidForActions(principal, userId), dto));
+    }
+
+    /**
+     * Method delete habit, chosen by user.
+     *
+     * @param habitId id with habits, chosen by user.
+     * @param userId id current user.
+     * @param principal authentication principal.
+     */
+    @ApiOperation(value = "Delete habit")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @DeleteMapping("/{userId}/habit/{habitId}")
+    public void deleteHabit(
+        @ApiParam("Id habit of current user. Cannot be empty.")
+        @PathVariable Long habitId,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable Long userId,
+        @ApiIgnore
+            Principal principal) {
+        userService.deleteHabitByUserIdAndHabitDictionary(userId, habitId);
+        ResponseEntity.status(HttpStatus.OK);
+    }
+
+    /**
+     * Method for delete user goals.
+     *
+     * @param ids       string with objects id for deleting.
+     * @param userId    {@link User} id
+     * @param principal - authentication principal
+     * @return new {@link ResponseEntity}
+     * @author Bogdan Kuzenko
+     */
+    @ApiOperation(value = "Delete user goal")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{userId}/userGoals")
+    public ResponseEntity<List<Long>> bulkDeleteUserGoals(
+        @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true)
+        @RequestParam String ids,
+        @PathVariable Long userId,
+        @ApiIgnore Principal principal) {
+        userValidationService.userValidForActions(principal, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(userService
+            .deleteUserGoals(ids));
     }
 }

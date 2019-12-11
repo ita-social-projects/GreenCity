@@ -12,4 +12,10 @@
     <include file="db/changelog/logs/ch-habit-statistics-olkhovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-user-goals-skolozdra-1.xml"/>
     <include file="db/changelog/logs/ch-advice-dzen-1.xml"/>
+    <include file="db/changelog/logs/ch-update-habit-dictionary-dzen-2.xml"/>
+    <include file="db/changelog/logs/ch-habit_facts-dzen-3.xml"/>
+    <include file="db/changelog/logs/ch-add-constraints-Koval-2.xml"/>
+    <include file="db/changelog/logs/ch-custom-goals-Kuzenko-1.xml"/>
+    <include file="db/changelog/logs/ch-change-table-Kuzenko-1.xml"/>
+    <include file="db/changelog/logs/ch-user-achievements-olkhovskyi-1.xml"/>
 </databaseChangeLog>

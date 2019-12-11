@@ -15,6 +15,7 @@ import greencity.security.service.OwnSecurityService;
 import greencity.security.service.RestoreLogicService;
 import greencity.security.service.RestorePasswordEmailService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 public class RestoreLogicServiceImpl implements RestoreLogicService {
-    private RestorePasswordEmailService restorePasswordEmailService;
-    private UserRepo userRepo;
-    private RestorePasswordEmailRepo repo;
-    private OwnSecurityService ownSecurityService;
+    private final RestorePasswordEmailService restorePasswordEmailService;
+    private final UserRepo userRepo;
+    private final RestorePasswordEmailRepo repo;
+    private final OwnSecurityService ownSecurityService;
 
     /**
      * Constructor for RestoreLogicServiceImpl class.
@@ -34,6 +35,7 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
      * @param repo                        {@link RestorePasswordEmailRepo}
      * @param restorePasswordEmailService {@link RestorePasswordEmailService}
      */
+    @Autowired
     public RestoreLogicServiceImpl(UserRepo userRepo,
                                    RestorePasswordEmailRepo repo,
                                    OwnSecurityService ownSecurityService,

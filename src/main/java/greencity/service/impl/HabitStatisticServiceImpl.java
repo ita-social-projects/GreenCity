@@ -2,6 +2,8 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatistic.*;
+import greencity.dto.user.HabitDictionaryDto;
+import greencity.dto.user.HabitLogItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import greencity.entity.enums.HabitRate;
@@ -13,27 +15,37 @@ import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitStatisticService;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class HabitStatisticServiceImpl implements HabitStatisticService {
-    private static final Integer DAY_DIFFERENCE = 1;
     private HabitStatisticRepo habitStatisticRepo;
     private HabitRepo habitRepo;
     private HabitStatisticMapper habitStatisticMapper;
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-
+    /**
+     * Constructor with parameters.
+     */
+    @Autowired
+    public HabitStatisticServiceImpl(HabitStatisticRepo habitStatisticRepo,
+                                     HabitRepo habitRepo,
+                                     HabitStatisticMapper habitStatisticMapper,
+                                     ModelMapper modelMapper) {
+        this.habitStatisticRepo = habitStatisticRepo;
+        this.habitRepo = habitRepo;
+        this.habitStatisticMapper = habitStatisticMapper;
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * {@inheritDoc}
@@ -56,8 +68,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     private boolean checkDate(LocalDate date) {
-        return LocalDate.now().compareTo(date) == 0
-            || LocalDate.now().compareTo(date) == DAY_DIFFERENCE;
+        int diff = Period.between(LocalDate.now(), date).getDays();
+        return diff == 0 || diff == -1;
     }
 
 
@@ -140,10 +152,10 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public CalendarUsefulHabitsDto getInfoAboutUserHabits(Long userId) {
         List<Habit> allHabitsByUserId = findAllHabitsByStatus(userId, true);
 
-        Map<String, Integer> statisticByHabitsPerMonth =
+        List<HabitLogItemDto> statisticByHabitsPerMonth =
             getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
 
-        Map<String, Integer> statisticUnTakenItemsWithPrevMonth =
+        List<HabitLogItemDto> statisticUnTakenItemsWithPrevMonth =
             getDifferenceItemsWithPrevDay(allHabitsByUserId);
 
         CalendarUsefulHabitsDto dto = new CalendarUsefulHabitsDto();
@@ -162,24 +174,24 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return habitStatisticRepo.getAmountOfItemsToday(habitId).orElse(0);
     }
 
-    private Map<String, Integer> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
+    private List<HabitLogItemDto> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
         LocalDate firstDayOfMonth = LocalDate.now();
         return allHabitsByUserId
             .stream()
-            .collect(Collectors
-                .toMap(habit -> habit.getHabitDictionary().getName(),
-                    habit -> habitStatisticRepo
-                        .getSumOfAllItemsPerMonth(habit.getId(), firstDayOfMonth.withDayOfMonth(1)).orElse(0)
-                ));
+            .map(habit -> new HabitLogItemDto(
+                habit.getHabitDictionary().getName(),
+                habitStatisticRepo
+                    .getSumOfAllItemsPerMonth(habit.getId(),
+                        firstDayOfMonth.withDayOfMonth(1)).orElse(0))).collect(Collectors.toList());
     }
 
-    private Map<String, Integer> getDifferenceItemsWithPrevDay(List<Habit> allHabitsByUserId) {
+    private List<HabitLogItemDto> getDifferenceItemsWithPrevDay(List<Habit> allHabitsByUserId) {
         return allHabitsByUserId
             .stream()
-            .collect(Collectors
-                .toMap(habit -> habit.getHabitDictionary().getName(),
-                    habit -> getItemsTakenToday(habit.getId()) - getItemsForPreviousDay(habit.getId())
-                ));
+            .map(habit -> new HabitLogItemDto(
+                habit.getHabitDictionary().getName(),
+                getItemsTakenToday(habit.getId()) - getItemsForPreviousDay(habit.getId())
+            )).collect(Collectors.toList());
     }
 
     /**
@@ -209,6 +221,15 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             }
             localDate = localDate.plusDays(1);
         }
-        return new HabitDto(habit.getId(), habit.getHabitDictionary().getName(), result);
+        return new HabitDto(habit.getId(),
+            habit.getHabitDictionary().getName(),
+            habit.getStatusHabit(),
+            habit.getHabitDictionary().getDescription(),
+            habit.getHabitDictionary().getName(),
+            habit.getHabitDictionary().getHabitItem(),
+            habit.getCreateDate(),
+            result,
+            modelMapper.map(habit.getHabitDictionary(), HabitDictionaryDto.class)
+        );
     }
 }

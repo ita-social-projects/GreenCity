@@ -1,6 +1,7 @@
 package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
+
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
@@ -107,8 +108,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Scheduled(fixedRate = 86400000)
     @Override
-    public void deleteNotActivatedEmails() {
-        int rows = verifyEmailService.deleteAllExpiredEmailVerificationTokens();
+    public void deleteAllUsersThatDidNotVerifyEmail() {
+        int rows = verifyEmailService.deleteAllUsersThatDidNotVerifyEmail();
         log.info(rows + " email verification tokens were deleted.");
     }
 
@@ -121,8 +122,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .findByEmail(dto.getEmail())
             .filter(u -> isPasswordCorrect(dto, u))
             .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
+        userService.addDefaultHabit(user);
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
+        }
+        if (user.getUserStatus() == UserStatus.DEACTIVATED) {
+            throw new UserDeactivatedException(USER_DEACTIVATED);
         }
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
@@ -130,6 +135,9 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     }
 
     private boolean isPasswordCorrect(OwnSignInDto signInDto, User user) {
+        if (user.getOwnSecurity() == null) {
+            return false;
+        }
         return passwordEncoder.matches(signInDto.getPassword(), user.getOwnSecurity().getPassword());
     }
 
@@ -139,7 +147,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Transactional
     @Override
     public AccessRefreshTokensDto updateAccessTokens(String refreshToken) {
-        String email = jwtTool.getEmailOutOfAccessToken(refreshToken);
+        String email;
+        try {
+            email = jwtTool.getEmailOutOfAccessToken(refreshToken);
+        } catch (Exception e) {
+            throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
+        }
         User user = userService
             .findByEmail(email)
             .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));

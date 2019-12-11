@@ -103,16 +103,6 @@ VALUES ('Ukrainian food');
 INSERT INTO specifications (name)
 VALUES ('Dance');
 
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 1, 4);
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 2, 2);
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 3, 3);
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 4, 6);
--- INSERT INTO specifications (value, place_id, specification_id)
--- VALUES ('disc', 5, 5);
 
 INSERT INTO favorite_places (place_id, user_id, name)
 values (1, 1, 'Forum');
@@ -195,27 +185,19 @@ values (1, 3, 1, 1),
        (5, 93, 5, 5),
        (6, 50, 5, 6);
 
---  INSERT INTO advices(habit_dictionary_id, name)
---  VALUES (1, 'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
---         (2, 'Не візьми стакан - збережи природу.'),
---         (1, 'Після переходу на багаторазові сумки вам більше не доведеться постійно купувати пакети для товарів і продуктів. Екосумки мають більший термін служби і повільно зношуються.'),
---         (1, 'Щоб зменшити побутові відходи, почніть із того, щоб відмовитися від пластикових пакетів.'),
---         (1, 'Всі багаторазові сумки дуже просто чистити. Немає необхідності турбуватися про те, що варення, мед або крихти потрапляють у куточки. Просто покладіть потім сумку в пральну або посудомийну машину.'),
---         (1, 'Екосумки дуже популярні серед спортсменів і всіх, хто веде здоровий спосіб життя.');
-
-INSERT INTO habit_dictionary (name)
-VALUES ('bag'),
-       ('cap');
+INSERT INTO habit_dictionary (name, description, habit_item)
+VALUES ('Економити пакети', 'bag description', 'bag'),
+       ('Відмовитись від одноразових стаканчиків', 'cap description', 'cap');
 
 INSERT INTO habits (user_id, habit_dictionary_id, status, create_date)
-VALUES (1, 1, 1, '2019-11-12 19:03:33'),
-       (1, 2, 1, '2019-11-12 15:12:59'),
-       (2, 1, 1, '2019-11-14 11:33:01'),
-       (2, 2, 1, '2019-11-15 20:01:19'),
-       (3, 1, 1, '2019-11-15 10:21:11'),
-       (3, 2, 1, '2019-11-16 17:01:09'),
-       (4, 1, 1, '2019-11-20 19:11:51'),
-       (4, 2, 1, '2019-11-20 21:12:52');
+VALUES (1, 1, true, '2019-11-12 19:03:33'),
+       (1, 2, true, '2019-11-12 15:12:59'),
+       (2, 1, true, '2019-11-14 11:33:01'),
+       (2, 2, true, '2019-11-15 20:01:19'),
+       (3, 1, true, '2019-11-15 10:21:11'),
+       (3, 2, true, '2019-11-16 17:01:09'),
+       (4, 1, true, '2019-11-20 19:11:51'),
+       (4, 2, true, '2019-11-20 21:12:52');
 
 INSERT INTO habit_statistics(rate, date, amount_of_items, habit_id)
 VALUES ('GOOD', '2019-11-13', 12, 1),
@@ -235,13 +217,31 @@ VALUES ('Buy a bamboo brush'),
        ('Start recycling batteries'),
        ('Finish book about vegans');
 
+INSERT INTO custom_goals(text, user_id)
+VALUES ('Buy a bamboo brush', 1),
+       ('Buy composter', 1),
+       ('Start sorting trash', 2),
+       ('Start recycling batteries', 2),
+       ('Finish book about vegans', 3);
+
 INSERT INTO advices(habit_dictionary_id, name)
-VALUES (1, 'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
+VALUES (1,
+        'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
        (2, 'Don''t take a glass - protect nature.'),
-       (1, 'After switching to reusable bags, you no longer have to constantly buy packages for goods and products. Eco bags have a longer life and wear out slowly.'),
+       (1,
+        'After switching to reusable bags, you no longer have to constantly buy packages for goods and products. Eco bags have a longer life and wear out slowly.'),
        (1, 'To reduce household waste, start by giving up plastic bags.'),
-       (1, 'All reusable bags are very easy to clean. There is no need to worry about jam, honey or crumbs falling into the corners. Just put the bag in the washing machine or dishwasher.'),
+       (1,
+        'All reusable bags are very easy to clean. There is no need to worry about jam, honey or crumbs falling into the corners. Just put the bag in the washing machine or dishwasher.'),
        (1, 'Eco Bags are very popular with athletes and anyone who leads a healthy lifestyle.');
+
+INSERT INTO user_goals(user_id, goal_id, custom_goal_id, status, date_completed)
+VALUES (1, 1, null, 'ACTIVE', null),
+       (2, 3, null, 'ACTIVE', null),
+       (2, 4, null, 'DONE', '2019-11-14 19:04:51'),
+       (1, null, 1, 'DONE', '2019-11-15 12:44:36'),
+       (3, null, 2, 'ACTIVE', null),
+       (3, null, 3, 'DONE', '2019-11-11 13:55:13');
 
 INSERT INTO user_goals(user_id, goal_id, status, date_completed)
 VALUES (1, 1, 'ACTIVE', null),
@@ -250,3 +250,24 @@ VALUES (1, 1, 'ACTIVE', null),
        (2, 4, 'DONE', '2019-11-14 19:04:51'),
        (3, 5, 'ACTIVE', null),
        (3, 4, 'DONE', '2019-11-11 13:55:13');
+
+INSERT INTO habit_facts(habit_dictionary_id, name)
+VALUES (1, 'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
+       (1, 'Більшість шкідливих речовин містяться навіть не в стаканчиках, а в кришечках та трубочках. Їх переважно виготовляють з 6-го або 7-го типів пластику. Вони виділяють токсичну речовину — Дисанол-А.'),
+       (1, 'На заводі зі стаканчиків знімається плівка, і картон вдається переробити. Але наразі виникають проблеми з логістикою між Львовом та Харківською областю. На це поки що немає фінансів'),
+       (1, 'Сміттєспалювального заводу, який би утилізовував небезпечні стаканчики, в Україні поки що не збудували'),
+       (2, 'Культура кави з собою дуже глибоко вкорінилася в нашому житті, і через це щодня тисячі паперових стаканчиків опиняються на смітнику.'),
+       (2, 'Одноразові пакети на касі в супермаркетах коштують 2-3 гривні. Вони не тільки забруднюють навколишнє середовище, а ще й з’їдають частину вашого бюджету. Набагато практичніше носити з собою складну сумочку з тканини, ще зовсім недавно так робили всі люди.'),
+       (2, 'За даними ООН, приблизно 5 трильйонів поліетиленових пакетів споживаються у світі щороку, або близько 10 мільйонів - щохвилини.'),
+       (2, 'Наразі, близько 60 країн світу почали боротьбу із пластиком на законодавчому рівні.');
+
+INSERT INTO achievements(title, description, message)
+VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!'),
+       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
+       ('Сonscious', 'Made first habit', 'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
+       ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!'),
+       ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!'),
+       ('ach6', 'get ach 6', 'info'),
+       ('ach7', 'get ach 7', 'info'),
+       ('ach8', 'get ach 8', 'info'),
+       ('ach9', 'get ach 9', 'info');

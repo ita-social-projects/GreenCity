@@ -2,7 +2,10 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
@@ -133,7 +136,7 @@ public interface UserService {
     /**
      * Update {@link User}.
      *
-     * @param dto {@link UserUpdateDto} - dto with new {@link User} params.
+     * @param dto   {@link UserUpdateDto} - dto with new {@link User} params.
      * @param email {@link String} - email of user that need to update.
      * @return {@link User}.
      * @author Nazar Stasyuk
@@ -144,7 +147,7 @@ public interface UserService {
      * Updates refresh token for a given user.
      *
      * @param refreshTokenKey - new refresh token key
-     * @param id - user's id
+     * @param id              - user's id
      * @return - number of updated rows
      */
     int updateUserRefreshToken(String refreshTokenKey, Long id);
@@ -174,11 +177,61 @@ public interface UserService {
     List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto dto);
 
     /**
+     * Method for deleted list of user goals.
+     *
+     * @param ids string with ids object for deleting.
+     * @return list ids of deleted {@link UserGoal}
+     * @author Bogdan Kuzenko
+     */
+    List<Long> deleteUserGoals(String ids);
+
+    /**
      * Method update status of user goal.
      *
-     * @param user {@link User} current user.
+     * @param user   {@link User} current user.
      * @param goalId - {@link UserGoal}'s id that should be updated.
      * @return {@link UserGoalDto}
      */
     UserGoalResponseDto updateUserGoalStatus(User user, Long goalId);
+
+    /**
+     * Method returns list of available (not ACTIVE) habitDictionary for user.
+     *
+     * @param user {@link User} current user.
+     * @return List of {@link HabitDictionaryDto}
+     * @author Bogdan Kuzenko
+     */
+    List<HabitDictionaryDto> getAvailableHabitDictionary(User user);
+
+    /**
+     * Method returns list of available habit for user.
+     *
+     * @param user {@link User} current user.
+     * @param habitIdDto {@link HabitIdDto}
+     * @return List of {@link HabitCreateDto}
+     */
+    List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto);
+
+    /**
+     *  Method delete habit fot user.
+     *
+     * @param userId id current user.
+     * @param habitIdDtos {@link HabitIdDto}
+     */
+    void deleteHabitByUserIdAndHabitDictionary(Long userId, Long habitIdDtos);
+
+    /**
+     *  Method add default habit.
+     * @param user current user
+     */
+    void addDefaultHabit(User user);
+
+    /**
+     * Method returns list of available (not ACTIVE) customGoals for user.
+     *
+     * @param user {@link User} current user.
+     * @return List of {@link CustomGoalResponseDto}
+     * @author Bogdan Kuzenko
+     */
+    List<CustomGoalResponseDto> getAvailableCustomGoals(User user);
 }

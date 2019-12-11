@@ -12,7 +12,7 @@
             <column name="habit_dictionary_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="TINYINT">
+            <column name="status" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
             <column name="create_date" type="datetime(6)">

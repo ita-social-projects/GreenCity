@@ -3,7 +3,7 @@ package greencity.controller;
 import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
 import greencity.constant.HttpStatuses;
-import greencity.dto.advice.AdviceAdminDTO;
+import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.entity.Advice;
 import greencity.service.impl.AdviceServiceImpl;
@@ -29,7 +29,7 @@ public class AdviceController {
      * The controller which returns random {@link Advice} by HabitDictionary adviceId.
      *
      * @param habitId HabitDictionary
-     * @return {@link AdviceAdminDTO}
+     * @return {@link AdviceDTO}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get random advice by habit adviceId")
@@ -40,14 +40,14 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/random/{habitId}")
-    public AdviceAdminDTO getRandomAdviceByHabitId(@PathVariable Long habitId) {
+    public AdviceDTO getRandomAdviceByHabitId(@PathVariable Long habitId) {
         return adviceService.getRandomAdviceByHabitId(habitId);
     }
 
     /**
      * The controller which returns all {@link Advice}.
      *
-     * @return List of {@link AdviceAdminDTO}
+     * @return List of {@link AdviceDTO}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get all advices")
@@ -58,14 +58,14 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public List<AdviceAdminDTO> getAll() {
+    public List<AdviceDTO> getAll() {
         return adviceService.getAllAdvices();
     }
 
     /**
      * The controller which save {@link Advice}.
      *
-     * @param advice {@link AdviceAdminDTO}
+     * @param advice {@link AdviceDTO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
@@ -82,9 +82,9 @@ public class AdviceController {
     }
 
     /**
-     *  The controller which update {@link Advice}.
+     * The controller which update {@link Advice}.
      *
-     * @param dto {@link AdviceAdminDTO}
+     * @param dto {@link AdviceDTO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */

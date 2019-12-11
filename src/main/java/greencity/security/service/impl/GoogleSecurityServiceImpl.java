@@ -35,28 +35,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class GoogleSecurityServiceImpl implements GoogleSecurityService {
-    private UserService userService;
-    private GoogleIdTokenVerifier verifier;
-    private JwtTool tokenTool;
+    private final UserService userService;
+    private final GoogleIdTokenVerifier googleIdTokenVerifier;
+    private final JwtTool jwtTool;
 
     /**
      * Constructor.
      *
      * @param userService {@link UserService} - service of {@link User} logic.
-     * @param tokenTool   {@link JwtTool} - tool for jwt logic.
+     * @param jwtTool   {@link JwtTool} - tool for jwt logic.
      * @param clientId    {@link String} - google client id.
      */
     @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
-                                     JwtTool tokenTool,
+                                     JwtTool jwtTool,
                                      @Value("${google.clientId}") String clientId
     ) {
         this.userService = userService;
-        this.tokenTool = tokenTool;
-        this.verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-            .setAudience(
-                Collections.singletonList(clientId)
-            )
+        this.jwtTool = jwtTool;
+        this.googleIdTokenVerifier = new GoogleIdTokenVerifier
+            .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+            .setAudience(Collections.singletonList(clientId))
             .build();
     }
 
@@ -67,7 +66,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     @Override
     public SuccessSignInDto authenticate(String idToken) {
         try {
-            GoogleIdToken googleIdToken = verifier.verify(idToken);
+            GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
             if (googleIdToken != null) {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
@@ -104,12 +103,13 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
+            .refreshTokenKey(jwtTool.generateRefreshTokenKey())
             .build();
     }
 
     private SuccessSignInDto getSuccessSignInDto(User user) {
-        String accessToken = tokenTool.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = tokenTool.createRefreshToken(user);
+        String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
+        String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), false);
     }
 }

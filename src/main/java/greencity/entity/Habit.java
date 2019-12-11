@@ -12,9 +12,9 @@ import lombok.*;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"user", "habitDictionary"})
+    exclude = {"user", "habitDictionary", "habitStatistics"})
 @ToString(
-    exclude = {"user", "habitDictionary"})
+    exclude = {"user", "habitDictionary", "habitStatistics"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

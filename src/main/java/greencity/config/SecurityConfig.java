@@ -1,13 +1,15 @@
 package greencity.config;
 
 import static greencity.constant.AppConstant.*;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,6 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * Constructor.
      */
+    @Autowired
     public SecurityConfig(JwtTool jwtTool) {
         this.jwtTool = jwtTool;
     }
@@ -94,11 +97,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
+                "/facts/random/*",
                 "/habit/statistic/*",
-                "/user/*/habits",
-                "/user/*/habits/statistic",
+                "/user/{userId}/habits",
+                "/user/{userId}/habits/statistic",
                 "/user/{userId}/goals",
-                "/user/{userId}/goals/*"
+                "/user/{userId}/goals/*",
+                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/customGoals",
+                "/user/{userId}/customGoals/*",
+                "/achievements"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -109,19 +117,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/habit/statistic/*",
-                "/user/{userId}/goals/*"
+                "/user/{userId}/goals/*",
+                "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
                 "/place/save/favorite/**",
                 "/habit/statistic/",
-                "/user/{userId}/goals"
+                "/user/{userId}/goals",
+                "/user/{userId}/habits",
+                "/user/{userId}/habit",
+                "/user/{userId}/habits/statistic",
+                "/user/{userId}/goals/*",
+                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/goals",
+                "/user/{userId}/customGoals"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.DELETE,
+                "/user/{userId}/customGoals",
+                "/user/{userId}/userGoals",
+                "/user/{userId}/habit/{habitId}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate"
             ).hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers("/advices/*").hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers("/advices/*", "/facts/*").hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",
                 "/place/statuses**",
