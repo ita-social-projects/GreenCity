@@ -53,7 +53,7 @@ public class HabitStatisticServiceImplTest {
     public void saveTest() {
         AddHabitStatisticDto addhs = AddHabitStatisticDto
             .builder().amountOfItems(10).habitRate(HabitRate.GOOD)
-            .id(1L).habitId(1L).createdOn(LocalDate.of(2019, 11, 28)).build();
+            .id(1L).habitId(1L).createdOn(LocalDate.now()).build();
         when(habitStatisticService.save(addhs)).thenReturn(addhs);
         assertEquals(addhs, habitStatisticService.save(addhs));
     }
