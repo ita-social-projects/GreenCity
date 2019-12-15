@@ -179,7 +179,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return allHabitsByUserId
             .stream()
             .map(habit -> new HabitLogItemDto(
-                habit.getHabitDictionary().getName(),
+                habit.getHabitDictionary().getHabitItem(),
                 habitStatisticRepo
                     .getSumOfAllItemsPerMonth(habit.getId(),
                         firstDayOfMonth.withDayOfMonth(1)).orElse(0))).collect(Collectors.toList());
@@ -189,7 +189,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return allHabitsByUserId
             .stream()
             .map(habit -> new HabitLogItemDto(
-                habit.getHabitDictionary().getName(),
+                habit.getHabitDictionary().getHabitItem(),
                 getItemsTakenToday(habit.getId()) - getItemsForPreviousDay(habit.getId())
             )).collect(Collectors.toList());
     }
