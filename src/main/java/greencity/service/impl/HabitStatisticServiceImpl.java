@@ -17,6 +17,7 @@ import greencity.service.HabitStatisticService;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -212,6 +213,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         List<HabitStatistic> habitStatistics = habit.getHabitStatistics();
         LocalDate localDate = habit.getCreateDate();
         int counter = 0;
+
+        habitStatistics.sort(Comparator.comparing(HabitStatistic::getCreatedOn));
+
         for (int i = 0; i < 21; i++) {
             if (counter < habitStatistics.size() && localDate.equals(habitStatistics.get(counter).getCreatedOn())) {
                 result.add(new HabitStatisticDto(habit.getHabitStatistics().get(counter)));
