@@ -155,15 +155,6 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void deleteByIdTest() {
-        Place placeToDelete = new Place();
-
-        Mockito.when(placeRepo.findById(1L)).thenReturn(Optional.of(placeToDelete));
-
-        Assert.assertEquals(new Long(1), placeService.deleteById(1L));
-    }
-
-    @Test
     public void updateStatusTest() {
         Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
 
