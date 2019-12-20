@@ -8,12 +8,14 @@ import static org.powermock.api.support.membermodification.MemberMatcher.method;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
+import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
@@ -32,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.powermock.api.mockito.PowerMockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +42,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UserServiceImplTest {
@@ -51,6 +62,9 @@ public class UserServiceImplTest {
 
     @Mock
     GoalRepo goalRepo;
+
+    @Mock
+    CustomGoalRepo customGoalRepo;
 
     @Mock
     HabitDictionaryRepo habitDictionaryRepo;
@@ -143,6 +157,12 @@ public class UserServiceImplTest {
         verify(userRepo, times(1)).save(any());
     }
 
+    @Test(expected = BadUpdateRequestException.class)
+    public void updateRoleOnTheSameUserTest() {
+        when(userService.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        userService.updateRole(user.getId(), null, user.getEmail());
+    }
+
     @Test
     public void findByIdTest() {
         Long id = 1L;
@@ -165,6 +185,19 @@ public class UserServiceImplTest {
     @Test(expected = BadIdException.class)
     public void deleteByIdExceptionBadIdTest() {
         userService.deleteById(1L);
+    }
+
+    @Test(expected = BadIdException.class)
+    public void deleteByNullIdExceptionTest() {
+        userService.deleteById(null);
+        verifyZeroInteractions(userRepo);
+    }
+
+    @Test
+    public void deleteByExistentIdTest() {
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        userService.deleteById(user.getId());
+        verify(userRepo).delete(user);
     }
 
     /**
@@ -310,11 +343,121 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void updateUserRefreshTokenForUserWithExistentIdTest() {
+        when(userRepo.updateUserRefreshToken("foo", user.getId())).thenReturn(1);
+        int updatedRows = userService.updateUserRefreshToken("foo", user.getId());
+        assertEquals(1, updatedRows);
+    }
+
+    @Test(expected = UserGoalStatusNotUpdatedException.class)
+    public void updateUserGoalStatusWithNonExistentGoalIdTest() {
+        user.setUserGoals(Collections.singletonList(new UserGoal(1L, null, null, null, null, null)));
+        userService.updateUserGoalStatus(user, 2L);
+        verifyZeroInteractions(userGoalRepo);
+    }
+
+    @Test
+    public void updateUserGoalStatusWithDisabledGoalStateTest() {
+        UserGoal userGoal = new UserGoal(1L, null, null, null, GoalStatus.DISABLED, null);
+        when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
+        user.setUserGoals(Collections.singletonList(userGoal));
+        userService.updateUserGoalStatus(user, userGoal.getId());
+        verify(userGoalRepo, times(0)).save(userGoal);
+    }
+
+    @Test
+    public void updateUserGoalStatusWithActiveGoalStateTest() {
+        UserGoal userGoal = new UserGoal(1L, null, null, null, GoalStatus.ACTIVE, null);
+        when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
+        when(userGoalToResponseDtoMapper.convertToDto(userGoal)).thenReturn(new UserGoalResponseDto(1L, null, GoalStatus.DONE));
+        user.setUserGoals(Collections.singletonList(userGoal));
+        UserGoalResponseDto userGoalResponseDto = userService.updateUserGoalStatus(user, userGoal.getId());
+        assertEquals(GoalStatus.DONE, userGoal.getStatus());
+        assertEquals(userGoalResponseDto, new UserGoalResponseDto(1L, null, GoalStatus.DONE));
+        verify(userGoalRepo).save(userGoal);
+    }
+
+    @Test
+    public void updateUserGoalStatusWithDoneGoalStateTest() {
+        UserGoal userGoal = new UserGoal(1L, null, null, null, GoalStatus.DONE, null);
+        when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
+        UserGoalResponseDto expectedUserGoalResponseDto = new UserGoalResponseDto(1L, null, GoalStatus.ACTIVE);
+        when(userGoalToResponseDtoMapper.convertToDto(userGoal)).thenReturn(expectedUserGoalResponseDto);
+        user.setUserGoals(Collections.singletonList(userGoal));
+        UserGoalResponseDto userGoalResponseDto = userService.updateUserGoalStatus(user, userGoal.getId());
+        assertEquals(GoalStatus.ACTIVE, userGoal.getStatus());
+        assertEquals(userGoalResponseDto, expectedUserGoalResponseDto);
+        verify(userGoalRepo).save(userGoal);
+    }
+
+    @Test
     public void getAvailableGoalsTest() {
         List<Goal> goals = new ArrayList<>(Arrays.asList(new Goal(), new Goal()));
         List<GoalDto> goalDto = modelMapper.map(goals, new TypeToken<List<GoalDto>>(){}.getType());
         when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(goals);
         assertEquals(userService.getAvailableGoals(user), goalDto);
+    }
+
+    @Test
+    public void saveUserGoalsWithNullUserGoalsAndExistentCustomGoalsTest() {
+        user.setUserGoals(new ArrayList<>());
+        when(modelMapper.map(any(), any())).thenReturn(new UserGoal());
+        when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
+        UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto();
+        BulkSaveUserGoalDto nullUserGoalsDto =
+            new BulkSaveUserGoalDto(null, Collections.singletonList(userCustomGoalDto));
+        userService.saveUserGoals(user, nullUserGoalsDto);
+        verify(userGoalRepo).saveAll(user.getUserGoals());
+        verify(modelMapper).map(userCustomGoalDto, UserGoal.class);
+    }
+
+    @Test
+    public void saveUserGoalsWithExistentUserGoalsAndNullCustomGoalsTest() {
+        user.setUserGoals(new ArrayList<>());
+        when(modelMapper.map(any(), any())).thenReturn(new UserGoal());
+        when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
+        UserGoalDto userGoalDto = new UserGoalDto();
+        BulkSaveUserGoalDto nullCustomGoalsDto =
+            new BulkSaveUserGoalDto(Collections.singletonList(userGoalDto), null);
+        userService.saveUserGoals(user, nullCustomGoalsDto);
+        verify(userGoalRepo).saveAll(user.getUserGoals());
+        verify(modelMapper).map(userGoalDto, UserGoal.class);
+    }
+
+    @Test
+    public void saveUserGoalsWithExistentUserGoalsAndExistentCustomGoalsTest() {
+        user.setUserGoals(new ArrayList<>());
+        when(modelMapper.map(any(), any())).thenReturn(new UserGoal());
+        when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
+        UserGoalDto userGoalDto = new UserGoalDto();
+        UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto();
+        BulkSaveUserGoalDto userGoalsAndCustomGoalsDto = new BulkSaveUserGoalDto(
+            Collections.singletonList(userGoalDto), Collections.singletonList(userCustomGoalDto)
+        );
+        userService.saveUserGoals(user, userGoalsAndCustomGoalsDto);
+        verify(userGoalRepo, times(2)).saveAll(user.getUserGoals());
+        verify(modelMapper).map(userGoalDto, UserGoal.class);
+        verify(modelMapper).map(userCustomGoalDto, UserGoal.class);
+    }
+
+    @Test
+    public void deleteUserGoalsWithEmptyInputIdsTest() {
+        List<Long> deletedGoals = userService.deleteUserGoals("");
+        assertEquals(0, deletedGoals.size());
+    }
+
+    @Test
+    public void deleteUserGoalsWithValidInputIdsTest() {
+        UserServiceImpl userServiceSpy = PowerMockito.spy(userService);
+        UserGoal userGoalToDelete = new UserGoal(1L, null, null, null, null, null);
+        when(userGoalRepo.findById(anyLong())).thenReturn(Optional.of(userGoalToDelete));
+        PowerMockito.doNothing().when(userGoalRepo).delete(userGoalToDelete);
+        List<Long> deletedGoals = userServiceSpy.deleteUserGoals("1,2,3");
+        ArrayList<Long> expectedDeletedGoals = new ArrayList<>(3);
+        expectedDeletedGoals.add(1L);
+        expectedDeletedGoals.add(2L);
+        expectedDeletedGoals.add(3L);
+        assertEquals(deletedGoals, expectedDeletedGoals);
     }
 
     @Test(expected = UserHasNoAvailableGoalsException.class)
@@ -348,6 +491,32 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void createUserHabitWithEmptyDtoIdListAndNotEmptyUserHabitsTest() {
+        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.singletonList(new Habit()));
+        assertEquals(Collections.emptyList(), userService.createUserHabit(user, Collections.emptyList()));
+    }
+
+    @Test
+    public void createUserHabitWithExistentHabitIdsNotMatchingTest() {
+        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null, null), null, null, null, null)));
+        assertEquals(Collections.emptyList(), userService.createUserHabit(user, Collections.singletonList(new HabitIdDto(2L))));
+    }
+
+    @Test(expected = BadIdException.class)
+    public void createUserHabitWithExistentHabitTest() {
+        when(habitRepo.findByUserIdAndStatusHabit(user.getId()))
+            .thenReturn(
+                Collections.singletonList(
+                    Habit.builder()
+                        .habitDictionary(HabitDictionary.builder().id(1L).build())
+                        .build()
+                )
+            );
+        userService.createUserHabit(user, Collections.singletonList(new HabitIdDto(1L)));
+        verify(habitRepo, times(0)).saveAll(any());
+    }
+
+    @Test
     public void addDefaultHabitTest() {
         when(habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L)).thenReturn(Optional.empty());
         when(habitMapper.convertToDto(new Habit())).thenReturn(new HabitCreateDto());
@@ -358,6 +527,23 @@ public class UserServiceImplTest {
             .thenReturn(Collections.singletonList(new HabitCreateDto()));
         userService.addDefaultHabit(user);
         verify(habitRepo, times(1)).saveAll(Collections.singletonList(new Habit()));
+    }
+
+    @Test
+    public void getAvailableCustomGoalsForUserWithNoGoalsTest() {
+        when(customGoalRepo.findAllAvailableCustomGoalsForUser(user)).thenReturn(Collections.emptyList());
+        assertNull(userService.getAvailableCustomGoals(user));
+    }
+
+    @Test
+    public void getAvailableCustomGoalsForUserWithExistentGoalTest() {
+        List<CustomGoalResponseDto> customGoalsDtos = Collections.singletonList(new CustomGoalResponseDto(1L, "foo"));
+        when(modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUser(user),
+            new TypeToken<List<CustomGoalResponseDto>>() {
+            }.getType()))
+            .thenReturn(customGoalsDtos);
+        assertNotNull(userService.getAvailableCustomGoals(user));
+        assertEquals(userService.getAvailableCustomGoals(user), customGoalsDtos);
     }
 
     @Test(expected = BadIdException.class)
@@ -386,5 +572,24 @@ public class UserServiceImplTest {
         when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(Collections.emptyList());
         userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), habit.getId());
         verify(habitRepo, times(1)).deleteById(habit.getId());
+    }
+
+    @Test(expected = NotDeletedException.class)
+    public void deleteHabitByUserAndNullHabit() {
+        userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), null);
+    }
+
+    @Test(expected = NotDeletedException.class)
+    public void deleteHabitByNullUserAndNullHabit() {
+        userService.deleteHabitByUserIdAndHabitDictionary(null, null);
+    }
+
+    @Test
+    public void deleteHabitByUserWithExistentHabits() {
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitStatisticRepo.findAllByHabitId(habit.getId())).thenReturn(Collections.singletonList(null));
+        when(habitRepo.countHabitByUserId(user.getId())).thenReturn(2);
+        userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), habit.getId());
+        verify(habitRepo).updateHabitStatusById(habit.getId(), false);
     }
 }
