@@ -4,6 +4,7 @@ import static greencity.constant.ErrorMessage.*;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.constant.ValidationConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -306,6 +307,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<Long> deleteUserGoals(String ids) {
+        if (!ids.matches("^\\d+(,\\d+)*$")) {
+            throw new NotDeletedException(ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS);
+        }
         List<Long> arrayId = Arrays.stream(ids.split(","))
             .map(Long::valueOf)
             .collect(Collectors.toList());

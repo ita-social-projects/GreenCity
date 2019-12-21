@@ -440,10 +440,9 @@ public class UserServiceImplTest {
         verify(modelMapper).map(userCustomGoalDto, UserGoal.class);
     }
 
-    @Test
+    @Test(expected = NotDeletedException.class)
     public void deleteUserGoalsWithEmptyInputIdsTest() {
-        List<Long> deletedGoals = userService.deleteUserGoals("");
-        assertEquals(0, deletedGoals.size());
+        userService.deleteUserGoals("");
     }
 
     @Test

@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
+import greencity.constant.ValidationConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.BulkCustomGoalDto;
@@ -27,17 +28,20 @@ import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
+@Validated
 public class UserController {
     private UserService userService;
     private UserValidationService userValidationService;
@@ -561,6 +565,7 @@ public class UserController {
     @DeleteMapping("/{userId}/userGoals")
     public ResponseEntity<List<Long>> bulkDeleteUserGoals(
         @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true)
+        @Pattern(regexp = "^\\d+(,\\d+)*$", message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS)
         @RequestParam String ids,
         @PathVariable Long userId,
         @ApiIgnore Principal principal) {
