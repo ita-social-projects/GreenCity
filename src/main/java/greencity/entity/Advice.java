@@ -18,7 +18,7 @@ public class Advice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "advice", fetch = FetchType.LAZY)
     private List<AdviceTranslation> translations;
 
     @ManyToOne

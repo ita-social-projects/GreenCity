@@ -3,10 +3,12 @@ package greencity.entity;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "advice_translations")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -15,12 +17,12 @@ public class AdviceTranslation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     private Language language;
 
-    @OneToMany(mappedBy = "translations")
+    @ManyToOne
     private Advice advice;
 
-    @Column(name = "name", nullable = false, unique = true, length = 300)
+    @Column(nullable = false, unique = true, length = 300)
     private String content;
 }

@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.util.List;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,4 +20,7 @@ public class Language {
 
     @Column(name = "code", nullable = false, unique = true, length = 35)
     private String code;
+
+    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
+    private List<AdviceTranslation> adviceTranslations;
 }
