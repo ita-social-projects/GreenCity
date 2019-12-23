@@ -1,26 +1,26 @@
 package greencity.entity;
 
-import java.util.List;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
+@Table(name = "advice_translations")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "advices")
-public class Advice {
+public class AdviceTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private List<AdviceTranslation> translations;
+    @OneToOne
+    private Language language;
 
-    @ManyToOne
-    private HabitDictionary habitDictionary;
+    @OneToMany(mappedBy = "translations")
+    private Advice advice;
+
+    @Column(name = "name", nullable = false, unique = true, length = 300)
+    private String content;
 }

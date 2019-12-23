@@ -16,6 +16,7 @@ public class Language {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "code", nullable = false, unique = true, length = 35)
     private String code;
 }
