@@ -59,16 +59,14 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         if (habitStatisticRepo.findHabitStatByDate(dto.getCreatedOn(), dto.getHabitId()).isPresent()) {
             throw new NotSavedException(ErrorMessage.HABIT_STATISTIC_ALREADY_EXISTS);
         }
-        if (checkDate(dto.getCreatedOn())) {
+        if (isTodayOrYesterday(dto.getCreatedOn())) {
             HabitStatistic habitStatistic = habitStatisticMapper.convertToEntity(dto);
-
             return habitStatisticMapper.convertToDto(habitStatisticRepo.save(habitStatistic));
-        } else {
-            throw new BadRequestException(ErrorMessage.WRONG_DATE);
         }
+        throw new BadRequestException(ErrorMessage.WRONG_DATE);
     }
 
-    private boolean checkDate(LocalDate date) {
+    private boolean isTodayOrYesterday(LocalDate date) {
         int diff = Period.between(LocalDate.now(), date).getDays();
         return diff == 0 || diff == -1;
     }

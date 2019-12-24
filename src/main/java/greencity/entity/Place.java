@@ -1,9 +1,7 @@
 package greencity.entity;
 
-import greencity.constant.AppConstant;
 import greencity.entity.enums.PlaceStatus;
-import greencity.util.DateTimeService;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,9 +16,11 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode(
     exclude = {"discountValues", "author", "openingHoursList", "comments", "photos",
-        "location", "favoritePlaces", "category", "rates", "webPages", "status", "discountValues"})
-@ToString(exclude = {"comments", "photos", "favoritePlaces",
-    "webPages", "rates", "discountValues", "openingHoursList", "location", "author"})
+        "location", "favoritePlaces", "category", "webPages", "status", "discountValues"})
+@ToString(
+    exclude = {"discountValues", "author", "openingHoursList", "comments", "photos",
+        "location", "favoritePlaces", "category", "webPages", "status", "discountValues"}
+)
 @Table(name = "places")
 public class Place {
     @Id
@@ -69,7 +69,7 @@ public class Place {
     private User author;
 
     @Column(name = "modified_date")
-    private LocalDateTime modifiedDate = DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE);
+    private ZonedDateTime modifiedDate;
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(name = "status")
