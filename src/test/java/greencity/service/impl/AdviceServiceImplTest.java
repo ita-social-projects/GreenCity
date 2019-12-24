@@ -44,7 +44,7 @@ public class AdviceServiceImplTest {
     private AdviceDTO adviceDTO = new AdviceDTO(1L, "advice", null);
     private AdvicePostDTO advicePostDTO = new AdvicePostDTO("advice", new HabitDictionaryIdDto(1L));
     private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", "test", "test", null);
-    private Advice advice = new Advice(1L, "advice", habitDictionary);
+    private Advice advice = new Advice(1L,null, habitDictionary);
 
     @Test
     public void getAllAdvicesFailed() {

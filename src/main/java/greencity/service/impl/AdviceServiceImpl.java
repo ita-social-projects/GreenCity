@@ -109,7 +109,7 @@ public class AdviceServiceImpl implements AdviceService {
         return adviceRepo.findById(id)
             .map(employee -> {
                 employee.setHabitDictionary(habitDictionaryRepo.findById(advice.getHabitDictionary().getId()).get());
-                employee.setAdvice(advice.getAdvice());
+                //TODO
                 return adviceRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
