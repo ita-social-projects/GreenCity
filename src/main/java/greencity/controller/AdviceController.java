@@ -40,8 +40,8 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/random/{habitId}")
-    public AdviceDTO getRandomAdviceByHabitId(@PathVariable Long habitId) {
-        return adviceService.getRandomAdviceByHabitId(habitId);
+    public AdviceDTO getRandomAdviceByHabitId(@PathVariable Long habitId, @RequestParam String language) {
+        return adviceService.getRandomAdviceByHabitId(habitId, language);
     }
 
     /**
@@ -62,45 +62,7 @@ public class AdviceController {
         return adviceService.getAllAdvices();
     }
 
-    /**
-     * The controller which save {@link Advice}.
-     *
-     * @param advice {@link AdviceDTO}
-     * @return {@link ResponseEntity}
-     * @author Vitaliy Dzen
-     */
-    @ApiOperation(value = "Save advice")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @PostMapping
-    public ResponseEntity save(@Valid @RequestBody AdvicePostDTO advice) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adviceService.save(advice));
-    }
 
-    /**
-     * The controller which update {@link Advice}.
-     *
-     * @param dto {@link AdviceDTO}
-     * @return {@link ResponseEntity}
-     * @author Vitaliy Dzen
-     */
-    @ApiOperation(value = "Update advice")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @PutMapping("/{adviceId}")
-    public ResponseEntity<AdvicePostDTO> update(
-        @Valid @RequestBody AdvicePostDTO dto, @PathVariable Long adviceId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(adviceService.update(dto, adviceId), AdvicePostDTO.class));
-    }
 
     /**
      * The controller which delete {@link Advice}.

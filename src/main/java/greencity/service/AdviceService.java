@@ -25,7 +25,7 @@ public interface AdviceService {
      * @return random {@link Advice}
      * @author Vitaliy Dzen
      */
-    AdviceDTO getRandomAdviceByHabitId(Long id);
+    AdviceDTO getRandomAdviceByHabitId(Long id, String language);
 
     /**
      * Method find {@link Advice} by id.
@@ -43,25 +43,7 @@ public interface AdviceService {
      * @return {@link AdviceDTO}
      * @author Vitaliy Dzen
      */
-    AdviceDTO getAdviceByName(String name);
-
-    /**
-     * Method saves new {@link Advice}.
-     *
-     * @param advice {@link AdviceDTO}
-     * @return instance of {@link Advice}
-     * @author Vitaliy Dzen
-     */
-    Advice save(AdvicePostDTO advice);
-
-    /**
-     * Method updates {@link Advice}.
-     *
-     * @param advice {@link AdviceDTO}
-     * @return instance of {@link Advice}
-     * @author Vitaliy Dzen
-     */
-    Advice update(AdvicePostDTO advice, Long id);
+    AdviceDTO getAdviceByName(String language, String name);
 
     /**
      * Method delete {@link Advice} by id.
