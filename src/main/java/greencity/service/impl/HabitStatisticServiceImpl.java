@@ -225,7 +225,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
 
         for (int i = 0; i < 21; i++) {
             if (counter < habitStatistics.size()
-                && zonedDateTime.compareTo(habitStatistics.get(counter).getCreatedOn()) == 0)
+                && zonedDateTime.toLocalDate().equals(habitStatistics.get(counter).getCreatedOn().toLocalDate()))
             {
                 result.add(new HabitStatisticDto(habit.getHabitStatistics().get(counter)));
                 counter++;

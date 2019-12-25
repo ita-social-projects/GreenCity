@@ -77,7 +77,7 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody AdvicePostDTO advice) {
+    public ResponseEntity<Object> save(@Valid @RequestBody AdvicePostDTO advice) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adviceService.save(advice));
     }
 
@@ -117,7 +117,7 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{adviceId}")
-    public ResponseEntity delete(@PathVariable Long adviceId) {
+    public ResponseEntity<Object> delete(@PathVariable Long adviceId) {
         adviceService.delete(adviceId);
         return ResponseEntity.ok().build();
     }
