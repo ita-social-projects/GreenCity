@@ -28,7 +28,6 @@ import org.modelmapper.TypeToken;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdviceServiceImplTest {
-
     @Mock
     private ModelMapper modelMapper;
 
@@ -114,7 +113,6 @@ public class AdviceServiceImplTest {
     @Test(expected = NotUpdatedException.class)
     public void updateFailed() {
         adviceService.update(advicePostDTO, 1L);
-
     }
 
     @Test

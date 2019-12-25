@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
-
     private final HabitDictionaryRepo habitDictionaryRepo;
     private final HabitDictionaryMapper habitDictionaryMapper;
     private final DateService dateService;

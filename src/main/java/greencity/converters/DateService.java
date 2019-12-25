@@ -7,14 +7,17 @@ import java.time.ZonedDateTime;
  * @author Yurii Koval
  */
 public interface DateService {
-
     /**
+     * Returns converted {@link ZonedDateTime} to datasource timezone.
+     *
      * @param toConvert date that should be converted.
      * @return converted to datasource timezone {@link ZonedDateTime}.
      */
     ZonedDateTime convertToDatasourceTimezone(ZonedDateTime toConvert);
 
     /**
+     * Returns {@link ZonedDateTime} of the datasource.
+     *
      * @return instance of datasource {@link ZonedDateTime}.
      */
     ZonedDateTime getDatasourceZonedDateTime();

@@ -14,10 +14,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Slf4j
 @Configuration
 public class DatasourceMetadata {
-
     private final JdbcTemplate jdbcTemplate;
 
     /**
+     * Constructor.
      *
      * @param jdbcTemplate {@link JdbcTemplate}
      */
@@ -43,5 +43,6 @@ public class DatasourceMetadata {
         return ZoneId.of(zoneId);
     }
 
-    public static class FailedToObtainDatasourceTimezone extends RuntimeException {}
+    public static class FailedToObtainDatasourceTimezone extends RuntimeException {
+    }
 }
