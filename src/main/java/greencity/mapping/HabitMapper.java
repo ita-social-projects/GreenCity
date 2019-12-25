@@ -8,6 +8,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitDictionaryRepo;
 import greencity.converters.DateService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,6 +17,14 @@ public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
     private final HabitDictionaryMapper habitDictionaryMapper;
     private final DateService dateService;
 
+    /**
+     * Constructor.
+     *
+     * @param habitDictionaryRepo {@link HabitDictionaryRepo}
+     * @param habitDictionaryMapper {@link HabitDictionaryMapper}
+     * @param dateService {@link DateService}
+     */
+    @Autowired
     public HabitMapper(HabitDictionaryRepo habitDictionaryRepo,
                        HabitDictionaryMapper habitDictionaryMapper,
                        DateService dateService) {
@@ -25,6 +34,12 @@ public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
     }
 
 
+    /**
+     * Converts {@link Habit} entity to {@link HabitCreateDto}.
+     *
+     * @param entity to map from.
+     * @return {@link HabitCreateDto}
+     */
     @Override
     public HabitCreateDto convertToDto(Habit entity) {
         HabitCreateDto habitCreateDto = new HabitCreateDto();

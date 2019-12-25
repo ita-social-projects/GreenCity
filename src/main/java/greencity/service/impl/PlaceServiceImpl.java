@@ -53,6 +53,9 @@ public class PlaceServiceImpl implements PlaceService {
     private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
 
+    /**
+     * Constructor.
+     */
     @Autowired
     public PlaceServiceImpl(PlaceRepo placeRepo,
                             ModelMapper modelMapper,
