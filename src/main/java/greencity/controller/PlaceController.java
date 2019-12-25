@@ -107,7 +107,7 @@ public class PlaceController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/info/{id}")
-    public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
+    public ResponseEntity<Object> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getInfoById(id));
     }
 
@@ -336,7 +336,6 @@ public class PlaceController {
      * The method which delete {@link Place} from DB(change {@link PlaceStatus} to DELETED).
      *
      * @param id - {@link Place} id
-     * @return id of deleted {@link Place}
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Delete place")
@@ -347,8 +346,9 @@ public class PlaceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> delete(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.deleteById(id));
+    public void delete(@PathVariable Long id) {
+        placeService.deleteById(id);
+        ResponseEntity.status(HttpStatus.OK);
     }
 
     /**
