@@ -37,12 +37,22 @@ public class DatasourceMetadata {
     public ZoneId datasourceTimezone() {
         String zoneId = jdbcTemplate.queryForObject("SHOW TIMEZONE", String.class);
         if (zoneId == null) {
-            throw new FailedToObtainDatasourceTimezone();
+            String errorMessage = "Didn't manage to obtain datasource timezone!";
+            log.error(errorMessage);
+            throw new FailedToObtainDatasourceTimezone(errorMessage);
         }
         log.info("Obtained timezone of the database is {}", zoneId);
         return ZoneId.of(zoneId);
     }
 
     public static class FailedToObtainDatasourceTimezone extends RuntimeException {
+        /**
+         * Constructor.
+         *
+         * @param message {@link String} why the exception happened.
+         */
+        public FailedToObtainDatasourceTimezone(String message) {
+            super(message);
+        }
     }
 }

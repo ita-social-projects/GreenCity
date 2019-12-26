@@ -26,7 +26,7 @@ public class DateServiceImpl implements DateService {
      */
     @Override
     public ZonedDateTime convertToDatasourceTimezone(ZonedDateTime toConvert) {
-        return toConvert.withZoneSameLocal(datasourceTimezone);
+        return toConvert.withZoneSameInstant(datasourceTimezone);
     }
 
     /**
