@@ -11,25 +11,26 @@ import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.service.OwnSecurityService;
 import greencity.security.service.RestoreLogicService;
 import greencity.security.service.VerifyEmailService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
- * Controller that provide our sign-up and sign-in logic.
+ * Controller that provides our sign-up and sign-in logic.
  *
  * @author Nazar Stasyuk
  * @version 1.0
@@ -39,20 +40,24 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @Slf4j
 public class OwnSecurityController {
-    @Value("${client.address}")
-    private String clientAddress;
-    private OwnSecurityService service;
-    private VerifyEmailService verifyEmailService;
-    private RestoreLogicService restoreLogicService;
+    private final String clientAddress;
+    private final OwnSecurityService service;
+    private final VerifyEmailService verifyEmailService;
+    private final RestoreLogicService restoreLogicService;
 
     /**
      * Constructor.
      *
+     * @param clientAddress - Google client address.
      * @param service            - {@link OwnSecurityService} - service for security logic.
-     * @param verifyEmailService {@link VerifyEmailService} - service for verify email logic.
+     * @param verifyEmailService {@link VerifyEmailService} - service for email verification.
      */
-    public OwnSecurityController(
-        OwnSecurityService service, VerifyEmailService verifyEmailService, RestoreLogicService restoreLogicService) {
+    @Autowired
+    public OwnSecurityController(@Value("${client.address}") String clientAddress,
+                                 OwnSecurityService service,
+                                 VerifyEmailService verifyEmailService,
+                                 RestoreLogicService restoreLogicService) {
+        this.clientAddress = clientAddress;
         this.service = service;
         this.verifyEmailService = verifyEmailService;
         this.restoreLogicService = restoreLogicService;
@@ -70,7 +75,7 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = USER_ALREADY_REGISTERED_WITH_THIS_EMAIL)
     })
     @PostMapping("/signUp")
-    public ResponseEntity singUp(@Valid @RequestBody OwnSignUpDto dto) {
+    public ResponseEntity<Object> singUp(@Valid @RequestBody OwnSignUpDto dto) {
         service.signUp(dto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -103,11 +108,11 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN)
     })
     @GetMapping("/verifyEmail")
-    public ResponseEntity verify(@RequestParam @NotBlank String token) throws URISyntaxException {
+    public ResponseEntity<Object> verify(@RequestParam @NotBlank String token) throws URISyntaxException {
         verifyEmailService.verifyByToken(token);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(new URI(clientAddress));
-        return new ResponseEntity(responseHeaders, HttpStatus.SEE_OTHER);
+        return new ResponseEntity<>(responseHeaders, HttpStatus.SEE_OTHER);
     }
 
     /**
@@ -122,10 +127,9 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = REFRESH_TOKEN_NOT_VALID)
     })
     @GetMapping("/updateAccessToken")
-    public ResponseEntity updateAccessToken(@RequestParam @NotBlank String refreshToken) {
-        return ResponseEntity.ok().body(service.updateAccessToken(refreshToken));
+    public ResponseEntity<Object> updateAccessToken(@RequestParam @NotBlank String refreshToken) {
+        return ResponseEntity.ok().body(service.updateAccessTokens(refreshToken));
     }
-
 
     /**
      * Method for restoring password and sending email for restore.
@@ -140,7 +144,7 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = USER_NOT_FOUND_BY_EMAIL)
     })
     @GetMapping("/restorePassword")
-    public ResponseEntity restore(@RequestParam @Email String email) {
+    public ResponseEntity<Object> restore(@RequestParam @Email String email) {
         restoreLogicService.sendEmailForRestore(email);
         return ResponseEntity.ok().build();
     }
@@ -158,7 +162,7 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = TOKEN_FOR_RESTORE_IS_INVALID)
     })
     @PostMapping("/changePassword")
-    public ResponseEntity changePassword(@Valid @RequestBody OwnRestoreDto form) {
+    public ResponseEntity<Object> changePassword(@Valid @RequestBody OwnRestoreDto form) {
         restoreLogicService.restoreByToken(form.getToken(), form.getPassword());
         return ResponseEntity.ok().build();
     }
@@ -176,8 +180,9 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = PASSWORD_DOES_NOT_MATCH)
     })
     @PutMapping
-    public ResponseEntity updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto) {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<Object> updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto,
+                                         @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        String email = principal.getName();
         service.updateCurrentPassword(updateDto, email);
         return ResponseEntity.ok().build();
     }

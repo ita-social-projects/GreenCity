@@ -4,7 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.entity.Specification;
-import greencity.exception.NotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SpecificationRepo;
 import greencity.service.SpecificationService;
 import java.util.List;

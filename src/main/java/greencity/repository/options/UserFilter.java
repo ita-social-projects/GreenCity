@@ -5,6 +5,7 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.entity.User;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -52,11 +53,29 @@ public class UserFilter implements Specification<User> {
      * @return a {@link Predicate}, may be {@literal null}.
      */
     private Predicate hasFieldsLike(Root<User> r, CriteriaBuilder cb, String reg) {
+        reg = replaceCriteria(reg);
         return cb.or(
             cb.like(r.get(RepoConstants.FIRST_NAME), reg),
             cb.like(r.get(RepoConstants.LAST_NAME), reg),
             cb.like(r.get(RepoConstants.EMAIL), reg),
             cb.like(r.get(RepoConstants.REGISTRATION_DATE).as(String.class), reg)
         );
+    }
+
+    /**
+     * Returns a String criteria for search.
+     *
+     * @param criteria  String for search.
+     * @return String creteria  not be {@literal null}.
+     */
+    private String replaceCriteria(String criteria) {
+        criteria = Optional.ofNullable(criteria).orElseGet(() -> "");
+        criteria = criteria.trim();
+        criteria = criteria.replace("_", "\\_");
+        criteria = criteria.replace("%", "\\%");
+        criteria = criteria.replace("\\", "\\\\");
+        criteria = criteria.replace("'", "\\'");
+        criteria = "%" + criteria + "%";
+        return criteria;
     }
 }

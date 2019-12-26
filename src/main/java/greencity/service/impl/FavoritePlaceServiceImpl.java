@@ -7,7 +7,7 @@ import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.User;
-import greencity.exception.BadIdException;
+import greencity.exception.exceptions.BadIdException;
 import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.mapping.FavoritePlaceWithLocationMapper;
 import greencity.repository.FavoritePlaceRepo;

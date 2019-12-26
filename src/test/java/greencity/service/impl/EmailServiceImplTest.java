@@ -1,8 +1,5 @@
 package greencity.service.impl;
 
-import static org.mockito.Mockito.*;
-
-import greencity.GreenCityApplication;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -14,15 +11,14 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.ITemplateEngine;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 public class EmailServiceImplTest {
     private EmailService service;
     private User user;
@@ -33,7 +29,9 @@ public class EmailServiceImplTest {
 
     @Before
     public void setup() {
-        service = new EmailServiceImpl(javaMailSender, templateEngine);
+        initMocks(this);
+        service = new EmailServiceImpl(javaMailSender, templateEngine,
+            "http://localhost:4200", "http://localhost:8080");
         user = User.builder().firstName("testFirstName").email("testEmail@gmail.com").build();
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
@@ -59,6 +57,18 @@ public class EmailServiceImplTest {
         service.sendAddedNewPlacesReportEmail(
             Collections.singletonList(user), categoriesWithPlacesTest, EmailNotification.DAILY);
 
+        verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    public void sendVerificationEmailTest() {
+        service.sendVerificationEmail(user, "");
+        verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    public void sendRestoreEmailTest() {
+        service.sendRestoreEmail(user, "");
         verify(javaMailSender).createMimeMessage();
     }
 }

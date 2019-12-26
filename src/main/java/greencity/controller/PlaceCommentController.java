@@ -9,9 +9,8 @@ import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.NotFoundException;
-import greencity.exception.UserBlockedException;
+import greencity.exception.exceptions.BadEmailException;
+import greencity.exception.exceptions.UserBlockedException;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
@@ -24,7 +23,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -50,12 +49,13 @@ public class PlaceCommentController {
     @ApiOperation(value = "Add comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CommentReturnDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity save(@PathVariable Long placeId,
-                               @Valid @RequestBody AddCommentDto addCommentDto) {
-        Principal principal = SecurityContextHolder.getContext().getAuthentication();
+                               @Valid @RequestBody AddCommentDto addCommentDto,
+                               @ApiIgnore @AuthenticationPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getName())
             .orElseThrow(() -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
@@ -92,6 +92,7 @@ public class PlaceCommentController {
     @ApiOperation(value = "Get comments by page")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("comments")
@@ -109,6 +110,7 @@ public class PlaceCommentController {
     @ApiOperation(value = "Delete comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })

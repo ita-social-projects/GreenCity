@@ -11,8 +11,8 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.BadEmailException;
-import greencity.exception.UserBlockedException;
+import greencity.exception.exceptions.BadEmailException;
+import greencity.exception.exceptions.UserBlockedException;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
@@ -56,6 +56,7 @@ public class PlaceController {
     @ApiOperation(value = "Propose new place.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = PlaceWithUserDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/propose")
@@ -80,6 +81,7 @@ public class PlaceController {
     @ApiOperation(value = "Update place")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceUpdateDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -100,11 +102,12 @@ public class PlaceController {
     @ApiOperation(value = "Get info about place")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/info/{id}")
-    public ResponseEntity<?> getInfo(@NotNull @PathVariable Long id) {
+    public ResponseEntity<Object> getInfo(@NotNull @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getInfoById(id));
     }
 
@@ -119,6 +122,7 @@ public class PlaceController {
     @ApiOperation(value = "Get info about favourite place")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -138,6 +142,7 @@ public class PlaceController {
     @ApiOperation(value = "Save place as favourite.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = FavoritePlaceDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -159,6 +164,7 @@ public class PlaceController {
     @ApiOperation(value = "Get list of places by Map Bounds.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceByBoundsDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -183,6 +189,7 @@ public class PlaceController {
     @ApiOperation(value = "Get places by status(APPROVED, PROPOSED, DECLINED, DELETED).")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -207,6 +214,7 @@ public class PlaceController {
         + "in the incoming FilterPlaceDto object")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = FilterPlaceDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -227,6 +235,7 @@ public class PlaceController {
     @ApiOperation(value = "Update status of place")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UpdatePlaceStatusDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
@@ -251,6 +260,7 @@ public class PlaceController {
         + "in the incoming FilterPlaceDto object")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -273,6 +283,7 @@ public class PlaceController {
     @ApiOperation(value = "Get place by id.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceUpdateDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -292,6 +303,7 @@ public class PlaceController {
     @ApiOperation(value = "Bulk update place statuses")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UpdatePlaceStatusDto[].class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
@@ -311,6 +323,7 @@ public class PlaceController {
     @ApiOperation(value = "Get array of available place statuses")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceStatus[].class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
@@ -323,18 +336,19 @@ public class PlaceController {
      * The method which delete {@link Place} from DB(change {@link PlaceStatus} to DELETED).
      *
      * @param id - {@link Place} id
-     * @return id of deleted {@link Place}
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Delete place")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> delete(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.deleteById(id));
+    public void delete(@PathVariable Long id) {
+        placeService.deleteById(id);
+        ResponseEntity.status(HttpStatus.OK);
     }
 
     /**
@@ -347,6 +361,7 @@ public class PlaceController {
     @ApiOperation(value = "Bulk delete places")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })

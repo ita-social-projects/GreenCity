@@ -17,8 +17,8 @@ import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
-import greencity.exception.NotFoundException;
-import greencity.exception.PlaceStatusException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.PlaceStatusException;
 import greencity.mapping.ProposePlaceMapper;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
@@ -152,15 +152,6 @@ public class PlaceServiceImplTest {
         when(placeRepo.save(place)).thenReturn(place);
 
         assertEquals(place, placeService.save(placeAddDto, user.getEmail()));
-    }
-
-    @Test
-    public void deleteByIdTest() {
-        Place placeToDelete = new Place();
-
-        Mockito.when(placeRepo.findById(1L)).thenReturn(Optional.of(placeToDelete));
-
-        Assert.assertEquals(new Long(1), placeService.deleteById(1L));
     }
 
     @Test

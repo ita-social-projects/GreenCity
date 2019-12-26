@@ -1,16 +1,17 @@
 package greencity.security.service;
 
 import greencity.entity.OwnSecurity;
-import greencity.security.dto.AccessTokenDto;
+import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
+import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * Provides the interface to manage {@link OwnSecurityService} entity.
  *
- * @author Nazar Stasyuk
+ * @author Nazar Stasyuk && Yurii Koval
  * @version 1.0
  */
 public interface OwnSecurityService {
@@ -18,6 +19,7 @@ public interface OwnSecurityService {
      * Method that allow you sign-up user.
      *
      * @param dto a value of {@link OwnSignUpDto}
+     * @author Yurii Koval
      */
     void signUp(OwnSignUpDto dto);
 
@@ -29,9 +31,11 @@ public interface OwnSecurityService {
     void delete(OwnSecurity userOwnSecurity);
 
     /**
-     * Method that delete {@link greencity.entity.VerifyEmail} when user not submit email.
+     * Deletes {@link greencity.entity.VerifyEmail} when user did not submit email.
+     * @author Yurii Koval
      */
-    void deleteNotActiveEmailUsers();
+    @Scheduled(fixedRate = 86400000)
+    void deleteAllUsersThatDidNotVerifyEmail();
 
     /**
      * Method that allow you sign-in user.
@@ -45,9 +49,9 @@ public interface OwnSecurityService {
      * Method that update your access token by refresh token.
      *
      * @param refreshToken a value of {@link String}
-     * @return {@link AccessTokenDto} this is DTO with new access token
+     * @return {@link AccessRefreshTokensDto} this is DTO with new access token
      */
-    AccessTokenDto updateAccessToken(String refreshToken);
+    AccessRefreshTokensDto updateAccessTokens(String refreshToken);
 
     /**
      * Method for updating password.

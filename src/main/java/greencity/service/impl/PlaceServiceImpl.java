@@ -14,9 +14,9 @@ import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
-import greencity.exception.BadEmailException;
-import greencity.exception.NotFoundException;
-import greencity.exception.PlaceStatusException;
+import greencity.exception.exceptions.BadEmailException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.PlaceStatusException;
 import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.ProposePlaceMapper;
 import greencity.repository.PlaceRepo;
@@ -178,12 +178,10 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Nazar Vladyka
      */
     @Override
-    public Long deleteById(Long id) {
+    public void deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
         updateStatus(id, PlaceStatus.DELETED);
-
-        return id;
     }
 
     /**
@@ -320,12 +318,6 @@ public class PlaceServiceImpl implements PlaceService {
             .collect(Collectors.toList());
     }
 
-    private List<Long> getPlaceBoundsId(List<PlaceByBoundsDto> listB) {
-        List<Long> result = new ArrayList<Long>();
-        listB.forEach(el -> result.add(el.getId()));
-        return result;
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -414,7 +406,7 @@ public class PlaceServiceImpl implements PlaceService {
             list.getContent().stream()
                 .map(user -> modelMapper.map(user, AdminPlaceDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<AdminPlaceDto>(
+        return new PageableDto(
             adminPlaceDtos,
             list.getTotalElements(),
             list.getPageable().getPageNumber());

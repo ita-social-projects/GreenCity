@@ -1,12 +1,15 @@
 package greencity.config;
 
 import static greencity.constant.AppConstant.*;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
-import greencity.security.jwt.JwtAuthenticationProvider;
-import greencity.security.jwt.JwtTokenTool;
-import greencity.service.UserService;
+import greencity.security.filters.AccessTokenAuthenticationFilter;
+import greencity.security.jwt.JwtTool;
+import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,8 +19,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,24 +30,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 /**
  * Config for security.
  *
- * @author Nazar Stasyuk
+ * @author Nazar Stasyuk && Yurii Koval
  * @version 1.0
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private JwtTokenTool tool;
-    private UserService userService;
+    private final JwtTool jwtTool;
 
     /**
      * Constructor.
-     *
-     * @param tool        {@link JwtTokenTool} - tool for JWT
-     * @param userService {@link UserService} - user service.
      */
-    public SecurityConfig(JwtTokenTool tool, UserService userService) {
-        this.tool = tool;
-        this.userService = userService;
+    @Autowired
+    public SecurityConfig(JwtTool jwtTool) {
+        this.jwtTool = jwtTool;
     }
 
     /**
@@ -51,15 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    /**
-     * Bean {@link AuthenticationManager} that uses in authentication managing.
-     */
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
     }
 
     /**
@@ -73,6 +65,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .csrf()
             .disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore(
+                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager()),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .exceptionHandling()
+            .authenticationEntryPoint((req, resp, exc) -> resp.sendError(SC_UNAUTHORIZED, "Authorize first."))
+            .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
+            .and()
             .authorizeRequests()
             .antMatchers(
                 "/ownSecurity/**",
@@ -93,21 +95,54 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/about/{id}/**",
                 "/specification/**"
             ).permitAll()
+            .antMatchers(HttpMethod.GET,
+                "/advices/random/*",
+                "/facts/random/*",
+                "/habit/statistic/*",
+                "/user/{userId}/habits",
+                "/user/{userId}/habits/statistic",
+                "/user/{userId}/goals",
+                "/user/{userId}/goals/*",
+                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/customGoals",
+                "/user/{userId}/customGoals/*",
+                "/achievements"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
                 "/place/{status}/**",
                 "/favorite_place/**",
                 "/place/save/favorite",
-                "/user/**"
+                "/user"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PATCH,
+                "/habit/statistic/*",
+                "/user/{userId}/goals/*",
+                "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
-                "/place/save/favorite/**"
+                "/place/save/favorite/**",
+                "/habit/statistic/",
+                "/user/{userId}/goals",
+                "/user/{userId}/habits",
+                "/user/{userId}/habit",
+                "/user/{userId}/habits/statistic",
+                "/user/{userId}/goals/*",
+                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/goals",
+                "/user/{userId}/customGoals"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.DELETE,
+                "/user/{userId}/customGoals",
+                "/user/{userId}/userGoals",
+                "/user/{userId}/habit/{habitId}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate"
             ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers("/advices/*", "/facts/*").hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status**",
                 "/place/statuses**",
@@ -128,15 +163,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/user/**",
-                "/ownSecurity/**")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
-            .anyRequest()
-            .hasAnyRole(ADMIN)
+                "/ownSecurity/**"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
-                "/place/update/**")
-            .hasAnyRole(ADMIN, MODERATOR)
-            .and()
-            .apply(new JwtConfig(tool));
+                "/place/update/**"
+            ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PATCH,
+                "/user/update/role"
+            ).hasRole(ADMIN)
+            .anyRequest().hasAnyRole(ADMIN);
     }
 
     /**
@@ -161,7 +196,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(new JwtAuthenticationProvider(userService, passwordEncoder()));
+        auth.authenticationProvider(new JwtAuthenticationProvider(jwtTool));
+    }
+
+    /**
+     * Provides AuthenticationManager.
+     *
+     * @return {@link AuthenticationManager}
+     */
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
     }
 
     /**
