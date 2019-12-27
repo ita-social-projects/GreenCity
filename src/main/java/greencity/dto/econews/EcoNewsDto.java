@@ -1,6 +1,7 @@
 package greencity.dto.econews;
 
 import java.time.ZonedDateTime;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EcoNewsDto {
     @NotNull
+    @Min(0)
     private Long id;
     @NotEmpty
     private String title;

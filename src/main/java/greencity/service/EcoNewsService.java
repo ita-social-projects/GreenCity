@@ -26,4 +26,9 @@ public interface EcoNewsService {
      * dsafa.
      */
     EcoNews findById(Long id);
+
+    /**
+     * dsads.
+     */
+    Long delete(Long id);
 }

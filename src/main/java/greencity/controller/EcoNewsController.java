@@ -76,4 +76,19 @@ public class EcoNewsController {
     public ResponseEntity<List<EcoNewsDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll());
     }
+
+    /**
+     * dasda.
+     */
+    @ApiOperation(value = "Delete eco news.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @DeleteMapping("/{econewsId}")
+    public ResponseEntity<Long> delete(@PathVariable Long econewsId) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.delete(econewsId));
+    }
 }

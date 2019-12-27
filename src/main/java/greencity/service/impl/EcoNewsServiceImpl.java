@@ -5,6 +5,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
+import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
@@ -34,6 +35,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     /**
      * asdas.
      * fsddggrweas.
+     *
      * @return
      */
     @Override
@@ -84,5 +86,18 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return ecoNewsRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+    }
+
+    /**
+     * dsadsa.
+     */
+    public Long delete(Long id) {
+        Optional<EcoNews> byId = ecoNewsRepo.findById(id);
+        if (byId.isPresent()) {
+            ecoNewsRepo.deleteById(id);
+            return id;
+        } else {
+            throw new NotDeletedException(ErrorMessage.ECO_NEWS_NOT_DELETED);
+        }
     }
 }
