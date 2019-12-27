@@ -304,6 +304,7 @@ public class UserServiceImpl implements UserService {
      *
      * @author Bogdan Kuzenko
      */
+    @Transactional
     @Override
     public List<Long> deleteUserGoals(String ids) {
         List<Long> arrayId = Arrays.stream(ids.split(","))
