@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
 
-
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
