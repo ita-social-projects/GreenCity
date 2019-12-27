@@ -27,10 +27,11 @@ public interface EmailService {
 
     /**
      * Method for sending news for users who subscribed for updates.
-     *
+     * @param subscribers     - {@link NewsSubscriberRequestDto} list with subscribers for receiving.
      * @param newsDto         - {@link NewsDto} object with data
      */
-    void sendNewNewsForSubscriber(AddEcoNewsDtoResponse newsDto);
+    void sendNewNewsForSubscriber(List<NewsSubscriberRequestDto> subscribers,
+                                  AddEcoNewsDtoResponse newsDto);
 
     /**
      * Method for sending simple notification to {@code User} about change status.

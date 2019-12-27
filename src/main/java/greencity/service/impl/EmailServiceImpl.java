@@ -9,7 +9,6 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.service.EmailService;
-import greencity.service.NewsSubscriberService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,6 @@ import org.thymeleaf.context.Context;
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     private final ITemplateEngine templateEngine;
-    private final NewsSubscriberService newsSubscriberService;
     private final String clientLink;
     private final String ecoNewsLink;
     private final String serverLink;
@@ -43,13 +41,11 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     public EmailServiceImpl(JavaMailSender javaMailSender,
                             ITemplateEngine templateEngine,
-                            NewsSubscriberService newsSubscriberService,
                             @Value("${client.address}") String clientLink,
                             @Value("${econews.address}") String ecoNewsLink,
                             @Value("${address}") String serverLink) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
-        this.newsSubscriberService = newsSubscriberService;
         this.clientLink = clientLink;
         this.ecoNewsLink = ecoNewsLink;
         this.serverLink = serverLink;
@@ -101,9 +97,9 @@ public class EmailServiceImpl implements EmailService {
      * @author Bogdan Kuzenko
      */
     @Override
-    public void sendNewNewsForSubscriber(AddEcoNewsDtoResponse newsDto) {
+    public void sendNewNewsForSubscriber(List<NewsSubscriberRequestDto> subscribers,
+                                         AddEcoNewsDtoResponse newsDto) {
         Map<String, Object> model = new HashMap<>();
-        List<NewsSubscriberRequestDto> subscribers = newsSubscriberService.findAll();
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberRequestDto dto : subscribers) {
