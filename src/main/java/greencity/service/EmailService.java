@@ -28,12 +28,9 @@ public interface EmailService {
     /**
      * Method for sending news for users who subscribed for updates.
      *
-     * @param subscribers     - list of {@link NewsSubscriberRequestDto}'s who subscribed
      * @param newsDto         - {@link NewsDto} object with data
-     * @param unsubscribeLink - {@link String} with link for unsubscribe
      */
-    void sendNewNewsForSubscriber(List<NewsSubscriberRequestDto> subscribers,
-                                  AddEcoNewsDtoResponse newsDto, String unsubscribeLink);
+    void sendNewNewsForSubscriber(AddEcoNewsDtoResponse newsDto);
 
     /**
      * Method for sending simple notification to {@code User} about change status.
