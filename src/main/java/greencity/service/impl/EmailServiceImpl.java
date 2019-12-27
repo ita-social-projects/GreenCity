@@ -2,6 +2,8 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
+import greencity.dto.newssubscriber.NewsDto;
+import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -89,6 +91,24 @@ public class EmailServiceImpl implements EmailService {
     /**
      * {@inheritDoc}
      *
+     * @author Bogdan Kuzenko
+     */
+    @Override
+    public void sendNewNewsForSubscriber(List<NewsSubscriberRequestDto> subscribers,
+                                         NewsDto newsDto, String unsubscribeLink) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.UNSUBSCRIBE_LINK, unsubscribeLink);
+        model.put(EmailConstants.NEWS_RESULT, newsDto);
+        for (NewsSubscriberRequestDto dto : subscribers) {
+            String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
+            sendEmailByEmail(dto.getEmail(), EmailConstants.NEWS, template);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Stasyuk
      */
     @Override
@@ -124,11 +144,15 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void sendEmail(User receiver, String subject, String content) {
-        log.info(LogMessage.IN_SEND_EMAIL, receiver, subject);
+        sendEmailByEmail(receiver.getEmail(), subject, content);
+    }
+
+    private void sendEmailByEmail(String email, String subject, String content) {
+        log.info(LogMessage.IN_SEND_EMAIL, email, subject);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         try {
-            mimeMessageHelper.setTo(receiver.getEmail());
+            mimeMessageHelper.setTo(email);
             mimeMessageHelper.setSubject(subject);
             mimeMessage.setContent(content, EmailConstants.EMAIL_CONTENT_TYPE);
         } catch (MessagingException e) {

@@ -88,6 +88,11 @@ public class ErrorMessage {
     public static final String CUSTOM_GOAL_FOR_THIS_USER_ALREADY_EXIST = "Custom goal with same text for this user already exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
+    public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
+    public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND = "Subscriber with this email address not found in the database.";
+    public static final String NEWS_SUBSCRIBERS_NOT_FOUND = "Not found any subscriber in the database.";
+    public static final String NEWS_SUBSCRIBER_NOT_DELETED = "The subscriber was not delete.";
+    public static final String NEWS_SUBSCRIBER_NOT_SAVED = "The subscriber was not saved.";
 
     private ErrorMessage() {
     }

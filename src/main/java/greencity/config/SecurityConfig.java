@@ -93,7 +93,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses/**",
                 "/user/emailNotifications/**",
                 "/place/about/{id}/**",
-                "/specification/**"
+                "/specification/**",
+                "/newsSubscriber"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
@@ -131,7 +132,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/goals/*",
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/goals",
-                "/user/{userId}/customGoals"
+                "/user/{userId}/customGoals",
+                "/newsSubscriber/send",
+                "/newsSubscriber/save"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
