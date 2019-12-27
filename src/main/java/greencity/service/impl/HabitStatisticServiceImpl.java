@@ -14,8 +14,10 @@ import greencity.mapping.HabitStatisticMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitStatisticService;
+import greencity.converters.DateService;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -29,10 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 public class HabitStatisticServiceImpl implements HabitStatisticService {
-    private HabitStatisticRepo habitStatisticRepo;
-    private HabitRepo habitRepo;
-    private HabitStatisticMapper habitStatisticMapper;
+    private final HabitStatisticRepo habitStatisticRepo;
+    private final HabitRepo habitRepo;
+    private final HabitStatisticMapper habitStatisticMapper;
     private final ModelMapper modelMapper;
+    private final DateService dateService;
 
     /**
      * Constructor with parameters.
@@ -41,17 +44,19 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public HabitStatisticServiceImpl(HabitStatisticRepo habitStatisticRepo,
                                      HabitRepo habitRepo,
                                      HabitStatisticMapper habitStatisticMapper,
-                                     ModelMapper modelMapper) {
+                                     ModelMapper modelMapper,
+                                     DateService dateService) {
         this.habitStatisticRepo = habitStatisticRepo;
         this.habitRepo = habitRepo;
         this.habitStatisticMapper = habitStatisticMapper;
         this.modelMapper = modelMapper;
+        this.dateService = dateService;
     }
 
     /**
      * {@inheritDoc}
      *
-     * @author Yuriy Olkhovskyi
+     * @author Yuriy Olkhovskyi && Yurii Koval
      */
     @Transactional
     @Override
@@ -59,16 +64,19 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         if (habitStatisticRepo.findHabitStatByDate(dto.getCreatedOn(), dto.getHabitId()).isPresent()) {
             throw new NotSavedException(ErrorMessage.HABIT_STATISTIC_ALREADY_EXISTS);
         }
-        if (checkDate(dto.getCreatedOn())) {
+        boolean proceed = isTodayOrYesterday(
+            dateService
+                .convertToDatasourceTimezone(dto.getCreatedOn())
+                .toLocalDate()
+        );
+        if (proceed) {
             HabitStatistic habitStatistic = habitStatisticMapper.convertToEntity(dto);
-
             return habitStatisticMapper.convertToDto(habitStatisticRepo.save(habitStatistic));
-        } else {
-            throw new BadRequestException(ErrorMessage.WRONG_DATE);
         }
+        throw new BadRequestException(ErrorMessage.WRONG_DATE);
     }
 
-    private boolean checkDate(LocalDate date) {
+    private boolean isTodayOrYesterday(LocalDate date) {
         int diff = Period.between(LocalDate.now(), date).getDays();
         return diff == 0 || diff == -1;
     }
@@ -153,8 +161,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public CalendarUsefulHabitsDto getInfoAboutUserHabits(Long userId) {
         List<Habit> allHabitsByUserId = findAllHabitsByStatus(userId, true);
 
-        List<HabitLogItemDto> statisticByHabitsPerMonth =
-            getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
+        List<HabitLogItemDto> statisticByHabitsPerMonth = getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
 
         List<HabitLogItemDto> statisticUnTakenItemsWithPrevMonth =
             getDifferenceItemsWithPrevDay(allHabitsByUserId);
@@ -176,7 +183,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     private List<HabitLogItemDto> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
-        LocalDate firstDayOfMonth = LocalDate.now();
+        ZonedDateTime firstDayOfMonth = dateService.getDatasourceZonedDateTime();
         return allHabitsByUserId
             .stream()
             .map(habit -> new HabitLogItemDto(
@@ -211,19 +218,20 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private HabitDto convertHabitToHabitDto(Habit habit) {
         List<HabitStatisticDto> result = new ArrayList<>();
         List<HabitStatistic> habitStatistics = habit.getHabitStatistics();
-        LocalDate localDate = habit.getCreateDate();
+        ZonedDateTime zonedDateTime = habit.getCreateDate();
         int counter = 0;
 
         habitStatistics.sort(Comparator.comparing(HabitStatistic::getCreatedOn));
 
         for (int i = 0; i < 21; i++) {
-            if (counter < habitStatistics.size() && localDate.equals(habitStatistics.get(counter).getCreatedOn())) {
+            if (counter < habitStatistics.size()
+                && zonedDateTime.toLocalDate().equals(habitStatistics.get(counter).getCreatedOn().toLocalDate())) {
                 result.add(new HabitStatisticDto(habit.getHabitStatistics().get(counter)));
                 counter++;
             } else {
-                result.add(new HabitStatisticDto(null, HabitRate.DEFAULT, localDate, 0));
+                result.add(new HabitStatisticDto(null, HabitRate.DEFAULT, zonedDateTime, 0));
             }
-            localDate = localDate.plusDays(1);
+            zonedDateTime = zonedDateTime.plusDays(1);
         }
         return new HabitDto(habit.getId(),
             habit.getHabitDictionary().getName(),

@@ -1,7 +1,7 @@
 package greencity.entity;
 
 import greencity.entity.enums.HabitRate;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import javax.persistence.*;
 import lombok.*;
 
@@ -23,7 +23,7 @@ public class HabitStatistic {
     private HabitRate habitRate;
 
     @Column(name = "date", nullable = false)
-    private LocalDate createdOn;
+    private ZonedDateTime createdOn;
 
     @Column(name = "amount_of_items")
     private Integer amountOfItems;

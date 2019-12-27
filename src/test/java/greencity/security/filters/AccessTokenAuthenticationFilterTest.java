@@ -17,12 +17,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-/**
- * @author Yurii Koval
- */
 @RunWith(PowerMockRunner.class)
 public class AccessTokenAuthenticationFilterTest {
-
     @Mock
     HttpServletRequest request;
     @Mock

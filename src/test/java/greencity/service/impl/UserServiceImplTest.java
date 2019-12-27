@@ -1,11 +1,5 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.support.membermodification.MemberMatcher.method;
-
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.GoalDto;
@@ -20,15 +14,19 @@ import greencity.exception.exceptions.*;
 import greencity.mapping.HabitMapper;
 import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -94,7 +92,7 @@ public class UserServiceImplTest {
             .habitDictionary(new HabitDictionary())
             .user(user)
             .statusHabit(true)
-            .createDate(LocalDate.now())
+            .createDate(ZonedDateTime.now())
             .build();
 
     @InjectMocks
