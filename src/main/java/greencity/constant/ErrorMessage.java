@@ -88,6 +88,9 @@ public class ErrorMessage {
     public static final String CUSTOM_GOAL_FOR_THIS_USER_ALREADY_EXIST = "Custom goal with same text for this user already exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
+    public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved";
+    public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
+    public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
 
     private ErrorMessage() {
     }
