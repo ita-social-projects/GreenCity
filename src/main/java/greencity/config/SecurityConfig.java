@@ -93,7 +93,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses/**",
                 "/user/emailNotifications/**",
                 "/place/about/{id}/**",
-                "/specification/**",
+                "/specification/**"
+            ).permitAll()
+            .antMatchers(
+                HttpMethod.POST,
+                "/newsSubscriber"
+            ).permitAll()
+            .antMatchers(
+                HttpMethod.DELETE,
                 "/newsSubscriber"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
@@ -132,9 +139,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/goals/*",
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/goals",
-                "/user/{userId}/customGoals",
-                "/newsSubscriber/send",
-                "/newsSubscriber/save"
+                "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
@@ -159,7 +164,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/all/",
                 "/user/roles",
                 "/comments",
-                "/econews"
+                "/econews",
+                "/newsSubscriber"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",

@@ -7,5 +7,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NewsSubscriberRepo extends JpaRepository<NewsSubscriber, Long> {
+    /**
+     * Method for finding newsSubscriber by email.
+     *
+     * @param email email for searching.
+     * @return optional of {@link NewsSubscriber}
+     */
     Optional<NewsSubscriber> findByEmail(String email);
 }

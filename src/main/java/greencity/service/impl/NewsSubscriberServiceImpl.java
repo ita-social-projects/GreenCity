@@ -58,11 +58,11 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
      * @author Bogdan Kuzenko.
      */
     @Override
-    public Long delete(NewsSubscriberRequestDto dto) {
-        NewsSubscriber newsSubscriber = findByEmail(dto.getEmail())
+    public Long delete(String email) {
+        NewsSubscriber newsSubscriber = findByEmail(email)
             .orElseThrow(() -> new NewsSubscriberPresentException(NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND));
         newsSubscriberRepo.delete(newsSubscriber);
-        if (findByEmail(dto.getEmail()).isPresent()) {
+        if (findByEmail(email).isPresent()) {
             log.error(NEWS_SUBSCRIBER_NOT_DELETED);
             throw new NotDeletedException(NEWS_SUBSCRIBER_NOT_DELETED);
         }

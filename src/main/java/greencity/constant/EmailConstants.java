@@ -5,16 +5,18 @@ public class EmailConstants {
     // subjects
     public static final String GC_CONTRIBUTORS = "GreenCity contributors";
     public static final String NEW_PLACES = "New places";
-    public static final String NEWS = "News";
+    public static final String NEWS = "Eco news from GreenCity";
     public static final String VERIFY_EMAIL = "Verify your email address";
     public static final String CONFIRM_RESTORING_PASS = "Confirm restoring password";
     // params
     public static final String CLIENT_LINK = "clientLink";
+    public static final String ECO_NEWS_LINK = "ecoNewsLink";
     public static final String UNSUBSCRIBE_LINK = "unsubscribeLink";
     public static final String USER_NAME = "userFirstName";
     public static final String PLACE_NAME = "placeName";
     public static final String STATUS = "status";
     public static final String VERIFY_ADDRESS = "verifyAddress";
+    public static final String UNSUBSCRIBE = "unsubscribe";
     public static final String RESTORE_PASS = "restorePassword";
     public static final String RESULT = "result";
     public static final String REPORT_TYPE = "reportType";

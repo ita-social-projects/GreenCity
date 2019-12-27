@@ -34,6 +34,9 @@ public class CustomGoalServiceImpl implements CustomGoalService {
     private CustomGoalRepo customGoalRepo;
     private ModelMapper modelMapper;
 
+    /**
+     * Constructor with parameters.
+     */
     @Autowired
     public CustomGoalServiceImpl(ModelMapper modelMapper, CustomGoalRepo customGoalRepo) {
         this.modelMapper = modelMapper;

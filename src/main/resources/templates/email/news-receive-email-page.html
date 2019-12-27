@@ -128,8 +128,9 @@
                 <tr>
                     <td class="site-clr" align="center" valign="top" style="margin-top: 20px">
                         <!--/*@thymesVar id="clientLink" type="java.lang.String"*/-->
-                        <a th:href="${clientLink}"
-                           style="display: inline-block; padding: 20px 50px; font-weight:700; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 32px; color: #ffffff; text-decoration: none; border-radius: 6px;">GreenCity</a>
+                        <a th:href="${ecoNewsLink}"
+                           style="display: inline-block; padding: 20px 50px; font-weight:700; font-family: 'Source Sans Pro',
+                           Helvetica, Arial, sans-serif; font-size: 32px; color: #ffffff; text-decoration: none; border-radius: 6px;">GreenCity</a>
                     </td>
                 </tr>
             </table>
@@ -141,31 +142,6 @@
         </td>
     </tr>
     <!-- end logo -->
-
-    <!-- start hero -->
-    <tr>
-        <td class="background-clr" align="center">
-            <!--[if (gte mso 9)|(IE)]>
-            <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
-                <tr>
-                    <td align="center" valign="top" width="600">
-            <![endif]-->
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                <tr>
-                    <td class="background-msg-clr" align="left"
-                        style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
-                        <h1 th:text="${'Dear user, '}"
-                            style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;"></h1>
-                    </td>
-                </tr>
-            </table>
-            <!--[if (gte mso 9)|(IE)]>
-            </td>
-            </tr>
-            </table>
-            <![endif]-->
-        </td>
-    </tr>
 
     <tr>
         <td align="center" bgcolor="#e9ecef">
@@ -179,23 +155,19 @@
                 <tr>
                     <td class="background-msg-clr" align="left"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px;">
-                        <div th:each="newsDto : ${news}">
-                            <span th:data="${newsDto.getCreationDate}" style="font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+                        <div>
+                            <h3>
+                                <span th:text="${news.creationDate.toLocalDate}" style="font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
                             font-size: 8px;">2019-10-10</span>
-                            <h3><span th:text="${newsDto.getTitle}">Заголовок нашої новини</span></h3>
+                                <br>
+                                <span th:text="${news.title}"></span>
+                            </h3>
                             <br>
-                            <span th:text="${newsDto.getText}">
-                                Тут буде власне сама новина дуже цікава
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias autem dignissimos ipsam modi non omnis quae quasi
-                                repudiandae sed tempore! Asperiores aut beatae laborum optio quam sed ullam? Debitis, voluptate!
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias autem dignissimos ipsam modi non omnis quae quasi
-                                repudiandae sed tempore! Asperiores aut beatae laborum optio quam sed ullam? Debitis, voluptate!
-
-                            </span>
+                            <span th:text="${news.text}"></span>
                             <br>
-                            <span th:href="${clientLink}" class="gCity-link">Read more</span>
+                            <span th:href="${ecoNewsLink}" class="gCity-link">Read more</span>
                             <br>
-                                </ul>
+                            </ul>
                         </div>
                     </td>
                 </tr>
@@ -233,8 +205,10 @@
             <p style="margin: 0;">
                 You received this email because you subscribed for notifications about news via e-mail.
                 If you didn't request this action you can unsubscribe from next news clicking on this
-                <span th:href="${unsubscribeLink}" class="gCity-link">LINK</span>
-                or copy this link (<span th:href="${unsubscribeLink}"/>) on browser.
+                <span th:href="${unsubscribeLink} + ${}" class="gCity-link">LINK</span>
+                or copy this link (<span style="margin: 0;" th:text="${unsubscribeLink}">
+                <a th:href="${unsubscribeLink}" target="_blank"></a>
+                </span>) on browser.
             </p>
         </td>
     </tr>

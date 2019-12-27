@@ -2,7 +2,7 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
-import greencity.dto.newssubscriber.NewsDto;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
@@ -32,6 +32,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     private final ITemplateEngine templateEngine;
     private final String clientLink;
+    private final String ecoNewsLink;
     private final String serverLink;
 
     /**
@@ -41,10 +42,12 @@ public class EmailServiceImpl implements EmailService {
     public EmailServiceImpl(JavaMailSender javaMailSender,
                             ITemplateEngine templateEngine,
                             @Value("${client.address}") String clientLink,
+                            @Value("${econews.address}") String ecoNewsLink,
                             @Value("${address}") String serverLink) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.clientLink = clientLink;
+        this.ecoNewsLink = ecoNewsLink;
         this.serverLink = serverLink;
     }
 
@@ -95,12 +98,12 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendNewNewsForSubscriber(List<NewsSubscriberRequestDto> subscribers,
-                                         NewsDto newsDto, String unsubscribeLink) {
+                                         AddEcoNewsDtoResponse newsDto, String unsubscribeLink) {
         Map<String, Object> model = new HashMap<>();
-        model.put(EmailConstants.CLIENT_LINK, clientLink);
-        model.put(EmailConstants.UNSUBSCRIBE_LINK, unsubscribeLink);
+        model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberRequestDto dto : subscribers) {
+            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber?email=" + dto.getEmail());
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
             sendEmailByEmail(dto.getEmail(), EmailConstants.NEWS, template);
         }

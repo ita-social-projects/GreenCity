@@ -23,10 +23,10 @@ public interface NewsSubscriberService {
     /**
      * Method for deleted newsSubscriber.
      *
-     * @param dto {@link NewsSubscriberRequestDto} object for deleting.
+     * @param email email for deleting.
      * @return long id of deleted {@link NewsSubscriber}
      */
-    Long delete(NewsSubscriberRequestDto dto);
+    Long delete(String email);
 
     /**
      * Method for finding all newsSubscriber.

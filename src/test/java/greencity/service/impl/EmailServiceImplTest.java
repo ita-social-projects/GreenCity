@@ -31,7 +31,7 @@ public class EmailServiceImplTest {
     public void setup() {
         initMocks(this);
         service = new EmailServiceImpl(javaMailSender, templateEngine,
-            "http://localhost:4200", "http://localhost:8080");
+            "http://localhost:4200", "http://localhost:4200", "http://localhost:8080");
         user = User.builder().firstName("testFirstName").email("testEmail@gmail.com").build();
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
