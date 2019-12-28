@@ -53,7 +53,7 @@ public class PlaceCommentController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/place/{placeId}/comments")
-    public ResponseEntity save(@PathVariable Long placeId,
+    public ResponseEntity<Object> save(@PathVariable Long placeId,
                                @Valid @RequestBody AddCommentDto addCommentDto,
                                @ApiIgnore @AuthenticationPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getName())
@@ -74,7 +74,7 @@ public class PlaceCommentController {
      * @author Marian Milian
      */
     @GetMapping("comments/{id}")
-    public ResponseEntity getCommentById(@PathVariable Long id) {
+    public ResponseEntity<Object> getCommentById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.findById(id));
     }
@@ -96,7 +96,7 @@ public class PlaceCommentController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("comments")
-    public ResponseEntity getAllComments(@ApiIgnore Pageable pageable) {
+    public ResponseEntity<Object> getAllComments(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.getAllComments(pageable));
     }
@@ -115,7 +115,7 @@ public class PlaceCommentController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("comments")
-    public ResponseEntity delete(Long id) {
+    public ResponseEntity<Object> delete(Long id) {
         placeCommentService.deleteById(id);
         return ResponseEntity.ok().build();
     }

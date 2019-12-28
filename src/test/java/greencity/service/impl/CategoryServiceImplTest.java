@@ -69,8 +69,8 @@ public class CategoryServiceImplTest {
         List<Category> genericEntityList = Arrays.asList(
             Category.builder()
                 .name("Test")
-                .build()
-            , Category.builder()
+                .build(),
+            Category.builder()
                 .name("Test1")
                 .build());
         when(categoryService.findAll()).thenReturn(genericEntityList);
@@ -80,8 +80,6 @@ public class CategoryServiceImplTest {
             .collect(Collectors.toList());
         List<CategoryDto> allCategoryDto = categoryService.findAllCategoryDto();
         assertEquals(mappedList, allCategoryDto);
-
-
     }
 
     @Test

@@ -23,7 +23,6 @@ import org.modelmapper.ModelMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdviceServiceImplTest {
-
     @Mock
     private ModelMapper modelMapper;
 
