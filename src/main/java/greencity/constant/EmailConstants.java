@@ -16,7 +16,6 @@ public class EmailConstants {
     public static final String PLACE_NAME = "placeName";
     public static final String STATUS = "status";
     public static final String VERIFY_ADDRESS = "verifyAddress";
-    public static final String UNSUBSCRIBE = "unsubscribe";
     public static final String RESTORE_PASS = "restorePassword";
     public static final String RESULT = "result";
     public static final String REPORT_TYPE = "reportType";

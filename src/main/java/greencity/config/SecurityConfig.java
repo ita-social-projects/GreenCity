@@ -93,14 +93,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses/**",
                 "/user/emailNotifications/**",
                 "/place/about/{id}/**",
-                "/specification/**"
+                "/specification/**",
+                "/newsSubscriber/unsubscribe"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
-                "/newsSubscriber"
-            ).permitAll()
-            .antMatchers(
-                HttpMethod.DELETE,
                 "/newsSubscriber"
             ).permitAll()
             .antMatchers(HttpMethod.GET,

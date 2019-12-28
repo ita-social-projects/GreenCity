@@ -17,4 +17,7 @@ public class NewsSubscriber {
 
     @Column(name = "email_address", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "unsubscribe_token", nullable = false)
+    private String unsubscribeToken;
 }

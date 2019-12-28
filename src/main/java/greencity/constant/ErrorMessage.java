@@ -97,6 +97,7 @@ public class ErrorMessage {
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_DELETED = "Eco news hasn't been deleted";
+    public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
 
     private ErrorMessage() {
     }

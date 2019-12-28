@@ -3,15 +3,14 @@ package greencity.service.impl;
 import static greencity.constant.ErrorMessage.*;
 
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.NewsSubscriber;
-import greencity.exception.exceptions.NewsSubscriberPresentException;
-import greencity.exception.exceptions.NotDeletedException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.NotSavedException;
+import greencity.exception.exceptions.*;
 import greencity.repository.NewsSubscriberRepo;
 import greencity.service.NewsSubscriberService;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -46,8 +45,10 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
             log.error(NEWS_SUBSCRIBER_EXIST);
             throw new NewsSubscriberPresentException(NEWS_SUBSCRIBER_EXIST);
         }
+        NewsSubscriber entity = modelMapper.map(dto, NewsSubscriber.class);
+        entity.setUnsubscribeToken(UUID.randomUUID().toString());
         NewsSubscriber newsSubscriber = Optional.of(newsSubscriberRepo
-            .save(modelMapper.map(dto, NewsSubscriber.class)))
+            .save(entity))
             .orElseThrow(() -> new NotSavedException(NEWS_SUBSCRIBER_NOT_SAVED));
         return modelMapper.map(newsSubscriber, NewsSubscriberRequestDto.class);
     }
@@ -57,11 +58,14 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
      *
      * @author Bogdan Kuzenko.
      */
-    @Override
-    public Long delete(String email) {
+    public Long unsubscribe(String email, String unsubscribeToken) {
         NewsSubscriber newsSubscriber = findByEmail(email)
             .orElseThrow(() -> new NewsSubscriberPresentException(NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND));
-        newsSubscriberRepo.delete(newsSubscriber);
+        if (newsSubscriber.getUnsubscribeToken().equals(unsubscribeToken)) {
+            newsSubscriberRepo.delete(newsSubscriber);
+        } else {
+            throw new InvalidUnsubscribeToken(INVALID_UNSUBSCRIBE_TOKEN);
+        }
         if (findByEmail(email).isPresent()) {
             log.error(NEWS_SUBSCRIBER_NOT_DELETED);
             throw new NotDeletedException(NEWS_SUBSCRIBER_NOT_DELETED);
@@ -75,14 +79,14 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
      * @author Bogdan Kuzenko.
      */
     @Override
-    public List<NewsSubscriberRequestDto> findAll() {
+    public List<NewsSubscriberResponseDto> findAll() {
         List<NewsSubscriber> allSubscribers = newsSubscriberRepo.findAll();
         if (allSubscribers.isEmpty()) {
             log.error(NEWS_SUBSCRIBERS_NOT_FOUND);
             throw new NotFoundException(NEWS_SUBSCRIBERS_NOT_FOUND);
         }
         return allSubscribers.stream()
-            .map(el -> modelMapper.map(el, NewsSubscriberRequestDto.class))
+            .map(el -> modelMapper.map(el, NewsSubscriberResponseDto.class))
             .collect(Collectors.toList());
     }
 

@@ -2,11 +2,13 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.service.NewsSubscriberService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,7 @@ public class NewsSubscriberController {
     /**
      * Method returns all news subscriber.
      *
-     * @return list of {@link NewsSubscriberRequestDto}
+     * @return list of {@link NewsSubscriberResponseDto}
      * @author Bogdan Kuzenko
      */
     @ApiOperation(value = "Get all emails for sending news.")
@@ -41,15 +43,15 @@ public class NewsSubscriberController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
-    public ResponseEntity<List<NewsSubscriberRequestDto>> getAll() {
+    public ResponseEntity<List<NewsSubscriberResponseDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(newsSubscriberService.findAll());
     }
 
     /**
      * Method saves email for receiving news.
      *
-     * @param dto {@link NewsSubscriberRequestDto} object with email address for receiving news.
-     * @return {@link NewsSubscriberRequestDto} object with saving email.
+     * @param dto {@link NewsSubscriberResponseDto} object with email address for receiving news.
+     * @return {@link NewsSubscriberResponseDto} object with saving email.
      * @author Bogdan Kuzenko
      */
     @ApiOperation(value = "Save email in database for receiving news.")
@@ -60,7 +62,7 @@ public class NewsSubscriberController {
     })
     @PostMapping("")
     public ResponseEntity<NewsSubscriberRequestDto> save(
-        @RequestBody NewsSubscriberRequestDto dto) {
+        @RequestBody @Valid NewsSubscriberRequestDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(newsSubscriberService.save(dto));
     }
@@ -68,7 +70,7 @@ public class NewsSubscriberController {
     /**
      * Method for delete subscriber email from database.
      *
-     * @param email {@link NewsSubscriberRequestDto} object with email address for deleting.
+     * @param email {@link NewsSubscriberResponseDto} object with email address for deleting.
      * @return id of deleted object.
      */
     @ApiOperation(value = "Deleting an email from subscribe table in database.")
@@ -77,8 +79,10 @@ public class NewsSubscriberController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @DeleteMapping("")
-    public ResponseEntity<Long> delete(@RequestParam @Email String email) {
-        return ResponseEntity.status(HttpStatus.OK).body(newsSubscriberService.delete(email));
+    @GetMapping("/unsubscribe")
+    public ResponseEntity<Long> delete(@RequestParam @Valid String email,
+                                       @RequestParam String unsubscribeToken) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(newsSubscriberService.unsubscribe(email, unsubscribeToken));
     }
 }
