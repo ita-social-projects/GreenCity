@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, Long> {
     /**
-     * Method for getting random advice by habit id and language code.
+     * Method for getting random content by habit id and language code.
      * This method use native SQL query to reduce the load on the backend
      *
      * @param habitId Id of HabitDictionary
@@ -25,7 +25,7 @@ public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, 
     Optional<AdviceTranslation> getRandomAdviceTranslationByHabitIdAndLanguage(String languageCode, Long habitId);
 
     /**
-     * Method find {@link AdviceTranslation} by advice and language code.
+     * Method find {@link AdviceTranslation} by content and language code.
      *
      * @param languageCode of {@link Language}
      * @param advice       of {@link Advice}
