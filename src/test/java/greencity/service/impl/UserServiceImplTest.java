@@ -24,6 +24,7 @@ import greencity.mapping.HabitMapper;
 import greencity.repository.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -91,7 +92,7 @@ public class UserServiceImplTest {
             .habitDictionary(new HabitDictionary())
             .user(user)
             .statusHabit(true)
-            .createDate(LocalDate.now())
+            .createDate(ZonedDateTime.now())
             .build();
 
     @InjectMocks
@@ -291,18 +292,33 @@ public class UserServiceImplTest {
 
     @Test
     public void getUserGoalsTest() {
+//        List<UserGoal> userGoals = new ArrayList<>(Arrays.asList(new UserGoal(), new UserGoal()));
+//        List<UserGoalResponseDto> userGoalDto = userGoals
+//            .stream()
+//            .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
+//            .collect(Collectors.toList());
+//        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
+//        assertEquals(userService.getUserGoals(user), userGoalDto);
     }
 
     @Test(expected = UserHasNoGoalsException.class)
     public void getUserGoalsUserHasNoGoalTest() {
+//        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
+//        userService.getUserGoals(user);
     }
 
     @Test
     public void getAvailableGoalsTest() {
+//        List<Goal> goals = new ArrayList<>(Arrays.asList(new Goal(), new Goal()));
+//        List<GoalDto> goalDto = modelMapper.map(goals, new TypeToken<List<GoalDto>>(){}.getType());
+//        when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(goals);
+//        assertEquals(userService.getAvailableGoals(user), goalDto);
     }
 
     @Test(expected = UserHasNoAvailableGoalsException.class)
     public void getAvailableGoalsNoAvailableGoalsTest() {
+//        when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(Collections.emptyList());
+//        userService.getAvailableGoals(user);
     }
 
     @Test

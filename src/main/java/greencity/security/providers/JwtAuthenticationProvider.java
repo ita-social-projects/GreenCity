@@ -45,7 +45,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             .parseClaimsJws(authentication.getName())
             .getBody()
             .getSubject();
-        @SuppressWarnings({"unchecked, rawtypes"})
+        @SuppressWarnings({"unchecked, rawtype"})
         List<String> authorities = (List<String>) Jwts.parser()
             .setSigningKey(jwtTool.getAccessTokenKey())
             .parseClaimsJws(authentication.getName())

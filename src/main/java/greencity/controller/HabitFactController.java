@@ -77,7 +77,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody HabitFactPostDTO fact) {
+    public ResponseEntity<Object> save(@Valid @RequestBody HabitFactPostDTO fact) {
         return ResponseEntity.status(HttpStatus.CREATED).body(habitFactService.save(fact));
     }
 
@@ -118,7 +118,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{factId}")
-    public ResponseEntity delete(@PathVariable Long factId) {
+    public ResponseEntity<Object> delete(@PathVariable Long factId) {
         habitFactService.delete(factId);
         return ResponseEntity.ok().build();
     }

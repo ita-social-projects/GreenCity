@@ -1,9 +1,6 @@
 package greencity.service.impl;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
@@ -13,21 +10,22 @@ import greencity.entity.enums.HabitRate;
 import greencity.mapping.HabitStatisticMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
-import java.time.LocalDate;
+import greencity.converters.DateService;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
+import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
-@RunWith(MockitoJUnitRunner.class)
 public class HabitStatisticServiceImplTest {
 
     @Mock
@@ -42,18 +40,28 @@ public class HabitStatisticServiceImplTest {
     @Mock
     ModelMapper modelMapper;
 
-    @InjectMocks
+    @Mock
+    DateService dateService;
+
     private HabitStatisticServiceImpl habitStatisticService;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+        habitStatisticService = new HabitStatisticServiceImpl(habitStatisticRepo, habitRepo,
+            habitStatisticMapper, modelMapper, dateService);
+    }
 
 
     private HabitStatistic habitStatistic = new HabitStatistic(
-        1L, HabitRate.GOOD, LocalDate.of(2019, 11, 15), 10, null);
+        1L, HabitRate.GOOD, ZonedDateTime.now(), 10, null);
 
     @Test
     public void saveTest() {
         AddHabitStatisticDto addhs = AddHabitStatisticDto
             .builder().amountOfItems(10).habitRate(HabitRate.GOOD)
-            .id(1L).habitId(1L).createdOn(LocalDate.now()).build();
+            .id(1L).habitId(1L).createdOn(ZonedDateTime.now()).build();
+        when(dateService.convertToDatasourceTimezone(any())).thenReturn(ZonedDateTime.now());
         when(habitStatisticService.save(addhs)).thenReturn(addhs);
         assertEquals(addhs, habitStatisticService.save(addhs));
     }

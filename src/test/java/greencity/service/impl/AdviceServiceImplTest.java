@@ -5,8 +5,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import greencity.dto.advice.AdviceDTO;
-import greencity.dto.advice.AdvicePostDTO;
-import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.entity.Advice;
 import greencity.entity.HabitDictionary;
 import greencity.exception.exceptions.NotDeletedException;
@@ -25,7 +23,6 @@ import org.modelmapper.ModelMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdviceServiceImplTest {
-
     @Mock
     private ModelMapper modelMapper;
 
@@ -41,14 +38,14 @@ public class AdviceServiceImplTest {
     @Mock
     private HabitDictionaryRepo habitDictionaryRepo;
 
-    private AdviceDTO adviceDTO = new AdviceDTO(1L, "advice", null);
-    private AdvicePostDTO advicePostDTO = new AdvicePostDTO("advice", new HabitDictionaryIdDto(1L));
+    private AdviceDTO adviceDTO = new AdviceDTO(1L, "content", null);
+    //    private AdvicePostDTO advicePostDTO = new AdvicePostDTO("content", new HabitDictionaryIdDto(1L));
     private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", "test", "test", null);
 
     private Advice advice = new Advice(1L, Collections.emptyList(), habitDictionary);
-  //  private Language language = new Language(1L, "en", anyList());
+    //  private Language language = new Language(1L, "en", anyList());
 
-  //  private AdviceTranslation adviceTranslation = new AdviceTranslation(1L, language, advice, "djdj");
+    //  private AdviceTranslation adviceTranslation = new AdviceTranslation(1L, language, content, "djdj");
 
 
 //    @Test
@@ -60,16 +57,16 @@ public class AdviceServiceImplTest {
 //    }
 
 //    @Test
-//    public void getRandomAdviceByHabitId() {
+//    public void getRandomAdviceByHabitIdAndLanguage() {
 //        when(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(anyString(), anyLong()))
 //                .thenReturn(Optional.of(adviceTranslation));
-//        when(modelMapper.map(advice, AdviceDTO.class)).thenReturn(adviceDTO);
-//        assertEquals(adviceDTO, adviceService.getRandomAdviceByHabitId(anyLong(), "en"));
+//        when(modelMapper.map(content, AdviceDTO.class)).thenReturn(adviceDTO);
+//        assertEquals(adviceDTO, adviceService.getRandomAdviceByHabitIdAndLanguage(anyLong(), "en"));
 //    }
 
 //    @Test(expected = NotFoundException.class)
 //    public void getRandomAdviceByHabitIdFailed() {
-//        adviceService.getRandomAdviceByHabitId(anyLong());
+//        adviceService.getRandomAdviceByHabitIdAndLanguage(anyLong());
 //    }
 
     @Test
@@ -86,8 +83,8 @@ public class AdviceServiceImplTest {
 
 //    @Test
 //    public void getAdviceByName() {
-//        when(adviceRepo.findAdviceByAdvice(anyString())).thenReturn(Optional.of(advice));
-//        when(modelMapper.map(advice, AdviceDTO.class)).thenReturn(adviceDTO);
+//        when(adviceRepo.findAdviceByAdvice(anyString())).thenReturn(Optional.of(content));
+//        when(modelMapper.map(content, AdviceDTO.class)).thenReturn(adviceDTO);
 //        assertEquals(adviceDTO, adviceService.getAdviceByName(anyString()));
 //    }
 
@@ -97,24 +94,24 @@ public class AdviceServiceImplTest {
 //    }
 
 //    @Test
-//    public void save() {
-//        when(adviceService.save(advicePostDTO)).thenReturn(advice);
-//        assertEquals(advice, adviceService.save(advicePostDTO));
+//    public void saveAdviceAndAdviceTranslation() {
+//        when(adviceService.saveAdviceAndAdviceTranslation(advicePostDTO)).thenReturn(content);
+//        assertEquals(content, adviceService.saveAdviceAndAdviceTranslation(advicePostDTO));
 //    }
 //
 //    @Test(expected = NotSavedException.class)
 //    public void saveFailed() {
-//        when(adviceRepo.findAdviceByAdvice(anyString())).thenReturn(Optional.of(advice));
-//        adviceService.save(advicePostDTO);
+//        when(adviceRepo.findAdviceByAdvice(anyString())).thenReturn(Optional.of(content));
+//        adviceService.saveAdviceAndAdviceTranslation(advicePostDTO);
 //    }
 //
 //    @Test
 //    public void update() {
 //        when(habitDictionaryRepo.findById(anyLong())).thenReturn(Optional.of(habitDictionary));
-//        when(adviceRepo.findById(anyLong())).thenReturn(Optional.of(advice));
-//        when(adviceRepo.save(advice)).thenReturn(advice);
-//        when(adviceService.update(advicePostDTO, 1L)).thenReturn(advice);
-//        assertEquals(advice, adviceService.update(advicePostDTO, 1L));
+//        when(adviceRepo.findById(anyLong())).thenReturn(Optional.of(content));
+//        when(adviceRepo.saveAdviceAndAdviceTranslation(content)).thenReturn(content);
+//        when(adviceService.update(advicePostDTO, 1L)).thenReturn(content);
+//        assertEquals(content, adviceService.update(advicePostDTO, 1L));
 //    }
 //
 //    @Test(expected = NotUpdatedException.class)

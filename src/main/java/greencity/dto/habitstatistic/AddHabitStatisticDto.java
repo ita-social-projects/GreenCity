@@ -2,7 +2,7 @@ package greencity.dto.habitstatistic;
 
 import greencity.constant.ValidationConstants;
 import greencity.entity.enums.HabitRate;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,6 +28,6 @@ public class AddHabitStatisticDto {
     @NotNull(message = "Habit id can not be null")
     private Long habitId;
     @NotNull(message = "Date of creation can not be null")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate createdOn;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private ZonedDateTime createdOn;
 }

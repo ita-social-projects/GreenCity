@@ -37,7 +37,7 @@ public class HabitStatisticController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/statistic/")
-    public ResponseEntity save(@Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto) {
+    public ResponseEntity<Object> save(@Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitStatisticServiceImpl.save(addHabitStatisticDto));
     }
