@@ -106,8 +106,8 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberResponseDto dto : subscribers) {
-            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber?email=" + dto.getEmail()
-                + "&unsubscribeToken=" + dto.getUnsubscribeToken());
+            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
+                + dto.getEmail() + "&unsubscribeToken=" + dto.getUnsubscribeToken());
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
             sendEmailByEmail(dto.getEmail(), EmailConstants.NEWS, template);
         }
