@@ -88,6 +88,7 @@ public class ErrorMessage {
     public static final String CUSTOM_GOAL_FOR_THIS_USER_ALREADY_EXIST = "Custom goal with same text for this user already exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
+    public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
 
     private ErrorMessage() {
     }

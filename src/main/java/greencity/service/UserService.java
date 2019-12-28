@@ -153,28 +153,31 @@ public interface UserService {
     int updateUserRefreshToken(String refreshTokenKey, Long id);
 
     /**
-     * Method returns list of user goals.
+     * Method returns list of user goals for specific language.
      *
-     * @param user {@link User} current user.
+     * @param user     {@link User} current user.
+     * @param language needed language code.
      * @return List of {@link UserGoalDto}.
      */
-    List<UserGoalResponseDto> getUserGoals(User user);
+    List<UserGoalResponseDto> getUserGoals(User user, String language);
 
     /**
-     * Method returns list of available (not ACTIVE) goals for user.
+     * Method returns list of available (not ACTIVE) goals for user for specific language.
      *
-     * @param user {@link User} current user.
+     * @param user     {@link User} current user.
+     * @param language needed language code.
      * @return List of {@link GoalDto}.
      */
-    List<GoalDto> getAvailableGoals(User user);
+    List<GoalDto> getAvailableGoals(User user, String language);
 
     /**
      * Method saves list of user goals.
      *
-     * @param user {@link User} current user.
-     * @return List of saved {@link UserGoalDto}.
+     * @param user     {@link User} current user.
+     * @param language needed language code.
+     * @return List of saved {@link UserGoalDto} with specific language.
      */
-    List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto dto);
+    List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto dto, String language);
 
     /**
      * Method for deleted list of user goals.
@@ -188,11 +191,12 @@ public interface UserService {
     /**
      * Method update status of user goal.
      *
-     * @param user   {@link User} current user.
-     * @param goalId - {@link UserGoal}'s id that should be updated.
-     * @return {@link UserGoalDto}
+     * @param user     {@link User} current user.
+     * @param goalId   - {@link UserGoal}'s id that should be updated.
+     * @param language needed language code.
+     * @return {@link UserGoalDto} with specific language.
      */
-    UserGoalResponseDto updateUserGoalStatus(User user, Long goalId);
+    UserGoalResponseDto updateUserGoalStatus(User user, Long goalId, String language);
 
     /**
      * Method returns list of available (not ACTIVE) habitDictionary for user.
@@ -206,22 +210,23 @@ public interface UserService {
     /**
      * Method returns list of available habit for user.
      *
-     * @param user {@link User} current user.
+     * @param user       {@link User} current user.
      * @param habitIdDto {@link HabitIdDto}
      * @return List of {@link HabitCreateDto}
      */
     List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto);
 
     /**
-     *  Method delete habit fot user.
+     * Method delete habit fot user.
      *
-     * @param userId id current user.
+     * @param userId      id current user.
      * @param habitIdDtos {@link HabitIdDto}
      */
     void deleteHabitByUserIdAndHabitDictionary(Long userId, Long habitIdDtos);
 
     /**
-     *  Method add default habit.
+     * Method add default habit.
+     *
      * @param user current user
      */
     void addDefaultHabit(User user);

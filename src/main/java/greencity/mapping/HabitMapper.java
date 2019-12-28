@@ -7,20 +7,39 @@ import greencity.entity.HabitDictionary;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitDictionaryRepo;
-import java.time.LocalDate;
-import lombok.AllArgsConstructor;
+import greencity.converters.DateService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
 @Component
 public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
+    private final HabitDictionaryRepo habitDictionaryRepo;
+    private final HabitDictionaryMapper habitDictionaryMapper;
+    private final DateService dateService;
+
     /**
-     * Autowired.
+     * Constructor.
+     *
+     * @param habitDictionaryRepo {@link HabitDictionaryRepo}
+     * @param habitDictionaryMapper {@link HabitDictionaryMapper}
+     * @param dateService {@link DateService}
      */
-    private HabitDictionaryRepo habitDictionaryRepo;
-    private HabitDictionaryMapper habitDictionaryMapper;
+    @Autowired
+    public HabitMapper(HabitDictionaryRepo habitDictionaryRepo,
+                       HabitDictionaryMapper habitDictionaryMapper,
+                       DateService dateService) {
+        this.habitDictionaryRepo = habitDictionaryRepo;
+        this.habitDictionaryMapper = habitDictionaryMapper;
+        this.dateService = dateService;
+    }
 
 
+    /**
+     * Converts {@link Habit} entity to {@link HabitCreateDto}.
+     *
+     * @param entity to map from.
+     * @return {@link HabitCreateDto}
+     */
     @Override
     public HabitCreateDto convertToDto(Habit entity) {
         HabitCreateDto habitCreateDto = new HabitCreateDto();
@@ -41,7 +60,7 @@ public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         Habit habit = new Habit();
         habit.setUser(user);
-        habit.setCreateDate(LocalDate.now());
+        habit.setCreateDate(dateService.getDatasourceZonedDateTime());
         habit.setHabitDictionary(dictionary);
         habit.setStatusHabit(true);
         return habit;

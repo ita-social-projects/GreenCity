@@ -20,7 +20,7 @@ public class AdviceTranslateMapper implements MapperToDto<AdviceTranslation, Adv
         adviceDTO.setId(entity.getId());
         adviceDTO.setContent(entity.getContent());
         adviceDTO.setHabitDictionary(modelMapper
-                .map(entity.getAdvice().getHabitDictionary(), HabitDictionaryDto.class));
+            .map(entity.getAdvice().getHabitDictionary(), HabitDictionaryDto.class));
         return adviceDTO;
     }
 }

@@ -6,12 +6,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import greencity.entity.localization.AdviceTranslation;
+import greencity.entity.localization.GoalTranslation;
+import java.util.List;
+import javax.persistence.*;
+import lombok.*;
+
 
 @Entity
 @Table(name = "languages")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"adviceTranslations", "goalTranslations"})
+@ToString(exclude = {"adviceTranslations", "goalTranslations"})
 @Builder
 public class Language {
     @Id
@@ -23,4 +31,7 @@ public class Language {
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<AdviceTranslation> adviceTranslations;
+
+    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
+    private List<GoalTranslation> goalTranslations;
 }

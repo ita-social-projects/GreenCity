@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.entity.localization.AdviceTranslation;
 import java.util.List;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;

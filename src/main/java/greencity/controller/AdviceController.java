@@ -2,14 +2,17 @@ package greencity.controller;
 
 import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
+import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
+import greencity.entity.AdviceTranslation;
 import greencity.service.impl.AdviceServiceImpl;
 import greencity.service.impl.AdviceTranslationServiceImpl;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
@@ -42,8 +45,10 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/random/{habitId}")
-    public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(@PathVariable Long habitId,
-                                                                      @RequestParam String language) {
+    public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(
+        @PathVariable Long habitId,
+        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return adviceService.getRandomAdviceByHabitIdAndLanguage(habitId, language);
     }
 
@@ -78,7 +83,7 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody AdvicePostDTO advice) {
+    public ResponseEntity<List<AdviceTranslation>> save(@Valid @RequestBody AdvicePostDTO advice) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(adviceTranslationService.saveAdviceAndAdviceTranslation(advice));
     }
@@ -103,7 +108,6 @@ public class AdviceController {
             .body(mapper.map(adviceService.update(dto, adviceId), AdvicePostDTO.class));
     }
 
-
     /**
      * The controller which delete {@link Advice}.
      *
@@ -118,7 +122,7 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{adviceId}")
-    public ResponseEntity delete(@PathVariable Long adviceId) {
+    public ResponseEntity<Object> delete(@PathVariable Long adviceId) {
         adviceService.delete(adviceId);
         return ResponseEntity.ok().build();
     }

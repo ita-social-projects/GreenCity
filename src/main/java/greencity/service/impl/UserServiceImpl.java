@@ -16,9 +16,9 @@ import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.mapping.HabitMapper;
-import greencity.mapping.UserGoalToResponseDtoMapper;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
@@ -51,12 +51,12 @@ public class UserServiceImpl implements UserService {
     private final CustomGoalRepo customGoalRepo;
     private final HabitRepo habitRepo;
     private final HabitStatisticRepo habitStatisticRepo;
+    private final GoalTranslationRepo goalTranslationRepo;
 
     /**
      * Autowired mapper.
      */
     private ModelMapper modelMapper;
-    private UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
     private HabitMapper habitMapper;
 
     /**
@@ -218,11 +218,11 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<UserGoalResponseDto> getUserGoals(User user) {
+    public List<UserGoalResponseDto> getUserGoals(User user, String language) {
         List<UserGoalResponseDto> userGoalResponseDto = userGoalRepo
             .findAllByUserId(user.getId())
             .stream()
-            .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
+            .map(userGoal -> convertUserGoalToUserGoalResponseDto(userGoal, language))
             .collect(Collectors.toList());
         if (userGoalResponseDto.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
@@ -235,13 +235,16 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<GoalDto> getAvailableGoals(User user) {
-        List<Goal> availableGoals = goalRepo.findAvailableGoalsByUser(user);
-        if (availableGoals.isEmpty()) {
+    public List<GoalDto> getAvailableGoals(User user, String language) {
+        List<GoalTranslation> goalTranslations = goalTranslationRepo
+            .findAvailableByUser(user, language);
+        if (goalTranslations.isEmpty()) {
             throw new UserHasNoAvailableGoalsException(USER_HAS_NO_AVAILABLE_GOALS);
         }
-        return modelMapper.map(availableGoals, new TypeToken<List<GoalDto>>() {
-        }.getType());
+        return goalTranslations
+            .stream()
+            .map(g -> new GoalDto(g.getGoal().getId(), g.getText()))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -249,7 +252,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto bulkDto) {
+    public List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto bulkDto, String language) {
         List<UserGoalDto> goals = bulkDto.getUserGoals();
         List<UserCustomGoalDto> customGoals = bulkDto.getUserCustomGoal();
         if (goals == null && customGoals != null) {
@@ -263,7 +266,7 @@ public class UserServiceImpl implements UserService {
             saveCustomGoalsForUserGoals(user, customGoals);
         }
         return user.getUserGoals().stream()
-            .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
+            .map(userGoal -> convertUserGoalToUserGoalResponseDto(userGoal, language))
             .collect(Collectors.toList());
     }
 
@@ -336,7 +339,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public UserGoalResponseDto updateUserGoalStatus(User user, Long goalId) {
+    public UserGoalResponseDto updateUserGoalStatus(User user, Long goalId, String language) {
         UserGoal userGoal;
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
@@ -352,7 +355,7 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
         }
-        return userGoalToResponseDtoMapper.convertToDto(userGoal);
+        return convertUserGoalToUserGoalResponseDto(userGoal, language);
     }
 
     /**
@@ -427,7 +430,7 @@ public class UserServiceImpl implements UserService {
      * Method convert HabitIdDto to Habit.
      *
      * @param habitIdDtos {@link HabitIdDto}
-     * @param user current user.
+     * @param user        current user.
      * @return list habits.
      */
     private List<Habit> convertToHabit(List<HabitIdDto> habitIdDtos, final User user) {
@@ -459,13 +462,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<CustomGoalResponseDto> getAvailableCustomGoals(User user) {
         return modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUser(user),
-            new TypeToken<List<CustomGoalResponseDto>>() {}.getType());
+            new TypeToken<List<CustomGoalResponseDto>>() {
+            }.getType());
     }
 
     /**
      * Method check is in user habit.
      *
-     * @param userId Id current user.
+     * @param userId      Id current user.
      * @param habitIdDtos {@link HabitIdDto}
      * @return boolean
      */
@@ -496,7 +500,7 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
         int countHabit = habitRepo.countHabitByUserId(userId);
         if (!habitStatisticRepo.findAllByHabitId(habit.getId()).isEmpty() && countHabit > 1) {
-            habitRepo.updateHabitStatusById(habit.getId(),false);
+            habitRepo.updateHabitStatusById(habit.getId(), false);
         } else if (countHabit > 1) {
             habitRepo.deleteById(habit.getId());
         } else {
@@ -514,5 +518,21 @@ public class UserServiceImpl implements UserService {
             habitIdDto.setHabitDictionaryId(1L);
             createUserHabit(user, Collections.singletonList(habitIdDto));
         }
+    }
+
+    private UserGoalResponseDto convertUserGoalToUserGoalResponseDto(UserGoal userGoal, String language) {
+        UserGoalResponseDto dto = modelMapper.map(userGoal, UserGoalResponseDto.class);
+        if (userGoal.getCustomGoal() == null) {
+            Goal goal = goalRepo
+                .findById(userGoal
+                    .getGoal().getId()).orElseThrow(() -> new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID));
+            dto.setText(goalTranslationRepo.findByGoalAndLanguageCode(goal, language)
+                .orElseThrow(() -> new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_LANGUAGE_CODE)).getText());
+        } else if (userGoal.getGoal() == null) {
+            CustomGoal customGoal = customGoalRepo.findById(userGoal
+                .getCustomGoal().getId()).orElseThrow(() -> new NotFoundException(CUSTOM_GOAL_NOT_FOUND_BY_ID));
+            dto.setText(customGoal.getText());
+        }
+        return dto;
     }
 }
