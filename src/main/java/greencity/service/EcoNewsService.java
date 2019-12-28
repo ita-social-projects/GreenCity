@@ -8,27 +8,40 @@ import java.util.List;
 
 public interface EcoNewsService {
     /**
-     * DAsdas.
+     * Method for creating {@link EcoNews} instance.
+     *
+     * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text, image path.
+     * @return {@link AddEcoNewsDtoResponse} instance.
      */
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest);
 
     /**
-     * dasdas.
+     * Method for getting last three eco news.
+     *
+     * @return list of {@link EcoNewsDto} instances.
      */
     List<EcoNewsDto> getThreeLastEcoNews();
 
     /**
-     * dsad.
+     * Method for getting all eco news.
+     *
+     * @return list of {@link EcoNewsDto} instances.
      */
     List<EcoNewsDto> findAll();
 
     /**
-     * dsafa.
+     * Method for get the {@link EcoNews} instance by its id.
+     *
+     * @param id {@link EcoNews} instance id.
+     * @return {@link EcoNews} instance.
      */
     EcoNews findById(Long id);
 
     /**
-     * dsads.
+     * Method for deleting the {@link EcoNews} instance by its id.
+     *
+     * @param id - {@link EcoNews} instance id which will be deleted.
+     * @return {@link EcoNews} instance.
      */
     Long delete(Long id);
 }
