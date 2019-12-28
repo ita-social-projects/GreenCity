@@ -16,7 +16,6 @@ public class AddEcoNewsDtoResponse {
     @NotEmpty
     private String text;
     @NotEmpty
-    //    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime creationDate;
     @NotEmpty
