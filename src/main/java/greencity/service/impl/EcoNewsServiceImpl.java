@@ -4,39 +4,49 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
+import greencity.repository.NewsSubscriberRepo;
 import greencity.service.EcoNewsService;
+import greencity.service.EmailService;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EcoNewsServiceImpl implements EcoNewsService {
-    EcoNewsRepo ecoNewsRepo;
-    ModelMapper modelMapper;
+    private final EcoNewsRepo ecoNewsRepo;
+    private final ModelMapper modelMapper;
+    private final EmailService emailService;
+    private final NewsSubscriberRepo newsSubscriberRepo;
 
     /**
-     * njkkl .
+     * Constructor with parameters.
+     *
+     * @author Yuriy Olkhovskyi.
      */
     @Autowired
-    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper) {
+    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
+                              EmailService emailService, NewsSubscriberRepo newsSubscriberRepo) {
         this.ecoNewsRepo = ecoNewsRepo;
         this.modelMapper = modelMapper;
+        this.emailService = emailService;
+        this.newsSubscriberRepo = newsSubscriberRepo;
     }
 
     /**
-     * asdas.
-     * fsddggrweas.
+     * {@inheritDoc}
      *
-     * @return
+     * @author Yuriy Olkhovskyi.
      */
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
@@ -44,13 +54,19 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toSave.setCreationDate(ZonedDateTime.now());
         toSave = Optional.of(ecoNewsRepo.save(toSave))
             .orElseThrow(() -> new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED));
+        List<NewsSubscriberRequestDto> subscribers = modelMapper.map(newsSubscriberRepo.findAll(),
+            new TypeToken<List<NewsSubscriberRequestDto>>() {
+            }.getType());
+        if (!subscribers.isEmpty()) {
+            emailService.sendNewNewsForSubscriber(subscribers, modelMapper.map(toSave, AddEcoNewsDtoResponse.class));
+        }
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
     /**
-     * dasdas.
+     * {@inheritDoc}
      *
-     * @return dsadas.
+     * @author Yuriy Olkhovskyi.
      */
     @Override
     public List<EcoNewsDto> getThreeLastEcoNews() {
@@ -65,7 +81,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * dsad.
+     * {@inheritDoc}
+     *
+     * @author Yuriy Olkhovskyi.
      */
     @Override
     public List<EcoNewsDto> findAll() {
@@ -76,10 +94,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * dsa.
+     * {@inheritDoc}
      *
-     * @param id dsadsa.
-     * @return dsa.
+     * @author Yuriy Olkhovskyi.
      */
     @Override
     public EcoNews findById(Long id) {
@@ -89,11 +106,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * dsadsa.
+     * {@inheritDoc}
+     *
+     * @author Yuriy Olkhovskyi.
      */
     public Long delete(Long id) {
-        Optional<EcoNews> byId = ecoNewsRepo.findById(id);
-        if (byId.isPresent()) {
+        if (ecoNewsRepo.findById(id).isPresent()) {
             ecoNewsRepo.deleteById(id);
             return id;
         } else {

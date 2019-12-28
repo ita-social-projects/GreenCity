@@ -21,9 +21,7 @@ public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
 
     /**
-     * fds.
-     *
-     * @param ecoNewsService dsada.
+     * Constructor with parameters.
      */
     @Autowired
     public EcoNewsController(EcoNewsService ecoNewsService) {
@@ -31,7 +29,11 @@ public class EcoNewsController {
     }
 
     /**
-     * dasds.
+     * Method for creating {@link EcoNews}.
+     *
+     * @param addEcoNewsDtoRequest - dto for {@link EcoNews} entity.
+     * @return dto {@link AddEcoNewsDtoResponse} instance.
+     * @author Yuriy Olkhovskyi.
      */
     @ApiOperation(value = "Add new econews.")
     @ApiResponses(value = {
@@ -46,9 +48,10 @@ public class EcoNewsController {
     }
 
     /**
-     * dsadas.
+     * Method for getting three last eco news.
      *
-     * @return sdaas.
+     * @return  list of {@link EcoNewsDto} instances.
+     * @author Yuriy Olkhovskyi.
      */
     @ApiOperation(value = "Get three last eco news.")
     @ApiResponses(value = {
@@ -62,9 +65,10 @@ public class EcoNewsController {
     }
 
     /**
-     * dsadas.
+     * Method for getting all eco news.
      *
-     * @return sdaas.
+     * @return list of {@link EcoNewsDto} instances.
+     * @author Yuriy Olkhovskyi.
      */
     @ApiOperation(value = "Find all eco news.")
     @ApiResponses(value = {
@@ -78,7 +82,11 @@ public class EcoNewsController {
     }
 
     /**
-     * dasda.
+     * Method for deleting {@link EcoNews} by its id.
+     *
+     * @param econewsId - {@link EcoNews} id which will be deleted.
+     * @return id of deleted {@link EcoNews}.
+     * @author Yuriy Olkhovskyi.
      */
     @ApiOperation(value = "Delete eco news.")
     @ApiResponses(value = {

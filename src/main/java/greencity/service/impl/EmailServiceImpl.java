@@ -155,6 +155,8 @@ public class EmailServiceImpl implements EmailService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         try {
+            //TODO set mail as a local variable greencity448@gmail.com
+            mimeMessageHelper.setFrom(email);
             mimeMessageHelper.setTo(email);
             mimeMessageHelper.setSubject(subject);
             mimeMessage.setContent(content, EmailConstants.EMAIL_CONTENT_TYPE);
