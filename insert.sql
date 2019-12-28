@@ -300,47 +300,7 @@ VALUES (1, 1,
         'Eco Bags are very popular with athletes and anyone who leads a healthy lifestyle.'),
        (3, 6,
         'Эко-сумки очень популярны у спортсменов и тех, кто ведет здоровый образ жизни.');
-INSERT INTO advices(habit_dictionary_id)
-VALUES (1),
-       (2),
-       (1),
-       (1),
-       (1),
-       (1);
 
-INSERT INTO languages(code)
-VALUES ('uk'),
-       ('en'),
-       ('ru');
-
-INSERT INTO advice_translations(language_id, advice_id, content)
-VALUES (1, 1,
-        'Покладіть по одній еко-сумці в кожну сумку чи рюкзак, так вона завжди буде з вами, якщо ви несподівано вирушите в магазин.'),
-       (2, 1,
-        'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
-       (3, 1,
-        'Положите по одной эко-сумке в каждую сумку или рюкзак, чтобы она всегда была с вами, если вы неожиданно отправитесь в магазин.'),
-       (1, 2, 'Не беріть стаканчики - бережіть природу.'),
-       (2, 2, 'Don''t take a glass - protect nature.'),
-       (3, 2, 'Не берите стаканчики - берегите природу.'),
-       (1, 3,
-        'Після переходу на сумки для багаторазового використання вам більше не доведеться постійно купувати пакети для товарів і продуктів. Еко сумки мають довший термін експлуатації та зношуються повільно.'),
-       (2, 3,
-        'After switching to reusable bags, you no longer have to constantly buy packages for goods and products. Eco bags have a longer life and wear out slowly.'),
-       (3, 3,
-        'После перехода на многоразовые сумки вам больше не придется постоянно покупать пакеты для товаров и продуктов. Эко-сумки имеют более длительный срок службы и медленно изнашиваются.'),
-       (1, 4, 'Почніть зменшення побутових відходів з відмови від пластикових пакетів.'),
-       (2, 4, 'To reduce household waste, start by giving up plastic bags.'),
-       (3, 4, 'Начните уменьшения бытовых отходов с отказа от пластиковых пакетов.'),
-       (1, 5,
-        'Всі сумки для багаторазового використання дуже легко чистити. Не потрібно турбуватися про те, що варення, мед або крихта потрапляють в куточки. Просто покладіть сумку в пральну або посудомийну машину.'),
-       (2, 5,
-        'All reusable bags are very easy to clean. There is no need to worry about jam, honey or crumbs falling into the corners. Just put the bag in the washing machine or dishwasher.'),
-       (3, 5,
-        'Все сумки для многократного использования очень легко чистить. Не нужно беспокоиться о том, что варенье, мед или крошка попадают в уголки. Просто положите сумку в стиральную или посудомоечную машину.'),
-       (1, 6, 'Еко-сумки дуже популярні серед спортсменів і всіх, хто веде здоровий спосіб життя.'),
-       (2, 6, 'Eco Bags are very popular with athletes and anyone who leads a healthy lifestyle.'),
-       (3, 6, 'Эко-сумки очень популярны у спортсменов и тех, кто ведет здоровый образ жизни.');
 
 INSERT INTO fact_translations(language_id, habit_fact_id, content)
 VALUES (1, 1,
@@ -394,14 +354,6 @@ VALUES (1, 1, null, 'ACTIVE', null),
        (1, null, 1, 'DONE', '2019-11-15 12:44:36'),
        (3, null, 2, 'ACTIVE', null),
        (3, null, 3, 'DONE', '2019-11-11 13:55:13');
-
-INSERT INTO user_goals(user_id, goal_id, status, date_completed)
-VALUES (1, 1, 'ACTIVE', null),
-       (1, 2, 'DONE', '2019-11-15 12:44:36'),
-       (2, 3, 'ACTIVE', null),
-       (2, 4, 'DONE', '2019-11-14 19:04:51'),
-       (3, 5, 'ACTIVE', null),
-       (3, 4, 'DONE', '2019-11-11 13:55:13');
 
 INSERT INTO achievements(title, description, message)
 VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!'),
