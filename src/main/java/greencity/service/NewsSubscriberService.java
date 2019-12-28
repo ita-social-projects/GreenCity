@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.NewsSubscriber;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -23,15 +24,16 @@ public interface NewsSubscriberService {
     /**
      * Method for deleted newsSubscriber.
      *
-     * @param email email for deleting.
+     * @param email subscriber email for deleting.
+     * @param unsubscribeToken unsubscribe token for subscriber verification.
      * @return long id of deleted {@link NewsSubscriber}
      */
-    Long delete(String email);
+    Long unsubscribe(String email, String unsubscribeToken);
 
     /**
      * Method for finding all newsSubscriber.
      *
-     * @return list of {@link NewsSubscriberRequestDto}
+     * @return list of {@link NewsSubscriberResponseDto}
      */
-    List<NewsSubscriberRequestDto> findAll();
+    List<NewsSubscriberResponseDto> findAll();
 }

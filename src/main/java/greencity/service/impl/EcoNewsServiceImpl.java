@@ -5,6 +5,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -54,8 +55,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toSave.setCreationDate(ZonedDateTime.now());
         toSave = Optional.of(ecoNewsRepo.save(toSave))
             .orElseThrow(() -> new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED));
-        List<NewsSubscriberRequestDto> subscribers = modelMapper.map(newsSubscriberRepo.findAll(),
-            new TypeToken<List<NewsSubscriberRequestDto>>() {
+        List<NewsSubscriberResponseDto> subscribers = modelMapper.map(newsSubscriberRepo.findAll(),
+            new TypeToken<List<NewsSubscriberResponseDto>>() {
             }.getType());
         if (!subscribers.isEmpty()) {
             emailService.sendNewNewsForSubscriber(subscribers, modelMapper.map(toSave, AddEcoNewsDtoResponse.class));

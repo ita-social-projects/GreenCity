@@ -157,8 +157,8 @@
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px;">
                         <div>
                             <h3>
-                                <span th:text="${news.creationDate.toLocalDate}" style="font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-                            font-size: 8px;">2019-10-10</span>
+                                <span th:text="${news.creationDate.toLocalDate().toString()}" style="font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+                            font-size: 8px;"></span>
                                 <br>
                                 <span th:text="${news.title}"></span>
                             </h3>
@@ -205,9 +205,8 @@
             <p style="margin: 0;">
                 You received this email because you subscribed for notifications about news via e-mail.
                 If you didn't request this action you can unsubscribe from next news clicking on this
-                <span th:href="${unsubscribeLink} + ${}" class="gCity-link">LINK</span>
+                <span th:href="${unsubscribeLink}" class="gCity-link">LINK</span>
                 or copy this link (<span style="margin: 0;" th:text="${unsubscribeLink}">
-                <a th:href="${unsubscribeLink}" target="_blank"></a>
                 </span>) on browser.
             </p>
         </td>

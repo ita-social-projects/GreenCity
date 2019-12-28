@@ -1,8 +1,7 @@
 package greencity.service;
 
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.newssubscriber.NewsDto;
-import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -27,10 +26,10 @@ public interface EmailService {
 
     /**
      * Method for sending news for users who subscribed for updates.
-     * @param subscribers     - {@link NewsSubscriberRequestDto} list with subscribers for receiving.
-     * @param newsDto         - {@link NewsDto} object with data
+     * @param subscribers     - {@link NewsSubscriberResponseDto} list with subscribers for receiving.
+     * @param newsDto         - {@link AddEcoNewsDtoResponse} object with data
      */
-    void sendNewNewsForSubscriber(List<NewsSubscriberRequestDto> subscribers,
+    void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
                                   AddEcoNewsDtoResponse newsDto);
 
     /**

@@ -13,6 +13,9 @@
             <column name="email_address" type="varchar(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
+            <column name="unsubscribe_token" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>
