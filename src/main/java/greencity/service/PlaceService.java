@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
-import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.enums.PlaceStatus;
 import java.util.List;
@@ -88,9 +87,8 @@ public interface PlaceService {
      * Method for deleting place by id.
      *
      * @param id - Long place's id
-     * @return id of deleted place
      */
-    Long deleteById(Long id);
+    void deleteById(Long id);
 
     /**
      * Method for deleting places by ids.
