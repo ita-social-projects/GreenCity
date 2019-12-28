@@ -44,7 +44,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/random/{habitId}")
-    public LanguageTranslationDTO getRandomAdviceByHabitId(@PathVariable Long habitId,
+    public LanguageTranslationDTO getRandomFactByHabitId(@PathVariable Long habitId,
                                                            @RequestParam String language) {
         return habitFactService.getRandomHabitFactByHabitIdAndLanguage(habitId, language);
     }
