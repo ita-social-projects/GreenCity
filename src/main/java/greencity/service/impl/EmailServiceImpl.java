@@ -9,6 +9,9 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.service.EmailService;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,8 +109,13 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
         model.put(EmailConstants.NEWS_RESULT, newsDto);
         for (NewsSubscriberResponseDto dto : subscribers) {
-            model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
-                + dto.getEmail() + "&unsubscribeToken=" + dto.getUnsubscribeToken());
+            try {
+                model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
+                    + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())
+                    + "&unsubscribeToken=" + dto.getUnsubscribeToken());
+            } catch (UnsupportedEncodingException e) {
+                log.error(e.getMessage());
+            }
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
             sendEmailByEmail(dto.getEmail(), EmailConstants.NEWS, template);
         }
