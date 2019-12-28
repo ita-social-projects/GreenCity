@@ -93,7 +93,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     /**
      * Method for finding one NewsSubscriber by email.
      *
-     * @param email email id.
+     * @param email String email.
      * @return optional of {@link NewsSubscriber}
      */
     private Optional<NewsSubscriber> findByEmail(String email) {
