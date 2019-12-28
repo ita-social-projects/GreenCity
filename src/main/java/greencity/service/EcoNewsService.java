@@ -30,7 +30,7 @@ public interface EcoNewsService {
     List<EcoNewsDto> findAll();
 
     /**
-     * Method for get the {@link EcoNews} instance by its id.
+     * Method for getting the {@link EcoNews} instance by its id.
      *
      * @param id {@link EcoNews} instance id.
      * @return {@link EcoNews} instance.

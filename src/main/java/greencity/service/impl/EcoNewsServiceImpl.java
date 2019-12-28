@@ -4,10 +4,8 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.EcoNews;
-import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
@@ -112,11 +110,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     public Long delete(Long id) {
-        if (ecoNewsRepo.findById(id).isPresent()) {
-            ecoNewsRepo.deleteById(id);
-            return id;
-        } else {
-            throw new NotDeletedException(ErrorMessage.ECO_NEWS_NOT_DELETED);
-        }
+        ecoNewsRepo.deleteById(findById(id).getId());
+        return id;
     }
 }

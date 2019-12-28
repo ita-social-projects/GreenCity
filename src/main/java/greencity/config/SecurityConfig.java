@@ -94,7 +94,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/emailNotifications/**",
                 "/place/about/{id}/**",
                 "/specification/**",
-                "/newsSubscriber/unsubscribe"
+                "/newsSubscriber/unsubscribe",
+                "/econews/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
@@ -161,13 +162,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/all/",
                 "/user/roles",
                 "/comments",
-                "/econews",
                 "/newsSubscriber"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",
                 "/place/**",
-                "/comments"
+                "/comments",
+                "/econews"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/user/**",
