@@ -5,7 +5,7 @@ import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 import greencity.constant.HttpStatuses;
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
-import greencity.dto.advice.AdviceTranslationDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.service.impl.AdviceServiceImpl;
 import greencity.service.impl.AdviceTranslationServiceImpl;
@@ -42,8 +42,8 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/random/{habitId}")
-    public AdviceTranslationDTO getRandomAdviceByHabitIdAndLanguage(@PathVariable Long habitId,
-                                                                    @RequestParam String language) {
+    public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(@PathVariable Long habitId,
+                                                                      @RequestParam String language) {
         return adviceService.getRandomAdviceByHabitIdAndLanguage(habitId, language);
     }
 
@@ -60,7 +60,7 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public List<AdviceTranslationDTO> getAll() {
+    public List<LanguageTranslationDTO> getAll() {
         return adviceService.getAllAdvices();
     }
 

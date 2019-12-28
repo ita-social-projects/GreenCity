@@ -1,5 +1,6 @@
 package greencity.dto.advice;
 
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitDictionaryIdDto;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdvicePostDTO {
     @NotNull
-    private List<AdviceTranslationDTO> translations;
+    private List<LanguageTranslationDTO> translations;
 
     @NotNull
     private HabitDictionaryIdDto habitDictionary;

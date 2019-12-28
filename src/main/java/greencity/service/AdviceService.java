@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
-import greencity.dto.advice.AdviceTranslationDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public interface AdviceService {
      * @return List of all {@link Advice}
      * @author Vitaliy Dzen
      */
-    List getAllAdvices();
+    List<LanguageTranslationDTO> getAllAdvices();
 
     /**
      * Method finds random {@link Advice}.
@@ -26,7 +26,7 @@ public interface AdviceService {
      * @return random {@link Advice}
      * @author Vitaliy Dzen
      */
-    AdviceTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language);
+    LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language);
 
     /**
      * Method find {@link Advice} by id.

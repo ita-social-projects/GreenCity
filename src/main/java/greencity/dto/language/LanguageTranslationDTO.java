@@ -1,7 +1,6 @@
-package greencity.dto.advice;
+package greencity.dto.language;
 
 import greencity.constant.ValidationConstants;
-import greencity.dto.language.LanguageDTO;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdviceTranslationDTO {
+public class LanguageTranslationDTO {
     @NotNull
     private LanguageDTO language;
 

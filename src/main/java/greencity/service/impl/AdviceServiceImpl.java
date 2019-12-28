@@ -3,7 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
-import greencity.dto.advice.AdviceTranslationDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -41,8 +41,8 @@ public class AdviceServiceImpl implements AdviceService {
      * @author Vitaliy Dzen
      */
     @Override
-    public List<AdviceTranslationDTO> getAllAdvices() {
-        return modelMapper.map(adviceTranslationRepo.findAll(), new TypeToken<List<AdviceTranslationDTO>>() {
+    public List<LanguageTranslationDTO> getAllAdvices() {
+        return modelMapper.map(adviceTranslationRepo.findAll(), new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType());
     }
 
@@ -53,10 +53,10 @@ public class AdviceServiceImpl implements AdviceService {
      * @author Vitaliy Dzen
      */
     @Override
-    public AdviceTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
+    public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id)
             .orElseThrow(() ->
-                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceTranslationDTO.class);
+                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), LanguageTranslationDTO.class);
     }
 
     /**
