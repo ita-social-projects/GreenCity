@@ -536,7 +536,7 @@ public class UserController {
     }
 
     /**
-     * Method delete habit, chosen by user.
+     * Method deletes habit, chosen by user.
      *
      * @param habitId   id with habits, chosen by user.
      * @param userId    id current user.
@@ -562,7 +562,7 @@ public class UserController {
     }
 
     /**
-     * Method for delete user goals.
+     * Method for deleting user goals.
      *
      * @param ids       string with objects id for deleting.
      * @param userId    {@link User} id
