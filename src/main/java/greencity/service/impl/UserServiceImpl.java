@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
      * Autowired mapper.
      */
     private ModelMapper modelMapper;
-    private UserGoalToResponseDtoMapper userGoalToResponseDtoMapper;
     private HabitMapper habitMapper;
 
     /**

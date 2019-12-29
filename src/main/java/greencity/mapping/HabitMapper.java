@@ -9,11 +9,8 @@ import greencity.entity.HabitDictionaryTranslation;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitDictionaryRepo;
-import greencity.converters.DateService;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.time.LocalDate;
-
 import greencity.repository.HabitDictionaryTranslationRepo;
+import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -27,15 +24,16 @@ public class HabitMapper {
     private HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
 
     /**
-     *  Method convert Entity ti Dto.
-     * @param entity {@link Habit}.
+     * Method convert Entity ti Dto.
+     *
+     * @param entity   {@link Habit}.
      * @param language language code
      * @return {@link HabitCreateDto}
      */
     public HabitCreateDto convertToDto(Habit entity, String language) {
         HabitDictionaryTranslation htd = habitDictionaryTranslationRepo
-                .findByHabitDictionaryAndLanguageCode(entity.getHabitDictionary(), language)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_DACTIONARY_TRANSLATION_NOT_FOUnD));
+            .findByHabitDictionaryAndLanguageCode(entity.getHabitDictionary(), language)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_DACTIONARY_TRANSLATION_NOT_FOUnD));
         final HabitCreateDto habitCreateDto = new HabitCreateDto();
         final HabitDictionaryDto habitDictionaryDto = new HabitDictionaryDto();
         habitDictionaryDto.setName(htd.getName());
@@ -50,7 +48,8 @@ public class HabitMapper {
 
     /**
      * Convert to habit entity.
-     * @param id {@link HabitDictionary}
+     *
+     * @param id   {@link HabitDictionary}
      * @param user {@link User} current user.
      * @return {@link Habit}
      */
@@ -59,7 +58,7 @@ public class HabitMapper {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         Habit habit = new Habit();
         habit.setUser(user);
-        habit.setCreateDate(LocalDate.now());
+        habit.setCreateDate(ZonedDateTime.now());
         habit.setHabitDictionary(dictionary);
         habit.setStatusHabit(true);
         return habit;
