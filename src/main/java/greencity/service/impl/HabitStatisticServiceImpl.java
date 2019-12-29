@@ -235,6 +235,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         habitDictionaryDto.setDescription(habitDictionaryTranslation.getDescription());
         habitDictionaryDto.setHabitItem(habitDictionaryTranslation.getHabitItem());
         habitDictionaryDto.setName(habitDictionaryTranslation.getName());
+
         return new HabitDto(habit.getId(),
             habitDictionaryTranslation.getName(),
             habit.getStatusHabit(),

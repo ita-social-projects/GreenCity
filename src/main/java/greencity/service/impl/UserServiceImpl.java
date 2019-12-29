@@ -408,8 +408,7 @@ public class UserServiceImpl implements UserService {
         if (availableHabitDictionary.isEmpty()) {
             throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
         }
-        return modelMapper.map(availableHabitDictionary, new TypeToken<List<HabitDictionaryDto>>() {
-        }.getType());
+        return habitDictionaryDtos(availableHabitDictionary);
     }
 
     /**
@@ -516,5 +515,21 @@ public class UserServiceImpl implements UserService {
             habitIdDto.setHabitDictionaryId(1L);
             createUserHabit(user, Collections.singletonList(habitIdDto), language);
         }
+    }
+
+
+    private List<HabitDictionaryDto> habitDictionaryDtos(
+            List<HabitDictionaryTranslation> habitDictionaryTranslations) {
+        List<HabitDictionaryDto> habitDictionaryDtos = new ArrayList<>();
+        for (HabitDictionaryTranslation hdt : habitDictionaryTranslations) {
+            HabitDictionaryDto hd = new HabitDictionaryDto();
+            hd.setId(hdt.getHabitDictionary().getId());
+            hd.setName(hdt.getName());
+            hd.setDescription(hdt.getDescription());
+            hd.setHabitItem(hdt.getHabitItem());
+            hd.setImage(hdt.getHabitDictionary().getImage());
+            habitDictionaryDtos.add(hd);
+        }
+        return habitDictionaryDtos;
     }
 }

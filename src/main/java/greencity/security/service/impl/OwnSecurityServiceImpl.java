@@ -117,12 +117,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      * {@inheritDoc}
      */
     @Override
-    public SuccessSignInDto signIn(final OwnSignInDto dto, String language) {
+    public SuccessSignInDto signIn(final OwnSignInDto dto) {
         User user = userService
             .findByEmail(dto.getEmail())
             .filter(u -> isPasswordCorrect(dto, u))
             .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
-        userService.addDefaultHabit(user, language);
+        userService.addDefaultHabit(user, "en");
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
