@@ -219,10 +219,12 @@ public class UserController {
      * @return list of {@link HabitDto}
      */
     @GetMapping("/{userId}/habits")
-    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal) {
+    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal,
+                                          @ApiParam(value = "Code of the needed language.")
+                                                            @RequestParam String language) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitStatisticServiceImpl.findAllHabitsAndTheirStatistics(
-                userValidationService.userValidForActions(principal, userId).getId(), true));
+                userValidationService.userValidForActions(principal, userId).getId(), true, language));
     }
 
     /**
@@ -495,11 +497,13 @@ public class UserController {
         @ApiIgnore
             Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId) {
+        @PathVariable Long userId,
+        @ApiParam(value = "Code of the needed language.")
+        @RequestParam String language) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getAvailableHabitDictionary(
-                userValidationService.userValidForActions(principal, userId)));
+                userValidationService.userValidForActions(principal, userId), language));
     }
 
     /**
@@ -521,11 +525,14 @@ public class UserController {
         @Valid @RequestBody List<HabitIdDto> dto,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId,
+        @ApiParam(value = "Code of the needed language.")
+        @RequestParam String language,
         @ApiIgnore
             Principal principal) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.createUserHabit(userValidationService.userValidForActions(principal, userId), dto));
+            .body(userService.createUserHabit(userValidationService.userValidForActions(principal, userId),
+                    dto, language));
     }
 
     /**

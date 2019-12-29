@@ -12,4 +12,5 @@ public class HabitDictionaryDto {
     private String name;
     private String habitItem;
     private String description;
+    private String image;
 }

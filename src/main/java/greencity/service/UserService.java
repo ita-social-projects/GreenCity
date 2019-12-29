@@ -202,10 +202,11 @@ public interface UserService {
      * Method returns list of available (not ACTIVE) habitDictionary for user.
      *
      * @param user {@link User} current user.
+     * @param language language code.
      * @return List of {@link HabitDictionaryDto}
      * @author Bogdan Kuzenko
      */
-    List<HabitDictionaryDto> getAvailableHabitDictionary(User user);
+    List<HabitDictionaryDto> getAvailableHabitDictionary(User user, String language);
 
     /**
      * Method returns list of available habit for user.
@@ -214,7 +215,7 @@ public interface UserService {
      * @param habitIdDto {@link HabitIdDto}
      * @return List of {@link HabitCreateDto}
      */
-    List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto);
+    List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto, String language);
 
     /**
      * Method delete habit fot user.
@@ -229,7 +230,7 @@ public interface UserService {
      *
      * @param user current user
      */
-    void addDefaultHabit(User user);
+    void addDefaultHabit(User user, String language);
 
     /**
      * Method returns list of available (not ACTIVE) customGoals for user.

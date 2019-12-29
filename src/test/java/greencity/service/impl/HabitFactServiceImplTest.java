@@ -59,6 +59,10 @@ public class HabitFactServiceImplTest {
 //        habitFactService.getRandomHabitFactByHabitId(anyLong());
 //    }
 
+    @Test(expected = NotFoundException.class)
+    public void getRandomHabitFactByHabitIdFailed() {
+        habitFactService.getRandomHabitFactByHabitId(anyLong());
+    }
 
 //    @Test
 //    public void getHabitFactById() {

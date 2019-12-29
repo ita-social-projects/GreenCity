@@ -18,8 +18,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"adviceTranslations", "goalTranslations"})
-@ToString(exclude = {"adviceTranslations", "goalTranslations"})
+@EqualsAndHashCode(exclude = {"adviceTranslations", "goalTranslations", "habitDictionaryTranslations"})
+@ToString(exclude = {"adviceTranslations", "goalTranslations", "habitDictionaryTranslations"})
 @Builder
 public class Language {
     @Id
@@ -31,6 +31,9 @@ public class Language {
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<AdviceTranslation> adviceTranslations;
+
+    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
+    private List<HabitDictionaryTranslation> habitDictionaryTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<GoalTranslation> goalTranslations;
