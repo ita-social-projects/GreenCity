@@ -2,31 +2,47 @@ package greencity.mapping;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDictionaryDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionary;
+import greencity.entity.HabitDictionaryTranslation;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitDictionaryRepo;
 import java.time.LocalDate;
+
+import greencity.repository.HabitDictionaryTranslationRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
-public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
+public class HabitMapper {
     /**
      * Autowired.
      */
     private HabitDictionaryRepo habitDictionaryRepo;
-    private HabitDictionaryMapper habitDictionaryMapper;
+    private HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
 
-
-    @Override
-    public HabitCreateDto convertToDto(Habit entity) {
-        HabitCreateDto habitCreateDto = new HabitCreateDto();
+    /**
+     *  Method convert Entity ti Dto.
+     * @param entity {@link Habit}.
+     * @param language language code
+     * @return {@link HabitCreateDto}
+     */
+    public HabitCreateDto convertToDto(Habit entity, String language) {
+        HabitDictionaryTranslation htd = habitDictionaryTranslationRepo
+                .findByHabitDictionaryAndLanguageCode(entity.getHabitDictionary(), language)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_DACTIONARY_TRANSLATION_NOT_FOUnD));
+        final HabitCreateDto habitCreateDto = new HabitCreateDto();
+        final HabitDictionaryDto habitDictionaryDto = new HabitDictionaryDto();
+        habitDictionaryDto.setName(htd.getName());
+        habitDictionaryDto.setDescription(htd.getDescription());
+        habitDictionaryDto.setImage(entity.getHabitDictionary().getImage());
+        habitDictionaryDto.setId(entity.getHabitDictionary().getId());
         habitCreateDto.setId(entity.getId());
         habitCreateDto.setStatus(entity.getStatusHabit());
-        habitCreateDto.setHabitDictionary(habitDictionaryMapper.convertToDto(entity.getHabitDictionary()));
+        habitCreateDto.setHabitDictionary(habitDictionaryDto);
         return habitCreateDto;
     }
 

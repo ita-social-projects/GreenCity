@@ -19,4 +19,7 @@
     <include file="db/changelog/logs/ch-change-table-Kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-user-achievements-olkhovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-advice-localization-kopylchak-1.xml"/>
+    <include file="db/changelog/logs/ch-update-habit-dictionary-turko.xml"/>
+    <include file="db/changelog/logs/ch-habit-dictionary-translation-turko.xml"/>
+
 </databaseChangeLog>

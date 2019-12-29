@@ -64,6 +64,9 @@ public class UserServiceImplTest {
     @Mock
     HabitStatisticRepo habitStatisticRepo;
 
+    @Mock
+    HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
+
     private User user =
         User.builder()
             .id(1L)
@@ -323,40 +326,31 @@ public class UserServiceImplTest {
         userService.getAvailableGoals(user);
     }
 
-    @Test
-    public void getAvailableHabitDictionaryTest() {
-        List<HabitDictionary> habitDictionaries = new ArrayList<>(Arrays.asList(new HabitDictionary(), new HabitDictionary()));
-        List<HabitDictionaryDto> habitDictionaryDtos = modelMapper.map(habitDictionaries, new TypeToken<List<HabitDictionaryDto>>() {
-        }.getType());
-        when(habitDictionaryRepo.findAvailableHabitDictionaryByUser(user)).thenReturn(habitDictionaries);
-        assertEquals(userService.getAvailableHabitDictionary(user), habitDictionaryDtos);
-    }
-
     @Test(expected = UserHasNoAvailableHabitDictionaryException.class)
     public void getAvailableHabitDictionaryNoAvailable() {
-        when(habitDictionaryRepo.findAvailableHabitDictionaryByUser(user)).thenReturn(Collections.emptyList());
-        userService.getAvailableHabitDictionary(user);
+        when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en")).thenReturn(Collections.emptyList());
+        userService.getAvailableHabitDictionary(user, "en");
     }
 
     @Test
     public void createUserHabitTest() {
-        when(habitMapper.convertToDto(new Habit())).thenReturn(new HabitCreateDto());
+        when(habitMapper.convertToDto(new Habit(), "en")).thenReturn(new HabitCreateDto());
         when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
         when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
-        assertEquals(userService.createUserHabit(user, Collections.emptyList()), Collections.emptyList());
+        assertEquals(userService.createUserHabit(user, Collections.emptyList(), anyString()), Collections.emptyList());
     }
 
     @Test
     public void addDefaultHabitTest() {
         when(habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L)).thenReturn(Optional.empty());
-        when(habitMapper.convertToDto(new Habit())).thenReturn(new HabitCreateDto());
+        when(habitMapper.convertToDto(new Habit(), "en")).thenReturn(new HabitCreateDto());
         when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
         when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
-        when(userService.createUserHabit(user, Collections.singletonList(new HabitIdDto())))
+        when(userService.createUserHabit(user, Collections.singletonList(new HabitIdDto()), anyString()))
             .thenReturn(Collections.singletonList(new HabitCreateDto()));
-        userService.addDefaultHabit(user);
+        userService.addDefaultHabit(user, "en");
         verify(habitRepo, times(1)).saveAll(Collections.singletonList(new Habit()));
     }
 

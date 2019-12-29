@@ -43,7 +43,7 @@ public interface OwnSecurityService {
      * @param dto a value of {@link OwnSignInDto}
      * @return {@link SuccessSignInDto}
      */
-    SuccessSignInDto signIn(OwnSignInDto dto);
+    SuccessSignInDto signIn(OwnSignInDto dto, String language);
 
     /**
      * Method that update your access token by refresh token.

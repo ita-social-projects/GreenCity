@@ -23,4 +23,7 @@ public class Language {
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<AdviceTranslation> adviceTranslations;
+
+    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
+    private List<HabitDictionaryTranslation> habitDictionaryTranslations;
 }

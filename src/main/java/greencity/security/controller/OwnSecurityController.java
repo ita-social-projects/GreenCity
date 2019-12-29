@@ -92,8 +92,8 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @PostMapping("/signIn")
-    public SuccessSignInDto singIn(@Valid @RequestBody OwnSignInDto dto) {
-        return service.signIn(dto);
+    public SuccessSignInDto singIn(@Valid @RequestBody OwnSignInDto dto, @RequestParam String language) {
+        return service.signIn(dto, language);
     }
 
     /**

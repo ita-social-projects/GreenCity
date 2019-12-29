@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
     private final CustomGoalRepo customGoalRepo;
     private final HabitRepo habitRepo;
     private final HabitStatisticRepo habitStatisticRepo;
+    private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
 
     /**
      * Autowired mapper.
@@ -401,8 +402,9 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<HabitDictionaryDto> getAvailableHabitDictionary(User user) {
-        List<HabitDictionary> availableHabitDictionary = habitDictionaryRepo.findAvailableHabitDictionaryByUser(user);
+    public List<HabitDictionaryDto> getAvailableHabitDictionary(User user, String language) {
+        List<HabitDictionaryTranslation> availableHabitDictionary = habitDictionaryTranslationRepo
+                .findAvailableHabitDictionaryByUser(user.getId(), language);
         if (availableHabitDictionary.isEmpty()) {
             throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
         }
@@ -414,10 +416,10 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto) {
+    public List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto, String language) {
         if (checkHabitId(user.getId(), habitIdDto)) {
             List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
-            return convertToHabitCreateDto(habits);
+            return convertToHabitCreateDto(habits, language);
         } else {
             throw new BadIdException(ErrorMessage.HABIT_IS_SAVED);
         }
@@ -443,10 +445,10 @@ public class UserServiceImpl implements UserService {
      * @param habits - list {@link Habit}.
      * @return List {@link HabitCreateDto}
      */
-    private List<HabitCreateDto> convertToHabitCreateDto(List<Habit> habits) {
+    private List<HabitCreateDto> convertToHabitCreateDto(List<Habit> habits, String language) {
         return habits
             .stream()
-            .map(habitMapper::convertToDto)
+            .map(habit -> habitMapper.convertToDto(habit, language))
             .collect(Collectors.toList());
     }
 
@@ -508,11 +510,11 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void addDefaultHabit(User user) {
+    public void addDefaultHabit(User user, String language) {
         if (habitRepo.findByUserIdAndStatusHabit(user.getId()).isEmpty()) {
             HabitIdDto habitIdDto = new HabitIdDto();
             habitIdDto.setHabitDictionaryId(1L);
-            createUserHabit(user, Collections.singletonList(habitIdDto));
+            createUserHabit(user, Collections.singletonList(habitIdDto), language);
         }
     }
 }

@@ -185,9 +185,22 @@ values (1, 3, 1, 1),
        (5, 93, 5, 5),
        (6, 50, 5, 6);
 
-INSERT INTO habit_dictionary (name, description, habit_item)
-VALUES ('Економити пакети', 'bag description', 'bag'),
-       ('Відмовитись від одноразових стаканчиків', 'cap description', 'cap');
+INSERT INTO habit_dictionary (image)
+VALUES ('bag'),
+       ('cap');
+
+INSERT INTO languages(code)
+VALUES ('uk'),
+       ('en'),
+       ('ru');
+
+INSERT INTO habit_dictionary_translation(name, description, habit_item, language_id, habit_dictionary_id)
+VALUES ('Економити пакети', 'Опис пакетів', 'Пакети', 1, 1),
+       ('Save bags', 'bag description', 'bags', 2, 1),
+       ('экономить пакеты', 'описание пакетов', 'Пакеты', 3, 1),
+       ('Відмовитись від одноразових стаканчиків', 'Опис стаканчиків', 'Стаканчики',2, 2),
+       ('Discard disposable cups', 'cap description', 'caps',2, 2),
+       ('Отказаться от одноразовых стаканчиков', 'описание стаканчиков', 'Стаканчики',3, 2);
 
 INSERT INTO habits (user_id, habit_dictionary_id, status, create_date)
 VALUES (1, 1, true, '2019-11-12 19:03:33'),
@@ -208,6 +221,7 @@ VALUES ('GOOD', '2019-11-13', 12, 1),
        ('GOOD', '2019-11-16', 14, 6),
        ('NORMAL', '2019-11-16', 7, 7),
        ('GOOD', '2019-11-16', 15, 8);
+
 
 
 INSERT INTO goals(text)
@@ -231,11 +245,6 @@ VALUES (1),
        (1),
        (1),
        (1);
-
-INSERT INTO languages(code)
-VALUES ('uk'),
-       ('en'),
-       ('ru');
 
 INSERT INTO advice_translations(language_id, advice_id, content)
 VALUES (1, 1, 'Покладіть по одній еко-сумці в кожну сумку чи рюкзак, так вона завжди буде з вами, якщо ви несподівано вирушите в магазин.'),
