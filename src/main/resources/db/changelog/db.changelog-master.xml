@@ -18,5 +18,7 @@
     <include file="db/changelog/logs/ch-custom-goals-Kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-change-table-Kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-user-achievements-olkhovskyi-1.xml"/>
+    <include file="db/changelog/logs/ch-news-subscriber-table-Kuzenko-1.xml"/>
+    <include file="db/changelog/logs/ch-econews-olkhovskyi-2.xml"/>
     <include file="db/changelog/logs/ch-modify-column-Koval-3.xml"/>
 </databaseChangeLog>

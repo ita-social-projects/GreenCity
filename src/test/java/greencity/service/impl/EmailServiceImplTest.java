@@ -1,5 +1,9 @@
 package greencity.service.impl;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -15,10 +19,6 @@ import org.mockito.Mock;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.ITemplateEngine;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 public class EmailServiceImplTest {
     private EmailService service;
     private User user;
@@ -31,7 +31,8 @@ public class EmailServiceImplTest {
     public void setup() {
         initMocks(this);
         service = new EmailServiceImpl(javaMailSender, templateEngine,
-            "http://localhost:4200", "http://localhost:8080");
+            "http://localhost:4200", "http://localhost:4200", "http://localhost:8080",
+            "test@email.com");
         user = User.builder().firstName("testFirstName").email("testEmail@gmail.com").build();
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
