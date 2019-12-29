@@ -33,7 +33,7 @@ public class CategoryController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping
-    public ResponseEntity saveCategory(@Valid @RequestBody CategoryDto dto) {
+    public ResponseEntity<Object> saveCategory(@Valid @RequestBody CategoryDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(dto));
     }
 

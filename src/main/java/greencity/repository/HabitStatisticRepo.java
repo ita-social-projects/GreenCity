@@ -3,7 +3,7 @@ package greencity.repository;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,7 +25,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return {@link HabitStatistic} instance, if it doesn't exist returns Optional.
      */
     @Query(value = "SELECT hs FROM HabitStatistic hs WHERE hs.createdOn=:localDate AND habit_id=:habitId")
-    Optional<HabitStatistic> findHabitStatByDate(@Param("localDate") LocalDate localDate,
+    Optional<HabitStatistic> findHabitStatByDate(@Param("localDate") ZonedDateTime localDate,
                                                  @Param("habitId") Long habitId);
 
     /**
@@ -38,7 +38,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs\n"
         + " WHERE hs.habit.id=:habitId AND hs.createdOn <= CURRENT_DATE AND hs.createdOn >=:firstDayOfMonth")
     Optional<Integer> getSumOfAllItemsPerMonth(@Param("habitId") Long habitId,
-                                               @Param("firstDayOfMonth") LocalDate firstDay);
+                                               @Param("firstDayOfMonth") ZonedDateTime firstDay);
 
     /**
      * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
