@@ -97,6 +97,7 @@ public class EcoNewsController {
     })
     @DeleteMapping("/{econewsId}")
     public ResponseEntity<Long> delete(@PathVariable Long econewsId) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.delete(econewsId));
+        Long idDeletedEcoNews = ecoNewsService.delete(econewsId);
+        return ResponseEntity.status(HttpStatus.OK).body(idDeletedEcoNews);
     }
 }
