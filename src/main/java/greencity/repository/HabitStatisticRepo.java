@@ -36,7 +36,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return sum of items per month.
      */
     @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs\n"
-        + " WHERE hs.habit.id=:habitId AND hs.createdOn <= CURRENT_DATE AND hs.createdOn >=:firstDayOfMonth")
+        + " WHERE hs.habit.id=:habitId AND DATE(hs.createdOn) <= CURRENT_DATE AND DATE(hs.createdOn) >=:firstDayOfMonth")
     Optional<Integer> getSumOfAllItemsPerMonth(@Param("habitId") Long habitId,
                                                @Param("firstDayOfMonth") ZonedDateTime firstDay);
 
