@@ -1,17 +1,17 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.advice.AdviceDTO;
 import greencity.dto.fact.HabitFactDTO;
 import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.language.LanguageTranslationDTO;
+import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.repository.FactTranslationRepo;
 import greencity.repository.HabitDictionaryRepo;
 import greencity.repository.HabitFactRepo;
-import greencity.service.AdviceService;
 import greencity.service.HabitFactService;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of {@link AdviceService}.
+ * Implementation of {@link HabitFactService}.
  *
  * @author Vitaliy Dzen
  */
@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 public class HabitFactServiceImpl implements HabitFactService {
     private HabitFactRepo habitFactRepo;
     private HabitDictionaryRepo habitDictionaryRepo;
+    private FactTranslationRepo factTranslationRepo;
 
     @Autowired
     private final ModelMapper modelMapper;
@@ -41,8 +42,9 @@ public class HabitFactServiceImpl implements HabitFactService {
      * @author Vitaliy Dzen
      */
     @Override
-    public List<HabitFactDTO> getAllHabitFacts() {
-        return modelMapper.map(habitFactRepo.findAll(), new TypeToken<List<HabitFactDTO>>() {
+    public List<LanguageTranslationDTO> getAllHabitFacts() {
+        List<FactTranslation> factTranslation = factTranslationRepo.findAll();
+        return modelMapper.map(factTranslation, new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType());
     }
 
@@ -53,10 +55,10 @@ public class HabitFactServiceImpl implements HabitFactService {
      * @author Vitaliy Dzen
      */
     @Override
-    public HabitFactDTO getRandomHabitFactByHabitId(Long id) {
-        return modelMapper.map(habitFactRepo.getRandomHabitFactByHabitId(id)
+    public LanguageTranslationDTO getRandomHabitFactByHabitIdAndLanguage(Long id, String language) {
+        return modelMapper.map(factTranslationRepo.getRandomFactTranslationByHabitIdAndLanguage(language, id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
-            HabitFactDTO.class);
+            LanguageTranslationDTO.class);
     }
 
     /**
@@ -81,8 +83,8 @@ public class HabitFactServiceImpl implements HabitFactService {
      * @author Vitaliy Dzen
      */
     @Override
-    public HabitFactDTO getHabitFactByName(String name) {
-        return modelMapper.map(habitFactRepo.findHabitFactByFact(name)
+    public HabitFactDTO getHabitFactByName(String language, String name) {
+        return modelMapper.map(factTranslationRepo.findFactTranslationByLanguage_CodeAndHabitFact(language, name)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
             HabitFactDTO.class);
     }
@@ -90,15 +92,12 @@ public class HabitFactServiceImpl implements HabitFactService {
     /**
      * Method saves new {@link HabitFact}.
      *
-     * @param fact {@link AdviceDTO}
+     * @param fact {@link HabitFactPostDTO}
      * @return instance of {@link HabitFact}
      * @author Vitaliy Dzen
      */
     @Override
     public HabitFact save(HabitFactPostDTO fact) {
-        if (habitFactRepo.findHabitFactByFact(fact.getFact()).isPresent()) {
-            throw new NotSavedException(ErrorMessage.HABIT_FACT_NOT_SAVED_BY_NAME);
-        }
         return habitFactRepo.save(modelMapper.map(fact, HabitFact.class));
     }
 
@@ -115,7 +114,6 @@ public class HabitFactServiceImpl implements HabitFactService {
         return habitFactRepo.findById(id)
             .map(employee -> {
                 employee.setHabitDictionary(habitDictionaryRepo.findById(fact.getHabitDictionary().getId()).get());
-                employee.setFact(fact.getFact());
                 return habitFactRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_FACT_NOT_UPDATED_BY_ID));

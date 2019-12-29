@@ -12,6 +12,7 @@ public class AppConstant {
     public static final String USER = "USER";
     public static final String AUTHORITIES = "authorities";
     public static final String VALIDATION_EMAIL = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+    public static final String DEFAULT_LANGUAGE_CODE = "en";
 
     private AppConstant() {
     }

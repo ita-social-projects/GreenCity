@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -20,10 +21,7 @@ import greencity.service.CustomGoalService;
 import greencity.service.UserService;
 import greencity.service.UserValidationService;
 import greencity.service.impl.HabitStatisticServiceImpl;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
@@ -221,10 +219,12 @@ public class UserController {
      * @return list of {@link HabitDto}
      */
     @GetMapping("/{userId}/habits")
-    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal) {
+    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal,
+                                          @ApiParam(value = "Code of the needed language.")
+                                                            @RequestParam String language) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitStatisticServiceImpl.findAllHabitsAndTheirStatistics(
-                userValidationService.userValidForActions(principal, userId).getId(), true));
+                userValidationService.userValidForActions(principal, userId).getId(), true, language));
     }
 
     /**
@@ -245,9 +245,10 @@ public class UserController {
     }
 
     /**
-     * Method returns list of user goals.
+     * Method returns list of user goals for specific language.
      *
      * @param principal - authentication principal
+     * @param language  - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -262,10 +263,12 @@ public class UserController {
         @ApiIgnore
             Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId) {
+        @PathVariable Long userId,
+        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getUserGoals(userValidationService.userValidForActions(principal, userId)));
+            .body(userService.getUserGoals(userValidationService.userValidForActions(principal, userId), language));
     }
 
     /**
@@ -370,6 +373,7 @@ public class UserController {
      * Method returns list of available (not ACTIVE) goals for user.
      *
      * @param principal - authentication principal
+     * @param language  - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -383,10 +387,13 @@ public class UserController {
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
         @ApiIgnore Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId) {
+        @PathVariable Long userId,
+        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableGoals(userValidationService.userValidForActions(principal, userId)));
+            .body(userService.getAvailableGoals(userValidationService.userValidForActions(principal, userId),
+                language));
     }
 
     /**
@@ -417,6 +424,7 @@ public class UserController {
     /**
      * Method updates goal status.
      *
+     * @param language - needed language code
      * @return new {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -432,18 +440,21 @@ public class UserController {
         @PathVariable Long userId,
         @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
         @PathVariable Long goalId,
+        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language,
         @ApiIgnore
             Principal principal) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService
-                .updateUserGoalStatus(userValidationService.userValidForActions(principal, userId), goalId));
+                .updateUserGoalStatus(userValidationService.userValidForActions(principal, userId), goalId, language));
     }
 
     /**
      * Method saves goals, chosen by user.
      *
-     * @param dto - dto with goals, chosen by user.
+     * @param dto      - dto with goals, chosen by user.
+     * @param language - needed language code
      * @return new {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -459,10 +470,13 @@ public class UserController {
         @ApiIgnore
             Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId) {
+        @PathVariable Long userId,
+        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.saveUserGoals(userValidationService.userValidForActions(principal, userId), dto));
+            .body(userService.saveUserGoals(userValidationService
+                .userValidForActions(principal, userId), dto, language));
     }
 
     /**
@@ -483,18 +497,20 @@ public class UserController {
         @ApiIgnore
             Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId) {
+        @PathVariable Long userId,
+        @ApiParam(value = "Code of the needed language.")
+        @RequestParam String language) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getAvailableHabitDictionary(
-                userValidationService.userValidForActions(principal, userId)));
+                userValidationService.userValidForActions(principal, userId), language));
     }
 
     /**
      * Method saves habit, chosen by user.
      *
-     * @param dto - dto with habits, chosen by user.
-     * @param userId id current user.
+     * @param dto       - dto with habits, chosen by user.
+     * @param userId    id current user.
      * @param principal authentication principal.
      * @return {@link ResponseEntity}
      */
@@ -509,18 +525,21 @@ public class UserController {
         @Valid @RequestBody List<HabitIdDto> dto,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable Long userId,
+        @ApiParam(value = "Code of the needed language.")
+        @RequestParam String language,
         @ApiIgnore
             Principal principal) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.createUserHabit(userValidationService.userValidForActions(principal, userId), dto));
+            .body(userService.createUserHabit(userValidationService.userValidForActions(principal, userId),
+                    dto, language));
     }
 
     /**
      * Method deletes habit, chosen by user.
      *
-     * @param habitId id with habits, chosen by user.
-     * @param userId id current user.
+     * @param habitId   id with habits, chosen by user.
+     * @param userId    id current user.
      * @param principal authentication principal.
      */
     @ApiOperation(value = "Delete habit")

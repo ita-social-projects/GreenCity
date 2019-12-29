@@ -17,15 +17,12 @@ public class HabitDictionary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
-
-    @Column(nullable = false, unique = true)
-    private String habitItem;
-
     @Column(nullable = false)
-    private String description;
+    private String image;
 
     @OneToMany(mappedBy = "habitDictionary")
     private List<Habit> habit;
+
+    @OneToMany(mappedBy = "habitDictionary")
+    private List<HabitDictionaryTranslation> habitDictionaryTranslations;
 }

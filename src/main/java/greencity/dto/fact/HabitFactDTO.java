@@ -20,7 +20,7 @@ public class HabitFactDTO {
     @NotBlank(message = ValidationConstants.EMPTY_HABIT_FACT)
     @Length(min = ValidationConstants.HABIT_FACT_MIN_LENGTH, max = ValidationConstants.HABIT_FACT_MAX_LENGTH,
         message = ValidationConstants.INVALID_HABIT_FACT_LENGTH)
-    private String fact;
+    private String content;
 
     @NotNull(message = "habitDictionary can not be null")
     private HabitDictionaryDto habitDictionary;
