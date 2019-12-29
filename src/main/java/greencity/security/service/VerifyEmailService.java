@@ -35,13 +35,6 @@ public interface VerifyEmailService {
     void verifyByToken(String token);
 
     /**
-     * Find all method.
-     *
-     * @return {@link List}
-     */
-    List<VerifyEmail> findAll();
-
-    /**
      * Method that check if user not late with validation of his email.
      *
      * @return {@code boolean}

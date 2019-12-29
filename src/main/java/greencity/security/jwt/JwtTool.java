@@ -82,11 +82,12 @@ public class JwtTool {
     }
 
     /**
-     * Gets email from token.
-     * WARNING: The method DOESN'T CHECK whether the given token is valid. It simply parses the token.
+     * Gets email from token and throws an error if token is expired.
+     * WARNING: The method DOESN'T CHECK whether the token's signature is valid.
      *
      * @param token - access token
      * @return - user's email
+     * @throws io.jsonwebtoken.ExpiredJwtException - if token is expired.
      */
     public String getEmailOutOfAccessToken(String token) {
         String[] splitToken = token.split("\\.");

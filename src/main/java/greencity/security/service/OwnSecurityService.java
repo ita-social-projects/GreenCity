@@ -1,6 +1,5 @@
 package greencity.security.service;
 
-import greencity.entity.OwnSecurity;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
@@ -22,13 +21,6 @@ public interface OwnSecurityService {
      * @author Yurii Koval
      */
     void signUp(OwnSignUpDto dto);
-
-    /**
-     * Method that allow you to delete {@link OwnSecurity}.
-     *
-     * @param userOwnSecurity a value of {@link OwnSecurity}
-     */
-    void delete(OwnSecurity userOwnSecurity);
 
     /**
      * Deletes {@link greencity.entity.VerifyEmail} when user did not submit email.

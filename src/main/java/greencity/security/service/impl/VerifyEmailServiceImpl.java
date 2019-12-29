@@ -25,22 +25,22 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class VerifyEmailServiceImpl implements VerifyEmailService {
-    private final Integer expireTime;
+    private final Integer expirationTime;
     private final VerifyEmailRepo verifyEmailRepo;
     private final EmailService emailService;
 
     /**
      * Constructor.
      *
-     * @param expireTime - how many hours a token will live.
+     * @param expirationTime - how many hours a token will live.
      * @param verifyEmailRepo {@link VerifyEmailRepo} - this is repository for {@link VerifyEmail}
      * @param emailService {@link EmailService} - service for sending email
      */
     @Autowired
-    public VerifyEmailServiceImpl(@Value("${verifyEmailTimeHour}") Integer expireTime,
+    public VerifyEmailServiceImpl(@Value("${verifyEmailTimeHour}") Integer expirationTime,
                                   VerifyEmailRepo verifyEmailRepo,
                                   EmailService emailService) {
-        this.expireTime = expireTime;
+        this.expirationTime = expirationTime;
         this.verifyEmailRepo = verifyEmailRepo;
         this.emailService = emailService;
     }
@@ -54,7 +54,7 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
             VerifyEmail.builder()
                 .user(user)
                 .token(UUID.randomUUID().toString())
-                .expiryDate(calculateExpiryDate(expireTime))
+                .expiryDate(calculateExpiryDate(expirationTime))
                 .build();
         verifyEmailRepo.save(verifyEmail);
         emailService.sendVerificationEmail(user, verifyEmail.getToken());
@@ -75,14 +75,6 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
             log.info("User late with verify. Token is invalid.");
             throw new UserActivationEmailTokenExpiredException(EMAIL_TOKEN_EXPIRED);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<VerifyEmail> findAll() {
-        return verifyEmailRepo.findAll();
     }
 
     private LocalDateTime calculateExpiryDate(Integer expiryTimeInHour) {

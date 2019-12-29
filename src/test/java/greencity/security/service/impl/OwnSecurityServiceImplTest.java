@@ -54,18 +54,4 @@ public class OwnSecurityServiceImplTest {
     private AuthenticationManager manager;
     @Mock
     private JwtTool tokenTool;
-
-    @Test
-    public void delete() {
-        doNothing().when(repo).delete(any(OwnSecurity.class));
-        when(repo.existsById(anyLong())).thenReturn(true);
-        service.delete(OwnSecurity.builder().id(1L).build());
-        verify(repo, times(1)).delete(any(OwnSecurity.class));
-    }
-
-    @Test(expected = BadIdException.class)
-    public void deleteNoExist() {
-        when(repo.existsById(anyLong())).thenReturn(false);
-        service.delete(OwnSecurity.builder().id(1L).build());
-    }
 }

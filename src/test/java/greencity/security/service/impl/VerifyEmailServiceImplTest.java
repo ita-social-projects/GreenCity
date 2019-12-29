@@ -75,12 +75,4 @@ public class VerifyEmailServiceImplTest {
         when(repo.existsById(anyLong())).thenReturn(false);
         verifyEmailService.delete(VerifyEmail.builder().id(1L).build());
     }
-
-    @Test
-    public void findAll() {
-        List<VerifyEmail> verifyEmails = Collections.singletonList(new VerifyEmail());
-        when(repo.findAll()).thenReturn(verifyEmails);
-
-        assertEquals(verifyEmailService.findAll(), verifyEmails);
-    }
 }

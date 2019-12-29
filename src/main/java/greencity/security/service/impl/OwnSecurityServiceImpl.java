@@ -18,6 +18,7 @@ import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
 import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,14 +66,14 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         user.setRefreshTokenKey(jwtTool.generateRefreshTokenKey());
         try {
             User savedUser = userService.save(user);
-            ownSecurityRepo.save(createUserOwnSecurityToUser(dto, savedUser));
+            ownSecurityRepo.save(convertUserOwnSecurityToUser(dto, savedUser));
             verifyEmailService.save(savedUser);
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
     }
 
-    private OwnSecurity createUserOwnSecurityToUser(OwnSignUpDto dto, User user) {
+    private OwnSecurity convertUserOwnSecurityToUser(OwnSignUpDto dto, User user) {
         return OwnSecurity.builder()
             .password(passwordEncoder.encode(dto.getPassword()))
             .user(user)
@@ -90,17 +91,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
             .build();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void delete(OwnSecurity userOwnSecurity) {
-        if (!ownSecurityRepo.existsById(userOwnSecurity.getId())) {
-            throw new BadIdException(NO_ENY_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
-        }
-        ownSecurityRepo.delete(userOwnSecurity);
     }
 
     /**
@@ -150,7 +140,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         String email;
         try {
             email = jwtTool.getEmailOutOfAccessToken(refreshToken);
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
         }
         User user = userService
