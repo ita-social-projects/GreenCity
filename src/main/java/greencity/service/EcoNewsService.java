@@ -41,7 +41,6 @@ public interface EcoNewsService {
      * Method for deleting the {@link EcoNews} instance by its id.
      *
      * @param id - {@link EcoNews} instance id which will be deleted.
-     * @return {@link EcoNews} instance.
      */
-    Long delete(Long id);
+    void delete(Long id);
 }

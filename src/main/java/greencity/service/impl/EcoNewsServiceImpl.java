@@ -109,8 +109,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
-    public Long delete(Long id) {
+    public void delete(Long id) {
         ecoNewsRepo.deleteById(findById(id).getId());
-        return id;
     }
 }
