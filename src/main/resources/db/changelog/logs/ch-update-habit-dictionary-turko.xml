@@ -19,7 +19,7 @@
             <column name="description" type="varchar(255)"/>
         </dropColumn>
         <addColumn tableName="habit_dictionary">
-            <column name="image" type="varchar(255)">
+            <column name="image" type="varchar(255)" defaultValue="bag">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
