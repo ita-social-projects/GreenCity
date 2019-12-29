@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,11 +32,16 @@ public class CustomGoalServiceImpl implements CustomGoalService {
      * Autowired repository.
      */
     private CustomGoalRepo customGoalRepo;
+    private ModelMapper modelMapper;
 
     /**
-     * Autowired mapper.
+     * Constructor with parameters.
      */
-    private ModelMapper modelMapper;
+    @Autowired
+    public CustomGoalServiceImpl(ModelMapper modelMapper, CustomGoalRepo customGoalRepo) {
+        this.modelMapper = modelMapper;
+        this.customGoalRepo = customGoalRepo;
+    }
 
     /**
      * {@inheritDoc}
