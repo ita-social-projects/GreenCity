@@ -86,7 +86,6 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
     @Transactional
     @Override
     public void restoreByToken(String token, String password) {
-        log.info("begin");
         RestorePasswordEmail restorePasswordEmail = repo
                 .findByToken(token)
                 .orElseThrow(() -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
@@ -104,6 +103,5 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
             log.info("User late with sendEmailForRestore. Token is invalid.");
             throw new UserActivationEmailTokenExpiredException(EMAIL_TOKEN_EXPIRED);
         }
-        log.info("end");
     }
 }

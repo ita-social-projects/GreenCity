@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import java.util.List;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +18,8 @@ public class HabitFact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true, length = 300)
-    private String fact;
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "habitFact", fetch = FetchType.LAZY)
+    private List<FactTranslation> translations;
 
     @ManyToOne
     private HabitDictionary habitDictionary;

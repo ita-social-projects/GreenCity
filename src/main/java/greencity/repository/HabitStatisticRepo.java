@@ -21,7 +21,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     /**
      * Method for finding statistic for current date.
      *
-     *
      * @return {@link HabitStatistic} instance, if it doesn't exist returns Optional.
      */
     @Query(value = "SELECT hs FROM HabitStatistic hs WHERE hs.createdOn=:localDate AND habit_id=:habitId")
@@ -31,12 +30,13 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     /**
      * Method for finding the sum of all untaken items for current month.
      *
-     * @param habitId {@link Habit} id.
+     * @param habitId  {@link Habit} id.
      * @param firstDay first day of current month.
      * @return sum of items per month.
      */
     @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs\n"
-        + " WHERE hs.habit.id=:habitId AND hs.createdOn <= CURRENT_DATE AND hs.createdOn >=:firstDayOfMonth")
+        + " WHERE hs.habit.id=:habitId AND DATE(hs.createdOn) <= CURRENT_DATE AND"
+        + " DATE(hs.createdOn) >=:firstDayOfMonth")
     Optional<Integer> getSumOfAllItemsPerMonth(@Param("habitId") Long habitId,
                                                @Param("firstDayOfMonth") ZonedDateTime firstDay);
 
@@ -55,7 +55,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
-        + " WHERE hs.createdOn = CURRENT_DATE - 1 AND habit_id =:habitId")
+        + " WHERE DATE(hs.createdOn) = CURRENT_DATE - 1 AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsInPreviousDay(@Param("habitId") Long habitId);
 
     /**
@@ -65,6 +65,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
-        + " WHERE hs.createdOn = CURRENT_DATE AND habit_id =:habitId")
+        + " WHERE DATE(hs.createdOn) = CURRENT_DATE AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsToday(@Param("habitId") Long habitId);
 }

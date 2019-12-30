@@ -2,56 +2,54 @@ package greencity.mapping;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDictionaryDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionary;
+import greencity.entity.HabitDictionaryTranslation;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitDictionaryRepo;
-import greencity.converters.DateService;
-import org.springframework.beans.factory.annotation.Autowired;
+import greencity.repository.HabitDictionaryTranslationRepo;
+import java.time.ZonedDateTime;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+@AllArgsConstructor
 @Component
-public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
-    private final HabitDictionaryRepo habitDictionaryRepo;
-    private final HabitDictionaryMapper habitDictionaryMapper;
-    private final DateService dateService;
-
+public class HabitMapper {
     /**
-     * Constructor.
-     *
-     * @param habitDictionaryRepo {@link HabitDictionaryRepo}
-     * @param habitDictionaryMapper {@link HabitDictionaryMapper}
-     * @param dateService {@link DateService}
+     * Autowired.
      */
-    @Autowired
-    public HabitMapper(HabitDictionaryRepo habitDictionaryRepo,
-                       HabitDictionaryMapper habitDictionaryMapper,
-                       DateService dateService) {
-        this.habitDictionaryRepo = habitDictionaryRepo;
-        this.habitDictionaryMapper = habitDictionaryMapper;
-        this.dateService = dateService;
-    }
-
+    private HabitDictionaryRepo habitDictionaryRepo;
+    private HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
 
     /**
-     * Converts {@link Habit} entity to {@link HabitCreateDto}.
+     * Method convert Entity ti Dto.
      *
-     * @param entity to map from.
+     * @param entity   {@link Habit}.
+     * @param language language code
      * @return {@link HabitCreateDto}
      */
-    @Override
-    public HabitCreateDto convertToDto(Habit entity) {
-        HabitCreateDto habitCreateDto = new HabitCreateDto();
+    public HabitCreateDto convertToDto(Habit entity, String language) {
+        HabitDictionaryTranslation htd = habitDictionaryTranslationRepo
+            .findByHabitDictionaryAndLanguageCode(entity.getHabitDictionary(), language)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_DACTIONARY_TRANSLATION_NOT_FOUnD));
+        final HabitCreateDto habitCreateDto = new HabitCreateDto();
+        final HabitDictionaryDto habitDictionaryDto = new HabitDictionaryDto();
+        habitDictionaryDto.setName(htd.getName());
+        habitDictionaryDto.setDescription(htd.getDescription());
+        habitDictionaryDto.setImage(entity.getHabitDictionary().getImage());
+        habitDictionaryDto.setId(entity.getHabitDictionary().getId());
         habitCreateDto.setId(entity.getId());
         habitCreateDto.setStatus(entity.getStatusHabit());
-        habitCreateDto.setHabitDictionary(habitDictionaryMapper.convertToDto(entity.getHabitDictionary()));
+        habitCreateDto.setHabitDictionary(habitDictionaryDto);
         return habitCreateDto;
     }
 
     /**
      * Convert to habit entity.
-     * @param id {@link HabitDictionary}
+     *
+     * @param id   {@link HabitDictionary}
      * @param user {@link User} current user.
      * @return {@link Habit}
      */
@@ -60,7 +58,7 @@ public class HabitMapper implements MapperToDto<Habit, HabitCreateDto> {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         Habit habit = new Habit();
         habit.setUser(user);
-        habit.setCreateDate(dateService.getDatasourceZonedDateTime());
+        habit.setCreateDate(ZonedDateTime.now());
         habit.setHabitDictionary(dictionary);
         habit.setStatusHabit(true);
         return habit;

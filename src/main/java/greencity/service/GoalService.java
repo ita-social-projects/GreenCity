@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public interface GoalService {
     /**
-     * Method returns list of goals, available for tracking.
+     * Method returns list of goals, available for tracking for specific language.
      *
+     * @param language needed language code
      * @return List of {@link GoalDto}.
      */
-    List<GoalDto> findAll();
+    List<GoalDto> findAll(String language);
 }

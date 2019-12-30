@@ -71,5 +71,5 @@ public interface HabitStatisticService {
      * @param status status of habit.
      * @return list of {@link HabitDto} instances.
      */
-    List<HabitDto> findAllHabitsAndTheirStatistics(Long id, Boolean status);
+    List<HabitDto> findAllHabitsAndTheirStatistics(Long id, Boolean status, String language);
 }

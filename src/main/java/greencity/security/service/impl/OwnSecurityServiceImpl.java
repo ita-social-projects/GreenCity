@@ -112,7 +112,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .findByEmail(dto.getEmail())
             .filter(u -> isPasswordCorrect(dto, u))
             .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
-        userService.addDefaultHabit(user);
+        userService.addDefaultHabit(user, "en");
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
