@@ -175,7 +175,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
-        log.info("Updating user password start");
         User user = userService
                 .findByEmail(email)
                 .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
@@ -186,6 +185,5 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             throw new PasswordsDoNotMatchesException(PASSWORD_DOES_NOT_MATCH);
         }
         updatePassword(updatePasswordDto.getPassword(), user.getId());
-        log.info("Updating user password end");
     }
 }

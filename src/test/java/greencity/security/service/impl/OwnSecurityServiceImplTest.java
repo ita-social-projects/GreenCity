@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@RunWith(MockitoJUnitRunner.class)
 public class OwnSecurityServiceImplTest {
 
     private User user =

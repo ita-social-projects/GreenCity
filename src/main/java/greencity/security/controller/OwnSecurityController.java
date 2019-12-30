@@ -181,7 +181,7 @@ public class OwnSecurityController {
     })
     @PutMapping
     public ResponseEntity<Object> updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto,
-                                         @ApiIgnore @AuthenticationPrincipal Principal principal) {
+                                                 @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         service.updateCurrentPassword(updateDto, email);
         return ResponseEntity.ok().build();
