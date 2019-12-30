@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +66,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         try {
             User savedUser = userService.save(user);
             ownSecurityRepo.save(convertUserOwnSecurityToUser(dto, savedUser));
-            verifyEmailService.save(savedUser);
+            verifyEmailService.saveEmailVerificationTokenForUser(savedUser);
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
@@ -91,16 +90,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
             .build();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Scheduled(fixedRate = 86400000)
-    @Override
-    public void deleteAllUsersThatDidNotVerifyEmail() {
-        int rows = verifyEmailService.deleteAllUsersThatDidNotVerifyEmail();
-        log.info(rows + " email verification tokens were deleted.");
     }
 
     /**

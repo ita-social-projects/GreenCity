@@ -1,22 +1,21 @@
 package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
-
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
-import greencity.exception.exceptions.BadIdException;
 import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;
 import greencity.security.service.VerifyEmailService;
 import greencity.service.EmailService;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -32,9 +31,9 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     /**
      * Constructor.
      *
-     * @param expirationTime - how many hours a token will live.
-     * @param verifyEmailRepo {@link VerifyEmailRepo} - this is repository for {@link VerifyEmail}
-     * @param emailService {@link EmailService} - service for sending email
+     * @param expirationTime - how many hours a token lives.
+     * @param verifyEmailRepo {@link VerifyEmailRepo}
+     * @param emailService {@link EmailService} - a service for sending emails.
      */
     @Autowired
     public VerifyEmailServiceImpl(@Value("${verifyEmailTimeHour}") Integer expirationTime,
@@ -49,15 +48,20 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
      * {@inheritDoc}
      */
     @Override
-    public void save(User user) {
+    public void saveEmailVerificationTokenForUser(User user) {
         VerifyEmail verifyEmail =
             VerifyEmail.builder()
                 .user(user)
                 .token(UUID.randomUUID().toString())
-                .expiryDate(calculateExpiryDate(expirationTime))
+                .expiryDate(calculateExpirationDateTime())
                 .build();
         verifyEmailRepo.save(verifyEmail);
         emailService.sendVerificationEmail(user, verifyEmail.getToken());
+    }
+
+    private LocalDateTime calculateExpirationDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        return now.plusHours(this.expirationTime);
     }
 
     /**
@@ -66,20 +70,15 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     @Override
     public void verifyByToken(String token) {
         VerifyEmail verifyEmail = verifyEmailRepo
-                .findByToken(token)
-                .orElseThrow(() -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
+            .findByToken(token)
+            .orElseThrow(() -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
         if (isNotExpired(verifyEmail.getExpiryDate())) {
-            log.info("Date of user email is valid.");
-            delete(verifyEmail);
+            verifyEmailRepo.delete(verifyEmail);
+            log.info("User has successfully verify the email by token {}.", token);
         } else {
-            log.info("User late with verify. Token is invalid.");
+            log.info("User didn't verify his/her email on time with token {}.", token);
             throw new UserActivationEmailTokenExpiredException(EMAIL_TOKEN_EXPIRED);
         }
-    }
-
-    private LocalDateTime calculateExpiryDate(Integer expiryTimeInHour) {
-        LocalDateTime now = LocalDateTime.now();
-        return now.plusHours(expiryTimeInHour);
     }
 
     /**
@@ -93,18 +92,10 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void delete(VerifyEmail verifyEmail) {
-        if (!verifyEmailRepo.existsById(verifyEmail.getId())) {
-            throw new BadIdException(NO_ANY_VERIFY_EMAIL_TO_DELETE + verifyEmail.getId());
-        }
-        verifyEmailRepo.delete(verifyEmail);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int deleteAllUsersThatDidNotVerifyEmail() {
-        return verifyEmailRepo.deleteAllUsersThatDidNotVerifyEmail();
+    @Scheduled(fixedRate = 86400000)
+    @Transactional
+    public void deleteAllUsersThatDidNotVerifyEmail() {
+        int rows = verifyEmailRepo.deleteAllUsersThatDidNotVerifyEmail();
+        log.info(rows + " email verification tokens were deleted.");
     }
 }

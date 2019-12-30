@@ -5,7 +5,6 @@ import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
-import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * Provides the interface to manage {@link OwnSecurityService} entity.
@@ -21,13 +20,6 @@ public interface OwnSecurityService {
      * @author Yurii Koval
      */
     void signUp(OwnSignUpDto dto);
-
-    /**
-     * Deletes {@link greencity.entity.VerifyEmail} when user did not submit email.
-     * @author Yurii Koval
-     */
-    @Scheduled(fixedRate = 86400000)
-    void deleteAllUsersThatDidNotVerifyEmail();
 
     /**
      * Method that allow you sign-in user.
