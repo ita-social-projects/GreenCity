@@ -3,12 +3,13 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AdviceRepo;
+import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitDictionaryRepo;
 import greencity.service.AdviceService;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 public class AdviceServiceImpl implements AdviceService {
     private AdviceRepo adviceRepo;
     private HabitDictionaryRepo habitDictionaryRepo;
+    private AdviceTranslationRepo adviceTranslationRepo;
 
     @Autowired
     private final ModelMapper modelMapper;
@@ -39,8 +41,8 @@ public class AdviceServiceImpl implements AdviceService {
      * @author Vitaliy Dzen
      */
     @Override
-    public List<AdviceDTO> getAllAdvices() {
-        return modelMapper.map(adviceRepo.findAll(), new TypeToken<List<AdviceDTO>>() {
+    public List<LanguageTranslationDTO> getAllAdvices() {
+        return modelMapper.map(adviceTranslationRepo.findAll(), new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType());
     }
 
@@ -51,9 +53,10 @@ public class AdviceServiceImpl implements AdviceService {
      * @author Vitaliy Dzen
      */
     @Override
-    public AdviceDTO getRandomAdviceByHabitId(Long id) {
-        return modelMapper.map(adviceRepo.getRandomAdviceByHabitId(id).orElseThrow(() ->
-            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceDTO.class);
+    public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
+        return modelMapper.map(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id)
+            .orElseThrow(() ->
+                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), LanguageTranslationDTO.class);
     }
 
     /**
@@ -70,16 +73,17 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method find {@link Advice} by advice.
+     * Method find {@link Advice} by content.
      *
      * @param name of {@link Advice}
      * @return {@link AdviceDTO}
      * @author Vitaliy Dzen
      */
     @Override
-    public AdviceDTO getAdviceByName(String name) {
-        return modelMapper.map(adviceRepo.findAdviceByAdvice(name).orElseThrow(() ->
-            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDTO.class);
+    public AdviceDTO getAdviceByName(String language, String name) {
+        return modelMapper.map(adviceTranslationRepo
+            .findAdviceTranslationByLanguage_CodeAndAdvice(language, name).orElseThrow(() ->
+                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDTO.class);
     }
 
     /**
@@ -91,9 +95,6 @@ public class AdviceServiceImpl implements AdviceService {
      */
     @Override
     public Advice save(AdvicePostDTO advicePostDTO) {
-        if (adviceRepo.findAdviceByAdvice(advicePostDTO.getAdvice()).isPresent()) {
-            throw new NotSavedException(ErrorMessage.ADVICE_NOT_SAVED_BY_NAME);
-        }
         return adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
     }
 
@@ -109,7 +110,6 @@ public class AdviceServiceImpl implements AdviceService {
         return adviceRepo.findById(id)
             .map(employee -> {
                 employee.setHabitDictionary(habitDictionaryRepo.findById(advice.getHabitDictionary().getId()).get());
-                employee.setAdvice(advice.getAdvice());
                 return adviceRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));

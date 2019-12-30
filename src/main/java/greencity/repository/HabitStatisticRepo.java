@@ -55,7 +55,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
-        + " WHERE hs.createdOn = CURRENT_DATE - 1 AND habit_id =:habitId")
+        + " WHERE DATE(hs.createdOn) = CURRENT_DATE - 1 AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsInPreviousDay(@Param("habitId") Long habitId);
 
     /**
@@ -65,6 +65,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
-        + " WHERE hs.createdOn = CURRENT_DATE AND habit_id =:habitId")
+        + " WHERE DATE(hs.createdOn) = CURRENT_DATE AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsToday(@Param("habitId") Long habitId);
 }

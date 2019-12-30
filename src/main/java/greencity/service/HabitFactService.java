@@ -2,11 +2,12 @@ package greencity.service;
 
 import greencity.dto.fact.HabitFactDTO;
 import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import java.util.List;
 
 /**
- * AdviceService interface.
+ * HabitFactService interface.
  *
  * @author Vitaliy Dzen
  */
@@ -17,7 +18,7 @@ public interface HabitFactService {
      * @return List of all {@link HabitFact}
      * @author Vitaliy Dzen
      */
-    List getAllHabitFacts();
+    List<LanguageTranslationDTO> getAllHabitFacts();
 
     /**
      * Method finds random {@link HabitFact}.
@@ -25,7 +26,7 @@ public interface HabitFactService {
      * @return random {@link HabitFact}
      * @author Vitaliy Dzen
      */
-    HabitFactDTO getRandomHabitFactByHabitId(Long id);
+    LanguageTranslationDTO getRandomHabitFactByHabitIdAndLanguage(Long id, String language);
 
     /**
      * Method find {@link HabitFact} by id.
@@ -43,7 +44,7 @@ public interface HabitFactService {
      * @return {@link HabitFactDTO}
      * @author Vitaliy Dzen
      */
-    HabitFactDTO getHabitFactByName(String name);
+    HabitFactDTO getHabitFactByName(String language, String name);
 
     /**
      * Method saves new {@link HabitFact}.
