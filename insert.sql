@@ -182,8 +182,8 @@ VALUES ('20:00:00', '06:00:00', 3, 5);
 INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
 VALUES ('20:00:00', '06:00:00', 4, 5);
 
-insert into discount_values(id, value, place_id, specification_id)
-values (1, 3, 1, 1),
+INSERT INTO discount_values(id, value, place_id, specification_id)
+VALUES (1, 3, 1, 1),
        (2, 13, 2, 2),
        (3, 33, 3, 3),
        (4, 63, 4, 4),

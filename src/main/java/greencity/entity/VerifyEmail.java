@@ -20,5 +20,6 @@ public class VerifyEmail {
 
     private String token;
 
+    @Column(name = "expiry_date")
     private LocalDateTime expiryDate;
 }

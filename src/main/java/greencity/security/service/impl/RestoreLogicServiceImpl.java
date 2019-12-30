@@ -10,13 +10,14 @@ import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
 import greencity.repository.UserRepo;
+import greencity.security.jwt.JwtTool;
 import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.OwnSecurityService;
 import greencity.security.service.RestoreLogicService;
 import greencity.security.service.RestorePasswordEmailService;
+import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,33 +28,33 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
     private final UserRepo userRepo;
     private final RestorePasswordEmailRepo repo;
     private final OwnSecurityService ownSecurityService;
+    private final JwtTool jwtTool;
 
     /**
      * Constructor for RestoreLogicServiceImpl class.
-     *
-     * @param userRepo                    {@link UserRepo}
-     * @param repo                        {@link RestorePasswordEmailRepo}
+     * @param userRepo {@link UserRepo}
+     * @param repo {@link RestorePasswordEmailRepo}
      * @param restorePasswordEmailService {@link RestorePasswordEmailService}
+     * @param jwtTool {@link JwtTool}
      */
     @Autowired
     public RestoreLogicServiceImpl(UserRepo userRepo,
                                    RestorePasswordEmailRepo repo,
                                    OwnSecurityService ownSecurityService,
-                                   RestorePasswordEmailService restorePasswordEmailService) {
+                                   RestorePasswordEmailService restorePasswordEmailService, JwtTool jwtTool) {
         this.restorePasswordEmailService = restorePasswordEmailService;
         this.userRepo = userRepo;
         this.repo = repo;
         this.ownSecurityService = ownSecurityService;
+        this.jwtTool = jwtTool;
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dovhal
      */
+    @Transactional
     @Override
     public void sendEmailForRestore(String email) {
-        log.info("start");
         User user = userRepo
                 .findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -61,27 +62,11 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
         if (restorePasswordEmail != null) {
             throw new BadEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
         }
-        restorePasswordEmailService.save(user);
-        log.info("end");
-    }
-
-
-    /**
-     * Deletes expiry reset tokens.
-     *
-     * @author Yurii Koval
-     */
-    @Override
-    @Scheduled(fixedRate = 86400000)
-    public void deleteExpiry() {
-        int n = restorePasswordEmailService.deleteAllExpiredPasswordResetTokens();
-        log.info(n + " password reset tokens were deleted.");
+        restorePasswordEmailService.savePasswordRestorationTokenForUser(user, jwtTool.generateTokenKey());
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dovhal
      */
     @Transactional
     @Override
@@ -89,19 +74,21 @@ public class RestoreLogicServiceImpl implements RestoreLogicService {
         RestorePasswordEmail restorePasswordEmail = repo
                 .findByToken(token)
                 .orElseThrow(() -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
-        User user = userRepo
-                .findById(restorePasswordEmail.getUser().getId())
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID
-                                + restorePasswordEmail.getUser().getId())
-                );
-        if (restorePasswordEmailService.isNotExpired(restorePasswordEmail.getExpiryDate())) {
-            log.info("Date of user email is valid and user was found.");
-            ownSecurityService.updatePassword(password, user.getId());
+        if (isNotExpired(restorePasswordEmail.getExpiryDate())) {
+            ownSecurityService.updatePassword(password, restorePasswordEmail.getUser().getId());
             restorePasswordEmailService.delete(restorePasswordEmail);
+            log.info("User has successfully restore the password.");
         } else {
-            log.info("User late with sendEmailForRestore. Token is invalid.");
+            log.info("Password restoration token has expired.");
             throw new UserActivationEmailTokenExpiredException(EMAIL_TOKEN_EXPIRED);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isNotExpired(LocalDateTime emailExpiredDate) {
+        return LocalDateTime.now().isBefore(emailExpiredDate);
     }
 }
