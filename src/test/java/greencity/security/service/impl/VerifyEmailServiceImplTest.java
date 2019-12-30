@@ -35,7 +35,7 @@ public class VerifyEmailServiceImplTest {
     @Test
     public void save() {
         when(verifyEmailRepo.save(any(VerifyEmail.class))).thenReturn(null);
-        verifyEmailService.saveEmailVerificationTokenForUser(User.builder().email("").firstName("").build());
+        verifyEmailService.saveEmailVerificationTokenForUser(User.builder().email("").firstName("").build(), "token");
         verify(verifyEmailRepo, (times(1))).save(any(VerifyEmail.class));
     }
 

@@ -62,11 +62,11 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void signUp(OwnSignUpDto dto) {
         User user = createNewRegisteredUser(dto);
-        user.setRefreshTokenKey(jwtTool.generateRefreshTokenKey());
+        user.setRefreshTokenKey(jwtTool.generateTokenKey());
         try {
             User savedUser = userService.save(user);
             ownSecurityRepo.save(convertUserOwnSecurityToUser(dto, savedUser));
-            verifyEmailService.saveEmailVerificationTokenForUser(savedUser);
+            verifyEmailService.saveEmailVerificationTokenForUser(savedUser, jwtTool.generateTokenKey());
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
@@ -136,7 +136,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .findByEmail(email)
             .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         checkUserStatus(user);
-        String newRefreshTokenKey = jwtTool.generateRefreshTokenKey();
+        String newRefreshTokenKey = jwtTool.generateTokenKey();
         userService.updateUserRefreshToken(newRefreshTokenKey, user.getId());
         if (jwtTool.isTokenValid(refreshToken, user.getRefreshTokenKey())) {
             user.setRefreshTokenKey(newRefreshTokenKey);

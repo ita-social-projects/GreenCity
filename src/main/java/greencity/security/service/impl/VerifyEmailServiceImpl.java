@@ -9,7 +9,6 @@ import greencity.security.repository.VerifyEmailRepo;
 import greencity.security.service.VerifyEmailService;
 import greencity.service.EmailService;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,11 +47,11 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
      * {@inheritDoc}
      */
     @Override
-    public void saveEmailVerificationTokenForUser(User user) {
+    public void saveEmailVerificationTokenForUser(User user, String token) {
         VerifyEmail verifyEmail =
             VerifyEmail.builder()
                 .user(user)
-                .token(UUID.randomUUID().toString())
+                .token(token)
                 .expiryDate(calculateExpirationDateTime())
                 .build();
         verifyEmailRepo.save(verifyEmail);

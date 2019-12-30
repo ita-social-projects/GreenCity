@@ -142,7 +142,7 @@ public class JwtTool {
      *
      * @return random generated token key
      */
-    public String generateRefreshTokenKey() {
+    public String generateTokenKey() {
         return UUID.randomUUID().toString();
     }
 }
