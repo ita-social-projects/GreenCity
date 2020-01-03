@@ -45,22 +45,9 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
    ![env-vars](env-example.png)
 
-## Setup Checkstyle to your Intellij Idea
+## Setup Checkstyle
 
-1. Download Checkstyle plugin, **version 8.22**, for your IDE. Go to - Other Settings/Checkstyle. Click on add configuration File -> Browse -> and choose configuration file in root of project - `checkstyle.xml` -> OK. Also add description for this Checkstyle file, e.g. "GreenCity".
-
-2. Click to activate this Configuration File -> Apply.
-
-3. Go to Editor -> Code Style -> Choose Scheme : Default-> Settings -> Restore Defaults -> Duplicate -> Set the name (e.g GreenCity) -> Settings -> Import Scheme -> CheckStyle Configuration -> and choose configuration file in root of project - `checkstyle.xml` -> OK -> Apply. If you did everything right you can use hotkeys as Ctrl + Alt + L - to formate the code, and Ctrl + Alt + O - to optimize imports.
-
-
-**P.S. If imports have wrong order after formatting, go to IDE Settings -> Editor -> Java -> Imports -> Import Layout and check whether the order of imports is like this:**
-
-- "import static all others imports",
-- "blank line",
-- "import all others imports"
-
-**IMPORTANT!** Always before creating pull request, execute command: `mvn checkstyle:check`. Pull requests that do not pass checkstyle will NOT BE approved!
+Here you can read more about [how to set up checkstyle](https://github.com/ita-social-projects/GreenCity/wiki/Setup-CheckStyle-to-your-IDE);
 
 
 
