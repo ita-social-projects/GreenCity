@@ -33,21 +33,23 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 2. You should create database `greencity`.
 
-3. All these variables you can set in Intellij Idea. For instance,
 
-   ```properties
-   spring.datasource.url=${DATASOURCE_URL}
-   spring.datasource.username=${DATASOURCE_USER}
-   spring.datasource.password=${DATASOURCE_PASSWORD}
-   spring.mail.username=${EMAIL_ADDRESS}
-   spring.mail.password=${EMAIL_PASSWORD}
-   ```
+All these variables you can set in Intellij Idea. For instance,
 
-   ![env-vars](env-example.png)
+```properties
+spring.datasource.url=${DATASOURCE_URL}
+spring.datasource.username=${DATASOURCE_USER}
+spring.datasource.password=${DATASOURCE_PASSWORD}
+spring.mail.username=${EMAIL_ADDRESS}
+spring.mail.password=${EMAIL_PASSWORD}
+```
+
+![env-vars](env-example.png)
+
+3. If you did everything correctly, you should be able access swagger by this URL: http://localhost:8080/swagger-ui.html#/
 
 ## Setup Checkstyle
 
 Here you can read more about [how to set up checkstyle](https://github.com/ita-social-projects/GreenCity/wiki/Setup-CheckStyle-to-your-IDE);
 
-
-
+Here you can read more about [SonarQube Plugin for Intellij Idea](https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin/);
