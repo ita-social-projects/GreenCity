@@ -3,7 +3,6 @@ package greencity.mapping;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
