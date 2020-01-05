@@ -7,25 +7,25 @@ import static org.mockito.Mockito.*;
 
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitIdDto;
-import greencity.dto.user.HabitDictionaryDto;
 import greencity.dto.user.RoleDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserUpdateDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitDictionary;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.mapping.HabitMapper;
 import greencity.repository.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -52,6 +51,9 @@ public class UserServiceImplTest {
 
     @Mock
     GoalRepo goalRepo;
+
+    @Mock
+    GoalTranslationRepo goalTranslationRepo;
 
     @Mock
     HabitDictionaryRepo habitDictionaryRepo;
@@ -97,6 +99,12 @@ public class UserServiceImplTest {
             .statusHabit(true)
             .createDate(ZonedDateTime.now())
             .build();
+    private String language = "uk";
+    private List<GoalTranslation> goalTranslations = Arrays.asList(
+        new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList()), "TEST", new Goal(1L, Collections.emptyList(), Collections.emptyList())),
+        new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList()), "TEST", new Goal(2L, Collections.emptyList(), Collections.emptyList())));
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -295,33 +303,36 @@ public class UserServiceImplTest {
 
     @Test
     public void getUserGoalsTest() {
-//        List<UserGoal> userGoals = new ArrayList<>(Arrays.asList(new UserGoal(), new UserGoal()));
-//        List<UserGoalResponseDto> userGoalDto = userGoals
-//            .stream()
-//            .map(userGoal -> userGoalToResponseDtoMapper.convertToDto(userGoal))
-//            .collect(Collectors.toList());
-//        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
-//        assertEquals(userService.getUserGoals(user), userGoalDto);
+        List<UserGoal> userGoals = new ArrayList<>(Arrays.asList(new UserGoal(), new UserGoal()));
+        List<UserGoalResponseDto> userGoalDto = userGoals
+            .stream()
+            .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
+            .collect(Collectors.toList());
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
+        assertEquals(userService.getUserGoals(user, language), userGoalDto);
     }
 
     @Test(expected = UserHasNoGoalsException.class)
     public void getUserGoalsUserHasNoGoalTest() {
-//        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
-//        userService.getUserGoals(user);
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
+        userService.getUserGoals(user, language);
     }
 
     @Test
     public void getAvailableGoalsTest() {
-//        List<Goal> goals = new ArrayList<>(Arrays.asList(new Goal(), new Goal()));
-//        List<GoalDto> goalDto = modelMapper.map(goals, new TypeToken<List<GoalDto>>(){}.getType());
-//        when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(goals);
-//        assertEquals(userService.getAvailableGoals(user), goalDto);
+        List<GoalDto> goalDto = Arrays.asList(new GoalDto(1L, "TEST"), new GoalDto(2L, "TEST"));
+
+        when(goalTranslationRepo.findAvailableByUser(user, language)).thenReturn(goalTranslations);
+        when(modelMapper.map(goalTranslations.get(0), GoalDto.class)).thenReturn(goalDto.get(0));
+        when(modelMapper.map(goalTranslations.get(1), GoalDto.class)).thenReturn(goalDto.get(1));
+
+        assertEquals(goalDto, userService.getAvailableGoals(user, language));
     }
 
     @Test(expected = UserHasNoAvailableGoalsException.class)
     public void getAvailableGoalsNoAvailableGoalsTest() {
-//        when(goalRepo.findAvailableGoalsByUser(user)).thenReturn(Collections.emptyList());
-//        userService.getAvailableGoals(user);
+        when(goalTranslationRepo.findAvailableByUser(user, language)).thenReturn(Collections.emptyList());
+        userService.getAvailableGoals(user, language);
     }
 
     @Test(expected = UserHasNoAvailableHabitDictionaryException.class)

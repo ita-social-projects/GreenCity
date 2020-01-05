@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.constant.AppConstant;
 import greencity.service.LanguageService;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,12 @@ public class LanguageServiceImpl implements LanguageService {
      */
     @Override
     public String extractLanguageCodeFromRequest() {
-        return request.getParameter("language");
+        String languageCode = request.getParameter("language");
+
+        if (languageCode == null) {
+            return AppConstant.DEFAULT_LANGUAGE_CODE;
+        }
+
+        return languageCode;
     }
 }
