@@ -96,6 +96,9 @@ public class ValidationConstants {
     public static final int MIN_AMOUNT_OF_ITEMS = 0;
     public static final int MAX_AMOUNT_OF_ITEMS = 16;
 
+    public static final String BAD_COMMA_SEPARATED_NUMBERS =
+        "Non-empty string can contain numbers separated by a comma only";
+
     private ValidationConstants() {
     }
 }
