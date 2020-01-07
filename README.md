@@ -18,7 +18,7 @@ Before sending any pull request, please discuss requirements/changes to be imple
 
 Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-projects/GreenCity) for back-end part and [GreenCityClient](https://github.com/ita-social-projects/GreenCityClient) for front-end part) all of the issues are listed in the first one - [GreenCity](https://github.com/ita-social-projects/GreenCity).
 
-**NOTE: make sure that your code passes checkstyle. Otherwise your pull request will be declined**. See paragraph [Setup Checkstyle](#setup-checkstyle).
+**NOTE: make sure that your code passes checkstyle. Otherwise your pull request will be declined**. See paragraph [Setup Checkstyle](#5-setup-checkstyle).
 
 ## 4. Start the project locally
 
@@ -50,7 +50,7 @@ spring.mail.password=${EMAIL_PASSWORD}
 
 ### 4.3. How to work with swagger UI in our project
 
-1. Run GreenCity project (look up paragraph [How to run](#how-to-run)).
+1. Run GreenCity project (look up paragraph [How to run](#42-how-to-run)).
 
 2. Use the following link to open Swagger UI: http://localhost:8080/swagger-ui.html#/
 
