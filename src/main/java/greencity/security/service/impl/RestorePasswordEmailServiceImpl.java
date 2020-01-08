@@ -8,17 +8,16 @@ import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.RestorePasswordEmailService;
 import greencity.service.EmailService;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailService {
-    private final Integer expireTime;
+    private final Integer expirationTime;
     private final RestorePasswordEmailRepo restorePasswordEmailRepo;
     private final EmailService emailService;
 
@@ -26,35 +25,37 @@ public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailServ
     /**
      * Constructor for RestorePasswordEmailServiceImpl class.
      *
-     * @param expireTime server address
+     * @param expirationTime server address
      * @param repo           {@link RestorePasswordEmailRepo}
      * @param emailService   {@link EmailService}
      */
     @Autowired
-    public RestorePasswordEmailServiceImpl(@Value("${verifyEmailTimeHour}") Integer expireTime,
+    public RestorePasswordEmailServiceImpl(@Value("${verifyEmailTimeHour}") Integer expirationTime,
                                            RestorePasswordEmailRepo repo,
                                            EmailService emailService) {
-        this.expireTime = expireTime;
+        this.expirationTime = expirationTime;
         this.restorePasswordEmailRepo = repo;
         this.emailService = emailService;
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dovhal
      */
     @Override
-    public void save(User user) {
+    public void savePasswordRestorationTokenForUser(User user, String token) {
         RestorePasswordEmail restorePasswordEmail =
             RestorePasswordEmail.builder()
                 .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(calculateExpiryDate(expireTime))
+                .token(token)
+                .expiryDate(calculateExpiryDate(expirationTime))
                 .build();
         restorePasswordEmailRepo.save(restorePasswordEmail);
         emailService.sendRestoreEmail(user, restorePasswordEmail.getToken());
-        log.info("end");
+    }
+
+    private LocalDateTime calculateExpiryDate(Integer expirationTimeInHour) {
+        LocalDateTime now = LocalDateTime.now();
+        return now.plusHours(expirationTimeInHour);
     }
 
     /**
@@ -64,49 +65,21 @@ public class RestorePasswordEmailServiceImpl implements RestorePasswordEmailServ
      */
     @Override
     public void delete(RestorePasswordEmail restorePasswordEmail) {
-        log.info("begin");
         if (!restorePasswordEmailRepo.existsById(restorePasswordEmail.getId())) {
             throw new NotFoundException(ErrorMessage.LINK_FOR_RESTORE_NOT_FOUND
                     + restorePasswordEmail.getUser().getEmail()
             );
         }
         restorePasswordEmailRepo.delete(restorePasswordEmail);
-        log.info("end");
     }
 
     /**
      * {@inheritDoc}
      */
+    @Scheduled(fixedRate = 86400000)
     @Override
-    public int deleteAllExpiredPasswordResetTokens() {
-        return restorePasswordEmailRepo.deleteAllExpiredPasswordResetTokens();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Dmytro Dovhal
-     */
-    @Override
-    public List<RestorePasswordEmail> findAll() {
-        return restorePasswordEmailRepo.findAll();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Yurii Koval
-     */
-    @Override
-    public boolean isNotExpired(LocalDateTime emailExpiredDate) {
-        return LocalDateTime.now().isBefore(emailExpiredDate);
-    }
-
-    private LocalDateTime calculateExpiryDate(Integer expiryTimeInHour) {
-        log.info("start");
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime result = now.plusHours(expiryTimeInHour);
-        log.info("finish");
-        return result;
+    public void deleteAllExpiredPasswordResetTokens() {
+        int rows = restorePasswordEmailRepo.deleteAllExpiredPasswordResetTokens();
+        log.info(rows + " password reset tokens were deleted.");
     }
 }

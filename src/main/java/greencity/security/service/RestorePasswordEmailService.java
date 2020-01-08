@@ -2,22 +2,21 @@ package greencity.security.service;
 
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Provides the interface to manage {@link RestorePasswordEmailService}.
  *
  * @author Dmytro Dovhal && Yurii Koval
- * @version 1.0
+ * @version 2.0
  */
 public interface RestorePasswordEmailService {
     /**
-     * Save method.
+     * Saves password restoration token for a given user.
      *
-     * @param user {@link User} - we use here user, who previously have been found by email.
+     * @param user {@link User}
+     * @param token {@link String} - token for password restoration.
      */
-    void save(User user);
+    void savePasswordRestorationTokenForUser(User user, String token);
 
     /**
      * Method that provide delete {@link RestorePasswordEmail}.
@@ -28,21 +27,6 @@ public interface RestorePasswordEmailService {
 
     /**
      * Deletes from the database password reset tokens that are expired.
-     * @author Yurii Koval
      */
-    int deleteAllExpiredPasswordResetTokens();
-
-    /**
-     * Find all method.
-     *
-     * @return {@link List}
-     */
-    List<RestorePasswordEmail> findAll();
-
-    /**
-     * Method that check if user is not late with restoring of his email.
-     *
-     * @return {@code boolean}
-     */
-    boolean isNotExpired(LocalDateTime emailExpiredDate);
+    void deleteAllExpiredPasswordResetTokens();
 }

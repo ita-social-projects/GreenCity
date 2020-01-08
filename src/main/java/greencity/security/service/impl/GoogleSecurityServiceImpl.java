@@ -103,7 +103,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
-            .refreshTokenKey(jwtTool.generateRefreshTokenKey())
+            .refreshTokenKey(jwtTool.generateTokenKey())
             .build();
     }
 

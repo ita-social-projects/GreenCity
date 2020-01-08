@@ -1,48 +1,32 @@
 package greencity.security.service;
 
 import greencity.entity.User;
-import greencity.entity.VerifyEmail;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
- * Service that provide {@link VerifyEmail} logic.
+ * Service that does email verification.
  *
  * @author Nazar Stasyuk && Yurii Koval
  * @version 1.0
  */
 public interface VerifyEmailService {
     /**
-     * Save method.
+     * Saves email verification token for the given user.
      *
-     * @param user {@link User} - we use here user, not DTO, because we create this user in sign-in
-     *             and sign-up logic.
+     * @param user {@link User} - a user that is registering.
+     * @param token {@link String} - token key.
      */
-    void save(User user);
+    void saveEmailVerificationTokenForUser(User user, String token);
 
     /**
-     * Method that provide delete {@link VerifyEmail}.
+     * Verifies email by token.
      *
-     * @param verifyEmail {@link VerifyEmail}
-     */
-    void delete(VerifyEmail verifyEmail);
-
-    /**
-     * Verify email by token.
-     *
-     * @param token {@link String} - token that confirm that this user are owner of this email.
+     * @param token {@link String} - token that confirms the user is the owner of his/her email.
      */
     void verifyByToken(String token);
 
     /**
-     * Find all method.
-     *
-     * @return {@link List}
-     */
-    List<VerifyEmail> findAll();
-
-    /**
-     * Method that check if user not late with validation of his email.
+     * Checks whether a user is not late with email verification.
      *
      * @return {@code boolean}
      */
@@ -50,9 +34,6 @@ public interface VerifyEmailService {
 
     /**
      * Deletes email verification tokens that are expired.
-     *
-     * @return - number of deleted tokens
-     * @author Yurii Koval
      */
-    int deleteAllUsersThatDidNotVerifyEmail();
+    void deleteAllUsersThatDidNotVerifyEmail();
 }
