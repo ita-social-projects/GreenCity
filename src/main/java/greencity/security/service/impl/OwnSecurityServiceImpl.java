@@ -4,6 +4,7 @@ import static greencity.constant.ErrorMessage.*;
 
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
+import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -22,6 +23,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final VerifyEmailService verifyEmailService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTool jwtTool;
+    private final Integer expirationTime;
 
     /**
      * Constructor.
@@ -47,12 +50,14 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   UserService userService,
                                   VerifyEmailService verifyEmailService,
                                   PasswordEncoder passwordEncoder,
-                                  JwtTool jwtTool) {
+                                  JwtTool jwtTool,
+                                  @Value("${verifyEmailTimeHour}") Integer expirationTime) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.verifyEmailService = verifyEmailService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTool = jwtTool;
+        this.expirationTime = expirationTime;
     }
 
     /**
@@ -61,35 +66,51 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Transactional
     @Override
     public void signUp(OwnSignUpDto dto) {
-        User user = createNewRegisteredUser(dto);
-        user.setRefreshTokenKey(jwtTool.generateTokenKey());
+        User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey());
+        OwnSecurity ownSecurity = createOwnSecurity(dto, user);
+        VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
+        user.setOwnSecurity(ownSecurity);
+        user.setVerifyEmail(verifyEmail);
         try {
             User savedUser = userService.save(user);
-            ownSecurityRepo.save(convertUserOwnSecurityToUser(dto, savedUser));
-            verifyEmailService.saveEmailVerificationTokenForUser(savedUser, jwtTool.generateTokenKey());
+            verifyEmailService.sendEmail(savedUser, savedUser.getVerifyEmail().getToken());
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
     }
 
-    private OwnSecurity convertUserOwnSecurityToUser(OwnSignUpDto dto, User user) {
-        return OwnSecurity.builder()
-            .password(passwordEncoder.encode(dto.getPassword()))
-            .user(user)
-            .build();
-    }
-
-    private User createNewRegisteredUser(OwnSignUpDto dto) {
+    private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey) {
         return User.builder()
             .firstName(dto.getFirstName())
             .lastName(dto.getLastName())
             .email(dto.getEmail())
             .dateOfRegistration(LocalDateTime.now())
             .role(ROLE.ROLE_USER)
+            .refreshTokenKey(refreshTokenKey)
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
             .build();
+    }
+
+    private OwnSecurity createOwnSecurity(OwnSignUpDto dto, User user) {
+        return OwnSecurity.builder()
+            .password(passwordEncoder.encode(dto.getPassword()))
+            .user(user)
+            .build();
+    }
+
+    private VerifyEmail createVerifyEmail(User user, String emailVerificationToken) {
+        return VerifyEmail.builder()
+            .user(user)
+            .token(emailVerificationToken)
+            .expiryDate(calculateExpirationDateTime())
+            .build();
+    }
+
+    private LocalDateTime calculateExpirationDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        return now.plusHours(this.expirationTime);
     }
 
     /**

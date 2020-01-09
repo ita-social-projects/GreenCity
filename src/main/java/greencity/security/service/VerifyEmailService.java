@@ -16,7 +16,7 @@ public interface VerifyEmailService {
      * @param user {@link User} - a user that is registering.
      * @param token {@link String} - token key.
      */
-    void saveEmailVerificationTokenForUser(User user, String token);
+    void sendEmail(User user, String token);
 
     /**
      * Verifies email by token.

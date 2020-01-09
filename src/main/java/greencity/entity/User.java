@@ -62,10 +62,10 @@ public class User {
     @OneToMany(mappedBy = "author")
     private List<Place> addedPlaces = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private OwnSecurity ownSecurity;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private VerifyEmail verifyEmail;
 
     @OneToOne(mappedBy = "user")
