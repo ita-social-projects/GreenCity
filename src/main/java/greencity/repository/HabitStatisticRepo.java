@@ -4,8 +4,10 @@ import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -67,4 +69,32 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
         + " WHERE DATE(hs.createdOn) = CURRENT_DATE AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsToday(@Param("habitId") Long habitId);
+
+    /**
+     * Returns {@link Tuple} consisting of habit item name(like 'cup' or 'bag')
+     * and amount of not taken items by a specific date(according to the method date parameter)
+     * for all the habits existing in the system.
+     * Selection is filtered by habit status which must be active(true).
+     * Result is sorted in descending order, that is the most popular habit
+     * will be the first in a list and the least popular will be the last.
+     *
+     * @param statisticCreationDate Statistic creation date.
+     * @param languageCode Language code of habit items, for example, 'en'.
+     * @return {@link List} of {@link Tuple}s that contain item names and not taken amount of that items.
+     * @author Shevtsiv Rostyslav
+     */
+    @Query("SELECT habitDictTranslation.habitItem, SUM(habitStatistic.amountOfItems) "
+        + "FROM HabitStatistic habitStatistic "
+        + "        INNER JOIN Habit habit ON habitStatistic.id = habit.id AND habit.statusHabit = TRUE "
+        + "                AND FUNCTION('DATE', habitStatistic.createdOn) = :statisticCreationDate "
+        + "        INNER JOIN HabitDictionaryTranslation habitDictTranslation "
+        + "                ON habitDictTranslation.habitDictionary.id = habit.habitDictionary.id "
+        + "        INNER JOIN Language language ON habitDictTranslation.language.id = language.id "
+        + "                AND language.code = :languageCode "
+        + "GROUP BY habitDictTranslation.habitItem "
+        + "ORDER BY COUNT(habit) DESC ")
+    List<Tuple> getStatisticsForAllHabitItemsByDate(
+        @Param("statisticCreationDate") Date statisticCreationDate,
+        @Param("languageCode") String languageCode
+    );
 }

@@ -592,4 +592,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService
             .deleteUserGoals(ids));
     }
+
+    /**
+     * Counts all users by user {@link UserStatus} ACTIVATED.
+     *
+     * @return amount of users with {@link UserStatus} ACTIVATED.
+     * @author Shevtsiv Rostyslav
+     */
+    @ApiOperation(value = "Get all activated users amount")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/activatedUsersAmount")
+    public ResponseEntity<Long> getActivatedUsersAmount() {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.getActivatedUsersAmount());
+    }
 }

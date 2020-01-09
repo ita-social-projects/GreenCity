@@ -472,6 +472,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getActivatedUsersAmount() {
+        return userRepo.countAllByUserStatus(UserStatus.ACTIVATED);
+    }
+
+    /**
      * Method check is in user habit.
      *
      * @param userId      Id current user.
