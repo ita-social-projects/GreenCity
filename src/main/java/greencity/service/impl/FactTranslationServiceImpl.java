@@ -30,7 +30,8 @@ public class FactTranslationServiceImpl implements FactTranslationService {
      * @author Vitaliy Dzen
      */
     @Autowired
-    public FactTranslationServiceImpl(FactTranslationRepo factTranslationRepo, HabitFactServiceImpl habitFactService, ModelMapper modelMapper) {
+    public FactTranslationServiceImpl(FactTranslationRepo factTranslationRepo, HabitFactServiceImpl habitFactService,
+                                      ModelMapper modelMapper) {
         this.factTranslationRepo = factTranslationRepo;
         this.habitFactService = habitFactService;
         this.modelMapper = modelMapper;
