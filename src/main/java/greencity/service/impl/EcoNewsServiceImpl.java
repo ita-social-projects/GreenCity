@@ -14,11 +14,11 @@ import greencity.service.EcoNewsService;
 import greencity.service.EmailService;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,8 +51,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setCreationDate(ZonedDateTime.now());
-        toSave = Optional.of(ecoNewsRepo.save(toSave))
-            .orElseThrow(() -> new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED));
+        try {
+            ecoNewsRepo.save(toSave);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
+        }
         List<NewsSubscriberResponseDto> subscribers = modelMapper.map(newsSubscriberRepo.findAll(),
             new TypeToken<List<NewsSubscriberResponseDto>>() {
             }.getType());
