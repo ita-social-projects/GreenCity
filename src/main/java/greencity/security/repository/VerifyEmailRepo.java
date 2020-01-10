@@ -45,6 +45,6 @@ public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
     @Modifying
     @Query(
         value = "DELETE FROM User WHERE id IN "
-            + "(SELECT id FROM VerifyEmail WHERE expiryDate < CURRENT_TIMESTAMP)")
+            + "(SELECT v.user.id FROM VerifyEmail v WHERE expiryDate < CURRENT_TIMESTAMP)")
     int deleteAllUsersThatDidNotVerifyEmail();
 }
