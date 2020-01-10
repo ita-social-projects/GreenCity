@@ -55,7 +55,7 @@ public class AdviceServiceImplTest {
 
 
     @Test
-    public void getAllAdvicesFailed() {
+    public void getAllAdvices() {
         List<LanguageTranslationDTO> expected = Collections.emptyList();
         when(modelMapper.map(adviceTranslationRepo.findAll(), new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType())).thenReturn(expected);
