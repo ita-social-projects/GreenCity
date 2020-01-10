@@ -14,7 +14,6 @@ import greencity.repository.HabitDictionaryRepo;
 import greencity.repository.HabitFactRepo;
 import greencity.service.HabitFactService;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +25,25 @@ import org.springframework.stereotype.Service;
  * @author Vitaliy Dzen
  */
 @Service
-@AllArgsConstructor
 public class HabitFactServiceImpl implements HabitFactService {
     private HabitFactRepo habitFactRepo;
     private HabitDictionaryRepo habitDictionaryRepo;
     private FactTranslationRepo factTranslationRepo;
-
-    @Autowired
     private final ModelMapper modelMapper;
+
+    /**
+     * Constructor with parameters.
+     *
+     * @author Vitaliy Dzen
+     */
+    @Autowired
+    public HabitFactServiceImpl(ModelMapper modelMapper, HabitFactRepo habitFactRepo,
+                                HabitDictionaryRepo habitDictionaryRepo, FactTranslationRepo factTranslationRepo) {
+        this.modelMapper = modelMapper;
+        this.habitFactRepo = habitFactRepo;
+        this.habitDictionaryRepo = habitDictionaryRepo;
+        this.factTranslationRepo = factTranslationRepo;
+    }
 
     /**
      * Method finds all {@link HabitFact}.
