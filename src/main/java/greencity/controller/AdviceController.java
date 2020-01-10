@@ -9,8 +9,8 @@ import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.AdviceTranslation;
-import greencity.service.impl.AdviceServiceImpl;
-import greencity.service.impl.AdviceTranslationServiceImpl;
+import greencity.service.AdviceService;
+import greencity.service.AdviceTranslationService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/advices")
 @AllArgsConstructor
 public class AdviceController {
-    private AdviceServiceImpl adviceService;
-    private AdviceTranslationServiceImpl adviceTranslationService;
+    private AdviceService adviceService;
+    private AdviceTranslationService adviceTranslationService;
     private ModelMapper mapper;
 
     /**
