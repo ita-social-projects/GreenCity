@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -52,10 +51,10 @@ public class UserServiceImplTest {
     GoalRepo goalRepo;
 
     @Mock
-    GoalTranslationRepo goalTranslationRepo;
+    CustomGoalRepo customGoalRepo;
 
     @Mock
-    CustomGoalRepo customGoalRepo;
+    GoalTranslationRepo goalTranslationRepo;
 
     @Mock
     HabitDictionaryRepo habitDictionaryRepo;
@@ -329,13 +328,13 @@ public class UserServiceImplTest {
 
         when(modelMapper.map(any(UserGoal.class), eq(UserGoalResponseDto.class))).thenReturn(new UserGoalResponseDto());
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
-        assertEquals(userService.getUserGoals(user, language), userGoalDto);
+        assertEquals(userService.getUserGoals(user, "en"), userGoalDto);
     }
 
     @Test(expected = UserHasNoGoalsException.class)
     public void getUserGoalsUserHasNoGoalTest() {
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
-        userService.getUserGoals(user, language);
+        userService.getUserGoals(user, "en");
     }
 
     @Test
@@ -357,7 +356,8 @@ public class UserServiceImplTest {
         UserGoal userGoal = new UserGoal(1L, null, new Goal(1L, null, null), null, GoalStatus.DISABLED, null);
         when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
         user.setUserGoals(Collections.singletonList(userGoal));
-        when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE.DISABLED));
+        when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
+            new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
         when(goalRepo.findById(anyLong())).thenReturn(Optional.of(new Goal(1L, null, null)));
         when(goalTranslationRepo.findByGoalAndLanguageCode(any(), any()))
             .thenReturn(Optional.of(new GoalTranslation(1L, null, "foo", null)));
@@ -416,7 +416,7 @@ public class UserServiceImplTest {
         when(modelMapper.map(any(), eq(UserGoal.class)))
             .thenReturn(new UserGoal(1L, user, new Goal(1L, null, null), null, null, null));
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
-            new UserGoalResponseDto(1L, "foo", null));
+            new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
         when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
         UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto();
         BulkSaveUserGoalDto nullUserGoalsDto =
@@ -436,7 +436,7 @@ public class UserServiceImplTest {
         when(modelMapper.map(any(), eq(UserGoal.class)))
             .thenReturn(new UserGoal(1L, user, new Goal(1L, null, null), null, null, null));
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
-            new UserGoalResponseDto(1L, "foo", null));
+            new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
         when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
         UserGoalDto userGoalDto = new UserGoalDto();
         BulkSaveUserGoalDto nullCustomGoalsDto =
@@ -456,7 +456,7 @@ public class UserServiceImplTest {
         when(modelMapper.map(any(), eq(UserGoal.class)))
             .thenReturn(new UserGoal(1L, user, new Goal(1L, null, null), null, null, null));
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
-            new UserGoalResponseDto(1L, "foo", null));
+            new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
         when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
         UserGoalDto userGoalDto = new UserGoalDto();
         UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto();
