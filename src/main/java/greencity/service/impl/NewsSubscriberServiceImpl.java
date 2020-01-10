@@ -47,10 +47,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
         }
         NewsSubscriber entity = modelMapper.map(dto, NewsSubscriber.class);
         entity.setUnsubscribeToken(UUID.randomUUID().toString());
-        NewsSubscriber newsSubscriber = Optional.of(newsSubscriberRepo
-            .save(entity))
-            .orElseThrow(() -> new NotSavedException(NEWS_SUBSCRIBER_NOT_SAVED));
-        return modelMapper.map(newsSubscriber, NewsSubscriberRequestDto.class);
+        return modelMapper.map(newsSubscriberRepo.save(entity), NewsSubscriberRequestDto.class);
     }
 
     /**
@@ -65,10 +62,6 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
             newsSubscriberRepo.delete(newsSubscriber);
         } else {
             throw new InvalidUnsubscribeToken(INVALID_UNSUBSCRIBE_TOKEN);
-        }
-        if (findByEmail(email).isPresent()) {
-            log.error(NEWS_SUBSCRIBER_NOT_DELETED);
-            throw new NotDeletedException(NEWS_SUBSCRIBER_NOT_DELETED);
         }
         return newsSubscriber.getId();
     }
