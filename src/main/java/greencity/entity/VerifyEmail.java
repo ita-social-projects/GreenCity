@@ -15,7 +15,7 @@ public class VerifyEmail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.DETACH)
     private User user;
 
     private String token;

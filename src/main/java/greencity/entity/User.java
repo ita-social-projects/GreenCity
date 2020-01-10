@@ -18,10 +18,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-    "verifyEmail"})
+    "verifyEmail", "estimates", "restorePasswordEmail"})
 @ToString(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-    "verifyEmail"})
+    "verifyEmail", "estimates", "restorePasswordEmail"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,10 +62,10 @@ public class User {
     @OneToMany(mappedBy = "author")
     private List<Place> addedPlaces = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private OwnSecurity ownSecurity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private VerifyEmail verifyEmail;
 
     @OneToOne(mappedBy = "user")

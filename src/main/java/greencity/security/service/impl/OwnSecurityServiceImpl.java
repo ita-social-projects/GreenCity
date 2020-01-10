@@ -14,16 +14,18 @@ import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
+import greencity.security.events.SignInEvent;
+import greencity.security.events.SignUpEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
-import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,10 +39,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final OwnSecurityRepo ownSecurityRepo;
     private final UserService userService;
-    private final VerifyEmailService verifyEmailService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTool jwtTool;
     private final Integer expirationTime;
+    private final ApplicationEventPublisher appEventPublisher;
 
     /**
      * Constructor.
@@ -48,16 +50,16 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Autowired
     public OwnSecurityServiceImpl(OwnSecurityRepo ownSecurityRepo,
                                   UserService userService,
-                                  VerifyEmailService verifyEmailService,
                                   PasswordEncoder passwordEncoder,
                                   JwtTool jwtTool,
-                                  @Value("${verifyEmailTimeHour}") Integer expirationTime) {
+                                  @Value("${verifyEmailTimeHour}") Integer expirationTime,
+                                  ApplicationEventPublisher appEventPublisher) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
-        this.verifyEmailService = verifyEmailService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTool = jwtTool;
         this.expirationTime = expirationTime;
+        this.appEventPublisher = appEventPublisher;
     }
 
     /**
@@ -73,7 +75,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         user.setVerifyEmail(verifyEmail);
         try {
             User savedUser = userService.save(user);
-            verifyEmailService.sendEmail(savedUser, savedUser.getVerifyEmail().getToken());
+            appEventPublisher.publishEvent(new SignUpEvent(savedUser));
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
@@ -122,13 +124,13 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .findByEmail(dto.getEmail())
             .filter(u -> isPasswordCorrect(dto, u))
             .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
-        userService.addDefaultHabit(user, "en");
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
         if (user.getUserStatus() == UserStatus.DEACTIVATED) {
             throw new UserDeactivatedException(USER_DEACTIVATED);
         }
+        appEventPublisher.publishEvent(new SignInEvent(user));
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), true);

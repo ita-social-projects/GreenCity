@@ -5,23 +5,37 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
  * Repository for {@link VerifyEmail}.
  *
- * @author Nazar Stasyuk && Yurii Koval
- * @version 2.0
+ * @author Yurii Koval
+ * @version 3.0
  */
 @Repository
 public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
     /**
-     * Method that allows you find {@link VerifyEmail} by token.
+     * Finds a record by userId and email verification token.
      *
-     * @param token - {@link String}
-     * @return {@link Optional}
+     * @param userId - {@link Long} user's id
+     * @param token - {@link String} email verification token
+     * @return - not empty {@link Optional} if a record with given userId and token exists.
      */
-    Optional<VerifyEmail> findByToken(String token);
+    @Query("SELECT v FROM VerifyEmail v WHERE v.user.id=:userId AND v.token=:token")
+    Optional<VerifyEmail> findByTokenAndUserId(@Param("userId") Long userId, @Param("token") String token);
+
+    /**
+     * Deletes record for a given userId and email verification token.
+     *
+     * @param userId - {@link Long} user's id
+     * @param token - {@link String} email verification token
+     * @return - number of modified rows.
+     */
+    @Modifying
+    @Query("DELETE FROM VerifyEmail WHERE user.id=:userId AND token=:token")
+    int deleteVerifyEmailByTokenAndUserId(@Param("userId") Long userId, @Param("token") String token);
 
 
     /**

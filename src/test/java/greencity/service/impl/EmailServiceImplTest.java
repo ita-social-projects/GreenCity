@@ -63,7 +63,7 @@ public class EmailServiceImplTest {
 
     @Test
     public void sendVerificationEmailTest() {
-        service.sendVerificationEmail(user, "");
+        service.sendVerificationEmail(user);
         verify(javaMailSender).createMimeMessage();
     }
 

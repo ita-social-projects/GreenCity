@@ -108,8 +108,9 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN)
     })
     @GetMapping("/verifyEmail")
-    public ResponseEntity<Object> verify(@RequestParam @NotBlank String token) throws URISyntaxException {
-        verifyEmailService.verifyByToken(token);
+    public ResponseEntity<Object> verify(@RequestParam @NotBlank String token,
+                                         @RequestParam("user_id") Long userId) throws URISyntaxException {
+        verifyEmailService.verifyByToken(userId, token);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(new URI(clientAddress));
         return new ResponseEntity<>(responseHeaders, HttpStatus.SEE_OTHER);
