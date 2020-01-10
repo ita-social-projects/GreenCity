@@ -55,6 +55,7 @@ public class AdviceTranslationServiceImpl implements AdviceTranslationService {
      * @return List of {@link AdviceTranslation}
      * @author Vitaliy Dzen
      */
+    @Override
     public List<AdviceTranslation> saveAdviceAndAdviceTranslation(AdvicePostDTO advicePostDTO) {
         Advice advice = adviceService.save(advicePostDTO);
         List<AdviceTranslation> adviceTranslations = modelMapper.map(advicePostDTO.getTranslations(),

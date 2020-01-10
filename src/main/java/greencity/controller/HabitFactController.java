@@ -9,8 +9,8 @@ import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
-import greencity.service.impl.FactTranslationServiceImpl;
-import greencity.service.impl.HabitFactServiceImpl;
+import greencity.service.FactTranslationService;
+import greencity.service.HabitFactService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/facts")
 @AllArgsConstructor
 public class HabitFactController {
-    private HabitFactServiceImpl habitFactService;
-    private FactTranslationServiceImpl factTranslationService;
+    private HabitFactService habitFactService;
+    private FactTranslationService factTranslationService;
     private ModelMapper mapper;
 
     /**

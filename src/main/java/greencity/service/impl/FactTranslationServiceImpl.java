@@ -6,6 +6,7 @@ import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
 import greencity.repository.FactTranslationRepo;
 import greencity.service.FactTranslationService;
+import greencity.service.HabitFactService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FactTranslationServiceImpl implements FactTranslationService {
     private final FactTranslationRepo factTranslationRepo;
-    private final HabitFactServiceImpl habitFactService;
+    private final HabitFactService habitFactService;
     private final ModelMapper modelMapper;
 
     /**
@@ -30,7 +31,7 @@ public class FactTranslationServiceImpl implements FactTranslationService {
      * @author Vitaliy Dzen
      */
     @Autowired
-    public FactTranslationServiceImpl(FactTranslationRepo factTranslationRepo, HabitFactServiceImpl habitFactService,
+    public FactTranslationServiceImpl(FactTranslationRepo factTranslationRepo, HabitFactService habitFactService,
                                       ModelMapper modelMapper) {
         this.factTranslationRepo = factTranslationRepo;
         this.habitFactService = habitFactService;
@@ -45,6 +46,7 @@ public class FactTranslationServiceImpl implements FactTranslationService {
      * @return List of {@link FactTranslation}
      * @author Vitaliy Dzen
      */
+    @Override
     public List<FactTranslation> saveHabitFactAndFactTranslation(HabitFactPostDTO habitFactPostDTO) {
         HabitFact habitFact = habitFactService.save(habitFactPostDTO);
         List<FactTranslation> factTranslations = modelMapper.map(habitFactPostDTO.getTranslations(),

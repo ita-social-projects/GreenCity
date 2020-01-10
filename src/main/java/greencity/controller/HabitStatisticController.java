@@ -6,7 +6,7 @@ import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
-import greencity.service.impl.HabitStatisticServiceImpl;
+import greencity.service.HabitStatisticService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/habit")
 @AllArgsConstructor
 public class HabitStatisticController {
-    private final HabitStatisticServiceImpl habitStatisticServiceImpl;
+    private final HabitStatisticService habitStatisticService;
 
     /**
      * Method for creating {@link HabitStatistic} by {@link Habit} id.
@@ -39,7 +39,7 @@ public class HabitStatisticController {
     @PostMapping("/statistic/")
     public ResponseEntity<Object> save(@Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticServiceImpl.save(addHabitStatisticDto));
+            .body(habitStatisticService.save(addHabitStatisticDto));
     }
 
     /**
@@ -58,7 +58,7 @@ public class HabitStatisticController {
     @PatchMapping("/statistic/{habitStatisticId}")
     public ResponseEntity<UpdateHabitStatisticDto> update(
         @PathVariable Long habitStatisticId, @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticServiceImpl
+        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService
             .update(habitStatisticId, habitStatisticForUpdateDto));
     }
 
@@ -73,6 +73,6 @@ public class HabitStatisticController {
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticServiceImpl.findAllByHabitId(habitId));
+            .body(habitStatisticService.findAllByHabitId(habitId));
     }
 }
