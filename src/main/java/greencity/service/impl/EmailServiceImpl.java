@@ -2,12 +2,12 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
+import greencity.event.SendNewsEvent;
 import greencity.service.EmailService;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -20,6 +20,7 @@ import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -103,12 +104,12 @@ public class EmailServiceImpl implements EmailService {
      * @author Bogdan Kuzenko
      */
     @Override
-    public void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
-                                         AddEcoNewsDtoResponse newsDto) {
+    @EventListener
+    public void sendNewNewsForSubscriber(SendNewsEvent event) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
-        model.put(EmailConstants.NEWS_RESULT, newsDto);
-        for (NewsSubscriberResponseDto dto : subscribers) {
+        model.put(EmailConstants.NEWS_RESULT, event.getMessage().getNewsDto());
+        for (NewsSubscriberResponseDto dto : event.getMessage().getSubscribers()) {
             try {
                 model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
                     + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())

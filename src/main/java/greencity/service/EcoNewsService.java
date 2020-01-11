@@ -4,6 +4,8 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
+import greencity.event.EventMessageResponse;
+import greencity.event.messages.SendNewsByEmailMessage;
 import java.util.List;
 
 public interface EcoNewsService {
@@ -13,7 +15,7 @@ public interface EcoNewsService {
      * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text, image path.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
-    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest);
+    EventMessageResponse<SendNewsByEmailMessage, AddEcoNewsDtoResponse> save(AddEcoNewsDtoRequest addEcoNewsDtoRequest);
 
     /**
      * Method for getting last three eco news.

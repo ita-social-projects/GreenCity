@@ -43,7 +43,7 @@ public class EcoNewsController {
     })
     @PostMapping("")
     public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
-        AddEcoNewsDtoResponse save = ecoNewsService.save(addEcoNewsDtoRequest);
+        AddEcoNewsDtoResponse save = ecoNewsService.save(addEcoNewsDtoRequest).getResponse();
         return ResponseEntity.status(HttpStatus.CREATED).body(save);
     }
 

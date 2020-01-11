@@ -1,11 +1,15 @@
 package greencity.service.impl;
 
+import greencity.annotations.EventPublishing;
 import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.EcoNews;
+import greencity.event.EventMessageResponse;
+import greencity.event.SendNewsEvent;
+import greencity.event.messages.SendNewsByEmailMessage;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
@@ -47,8 +51,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @EventPublishing(eventClass = SendNewsEvent.class)
     @Override
-    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
+    public EventMessageResponse<SendNewsByEmailMessage, AddEcoNewsDtoResponse> save(
+        AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setCreationDate(ZonedDateTime.now());
         try {
@@ -59,10 +65,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         List<NewsSubscriberResponseDto> subscribers = modelMapper.map(newsSubscriberRepo.findAll(),
             new TypeToken<List<NewsSubscriberResponseDto>>() {
             }.getType());
+        SendNewsByEmailMessage eventMessage = null;
         if (!subscribers.isEmpty()) {
-            emailService.sendNewNewsForSubscriber(subscribers, modelMapper.map(toSave, AddEcoNewsDtoResponse.class));
+            eventMessage = new SendNewsByEmailMessage(subscribers, modelMapper.map(toSave,
+                AddEcoNewsDtoResponse.class));
         }
-        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+        return new EventMessageResponse<>(eventMessage,
+            modelMapper.map(toSave, AddEcoNewsDtoResponse.class), this);
     }
 
     /**
