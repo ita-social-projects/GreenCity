@@ -1,6 +1,8 @@
 package greencity.entity;
 
+import greencity.entity.localization.EcoNewsTranslation;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,9 +20,6 @@ public class EcoNews {
     private Long id;
 
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
     private ZonedDateTime creationDate;
 
     @Column(nullable = false)
@@ -28,6 +27,10 @@ public class EcoNews {
 
     @Column(nullable = false)
     private String imagePath;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ecoNews", cascade = {CascadeType.REMOVE, CascadeType.PERSIST,
+        CascadeType.REFRESH})
+    private List<EcoNewsTranslation> translations;
 
     @Override
     public boolean equals(Object o) {
@@ -39,7 +42,6 @@ public class EcoNews {
         }
         EcoNews ecoNews = (EcoNews) o;
         return id.equals(ecoNews.id)
-            && title.equals(ecoNews.title)
             && creationDate.equals(ecoNews.creationDate)
             && text.equals(ecoNews.text)
             && imagePath.equals(ecoNews.imagePath);
@@ -47,6 +49,6 @@ public class EcoNews {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, creationDate, text, imagePath);
+        return Objects.hash(id, creationDate, text, imagePath);
     }
 }

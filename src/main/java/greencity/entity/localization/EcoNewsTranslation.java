@@ -1,5 +1,6 @@
 package greencity.entity.localization;
 
+import greencity.entity.EcoNews;
 import greencity.entity.Language;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,8 @@ public class EcoNewsTranslation {
 
     @Column(nullable = false)
     private String title;
+
+    @ManyToOne
+    private EcoNews ecoNews;
 }
 
