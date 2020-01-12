@@ -9,7 +9,7 @@ import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.service.OwnSecurityService;
-import greencity.security.service.RestoreLogicService;
+import greencity.security.service.PasswordRecoveryService;
 import greencity.security.service.VerifyEmailService;
 import io.swagger.annotations.*;
 import java.net.URI;
@@ -43,12 +43,12 @@ public class OwnSecurityController {
     private final String clientAddress;
     private final OwnSecurityService service;
     private final VerifyEmailService verifyEmailService;
-    private final RestoreLogicService restoreLogicService;
+    private final PasswordRecoveryService passwordRecoveryService;
 
     /**
      * Constructor.
      *
-     * @param clientAddress - Google client address.
+     * @param clientAddress      - Google client address.
      * @param service            - {@link OwnSecurityService} - service for security logic.
      * @param verifyEmailService {@link VerifyEmailService} - service for email verification.
      */
@@ -56,11 +56,11 @@ public class OwnSecurityController {
     public OwnSecurityController(@Value("${client.address}") String clientAddress,
                                  OwnSecurityService service,
                                  VerifyEmailService verifyEmailService,
-                                 RestoreLogicService restoreLogicService) {
+                                 PasswordRecoveryService passwordRecoveryService) {
         this.clientAddress = clientAddress;
         this.service = service;
         this.verifyEmailService = verifyEmailService;
-        this.restoreLogicService = restoreLogicService;
+        this.passwordRecoveryService = passwordRecoveryService;
     }
 
     /**
@@ -135,7 +135,7 @@ public class OwnSecurityController {
      * Method for restoring password and sending email for restore.
      *
      * @param email - {@link String}
-     * @return - {@link ResponseEntity }
+     * @return - {@link ResponseEntity}
      * @author Dmytro Dovhal
      */
     @ApiOperation("Sending email for restore password.")
@@ -145,7 +145,7 @@ public class OwnSecurityController {
     })
     @GetMapping("/restorePassword")
     public ResponseEntity<Object> restore(@RequestParam @Email String email) {
-        restoreLogicService.sendEmailForRestore(email);
+        passwordRecoveryService.sendPasswordRecoveryEmailTo(email);
         return ResponseEntity.ok().build();
     }
 
@@ -163,7 +163,7 @@ public class OwnSecurityController {
     })
     @PostMapping("/changePassword")
     public ResponseEntity<Object> changePassword(@Valid @RequestBody OwnRestoreDto form) {
-        restoreLogicService.restoreByToken(form.getToken(), form.getPassword());
+        passwordRecoveryService.updatePasswordUsingToken(form.getToken(), form.getPassword());
         return ResponseEntity.ok().build();
     }
 
