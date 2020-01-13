@@ -1,6 +1,7 @@
 package greencity.security.events;
 
 import greencity.entity.User;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
@@ -8,6 +9,7 @@ import org.springframework.context.ApplicationEvent;
  * Event that is meant for notifying about sending password recovery to the email.
  */
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class SendRestorePasswordEmailEvent extends ApplicationEvent {
     /**
      * Token which will be sent to user's email and will be used in password
