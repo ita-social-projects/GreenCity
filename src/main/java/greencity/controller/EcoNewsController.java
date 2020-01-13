@@ -69,9 +69,9 @@ public class EcoNewsController {
     public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews(
         @ApiParam(value = "Code of the needed language.",
             defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String languageCode
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews(languageCode));
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews(language));
     }
 
     /**
