@@ -12,11 +12,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -61,5 +64,21 @@ public class UserControllerTest {
         when(userService.deleteUserGoals("1")).thenReturn(Collections.emptyList());
         mockMvc.perform(delete("/user/1/userGoals").param("ids", "1"))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    public void getAllActivatedUsersAmountStatusCodeTest() throws Exception {
+        mockMvc.perform(get("/user/activatedUsersAmount"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    public void getAllActivatedUsersAmountWithServiceMockTest() throws Exception {
+        when(userService.getActivatedUsersAmount()).thenReturn(42L);
+        MvcResult requestResult = mockMvc.perform(get("/user/activatedUsersAmount"))
+            .andExpect(status().isOk()).andReturn();
+        assertEquals("42", requestResult.getResponse().getContentAsString());
     }
 }

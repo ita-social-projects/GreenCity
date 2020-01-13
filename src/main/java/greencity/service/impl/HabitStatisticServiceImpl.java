@@ -22,6 +22,7 @@ import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -268,5 +269,19 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         habitDictionaryDto.setHabitItem(habitDictionaryTranslation.getHabitItem());
         habitDictionaryDto.setName(habitDictionaryTranslation.getName());
         return habitDictionaryTranslation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language) {
+        return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), language).stream()
+            .map(it ->
+                HabitItemsAmountStatisticDto.builder()
+                    .habitItem((String) it.get(0))
+                    .notTakenItems((long) it.get(1))
+                    .build()
+            ).collect(Collectors.toList());
     }
 }

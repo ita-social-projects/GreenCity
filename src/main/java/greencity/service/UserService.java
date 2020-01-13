@@ -240,4 +240,12 @@ public interface UserService {
      * @author Bogdan Kuzenko
      */
     List<CustomGoalResponseDto> getAvailableCustomGoals(User user);
+
+    /**
+     * Counts all users by user {@link UserStatus} ACTIVATED.
+     *
+     * @return amount of users with {@link UserStatus} ACTIVATED.
+     * @author Shevtsiv Rostyslav
+     */
+    long getActivatedUsersAmount();
 }
