@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -7,6 +8,7 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
@@ -42,15 +44,19 @@ public class EcoNewsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("")
-    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
-        AddEcoNewsDtoResponse save = ecoNewsService.save(addEcoNewsDtoRequest);
+    public ResponseEntity<AddEcoNewsDtoResponse> save(
+        @RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+        @ApiParam(value = "Code of the needed language.",
+            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        AddEcoNewsDtoResponse save = ecoNewsService.save(addEcoNewsDtoRequest, language);
         return ResponseEntity.status(HttpStatus.CREATED).body(save);
     }
 
     /**
      * Method for getting three last eco news.
      *
-     * @return  list of {@link EcoNewsDto} instances.
+     * @return list of {@link EcoNewsDto} instances.
      * @author Yuriy Olkhovskyi.
      */
     @ApiOperation(value = "Get three last eco news.")
@@ -60,8 +66,12 @@ public class EcoNewsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/newest")
-    public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews() {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews());
+    public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews(
+        @ApiParam(value = "Code of the needed language.",
+            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String languageCode
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews(languageCode));
     }
 
     /**
@@ -77,8 +87,11 @@ public class EcoNewsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
-    public ResponseEntity<List<EcoNewsDto>> findAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll());
+    public ResponseEntity<List<EcoNewsDto>> findAll(
+        @ApiParam(value = "Code of the needed language.",
+            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(language));
     }
 
     /**
