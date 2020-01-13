@@ -11,6 +11,7 @@ public interface EcoNewsService {
      * Method for creating {@link EcoNews} instance.
      *
      * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text, image path.
+     * @param languageCode         - code of the needed language.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode);

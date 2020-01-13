@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link org.modelmapper.ModelMapper} to map UserGoal into UserGoalResponseDto.
+ * Class that used by {@link org.modelmapper.ModelMapper} to map {@link UserGoal} into {@link UserGoalResponseDto}.
  */
 @Component
 public class UserGoalResponseDtoMapper extends AbstractConverter<UserGoal, UserGoalResponseDto> {

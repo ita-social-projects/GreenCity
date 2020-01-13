@@ -1,23 +1,30 @@
 package greencity.mapping;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
+import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.repository.LanguageRepository;
 import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Class that used by {@link ModelMapper} to map {@link AddEcoNewsDtoRequest} into
+ * {@link EcoNews}.
+ */
 @Component
 public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoRequest, EcoNews> {
     private LanguageRepository languageRepository;
 
     /**
-     * Constructor.
+     * All args constructor.
      *
-     * @param languageRepository lol
+     * @param languageRepository repository for getting language.
      */
     @Autowired
     public AddEcoNewsDtoRequestMapper(LanguageRepository languageRepository) {
@@ -25,10 +32,10 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
     }
 
     /**
-     * Hello world.
+     * Method for converting {@link AddEcoNewsDtoRequest} into {@link EcoNews}.
      *
-     * @param addEcoNewsDtoRequest dqw
-     * @return qwd
+     * @param addEcoNewsDtoRequest object to convert.
+     * @return converted object.
      */
     @Override
     protected EcoNews convert(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
@@ -42,7 +49,8 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
             .stream()
             .map(translation ->
                 new EcoNewsTranslation(null, languageRepository.findByCode(translation.getLanguage().getCode())
-                    .orElseThrow(() -> new RuntimeException()), translation.getTitle(), ecoNews))
+                    .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE)),
+                    translation.getTitle(), ecoNews))
             .collect(Collectors.toList()));
 
         return ecoNews;

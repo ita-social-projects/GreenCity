@@ -6,18 +6,24 @@ import greencity.entity.localization.EcoNewsTranslation;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.LanguageService;
 import org.modelmapper.AbstractConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Class that used by {@link ModelMapper} to map {@link EcoNews} into
+ * {@link AddEcoNewsDtoResponse}.
+ */
 @Component
 public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddEcoNewsDtoResponse> {
     private LanguageService languageService;
     private EcoNewsTranslationRepo ecoNewsTranslationRepo;
 
     /**
-     * Constructor.
-     * @param languageService lol
-     * @param ecoNewsTranslationRepo kek
+     * All args constructor.
+     *
+     * @param languageService        service to extract language from request.
+     * @param ecoNewsTranslationRepo repository for getting {@link EcoNewsTranslation}.
      */
     @Autowired
     public AddEcoNewsDtoResponseMapper(LanguageService languageService, EcoNewsTranslationRepo ecoNewsTranslationRepo) {
@@ -26,9 +32,10 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
     }
 
     /**
-     * Method.
-     * @param ecoNews aga
-     * @return da
+     * Method for converting {@link EcoNews} into {@link AddEcoNewsDtoResponse}.
+     *
+     * @param ecoNews object to convert.
+     * @return converted object.
      */
     @Override
     protected AddEcoNewsDtoResponse convert(EcoNews ecoNews) {
