@@ -12,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @EqualsAndHashCode(exclude = "translations")
+@ToString(exclude = "translations")
 @Table(name = "eco_news")
 public class EcoNews {
     @Id
