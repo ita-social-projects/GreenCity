@@ -20,7 +20,7 @@ public @interface EventPublishing {
      *
      * @return class of event which will be published.
      */
-    Class<? extends CustomApplicationEvent> eventClass();
+    Class<? extends CustomApplicationEvent>[] eventClass();
 
     /**
      * returns true if {@code null} message value in annotated method returning triggers event creating, in another case

@@ -51,8 +51,10 @@ public class EventPublishingAspect {
     @AfterReturning(pointcut = "myAnnotationPointcut(eventAnnotation)", returning = "eventMessageResponse")
     public void eventPublishingAdvice(EventPublishing eventAnnotation, EventMessageResponse eventMessageResponse) {
         if (checkMessage(eventMessageResponse) || eventAnnotation.isNullMessageTriggers()) {
-            publisher.publishEvent(buildEvent(eventAnnotation.eventClass(), eventMessageResponse.getMessage(),
-                eventMessageResponse.getSource()));
+            for (Class<? extends CustomApplicationEvent> eventClass : eventAnnotation.eventClass()) {
+                publisher.publishEvent(buildEvent(eventClass, eventMessageResponse.getMessage(),
+                    eventMessageResponse.getSource()));
+            }
         }
     }
 
