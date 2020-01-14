@@ -2,13 +2,15 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
-import greencity.event.SendNewsEvent;
+import greencity.events.SendNewsEvent;
 import greencity.service.EmailService;
+import greencity.service.NewsSubscriberService;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +41,7 @@ public class EmailServiceImpl implements EmailService {
     private final String ecoNewsLink;
     private final String serverLink;
     private final String senderEmailAddress;
+    private final NewsSubscriberService newsSubscriberService;
 
     /**
      * Constructor.
@@ -49,13 +52,15 @@ public class EmailServiceImpl implements EmailService {
                             @Value("${client.address}") String clientLink,
                             @Value("${econews.address}") String ecoNewsLink,
                             @Value("${address}") String serverLink,
-                            @Value("${sender.email.address}") String senderEmailAddress) {
+                            @Value("${sender.email.address}") String senderEmailAddress,
+                            NewsSubscriberService newsSubscriberService) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.clientLink = clientLink;
         this.ecoNewsLink = ecoNewsLink;
         this.serverLink = serverLink;
         this.senderEmailAddress = senderEmailAddress;
+        this.newsSubscriberService = newsSubscriberService;
     }
 
     /**
@@ -101,15 +106,25 @@ public class EmailServiceImpl implements EmailService {
     /**
      * {@inheritDoc}
      *
-     * @author Bogdan Kuzenko
      */
     @Override
     @EventListener
-    public void sendNewNewsForSubscriber(SendNewsEvent event) {
+    public void sendNewNewsForSubscriberListener(SendNewsEvent event) {
+        sendNewNewsForSubscriber(newsSubscriberService.findAll(), event.getBody());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Bogdan Kuzenko
+     */
+    @Override
+    public void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
+                                         AddEcoNewsDtoResponse newsDto) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
-        model.put(EmailConstants.NEWS_RESULT, event.getMessage().getNewsDto());
-        for (NewsSubscriberResponseDto dto : event.getMessage().getSubscribers()) {
+        model.put(EmailConstants.NEWS_RESULT, newsDto);
+        for (NewsSubscriberResponseDto dto : subscribers) {
             try {
                 model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
                     + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())

@@ -2,10 +2,9 @@ package greencity.aspects;
 
 import greencity.annotations.EventPublishing;
 import greencity.constant.ErrorMessage;
-import greencity.event.CustomApplicationEvent;
-import greencity.event.EventMessageResponse;
+import greencity.events.CustomApplicationEvent;
 import greencity.exception.exceptions.EventCreationException;
-import java.lang.reflect.InvocationTargetException;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -15,7 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
- * Aspect used for publishing event.
+ * Aspect used for publishing events.
  */
 @Aspect
 @Component
@@ -25,7 +24,7 @@ public class EventPublishingAspect {
     /**
      * All args constructor.
      *
-     * @param publisher object, used for publishing event.
+     * @param publisher object, used for publishing events.
      */
     @Autowired
     public EventPublishingAspect(ApplicationEventPublisher publisher) {
@@ -41,47 +40,37 @@ public class EventPublishingAspect {
     }
 
     /**
-     * advice, that builds and publishes event.
+     * advice, that builds and publishes events.
      *
-     * @param eventAnnotation      annotation, that is over method, that triggered event publishing.
-     * @param eventMessageResponse object, that triggered event method returns.
-     *                             When {@link EventMessageResponse#message} is {@code null}. Event will not be
-     *                             triggered.
+     * @param eventAnnotation annotation, that is over method, that triggered events publishing.
+     * @param returnObject    object, that triggered events method returns.
      */
-    @AfterReturning(pointcut = "myAnnotationPointcut(eventAnnotation)", returning = "eventMessageResponse")
-    public void eventPublishingAdvice(EventPublishing eventAnnotation, EventMessageResponse eventMessageResponse) {
-        if (checkMessage(eventMessageResponse) || eventAnnotation.isNullMessageTriggers()) {
-            for (Class<? extends CustomApplicationEvent> eventClass : eventAnnotation.eventClass()) {
-                publisher.publishEvent(buildEvent(eventClass, eventMessageResponse.getMessage(),
-                    eventMessageResponse.getSource()));
-            }
+    @AfterReturning(pointcut = "myAnnotationPointcut(eventAnnotation)", returning = "returnObject")
+    public void eventPublishingAdvice(JoinPoint jp, EventPublishing eventAnnotation, Object returnObject) {
+        for (Class<? extends CustomApplicationEvent> eventClass : eventAnnotation.eventClass()) {
+            publisher.publishEvent(buildEvent(eventClass, returnObject,
+                jp.getTarget()));
         }
     }
 
     /**
-     * Method for creating instance of event.
+     * Method for creating instance of events.
      *
-     * @param eventClass class of needed event.
-     * @param message    data, that will be put into event.
-     * @param source     the object on which the event initially occurred (never {@code null}).
-     * @return instance instance of event.
+     * @param eventClass class of needed events.
+     * @param body       data, that will be put into events.
+     * @param source     the object on which the events initially occurred (never {@code null}).
+     * @return instance instance of events.
      */
     private ApplicationEvent buildEvent(
-        Class<? extends CustomApplicationEvent> eventClass, Object message, Object source) {
+        Class<? extends CustomApplicationEvent> eventClass, Object body, Object source) {
         try {
-            return eventClass.getConstructor(Object.class, message.getClass()).newInstance(source, message);
-        } catch (InstantiationException | InvocationTargetException | IllegalAccessException
-            | NoSuchMethodException e) {
-            throw new EventCreationException(ErrorMessage.CAN_NOT_CREATE_EVENT_INSTANCE);
+            return eventClass.getConstructor(Object.class, body.getClass()).newInstance(source, body);
+        } catch (ReflectiveOperationException e) {
+            try {
+                return eventClass.getConstructor(Object.class).newInstance(source);
+            } catch (ReflectiveOperationException ex) {
+                throw new EventCreationException(ErrorMessage.CAN_NOT_CREATE_EVENT_INSTANCE);
+            }
         }
-    }
-
-    /**
-     * Method, that checks whether event should be published.
-     *
-     * @return {@code true} if event should be published, in another case - {@code false}.
-     */
-    private boolean checkMessage(EventMessageResponse eventMessageResponse) {
-        return eventMessageResponse.getMessage() != null;
     }
 }

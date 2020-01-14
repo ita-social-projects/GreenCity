@@ -5,22 +5,16 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.EcoNews;
-import greencity.event.EventMessageResponse;
-import greencity.event.SendNewsEvent;
-import greencity.event.messages.SendNewsByEmailMessage;
+import greencity.events.SendNewsEvent;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.NewsSubscriberRepo;
 import greencity.service.EcoNewsService;
-import greencity.service.EmailService;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -29,8 +23,6 @@ import org.springframework.stereotype.Service;
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final ModelMapper modelMapper;
-    private final EmailService emailService;
-    private final NewsSubscriberRepo newsSubscriberRepo;
 
     /**
      * Constructor with parameters.
@@ -38,12 +30,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Autowired
-    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
-                              EmailService emailService, NewsSubscriberRepo newsSubscriberRepo) {
+    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper) {
         this.ecoNewsRepo = ecoNewsRepo;
         this.modelMapper = modelMapper;
-        this.emailService = emailService;
-        this.newsSubscriberRepo = newsSubscriberRepo;
     }
 
     /**
@@ -51,10 +40,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
-    @EventPublishing(eventClass = SendNewsEvent.class)
+    @EventPublishing(eventClass = {SendNewsEvent.class})
     @Override
-    public EventMessageResponse<SendNewsByEmailMessage, AddEcoNewsDtoResponse> save(
-        AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
+    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setCreationDate(ZonedDateTime.now());
         try {
@@ -62,16 +50,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
-        List<NewsSubscriberResponseDto> subscribers = modelMapper.map(newsSubscriberRepo.findAll(),
-            new TypeToken<List<NewsSubscriberResponseDto>>() {
-            }.getType());
-        SendNewsByEmailMessage eventMessage = null;
-        if (!subscribers.isEmpty()) {
-            eventMessage = new SendNewsByEmailMessage(subscribers, modelMapper.map(toSave,
-                AddEcoNewsDtoResponse.class));
-        }
-        return new EventMessageResponse<>(eventMessage,
-            modelMapper.map(toSave, AddEcoNewsDtoResponse.class), this);
+
+        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
     /**
