@@ -1,9 +1,7 @@
 package greencity.entity;
 
-import lombok.*;
-
 import javax.persistence.*;
-import java.util.List;
+import lombok.*;
 
 @Entity
 @Data
@@ -12,9 +10,9 @@ import java.util.List;
 @Builder
 @Table(name = "habit_dictionary_translation")
 @EqualsAndHashCode(
-        exclude = {"habitDictionary"})
+    exclude = {"habitDictionary"})
 @ToString(
-        exclude = {"habitDictionary", "language"})
+    exclude = {"habitDictionary", "language"})
 public class HabitDictionaryTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

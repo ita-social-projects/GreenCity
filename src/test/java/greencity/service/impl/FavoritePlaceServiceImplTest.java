@@ -15,10 +15,8 @@ import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,8 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
@@ -74,7 +70,7 @@ public class FavoritePlaceServiceImplTest {
 
         verify(userService, times(1)).findIdByEmail(fp.getUser().getEmail());
         verify(placeService, times(1)).existsById(any());
-        verify(repo, times(1)).findByPlaceIdAndUserEmail(anyLong(),anyString());
+        verify(repo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
         verify(repo, times(1)).save(any(FavoritePlace.class));
         verify(favoritePlaceDtoMapper, times(1)).convertToEntity(any(FavoritePlaceDto.class));
         verify(favoritePlaceDtoMapper, times(1)).convertToDto(any(FavoritePlace.class));
