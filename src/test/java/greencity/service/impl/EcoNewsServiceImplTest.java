@@ -3,7 +3,6 @@ package greencity.service.impl;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
@@ -89,8 +88,6 @@ public class EcoNewsServiceImplTest {
     public void getThreeLastEcoNews() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
-        EcoNews entity =
-            new EcoNews(1L, zonedDateTime, "test text", "test image path", Collections.emptyList());
         EcoNewsDto ecoNewsDto =
             new EcoNewsDto(1L, "test title", zonedDateTime, "test text", "test image path");
         EcoNewsTranslation ecoNewsTranslation =
