@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
+import greencity.entity.enums.UserStatus;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -63,4 +64,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Modifying
     @Query(value = "UPDATE User SET refreshTokenKey=:refreshTokenKey WHERE id=:id")
     int updateUserRefreshToken(String refreshTokenKey, Long id);
+
+    /**
+     * Counts all users by user {@link UserStatus}.
+     *
+     * @return amount of user with given {@link UserStatus}.
+     */
+    long countAllByUserStatus(UserStatus userStatus);
 }

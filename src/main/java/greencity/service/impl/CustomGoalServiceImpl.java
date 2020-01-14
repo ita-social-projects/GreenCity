@@ -65,7 +65,7 @@ public class CustomGoalServiceImpl implements CustomGoalService {
     /**
      * Method for finding duplicates {@link CustomGoal} in user data before saving.
      *
-     * @param dto {@link CustomGoalSaveRequestDto}`s for saving and finding duplicates.
+     * @param dto  {@link CustomGoalSaveRequestDto}`s for saving and finding duplicates.
      * @param user {@link User} for whom goal are will saving.
      * @return list with the text of {@link CustomGoal}  which is duplicated.
      * @author Bogdan Kuzenko.

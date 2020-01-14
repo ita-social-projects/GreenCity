@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import greencity.converters.DateService;
 import greencity.dto.habitstatistic.*;
 import greencity.dto.user.HabitDictionaryDto;
 import greencity.dto.user.HabitLogItemDto;
@@ -11,17 +12,16 @@ import greencity.entity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.mapping.HabitMapper;
 import greencity.mapping.HabitStatisticMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitStatisticService;
-import greencity.converters.DateService;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -235,14 +235,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             }
             zonedDateTime = zonedDateTime.plusDays(1);
         }
-        HabitDictionaryTranslation habitDictionaryTranslation = habit.getHabitDictionary()
-                .getHabitDictionaryTranslations().stream()
-                .filter(t -> t.getLanguage().getCode().equals(language))
-                .findFirst().orElseThrow(() -> new NotFoundException("This habit don`t exist for thi language"));
         HabitDictionaryDto habitDictionaryDto = modelMapper.map(habit.getHabitDictionary(), HabitDictionaryDto.class);
-        habitDictionaryDto.setDescription(habitDictionaryTranslation.getDescription());
-        habitDictionaryDto.setHabitItem(habitDictionaryTranslation.getHabitItem());
-        habitDictionaryDto.setName(habitDictionaryTranslation.getName());
+        HabitDictionaryTranslation habitDictionaryTranslation = createHabitDictionaryTranslation(habit,
+            habitDictionaryDto, language);
 
         return new HabitDto(habit.getId(),
             habitDictionaryTranslation.getName(),
@@ -254,5 +249,39 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             result,
             habitDictionaryDto
         );
+    }
+
+    /**
+     * Create HabitDictionaryTranslation.
+     *
+     * @param habit              {@link Habit}.
+     * @param habitDictionaryDto {@link HabitDictionaryDto}.
+     * @param language           language code.
+     * @return {@link HabitDictionaryTranslation}.
+     */
+    private HabitDictionaryTranslation createHabitDictionaryTranslation(
+        Habit habit, HabitDictionaryDto habitDictionaryDto, String language) {
+        HabitDictionaryTranslation habitDictionaryTranslation = habit.getHabitDictionary()
+            .getHabitDictionaryTranslations().stream()
+            .filter(t -> t.getLanguage().getCode().equals(language))
+            .findFirst().orElseThrow(() -> new NotFoundException("This habit don`t exist for this language"));
+        habitDictionaryDto.setDescription(habitDictionaryTranslation.getDescription());
+        habitDictionaryDto.setHabitItem(habitDictionaryTranslation.getHabitItem());
+        habitDictionaryDto.setName(habitDictionaryTranslation.getName());
+        return habitDictionaryTranslation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language) {
+        return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), language).stream()
+            .map(it ->
+                HabitItemsAmountStatisticDto.builder()
+                    .habitItem((String) it.get(0))
+                    .notTakenItems((long) it.get(1))
+                    .build()
+            ).collect(Collectors.toList());
     }
 }

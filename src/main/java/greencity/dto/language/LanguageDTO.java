@@ -4,8 +4,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(of = {"id", "code"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

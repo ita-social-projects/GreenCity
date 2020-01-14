@@ -1,5 +1,6 @@
 package greencity.dto.advice;
 
+import greencity.annotations.LanguageTranslationConstraint;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitDictionaryIdDto;
 import java.util.List;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdvicePostDTO {
-    @NotNull
+    @LanguageTranslationConstraint
     private List<LanguageTranslationDTO> translations;
 
     @NotNull
