@@ -11,7 +11,10 @@ import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
-import greencity.entity.*;
+import greencity.entity.Habit;
+import greencity.entity.HabitDictionaryTranslation;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
@@ -223,7 +226,7 @@ public class UserServiceImpl implements UserService {
         List<UserGoalResponseDto> userGoalResponseDto = userGoalRepo
             .findAllByUserId(user.getId())
             .stream()
-            .map(userGoal -> convertUserGoalToUserGoalResponseDto(userGoal, language))
+            .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
             .collect(Collectors.toList());
         if (userGoalResponseDto.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
@@ -244,7 +247,7 @@ public class UserServiceImpl implements UserService {
         }
         return goalTranslations
             .stream()
-            .map(g -> new GoalDto(g.getGoal().getId(), g.getText()))
+            .map(g -> modelMapper.map(g, GoalDto.class))
             .collect(Collectors.toList());
     }
 
@@ -267,7 +270,7 @@ public class UserServiceImpl implements UserService {
             saveCustomGoalsForUserGoals(user, customGoals);
         }
         return user.getUserGoals().stream()
-            .map(userGoal -> convertUserGoalToUserGoalResponseDto(userGoal, language))
+            .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
             .collect(Collectors.toList());
     }
 
@@ -357,7 +360,7 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
         }
-        return convertUserGoalToUserGoalResponseDto(userGoal, language);
+        return modelMapper.map(userGoal, UserGoalResponseDto.class);
     }
 
     /**
@@ -408,7 +411,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<HabitDictionaryDto> getAvailableHabitDictionary(User user, String language) {
         List<HabitDictionaryTranslation> availableHabitDictionary = habitDictionaryTranslationRepo
-                .findAvailableHabitDictionaryByUser(user.getId(), language);
+            .findAvailableHabitDictionaryByUser(user.getId(), language);
         if (availableHabitDictionary.isEmpty()) {
             throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
         }
@@ -469,6 +472,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getActivatedUsersAmount() {
+        return userRepo.countAllByUserStatus(UserStatus.ACTIVATED);
+    }
+
+    /**
      * Method check is in user habit.
      *
      * @param userId      Id current user.
@@ -522,25 +533,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private UserGoalResponseDto convertUserGoalToUserGoalResponseDto(UserGoal userGoal, String language) {
-        UserGoalResponseDto dto = modelMapper.map(userGoal, UserGoalResponseDto.class);
-        if (userGoal.getCustomGoal() == null) {
-            Goal goal = goalRepo
-                .findById(userGoal
-                    .getGoal().getId()).orElseThrow(() -> new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID));
-            dto.setText(goalTranslationRepo.findByGoalAndLanguageCode(goal, language)
-                .orElseThrow(() -> new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_LANGUAGE_CODE)).getText());
-        } else if (userGoal.getGoal() == null) {
-            CustomGoal customGoal = customGoalRepo.findById(userGoal
-                .getCustomGoal().getId()).orElseThrow(() -> new NotFoundException(CUSTOM_GOAL_NOT_FOUND_BY_ID));
-            dto.setText(customGoal.getText());
-        }
-        return dto;
-    }
-
-
     private List<HabitDictionaryDto> habitDictionaryDtos(
-            List<HabitDictionaryTranslation> habitDictionaryTranslations) {
+        List<HabitDictionaryTranslation> habitDictionaryTranslations) {
         List<HabitDictionaryDto> habitDictionaryDtos = new ArrayList<>();
         for (HabitDictionaryTranslation hdt : habitDictionaryTranslations) {
             HabitDictionaryDto hd = new HabitDictionaryDto();

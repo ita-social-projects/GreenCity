@@ -7,7 +7,6 @@ import greencity.repository.AdviceTranslationRepo;
 import greencity.service.AdviceTranslationService;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +18,23 @@ import org.springframework.stereotype.Service;
  * @author Vitaliy Dzen
  */
 @Service
-@AllArgsConstructor
 public class AdviceTranslationServiceImpl implements AdviceTranslationService {
-    private AdviceTranslationRepo adviceTranslationRepo;
-    private AdviceServiceImpl adviceService;
-    @Autowired
+    private final AdviceTranslationRepo adviceTranslationRepo;
+    private final AdviceServiceImpl adviceService;
     private final ModelMapper modelMapper;
+
+    /**
+     * Constructor with parameters.
+     *
+     * @author Vitaliy Dzen
+     */
+    @Autowired
+    public AdviceTranslationServiceImpl(AdviceTranslationRepo adviceTranslationRepo,
+                                        AdviceServiceImpl adviceService, ModelMapper modelMapper) {
+        this.adviceTranslationRepo = adviceTranslationRepo;
+        this.adviceService = adviceService;
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * Method saves new {@link AdviceTranslation}.
@@ -45,6 +55,7 @@ public class AdviceTranslationServiceImpl implements AdviceTranslationService {
      * @return List of {@link AdviceTranslation}
      * @author Vitaliy Dzen
      */
+    @Override
     public List<AdviceTranslation> saveAdviceAndAdviceTranslation(AdvicePostDTO advicePostDTO) {
         Advice advice = adviceService.save(advicePostDTO);
         List<AdviceTranslation> adviceTranslations = modelMapper.map(advicePostDTO.getTranslations(),

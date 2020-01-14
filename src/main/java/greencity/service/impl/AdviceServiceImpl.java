@@ -13,7 +13,6 @@ import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitDictionaryRepo;
 import greencity.service.AdviceService;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +24,26 @@ import org.springframework.stereotype.Service;
  * @author Vitaliy Dzen
  */
 @Service
-@AllArgsConstructor
 public class AdviceServiceImpl implements AdviceService {
-    private AdviceRepo adviceRepo;
-    private HabitDictionaryRepo habitDictionaryRepo;
-    private AdviceTranslationRepo adviceTranslationRepo;
+    private final AdviceRepo adviceRepo;
+    private final HabitDictionaryRepo habitDictionaryRepo;
+    private final AdviceTranslationRepo adviceTranslationRepo;
 
-    @Autowired
     private final ModelMapper modelMapper;
+
+    /**
+     * Constructor with parameters.
+     *
+     * @author Vitaliy Dzen
+     */
+    @Autowired
+    public AdviceServiceImpl(AdviceRepo adviceRepo, HabitDictionaryRepo habitDictionaryRepo,
+                             AdviceTranslationRepo adviceTranslationRepo, ModelMapper modelMapper) {
+        this.adviceRepo = adviceRepo;
+        this.habitDictionaryRepo = habitDictionaryRepo;
+        this.adviceTranslationRepo = adviceTranslationRepo;
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * Method finds all {@link Advice}.

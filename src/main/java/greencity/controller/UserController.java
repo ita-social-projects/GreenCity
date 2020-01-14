@@ -19,9 +19,9 @@ import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 import greencity.service.CustomGoalService;
+import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import greencity.service.UserValidationService;
-import greencity.service.impl.HabitStatisticServiceImpl;
 import io.swagger.annotations.*;
 import java.security.Principal;
 import java.util.List;
@@ -43,7 +43,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class UserController {
     private UserService userService;
     private UserValidationService userValidationService;
-    private HabitStatisticServiceImpl habitStatisticServiceImpl;
+    private HabitStatisticService habitStatisticService;
     private CustomGoalService customGoalService;
 
     /**
@@ -227,7 +227,7 @@ public class UserController {
                                           @ApiParam(value = "Code of the needed language.")
                                                             @RequestParam String language) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticServiceImpl.findAllHabitsAndTheirStatistics(
+            .body(habitStatisticService.findAllHabitsAndTheirStatistics(
                 userValidationService.userValidForActions(principal, userId).getId(), true, language));
     }
 
@@ -244,7 +244,7 @@ public class UserController {
     public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(
         @PathVariable Long userId, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticServiceImpl.getInfoAboutUserHabits(
+            .body(habitStatisticService.getInfoAboutUserHabits(
                 userValidationService.userValidForActions(principal, userId).getId()));
     }
 
@@ -591,5 +591,24 @@ public class UserController {
         userValidationService.userValidForActions(principal, userId);
         return ResponseEntity.status(HttpStatus.OK).body(userService
             .deleteUserGoals(ids));
+    }
+
+    /**
+     * Counts all users by user {@link UserStatus} ACTIVATED.
+     *
+     * @return amount of users with {@link UserStatus} ACTIVATED.
+     * @author Shevtsiv Rostyslav
+     */
+    @ApiOperation(value = "Get all activated users amount")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/activatedUsersAmount")
+    public ResponseEntity<Long> getActivatedUsersAmount() {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.getActivatedUsersAmount());
     }
 }

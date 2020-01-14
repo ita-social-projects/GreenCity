@@ -2,12 +2,14 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
-import greencity.service.impl.HabitStatisticServiceImpl;
+import greencity.service.HabitStatisticService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/habit")
 @AllArgsConstructor
 public class HabitStatisticController {
-    private final HabitStatisticServiceImpl habitStatisticServiceImpl;
+    private final HabitStatisticService habitStatisticService;
 
     /**
      * Method for creating {@link HabitStatistic} by {@link Habit} id.
@@ -39,7 +41,7 @@ public class HabitStatisticController {
     @PostMapping("/statistic/")
     public ResponseEntity<Object> save(@Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticServiceImpl.save(addHabitStatisticDto));
+            .body(habitStatisticService.save(addHabitStatisticDto));
     }
 
     /**
@@ -58,7 +60,7 @@ public class HabitStatisticController {
     @PatchMapping("/statistic/{habitStatisticId}")
     public ResponseEntity<UpdateHabitStatisticDto> update(
         @PathVariable Long habitStatisticId, @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticServiceImpl
+        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService
             .update(habitStatisticId, habitStatisticForUpdateDto));
     }
 
@@ -73,6 +75,31 @@ public class HabitStatisticController {
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticServiceImpl.findAllByHabitId(habitId));
+            .body(habitStatisticService.findAllByHabitId(habitId));
+    }
+
+    /**
+     * Returns statistics for all not taken habit items in the system for today.
+     * Data is returned as an array of key-value-pairs mapped to {@link HabitItemsAmountStatisticDto},
+     * where key is the name of habit item and value is not taken amount of these items.
+     * Language of habit items is defined by the `language` parameter.
+     *
+     * @param language - Name of habit item localization language(e.x. "en" or "uk").
+     * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those key-value pairs.
+     */
+    @ApiOperation(value = "Get today's statistic for all habit items")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/statistic/todayStatisticsForAllHabitItems")
+    public ResponseEntity<List<HabitItemsAmountStatisticDto>> getTodayStatisticsForAllHabitItems(
+        @ApiParam(value = "Requested language code")
+        @RequestParam(defaultValue = "en") String language
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitStatisticService.getTodayStatisticsForAllHabitItems(language));
     }
 }

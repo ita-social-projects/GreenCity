@@ -17,4 +17,11 @@ public interface LanguageService {
      * @author Vitaliy Dzen
      */
     List<LanguageDTO> getAllLanguages();
+
+    /**
+     * Method for extracting language code from request param.
+     *
+     * @return language code
+     */
+    String extractLanguageCodeFromRequest();
 }

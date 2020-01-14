@@ -52,6 +52,25 @@ public class CustomGoalServiceImpl implements CustomGoalService {
     @Override
     public List<CustomGoalResponseDto> save(BulkSaveCustomGoalDto bulkSave, User user) {
         List<CustomGoalSaveRequestDto> dto = bulkSave.getCustomGoalSaveRequestDtoList();
+        List<String> errorMessages = findDuplicates(dto, user);
+        if (!errorMessages.isEmpty()) {
+            throw new CustomGoalNotSavedException(CUSTOM_GOAL_WHERE_NOT_SAVED + errorMessages.toString());
+        }
+        customGoalRepo.saveAll(user.getCustomGoals());
+        return user.getCustomGoals().stream()
+            .map(customGoal -> modelMapper.map(customGoal, CustomGoalResponseDto.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Method for finding duplicates {@link CustomGoal} in user data before saving.
+     *
+     * @param dto  {@link CustomGoalSaveRequestDto}`s for saving and finding duplicates.
+     * @param user {@link User} for whom goal are will saving.
+     * @return list with the text of {@link CustomGoal}  which is duplicated.
+     * @author Bogdan Kuzenko.
+     */
+    private List<String> findDuplicates(List<CustomGoalSaveRequestDto> dto, User user) {
         List<String> errorMessages = new ArrayList<>();
         for (CustomGoalSaveRequestDto el : dto) {
             CustomGoal customGoal = modelMapper.map(el, CustomGoal.class);
@@ -64,13 +83,7 @@ public class CustomGoalServiceImpl implements CustomGoalService {
                 errorMessages.add(customGoal.getText());
             }
         }
-        customGoalRepo.saveAll(user.getCustomGoals());
-        if (!errorMessages.isEmpty()) {
-            throw new CustomGoalNotSavedException(CUSTOM_GOAL_WHERE_NOT_SAVED + errorMessages.toString());
-        }
-        return user.getCustomGoals().stream()
-            .map(customGoal -> modelMapper.map(customGoal, CustomGoalResponseDto.class))
-            .collect(Collectors.toList());
+        return errorMessages;
     }
 
     /**

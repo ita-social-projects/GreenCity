@@ -9,7 +9,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Constraint(validatedBy = LanguageTranslationValidator.class)
-@Target( {ElementType.FIELD})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LanguageTranslationConstraint {
     /**
