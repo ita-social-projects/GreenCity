@@ -610,4 +610,11 @@ public class UserServiceImplTest {
         userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), habit.getId());
         verify(habitRepo).updateHabitStatusById(habit.getId(), false);
     }
+
+    @Test
+    public void getActivatedUsersAmountTest() {
+        when(userRepo.countAllByUserStatus(UserStatus.ACTIVATED)).thenReturn(1L);
+        long activatedUsersAmount = userService.getActivatedUsersAmount();
+        assertEquals(1L, activatedUsersAmount);
+    }
 }

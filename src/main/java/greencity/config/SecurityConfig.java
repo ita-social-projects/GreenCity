@@ -92,6 +92,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/info/favorite/**",
                 "/place/statuses/**",
                 "/user/emailNotifications/**",
+                "/user/activatedUsersAmount",
+                "/habit/todayStatisticsForAllHabitItems",
                 "/place/about/{id}/**",
                 "/specification/**",
                 "/newsSubscriber/unsubscribe",
