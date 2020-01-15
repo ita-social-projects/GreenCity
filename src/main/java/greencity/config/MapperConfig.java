@@ -1,7 +1,6 @@
 package greencity.config;
 
-import greencity.mapping.GoalDtoMapper;
-import greencity.mapping.UserGoalResponseDtoMapper;
+import greencity.mapping.*;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
@@ -14,6 +13,9 @@ import org.springframework.context.annotation.Configuration;
 public class MapperConfig {
     private UserGoalResponseDtoMapper userGoalResponseDtoMapper;
     private GoalDtoMapper goalDtoMapper;
+    private EcoNewsDtoMapper ecoNewsDtoMapper;
+    private AddEcoNewsDtoRequestMapper addEcoNewsDtoRequestMapper;
+    private AddEcoNewsDtoResponseMapper addEcoNewsDtoResponseMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -44,5 +46,8 @@ public class MapperConfig {
     private void addConverters(ModelMapper modelMapper) {
         modelMapper.addConverter(goalDtoMapper);
         modelMapper.addConverter(userGoalResponseDtoMapper);
+        modelMapper.addConverter(ecoNewsDtoMapper);
+        modelMapper.addConverter(addEcoNewsDtoRequestMapper);
+        modelMapper.addConverter(addEcoNewsDtoResponseMapper);
     }
 }

@@ -26,5 +26,6 @@
     <include file="db/changelog/logs/ch-modify-column-Koval-3.xml"/>
     <include file="db/changelog/logs/ch-update-habit-dictionary-turko.xml"/>
     <include file="db/changelog/logs/ch-habit-dictionary-translation-turko.xml"/>
+    <include file="db/changelog/logs/ch-eco-news-localization-Kopylchak-1.xml"/>
 
 </databaseChangeLog>
