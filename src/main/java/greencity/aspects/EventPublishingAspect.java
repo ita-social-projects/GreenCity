@@ -43,13 +43,15 @@ public class EventPublishingAspect {
      * advice, that builds and publishes events.
      *
      * @param eventAnnotation annotation, that is over method, that triggered events publishing.
-     * @param returnObject    object, that triggered events method returns.
+     * @param body            object, that triggered events method returns.
      */
-    @AfterReturning(pointcut = "myAnnotationPointcut(eventAnnotation)", returning = "returnObject")
-    public void eventPublishingAdvice(JoinPoint jp, EventPublishing eventAnnotation, Object returnObject) {
-        for (Class<? extends CustomApplicationEvent> eventClass : eventAnnotation.eventClass()) {
-            publisher.publishEvent(buildEvent(eventClass, returnObject,
-                jp.getTarget()));
+    @AfterReturning(pointcut = "myAnnotationPointcut(eventAnnotation)", returning = "body")
+    public void eventPublishingAdvice(JoinPoint jp, EventPublishing eventAnnotation, Object body) {
+        if (body != null || eventAnnotation.isNullTriggers()) {
+            for (Class<? extends CustomApplicationEvent> eventClass : eventAnnotation.eventClass()) {
+                publisher.publishEvent(buildEvent(eventClass, body,
+                    jp.getTarget()));
+            }
         }
     }
 
@@ -64,6 +66,9 @@ public class EventPublishingAspect {
     private ApplicationEvent buildEvent(
         Class<? extends CustomApplicationEvent> eventClass, Object body, Object source) {
         try {
+            if (body == null) {
+                return eventClass.getConstructor(Object.class).newInstance(source);
+            }
             return eventClass.getConstructor(Object.class, body.getClass()).newInstance(source, body);
         } catch (ReflectiveOperationException e) {
             try {

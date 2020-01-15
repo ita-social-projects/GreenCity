@@ -19,4 +19,11 @@ public @interface EventPublishing {
      * @return class of events which will be published.
      */
     Class<? extends CustomApplicationEvent>[] eventClass();
+
+    /**
+     * returns whether null value as a method returning triggers event publishing.
+     *
+     * @return whether null value as a method returning triggers event publishing.
+     */
+    boolean isNullTriggers() default false;
 }
