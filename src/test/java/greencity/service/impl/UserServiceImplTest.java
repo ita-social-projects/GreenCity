@@ -8,7 +8,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
@@ -39,7 +38,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplTest {
     @Mock
     UserRepo userRepo;
@@ -48,16 +47,10 @@ public class UserServiceImplTest {
     UserGoalRepo userGoalRepo;
 
     @Mock
-    GoalRepo goalRepo;
-
-    @Mock
     CustomGoalRepo customGoalRepo;
 
     @Mock
     GoalTranslationRepo goalTranslationRepo;
-
-    @Mock
-    HabitDictionaryRepo habitDictionaryRepo;
 
     @Mock
     HabitRepo habitRepo;
@@ -358,9 +351,6 @@ public class UserServiceImplTest {
         user.setUserGoals(Collections.singletonList(userGoal));
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
             new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
-        when(goalRepo.findById(anyLong())).thenReturn(Optional.of(new Goal(1L, null, null)));
-        when(goalTranslationRepo.findByGoalAndLanguageCode(any(), any()))
-            .thenReturn(Optional.of(new GoalTranslation(1L, null, "foo", null)));
         UserGoalResponseDto result = userService.updateUserGoalStatus(user, userGoal.getId(), "en");
         assertEquals("foo", result.getText());
         verify(userGoalRepo, times(0)).save(userGoal);
@@ -372,9 +362,6 @@ public class UserServiceImplTest {
         when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
             .thenReturn(new UserGoalResponseDto(1L, "foo", GoalStatus.DONE));
-        when(goalRepo.findById(anyLong())).thenReturn(Optional.of(new Goal(1L, null, null)));
-        when(goalTranslationRepo.findByGoalAndLanguageCode(any(), any()))
-            .thenReturn(Optional.of(new GoalTranslation(1L, null, "foo", null)));
         user.setUserGoals(Collections.singletonList(userGoal));
         UserGoalResponseDto userGoalResponseDto = userService.updateUserGoalStatus(user, userGoal.getId(), "en");
         assertEquals(GoalStatus.DONE, userGoal.getStatus());
@@ -389,9 +376,6 @@ public class UserServiceImplTest {
         UserGoalResponseDto expectedUserGoalResponseDto = new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE);
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
             .thenReturn(new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
-        when(goalRepo.findById(anyLong())).thenReturn(Optional.of(new Goal(1L, null, null)));
-        when(goalTranslationRepo.findByGoalAndLanguageCode(any(), any()))
-            .thenReturn(Optional.of(new GoalTranslation(1L, null, "foo", null)));
         user.setUserGoals(Collections.singletonList(userGoal));
         UserGoalResponseDto userGoalResponseDto = userService.updateUserGoalStatus(user, userGoal.getId(), "en");
         assertEquals(GoalStatus.ACTIVE, userGoal.getStatus());
@@ -421,9 +405,6 @@ public class UserServiceImplTest {
         UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto();
         BulkSaveUserGoalDto nullUserGoalsDto =
             new BulkSaveUserGoalDto(null, Collections.singletonList(userCustomGoalDto));
-        when(goalRepo.findById(anyLong())).thenReturn(Optional.of(new Goal(1L, null, null)));
-        when(goalTranslationRepo.findByGoalAndLanguageCode(any(), any()))
-            .thenReturn(Optional.of(new GoalTranslation(1L, null, "foo", null)));
         List<UserGoalResponseDto> result = userService.saveUserGoals(user, nullUserGoalsDto, "en");
         assertEquals("foo", result.get(0).getText());
         verify(userGoalRepo).saveAll(user.getUserGoals());
@@ -441,9 +422,6 @@ public class UserServiceImplTest {
         UserGoalDto userGoalDto = new UserGoalDto();
         BulkSaveUserGoalDto nullCustomGoalsDto =
             new BulkSaveUserGoalDto(Collections.singletonList(userGoalDto), null);
-        when(goalRepo.findById(anyLong())).thenReturn(Optional.of(new Goal(1L, null, null)));
-        when(goalTranslationRepo.findByGoalAndLanguageCode(any(), any()))
-            .thenReturn(Optional.of(new GoalTranslation(1L, null, "foo", null)));
         List<UserGoalResponseDto> result = userService.saveUserGoals(user, nullCustomGoalsDto, "en");
         assertEquals("foo", result.get(0).getText());
         verify(userGoalRepo).saveAll(user.getUserGoals());
@@ -463,9 +441,6 @@ public class UserServiceImplTest {
         BulkSaveUserGoalDto userGoalsAndCustomGoalsDto = new BulkSaveUserGoalDto(
             Collections.singletonList(userGoalDto), Collections.singletonList(userCustomGoalDto)
         );
-        when(goalRepo.findById(anyLong())).thenReturn(Optional.of(new Goal(1L, null, null)));
-        when(goalTranslationRepo.findByGoalAndLanguageCode(any(), any()))
-            .thenReturn(Optional.of(new GoalTranslation(1L, null, "foo", null)));
         List<UserGoalResponseDto> result = userService.saveUserGoals(user, userGoalsAndCustomGoalsDto, "en");
         assertEquals("foo", result.get(0).getText());
         verify(userGoalRepo, times(2)).saveAll(user.getUserGoals());
@@ -501,8 +476,6 @@ public class UserServiceImplTest {
 
     @Test
     public void createUserHabitTest() {
-        when(habitMapper.convertToDto(new Habit(), "en")).thenReturn(new HabitCreateDto());
-        when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
         when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
         assertEquals(userService.createUserHabit(user, Collections.emptyList(), anyString()), Collections.emptyList());
@@ -536,13 +509,8 @@ public class UserServiceImplTest {
 
     @Test
     public void addDefaultHabitTest() {
-        when(habitRepo.findByUserIdAndHabitDictionaryId(user.getId(), 1L)).thenReturn(Optional.empty());
-        when(habitMapper.convertToDto(new Habit(), "en")).thenReturn(new HabitCreateDto());
         when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
-        when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
-        when(userService.createUserHabit(user, Collections.singletonList(new HabitIdDto()), anyString()))
-            .thenReturn(Collections.singletonList(new HabitCreateDto()));
         userService.addDefaultHabit(user, "en");
         verify(habitRepo, times(1)).saveAll(Collections.singletonList(new Habit()));
     }
@@ -574,7 +542,6 @@ public class UserServiceImplTest {
     public void deleteHabitByUserIdAndHabitDictionaryNotDeletedExceptionTest() {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(new Habit()));
         when(habitRepo.countHabitByUserId(user.getId())).thenReturn(1);
-        when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(Collections.emptyList());
         userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L);
     }
 
