@@ -6,6 +6,7 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
+import greencity.events.SendNewsEvent;
 import java.util.List;
 import java.util.Map;
 
@@ -26,11 +27,17 @@ public interface EmailService {
 
     /**
      * Method for sending news for users who subscribed for updates.
-     * @param subscribers     - {@link NewsSubscriberResponseDto} list with subscribers for receiving.
-     * @param newsDto         - {@link AddEcoNewsDtoResponse} object with data
      */
     void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
                                   AddEcoNewsDtoResponse newsDto);
+
+    /**
+     * Method, that listen to {@link SendNewsEvent} and after triggering sends news for users who
+     * subscribed for updates.
+     *
+     * @param event {@link SendNewsEvent} with body, that contains data needed for sending news.
+     */
+    void sendNewNewsForSubscriberListener(SendNewsEvent event);
 
     /**
      * Method for sending simple notification to {@code User} about change status.

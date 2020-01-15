@@ -11,6 +11,7 @@ import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.EmailService;
+import greencity.service.NewsSubscriberService;
 import java.util.*;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -27,6 +28,8 @@ public class EmailServiceImplTest {
     private JavaMailSender javaMailSender;
     @Mock
     private ITemplateEngine templateEngine;
+    @Mock
+    private NewsSubscriberService newsSubscriberService;
 
     @Before
     public void setup() {
