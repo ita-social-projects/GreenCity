@@ -7,17 +7,17 @@ import static org.mockito.Mockito.*;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.EcoNews;
-import greencity.entity.NewsSubscriber;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
-import greencity.repository.NewsSubscriberRepo;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,12 +38,6 @@ public class EcoNewsServiceImplTest {
     @Mock
     ModelMapper modelMapper;
 
-    @Mock
-    EmailServiceImpl emailService;
-
-    @Mock
-    NewsSubscriberRepo newsSubscriberRepo;
-
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
 
@@ -53,14 +47,6 @@ public class EcoNewsServiceImplTest {
         new EcoNews(1L, ZonedDateTime.now(), "test text", "test image path", Collections.emptyList());
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse =
         new AddEcoNewsDtoResponse("test title", "test text", ZonedDateTime.now(), "test image path");
-
-    private List<NewsSubscriberResponseDto> subscribers = Arrays.asList(
-        new NewsSubscriberResponseDto("test1@mail.ua", "test token"),
-        new NewsSubscriberResponseDto("test2@mail.ua", "test token1"));
-    private List<NewsSubscriber> subscribersEntity = Arrays.asList(
-        new NewsSubscriber(1L, "test1@mail.ua", "test token"),
-        new NewsSubscriber(2L, "test2@mail.ua", "test token1"));
-
 
     @Test
     public void save() {
