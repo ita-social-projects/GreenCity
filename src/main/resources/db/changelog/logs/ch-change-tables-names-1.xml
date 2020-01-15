@@ -62,9 +62,4 @@
         <renameTable newTableName="verify_emails"
                      oldTableName="verify_email"/>
     </changeSet>
-    <changeSet author="Yuriy"
-               id="12">
-        <renameTable newTableName="web_pages"
-                     oldTableName="web_page"/>
-    </changeSet>
 </databaseChangeLog>
