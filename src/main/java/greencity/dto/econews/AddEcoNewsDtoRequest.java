@@ -1,5 +1,6 @@
 package greencity.dto.econews;
 
+import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AddEcoNewsDtoRequest {
     @NotEmpty
-    private String title;
+    private List<EcoNewsTranslationDto> translations;
     @NotEmpty
     private String text;
     @NotEmpty

@@ -10,8 +10,11 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.EcoNews;
 import greencity.entity.NewsSubscriber;
+import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
+import greencity.repository.EcoNewsTranslationRepo;
 import greencity.repository.NewsSubscriberRepo;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -22,12 +25,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EcoNewsServiceImplTest {
-
     @Mock
     EcoNewsRepo ecoNewsRepo;
+
+    @Mock
+    EcoNewsTranslationRepo ecoNewsTranslationRepo;
 
     @Mock
     ModelMapper modelMapper;
@@ -42,9 +48,9 @@ public class EcoNewsServiceImplTest {
     private EcoNewsServiceImpl ecoNewsService;
 
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest =
-        new AddEcoNewsDtoRequest("test title", "test text", "test image path");
+        new AddEcoNewsDtoRequest(Collections.emptyList(), "test text", "test image path");
     private EcoNews entity =
-        new EcoNews(1L, "test title", ZonedDateTime.now(), "test text", "test image path");
+        new EcoNews(1L, ZonedDateTime.now(), "test text", "test image path", Collections.emptyList());
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse =
         new AddEcoNewsDtoResponse("test title", "test text", ZonedDateTime.now(), "test image path");
 
@@ -60,56 +66,63 @@ public class EcoNewsServiceImplTest {
     public void save() {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(entity);
         when(modelMapper.map(entity, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
-        when(ecoNewsRepo.save(entity)).thenReturn(entity);
 
-        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest));
+        when(ecoNewsRepo.save(entity)).thenReturn(entity);
+        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "en"));
+    }
+
+    @Test(expected = NotSavedException.class)
+    public void saveThrowsNotSavedException() {
+        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(entity);
+        when(ecoNewsRepo.save(entity)).thenThrow(DataIntegrityViolationException.class);
+        ecoNewsService.save(addEcoNewsDtoRequest, "en");
     }
 
     @Test
     public void getThreeLastEcoNews() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
-        EcoNews entity =
-            new EcoNews(1L, "test title", zonedDateTime, "test text", "test image path");
         EcoNewsDto ecoNewsDto =
             new EcoNewsDto(1L, "test title", zonedDateTime, "test text", "test image path");
+        EcoNewsTranslation ecoNewsTranslation =
+            new EcoNewsTranslation(1L, null, "test title", null);
 
-        List<EcoNews> entityList = Collections.singletonList(entity);
         List<EcoNewsDto> dtoList = Collections.singletonList(ecoNewsDto);
 
-        when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(entityList);
-        when(modelMapper.map(entity, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-        Assert.assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews());
+        when(ecoNewsTranslationRepo.getNLastEcoNewsByLanguageCode(3, "en"))
+            .thenReturn(Collections.singletonList(ecoNewsTranslation));
+        when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+        Assert.assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews("en"));
     }
 
     @Test(expected = NotFoundException.class)
     public void getThreeLastEcoNewsNotFound() {
-        List<EcoNews> ecoNewsList = new ArrayList<>();
+        List<EcoNewsTranslation> ecoNewsTranslations = new ArrayList<>();
         List<EcoNewsDto> ecoNewsDtoList = new ArrayList<>();
-        when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(ecoNewsList);
-        Assert.assertEquals(ecoNewsDtoList, ecoNewsService.getThreeLastEcoNews());
+        when(ecoNewsTranslationRepo.getNLastEcoNewsByLanguageCode(anyInt(), anyString()))
+            .thenReturn(ecoNewsTranslations);
+        Assert.assertEquals(ecoNewsDtoList, ecoNewsService.getThreeLastEcoNews("en"));
     }
 
     @Test
     public void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
-        EcoNews entity =
-            new EcoNews(1L, "test title", now, "test text", "test image path");
-        List<EcoNews> entityList = Collections.singletonList(entity);
+        EcoNewsTranslation ecoNewsTranslation =
+            new EcoNewsTranslation(1L, null, "test title", null);
+        List<EcoNewsTranslation> ecoNewsTranslations = Collections.singletonList(ecoNewsTranslation);
         List<EcoNewsDto> dtoList = Collections.singletonList(
             new EcoNewsDto(1L, "test title", now, "test text", "test image path")
         );
-        when(ecoNewsRepo.findAll()).thenReturn(entityList);
-        when(modelMapper.map(entity, EcoNewsDto.class))
-            .thenReturn(new EcoNewsDto(1L, "test title", now, "test text", "test image path"));
-        Assert.assertEquals(dtoList, ecoNewsService.findAll());
-
+        when(ecoNewsTranslationRepo.findAllByLanguageCode(anyString())).thenReturn(ecoNewsTranslations);
+        when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class))
+            .thenReturn(dtoList.get(0));
+        Assert.assertEquals(dtoList, ecoNewsService.findAll("en"));
     }
 
     @Test
     public void findById() {
         EcoNews entity =
-            new EcoNews(1L, "test title", ZonedDateTime.now(), "test text", "test image path");
+            new EcoNews(1L, ZonedDateTime.now(), "test text", "test image path", Collections.emptyList());
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(entity));
         Assert.assertEquals(entity, ecoNewsService.findById(1L));
     }
@@ -118,7 +131,8 @@ public class EcoNewsServiceImplTest {
     public void delete() {
         doNothing().when(ecoNewsRepo).deleteById(1L);
         when(ecoNewsRepo.findById(anyLong()))
-            .thenReturn(Optional.of(new EcoNews(1L, "test title", ZonedDateTime.now(), "test text", "test image path")));
+            .thenReturn(Optional.of(new EcoNews(1L, ZonedDateTime.now(), "test text",
+                "test image path", Collections.emptyList())));
         ecoNewsService.delete(1L);
         verify(ecoNewsRepo, times(1)).deleteById(1L);
     }

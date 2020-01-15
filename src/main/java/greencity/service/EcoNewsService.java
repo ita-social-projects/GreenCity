@@ -11,23 +11,26 @@ public interface EcoNewsService {
      * Method for creating {@link EcoNews} instance.
      *
      * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text, image path.
+     * @param languageCode         - code of the needed language.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
-    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest);
+    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode);
 
     /**
      * Method for getting last three eco news.
      *
+     * @param languageCode needed language code.
      * @return list of {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> getThreeLastEcoNews();
+    List<EcoNewsDto> getThreeLastEcoNews(String languageCode);
 
     /**
      * Method for getting all eco news.
      *
+     * @param languageCode needed language code.
      * @return list of {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> findAll();
+    List<EcoNewsDto> findAll(String languageCode);
 
     /**
      * Method for getting the {@link EcoNews} instance by its id.

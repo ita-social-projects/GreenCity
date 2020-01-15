@@ -6,10 +6,12 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
+import greencity.entity.localization.EcoNewsTranslation;
 import greencity.events.SendNewsEvent;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
+import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.EcoNewsService;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final ModelMapper modelMapper;
+    private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
 
     /**
      * Constructor with parameters.
@@ -30,9 +33,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Autowired
-    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper) {
+    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
+                              EcoNewsTranslationRepo ecoNewsTranslationRepo) {
         this.ecoNewsRepo = ecoNewsRepo;
         this.modelMapper = modelMapper;
+        this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
     }
 
     /**
@@ -42,7 +47,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @EventPublishing(eventClass = {SendNewsEvent.class})
     @Override
-    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
+    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setCreationDate(ZonedDateTime.now());
         try {
@@ -60,12 +65,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Override
-    public List<EcoNewsDto> getThreeLastEcoNews() {
-        List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeLastEcoNews();
-        if (ecoNewsList.isEmpty()) {
+    public List<EcoNewsDto> getThreeLastEcoNews(String languageCode) {
+        List<EcoNewsTranslation> ecoNewsTranslations = ecoNewsTranslationRepo
+            .getNLastEcoNewsByLanguageCode(3, languageCode);
+        if (ecoNewsTranslations.isEmpty()) {
             throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
         }
-        return ecoNewsList
+        return ecoNewsTranslations
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
@@ -77,8 +83,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Override
-    public List<EcoNewsDto> findAll() {
-        return ecoNewsRepo.findAll()
+    public List<EcoNewsDto> findAll(String languageCode) {
+        return ecoNewsTranslationRepo.findAllByLanguageCode(languageCode)
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());

@@ -102,6 +102,7 @@ public class ErrorMessage {
     public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
     public static final String CAN_NOT_CREATE_EVENT_INSTANCE = "Can not create instance of events. "
         + "used constructor that differ from events superclass.";
+    public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
 
     private ErrorMessage() {
     }
