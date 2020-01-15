@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import greencity.entity.VerifyEmail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -8,6 +7,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
+import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.EmailService;
@@ -36,7 +36,7 @@ public class EmailServiceImplTest {
         initMocks(this);
         service = new EmailServiceImpl(javaMailSender, templateEngine,
             "http://localhost:4200", "http://localhost:4200", "http://localhost:8080",
-            "test@email.com");
+            "test@email.com", newsSubscriberService);
         user = User.builder()
             .id(1L)
             .verifyEmail(new VerifyEmail())
