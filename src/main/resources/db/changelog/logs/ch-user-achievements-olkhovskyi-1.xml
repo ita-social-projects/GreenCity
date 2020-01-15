@@ -29,7 +29,7 @@
             <column name="achievement_id" type="BIGINT">
                 <constraints nullable="false" />
             </column>
-            <column name="status" type="varchar(12)">
+            <column name="achievement_status" type="varchar(12)">
                 <constraints nullable="false" />
             </column>
         </createTable>
