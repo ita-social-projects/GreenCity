@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/econews")
@@ -43,14 +44,13 @@ public class EcoNewsController {
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PostMapping("")
-    public ResponseEntity<AddEcoNewsDtoResponse> save(
-        @RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+    @PostMapping(consumes = {"multipart/form-data", "application/json"})
+    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestParam("file") MultipartFile multipartFile,
+        AddEcoNewsDtoRequest addEcoNewsDtoRequest,
         @ApiParam(value = "Code of the needed language.",
             defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
         @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        AddEcoNewsDtoResponse save = ecoNewsService.save(addEcoNewsDtoRequest, language);
-        return ResponseEntity.status(HttpStatus.CREATED).body(save);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(multipartFile,addEcoNewsDtoRequest, language));
     }
 
     /**

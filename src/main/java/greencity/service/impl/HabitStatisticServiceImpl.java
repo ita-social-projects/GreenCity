@@ -235,6 +235,10 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             }
             zonedDateTime = zonedDateTime.plusDays(1);
         }
+        HabitDictionaryTranslation habitDictionaryTranslation = habit.getHabitDictionary()
+            .getHabitDictionaryTranslations().stream()
+            .filter(t -> t.getLanguage().getCode().equals(language))
+            .findFirst().orElseThrow(() -> new NotFoundException("This habit doesn't exist for this language"));
         HabitDictionaryDto habitDictionaryDto = modelMapper.map(habit.getHabitDictionary(), HabitDictionaryDto.class);
         HabitDictionaryTranslation habitDictionaryTranslation = createHabitDictionaryTranslation(habit,
             habitDictionaryDto, language);
