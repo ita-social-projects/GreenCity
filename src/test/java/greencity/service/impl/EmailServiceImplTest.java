@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.entity.VerifyEmail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -33,7 +34,12 @@ public class EmailServiceImplTest {
         service = new EmailServiceImpl(javaMailSender, templateEngine,
             "http://localhost:4200", "http://localhost:4200", "http://localhost:8080",
             "test@email.com");
-        user = User.builder().firstName("testFirstName").email("testEmail@gmail.com").build();
+        user = User.builder()
+            .id(1L)
+            .verifyEmail(new VerifyEmail())
+            .firstName("testFirstName")
+            .email("testEmail@gmail.com")
+            .build();
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
     }
@@ -63,7 +69,7 @@ public class EmailServiceImplTest {
 
     @Test
     public void sendVerificationEmailTest() {
-        service.sendVerificationEmail(user, "");
+        service.sendVerificationEmail(user);
         verify(javaMailSender).createMimeMessage();
     }
 
