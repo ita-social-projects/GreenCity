@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,8 @@ public class FileServiceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestParam("Image to save") MultipartFile multipartFile,
-                                              @ApiParam(value = "Folder name where the image will be saved('eco_news')"
+    public ResponseEntity<String> uploadImage(@RequestParam("Image to save")@NotEmpty MultipartFile multipartFile,
+                                              @ApiParam(value = "Folder name where the image will be saved('eco_news') "
                                                   + "The maximum size of an image is not more than 2 mb.")
                                               @RequestParam("folder name")
                                               @Pattern(regexp = VALIDATION_FOLDER, message = "invalid folder name")

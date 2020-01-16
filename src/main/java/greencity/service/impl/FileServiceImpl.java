@@ -6,6 +6,7 @@ import greencity.service.FileService;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,11 +43,10 @@ public class FileServiceImpl implements FileService {
             "api_key", apiKey,
             "api_secret", apiSecret
         ));
-
+        String fileName = UUID.randomUUID().toString();
         try {
-            File fileToSave = Files.createTempFile("temp", imageToSave.getOriginalFilename()).toFile();
+            File fileToSave = Files.createTempFile("temp", fileName).toFile();
             imageToSave.transferTo(fileToSave);
-
             Map response = cloudinary.uploader().upload(fileToSave, ObjectUtils.asMap(
                 "folder", imageFolderName));
             return response.get("secure_url").toString();
