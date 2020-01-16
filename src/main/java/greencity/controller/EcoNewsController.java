@@ -47,7 +47,8 @@ public class EcoNewsController {
     public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
                                                       @ApiParam(value = "Code of the needed language.",
                                                           defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-                                                      @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+                                                      @RequestParam(required = false, defaultValue =
+                                                          AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(addEcoNewsDtoRequest, language));
     }
 
