@@ -41,8 +41,8 @@ public class AddEcoNewsDtoResponseMapperTest {
         when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
             languageService.extractLanguageCodeFromRequest())).thenReturn(ecoNewsTranslation);
 
-        AddEcoNewsDtoResponse expected = new AddEcoNewsDtoResponse(ecoNewsTranslation.getTitle(), ecoNews.getText(),
-            ecoNews.getCreationDate(), ecoNews.getImagePath());
+        AddEcoNewsDtoResponse expected = new AddEcoNewsDtoResponse(ecoNews.getId(), ecoNewsTranslation.getTitle(),
+            ecoNews.getText(), ecoNews.getCreationDate(), ecoNews.getImagePath());
 
         assertEquals(expected, mapper.convert(ecoNews));
     }

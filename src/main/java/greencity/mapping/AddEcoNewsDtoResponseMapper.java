@@ -42,7 +42,7 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
         EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
             languageService.extractLanguageCodeFromRequest());
 
-        return new AddEcoNewsDtoResponse(translation.getTitle(), ecoNews.getText(), ecoNews.getCreationDate(),
-            ecoNews.getImagePath());
+        return new AddEcoNewsDtoResponse(ecoNews.getId(), translation.getTitle(), ecoNews.getText(),
+            ecoNews.getCreationDate(), ecoNews.getImagePath());
     }
 }

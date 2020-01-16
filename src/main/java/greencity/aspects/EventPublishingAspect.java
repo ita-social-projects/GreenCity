@@ -2,7 +2,7 @@ package greencity.aspects;
 
 import greencity.annotations.EventPublishing;
 import greencity.constant.ErrorMessage;
-import greencity.events.CustomApplicationEvent;
+import greencity.event.CustomApplicationEvent;
 import greencity.exception.exceptions.EventCreationException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -56,12 +56,12 @@ public class EventPublishingAspect {
     }
 
     /**
-     * Method for creating instance of events.
+     * Method for creating instance of event.
      *
-     * @param eventClass class of needed events.
-     * @param body       data, that will be put into events.
-     * @param source     the object on which the events initially occurred (never {@code null}).
-     * @return instance instance of events.
+     * @param eventClass class of needed event.
+     * @param body       data, that will be put into event.
+     * @param source     the object on which the event initially occurred (never {@code null}).
+     * @return instance instance of event.
      */
     private ApplicationEvent buildEvent(
         Class<? extends CustomApplicationEvent> eventClass, Object body, Object source) {

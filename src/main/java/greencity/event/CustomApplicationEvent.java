@@ -1,4 +1,4 @@
-package greencity.events;
+package greencity.event;
 
 import lombok.Getter;
 import lombok.Setter;

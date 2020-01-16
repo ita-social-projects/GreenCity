@@ -7,7 +7,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
-import greencity.events.SendNewsEvent;
+import greencity.event.SendNewsEvent;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;

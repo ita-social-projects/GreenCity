@@ -11,7 +11,6 @@ import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.EmailService;
-import greencity.service.NewsSubscriberService;
 import java.util.*;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -28,15 +27,13 @@ public class EmailServiceImplTest {
     private JavaMailSender javaMailSender;
     @Mock
     private ITemplateEngine templateEngine;
-    @Mock
-    private NewsSubscriberService newsSubscriberService;
 
     @Before
     public void setup() {
         initMocks(this);
         service = new EmailServiceImpl(javaMailSender, templateEngine,
             "http://localhost:4200", "http://localhost:4200", "http://localhost:8080",
-            "test@email.com", newsSubscriberService);
+            "test@email.com");
         user = User.builder()
             .id(1L)
             .verifyEmail(new VerifyEmail())
