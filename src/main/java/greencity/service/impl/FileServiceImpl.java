@@ -28,7 +28,6 @@ public class FileServiceImpl implements FileService {
         this.cloudName = cloudName;
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
-
     }
 
     /**

@@ -47,8 +47,8 @@ public class FileServiceController {
     })
     @PostMapping("/image")
     public ResponseEntity<String> uploadImage(@RequestParam("Image to save") MultipartFile multipartFile,
-                                              @ApiParam(value = "Folder name where the image will be saved('eco_news') " +
-                                                  "The maximum size of an image is not more than 2 mb.")
+                                              @ApiParam(value = "Folder name where the image will be saved('eco_news')"
+                                                  + "The maximum size of an image is not more than 2 mb.")
                                               @RequestParam("folder name")
                                               @Pattern(regexp = VALIDATION_FOLDER, message = "invalid folder name")
                                               @NotNull(message = "can not be null") String folderName) {
