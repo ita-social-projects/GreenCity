@@ -13,10 +13,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/econews")
@@ -38,20 +38,20 @@ public class EcoNewsController {
      * @return dto {@link AddEcoNewsDtoResponse} instance.
      * @author Yuriy Olkhovskyi.
      */
-    @ApiOperation(value = "Add new econews.")
+    @ApiOperation(value = "Add new eco news.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PostMapping(consumes = {"multipart/form-data", "application/json"})
-    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestParam("file") MultipartFile multipartFile,
-        AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        @ApiParam(value = "Code of the needed language.",
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(multipartFile,addEcoNewsDtoRequest, language));
+    @PostMapping
+    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+                                                      @ApiParam(value = "Code of the needed language.",
+                                                          defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+                                                      @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(addEcoNewsDtoRequest, language));
     }
+
 
     /**
      * Method for getting three last eco news.

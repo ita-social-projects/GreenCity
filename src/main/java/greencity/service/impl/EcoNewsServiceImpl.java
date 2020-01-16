@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.AppConstant;
+import static greencity.constant.AppConstant.ECO_NEWS_IMAGE_FOLDER;
 import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -24,7 +25,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class EcoNewsServiceImpl implements EcoNewsService {
@@ -33,7 +33,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final EmailService emailService;
     private final NewsSubscriberRepo newsSubscriberRepo;
     private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
-    private final FileService fileService;
 
     /**
      * Constructor with parameters.
@@ -42,16 +41,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Autowired
     public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
-                              EmailService emailService, NewsSubscriberRepo newsSubscriberRepo,
-                              EcoNewsTranslationRepo ecoNewsTranslationRepo) {
-                              EmailService emailService, NewsSubscriberRepo newsSubscriberRepo,
-                              FileService fileService) {
+                              EmailService emailService,
+                              EcoNewsTranslationRepo ecoNewsTranslationRepo,
+                              NewsSubscriberRepo newsSubscriberRepo) {
         this.ecoNewsRepo = ecoNewsRepo;
         this.modelMapper = modelMapper;
         this.emailService = emailService;
         this.newsSubscriberRepo = newsSubscriberRepo;
         this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
-        this.fileService = fileService;
     }
 
     /**
@@ -60,10 +57,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Override
-    public AddEcoNewsDtoResponse save(MultipartFile multipartFile, AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode) {
+    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setCreationDate(ZonedDateTime.now());
-        toSave.setImagePath(fileService.uploadImage(multipartFile, ECO_NEWS_IMAGE_FOLDER));
         try {
             ecoNewsRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {

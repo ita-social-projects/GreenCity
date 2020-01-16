@@ -14,6 +14,7 @@ public class AppConstant {
     public static final String VALIDATION_EMAIL = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final String ECO_NEWS_IMAGE_FOLDER = "eco_news";
+    public static final String VALIDATION_FOLDER = "(^eco_news$)";
 
     private AppConstant() {
     }

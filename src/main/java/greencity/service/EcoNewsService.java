@@ -5,7 +5,6 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import java.util.List;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface EcoNewsService {
     /**
@@ -13,10 +12,9 @@ public interface EcoNewsService {
      *
      * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text.
      * @param languageCode         - code of the needed language.
-     * @param multipartFile - image to save.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
-    AddEcoNewsDtoResponse save(MultipartFile multipartFile, AddEcoNewsDtoRequest addEcoNewsDtoRequest);
+    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode);
 
     /**
      * Method for getting last three eco news.
