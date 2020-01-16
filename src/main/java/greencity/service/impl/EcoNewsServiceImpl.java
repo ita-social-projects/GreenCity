@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.AppConstant;
-import static greencity.constant.AppConstant.ECO_NEWS_IMAGE_FOLDER;
 import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -16,7 +15,6 @@ import greencity.repository.EcoNewsTranslationRepo;
 import greencity.repository.NewsSubscriberRepo;
 import greencity.service.EcoNewsService;
 import greencity.service.EmailService;
-import greencity.service.FileService;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
