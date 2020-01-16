@@ -1,8 +1,5 @@
 package greencity.service.impl;
 
-import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND;
-
-import greencity.constant.AppConstant;
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -11,12 +8,7 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
-import greencity.events.SendNewsEvent;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.EmailService;
-import greencity.service.NewsSubscriberService;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +20,6 @@ import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -47,9 +38,6 @@ public class EmailServiceImpl implements EmailService {
     private final String ecoNewsLink;
     private final String serverLink;
     private final String senderEmailAddress;
-    private final NewsSubscriberService newsSubscriberService;
-    private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
-    private final EcoNewsRepo ecoNewsRepo;
 
     /**
      * Constructor.
@@ -60,19 +48,13 @@ public class EmailServiceImpl implements EmailService {
                             @Value("${client.address}") String clientLink,
                             @Value("${econews.address}") String ecoNewsLink,
                             @Value("${address}") String serverLink,
-                            @Value("${sender.email.address}") String senderEmailAddress,
-                            NewsSubscriberService newsSubscriberService,
-                            EcoNewsTranslationRepo ecoNewsTranslationRepo,
-                            EcoNewsRepo ecoNewsRepo) {
+                            @Value("${sender.email.address}") String senderEmailAddress) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.clientLink = clientLink;
         this.ecoNewsLink = ecoNewsLink;
         this.serverLink = serverLink;
         this.senderEmailAddress = senderEmailAddress;
-        this.newsSubscriberService = newsSubscriberService;
-        this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
-        this.ecoNewsRepo = ecoNewsRepo;
     }
 
     /**
@@ -113,27 +95,6 @@ public class EmailServiceImpl implements EmailService {
             String template = createEmailTemplate(model, EmailConstants.NEW_PLACES_REPORT_EMAIL_PAGE);
             sendEmail(user, EmailConstants.NEW_PLACES, template);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @EventListener
-    public void sendNewNewsForSubscriberListener(SendNewsEvent event) {
-        AddEcoNewsDtoResponse response = AddEcoNewsDtoResponse.builder()
-            .id(event.getBody().getId())
-            .title(event.getBody().getTitle())
-            .imagePath(event.getBody().getImagePath())
-            .text(event.getBody().getText())
-            .creationDate(event.getBody().getCreationDate())
-            .build();
-
-        response.setTitle(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(
-            ecoNewsRepo.findById(event.getBody().getId()).orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND)),
-            AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
-
-        sendNewNewsForSubscriber(newsSubscriberService.findAll(), response);
     }
 
     /**

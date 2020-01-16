@@ -1,6 +1,6 @@
 package greencity.annotations;
 
-import greencity.events.CustomApplicationEvent;
+import greencity.event.CustomApplicationEvent;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
