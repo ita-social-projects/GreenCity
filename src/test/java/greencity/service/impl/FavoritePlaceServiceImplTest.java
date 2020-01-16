@@ -18,7 +18,6 @@ import greencity.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,9 +45,8 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Ignore
-    @Test
-    public void saveTest() {
+    @Test(expected = BadIdException.class)
+    public void saveFavoritePlaceAlreadyExistTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
         dto.setName("a");
@@ -59,23 +57,10 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        when(userService.findIdByEmail(any())).thenReturn(1L);
         when(placeService.existsById(any())).thenReturn(true);
         when(repo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(new FavoritePlace());
-        when(repo.save(any(FavoritePlace.class))).thenReturn(fp);
         when(favoritePlaceDtoMapper.convertToEntity(any(FavoritePlaceDto.class))).thenReturn(fp);
-        when(favoritePlaceDtoMapper.convertToDto(any(FavoritePlace.class))).thenReturn(dto);
-        when(userService.findIdByEmail(anyString())).thenReturn((long) 3L);
-        FavoritePlaceDto dto2 = favoritePlaceService.save(dto, userEmail);
-
-        verify(userService, times(1)).findIdByEmail(fp.getUser().getEmail());
-        verify(placeService, times(1)).existsById(any());
-        verify(repo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
-        verify(repo, times(1)).save(any(FavoritePlace.class));
-        verify(favoritePlaceDtoMapper, times(1)).convertToEntity(any(FavoritePlaceDto.class));
-        verify(favoritePlaceDtoMapper, times(1)).convertToDto(any(FavoritePlace.class));
-        verify(userService, times(1)).findIdByEmail(anyString());
-        Assert.assertEquals(dto, dto2);
+        favoritePlaceService.save(dto, userEmail);
     }
 
     /**
@@ -120,9 +105,8 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Ignore
-    @Test(expected = BadIdException.class)
-    public void saveFavoritePlaceAlreadyExistTest() {
+    @Test
+    public void saveTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
         dto.setName("a");
@@ -133,11 +117,21 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
+        when(favoritePlaceDtoMapper.convertToDto(any(FavoritePlace.class))).thenReturn(dto);
         when(favoritePlaceDtoMapper.convertToEntity(any(FavoritePlaceDto.class))).thenReturn(fp);
         when(placeService.existsById(any())).thenReturn(true);
         when(repo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
-        favoritePlaceService.save(dto, userEmail);
+        when(repo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+        FavoritePlaceDto dto2 = favoritePlaceService.save(dto, userEmail);
 
+        verify(userService, times(1)).findIdByEmail(fp.getUser().getEmail());
+        verify(placeService, times(1)).existsById(any());
+        verify(repo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
+        verify(repo, times(1)).save(any(FavoritePlace.class));
+        verify(favoritePlaceDtoMapper, times(1)).convertToEntity(any(FavoritePlaceDto.class));
+        verify(favoritePlaceDtoMapper, times(1)).convertToDto(any(FavoritePlace.class));
+        verify(userService, times(1)).findIdByEmail(anyString());
+        Assert.assertEquals(dto, dto2);
     }
 
 
