@@ -1,4 +1,4 @@
-package greencity.events;
+package greencity.event;
 
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 

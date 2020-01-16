@@ -3,7 +3,6 @@ package greencity.service.impl;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
@@ -46,7 +45,7 @@ public class EcoNewsServiceImplTest {
     private EcoNews entity =
         new EcoNews(1L, ZonedDateTime.now(), "test text", "test image path", Collections.emptyList());
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse =
-        new AddEcoNewsDtoResponse("test title", "test text", ZonedDateTime.now(), "test image path");
+        new AddEcoNewsDtoResponse(1L, "test title", "test text", ZonedDateTime.now(), "test image path");
 
     @Test
     public void save() {

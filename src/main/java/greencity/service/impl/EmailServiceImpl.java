@@ -8,9 +8,7 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
-import greencity.events.SendNewsEvent;
 import greencity.service.EmailService;
-import greencity.service.NewsSubscriberService;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +20,6 @@ import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -41,7 +38,6 @@ public class EmailServiceImpl implements EmailService {
     private final String ecoNewsLink;
     private final String serverLink;
     private final String senderEmailAddress;
-    private final NewsSubscriberService newsSubscriberService;
 
     /**
      * Constructor.
@@ -52,15 +48,13 @@ public class EmailServiceImpl implements EmailService {
                             @Value("${client.address}") String clientLink,
                             @Value("${econews.address}") String ecoNewsLink,
                             @Value("${address}") String serverLink,
-                            @Value("${sender.email.address}") String senderEmailAddress,
-                            NewsSubscriberService newsSubscriberService) {
+                            @Value("${sender.email.address}") String senderEmailAddress) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.clientLink = clientLink;
         this.ecoNewsLink = ecoNewsLink;
         this.serverLink = serverLink;
         this.senderEmailAddress = senderEmailAddress;
-        this.newsSubscriberService = newsSubscriberService;
     }
 
     /**
@@ -101,16 +95,6 @@ public class EmailServiceImpl implements EmailService {
             String template = createEmailTemplate(model, EmailConstants.NEW_PLACES_REPORT_EMAIL_PAGE);
             sendEmail(user, EmailConstants.NEW_PLACES, template);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     */
-    @Override
-    @EventListener
-    public void sendNewNewsForSubscriberListener(SendNewsEvent event) {
-        sendNewNewsForSubscriber(newsSubscriberService.findAll(), event.getBody());
     }
 
     /**
@@ -163,7 +147,7 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, user.getFirstName());
-        model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" +  token
+        model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" + token
             + "&user_id=" + user.getId());
         String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);
         sendEmail(user, EmailConstants.CONFIRM_RESTORING_PASS, template);
