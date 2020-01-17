@@ -1,7 +1,6 @@
 package greencity.dto.newssubscriber;
 
 import static greencity.constant.AppConstant.VALIDATION_EMAIL;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

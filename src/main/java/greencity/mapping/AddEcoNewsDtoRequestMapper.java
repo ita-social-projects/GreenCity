@@ -41,8 +41,8 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
     protected EcoNews convert(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews ecoNews = EcoNews.builder()
             .creationDate(ZonedDateTime.now())
-            .imagePath(addEcoNewsDtoRequest.getImagePath())
             .text(addEcoNewsDtoRequest.getText())
+            .imagePath(addEcoNewsDtoRequest.getImagePath())
             .build();
 
         ecoNews.setTranslations(addEcoNewsDtoRequest.getTranslations()

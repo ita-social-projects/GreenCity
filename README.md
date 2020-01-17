@@ -42,6 +42,9 @@ spring.datasource.username=${DATASOURCE_USER}
 spring.datasource.password=${DATASOURCE_PASSWORD}
 spring.mail.username=${EMAIL_ADDRESS}
 spring.mail.password=${EMAIL_PASSWORD}
+cloud.name=${CLOUD_NAME}
+api.key=${API_KEY}
+api.secret=${API_SECRET}
 ```
 
 ![env-vars](./docs-photos/env-example.png)

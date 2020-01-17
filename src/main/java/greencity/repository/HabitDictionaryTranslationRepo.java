@@ -22,11 +22,11 @@ public interface HabitDictionaryTranslationRepo extends JpaRepository<HabitDicti
     Optional<HabitDictionaryTranslation> findByNameAndLanguage(String name, String language);
 
     /**
-     * djdjdjjd.
+     * Method return {@link Optional} of {@link HabitDictionaryTranslation}.
      *
-     * @param habitDictionary dddd.
-     * @param language        ddddd.
-     * @return null.
+     * @param habitDictionary {@link HabitDictionary}.
+     * @param language code language.
+     * @return {@link HabitDictionaryTranslation}.
      */
     Optional<HabitDictionaryTranslation> findByHabitDictionaryAndLanguageCode(HabitDictionary habitDictionary,
                                                                               String language);

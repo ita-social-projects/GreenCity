@@ -3,6 +3,7 @@ package greencity.dto.habitstatistic;
 import greencity.dto.user.HabitDictionaryDto;
 import java.time.ZonedDateTime;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class HabitDto {
+    @NotNull
     private Long id;
     private String name;
     private Boolean status;

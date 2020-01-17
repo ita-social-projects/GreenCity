@@ -264,7 +264,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         HabitDictionaryTranslation habitDictionaryTranslation = habit.getHabitDictionary()
             .getHabitDictionaryTranslations().stream()
             .filter(t -> t.getLanguage().getCode().equals(language))
-            .findFirst().orElseThrow(() -> new NotFoundException("This habit don`t exist for this language"));
+            .findFirst().orElseThrow(() -> new NotFoundException("This habit doesn't exist for this language"));
         habitDictionaryDto.setDescription(habitDictionaryTranslation.getDescription());
         habitDictionaryDto.setHabitItem(habitDictionaryTranslation.getHabitItem());
         habitDictionaryDto.setName(habitDictionaryTranslation.getName());
