@@ -7,6 +7,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
+import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.PlaceStatus;
 import greencity.service.EmailService;
@@ -33,7 +34,12 @@ public class EmailServiceImplTest {
         service = new EmailServiceImpl(javaMailSender, templateEngine,
             "http://localhost:4200", "http://localhost:4200", "http://localhost:8080",
             "test@email.com");
-        user = User.builder().firstName("testFirstName").email("testEmail@gmail.com").build();
+        user = User.builder()
+            .id(1L)
+            .verifyEmail(new VerifyEmail())
+            .firstName("testFirstName")
+            .email("testEmail@gmail.com")
+            .build();
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
     }
@@ -63,7 +69,7 @@ public class EmailServiceImplTest {
 
     @Test
     public void sendVerificationEmailTest() {
-        service.sendVerificationEmail(user, "");
+        service.sendVerificationEmail(user);
         verify(javaMailSender).createMimeMessage();
     }
 

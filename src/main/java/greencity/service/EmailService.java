@@ -26,8 +26,6 @@ public interface EmailService {
 
     /**
      * Method for sending news for users who subscribed for updates.
-     * @param subscribers     - {@link NewsSubscriberResponseDto} list with subscribers for receiving.
-     * @param newsDto         - {@link AddEcoNewsDtoResponse} object with data
      */
     void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
                                   AddEcoNewsDtoResponse newsDto);
@@ -43,9 +41,8 @@ public interface EmailService {
      * Method for sending verification email to {@link User}.
      *
      * @param user  - {@link User}
-     * @param token {@link String} - email verification token
      */
-    void sendVerificationEmail(User user, String token);
+    void sendVerificationEmail(User user);
 
     /**
      * Method for sending email for restore.

@@ -1,25 +1,22 @@
 package greencity.service.impl;
 
-import greencity.constant.AppConstant;
+import greencity.annotations.EventPublishing;
 import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
+import greencity.event.SendNewsEvent;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
-import greencity.repository.NewsSubscriberRepo;
 import greencity.service.EcoNewsService;
-import greencity.service.EmailService;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -28,8 +25,6 @@ import org.springframework.stereotype.Service;
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final ModelMapper modelMapper;
-    private final EmailService emailService;
-    private final NewsSubscriberRepo newsSubscriberRepo;
     private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
 
     /**
@@ -39,13 +34,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Autowired
     public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
-                              EmailService emailService,
-                              EcoNewsTranslationRepo ecoNewsTranslationRepo,
-                              NewsSubscriberRepo newsSubscriberRepo) {
+                              EcoNewsTranslationRepo ecoNewsTranslationRepo) {
         this.ecoNewsRepo = ecoNewsRepo;
         this.modelMapper = modelMapper;
-        this.emailService = emailService;
-        this.newsSubscriberRepo = newsSubscriberRepo;
         this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
     }
 
@@ -54,6 +45,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @EventPublishing(eventClass = {SendNewsEvent.class})
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
@@ -63,16 +55,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
-        List<NewsSubscriberResponseDto> subscribers = modelMapper.map(newsSubscriberRepo.findAll(),
-            new TypeToken<List<NewsSubscriberResponseDto>>() {
-            }.getType());
-        if (!subscribers.isEmpty()) {
-            AddEcoNewsDtoResponse newsToSend = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
-            newsToSend.setTitle(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(toSave,
-                AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
 
-            emailService.sendNewNewsForSubscriber(subscribers, newsToSend);
-        }
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 

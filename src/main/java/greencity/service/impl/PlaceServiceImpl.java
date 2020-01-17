@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -12,6 +13,7 @@ import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
+import greencity.event.SendChangePlaceStatusEmailEvent;
 import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,11 +50,11 @@ public class PlaceServiceImpl implements PlaceService {
     private final LocationService locationService;
     private final DiscountValueMapper discountValueMapper;
     private final UserService userService;
-    private final EmailService emailService;
     private final OpenHoursService openingHoursService;
     private final DiscountService discountService;
     private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * Constructor.
@@ -64,11 +67,11 @@ public class PlaceServiceImpl implements PlaceService {
                             LocationService locationService,
                             DiscountValueMapper discountValueMapper,
                             UserService userService,
-                            EmailService emailService,
                             OpenHoursService openingHoursService,
                             DiscountService discountService,
                             NotificationService notificationService,
-                            @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone) {
+                            @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
+                            ApplicationEventPublisher applicationEventPublisher) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.placeMapper = placeMapper;
@@ -76,11 +79,11 @@ public class PlaceServiceImpl implements PlaceService {
         this.locationService = locationService;
         this.discountValueMapper = discountValueMapper;
         this.userService = userService;
-        this.emailService = emailService;
         this.openingHoursService = openingHoursService;
         this.discountService = discountService;
         this.notificationService = notificationService;
         this.datasourceTimezone = datasourceTimezone;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     /**
@@ -255,7 +258,8 @@ public class PlaceServiceImpl implements PlaceService {
             notificationService.sendImmediatelyReport(updatable);
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
-            emailService.sendChangePlaceStatusEmail(updatable);
+            applicationEventPublisher.publishEvent(
+                new SendChangePlaceStatusEmailEvent(this, updatable));
         }
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
