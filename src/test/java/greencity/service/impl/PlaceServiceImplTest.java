@@ -1,5 +1,12 @@
 package greencity.service.impl;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -14,26 +21,20 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.ProposePlaceMapper;
-import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-import static junit.framework.TestCase.assertEquals;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -127,9 +128,6 @@ public class PlaceServiceImplTest {
     private UserService userService;
 
     @Mock
-    private EmailService emailService;
-
-    @Mock
     private ProposePlaceMapper proposePlaceMapper;
 
     @Mock
@@ -141,6 +139,9 @@ public class PlaceServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
     private ZoneId zoneId = ZoneId.of("Europe/Kiev");
 
     private PlaceService placeService;
@@ -149,8 +150,8 @@ public class PlaceServiceImplTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, proposePlaceMapper, categoryService,
-            locationService, discountValueMapper, userService, emailService, openingHoursService, discountService,
-            notificationService, zoneId);
+            locationService, discountValueMapper, userService, openingHoursService, discountService,
+            notificationService, zoneId, applicationEventPublisher);
     }
 
     @Test

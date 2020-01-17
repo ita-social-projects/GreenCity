@@ -84,7 +84,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendAddedNewPlacesReportEmail(List<User> subscribers,
                                               Map<Category, List<Place>> categoriesWithPlaces,
                                               EmailNotification notification) {
-        log.info(LogMessage.IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL, subscribers, categoriesWithPlaces, notification);
+        log.info(LogMessage.IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL, null, null, notification);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.RESULT, categoriesWithPlaces);
@@ -154,7 +154,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private String createEmailTemplate(Map<String, Object> vars, String templateName) {
-        log.info(LogMessage.IN_CREATE_TEMPLATE_NAME, vars, templateName);
+        log.info(LogMessage.IN_CREATE_TEMPLATE_NAME, null, templateName);
         Context context = new Context();
         context.setVariables(vars);
         return templateEngine.process("email/" + templateName, context);
