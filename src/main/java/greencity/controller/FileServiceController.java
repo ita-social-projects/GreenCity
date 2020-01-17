@@ -47,7 +47,7 @@ public class FileServiceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestParam("Image to save")@NotEmpty MultipartFile multipartFile,
+    public ResponseEntity<String> uploadImage(@RequestParam("Image to save") @NotEmpty MultipartFile multipartFile,
                                               @ApiParam(value = "Folder name where the image will be saved('eco_news') "
                                                   + "The maximum size of an image is not more than 2 mb.")
                                               @RequestParam("folder name")

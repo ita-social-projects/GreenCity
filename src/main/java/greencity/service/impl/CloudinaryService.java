@@ -2,8 +2,10 @@ package greencity.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import greencity.exception.exceptions.NotSavedException;
 import greencity.service.FileService;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.UUID;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class FileServiceImpl implements FileService {
+public class CloudinaryService implements FileService {
     private final String cloudName;
     private final String apiKey;
     private final String apiSecret;
@@ -20,11 +22,11 @@ public class FileServiceImpl implements FileService {
     /**
      * Constructor.
      */
-    public FileServiceImpl(@Value("${cloud.name}")
+    public CloudinaryService(@Value("${cloud.name}")
                                String cloudName,
-                           @Value("${api.key}")
+                             @Value("${api.key}")
                                String apiKey,
-                           @Value("${api.secret}")
+                             @Value("${api.secret}")
                                String apiSecret) {
         this.cloudName = cloudName;
         this.apiKey = apiKey;
@@ -50,8 +52,8 @@ public class FileServiceImpl implements FileService {
             Map response = cloudinary.uploader().upload(fileToSave, ObjectUtils.asMap(
                 "folder", imageFolderName));
             return response.get("secure_url").toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        } catch (IOException e) {
+            throw new NotSavedException(e.getMessage());
         }
     }
 }
