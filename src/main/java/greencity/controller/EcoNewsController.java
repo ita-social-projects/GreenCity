@@ -37,21 +37,21 @@ public class EcoNewsController {
      * @return dto {@link AddEcoNewsDtoResponse} instance.
      * @author Yuriy Olkhovskyi.
      */
-    @ApiOperation(value = "Add new econews.")
+    @ApiOperation(value = "Add new eco news.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PostMapping("")
-    public ResponseEntity<AddEcoNewsDtoResponse> save(
-        @RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        @ApiParam(value = "Code of the needed language.",
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        AddEcoNewsDtoResponse save = ecoNewsService.save(addEcoNewsDtoRequest, language);
-        return ResponseEntity.status(HttpStatus.CREATED).body(save);
+    @PostMapping
+    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+                                                      @ApiParam(value = "Code of the needed language.",
+                                                          defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+                                                      @RequestParam(required = false, defaultValue =
+                                                          AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(addEcoNewsDtoRequest, language));
     }
+
 
     /**
      * Method for getting three last eco news.

@@ -39,8 +39,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Autowired
     public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
-                              EmailService emailService, NewsSubscriberRepo newsSubscriberRepo,
-                              EcoNewsTranslationRepo ecoNewsTranslationRepo) {
+                              EmailService emailService,
+                              EcoNewsTranslationRepo ecoNewsTranslationRepo,
+                              NewsSubscriberRepo newsSubscriberRepo) {
         this.ecoNewsRepo = ecoNewsRepo;
         this.modelMapper = modelMapper;
         this.emailService = emailService;
