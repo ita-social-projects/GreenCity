@@ -33,7 +33,7 @@ public class HabitMapper {
     public HabitCreateDto convertToDto(Habit entity, String language) {
         HabitDictionaryTranslation htd = habitDictionaryTranslationRepo
             .findByHabitDictionaryAndLanguageCode(entity.getHabitDictionary(), language)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_DACTIONARY_TRANSLATION_NOT_FOUnD));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_DICTIONARY_TRANSLATION_NOT_FOUND));
         final HabitCreateDto habitCreateDto = new HabitCreateDto();
         final HabitDictionaryDto habitDictionaryDto = new HabitDictionaryDto();
         habitDictionaryDto.setName(htd.getName());
