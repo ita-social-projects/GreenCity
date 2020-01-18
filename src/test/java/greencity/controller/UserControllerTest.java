@@ -61,6 +61,7 @@ public class UserControllerTest {
     @WithMockUser
     public void bulkDeleteUserGoalsWithValidInputIdTest() throws Exception {
         when(userValidationService.userValidForActions(any(), anyLong())).thenReturn(null);
+        when(userService.findByEmail(anyString())).thenReturn(Optional.of(User.builder().id(1L).build()));
         when(userService.deleteUserGoals("1")).thenReturn(Collections.emptyList());
         mockMvc.perform(delete("/user/1/userGoals").param("ids", "1"))
             .andExpect(status().isOk());

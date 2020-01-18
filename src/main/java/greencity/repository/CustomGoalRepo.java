@@ -16,13 +16,13 @@ public interface CustomGoalRepo extends JpaRepository<CustomGoal, Long> {
     /**
      * Method returns list of available (not ACTIVE) custom goal for user.
      *
-     * @param user {@link User} current user
+     * @param userId id of the {@link User} current user
      * @return list of {@link CustomGoal}
      */
     @Query("SELECT cg FROM CustomGoal cg WHERE cg.id NOT IN"
         + "(SELECT ug.customGoal FROM UserGoal ug WHERE ug.user=:user "
-        + "AND ug.status='ACTIVE') AND cg.user=:user")
-    List<CustomGoal> findAllAvailableCustomGoalsForUser(@Param("user") User user);
+        + "AND ug.status='ACTIVE') AND cg.user.id=:userId")
+    List<CustomGoal> findAllAvailableCustomGoalsForUserId(@Param("userId") Long userId);
 
     /**
      * Method find all custom goals by user.
