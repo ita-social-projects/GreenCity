@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -174,7 +175,11 @@ public class CustomGoalServiceImpl implements CustomGoalService {
      * @author Bogdan Kuzenko.
      */
     private Long delete(Long id) {
-        customGoalRepo.delete(findOne(id));
+        try {
+            customGoalRepo.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(CUSTOM_GOAL_NOT_FOUND_BY_ID + " " + id);
+        }
         return id;
     }
 
