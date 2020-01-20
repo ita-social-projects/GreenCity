@@ -108,9 +108,7 @@ public class CustomGoalServiceImpl implements CustomGoalService {
     @Transactional
     @Override
     public CustomGoalResponseDto findById(Long id) {
-        CustomGoal customGoal = customGoalRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(CUSTOM_GOAL_NOT_FOUND_BY_ID + " " + id));
-        return modelMapper.map(customGoal, CustomGoalResponseDto.class);
+        return modelMapper.map(findOne(id), CustomGoalResponseDto.class);
     }
 
     /**
