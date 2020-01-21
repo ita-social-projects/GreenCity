@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
-import greencity.dto.goal.CustomGoalRequestDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.CustomGoalSaveRequestDto;
 import greencity.entity.CustomGoal;
@@ -24,15 +23,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -187,14 +184,13 @@ public class CustomGoalServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void bulkDeleteWithNonExistentIdTest() {
-        when(customGoalRepo.findById(anyLong())).thenReturn(Optional.empty());
+        doThrow(new EmptyResultDataAccessException(1)).when(customGoalRepo).deleteById(1L);
         customGoalService.bulkDelete("1");
     }
 
     @Test
     public void bulkDeleteWithExistentIdTest() {
-        doNothing().when(customGoalRepo).delete(any());
-        when(customGoalRepo.findById(anyLong())).thenReturn(Optional.of(new CustomGoal()));
+        doNothing().when(customGoalRepo).deleteById(anyLong());
         List<Long> bulkDeleteResult = customGoalService.bulkDelete("1,2,3");
         ArrayList<Long> expectedResult = new ArrayList<>();
         expectedResult.add(1L);
