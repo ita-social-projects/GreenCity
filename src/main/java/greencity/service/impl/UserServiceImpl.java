@@ -65,7 +65,12 @@ public class UserServiceImpl implements UserService {
     /**
      * Test.
      */
-    void testMethod() {
+    public int testMethod() {
+        int res = 10;
+        for (int i = 0; i < 10; i++) {
+            res++;
+        }
+        return res;
     }
 
     /**
