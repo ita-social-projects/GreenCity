@@ -8,7 +8,7 @@ import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
-import greencity.entity.AdviceTranslation;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.service.AdviceService;
 import greencity.service.AdviceTranslationService;
 import io.swagger.annotations.ApiOperation;
