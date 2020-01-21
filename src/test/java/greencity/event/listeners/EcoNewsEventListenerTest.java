@@ -81,8 +81,6 @@ public class EcoNewsEventListenerTest {
             .build();
         response.setTitle("Title");
 
-        when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(any(EcoNews.class), anyString()))
-            .thenReturn(translation);
         when(ecoNewsRepo.findById(anyLong())).thenThrow(NotFoundException.class);
 
         eventListener.onApplicationEvent(event);
