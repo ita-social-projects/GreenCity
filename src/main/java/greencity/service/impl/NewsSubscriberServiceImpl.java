@@ -73,12 +73,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
      */
     @Override
     public List<NewsSubscriberResponseDto> findAll() {
-        List<NewsSubscriber> allSubscribers = newsSubscriberRepo.findAll();
-        if (allSubscribers.isEmpty()) {
-            log.error(NEWS_SUBSCRIBERS_NOT_FOUND);
-            throw new NotFoundException(NEWS_SUBSCRIBERS_NOT_FOUND);
-        }
-        return allSubscribers.stream()
+        return newsSubscriberRepo.findAll().stream()
             .map(el -> modelMapper.map(el, NewsSubscriberResponseDto.class))
             .collect(Collectors.toList());
     }
