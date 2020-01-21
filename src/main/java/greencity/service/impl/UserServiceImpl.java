@@ -1,8 +1,7 @@
 package greencity.service.impl;
 
-import static greencity.constant.ErrorMessage.*;
-
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -62,6 +61,12 @@ public class UserServiceImpl implements UserService {
      */
     private ModelMapper modelMapper;
     private HabitMapper habitMapper;
+
+    /**
+     * Test.
+     */
+    void testMethod() {
+    }
 
     /**
      * {@inheritDoc}
