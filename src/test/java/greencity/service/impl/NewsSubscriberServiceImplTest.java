@@ -97,15 +97,4 @@ public class NewsSubscriberServiceImplTest {
             .thenReturn(new NewsSubscriberResponseDto("test@mail.ua", "token"));
         assertEquals(dtoList, newsSubscriberService.findAll());
     }
-
-    @Test(expected = NotFoundException.class)
-    public void findAllNotFoundSubscribersTest() {
-        List<NewsSubscriber> entityList = Collections.emptyList();
-        List<NewsSubscriberResponseDto> dtoList = Collections
-            .singletonList(new NewsSubscriberResponseDto("test@mail.ua", "token"));
-        when(newsSubscriberRepo.findAll()).thenReturn(entityList);
-        when(modelMapper.map(NewsSubscriber.class, NewsSubscriberResponseDto.class))
-            .thenReturn(new NewsSubscriberResponseDto("test2@mail.ua", "token2"));
-        assertEquals(dtoList, newsSubscriberService.findAll());
-    }
 }
