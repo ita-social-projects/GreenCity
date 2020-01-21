@@ -1,8 +1,8 @@
 package greencity.repository;
 
 import greencity.entity.Advice;
-import greencity.entity.AdviceTranslation;
 import greencity.entity.Language;
+import greencity.entity.localization.AdviceTranslation;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

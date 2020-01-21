@@ -478,7 +478,7 @@ public class UserServiceImplTest {
     public void createUserHabitTest() {
         when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
-        assertEquals(userService.createUserHabit(user, Collections.emptyList(), anyString()), Collections.emptyList());
+        assertEquals(Collections.emptyList(), userService.createUserHabit(user, Collections.emptyList(), anyString()));
     }
 
     @Test
