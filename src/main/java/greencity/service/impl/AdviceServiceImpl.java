@@ -16,6 +16,7 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -135,10 +136,11 @@ public class AdviceServiceImpl implements AdviceService {
      */
     @Override
     public Long delete(Long id) {
-        if (!(adviceRepo.findById(id).isPresent())) {
+        try {
+            adviceRepo.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
             throw new NotDeletedException(ErrorMessage.ADVICE_NOT_DELETED);
         }
-        adviceRepo.deleteById(id);
         return id;
     }
 }

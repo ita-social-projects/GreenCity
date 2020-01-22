@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdviceServiceImplTest {
@@ -122,13 +123,13 @@ public class AdviceServiceImplTest {
 
     @Test
     public void delete() {
-        when(adviceRepo.findById(advice.getId())).thenReturn(Optional.of(advice));
         assertEquals(advice.getId(), adviceService.delete(advice.getId()));
         verify(adviceRepo, times(1)).deleteById(anyLong());
     }
 
     @Test(expected = NotDeletedException.class)
     public void deleteFailed() {
+        doThrow(new EmptyResultDataAccessException(1)).when(adviceRepo).deleteById(advice.getId());
         adviceService.delete(advice.getId());
     }
 }
