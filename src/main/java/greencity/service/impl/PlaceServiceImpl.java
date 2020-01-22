@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 
-import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -14,6 +13,7 @@ import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
+import greencity.event.SendChangePlaceStatusEmailEvent;
 import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
@@ -22,13 +22,16 @@ import greencity.mapping.ProposePlaceMapper;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
-import greencity.util.DateTimeService;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,20 +42,49 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Slf4j
 @Service
-@AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
-    private static final PlaceStatus APPROVED_STATUS = PlaceStatus.APPROVED;
-    private PlaceRepo placeRepo;
-    private ModelMapper modelMapper;
-    private ProposePlaceMapper placeMapper;
-    private CategoryService categoryService;
-    private LocationService locationService;
-    private DiscountValueMapper discountValueMapper;
-    private UserService userService;
-    private EmailService emailService;
-    private OpenHoursService openingHoursService;
-    private DiscountService discountService;
-    private NotificationService notificationService;
+    private final PlaceRepo placeRepo;
+    private final ModelMapper modelMapper;
+    private final ProposePlaceMapper placeMapper;
+    private final CategoryService categoryService;
+    private final LocationService locationService;
+    private final DiscountValueMapper discountValueMapper;
+    private final UserService userService;
+    private final OpenHoursService openingHoursService;
+    private final DiscountService discountService;
+    private final NotificationService notificationService;
+    private final ZoneId datasourceTimezone;
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    /**
+     * Constructor.
+     */
+    @Autowired
+    public PlaceServiceImpl(PlaceRepo placeRepo,
+                            ModelMapper modelMapper,
+                            ProposePlaceMapper placeMapper,
+                            CategoryService categoryService,
+                            LocationService locationService,
+                            DiscountValueMapper discountValueMapper,
+                            UserService userService,
+                            OpenHoursService openingHoursService,
+                            DiscountService discountService,
+                            NotificationService notificationService,
+                            @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
+                            ApplicationEventPublisher applicationEventPublisher) {
+        this.placeRepo = placeRepo;
+        this.modelMapper = modelMapper;
+        this.placeMapper = placeMapper;
+        this.categoryService = categoryService;
+        this.locationService = locationService;
+        this.discountValueMapper = discountValueMapper;
+        this.userService = userService;
+        this.openingHoursService = openingHoursService;
+        this.discountService = discountService;
+        this.notificationService = notificationService;
+        this.datasourceTimezone = datasourceTimezone;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     /**
      * {@inheritDoc}
@@ -60,12 +92,12 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Roman Zahorui
      */
     @Override
-    public PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
+    public PageableDto<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
         List<AdminPlaceDto> list = places.stream()
             .map(place -> modelMapper.map(place, AdminPlaceDto.class))
             .collect(Collectors.toList());
-        return new PageableDto(list, places.getTotalElements(), places.getPageable().getPageNumber());
+        return new PageableDto<>(list, places.getTotalElements(), places.getPageable().getPageNumber());
     }
 
     /**
@@ -77,11 +109,9 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Place save(PlaceAddDto dto, String email) {
         log.info(LogMessage.IN_SAVE, dto.getName(), email);
-
         Place place = placeMapper.convertToEntity(dto);
         setUserToPlaceByEmail(email, place);
         place.getPhotos().forEach(photo -> photo.setUser(place.getAuthor()));
-
         return placeRepo.save(place);
     }
 
@@ -97,9 +127,8 @@ public class PlaceServiceImpl implements PlaceService {
         User user = userService.findByEmail(email).orElseThrow(
             () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         place.setAuthor(user);
-
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
-            place.setStatus(APPROVED_STATUS);
+            place.setStatus(PlaceStatus.APPROVED);
             notificationService.sendImmediatelyReport(place);
         }
         return user;
@@ -224,12 +253,13 @@ public class PlaceServiceImpl implements PlaceService {
         PlaceStatus oldStatus = updatable.getStatus();
         checkPlaceStatuses(oldStatus, status, id);
         updatable.setStatus(status);
-        updatable.setModifiedDate(DateTimeService.getDateTime(AppConstant.UKRAINE_TIMEZONE));
+        updatable.setModifiedDate(ZonedDateTime.now(datasourceTimezone));
         if (status.equals(PlaceStatus.APPROVED)) {
             notificationService.sendImmediatelyReport(updatable);
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
-            emailService.sendChangePlaceStatusEmail(updatable);
+            applicationEventPublisher.publishEvent(
+                new SendChangePlaceStatusEmailEvent(this, updatable));
         }
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
@@ -406,7 +436,7 @@ public class PlaceServiceImpl implements PlaceService {
             list.getContent().stream()
                 .map(user -> modelMapper.map(user, AdminPlaceDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto(
+        return new PageableDto<>(
             adminPlaceDtos,
             list.getTotalElements(),
             list.getPageable().getPageNumber());

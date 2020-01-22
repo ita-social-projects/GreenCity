@@ -1,5 +1,7 @@
 package greencity.service;
 
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -23,6 +25,12 @@ public interface EmailService {
                                        EmailNotification notification);
 
     /**
+     * Method for sending news for users who subscribed for updates.
+     */
+    void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
+                                  AddEcoNewsDtoResponse newsDto);
+
+    /**
      * Method for sending simple notification to {@code User} about change status.
      *
      * @param updatable - updated {@code Place}
@@ -33,9 +41,8 @@ public interface EmailService {
      * Method for sending verification email to {@link User}.
      *
      * @param user  - {@link User}
-     * @param token {@link String} - email verification token
      */
-    void sendVerificationEmail(User user, String token);
+    void sendVerificationEmail(User user);
 
     /**
      * Method for sending email for restore.

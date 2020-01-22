@@ -92,8 +92,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/info/favorite/**",
                 "/place/statuses/**",
                 "/user/emailNotifications/**",
+                "/user/activatedUsersAmount",
+                "/habit/todayStatisticsForAllHabitItems",
                 "/place/about/{id}/**",
-                "/specification/**"
+                "/specification/**",
+                "/newsSubscriber/unsubscribe",
+                "/econews/**"
+            ).permitAll()
+            .antMatchers(
+                HttpMethod.POST,
+                "/newsSubscriber"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
@@ -140,7 +148,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
-                "/place/filter/predicate"
+                "/place/filter/predicate",
+                "/econews",
+                "/files/image"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers("/advices/*", "/facts/*").hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
@@ -154,12 +164,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET,
                 "/user/all/",
                 "/user/roles",
-                "/comments"
+                "/comments",
+                "/newsSubscriber"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}/**",
                 "/place/**",
-                "/comments"
+                "/comments",
+                "/econews"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/user/**",

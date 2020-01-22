@@ -7,9 +7,9 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.PlaceStatus;
+import greencity.event.SendImmediatelyReportEvent;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
-import greencity.service.EmailService;
 import greencity.service.NotificationService;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +27,17 @@ public class NotificationServiceImpl implements NotificationService {
     private static final ZoneId ZONE_ID = ZoneId.of(AppConstant.UKRAINE_TIMEZONE);
     private final UserRepo userRepo;
     private final PlaceRepo placeRepo;
-    private final EmailService emailService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * Constructor.
      */
     @Autowired
-    public NotificationServiceImpl(UserRepo userRepo, PlaceRepo placeRepo, EmailService emailService) {
+    public NotificationServiceImpl(UserRepo userRepo, PlaceRepo placeRepo,
+                                   ApplicationEventPublisher applicationEventPublisher) {
         this.userRepo = userRepo;
         this.placeRepo = placeRepo;
-        this.emailService = emailService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -46,7 +48,9 @@ public class NotificationServiceImpl implements NotificationService {
         Map<Category, List<Place>> categoriesWithPlacesMap = new HashMap<>();
         categoriesWithPlacesMap.put(newPlace.getCategory(), Collections.singletonList(newPlace));
 
-        emailService.sendAddedNewPlacesReportEmail(subscribers, categoriesWithPlacesMap, emailNotification);
+        applicationEventPublisher.publishEvent(
+            new SendImmediatelyReportEvent(this, subscribers,
+                categoriesWithPlacesMap, emailNotification));
     }
 
     /**
@@ -100,11 +104,9 @@ public class NotificationServiceImpl implements NotificationService {
             categoriesWithPlacesMap = getCategoriesWithPlacesMap(places);
         }
         if (!categoriesWithPlacesMap.isEmpty()) {
-            emailService.sendAddedNewPlacesReportEmail(
-                subscribers,
-                categoriesWithPlacesMap,
-                emailNotification
-            );
+            applicationEventPublisher.publishEvent(
+                new SendImmediatelyReportEvent(this, subscribers,
+                    categoriesWithPlacesMap, emailNotification));
         }
     }
 

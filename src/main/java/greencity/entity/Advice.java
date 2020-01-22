@@ -1,5 +1,7 @@
 package greencity.entity;
 
+import greencity.entity.localization.AdviceTranslation;
+import java.util.List;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +19,8 @@ public class Advice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true, length = 300)
-    private String advice;
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "advice", fetch = FetchType.LAZY)
+    private List<AdviceTranslation> translations;
 
     @ManyToOne
     private HabitDictionary habitDictionary;

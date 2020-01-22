@@ -3,9 +3,11 @@ package greencity.repository;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -21,24 +23,24 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     /**
      * Method for finding statistic for current date.
      *
-     *
      * @return {@link HabitStatistic} instance, if it doesn't exist returns Optional.
      */
     @Query(value = "SELECT hs FROM HabitStatistic hs WHERE hs.createdOn=:localDate AND habit_id=:habitId")
-    Optional<HabitStatistic> findHabitStatByDate(@Param("localDate") LocalDate localDate,
+    Optional<HabitStatistic> findHabitStatByDate(@Param("localDate") ZonedDateTime localDate,
                                                  @Param("habitId") Long habitId);
 
     /**
      * Method for finding the sum of all untaken items for current month.
      *
-     * @param habitId {@link Habit} id.
+     * @param habitId  {@link Habit} id.
      * @param firstDay first day of current month.
      * @return sum of items per month.
      */
     @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs\n"
-        + " WHERE hs.habit.id=:habitId AND hs.createdOn <= CURRENT_DATE AND hs.createdOn >=:firstDayOfMonth")
+        + " WHERE hs.habit.id=:habitId AND DATE(hs.createdOn) <= CURRENT_DATE AND"
+        + " DATE(hs.createdOn) >=:firstDayOfMonth")
     Optional<Integer> getSumOfAllItemsPerMonth(@Param("habitId") Long habitId,
-                                               @Param("firstDayOfMonth") LocalDate firstDay);
+                                               @Param("firstDayOfMonth") ZonedDateTime firstDay);
 
     /**
      * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
@@ -55,7 +57,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
-        + " WHERE hs.createdOn = CURRENT_DATE - 1 AND habit_id =:habitId")
+        + " WHERE DATE(hs.createdOn) = CURRENT_DATE - 1 AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsInPreviousDay(@Param("habitId") Long habitId);
 
     /**
@@ -65,6 +67,34 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs\n"
-        + " WHERE hs.createdOn = CURRENT_DATE AND habit_id =:habitId")
+        + " WHERE DATE(hs.createdOn) = CURRENT_DATE AND habit_id =:habitId")
     Optional<Integer> getAmountOfItemsToday(@Param("habitId") Long habitId);
+
+    /**
+     * Returns {@link Tuple} consisting of habit item name(like 'cup' or 'bag')
+     * and amount of not taken items by a specific date(according to the method date parameter)
+     * for all the habits existing in the system.
+     * Selection is filtered by habit status which must be active(true).
+     * Result is sorted in descending order, that is the most popular habit
+     * will be the first in a list and the least popular will be the last.
+     *
+     * @param statisticCreationDate Statistic creation date.
+     * @param languageCode Language code of habit items, for example, 'en'.
+     * @return {@link List} of {@link Tuple}s that contain item names and not taken amount of that items.
+     * @author Shevtsiv Rostyslav
+     */
+    @Query("SELECT habitDictTranslation.habitItem, SUM(habitStatistic.amountOfItems) "
+        + "FROM HabitStatistic habitStatistic "
+        + "        INNER JOIN Habit habit ON habitStatistic.id = habit.id AND habit.statusHabit = TRUE "
+        + "                AND FUNCTION('DATE', habitStatistic.createdOn) = :statisticCreationDate "
+        + "        INNER JOIN HabitDictionaryTranslation habitDictTranslation "
+        + "                ON habitDictTranslation.habitDictionary.id = habit.habitDictionary.id "
+        + "        INNER JOIN Language language ON habitDictTranslation.language.id = language.id "
+        + "                AND language.code = :languageCode "
+        + "GROUP BY habitDictTranslation.habitItem "
+        + "ORDER BY COUNT(habit) DESC ")
+    List<Tuple> getStatisticsForAllHabitItemsByDate(
+        @Param("statisticCreationDate") Date statisticCreationDate,
+        @Param("languageCode") String languageCode
+    );
 }

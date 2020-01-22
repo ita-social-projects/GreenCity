@@ -71,5 +71,16 @@ public interface HabitStatisticService {
      * @param status status of habit.
      * @return list of {@link HabitDto} instances.
      */
-    List<HabitDto> findAllHabitsAndTheirStatistics(Long id, Boolean status);
+    List<HabitDto> findAllHabitsAndTheirStatistics(Long id, Boolean status, String language);
+
+    /**
+     * Returns statistics for all not taken habit items in the system for today.
+     * Data is returned as an array of key-value-pairs mapped to {@link HabitItemsAmountStatisticDto},
+     * where key is the name of habit item and value is not taken amount of these items.
+     * Language of habit items is defined by the `language` parameter.
+     *
+     * @param language - Name of habit item localization language(e.x. "en" or "uk").
+     * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those key-value pairs.
+     */
+    List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language);
 }

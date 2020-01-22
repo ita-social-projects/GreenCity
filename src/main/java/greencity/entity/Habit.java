@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
@@ -31,7 +31,7 @@ public class Habit {
     private Boolean statusHabit;
 
     @Column(name = "create_date", nullable = false)
-    private LocalDate createDate;
+    private ZonedDateTime createDate;
 
     @OneToMany(mappedBy = "habit", cascade = {CascadeType.ALL})
     private List<HabitStatistic> habitStatistics;

@@ -2,12 +2,17 @@ package greencity.controller;
 
 import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
+import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.fact.HabitFactDTO;
 import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.language.LanguageTranslationDTO;
+import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
-import greencity.service.impl.HabitFactServiceImpl;
+import greencity.service.FactTranslationService;
+import greencity.service.HabitFactService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
@@ -22,7 +27,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/facts")
 @AllArgsConstructor
 public class HabitFactController {
-    private HabitFactServiceImpl habitFactService;
+    private HabitFactService habitFactService;
+    private FactTranslationService factTranslationService;
     private ModelMapper mapper;
 
     /**
@@ -40,8 +46,11 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/random/{habitId}")
-    public HabitFactDTO getRandomAdviceByHabitId(@PathVariable Long habitId) {
-        return habitFactService.getRandomHabitFactByHabitId(habitId);
+    public LanguageTranslationDTO getRandomFactByHabitId(
+        @PathVariable Long habitId,
+        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        return habitFactService.getRandomHabitFactByHabitIdAndLanguage(habitId, language);
     }
 
     /**
@@ -58,7 +67,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public List<HabitFactDTO> getAll() {
+    public List<LanguageTranslationDTO> getAll() {
         return habitFactService.getAllHabitFacts();
     }
 
@@ -77,8 +86,9 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity save(@Valid @RequestBody HabitFactPostDTO fact) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(habitFactService.save(fact));
+    public ResponseEntity<List<FactTranslation>> save(@Valid @RequestBody HabitFactPostDTO fact) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            factTranslationService.saveHabitFactAndFactTranslation(fact));
     }
 
     /**
@@ -118,7 +128,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{factId}")
-    public ResponseEntity delete(@PathVariable Long factId) {
+    public ResponseEntity<Object> delete(@PathVariable Long factId) {
         habitFactService.delete(factId);
         return ResponseEntity.ok().build();
     }

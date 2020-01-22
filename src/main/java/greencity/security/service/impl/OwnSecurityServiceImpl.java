@@ -4,6 +4,7 @@ import static greencity.constant.ErrorMessage.*;
 
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
+import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -13,16 +14,19 @@ import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
+import greencity.security.events.SignInEvent;
+import greencity.security.events.SignUpEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
-import greencity.security.service.VerifyEmailService;
 import greencity.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +39,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final OwnSecurityRepo ownSecurityRepo;
     private final UserService userService;
-    private final VerifyEmailService verifyEmailService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTool jwtTool;
+    private final Integer expirationTime;
+    private final ApplicationEventPublisher appEventPublisher;
 
     /**
      * Constructor.
@@ -45,14 +50,16 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Autowired
     public OwnSecurityServiceImpl(OwnSecurityRepo ownSecurityRepo,
                                   UserService userService,
-                                  VerifyEmailService verifyEmailService,
                                   PasswordEncoder passwordEncoder,
-                                  JwtTool jwtTool) {
+                                  JwtTool jwtTool,
+                                  @Value("${verifyEmailTimeHour}") Integer expirationTime,
+                                  ApplicationEventPublisher appEventPublisher) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
-        this.verifyEmailService = verifyEmailService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTool = jwtTool;
+        this.expirationTime = expirationTime;
+        this.appEventPublisher = appEventPublisher;
     }
 
     /**
@@ -61,56 +68,51 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Transactional
     @Override
     public void signUp(OwnSignUpDto dto) {
-        User user = createNewRegisteredUser(dto);
-        user.setRefreshTokenKey(jwtTool.generateRefreshTokenKey());
+        User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey());
+        OwnSecurity ownSecurity = createOwnSecurity(dto, user);
+        VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
+        user.setOwnSecurity(ownSecurity);
+        user.setVerifyEmail(verifyEmail);
         try {
             User savedUser = userService.save(user);
-            ownSecurityRepo.save(createUserOwnSecurityToUser(dto, savedUser));
-            verifyEmailService.save(savedUser);
+            appEventPublisher.publishEvent(new SignUpEvent(savedUser));
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
     }
 
-    private OwnSecurity createUserOwnSecurityToUser(OwnSignUpDto dto, User user) {
-        return OwnSecurity.builder()
-            .password(passwordEncoder.encode(dto.getPassword()))
-            .user(user)
-            .build();
-    }
-
-    private User createNewRegisteredUser(OwnSignUpDto dto) {
+    private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey) {
         return User.builder()
             .firstName(dto.getFirstName())
             .lastName(dto.getLastName())
             .email(dto.getEmail())
             .dateOfRegistration(LocalDateTime.now())
             .role(ROLE.ROLE_USER)
+            .refreshTokenKey(refreshTokenKey)
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
             .build();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void delete(OwnSecurity userOwnSecurity) {
-        if (!ownSecurityRepo.existsById(userOwnSecurity.getId())) {
-            throw new BadIdException(NO_ENY_OWN_SECURITY_TO_DELETE + userOwnSecurity.getId());
-        }
-        ownSecurityRepo.delete(userOwnSecurity);
+    private OwnSecurity createOwnSecurity(OwnSignUpDto dto, User user) {
+        return OwnSecurity.builder()
+            .password(passwordEncoder.encode(dto.getPassword()))
+            .user(user)
+            .build();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Scheduled(fixedRate = 86400000)
-    @Override
-    public void deleteAllUsersThatDidNotVerifyEmail() {
-        int rows = verifyEmailService.deleteAllUsersThatDidNotVerifyEmail();
-        log.info(rows + " email verification tokens were deleted.");
+    private VerifyEmail createVerifyEmail(User user, String emailVerificationToken) {
+        return VerifyEmail.builder()
+            .user(user)
+            .token(emailVerificationToken)
+            .expiryDate(calculateExpirationDateTime())
+            .build();
+    }
+
+    private LocalDateTime calculateExpirationDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        return now.plusHours(this.expirationTime);
     }
 
     /**
@@ -122,13 +124,13 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .findByEmail(dto.getEmail())
             .filter(u -> isPasswordCorrect(dto, u))
             .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
-        userService.addDefaultHabit(user);
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
         if (user.getUserStatus() == UserStatus.DEACTIVATED) {
             throw new UserDeactivatedException(USER_DEACTIVATED);
         }
+        appEventPublisher.publishEvent(new SignInEvent(user));
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), true);
@@ -150,14 +152,14 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         String email;
         try {
             email = jwtTool.getEmailOutOfAccessToken(refreshToken);
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
         }
         User user = userService
             .findByEmail(email)
             .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         checkUserStatus(user);
-        String newRefreshTokenKey = jwtTool.generateRefreshTokenKey();
+        String newRefreshTokenKey = jwtTool.generateTokenKey();
         userService.updateUserRefreshToken(newRefreshTokenKey, user.getId());
         if (jwtTool.isTokenValid(refreshToken, user.getRefreshTokenKey())) {
             user.setRefreshTokenKey(newRefreshTokenKey);
@@ -196,7 +198,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
-        log.info("Updating user password start");
         User user = userService
                 .findByEmail(email)
                 .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
@@ -207,6 +208,5 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             throw new PasswordsDoNotMatchesException(PASSWORD_DOES_NOT_MATCH);
         }
         updatePassword(updatePasswordDto.getPassword(), user.getId());
-        log.info("Updating user password end");
     }
 }

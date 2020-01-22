@@ -1,7 +1,7 @@
 package greencity.service.impl;
 
 import greencity.dto.goal.GoalDto;
-import greencity.repository.GoalRepo;
+import greencity.repository.GoalTranslationRepo;
 import greencity.service.GoalService;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,24 +11,27 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GoalServiceImpl implements GoalService {
-    private final GoalRepo goalRepo;
+    private final GoalTranslationRepo goalTranslationRepo;
     private final ModelMapper modelMapper;
 
     /**
      * Constructor with parameters.
      */
     @Autowired
-    public GoalServiceImpl(GoalRepo goalRepo, ModelMapper modelMapper) {
-        this.goalRepo = goalRepo;
+    public GoalServiceImpl(GoalTranslationRepo goalTranslationRepo, ModelMapper modelMapper) {
+        this.goalTranslationRepo = goalTranslationRepo;
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<GoalDto> findAll() {
-        return goalRepo
-            .findAll()
+    public List<GoalDto> findAll(String language) {
+        return goalTranslationRepo
+            .findAllByLanguageCode(language)
             .stream()
-            .map(goal -> modelMapper.map(goal, GoalDto.class))
+            .map(g -> modelMapper.map(g, GoalDto.class))
             .collect(Collectors.toList());
     }
 }

@@ -1,10 +1,12 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import greencity.converters.DateService;
 import greencity.dto.habitstatistic.*;
 import greencity.dto.user.HabitDictionaryDto;
 import greencity.dto.user.HabitLogItemDto;
 import greencity.entity.Habit;
+import greencity.entity.HabitDictionaryTranslation;
 import greencity.entity.HabitStatistic;
 import greencity.entity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
@@ -16,8 +18,10 @@ import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitStatisticService;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 public class HabitStatisticServiceImpl implements HabitStatisticService {
-    private HabitStatisticRepo habitStatisticRepo;
-    private HabitRepo habitRepo;
-    private HabitStatisticMapper habitStatisticMapper;
+    private final HabitStatisticRepo habitStatisticRepo;
+    private final HabitRepo habitRepo;
+    private final HabitStatisticMapper habitStatisticMapper;
     private final ModelMapper modelMapper;
+    private final DateService dateService;
 
     /**
      * Constructor with parameters.
@@ -41,17 +46,19 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public HabitStatisticServiceImpl(HabitStatisticRepo habitStatisticRepo,
                                      HabitRepo habitRepo,
                                      HabitStatisticMapper habitStatisticMapper,
-                                     ModelMapper modelMapper) {
+                                     ModelMapper modelMapper,
+                                     DateService dateService) {
         this.habitStatisticRepo = habitStatisticRepo;
         this.habitRepo = habitRepo;
         this.habitStatisticMapper = habitStatisticMapper;
         this.modelMapper = modelMapper;
+        this.dateService = dateService;
     }
 
     /**
      * {@inheritDoc}
      *
-     * @author Yuriy Olkhovskyi
+     * @author Yuriy Olkhovskyi && Yurii Koval
      */
     @Transactional
     @Override
@@ -59,16 +66,19 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         if (habitStatisticRepo.findHabitStatByDate(dto.getCreatedOn(), dto.getHabitId()).isPresent()) {
             throw new NotSavedException(ErrorMessage.HABIT_STATISTIC_ALREADY_EXISTS);
         }
-        if (checkDate(dto.getCreatedOn())) {
+        boolean proceed = isTodayOrYesterday(
+            dateService
+                .convertToDatasourceTimezone(dto.getCreatedOn())
+                .toLocalDate()
+        );
+        if (proceed) {
             HabitStatistic habitStatistic = habitStatisticMapper.convertToEntity(dto);
-
             return habitStatisticMapper.convertToDto(habitStatisticRepo.save(habitStatistic));
-        } else {
-            throw new BadRequestException(ErrorMessage.WRONG_DATE);
         }
+        throw new BadRequestException(ErrorMessage.WRONG_DATE);
     }
 
-    private boolean checkDate(LocalDate date) {
+    private boolean isTodayOrYesterday(LocalDate date) {
         int diff = Period.between(LocalDate.now(), date).getDays();
         return diff == 0 || diff == -1;
     }
@@ -137,10 +147,10 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * @author Yuriy Olkhovskyi
      */
     @Override
-    public List<HabitDto> findAllHabitsAndTheirStatistics(Long id, Boolean status) {
+    public List<HabitDto> findAllHabitsAndTheirStatistics(Long id, Boolean status, String language) {
         return findAllHabitsByStatus(id, status)
             .stream()
-            .map(this::convertHabitToHabitDto)
+            .map(habit -> convertHabitToHabitDto(habit, language))
             .collect(Collectors.toList());
     }
 
@@ -153,8 +163,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public CalendarUsefulHabitsDto getInfoAboutUserHabits(Long userId) {
         List<Habit> allHabitsByUserId = findAllHabitsByStatus(userId, true);
 
-        List<HabitLogItemDto> statisticByHabitsPerMonth =
-            getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
+        List<HabitLogItemDto> statisticByHabitsPerMonth = getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
 
         List<HabitLogItemDto> statisticUnTakenItemsWithPrevMonth =
             getDifferenceItemsWithPrevDay(allHabitsByUserId);
@@ -176,11 +185,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     }
 
     private List<HabitLogItemDto> getAmountOfUnTakenItemsPerMonth(List<Habit> allHabitsByUserId) {
-        LocalDate firstDayOfMonth = LocalDate.now();
+        ZonedDateTime firstDayOfMonth = dateService.getDatasourceZonedDateTime();
         return allHabitsByUserId
             .stream()
             .map(habit -> new HabitLogItemDto(
-                habit.getHabitDictionary().getHabitItem(),
+                habit.getHabitDictionary().getImage(),
                 habitStatisticRepo
                     .getSumOfAllItemsPerMonth(habit.getId(),
                         firstDayOfMonth.withDayOfMonth(1)).orElse(0))).collect(Collectors.toList());
@@ -190,7 +199,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return allHabitsByUserId
             .stream()
             .map(habit -> new HabitLogItemDto(
-                habit.getHabitDictionary().getHabitItem(),
+                habit.getHabitDictionary().getImage(),
                 getItemsTakenToday(habit.getId()) - getItemsForPreviousDay(habit.getId())
             )).collect(Collectors.toList());
     }
@@ -208,32 +217,71 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             .collect(Collectors.toList());
     }
 
-    private HabitDto convertHabitToHabitDto(Habit habit) {
+    private HabitDto convertHabitToHabitDto(Habit habit, String language) {
         List<HabitStatisticDto> result = new ArrayList<>();
         List<HabitStatistic> habitStatistics = habit.getHabitStatistics();
-        LocalDate localDate = habit.getCreateDate();
+        ZonedDateTime zonedDateTime = habit.getCreateDate();
         int counter = 0;
 
         habitStatistics.sort(Comparator.comparing(HabitStatistic::getCreatedOn));
 
         for (int i = 0; i < 21; i++) {
-            if (counter < habitStatistics.size() && localDate.equals(habitStatistics.get(counter).getCreatedOn())) {
+            if (counter < habitStatistics.size()
+                && zonedDateTime.toLocalDate().equals(habitStatistics.get(counter).getCreatedOn().toLocalDate())) {
                 result.add(new HabitStatisticDto(habit.getHabitStatistics().get(counter)));
                 counter++;
             } else {
-                result.add(new HabitStatisticDto(null, HabitRate.DEFAULT, localDate, 0));
+                result.add(new HabitStatisticDto(null, HabitRate.DEFAULT, zonedDateTime, 0));
             }
-            localDate = localDate.plusDays(1);
+            zonedDateTime = zonedDateTime.plusDays(1);
         }
+        HabitDictionaryDto habitDictionaryDto = modelMapper.map(habit.getHabitDictionary(), HabitDictionaryDto.class);
+        HabitDictionaryTranslation habitDictionaryTranslation = createHabitDictionaryTranslation(habit,
+            habitDictionaryDto, language);
+
         return new HabitDto(habit.getId(),
-            habit.getHabitDictionary().getName(),
+            habitDictionaryTranslation.getName(),
             habit.getStatusHabit(),
-            habit.getHabitDictionary().getDescription(),
-            habit.getHabitDictionary().getName(),
-            habit.getHabitDictionary().getHabitItem(),
+            habitDictionaryTranslation.getDescription(),
+            habitDictionaryTranslation.getName(),
+            habitDictionaryTranslation.getHabitItem(),
             habit.getCreateDate(),
             result,
-            modelMapper.map(habit.getHabitDictionary(), HabitDictionaryDto.class)
+            habitDictionaryDto
         );
+    }
+
+    /**
+     * Create HabitDictionaryTranslation.
+     *
+     * @param habit              {@link Habit}.
+     * @param habitDictionaryDto {@link HabitDictionaryDto}.
+     * @param language           language code.
+     * @return {@link HabitDictionaryTranslation}.
+     */
+    private HabitDictionaryTranslation createHabitDictionaryTranslation(
+        Habit habit, HabitDictionaryDto habitDictionaryDto, String language) {
+        HabitDictionaryTranslation habitDictionaryTranslation = habit.getHabitDictionary()
+            .getHabitDictionaryTranslations().stream()
+            .filter(t -> t.getLanguage().getCode().equals(language))
+            .findFirst().orElseThrow(() -> new NotFoundException("This habit doesn't exist for this language"));
+        habitDictionaryDto.setDescription(habitDictionaryTranslation.getDescription());
+        habitDictionaryDto.setHabitItem(habitDictionaryTranslation.getHabitItem());
+        habitDictionaryDto.setName(habitDictionaryTranslation.getName());
+        return habitDictionaryTranslation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language) {
+        return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), language).stream()
+            .map(it ->
+                HabitItemsAmountStatisticDto.builder()
+                    .habitItem((String) it.get(0))
+                    .notTakenItems((long) it.get(1))
+                    .build()
+            ).collect(Collectors.toList());
     }
 }

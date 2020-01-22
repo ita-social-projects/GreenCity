@@ -15,7 +15,7 @@
     <changeSet author="Yurii Koval"
                id="Yurii-3">
         <addColumn tableName="verify_emails">
-            <column name="user_id" type="int"/>
+            <column name="user_id" type="BIGINT"/>
         </addColumn>
     </changeSet>
     <changeSet author="Yurii Koval"
@@ -58,7 +58,7 @@
     <changeSet author="Yurii Koval"
                id="Yurii-9">
         <addColumn tableName="own_security">
-            <column name="user_id" type="int"/>
+            <column name="user_id" type="BIGINT"/>
         </addColumn>
     </changeSet>
     <changeSet author="Yurii Koval"

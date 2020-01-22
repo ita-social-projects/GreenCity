@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DiscountServiceImplTest {
-
     @Mock
     private DiscountValuesRepo discountValuesRepo;
 
@@ -53,5 +52,4 @@ public class DiscountServiceImplTest {
         Set<DiscountValue> foundSet = discountService.findAllByPlaceId(anyLong());
         assertEquals(genericSet, foundSet);
     }
-
 }

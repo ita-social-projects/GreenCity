@@ -2,7 +2,8 @@ package greencity.service.impl;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import greencity.GreenCityApplication;
 import greencity.entity.Category;
@@ -25,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = GreenCityApplication.class)
@@ -36,7 +38,7 @@ public class NotificationServiceImplTest {
     @Mock
     private UserRepo userRepo;
     @Mock
-    private EmailService emailService;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     private List<Place> testPlaces;
     private EmailNotification emailNotification;
@@ -64,11 +66,6 @@ public class NotificationServiceImplTest {
         notificationService.sendImmediatelyReport(testPlaces.get(0));
 
         verify(userRepo).findAllByEmailNotification(emailNotification);
-        verify(emailService).sendAddedNewPlacesReportEmail(
-            eq(Collections.singletonList(testUser)),
-            any(HashMap.class),
-            eq(emailNotification)
-        );
     }
 
     @Test
@@ -84,11 +81,6 @@ public class NotificationServiceImplTest {
             any(LocalDateTime.class),
             eq(PlaceStatus.APPROVED));
         verify(userRepo).findAllByEmailNotification(emailNotification);
-        verify(emailService).sendAddedNewPlacesReportEmail(
-            eq(Collections.singletonList(testUser)),
-            any(HashMap.class),
-            eq(emailNotification)
-        );
     }
 
     @Test
@@ -104,11 +96,6 @@ public class NotificationServiceImplTest {
             any(LocalDateTime.class),
             eq(PlaceStatus.APPROVED));
         verify(userRepo).findAllByEmailNotification(emailNotification);
-        verify(emailService).sendAddedNewPlacesReportEmail(
-            eq(Collections.singletonList(testUser)),
-            any(HashMap.class),
-            eq(emailNotification)
-        );
     }
 
     @Test
@@ -124,10 +111,5 @@ public class NotificationServiceImplTest {
             any(LocalDateTime.class),
             eq(PlaceStatus.APPROVED));
         verify(userRepo).findAllByEmailNotification(emailNotification);
-        verify(emailService).sendAddedNewPlacesReportEmail(
-            eq(Collections.singletonList(testUser)),
-            any(HashMap.class),
-            eq(emailNotification)
-        );
     }
 }

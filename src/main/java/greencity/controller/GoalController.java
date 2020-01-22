@@ -1,9 +1,11 @@
 package greencity.controller;
 
+import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.goal.GoalDto;
 import greencity.service.GoalService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,7 +31,9 @@ public class GoalController {
     }
 
     /**
-     * Method returns all goals, available for tracking.
+     * Method returns all goals, available for tracking for specific language.
+     *
+     * @param language needed language code
      * @return list of {@link GoalDto}
      */
     @ApiOperation(value = "Get all goals.")
@@ -38,7 +43,9 @@ public class GoalController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
-    public ResponseEntity<List<GoalDto>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(goalService.findAll());
+    public ResponseEntity<List<GoalDto>> getAll(
+        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        return ResponseEntity.status(HttpStatus.OK).body(goalService.findAll(language));
     }
 }

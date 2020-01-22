@@ -19,28 +19,28 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
+import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.ProposePlaceMapper;
-import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @Slf4j
-@RunWith(MockitoJUnitRunner.class)
 public class PlaceServiceImplTest {
     Category category = Category.builder()
         .id(1L)
@@ -113,22 +113,13 @@ public class PlaceServiceImplTest {
     private PlaceRepo placeRepo;
 
     @Mock
-    private CategoryRepo categoryRepo;
-
-    @Mock
     private CategoryService categoryService;
 
     @Mock
     private LocationServiceImpl locationService;
 
     @Mock
-    private LocationService service;
-
-    @Mock
     private OpenHoursService openingHoursService;
-
-    @Mock
-    private SpecificationService specificationService;
 
     @Mock
     private ModelMapper modelMapper;
@@ -137,13 +128,31 @@ public class PlaceServiceImplTest {
     private UserService userService;
 
     @Mock
-    private EmailService emailService;
-
-    @Mock
     private ProposePlaceMapper proposePlaceMapper;
 
-    @InjectMocks
-    private PlaceServiceImpl placeService;
+    @Mock
+    private DiscountValueMapper discountValueMapper;
+
+    @Mock
+    private DiscountService discountService;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    private ZoneId zoneId = ZoneId.of("Europe/Kiev");
+
+    private PlaceService placeService;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+        placeService = new PlaceServiceImpl(placeRepo, modelMapper, proposePlaceMapper, categoryService,
+            locationService, discountValueMapper, userService, openingHoursService, discountService,
+            notificationService, zoneId, applicationEventPublisher);
+    }
 
     @Test
     public void saveTest() {
@@ -156,11 +165,13 @@ public class PlaceServiceImplTest {
 
     @Test
     public void updateStatusTest() {
-        Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
-
+        Place genericEntity = Place.builder()
+            .id(1L)
+            .status(PlaceStatus.PROPOSED)
+            .modifiedDate(ZonedDateTime.now())
+            .build();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
-
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
         assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
     }
@@ -180,8 +191,7 @@ public class PlaceServiceImplTest {
         Page<Place> placesPage = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         List<AdminPlaceDto> listDto = Collections.singletonList(dto);
 
-        PageableDto pageableDto =
-            new PageableDto(listDto, listDto.size(), 0);
+        PageableDto<AdminPlaceDto> pageableDto = new PageableDto<>(listDto, listDto.size(), 0);
         pageableDto.setPage(listDto);
 
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any(), any())).thenReturn(placesPage);

@@ -1,7 +1,7 @@
 package greencity.dto.habitstatistic;
 
 import greencity.dto.user.HabitLogItemDto;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CalendarUsefulHabitsDto {
-    private LocalDate creationDate;
+    private ZonedDateTime creationDate;
     private List<HabitLogItemDto> allItemsPerMonth;
     private List<HabitLogItemDto> differenceUnTakenItemsWithPreviousDay;
 }

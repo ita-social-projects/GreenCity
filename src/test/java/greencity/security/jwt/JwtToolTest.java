@@ -49,7 +49,7 @@ public class JwtToolTest {
             .getBody()
             .getSubject();
         assertEquals(expectedEmail, actualEmail);
-        @SuppressWarnings({"unchecked, rawtypes"})
+        @SuppressWarnings({"unchecked, rawtype"})
         List<String> authorities = (List<String>) Jwts.parser()
             .setSigningKey(jwtTool.getAccessTokenKey())
             .parseClaimsJws(accessToken)
@@ -72,7 +72,7 @@ public class JwtToolTest {
             .getBody()
             .getSubject();
         assertEquals(expectedEmail, actualEmail);
-        @SuppressWarnings({"unchecked, rawtypes"})
+        @SuppressWarnings({"unchecked, rawtype"})
         List<String> authorities = (List<String>) Jwts.parser()
             .setSigningKey(user.getRefreshTokenKey())
             .parseClaimsJws(refreshToken)

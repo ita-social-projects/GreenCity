@@ -2,11 +2,16 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.service.EmailService;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +35,9 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     private final ITemplateEngine templateEngine;
     private final String clientLink;
+    private final String ecoNewsLink;
     private final String serverLink;
+    private final String senderEmailAddress;
 
     /**
      * Constructor.
@@ -39,11 +46,15 @@ public class EmailServiceImpl implements EmailService {
     public EmailServiceImpl(JavaMailSender javaMailSender,
                             ITemplateEngine templateEngine,
                             @Value("${client.address}") String clientLink,
-                            @Value("${address}") String serverLink) {
+                            @Value("${econews.address}") String ecoNewsLink,
+                            @Value("${address}") String serverLink,
+                            @Value("${sender.email.address}") String senderEmailAddress) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.clientLink = clientLink;
+        this.ecoNewsLink = ecoNewsLink;
         this.serverLink = serverLink;
+        this.senderEmailAddress = senderEmailAddress;
     }
 
     /**
@@ -73,7 +84,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendAddedNewPlacesReportEmail(List<User> subscribers,
                                               Map<Category, List<Place>> categoriesWithPlaces,
                                               EmailNotification notification) {
-        log.info(LogMessage.IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL, subscribers, categoriesWithPlaces, notification);
+        log.info(LogMessage.IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL, null, null, notification);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.RESULT, categoriesWithPlaces);
@@ -89,14 +100,39 @@ public class EmailServiceImpl implements EmailService {
     /**
      * {@inheritDoc}
      *
+     * @author Bogdan Kuzenko
+     */
+    @Override
+    public void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
+                                         AddEcoNewsDtoResponse newsDto) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
+        model.put(EmailConstants.NEWS_RESULT, newsDto);
+        for (NewsSubscriberResponseDto dto : subscribers) {
+            try {
+                model.put(EmailConstants.UNSUBSCRIBE_LINK, serverLink + "/newsSubscriber/unsubscribe?email="
+                    + URLEncoder.encode(dto.getEmail(), StandardCharsets.UTF_8.toString())
+                    + "&unsubscribeToken=" + dto.getUnsubscribeToken());
+            } catch (UnsupportedEncodingException e) {
+                log.error(e.getMessage());
+            }
+            String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
+            sendEmailByEmail(dto.getEmail(), EmailConstants.NEWS, template);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Stasyuk
      */
     @Override
-    public void sendVerificationEmail(User user, String token) {
+    public void sendVerificationEmail(User user) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, user.getFirstName());
-        model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token=" + token);
+        model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token="
+            + user.getVerifyEmail().getToken() + "&user_id=" + user.getId());
         String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
         sendEmail(user, EmailConstants.VERIFY_EMAIL, template);
     }
@@ -111,24 +147,30 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, user.getFirstName());
-        model.put(EmailConstants.RESTORE_PASS, clientLink + "/GreenCityClient/auth/restore/" + token);
+        model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" + token
+            + "&user_id=" + user.getId());
         String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);
         sendEmail(user, EmailConstants.CONFIRM_RESTORING_PASS, template);
     }
 
     private String createEmailTemplate(Map<String, Object> vars, String templateName) {
-        log.info(LogMessage.IN_CREATE_TEMPLATE_NAME, vars, templateName);
+        log.info(LogMessage.IN_CREATE_TEMPLATE_NAME, null, templateName);
         Context context = new Context();
         context.setVariables(vars);
         return templateEngine.process("email/" + templateName, context);
     }
 
     private void sendEmail(User receiver, String subject, String content) {
-        log.info(LogMessage.IN_SEND_EMAIL, receiver, subject);
+        sendEmailByEmail(receiver.getEmail(), subject, content);
+    }
+
+    private void sendEmailByEmail(String email, String subject, String content) {
+        log.info(LogMessage.IN_SEND_EMAIL, email, subject);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         try {
-            mimeMessageHelper.setTo(receiver.getEmail());
+            mimeMessageHelper.setFrom(senderEmailAddress);
+            mimeMessageHelper.setTo(email);
             mimeMessageHelper.setSubject(subject);
             mimeMessage.setContent(content, EmailConstants.EMAIL_CONTENT_TYPE);
         } catch (MessagingException e) {
