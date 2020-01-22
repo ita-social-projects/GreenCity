@@ -7,14 +7,15 @@ import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
+import greencity.message.PasswordRecoveryMessage;
 import greencity.repository.UserRepo;
-import greencity.security.events.SendRestorePasswordEmailEvent;
 import greencity.security.events.UpdatePasswordEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.PasswordRecoveryService;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,27 +38,33 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private final UserRepo userRepo;
     private final RestorePasswordEmailRepo restorePasswordEmailRepo;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final RabbitTemplate rabbitTemplate;
     private final JwtTool jwtTool;
     @Value("${verifyEmailTimeHour}")
     private Integer tokenExpirationTimeInHours;
+    @Value("${messaging.rabbit.email.topic}")
+    private String sendEmailTopic;
+    private static final String PASSWORD_RECOVERY_PATTERN = ".password.recovery";
 
     /**
      * Constructor with all essentials beans for password recovery functionality.
-     *
      * @param restorePasswordEmailRepo  {@link RestorePasswordEmailRepo} - Used for storing recovery tokens
      * @param applicationEventPublisher {@link ApplicationEventPublisher} - Used for publishing events,
      *                                  such as email sending or password update
+     * @param rabbitTemplate            template for sending RabbitMQ messages
      * @param jwtTool                   {@link JwtTool} - Used for recovery token generation
      */
     public PasswordRecoveryServiceImpl(
         RestorePasswordEmailRepo restorePasswordEmailRepo,
         UserRepo userRepo,
         ApplicationEventPublisher applicationEventPublisher,
+        RabbitTemplate rabbitTemplate,
         JwtTool jwtTool
     ) {
         this.restorePasswordEmailRepo = restorePasswordEmailRepo;
         this.userRepo = userRepo;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.rabbitTemplate = rabbitTemplate;
         this.jwtTool = jwtTool;
     }
 
@@ -115,8 +122,15 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
                 .expiryDate(calculateExpirationDate(tokenExpirationTimeInHours))
                 .build();
         restorePasswordEmailRepo.save(restorePasswordEmail);
-        applicationEventPublisher.publishEvent(
-            new SendRestorePasswordEmailEvent(user, token)
+        rabbitTemplate.convertAndSend(
+            sendEmailTopic,
+            sendEmailTopic + PASSWORD_RECOVERY_PATTERN,
+            new PasswordRecoveryMessage(
+                user.getId(),
+                user.getFirstName(),
+                user.getEmail(),
+                token
+            )
         );
     }
 

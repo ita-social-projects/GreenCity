@@ -6,6 +6,7 @@ import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
+import greencity.message.PasswordRecoveryMessage;
 import greencity.repository.UserRepo;
 import greencity.security.events.SendRestorePasswordEmailEvent;
 import greencity.security.events.UpdatePasswordEvent;
@@ -18,9 +19,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,8 +39,13 @@ public class PasswordRecoveryServiceImplTest {
     private ApplicationEventPublisher applicationEventPublisher;
     @Mock
     private UserRepo userRepo;
+    @Mock
+    private RabbitTemplate rabbitTemplate;
     @InjectMocks
     private PasswordRecoveryServiceImpl passwordRecoveryService;
+    @Value("${messaging.rabbit.email.topic}")
+    private String sendEmailTopic;
+    private static final String PASSWORD_RECOVERY_PATTERN = ".password.recovery";
 
     @Test(expected = NotFoundException.class)
     public void sendPasswordRecoveryEmailToNonExistentUserTest() {
@@ -69,9 +78,16 @@ public class PasswordRecoveryServiceImplTest {
                 .token(token)
                 .build(), "expiryDate"
         ));
-        verify(applicationEventPublisher).publishEvent(refEq(
-            new SendRestorePasswordEmailEvent(user, "bar"), "timestamp"
-        ));
+        verify(rabbitTemplate).convertAndSend(
+            refEq(sendEmailTopic),
+            refEq(sendEmailTopic + PASSWORD_RECOVERY_PATTERN),
+            refEq(new PasswordRecoveryMessage(
+                user.getId(),
+                user.getFirstName(),
+                user.getEmail(),
+                token
+            ))
+        );
     }
 
     @Test(expected = BadVerifyEmailTokenException.class)

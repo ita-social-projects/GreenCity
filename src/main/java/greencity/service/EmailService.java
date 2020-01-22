@@ -51,4 +51,14 @@ public interface EmailService {
      * @param token - {@link String}
      */
     void sendRestoreEmail(User user, String token);
+
+    /**
+     * Sends password recovery email using separated user parameters.
+     *
+     * @param userId       the user id is used for recovery link building.
+     * @param userFistName user first name is used in email model constants.
+     * @param userEmail    user email which will be used for sending recovery letter.
+     * @param token        password recovery token.
+     */
+    void sendRestoreEmail(Long userId, String userFistName, String userEmail, String token);
 }

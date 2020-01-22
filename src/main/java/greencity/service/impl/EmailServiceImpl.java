@@ -153,11 +153,34 @@ public class EmailServiceImpl implements EmailService {
         sendEmail(user, EmailConstants.CONFIRM_RESTORING_PASS, template);
     }
 
+    /**
+     * Sends password recovery email using separated user parameters.
+     *
+     * @param userId       the user id is used for recovery link building.
+     * @param userFistName user first name is used in email model constants.
+     * @param userEmail    user email which will be used for sending recovery letter.
+     * @param token        password recovery token.
+     */
+    @Override
+    public void sendRestoreEmail(Long userId, String userFistName, String userEmail, String token) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.USER_NAME, userFistName);
+        model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" + token
+            + "&user_id=" + userId);
+        String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);
+        sendEmail(userEmail, EmailConstants.CONFIRM_RESTORING_PASS, template);
+    }
+
     private String createEmailTemplate(Map<String, Object> vars, String templateName) {
         log.info(LogMessage.IN_CREATE_TEMPLATE_NAME, null, templateName);
         Context context = new Context();
         context.setVariables(vars);
         return templateEngine.process("email/" + templateName, context);
+    }
+
+    private void sendEmail(String receiverEmail, String subject, String content) {
+        sendEmailByEmail(receiverEmail, subject, content);
     }
 
     private void sendEmail(User receiver, String subject, String content) {
