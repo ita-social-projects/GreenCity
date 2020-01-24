@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EmailMessageReceiver {
-    private static final String SEND_EMAIL_QUEUE = "send_email_queue";
+    private static final String PASSWORD_RECOVERY_QUEUE = "password-recovery-queue";
     private final EmailService emailService;
 
     /**
@@ -28,7 +28,7 @@ public class EmailMessageReceiver {
      * Method that is invoked on {@link PasswordRecoveryMessage} receiving.
      * It is responsible for sending password recovery emails.
      */
-    @RabbitListener(queues = SEND_EMAIL_QUEUE)
+    @RabbitListener(queues = PASSWORD_RECOVERY_QUEUE)
     public void sendPasswordRecoveryEmail(PasswordRecoveryMessage message) {
         emailService.sendRestoreEmail(
             message.getUserId(),

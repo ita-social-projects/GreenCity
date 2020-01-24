@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 public class EmailServiceRabbitConfig {
     @Value("${messaging.rabbit.email.topic}")
     private String emailTopicExchangeName;
-    private static final String SEND_EMAIL_QUEUE = "send_email_queue";
 
     /**
      * Topic exchange declaration that is used for email-related queues.
@@ -32,28 +31,26 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * Queue that is used for sending email-related messages.
-     * It is durable since it can handle security-related messages.
+     * Queue that is used for sending password recovery emails.
+     * It is durable since password recovery is security related functionality.
      *
-     * @return durable queue that is meant for sending email letters.
+     * @return durable queue that is meant for sending password recovery email letters.
      */
     @Bean
-    public Queue emailQueue() {
-        return new Queue(SEND_EMAIL_QUEUE, true);
+    public Queue passwordRecoveryEmailQueue() {
+        return new Queue("password-recovery-queue", true);
     }
 
     /**
-     * The binding that is used for linking email topic exchange to email-related queues.
-     * Topic pattern is extended with # symbol, so multiple words can be after topic
-     * name when sending messages.
+     * The binding that is used for linking email topic exchange to password recovery email queue.
      *
-     * @return Binding with topic exchange and email-related queue linked.
+     * @return Binding with topic exchange and password recovery queue linked.
      */
     @Bean
-    public Binding emailTopicAndQueueBinder(TopicExchange emailTopicExchange, Queue emailQueue) {
+    public Binding passwordRecoveryQueueToEmailTopicBinding(TopicExchange emailTopicExchange) {
         return BindingBuilder
-            .bind(emailQueue)
+            .bind(passwordRecoveryEmailQueue())
             .to(emailTopicExchange)
-            .with(emailTopicExchangeName + "#");
+            .with("password.recovery");
     }
 }

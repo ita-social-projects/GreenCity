@@ -44,7 +44,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private Integer tokenExpirationTimeInHours;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
-    private static final String PASSWORD_RECOVERY_PATTERN = ".password.recovery";
+    private static final String PASSWORD_RECOVERY_ROUTING_KEY = "password.recovery";
 
     /**
      * Constructor with all essentials beans for password recovery functionality.
@@ -124,7 +124,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         restorePasswordEmailRepo.save(restorePasswordEmail);
         rabbitTemplate.convertAndSend(
             sendEmailTopic,
-            sendEmailTopic + PASSWORD_RECOVERY_PATTERN,
+            PASSWORD_RECOVERY_ROUTING_KEY,
             new PasswordRecoveryMessage(
                 user.getId(),
                 user.getFirstName(),
