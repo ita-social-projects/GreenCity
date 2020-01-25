@@ -1,6 +1,7 @@
 package greencity.security.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.RabbitConstants.PASSWORD_RECOVERY_ROUTING_KEY;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
 import greencity.exception.exceptions.BadEmailException;
@@ -44,7 +45,6 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     private Integer tokenExpirationTimeInHours;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
-    private static final String PASSWORD_RECOVERY_ROUTING_KEY = "password.recovery";
 
     /**
      * Constructor with all essentials beans for password recovery functionality.

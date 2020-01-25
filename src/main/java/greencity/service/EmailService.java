@@ -33,9 +33,13 @@ public interface EmailService {
     /**
      * Method for sending simple notification to {@code User} about change status.
      *
-     * @param updatable - updated {@code Place}
+     * @param authorFirstName place author's first name.
+     * @param placeName       name of a place.
+     * @param placeStatus     updated status of a place.
+     * @param authorEmail     author's email.
      */
-    void sendChangePlaceStatusEmail(Place updatable);
+    void sendChangePlaceStatusEmail(String authorFirstName, String placeName,
+                                    String placeStatus, String authorEmail);
 
     /**
      * Method for sending verification email to {@link User}.
