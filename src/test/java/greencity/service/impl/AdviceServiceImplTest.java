@@ -4,13 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.entity.Advice;
-import greencity.entity.AdviceTranslation;
 import greencity.entity.HabitDictionary;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -27,10 +28,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdviceServiceImplTest {
-
     @InjectMocks
     private AdviceServiceImpl adviceService;
 
@@ -89,7 +90,8 @@ public class AdviceServiceImplTest {
 
     @Test
     public void getAdviceByName() {
-        when(adviceTranslationRepo.findAdviceTranslationByLanguage_CodeAndAdvice("en", "test")).thenReturn(Optional.of(adviceTranslation));
+        when(adviceTranslationRepo.findAdviceTranslationByLanguage_CodeAndAdvice("en", "test"))
+            .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, AdviceDTO.class)).thenReturn(adviceDTO);
         assertEquals(adviceDTO, adviceService.getAdviceByName("en", "test"));
     }
@@ -117,18 +119,17 @@ public class AdviceServiceImplTest {
     @Test(expected = NotUpdatedException.class)
     public void updateFailed() {
         adviceService.update(advicePostDTO, 1L);
-
     }
 
     @Test
     public void delete() {
-        when(adviceRepo.findById(advice.getId())).thenReturn(Optional.of(advice));
         assertEquals(advice.getId(), adviceService.delete(advice.getId()));
         verify(adviceRepo, times(1)).deleteById(anyLong());
     }
 
     @Test(expected = NotDeletedException.class)
     public void deleteFailed() {
+        doThrow(new EmptyResultDataAccessException(1)).when(adviceRepo).deleteById(advice.getId());
         adviceService.delete(advice.getId());
     }
 }

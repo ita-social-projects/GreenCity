@@ -26,10 +26,10 @@ public class SignInEventListenerTest {
 
     @Test
     public void onApplicationEvent() {
-        doNothing().when(userService).addDefaultHabit(any(User.class), anyString());
-        signInEventListener.onApplicationEvent(new SignInEvent(new User()));
+        doNothing().when(userService).addDefaultHabit(anyLong(), anyString());
+        signInEventListener.onApplicationEvent(new SignInEvent(User.builder().id(1L).build()));
 
-        verify(userService, times(1)).addDefaultHabit(any(User.class), anyString());
+        verify(userService, times(1)).addDefaultHabit(anyLong(), anyString());
     }
 
     @Test(expected = ClassCastException.class)

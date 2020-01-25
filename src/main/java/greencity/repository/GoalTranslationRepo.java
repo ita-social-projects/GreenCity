@@ -20,14 +20,14 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
     /**
      * Method returns available goal translations for specific user and language code.
      *
-     * @param user         target user
+     * @param userId         target user id
      * @param languageCode code of needed language
      * @return List of available {@link GoalTranslation}'s.
      */
     @Query("SELECT g FROM GoalTranslation g WHERE g.goal.id NOT IN "
-        + "(SELECT ug.goal FROM UserGoal ug WHERE ug.user = ?1 AND ug.status = 'ACTIVE') "
+        + "(SELECT ug.goal FROM UserGoal ug WHERE ug.user.id = ?1 AND ug.status = 'ACTIVE') "
         + "AND g.language.code = ?2")
-    List<GoalTranslation> findAvailableByUser(User user, String languageCode);
+    List<GoalTranslation> findAvailableByUserId(Long userId, String languageCode);
 
     /**
      * Method returns goal translations for specific goal and language code.
