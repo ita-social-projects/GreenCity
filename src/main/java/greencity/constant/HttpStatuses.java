@@ -1,6 +1,6 @@
 package greencity.constant;
 
-public class HttpStatuses {
+public final class HttpStatuses {
     public static final String OK = "OK";
     public static final String CREATED = "Created";
 

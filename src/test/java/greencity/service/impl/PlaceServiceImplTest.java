@@ -1,12 +1,5 @@
 package greencity.service.impl;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -27,14 +20,20 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import static junit.framework.TestCase.assertEquals;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -140,18 +139,33 @@ public class PlaceServiceImplTest {
     private NotificationService notificationService;
 
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    private RabbitTemplate rabbitTemplate;
 
     private ZoneId zoneId = ZoneId.of("Europe/Kiev");
 
     private PlaceService placeService;
+
+    private final Place genericEntity1 = Place.builder()
+        .id(1L)
+        .name("test1")
+        .author(user)
+        .status(PlaceStatus.PROPOSED)
+        .modifiedDate(ZonedDateTime.now())
+        .build();
+    private final Place genericEntity2 = Place.builder()
+        .id(2L)
+        .name("test2")
+        .author(user)
+        .status(PlaceStatus.PROPOSED)
+        .modifiedDate(ZonedDateTime.now())
+        .build();
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, proposePlaceMapper, categoryService,
             locationService, discountValueMapper, userService, openingHoursService, discountService,
-            notificationService, zoneId, applicationEventPublisher);
+            notificationService, zoneId, rabbitTemplate);
     }
 
     @Test
@@ -165,11 +179,15 @@ public class PlaceServiceImplTest {
 
     @Test
     public void updateStatusTest() {
+        User user = User.builder().firstName("test fname").email("test.ua").build();
         Place genericEntity = Place.builder()
             .id(1L)
+            .name("test")
+            .author(user)
             .status(PlaceStatus.PROPOSED)
             .modifiedDate(ZonedDateTime.now())
             .build();
+        doNothing().when(rabbitTemplate).convertAndSend((Object) any(), any(), any());
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(placeRepo.save(any())).thenReturn(genericEntity);
         placeService.updateStatus(1L, PlaceStatus.DECLINED);
@@ -275,8 +293,8 @@ public class PlaceServiceImplTest {
         );
 
         when(placeRepo.findById(anyLong()))
-            .thenReturn(Optional.of(new Place()))
-            .thenReturn(Optional.of(new Place()));
+            .thenReturn(Optional.of(genericEntity1))
+            .thenReturn(Optional.of(genericEntity2));
         when(modelMapper.map(any(), any()))
             .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DECLINED))
             .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DECLINED));
@@ -297,8 +315,8 @@ public class PlaceServiceImplTest {
         List<Long> request = Arrays.asList(1L, 2L);
 
         when(placeRepo.findById(anyLong()))
-            .thenReturn(Optional.of(new Place()))
-            .thenReturn(Optional.of(new Place()));
+            .thenReturn(Optional.of(genericEntity1))
+            .thenReturn(Optional.of(genericEntity2));
         when(modelMapper.map(any(), any()))
             .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED))
             .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED));

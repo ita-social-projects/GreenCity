@@ -1,5 +1,6 @@
 package greencity.config;
 
+import static greencity.constant.RabbitConstants.*;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -51,6 +52,29 @@ public class EmailServiceRabbitConfig {
         return BindingBuilder
             .bind(passwordRecoveryEmailQueue())
             .to(emailTopicExchange)
-            .with("password.recovery");
+            .with(PASSWORD_RECOVERY_ROUTING_KEY);
+    }
+
+    /**
+     * Queue that is used for change place status emails.
+     *
+     * @return durable queue that is meant for sending change place status email letters.
+     */
+    @Bean
+    public Queue changePlaceStatusEmailQueue() {
+        return new Queue("change-place-status", true);
+    }
+
+    /**
+     * The binding that is used for linking email topic exchange to change place status email queue.
+     *
+     * @return Binding with topic exchange and change place status queue linked.
+     */
+    @Bean
+    public Binding changePlaceStatusQueueToEmailTopicBinding(TopicExchange emailTopicExchange) {
+        return BindingBuilder
+            .bind(changePlaceStatusEmailQueue())
+            .to(emailTopicExchange)
+            .with(CHANGE_PLACE_STATUS_ROUTING_KEY);
     }
 }

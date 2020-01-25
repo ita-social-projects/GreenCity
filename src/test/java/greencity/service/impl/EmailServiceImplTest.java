@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import org.junit.Ignore;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -46,8 +47,11 @@ public class EmailServiceImplTest {
 
     @Test
     public void sendChangePlaceStatusEmailTest() {
-        Place generatedEntity = Place.builder().author(user).name("TestPlace").status(PlaceStatus.APPROVED).build();
-        service.sendChangePlaceStatusEmail(generatedEntity);
+        String authorFirstName = "test author first name";
+        String placeName = "test place name";
+        String placeStatus = "test place status";
+        String authorEmail = "test author email";
+        service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail);
 
         verify(javaMailSender).createMimeMessage();
     }

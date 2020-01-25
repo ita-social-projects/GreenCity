@@ -1,6 +1,6 @@
 package greencity.constant;
 
-public class ValidationConstants {
+public final class ValidationConstants {
     public static final String EMPTY_FIRSTNAME = "The firstName field can not be empty";
     public static final String INVALID_FIRSTNAME_LENGTH = "The firstName field should be between 2 and 20 characters";
     public static final int FIRSTNAME_MIN_LENGTH = 2;

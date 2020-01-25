@@ -60,19 +60,20 @@ public class EmailServiceImpl implements EmailService {
     /**
      * {@inheritDoc}
      *
-     * @author Nazar Vladyka
+     * @author Nazar Vladyka && Yurii Olkhovskyi
      */
     @Override
-    public void sendChangePlaceStatusEmail(Place place) {
-        log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, place);
+    public void sendChangePlaceStatusEmail(String authorFirstName, String placeName,
+                                           String placeStatus, String authorEmail) {
+        log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, placeName);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
-        model.put(EmailConstants.USER_NAME, place.getAuthor().getFirstName());
-        model.put(EmailConstants.PLACE_NAME, place.getName());
-        model.put(EmailConstants.STATUS, place.getStatus().toString().toLowerCase());
+        model.put(EmailConstants.USER_NAME, authorFirstName);
+        model.put(EmailConstants.PLACE_NAME, placeName);
+        model.put(EmailConstants.STATUS, placeStatus);
 
         String template = createEmailTemplate(model, EmailConstants.CHANGE_PLACE_STATUS_EMAIL_PAGE);
-        sendEmail(place.getAuthor(), EmailConstants.GC_CONTRIBUTORS, template);
+        sendEmail(authorEmail, EmailConstants.GC_CONTRIBUTORS, template);
     }
 
     /**
