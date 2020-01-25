@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.constant.ValidationConstants;
@@ -21,7 +22,6 @@ import greencity.entity.enums.UserStatus;
 import greencity.service.CustomGoalService;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
-import greencity.service.UserValidationService;
 import io.swagger.annotations.*;
 import java.security.Principal;
 import java.util.List;
@@ -42,7 +42,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @Validated
 public class UserController {
     private UserService userService;
-    private UserValidationService userValidationService;
     private HabitStatisticService habitStatisticService;
     private CustomGoalService customGoalService;
 
@@ -219,16 +218,14 @@ public class UserController {
      * Method for finding all {@link User} habits.
      *
      * @param userId    {@link User} id.
-     * @param principal Principal with {@link User} email.
      * @return list of {@link HabitDto}
      */
     @GetMapping("/{userId}/habits")
-    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable Long userId, @ApiIgnore Principal principal,
-                                          @ApiParam(value = "Code of the needed language.")
-                                                            @RequestParam String language) {
+    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable @CurrentUserId Long userId,
+                                                        @ApiParam(value = "Code of the needed language.")
+                                                        @RequestParam String language) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticService.findAllHabitsAndTheirStatistics(
-                userValidationService.userValidForActions(principal, userId).getId(), true, language));
+            .body(habitStatisticService.findAllHabitsAndTheirStatistics(userId, true, language));
     }
 
     /**
@@ -236,22 +233,18 @@ public class UserController {
      * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
      * @param userId    {@link User} id.
-     * @param principal - Principal with {@link User} email.
      * @return {@link CalendarUsefulHabitsDto} instance.
      */
     @ApiOperation(value = "Find statistic about user habits.")
     @GetMapping("/{userId}/habits/statistic")
-    public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(
-        @PathVariable Long userId, @ApiIgnore Principal principal) {
+    public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(@PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticService.getInfoAboutUserHabits(
-                userValidationService.userValidForActions(principal, userId).getId()));
+            .body(habitStatisticService.getInfoAboutUserHabits(userId));
     }
 
     /**
      * Method returns list of user goals for specific language.
      *
-     * @param principal - authentication principal
      * @param language  - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
@@ -264,22 +257,19 @@ public class UserController {
     })
     @GetMapping("/{userId}/goals")
     public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
-        @ApiIgnore
-            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId,
+        @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
         @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getUserGoals(userValidationService.userValidForActions(principal, userId), language));
+            .body(userService.getUserGoals(userId, language));
     }
 
     /**
      * Method returns list user custom goals.
      *
      * @param userId    {@link User} id
-     * @param principal - authentication principal
      * @return list of {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -290,9 +280,7 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/{userId}/customGoals")
-    public ResponseEntity<List<CustomGoalResponseDto>> findAllByUser(@PathVariable Long userId,
-                                                                     @ApiIgnore Principal principal) {
-        userValidationService.userValidForActions(principal, userId);
+    public ResponseEntity<List<CustomGoalResponseDto>> findAllByUser(@PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(customGoalService.findAllByUser(userId));
     }
 
@@ -300,7 +288,6 @@ public class UserController {
      * Method saves custom goals for user.
      *
      * @param dto       {@link BulkSaveUserGoalDto} with list objects to save
-     * @param principal - authentication principal
      * @param userId    {@link User} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
@@ -314,10 +301,8 @@ public class UserController {
     @PostMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> saveUserCustomGoals(
         @Valid @RequestBody BulkSaveCustomGoalDto dto,
-        @ApiIgnore Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId) {
-        userValidationService.userValidForActions(principal, userId);
+        @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(customGoalService.save(dto, userService.findById(userId)));
@@ -328,7 +313,6 @@ public class UserController {
      *
      * @param userId    {@link User} id
      * @param dto       {@link BulkCustomGoalDto} with list objects for update
-     * @param principal - authentication principal
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -340,10 +324,8 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("/{userId}/customGoals")
-    public ResponseEntity<List<CustomGoalResponseDto>> updateBulk(@PathVariable Long userId,
-                                                                  @Valid @RequestBody BulkCustomGoalDto dto,
-                                                                  @ApiIgnore Principal principal) {
-        userValidationService.userValidForActions(principal, userId);
+    public ResponseEntity<List<CustomGoalResponseDto>> updateBulk(@PathVariable @CurrentUserId Long userId,
+                                                                  @Valid @RequestBody BulkCustomGoalDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customGoalService.updateBulk(dto));
     }
@@ -353,7 +335,6 @@ public class UserController {
      *
      * @param ids       string with objects id for deleting.
      * @param userId    {@link User} id
-     * @param principal - authentication principal
      * @return new {@link ResponseEntity}
      */
     @ApiOperation(value = "Delete user custom goals")
@@ -367,16 +348,13 @@ public class UserController {
     public ResponseEntity<List<Long>> bulkDeleteCustomGoals(
         @ApiParam(value = "Ids of custom goals separated by a comma \n e.g. 1,2", required = true)
         @RequestParam String ids,
-        @PathVariable Long userId,
-        @ApiIgnore Principal principal) {
-        userValidationService.userValidForActions(principal, userId);
+        @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(customGoalService.bulkDelete(ids));
     }
 
     /**
      * Method returns list of available (not ACTIVE) goals for user.
      *
-     * @param principal - authentication principal
      * @param language  - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
@@ -389,21 +367,18 @@ public class UserController {
     })
     @GetMapping("/{userId}/goals/available")
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
-        @ApiIgnore Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId,
+        @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
         @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableGoals(userValidationService.userValidForActions(principal, userId),
-                language));
+            .body(userService.getAvailableGoals(userId, language));
     }
 
     /**
      * Method returns list of available (not ACTIVE) custom goals for user.
      *
-     * @param principal - authentication principal
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -415,13 +390,11 @@ public class UserController {
     })
     @GetMapping("/{userId}/customGoals/available")
     public ResponseEntity<List<CustomGoalResponseDto>> getAvailableCustomGoals(
-        @ApiIgnore
-            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId) {
+        @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableCustomGoals(userValidationService.userValidForActions(principal, userId)));
+            .body(userService.getAvailableCustomGoals(userId));
     }
 
 
@@ -441,17 +414,14 @@ public class UserController {
     @PatchMapping("/{userId}/goals/{goalId}")
     public ResponseEntity<UserGoalResponseDto> updateUserGoalStatus(
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId,
+        @PathVariable @CurrentUserId Long userId,
         @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
         @PathVariable Long goalId,
         @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language,
-        @ApiIgnore
-            Principal principal) {
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService
-                .updateUserGoalStatus(userValidationService.userValidForActions(principal, userId), goalId, language));
+            .body(userService.updateUserGoalStatus(userId, goalId, language));
     }
 
     /**
@@ -471,22 +441,18 @@ public class UserController {
     @PostMapping("/{userId}/goals")
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
         @Valid @RequestBody BulkSaveUserGoalDto dto,
-        @ApiIgnore
-            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId,
+        @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
         @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.saveUserGoals(userValidationService
-                .userValidForActions(principal, userId), dto, language));
+            .body(userService.saveUserGoals(userId, dto, language));
     }
 
     /**
      * Method returns list of available (not ACTIVE) habit dictionary for user.
      *
-     * @param principal - authentication principal
      * @return {@link ResponseEntity}.
      * @author Kuzenko Bogdan
      */
@@ -498,16 +464,13 @@ public class UserController {
     })
     @GetMapping("/{userId}/habit-dictionary/available")
     public ResponseEntity<List<HabitDictionaryDto>> getAvailableHabitDictionary(
-        @ApiIgnore
-            Principal principal,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId,
+        @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Code of the needed language.")
         @RequestParam String language) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableHabitDictionary(
-                userValidationService.userValidForActions(principal, userId), language));
+            .body(userService.getAvailableHabitDictionary(userId, language));
     }
 
     /**
@@ -515,7 +478,6 @@ public class UserController {
      *
      * @param dto       - dto with habits, chosen by user.
      * @param userId    id current user.
-     * @param principal authentication principal.
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Save one or multiple habits for current user.")
@@ -528,15 +490,12 @@ public class UserController {
     public ResponseEntity<List<HabitCreateDto>> saveUserHabits(
         @Valid @RequestBody List<HabitIdDto> dto,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId,
+        @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Code of the needed language.")
-        @RequestParam String language,
-        @ApiIgnore
-            Principal principal) {
+        @RequestParam String language) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.createUserHabit(userValidationService.userValidForActions(principal, userId),
-                    dto, language));
+            .body(userService.createUserHabit(userId, dto, language));
     }
 
     /**
@@ -544,7 +503,6 @@ public class UserController {
      *
      * @param habitId   id with habits, chosen by user.
      * @param userId    id current user.
-     * @param principal authentication principal.
      */
     @ApiOperation(value = "Delete habit")
     @ApiResponses(value = {
@@ -558,9 +516,7 @@ public class UserController {
         @ApiParam("Id habit of current user. Cannot be empty.")
         @PathVariable Long habitId,
         @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable Long userId,
-        @ApiIgnore
-            Principal principal) {
+        @PathVariable @CurrentUserId Long userId) {
         userService.deleteHabitByUserIdAndHabitDictionary(userId, habitId);
         ResponseEntity.status(HttpStatus.OK);
     }
@@ -570,7 +526,6 @@ public class UserController {
      *
      * @param ids       string with objects id for deleting.
      * @param userId    {@link User} id
-     * @param principal - authentication principal
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -586,9 +541,7 @@ public class UserController {
         @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true)
         @Pattern(regexp = "^\\d+(,\\d+)*$", message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS)
         @RequestParam String ids,
-        @PathVariable Long userId,
-        @ApiIgnore Principal principal) {
-        userValidationService.userValidForActions(principal, userId);
+        @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService
             .deleteUserGoals(ids));
     }

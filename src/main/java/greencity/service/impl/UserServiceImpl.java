@@ -222,9 +222,9 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<UserGoalResponseDto> getUserGoals(User user, String language) {
+    public List<UserGoalResponseDto> getUserGoals(Long userId, String language) {
         List<UserGoalResponseDto> userGoalResponseDto = userGoalRepo
-            .findAllByUserId(user.getId())
+            .findAllByUserId(userId)
             .stream()
             .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
             .collect(Collectors.toList());
@@ -239,9 +239,9 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<GoalDto> getAvailableGoals(User user, String language) {
+    public List<GoalDto> getAvailableGoals(Long userId, String language) {
         List<GoalTranslation> goalTranslations = goalTranslationRepo
-            .findAvailableByUser(user, language);
+            .findAvailableByUserId(userId, language);
         if (goalTranslations.isEmpty()) {
             throw new UserHasNoAvailableGoalsException(USER_HAS_NO_AVAILABLE_GOALS);
         }
@@ -256,9 +256,11 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<UserGoalResponseDto> saveUserGoals(User user, BulkSaveUserGoalDto bulkDto, String language) {
+    public List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto bulkDto, String language) {
         List<UserGoalDto> goals = bulkDto.getUserGoals();
         List<UserCustomGoalDto> customGoals = bulkDto.getUserCustomGoal();
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
         if (goals == null && customGoals != null) {
             saveCustomGoalsForUserGoals(user, customGoals);
         }
@@ -344,8 +346,10 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public UserGoalResponseDto updateUserGoalStatus(User user, Long goalId, String language) {
+    public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {
         UserGoal userGoal;
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
             if (userGoal.getStatus().equals(GoalStatus.DONE)) {
@@ -409,9 +413,9 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<HabitDictionaryDto> getAvailableHabitDictionary(User user, String language) {
+    public List<HabitDictionaryDto> getAvailableHabitDictionary(Long userId, String language) {
         List<HabitDictionaryTranslation> availableHabitDictionary = habitDictionaryTranslationRepo
-            .findAvailableHabitDictionaryByUser(user.getId(), language);
+            .findAvailableHabitDictionaryByUser(userId, language);
         if (availableHabitDictionary.isEmpty()) {
             throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
         }
@@ -422,8 +426,10 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitCreateDto> createUserHabit(User user, List<HabitIdDto> habitIdDto, String language) {
-        if (checkHabitId(user.getId(), habitIdDto)) {
+    public List<HabitCreateDto> createUserHabit(Long userId, List<HabitIdDto> habitIdDto, String language) {
+        if (checkHabitId(userId, habitIdDto)) {
+            User user = userRepo.findById(userId)
+                .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
             List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
             return convertToHabitCreateDto(habits, language);
         } else {
@@ -465,8 +471,8 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<CustomGoalResponseDto> getAvailableCustomGoals(User user) {
-        return modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUser(user),
+    public List<CustomGoalResponseDto> getAvailableCustomGoals(Long userId) {
+        return modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(userId),
             new TypeToken<List<CustomGoalResponseDto>>() {
             }.getType());
     }
@@ -525,11 +531,11 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void addDefaultHabit(User user, String language) {
-        if (habitRepo.findByUserIdAndStatusHabit(user.getId()).isEmpty()) {
+    public void addDefaultHabit(Long userId, String language) {
+        if (habitRepo.findByUserIdAndStatusHabit(userId).isEmpty()) {
             HabitIdDto habitIdDto = new HabitIdDto();
             habitIdDto.setHabitDictionaryId(1L);
-            createUserHabit(user, Collections.singletonList(habitIdDto), language);
+            createUserHabit(userId, Collections.singletonList(habitIdDto), language);
         }
     }
 
