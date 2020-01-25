@@ -1,6 +1,9 @@
 package greencity.receiver;
 
+import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_QUEUE;
+import static greencity.constant.RabbitConstants.PASSWORD_RECOVERY_QUEUE;
 import greencity.message.PasswordRecoveryMessage;
+import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.service.EmailService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -11,7 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EmailMessageReceiver {
-    private static final String PASSWORD_RECOVERY_QUEUE = "password-recovery-queue";
     private final EmailService emailService;
 
     /**
@@ -36,5 +38,15 @@ public class EmailMessageReceiver {
             message.getUserEmail(),
             message.getRecoveryToken()
         );
+    }
+
+    /**
+     * Method that is invoked on {@link SendChangePlaceStatusEmailMessage} receiving.
+     * It is responsible for sending change place status emails.
+     */
+    @RabbitListener(queues = CHANGE_PLACE_STATUS_QUEUE)
+    public void sendChangePlaceStatusEmail(SendChangePlaceStatusEmailMessage message) {
+        emailService.sendChangePlaceStatusEmail(message.getAuthorFirstName(),
+            message.getPlaceName(), message.getPlaceStatus(), message.getAuthorEmail());
     }
 }

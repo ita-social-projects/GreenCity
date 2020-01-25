@@ -1,6 +1,6 @@
 package greencity.constant;
 
-public class RepoConstants {
+public final class RepoConstants {
     public static final String LOCATION = "location";
     public static final String LOCATION_LAT = "lat";
     public static final String LOCATION_LNG = "lng";

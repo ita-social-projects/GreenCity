@@ -1,9 +1,9 @@
 package greencity.service.impl;
 
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
-
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
@@ -13,12 +13,12 @@ import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
-import greencity.event.SendChangePlaceStatusEmailEvent;
 import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.ProposePlaceMapper;
+import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
@@ -29,9 +29,10 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,9 @@ public class PlaceServiceImpl implements PlaceService {
     private final DiscountService discountService;
     private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final RabbitTemplate rabbitTemplate;
+    @Value("${messaging.rabbit.email.topic}")
+    private String sendEmailTopic;
 
     /**
      * Constructor.
@@ -71,7 +74,7 @@ public class PlaceServiceImpl implements PlaceService {
                             DiscountService discountService,
                             NotificationService notificationService,
                             @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
-                            ApplicationEventPublisher applicationEventPublisher) {
+                            RabbitTemplate rabbitTemplate) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.placeMapper = placeMapper;
@@ -83,7 +86,7 @@ public class PlaceServiceImpl implements PlaceService {
         this.discountService = discountService;
         this.notificationService = notificationService;
         this.datasourceTimezone = datasourceTimezone;
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
@@ -258,8 +261,10 @@ public class PlaceServiceImpl implements PlaceService {
             notificationService.sendImmediatelyReport(updatable);
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
-            applicationEventPublisher.publishEvent(
-                new SendChangePlaceStatusEmailEvent(this, updatable));
+            rabbitTemplate.convertAndSend(sendEmailTopic, CHANGE_PLACE_STATUS_ROUTING_KEY,
+                new SendChangePlaceStatusEmailMessage(updatable.getAuthor().getFirstName(),
+                    updatable.getName(), updatable.getStatus().toString().toLowerCase(),
+                    updatable.getAuthor().getEmail()));
         }
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
