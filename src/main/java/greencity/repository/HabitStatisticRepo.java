@@ -85,7 +85,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      */
     @Query("SELECT habitDictTranslation.habitItem, SUM(habitStatistic.amountOfItems) "
         + "FROM HabitStatistic habitStatistic "
-        + "        INNER JOIN Habit habit ON habitStatistic.id = habit.id AND habit.statusHabit = TRUE "
+        + "        INNER JOIN Habit habit ON habitStatistic.habit.id = habit.id AND habit.statusHabit = TRUE "
         + "                AND FUNCTION('DATE', habitStatistic.createdOn) = :statisticCreationDate "
         + "        INNER JOIN HabitDictionaryTranslation habitDictTranslation "
         + "                ON habitDictTranslation.habitDictionary.id = habit.habitDictionary.id "
