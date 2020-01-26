@@ -8,18 +8,20 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
- * Aspect used for publishing events.
+ * Aspect used for publishing events and messages.
  */
 @Aspect
 @Component
 public class EventPublishingAspect {
     private ApplicationEventPublisher publisher;
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * All args constructor.
@@ -27,8 +29,10 @@ public class EventPublishingAspect {
      * @param publisher object, used for publishing events.
      */
     @Autowired
-    public EventPublishingAspect(ApplicationEventPublisher publisher) {
+    public EventPublishingAspect(ApplicationEventPublisher publisher,
+                                 RabbitTemplate rabbitTemplate) {
         this.publisher = publisher;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
@@ -40,14 +44,18 @@ public class EventPublishingAspect {
     }
 
     /**
-     * advice, that builds and publishes events.
+     * advice, that builds and publishes events and messages.
      *
-     * @param eventAnnotation annotation, that is over method, that triggered events publishing.
-     * @param body            object, that triggered events method returns.
+     * @param eventAnnotation annotation, that is over method, that triggered events and message publishing.
+     * @param body            object, that triggered events(message) method returns.
      */
     @AfterReturning(pointcut = "myAnnotationPointcut(eventAnnotation)", returning = "body")
     public void eventPublishingAdvice(JoinPoint jp, EventPublishing eventAnnotation, Object body) {
-        if (body != null || eventAnnotation.isNullTriggers()) {
+        if (eventAnnotation.rabbitEnabled()) {
+            rabbitTemplate.convertAndSend(eventAnnotation.exchange(), eventAnnotation.routingKey(), body);
+        }
+
+        if ((body != null || eventAnnotation.isNullTriggers())) {
             for (Class<? extends CustomApplicationEvent> eventClass : eventAnnotation.eventClass()) {
                 publisher.publishEvent(buildEvent(eventClass, body,
                     jp.getTarget()));

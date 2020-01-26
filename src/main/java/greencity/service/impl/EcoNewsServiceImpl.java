@@ -2,12 +2,12 @@ package greencity.service.impl;
 
 import greencity.annotations.EventPublishing;
 import greencity.constant.ErrorMessage;
+import greencity.constant.RabbitConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
-import greencity.event.SendNewsEvent;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.EcoNewsRepo;
@@ -45,7 +45,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
-    @EventPublishing(eventClass = {SendNewsEvent.class})
+    @EventPublishing(rabbitEnabled = true, exchange = RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME,
+        routingKey = RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
