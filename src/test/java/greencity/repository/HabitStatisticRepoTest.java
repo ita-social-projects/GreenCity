@@ -78,4 +78,15 @@ public class HabitStatisticRepoTest {
         assertEquals("eggs", secondByPopularityHabitTuple.get(0));
         assertEquals(8L, secondByPopularityHabitTuple.get(1));
     }
+
+    @Test
+    @Sql("file:src/test/resources/sql/habit_statistics_id_not_match_habit_id.sql")
+    public void habitStatisticIdDoesNotMatchHabitId() {
+        List<Tuple> amountOfAllHabitItems
+            = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
+        assertEquals(1, amountOfAllHabitItems.size());
+        Tuple mostPopularHabitTuple = amountOfAllHabitItems.get(0);
+        assertEquals("baz", mostPopularHabitTuple.get(0));
+        assertEquals(42L, mostPopularHabitTuple.get(1));
+    }
 }
