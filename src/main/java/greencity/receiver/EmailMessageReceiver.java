@@ -7,6 +7,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.message.PasswordRecoveryMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendReportEmailMessage;
 import greencity.message.VerifyEmailMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
@@ -25,6 +26,7 @@ public class EmailMessageReceiver {
     public static final String CHANGE_PLACE_STATUS_QUEUE = "change-place-status";
     public static final String VERIFY_EMAIL_ROUTING_QUEUE = "verify-email-queue";
     public static final String ADD_ECO_NEWS_QUEUE_NAME = "eco_news_queue";
+    public static final String SEND_REPORT_QUEUE = "send-report";
     private final EmailService emailService;
     private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
     private final EcoNewsRepo ecoNewsRepo;
@@ -102,5 +104,14 @@ public class EmailMessageReceiver {
     public void sendVerifyEmail(VerifyEmailMessage message) {
         emailService.sendVerificationEmail(message.getId(), message.getName(), message.getEmail(), message.getToken());
     }
-}
 
+    /**
+     * Method that is invoked on {@link SendReportEmailMessage} receiving.
+     * It is responsible for sending report emails.
+     */
+    @RabbitListener(queues = SEND_REPORT_QUEUE)
+    public void sendReportEmail(SendReportEmailMessage message) {
+        emailService.sendAddedNewPlacesReportEmail(message.getSubscribers(),
+            message.getCategoriesDtoWithPlacesDtoMap(), message.getEmailNotification());
+    }
+}

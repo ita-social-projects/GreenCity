@@ -2,13 +2,13 @@ package greencity.config;
 
 import static greencity.constant.RabbitConstants.*;
 
+import greencity.constant.RabbitConstants;
 import greencity.entity.EcoNews;
 import greencity.receiver.EmailMessageReceiver;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
-import greencity.constant.RabbitConstants;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -125,8 +125,31 @@ public class EmailServiceRabbitConfig {
     @Bean
     public Binding verifyEmailQueueToEmailTopicBinding(TopicExchange emailTopicExchange) {
         return BindingBuilder
-                .bind(signUpVerifyEmailQueue())
-                .to(emailTopicExchange)
-                .with(VERIFY_EMAIL_ROUTING_KEY);
+            .bind(signUpVerifyEmailQueue())
+            .to(emailTopicExchange)
+            .with(VERIFY_EMAIL_ROUTING_KEY);
+    }
+
+    /**
+     * Queue that is used for sending report emails .
+     *
+     * @return durable queue that is meant for sending report email letters.
+     */
+    @Bean
+    public Queue sendReportEmailQueue() {
+        return new Queue("send-report", true);
+    }
+
+    /**
+     * The binding that is used for linking email topic exchange to send report email queue.
+     *
+     * @return Binding with topic exchange and send report queue linked.
+     */
+    @Bean
+    public Binding sendReportEmailTopicBinding(TopicExchange emailTopicExchange) {
+        return BindingBuilder
+            .bind(sendReportEmailQueue())
+            .to(emailTopicExchange)
+            .with(SEND_REPORT_ROUTING_KEY);
     }
 }
