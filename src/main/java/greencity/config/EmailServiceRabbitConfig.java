@@ -77,4 +77,27 @@ public class EmailServiceRabbitConfig {
             .to(emailTopicExchange)
             .with(CHANGE_PLACE_STATUS_ROUTING_KEY);
     }
+
+    /**
+     * Queue that is used for verify email.
+     *
+     * @return durable queue that is meant for sending verify email.
+     */
+    @Bean
+    public Queue singUpVerifyEmailQueue() {
+        return new Queue("verify-email-queue", true);
+    }
+
+    /**
+     * The binding that is used for send verify email..
+     *
+     * @return Binding with send verify email.
+     */
+    @Bean
+    public Binding verifyEmailQueueToEmailTopicBinding(TopicExchange emailTopicExchange) {
+        return BindingBuilder
+                .bind(singUpVerifyEmailQueue())
+                .to(emailTopicExchange)
+                .with(VERIFY_EMAIL_ROUTING_KEY);
+    }
 }

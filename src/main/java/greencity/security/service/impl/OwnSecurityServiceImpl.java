@@ -1,6 +1,7 @@
 package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
@@ -9,6 +10,7 @@ import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
+import greencity.message.VerifyEmailMessage;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
@@ -23,6 +25,7 @@ import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -43,6 +46,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final JwtTool jwtTool;
     private final Integer expirationTime;
     private final ApplicationEventPublisher appEventPublisher;
+    private final RabbitTemplate rabbitTemplate;
+    @Value("${messaging.rabbit.email.topic}")
+    private String sendEmailTopic;
+
 
     /**
      * Constructor.
@@ -53,13 +60,15 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   PasswordEncoder passwordEncoder,
                                   JwtTool jwtTool,
                                   @Value("${verifyEmailTimeHour}") Integer expirationTime,
-                                  ApplicationEventPublisher appEventPublisher) {
+                                  ApplicationEventPublisher appEventPublisher,
+                                  RabbitTemplate rabbitTemplate) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTool = jwtTool;
         this.expirationTime = expirationTime;
         this.appEventPublisher = appEventPublisher;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
@@ -75,7 +84,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         user.setVerifyEmail(verifyEmail);
         try {
             User savedUser = userService.save(user);
-            appEventPublisher.publishEvent(new SignUpEvent(savedUser));
+            rabbitTemplate.convertAndSend(
+                    sendEmailTopic,
+                    VERIFY_EMAIL_ROUTING_KEY,
+                    new VerifyEmailMessage(savedUser.getId(), savedUser.getFirstName(), savedUser.getEmail(),
+                            jwtTool.generateTokenKey())
+            );
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
