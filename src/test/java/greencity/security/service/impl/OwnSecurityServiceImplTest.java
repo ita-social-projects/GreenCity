@@ -21,6 +21,8 @@ import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -41,6 +43,9 @@ public class OwnSecurityServiceImplTest {
     @Mock
     ApplicationEventPublisher appEventPublisher;
 
+    @Mock
+    RabbitTemplate rabbitTemplate;
+
     private OwnSecurityService ownSecurityService;
 
     private User verifiedUser;
@@ -51,7 +56,7 @@ public class OwnSecurityServiceImplTest {
     public void init() {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
-            jwtTool, 1, appEventPublisher);
+            jwtTool, 1, appEventPublisher, rabbitTemplate);
 
         verifiedUser = User.builder()
             .email("test@gmail.com")

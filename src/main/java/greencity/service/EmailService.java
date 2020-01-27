@@ -49,6 +49,16 @@ public interface EmailService {
     void sendVerificationEmail(User user);
 
     /**
+     * Method for sending verification email to {@link User}.
+     *
+     * @param userId user id.
+     * @param userName name current user.
+     * @param userEmail email current user.
+     * @param token verify token current user.
+     */
+    void sendVerificationEmail(Long userId, String userName, String userEmail, String token);
+
+    /**
      * Method for sending email for restore.
      *
      * @param user  - {@link User}

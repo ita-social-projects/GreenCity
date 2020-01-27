@@ -2,6 +2,7 @@ package greencity.receiver;
 
 import greencity.message.PasswordRecoveryMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.VerifyEmailMessage;
 import greencity.service.EmailService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class EmailMessageReceiver {
     private static final String PASSWORD_RECOVERY_QUEUE = "password-recovery-queue";
     public static final String CHANGE_PLACE_STATUS_QUEUE = "change-place-status";
+    public static final String VERIFY_EMAIL_ROUTING_QUEUE = "verify-email-queue";
     private final EmailService emailService;
 
     /**
@@ -48,6 +50,15 @@ public class EmailMessageReceiver {
     public void sendChangePlaceStatusEmail(SendChangePlaceStatusEmailMessage message) {
         emailService.sendChangePlaceStatusEmail(message.getAuthorFirstName(),
             message.getPlaceName(), message.getPlaceStatus(), message.getAuthorEmail());
+    }
+
+    /**
+     * Method that is invoked on {@link VerifyEmailMessage} receiving.
+     * It is responsible for sending verify email.
+     */
+    @RabbitListener(queues = VERIFY_EMAIL_ROUTING_QUEUE)
+    public void sendVerifyEmail(VerifyEmailMessage message) {
+        emailService.sendVerificationEmail(message.getId(), message.getName(), message.getEmail(), message.getToken());
     }
 }
 
