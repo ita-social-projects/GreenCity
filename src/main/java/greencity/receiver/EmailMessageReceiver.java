@@ -3,11 +3,11 @@ package greencity.receiver;
 import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND;
 
 import greencity.constant.AppConstant;
-import greencity.constant.RabbitConstants;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.message.PasswordRecoveryMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.VerifyEmailMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.EmailService;
@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 public class EmailMessageReceiver {
     private static final String PASSWORD_RECOVERY_QUEUE = "password-recovery-queue";
     public static final String CHANGE_PLACE_STATUS_QUEUE = "change-place-status";
+    public static final String VERIFY_EMAIL_ROUTING_QUEUE = "verify-email-queue";
+    public static final String ADD_ECO_NEWS_QUEUE_NAME = "eco_news_queue";
     private final EmailService emailService;
     private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
     private final EcoNewsRepo ecoNewsRepo;
@@ -74,7 +76,7 @@ public class EmailMessageReceiver {
      *
      * @param addEcoNewsDtoResponse {@link AddEcoNewsDtoResponse} contains data needed for sending news.
      */
-    @RabbitListener(queues = RabbitConstants.ADD_ECO_NEWS_QUEUE_NAME)
+    @RabbitListener(queues = ADD_ECO_NEWS_QUEUE_NAME)
     public void sendNewsForSubscriber(AddEcoNewsDtoResponse addEcoNewsDtoResponse) {
         AddEcoNewsDtoResponse response = AddEcoNewsDtoResponse.builder()
             .id(addEcoNewsDtoResponse.getId())
@@ -90,6 +92,15 @@ public class EmailMessageReceiver {
             AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
 
         emailService.sendNewNewsForSubscriber(newsSubscriberService.findAll(), response);
+    }
+
+    /**
+     * Method that is invoked on {@link VerifyEmailMessage} receiving.
+     * It is responsible for sending verify email.
+     */
+    @RabbitListener(queues = VERIFY_EMAIL_ROUTING_QUEUE)
+    public void sendVerifyEmail(VerifyEmailMessage message) {
+        emailService.sendVerificationEmail(message.getId(), message.getName(), message.getEmail(), message.getToken());
     }
 }
 

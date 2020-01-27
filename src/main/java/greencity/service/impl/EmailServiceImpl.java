@@ -125,6 +125,22 @@ public class EmailServiceImpl implements EmailService {
     /**
      * {@inheritDoc}
      *
+     * @author Volodymyr Turko
+     */
+    @Override
+    public void sendVerificationEmail(Long id, String name, String email, String token) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.USER_NAME, name);
+        model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token="
+            + token + "&user_id=" + id);
+        String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
+        sendEmail(email, EmailConstants.VERIFY_EMAIL, template);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Stasyuk
      */
     @Override
@@ -133,7 +149,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, user.getFirstName());
         model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token="
-            + user.getVerifyEmail().getToken() + "&user_id=" + user.getId());
+                + user.getVerifyEmail().getToken() + "&user_id=" + user.getId());
         String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
         sendEmail(user, EmailConstants.VERIFY_EMAIL, template);
     }

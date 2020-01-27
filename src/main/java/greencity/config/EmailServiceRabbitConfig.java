@@ -3,6 +3,7 @@ package greencity.config;
 import static greencity.constant.RabbitConstants.*;
 
 import greencity.entity.EcoNews;
+import greencity.receiver.EmailMessageReceiver;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -88,7 +89,7 @@ public class EmailServiceRabbitConfig {
      */
     @Bean
     Queue ecoNewsEmailQueue() {
-        return new Queue(RabbitConstants.ADD_ECO_NEWS_QUEUE_NAME, true);
+        return new Queue(EmailMessageReceiver.ADD_ECO_NEWS_QUEUE_NAME, true);
     }
 
     /**
@@ -104,5 +105,28 @@ public class EmailServiceRabbitConfig {
             .bind(ecoNewsEmailQueue)
             .to(emailTopicExchange)
             .with(RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY);
+    }
+
+    /**
+     * Queue that is used for verify email.
+     *
+     * @return durable queue that is meant for sending verify email.
+     */
+    @Bean
+    public Queue signUpVerifyEmailQueue() {
+        return new Queue("verify-email-queue", true);
+    }
+
+    /**
+     * The binding that is used for send verify email..
+     *
+     * @return Binding with send verify email.
+     */
+    @Bean
+    public Binding verifyEmailQueueToEmailTopicBinding(TopicExchange emailTopicExchange) {
+        return BindingBuilder
+                .bind(signUpVerifyEmailQueue())
+                .to(emailTopicExchange)
+                .with(VERIFY_EMAIL_ROUTING_KEY);
     }
 }
