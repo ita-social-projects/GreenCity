@@ -88,7 +88,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                     sendEmailTopic,
                     VERIFY_EMAIL_ROUTING_KEY,
                     new VerifyEmailMessage(savedUser.getId(), savedUser.getFirstName(), savedUser.getEmail(),
-                            jwtTool.generateTokenKey())
+                            savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
