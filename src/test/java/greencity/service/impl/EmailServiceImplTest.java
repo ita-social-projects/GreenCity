@@ -1,16 +1,15 @@
 package greencity.service.impl;
 
-import org.junit.Ignore;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import greencity.entity.Category;
-import greencity.entity.Place;
+import greencity.dto.category.CategoryDto;
+import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.PlaceStatus;
 import greencity.service.EmailService;
 import java.util.*;
 import javax.mail.Session;
@@ -24,6 +23,7 @@ import org.thymeleaf.ITemplateEngine;
 public class EmailServiceImplTest {
     private EmailService service;
     private User user;
+    private PlaceAuthorDto placeAuthorDto;
     @Mock
     private JavaMailSender javaMailSender;
     @Mock
@@ -40,6 +40,12 @@ public class EmailServiceImplTest {
             .verifyEmail(new VerifyEmail())
             .firstName("testFirstName")
             .email("testEmail@gmail.com")
+            .build();
+        placeAuthorDto = PlaceAuthorDto.builder()
+            .id(1L)
+            .email("testEmail@gmail.com")
+            .firstName("testName")
+            .lastName("testLastName")
             .build();
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
@@ -59,14 +65,14 @@ public class EmailServiceImplTest {
 
     @Test
     public void sendAddedNewPlacesReportEmailTest() {
-        Category testCategory = Category.builder().name("CategoryName").build();
-        Place testPlace1 = Place.builder().name("PlaceName1").category(testCategory).build();
-        Place testPlace2 = Place.builder().name("PlaceName2").category(testCategory).build();
-        Map<Category, List<Place>> categoriesWithPlacesTest = new HashMap<>();
+        CategoryDto testCategory = CategoryDto.builder().name("CategoryName").build();
+        PlaceNotificationDto testPlace1 = PlaceNotificationDto.builder().name("PlaceName1").category(testCategory).build();
+        PlaceNotificationDto testPlace2 = PlaceNotificationDto.builder().name("PlaceName2").category(testCategory).build();
+        Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlacesTest = new HashMap<>();
         categoriesWithPlacesTest.put(testCategory, Arrays.asList(testPlace1, testPlace2));
 
         service.sendAddedNewPlacesReportEmail(
-            Collections.singletonList(user), categoriesWithPlacesTest, EmailNotification.DAILY);
+            Collections.singletonList(placeAuthorDto), categoriesWithPlacesTest, EmailNotification.DAILY.toString());
 
         verify(javaMailSender).createMimeMessage();
     }

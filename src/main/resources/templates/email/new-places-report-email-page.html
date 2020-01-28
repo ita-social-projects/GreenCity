@@ -185,20 +185,20 @@
                             <span th:if="${categoryWithPlaces.value.size() == 1}">place </span>
                             <span th:unless="${categoryWithPlaces.value.size() == 1}">places </span>
 
-                            <span th:if="${reportType.name() == 'IMMEDIATELY'}"
+                            <span th:if="${reportType == 'IMMEDIATELY'}"
                                   th:text="${'&quot;' + categoryWithPlaces.value.get(0).getName() + '&quot;'}">
                             </span>
 
-                            <span th:if="${reportType.name() == 'IMMEDIATELY'}">has just </span>
-                            <span th:unless="${reportType.name() == 'IMMEDIATELY'}">have </span>
+                            <span th:if="${reportType == 'IMMEDIATELY'}">has just </span>
+                            <span th:unless="${reportType == 'IMMEDIATELY'}">have </span>
 
                             been added to <a th:href="${clientLink}" class="gCity-link">Green City</a>
 
-                            <span th:if="${reportType.name() == 'DAILY'}">yesterday: </span>
-                            <span th:if="${reportType.name() == 'WEEKLY'}">last week: </span>
-                            <span th:if="${reportType.name() == 'MONTHLY'}">last month: </span>
+                            <span th:if="${reportType == 'DAILY'}">yesterday: </span>
+                            <span th:if="${reportType == 'WEEKLY'}">last week: </span>
+                            <span th:if="${reportType == 'MONTHLY'}">last month: </span>
 
-                            <ul th:each="place : ${categoryWithPlaces.value}" th:if="${reportType.name() != 'IMMEDIATELY'}">
+                            <ul th:each="place : ${categoryWithPlaces.value}" th:if="${reportType != 'IMMEDIATELY'}">
                                 <li th:text="${place.getName()}"></li>
                             </ul>
                         </div>

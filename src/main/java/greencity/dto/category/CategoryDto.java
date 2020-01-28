@@ -1,6 +1,7 @@
 package greencity.dto.category;
 
 import greencity.constant.ValidationConstants;
+import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoryDto {
+public class CategoryDto  implements Serializable {
     @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ValidationConstants.CATEGORY_NAME_BAD_FORMED)
     @Length(
         min = ValidationConstants.CATEGORY_NAME_MIN_LENGTH,

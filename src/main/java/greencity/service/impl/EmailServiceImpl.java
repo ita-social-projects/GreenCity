@@ -2,12 +2,12 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
+import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
-import greencity.entity.Category;
-import greencity.entity.Place;
+import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.User;
-import greencity.entity.enums.EmailNotification;
 import greencity.service.EmailService;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -79,22 +79,22 @@ public class EmailServiceImpl implements EmailService {
     /**
      * {@inheritDoc}
      *
-     * @author Nazar Vladyka
+     * @author Nazar Vladyka && Kuzenko Bogdan
      */
     @Override
-    public void sendAddedNewPlacesReportEmail(List<User> subscribers,
-                                              Map<Category, List<Place>> categoriesWithPlaces,
-                                              EmailNotification notification) {
+    public void sendAddedNewPlacesReportEmail(List<PlaceAuthorDto> subscribers,
+                                              Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlaces,
+                                              String notification) {
         log.info(LogMessage.IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL, null, null, notification);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.RESULT, categoriesWithPlaces);
         model.put(EmailConstants.REPORT_TYPE, notification);
 
-        for (User user : subscribers) {
+        for (PlaceAuthorDto user : subscribers) {
             model.put(EmailConstants.USER_NAME, user.getFirstName());
             String template = createEmailTemplate(model, EmailConstants.NEW_PLACES_REPORT_EMAIL_PAGE);
-            sendEmail(user, EmailConstants.NEW_PLACES, template);
+            sendEmail(user.getEmail(), EmailConstants.NEW_PLACES, template);
         }
     }
 

@@ -1,11 +1,13 @@
 package greencity.service;
 
+import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
+import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.entity.enums.EmailNotification;
 import java.util.List;
 import java.util.Map;
 
@@ -16,13 +18,13 @@ public interface EmailService {
     /**
      * Method for sending notification to {@link User}'s who subscribed for updates about added new places.
      *
-     * @param subscribers          - list of {@link User}'s who subscribed
-     * @param categoriesWithPlaces - map of {@link Category} as a key and list of {@link Place}'s as a value
-     * @param notification         - {@link EmailNotification} type
+     * @param subscribers          list of users for receiving email.
+     * @param categoriesWithPlaces map with {@link Category} and {@link Place}`s which were created.
+     * @param notification         type of notification.
      */
-    void sendAddedNewPlacesReportEmail(List<User> subscribers,
-                                       Map<Category, List<Place>> categoriesWithPlaces,
-                                       EmailNotification notification);
+    void sendAddedNewPlacesReportEmail(List<PlaceAuthorDto> subscribers,
+                                       Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlaces,
+                                       String notification);
 
     /**
      * Method for sending news for users who subscribed for updates.
@@ -44,7 +46,7 @@ public interface EmailService {
     /**
      * Method for sending verification email to {@link User}.
      *
-     * @param user  - {@link User}
+     * @param user - {@link User}
      */
     void sendVerificationEmail(User user);
 
