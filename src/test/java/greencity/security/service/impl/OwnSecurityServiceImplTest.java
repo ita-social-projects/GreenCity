@@ -16,13 +16,11 @@ import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import java.util.Optional;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,15 +78,16 @@ public class OwnSecurityServiceImplTest {
             .build();
     }
 
-    @Ignore
     @Test
     public void signUp() {
-        when(userService.save(any(User.class))).thenReturn(new User());
+        User user = User.builder().verifyEmail(new VerifyEmail()).build();
+        when(userService.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
-        doNothing().when(appEventPublisher).publishEvent(new SignUpEvent(new User()));
+
         ownSecurityService.signUp(new OwnSignUpDto());
+
         verify(userService, times(1)).save(any(User.class));
-        verify(appEventPublisher, times(1)).publishEvent(any(SignUpEvent.class));
+        verify(rabbitTemplate, times(1)).convertAndSend(any(), anyString(), (Object) any());
         verify(jwtTool, times(2)).generateTokenKey();
     }
 
