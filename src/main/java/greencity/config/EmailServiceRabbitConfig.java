@@ -1,10 +1,14 @@
 package greencity.config;
 
 import static greencity.constant.RabbitConstants.*;
+
+import greencity.entity.EcoNews;
+import greencity.receiver.EmailMessageReceiver;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import greencity.constant.RabbitConstants;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -76,6 +80,31 @@ public class EmailServiceRabbitConfig {
             .bind(changePlaceStatusEmailQueue())
             .to(emailTopicExchange)
             .with(CHANGE_PLACE_STATUS_ROUTING_KEY);
+    }
+
+    /**
+     * Queue, which stores messages for sending notification about adding new {@link EcoNews}.
+     *
+     * @return Queue, for sending notification about adding new {@link EcoNews}.
+     */
+    @Bean
+    Queue ecoNewsEmailQueue() {
+        return new Queue(EmailMessageReceiver.ADD_ECO_NEWS_QUEUE_NAME, true);
+    }
+
+    /**
+     * Method, that bind {@link this#ecoNewsEmailQueue()} with {@link this#emailTopicExchange()}.
+     *
+     * @param emailTopicExchange exchange to bind queue with.
+     * @param ecoNewsEmailQueue  queue to bind exchange with.
+     * @return binding with {@link this#ecoNewsEmailQueue()} and {@link this#emailTopicExchange()}.
+     */
+    @Bean
+    public Binding ecoNewsQueueToEmailTopicBinding(TopicExchange emailTopicExchange, Queue ecoNewsEmailQueue) {
+        return BindingBuilder
+            .bind(ecoNewsEmailQueue)
+            .to(emailTopicExchange)
+            .with(RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY);
     }
 
     /**

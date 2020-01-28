@@ -1,5 +1,9 @@
 package greencity.security.service.impl;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -17,10 +21,7 @@ import greencity.service.UserService;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -87,7 +88,7 @@ public class OwnSecurityServiceImplTest {
         ownSecurityService.signUp(new OwnSignUpDto());
 
         verify(userService, times(1)).save(any(User.class));
-        verify(rabbitTemplate, times(1)).convertAndSend(any(), anyString(), (Object) any());
+        verify(appEventPublisher, times(1)).publishEvent(any(SignUpEvent.class));
         verify(jwtTool, times(2)).generateTokenKey();
     }
 

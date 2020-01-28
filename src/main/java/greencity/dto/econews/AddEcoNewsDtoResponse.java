@@ -1,5 +1,6 @@
 package greencity.dto.econews;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -13,7 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddEcoNewsDtoResponse {
+public class AddEcoNewsDtoResponse implements Serializable {
     @Min(1)
     private Long id;
     @NotEmpty
