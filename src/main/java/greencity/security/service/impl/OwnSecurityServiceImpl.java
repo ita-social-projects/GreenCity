@@ -17,7 +17,6 @@ import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.events.SignInEvent;
-import greencity.security.events.SignUpEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
@@ -49,7 +48,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final RabbitTemplate rabbitTemplate;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
-
 
     /**
      * Constructor.

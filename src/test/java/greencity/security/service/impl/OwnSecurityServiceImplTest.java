@@ -20,7 +20,6 @@ import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import java.util.Optional;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -81,11 +80,10 @@ public class OwnSecurityServiceImplTest {
     }
 
     @Test
-    @Ignore
     public void signUp() {
-        when(userService.save(any(User.class))).thenReturn(new User());
+        User user = User.builder().verifyEmail(new VerifyEmail()).build();
+        when(userService.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
-        doNothing().when(appEventPublisher).publishEvent(new SignUpEvent(new User()));
 
         ownSecurityService.signUp(new OwnSignUpDto());
 
