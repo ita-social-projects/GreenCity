@@ -15,6 +15,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.events.SignInEvent;
 import greencity.security.events.SignUpEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.service.GoogleSecurityService;
@@ -89,7 +90,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                 } else {
                     User user = createNewUser(email, familyName, givenName);
                     User savedUser = userService.save(user);
-                    appEventPublisher.publishEvent(new SignUpEvent(savedUser));
+                    appEventPublisher.publishEvent(new SignInEvent(savedUser));
                     log.info("Google sign-up and sign-in user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 }
