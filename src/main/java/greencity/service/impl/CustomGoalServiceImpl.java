@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,15 +33,6 @@ public class CustomGoalServiceImpl implements CustomGoalService {
      */
     private CustomGoalRepo customGoalRepo;
     private ModelMapper modelMapper;
-
-    /**
-     * Constructor with parameters.
-     */
-    @Autowired
-    public CustomGoalServiceImpl(ModelMapper modelMapper, CustomGoalRepo customGoalRepo) {
-        this.modelMapper = modelMapper;
-        this.customGoalRepo = customGoalRepo;
-    }
 
     /**
      * {@inheritDoc}
