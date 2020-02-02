@@ -3,6 +3,8 @@ package greencity.service.impl;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+import greencity.constant.AppConstant;
+import greencity.constant.RabbitConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
@@ -10,8 +12,10 @@ import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
+import greencity.service.NewsSubscriberService;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,6 +41,12 @@ public class EcoNewsServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
+
+    @Mock
+    RabbitTemplate rabbitTemplate;
+
+    @Mock
+    NewsSubscriberService newsSubscriberService;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -51,9 +62,16 @@ public class EcoNewsServiceImplTest {
     public void save() {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(entity);
         when(modelMapper.map(entity, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
+        when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(entity, AppConstant.DEFAULT_LANGUAGE_CODE))
+            .thenReturn(new EcoNewsTranslation(null, null, "Title", null));
+        when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
 
         when(ecoNewsRepo.save(entity)).thenReturn(entity);
         Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "en"));
+        addEcoNewsDtoResponse.setTitle("Title");
+        verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
+            new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
+        addEcoNewsDtoResponse.setTitle("test title");
     }
 
     @Test(expected = NotSavedException.class)
