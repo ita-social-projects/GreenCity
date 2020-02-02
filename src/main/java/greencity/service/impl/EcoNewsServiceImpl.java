@@ -1,6 +1,6 @@
 package greencity.service.impl;
 
-import greencity.annotations.EventPublishing;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -10,14 +10,18 @@ import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.EcoNewsService;
+import greencity.service.NewsSubscriberService;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +30,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final ModelMapper modelMapper;
     private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
+    private RabbitTemplate rabbitTemplate;
+    private NewsSubscriberService newsSubscriberService;
+    @Value("${messaging.rabbit.email.topic}")
+    private String sendEmailTopic;
 
     /**
      * Constructor with parameters.
@@ -34,10 +42,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Autowired
     public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
-                              EcoNewsTranslationRepo ecoNewsTranslationRepo) {
+                              EcoNewsTranslationRepo ecoNewsTranslationRepo,
+                              RabbitTemplate rabbitTemplate,
+                              NewsSubscriberService newsSubscriberService) {
         this.ecoNewsRepo = ecoNewsRepo;
         this.modelMapper = modelMapper;
         this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
+        this.rabbitTemplate = rabbitTemplate;
+        this.newsSubscriberService = newsSubscriberService;
     }
 
     /**
@@ -45,8 +57,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
-    @EventPublishing(rabbitEnabled = true, exchange = RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME,
-        routingKey = RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
@@ -56,6 +66,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
+
+        rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
+            buildAddEcoNewsMessage(toSave));
 
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
@@ -110,5 +123,19 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     public void delete(Long id) {
         ecoNewsRepo.deleteById(findById(id).getId());
+    }
+
+    /**
+     * Method for building message for sending email about adding new eco news.
+     *
+     * @param ecoNews {@link EcoNews} which was added.
+     * @return {@link AddEcoNewsMessage} which contains needed info about {@link EcoNews} and subscribers.
+     */
+    private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
+        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
+        addEcoNewsDtoResponse.setTitle(
+            ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
+
+        return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
     }
 }
