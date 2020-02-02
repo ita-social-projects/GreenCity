@@ -2,9 +2,7 @@ package greencity.config;
 
 import static greencity.constant.RabbitConstants.*;
 
-import greencity.constant.RabbitConstants;
 import greencity.entity.EcoNews;
-import greencity.receiver.EmailMessageReceiver;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -89,7 +87,7 @@ public class EmailServiceRabbitConfig {
      */
     @Bean
     Queue ecoNewsEmailQueue() {
-        return new Queue(EmailMessageReceiver.ADD_ECO_NEWS_QUEUE_NAME, true);
+        return new Queue("eco_news_queue", true);
     }
 
     /**
@@ -104,7 +102,7 @@ public class EmailServiceRabbitConfig {
         return BindingBuilder
             .bind(ecoNewsEmailQueue)
             .to(emailTopicExchange)
-            .with(RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY);
+            .with(ADD_ECO_NEWS_ROUTING_KEY);
     }
 
     /**
