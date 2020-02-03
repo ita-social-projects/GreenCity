@@ -1,5 +1,9 @@
 package greencity.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
+import greencity.converters.DateService;
 import greencity.dto.habitstatistic.*;
 import greencity.dto.user.HabitLogItemDto;
 import greencity.entity.Habit;
@@ -13,16 +17,13 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.mapping.HabitStatisticMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
-import greencity.converters.DateService;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
