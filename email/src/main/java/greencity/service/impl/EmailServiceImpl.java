@@ -117,7 +117,7 @@ public class EmailServiceImpl implements EmailService {
                 log.error(e.getMessage());
             }
             String template = createEmailTemplate(model, EmailConstants.NEWS_RECEIVE_EMAIL_PAGE);
-            sendEmailByEmail(dto.getEmail(), EmailConstants.NEWS, template);
+            sendEmail(dto.getEmail(), EmailConstants.NEWS, template);
         }
     }
 
@@ -164,16 +164,12 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void sendEmail(String receiverEmail, String subject, String content) {
-        sendEmailByEmail(receiverEmail, subject, content);
-    }
-
-    private void sendEmailByEmail(String email, String subject, String content) {
-        log.info(LogMessage.IN_SEND_EMAIL, email, subject);
+        log.info(LogMessage.IN_SEND_EMAIL, receiverEmail, subject);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         try {
             mimeMessageHelper.setFrom(senderEmailAddress);
-            mimeMessageHelper.setTo(email);
+            mimeMessageHelper.setTo(receiverEmail);
             mimeMessageHelper.setSubject(subject);
             mimeMessage.setContent(content, EmailConstants.EMAIL_CONTENT_TYPE);
         } catch (MessagingException e) {
