@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -10,6 +11,7 @@ import greencity.entity.VerifyEmail;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.EmailNotVerified;
+import greencity.message.VerifyEmailMessage;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.events.SignInEvent;
@@ -24,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -52,6 +55,9 @@ public class OwnSecurityServiceImplTest {
     private User verifiedUser;
     private OwnSignInDto ownSignInDto;
     private User notVerifiedUser;
+
+    @Value("${messaging.rabbit.email.topic}")
+    private String sendEmailTopic;
 
     @Before
     public void init() {
@@ -89,7 +95,17 @@ public class OwnSecurityServiceImplTest {
         ownSecurityService.signUp(new OwnSignUpDto());
 
         verify(userService, times(1)).save(any(User.class));
-        verify(appEventPublisher, times(1)).publishEvent(any(SignUpEvent.class));
+        verify(rabbitTemplate, times(1)).convertAndSend(
+            refEq(sendEmailTopic),
+            refEq(VERIFY_EMAIL_ROUTING_KEY),
+            refEq(new VerifyEmailMessage(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getEmail(),
+                    user.getVerifyEmail().getToken()
+                )
+            )
+        );
         verify(jwtTool, times(2)).generateTokenKey();
     }
 
