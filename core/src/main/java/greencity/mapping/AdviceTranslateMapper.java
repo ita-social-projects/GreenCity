@@ -2,7 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.user.HabitDictionaryDto;
-import greencity.entity.AdviceTranslation;
+import greencity.entity.localization.AdviceTranslation;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

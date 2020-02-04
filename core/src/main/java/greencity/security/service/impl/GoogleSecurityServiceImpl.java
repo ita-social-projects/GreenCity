@@ -15,6 +15,8 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.events.SignInEvent;
+import greencity.security.events.SignUpEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.service.GoogleSecurityService;
 import greencity.service.UserService;
@@ -26,6 +28,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +41,8 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private final UserService userService;
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
     private final JwtTool jwtTool;
+    private final ApplicationEventPublisher appEventPublisher;
+
 
     /**
      * Constructor.
@@ -49,7 +54,8 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
                                      JwtTool jwtTool,
-                                     @Value("${google.clientId}") String clientId
+                                     @Value("${google.clientId}") String clientId,
+                                     ApplicationEventPublisher appEventPublisher
     ) {
         this.userService = userService;
         this.jwtTool = jwtTool;
@@ -57,6 +63,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
             .setAudience(Collections.singletonList(clientId))
             .build();
+        this.appEventPublisher = appEventPublisher;
     }
 
     /**
@@ -82,7 +89,8 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                     return getSuccessSignInDto(user);
                 } else {
                     User user = createNewUser(email, familyName, givenName);
-                    userService.save(user);
+                    User savedUser = userService.save(user);
+                    appEventPublisher.publishEvent(new SignInEvent(savedUser));
                     log.info("Google sign-up and sign-in user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 }

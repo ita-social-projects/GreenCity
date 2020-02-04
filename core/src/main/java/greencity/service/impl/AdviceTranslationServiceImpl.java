@@ -2,7 +2,7 @@ package greencity.service.impl;
 
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.entity.Advice;
-import greencity.entity.AdviceTranslation;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.repository.AdviceTranslationRepo;
 import greencity.service.AdviceTranslationService;
 import java.util.List;
