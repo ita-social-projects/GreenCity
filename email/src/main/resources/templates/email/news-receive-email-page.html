@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        /**
+         * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
+         */
+        @media screen {
+            @font-face {
+                font-family: 'Source Sans Pro';
+                font-style: normal;
+                font-weight: 400;
+                src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+            }
+            @font-face {
+                font-family: 'Source Sans Pro';
+                font-style: normal;
+                font-weight: 700;
+                src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
+            }
+        }
+
+        /**
+         * Avoid browser level font resizing.
+         * 1. Windows Mobile
+         * 2. iOS / OSX
+         */
+        body,
+        table,
+        td,
+        a {
+            -ms-text-size-adjust: 100%; /* 1 */
+            -webkit-text-size-adjust: 100%; /* 2 */
+        }
+
+        /**
+         * Remove extra space added to tables and cells in Outlook.
+         */
+        table,
+        td {
+            mso-table-rspace: 0pt;
+            mso-table-lspace: 0pt;
+        }
+
+        /**
+         * Better fluid images in Internet Explorer.
+         */
+        img {
+            -ms-interpolation-mode: bicubic;
+        }
+
+        /**
+         * Remove blue links for iOS devices.
+         */
+        a[x-apple-data-detectors] {
+            font-family: inherit !important;
+            font-size: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+
+        /**
+         * Fix centering issues in Android 4.4.
+         */
+        div[style*="margin: 16px 0;"] {
+            margin: 0 !important;
+        }
+
+        body {
+            width: 100% !important;
+            height: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /**
+         * Collapse table borders to avoid space between cells.
+         */
+        table {
+            border-collapse: collapse !important;
+        }
+
+        .site-clr {
+            background-color: #13aa57;
+        }
+
+        .background-clr {
+            background-color: #e9ecef;
+        }
+
+        .background-msg-clr {
+            background-color: #ffffff;
+        }
+
+        .gCity-link {
+            text-decoration: none;
+            color: #13aa57;
+            cursor: pointer;
+        }
+
+        img {
+            height: auto;
+            line-height: 100%;
+            text-decoration: none;
+            border: 0;
+            outline: none;
+        }
+    </style>
+
+</head>
+<body class="background-clr">
+<!-- start body -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <!-- start logo -->
+    <tr>
+        <td class="background-clr" align="center">
+            <!--[if (gte mso 9)|(IE)]>
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                    <td align="center" valign="top" width="600">
+            <![endif]-->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                <tr>
+                    <td class="site-clr" align="center" valign="top" style="margin-top: 20px">
+                        <!--/*@thymesVar id="clientLink" type="java.lang.String"*/-->
+                        <a th:href="${ecoNewsLink}"
+                           style="display: inline-block; padding: 20px 50px; font-weight:700; font-family: 'Source Sans Pro',
+                           Helvetica, Arial, sans-serif; font-size: 32px; color: #ffffff; text-decoration: none; border-radius: 6px;">GreenCity</a>
+                    </td>
+                </tr>
+            </table>
+            <!--[if (gte mso 9)|(IE)]>
+            </td>
+            </tr>
+            </table>
+            <![endif]-->
+        </td>
+    </tr>
+    <!-- end logo -->
+
+    <tr>
+        <td align="center" bgcolor="#e9ecef">
+            <!--[if (gte mso 9)|(IE)]>
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                    <td align="center" valign="top" width="600">
+            <![endif]-->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                <!-- start copy -->
+                <tr>
+                    <td class="background-msg-clr" align="left"
+                        style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px;">
+                        <div>
+                            <h3>
+                                <span th:text="${news.creationDate.toLocalDate().toString()}" style="font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+                            font-size: 8px;"></span>
+                                <br>
+                                <span th:text="${news.title}"></span>
+                            </h3>
+                            <br>
+                            <span th:text="${news.text}"></span>
+                            <br>
+                            <span th:href="${ecoNewsLink}" class="gCity-link">Read more</span>
+                            <br>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="background-msg-clr" align="left"
+                        style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 10px; line-height: 24px; border-bottom: 3px solid #d4dadf">
+                        <p style="margin: 0;">Sincerely yours, GreenCity's team</p>
+                    </td>
+                </tr>
+                <!-- end copy -->
+
+            </table>
+            <!--[if (gte mso 9)|(IE)]>
+            </td>
+            </tr>
+            </table>
+            <![endif]-->
+        </td>
+    </tr>
+
+
+    <tr>
+        <td class="background-clr" align="center" style="padding: 24px;">
+            <!--[if (gte mso 9)|(IE)]>
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                    <td align="center" valign="top" width="600">
+            <![endif]-->
+            <div border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+
+                <!-- start permission -->
+    <tr>
+        <td class="background-clr" align="center"
+            style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
+            <p style="margin: 0;">
+                You received this email because you subscribed for notifications about news via e-mail.
+                If you didn't request this action you can unsubscribe from next news clicking on this
+                <span th:href="${unsubscribeLink}" class="gCity-link">LINK</span>
+                or copy this link (<span style="margin: 0;" th:text="${unsubscribeLink}">
+                </span>) on browser.
+            </p>
+        </td>
+    </tr>
+    <!-- end permission -->
+
+</table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+<!-- end footer -->
+
+</table>
+<!-- end body -->
+</body>
+</html>
