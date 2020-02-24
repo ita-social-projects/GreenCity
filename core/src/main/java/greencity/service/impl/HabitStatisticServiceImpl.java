@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
 import greencity.dto.habitstatistic.*;
@@ -27,6 +28,8 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +64,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * @author Yuriy Olkhovskyi && Yurii Koval
      */
     @Transactional
+    @CacheEvict(value = CacheConstants.HABIT_ITEM_STATISTIC_CACHE, allEntries = true)
     @Override
     public AddHabitStatisticDto save(AddHabitStatisticDto dto) {
         if (habitStatisticRepo.findHabitStatByDate(dto.getCreatedOn(), dto.getHabitId()).isPresent()) {
@@ -90,6 +94,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * @author Yuriy Olkhovskyi
      */
     @Transactional
+    @CacheEvict(value = CacheConstants.HABIT_ITEM_STATISTIC_CACHE, allEntries = true)
     @Override
     public UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto) {
         HabitStatistic updatable = findById(habitStatisticId);
@@ -274,6 +279,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     /**
      * {@inheritDoc}
      */
+    @Cacheable(value = CacheConstants.HABIT_ITEM_STATISTIC_CACHE, key = "#language")
     @Override
     public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language) {
         return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), language).stream()
