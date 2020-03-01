@@ -14,10 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -33,6 +35,7 @@ import org.thymeleaf.context.Context;
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     private final ITemplateEngine templateEngine;
+    private final Executor executor;
     private final String clientLink;
     private final String ecoNewsLink;
     private final String serverLink;
@@ -44,12 +47,14 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     public EmailServiceImpl(JavaMailSender javaMailSender,
                             ITemplateEngine templateEngine,
+                            @Qualifier("sendEmailExecutor") Executor executor,
                             @Value("${client.address}") String clientLink,
                             @Value("${econews.address}") String ecoNewsLink,
                             @Value("${address}") String serverLink,
                             @Value("${sender.email.address}") String senderEmailAddress) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
+        this.executor = executor;
         this.clientLink = clientLink;
         this.ecoNewsLink = ecoNewsLink;
         this.serverLink = serverLink;
@@ -175,6 +180,6 @@ public class EmailServiceImpl implements EmailService {
         } catch (MessagingException e) {
             log.error(e.getMessage());
         }
-        new Thread(() -> javaMailSender.send(mimeMessage)).start();
+        executor.execute(() -> javaMailSender.send(mimeMessage));
     }
 }

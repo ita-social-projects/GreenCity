@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import org.junit.Before;
@@ -32,7 +33,7 @@ public class EmailServiceImplTest {
     @Before
     public void setup() {
         initMocks(this);
-        service = new EmailServiceImpl(javaMailSender, templateEngine,
+        service = new EmailServiceImpl(javaMailSender, templateEngine, Executors.newCachedThreadPool(),
             "http://localhost:4200", "http://localhost:4200", "http://localhost:8080",
             "test@email.com");
         placeAuthorDto = PlaceAuthorDto.builder()
