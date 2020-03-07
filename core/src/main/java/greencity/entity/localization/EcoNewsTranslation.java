@@ -2,10 +2,11 @@ package greencity.entity.localization;
 
 import greencity.entity.EcoNews;
 import greencity.entity.Language;
-import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 
 @Table(name = "eco_news_translations")
 @Entity
@@ -22,6 +23,9 @@ public class EcoNewsTranslation {
 
     @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
+    private String text;
 
     @ManyToOne
     private EcoNews ecoNews;

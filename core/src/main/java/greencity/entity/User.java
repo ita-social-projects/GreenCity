@@ -3,12 +3,13 @@ package greencity.entity;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data
@@ -53,7 +54,7 @@ public class User {
     @OneToMany(mappedBy = "author",fetch = FetchType.LAZY)
     private List<Place> places = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
@@ -61,6 +62,9 @@ public class User {
 
     @OneToMany(mappedBy = "author")
     private List<Place> addedPlaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author")
+    private List<EcoNews> addedEcoNews = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private OwnSecurity ownSecurity;

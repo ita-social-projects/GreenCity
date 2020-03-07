@@ -1,6 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.repository.EcoNewsTranslationRepo;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddEcoNewsDtoResponse> {
     private LanguageService languageService;
     private EcoNewsTranslationRepo ecoNewsTranslationRepo;
+    private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
 
     /**
      * All args constructor.
@@ -26,9 +28,11 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
      * @param ecoNewsTranslationRepo repository for getting {@link EcoNewsTranslation}.
      */
     @Autowired
-    public AddEcoNewsDtoResponseMapper(LanguageService languageService, EcoNewsTranslationRepo ecoNewsTranslationRepo) {
+    public AddEcoNewsDtoResponseMapper(LanguageService languageService, EcoNewsTranslationRepo ecoNewsTranslationRepo,
+                                       EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper) {
         this.languageService = languageService;
         this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
+        this.ecoNewsAuthorDtoMapper = ecoNewsAuthorDtoMapper;
     }
 
     /**
@@ -40,9 +44,10 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
     @Override
     protected AddEcoNewsDtoResponse convert(EcoNews ecoNews) {
         EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
-            languageService.extractLanguageCodeFromRequest());
+                languageService.extractLanguageCodeFromRequest());
+        EcoNewsAuthorDto ecoNewsAuthorDto = ecoNewsAuthorDtoMapper.convert(ecoNews.getAuthor());
 
-        return new AddEcoNewsDtoResponse(ecoNews.getId(), translation.getTitle(), ecoNews.getText(),
-            ecoNews.getCreationDate(), ecoNews.getImagePath());
+        return new AddEcoNewsDtoResponse(ecoNews.getId(), translation.getTitle(), translation.getText(),
+                ecoNewsAuthorDto, ecoNews.getCreationDate(), ecoNews.getImagePath());
     }
 }

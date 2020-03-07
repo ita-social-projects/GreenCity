@@ -1,12 +1,14 @@
 package greencity.dto.econews;
 
-import java.time.ZonedDateTime;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import greencity.dto.user.EcoNewsAuthorDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -18,9 +20,11 @@ public class EcoNewsDto {
     @NotEmpty
     private String title;
     @NotEmpty
-    private ZonedDateTime creationDate;
-    @NotEmpty
     private String text;
     @NotEmpty
     private String imagePath;
+    @NotEmpty
+    private EcoNewsAuthorDto ecoNewsAuthorDto;
+    @NotEmpty
+    private ZonedDateTime creationDate;
 }
