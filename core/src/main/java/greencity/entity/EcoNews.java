@@ -32,4 +32,7 @@ public class EcoNews {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ecoNews", cascade = {CascadeType.REMOVE, CascadeType.PERSIST,
             CascadeType.REFRESH})
     private List<EcoNewsTranslation> translations;
+
+    @ManyToMany
+    private List<Tag> tags;
 }

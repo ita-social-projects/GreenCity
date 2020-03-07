@@ -7,6 +7,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
+import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.localization.EcoNewsTranslation;
@@ -75,7 +76,7 @@ public class EcoNewsServiceImplTest {
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest =
             new AddEcoNewsDtoRequest(Collections.emptyList(), "test image path");
     private EcoNews entity =
-            new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList());
+            new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList(), new ArrayList<Tag>());
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse =
             new AddEcoNewsDtoResponse(1L, "test title", "test text", ecoNewsAuthorDto, ZonedDateTime.now(), "test image path");
 
@@ -146,7 +147,7 @@ public class EcoNewsServiceImplTest {
     @Test
     public void findById() {
         EcoNews entity =
-                new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList());
+                new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList(), new ArrayList<Tag>());
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(entity));
         Assert.assertEquals(entity, ecoNewsService.findById(1L));
     }
@@ -156,7 +157,7 @@ public class EcoNewsServiceImplTest {
         doNothing().when(ecoNewsRepo).deleteById(1L);
         when(ecoNewsRepo.findById(anyLong()))
                 .thenReturn(Optional.of(new EcoNews(1L, ZonedDateTime.now(),
-                        "test image path", author, Collections.emptyList())));
+                        "test image path", author, Collections.emptyList(), new ArrayList<Tag>())));
         ecoNewsService.delete(1L);
         verify(ecoNewsRepo, times(1)).deleteById(1L);
     }
