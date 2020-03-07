@@ -17,6 +17,7 @@ public class MapperConfig {
     private AddEcoNewsDtoRequestMapper addEcoNewsDtoRequestMapper;
     private AddEcoNewsDtoResponseMapper addEcoNewsDtoResponseMapper;
     private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
+    private TagDtoMapper tagDtoMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -29,11 +30,11 @@ public class MapperConfig {
     public ModelMapper getModelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper
-            .getConfiguration()
-            .setMatchingStrategy(MatchingStrategies.STRICT)
-            .setFieldMatchingEnabled(true)
-            .setSkipNullEnabled(true)
-            .setFieldAccessLevel(AccessLevel.PRIVATE);
+                .getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STRICT)
+                .setFieldMatchingEnabled(true)
+                .setSkipNullEnabled(true)
+                .setFieldAccessLevel(AccessLevel.PRIVATE);
         addConverters(modelMapper);
 
         return modelMapper;
@@ -51,5 +52,6 @@ public class MapperConfig {
         modelMapper.addConverter(addEcoNewsDtoRequestMapper);
         modelMapper.addConverter(addEcoNewsDtoResponseMapper);
         modelMapper.addConverter(ecoNewsAuthorDtoMapper);
+        modelMapper.addConverter(tagDtoMapper);
     }
 }

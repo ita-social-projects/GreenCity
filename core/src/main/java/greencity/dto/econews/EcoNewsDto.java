@@ -1,5 +1,6 @@
 package greencity.dto.econews;
 
+import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,11 +10,16 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class EcoNewsDto {
+    @NotEmpty
+    private ZonedDateTime creationDate;
+    @NotEmpty
+    private String imagePath;
     @NotNull
     @Min(0)
     private Long id;
@@ -22,9 +28,8 @@ public class EcoNewsDto {
     @NotEmpty
     private String text;
     @NotEmpty
-    private String imagePath;
+    private EcoNewsAuthorDto author;
     @NotEmpty
-    private EcoNewsAuthorDto ecoNewsAuthorDto;
-    @NotEmpty
-    private ZonedDateTime creationDate;
+    private List<TagDto> tags;
+
 }

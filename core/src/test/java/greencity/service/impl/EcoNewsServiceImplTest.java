@@ -5,6 +5,7 @@ import greencity.constant.RabbitConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
@@ -106,9 +107,10 @@ public class EcoNewsServiceImplTest {
     @Test
     public void getThreeLastEcoNews() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        List<TagDto> tagDtos = new ArrayList<>();
 
         EcoNewsDto ecoNewsDto =
-                new EcoNewsDto(1L, "test title", "test text", "test image path", ecoNewsAuthorDto, zonedDateTime);
+                new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text", ecoNewsAuthorDto, tagDtos);
         EcoNewsTranslation ecoNewsTranslation =
                 new EcoNewsTranslation(1L, null, "test title", "test text", null);
 
@@ -132,11 +134,12 @@ public class EcoNewsServiceImplTest {
     @Test
     public void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
+        List<TagDto> tagDtos = new ArrayList<>();
         EcoNewsTranslation ecoNewsTranslation =
                 new EcoNewsTranslation(1L, null, "test title", "test text", null);
         List<EcoNewsTranslation> ecoNewsTranslations = Collections.singletonList(ecoNewsTranslation);
         List<EcoNewsDto> dtoList = Collections.singletonList(
-                new EcoNewsDto(1L, "test title", "test text", "test image path", ecoNewsAuthorDto, now)
+                new EcoNewsDto(now, "test image path", 1L, "test title", "test text", ecoNewsAuthorDto, tagDtos)
         );
         when(ecoNewsTranslationRepo.findAllByLanguageCode(anyString())).thenReturn(ecoNewsTranslations);
         when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class))

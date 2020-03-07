@@ -34,6 +34,8 @@ public class EcoNewsDtoMapperTest {
 
     private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper = new EcoNewsAuthorDtoMapper();
 
+    private TagDtoMapper tagDtoMapper = new TagDtoMapper();
+
     private EcoNewsAuthorDto ecoNewsAuthorDto = ecoNewsAuthorDtoMapper.convert(author);
 
     private EcoNewsDtoMapper ecoNewsDtoMapper = new EcoNewsDtoMapper();
@@ -46,8 +48,9 @@ public class EcoNewsDtoMapperTest {
 
     @Test
     public void convertTest() {
-        EcoNewsDto expected = new EcoNewsDto(1L, ecoNewsTranslation.getTitle(),
-                ecoNewsTranslation.getText(), ecoNews.getImagePath(), ecoNewsAuthorDto, ecoNews.getCreationDate());
+        EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(), 1L,
+                ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(), ecoNewsAuthorDto,
+                tagDtoMapper.convert(ecoNews.getTags()));
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNewsTranslation));
     }
