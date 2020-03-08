@@ -5,17 +5,19 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.tag.TagDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/econews")
@@ -103,14 +105,27 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Delete eco news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{econewsId}")
     public ResponseEntity<Object> delete(@PathVariable Long econewsId) {
         ecoNewsService.delete(econewsId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @ApiOperation(value = "Get eco news by tags")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/tags")
+    public ResponseEntity<List<EcoNewsDto>> getEcoNews(
+            @ApiParam(value = "Query of the needed tag`s names.")
+            @RequestParam(required = false) List<TagDto> tags) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(tags));
     }
 }

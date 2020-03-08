@@ -6,6 +6,7 @@ import greencity.constant.RabbitConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.tag.TagDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
@@ -15,15 +16,17 @@ import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.EcoNewsService;
 import greencity.service.NewsSubscriberService;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EcoNewsServiceImpl implements EcoNewsService {
@@ -99,9 +102,21 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public List<EcoNewsDto> findAll(String languageCode) {
         return ecoNewsTranslationRepo.findAllByLanguageCode(languageCode)
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+                .stream()
+                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EcoNewsDto> find(List<TagDto> tags) {
+        List<String> tagsStrings = new ArrayList<>();
+        for (TagDto tagDto : tags) {
+            tagsStrings.add(tagDto.getName());
+        }
+        return ecoNewsRepo.find(tagsStrings)
+                .stream()
+                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -112,8 +127,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNews findById(Long id) {
         return ecoNewsRepo
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
     }
 
     /**
