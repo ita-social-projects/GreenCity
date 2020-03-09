@@ -10,7 +10,6 @@ import java.util.List;
 
 @Component
 public class TagDtoMapper extends AbstractConverter<List<Tag>, List<TagDto>> {
-
     @Override
     protected List<TagDto> convert(List<Tag> tags) {
         List<TagDto> tagDtos = new ArrayList<>();

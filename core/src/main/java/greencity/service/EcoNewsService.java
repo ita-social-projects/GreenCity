@@ -34,6 +34,12 @@ public interface EcoNewsService {
      */
     List<EcoNewsDto> findAll(String languageCode);
 
+    /**
+     * Method for getting all eco news by params.
+     *
+     * @param getEcoNewsDto needed params to search.
+     * @return list of {@link EcoNewsDto} instances.
+     */
     List<EcoNewsDto> find(GetEcoNewsDto getEcoNewsDto);
 
     /**

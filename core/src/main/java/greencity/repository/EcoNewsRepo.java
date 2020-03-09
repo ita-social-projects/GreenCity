@@ -16,5 +16,4 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
      */
     @Query(nativeQuery = true, value = "SELECT * FROM eco_news ORDER BY creation_date DESC LIMIT 3")
     List<EcoNews> getThreeLastEcoNews();
-
 }

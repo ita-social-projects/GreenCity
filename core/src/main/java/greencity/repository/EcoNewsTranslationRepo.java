@@ -25,12 +25,12 @@ public interface EcoNewsTranslationRepo extends JpaRepository<EcoNewsTranslation
      * @return n last {@link EcoNewsTranslation} for specific language.
      */
     @Query(nativeQuery = true, value = ""
-        + "SELECT * from eco_news_translations ent "
-        + "INNER JOIN eco_news en "
-        + "ON ent.eco_news_id = en.id "
-        + "WHERE ent.language_id = (SELECT id FROM languages WHERE code = :languageCode) "
-        + "ORDER BY en.creation_date DESC "
-        + "limit :n")
+            + "SELECT * from eco_news_translations ent "
+            + "INNER JOIN eco_news en "
+            + "ON ent.eco_news_id = en.id "
+            + "WHERE ent.language_id = (SELECT id FROM languages WHERE code = :languageCode) "
+            + "ORDER BY en.creation_date DESC "
+            + "limit :n")
     List<EcoNewsTranslation> getNLastEcoNewsByLanguageCode(int n, String languageCode);
 
     /**
@@ -42,18 +42,25 @@ public interface EcoNewsTranslationRepo extends JpaRepository<EcoNewsTranslation
      */
     EcoNewsTranslation findByEcoNewsAndLanguageCode(EcoNews ecoNews, String languageCode);
 
-    @Query(nativeQuery = true, value = "" +
-            "SELECT * FROM eco_news_translations as tr " +
-            "INNER JOIN eco_news as e on e.id = tr.eco_news_id " +
-            "WHERE tr.language_id = " +
-            "(SELECT l.id FROM languages as l WHERE l.code = :language) " +
-            "AND tr.eco_news_id IN (SELECT coun.id FROM " +
-            "(SELECT en.eco_news_id as id, count(t.id) as c " +
-            "FROM eco_news_tags as en " +
-            "INNER JOIN tags as t on en.tags_id = t.id " +
-            "WHERE t.name IN :tags GROUP BY en.eco_news_id) as coun " +
-            "WHERE coun.c = :countOfTags) " +
-            "ORDER BY e.creation_date")
+    /**
+     * Method returns {@link EcoNewsTranslation} for specific language and tags.
+     *
+     * @param tags        list of tags to search.
+     * @param countOfTags count of needed tags.
+     * @param language    code of language to join.
+     * @return {@link EcoNewsTranslation} for specific language and tags.
+     */
+    @Query(nativeQuery = true, value = ""
+            + "SELECT * FROM eco_news_translations as tr "
+            + "INNER JOIN eco_news as e on e.id = tr.eco_news_id "
+            + "WHERE tr.language_id = "
+            + "(SELECT l.id FROM languages as l WHERE l.code = :language) "
+            + "AND tr.eco_news_id IN (SELECT coun.id FROM "
+            + "(SELECT en.eco_news_id as id, count(t.id) as c "
+            + "FROM eco_news_tags as en "
+            + "INNER JOIN tags as t on en.tags_id = t.id "
+            + "WHERE t.name IN :tags GROUP BY en.eco_news_id) as coun "
+            + "WHERE coun.c = :countOfTags) "
+            + "ORDER BY e.creation_date")
     List<EcoNewsTranslation> find(List<String> tags, Long countOfTags, String language);
-
 }

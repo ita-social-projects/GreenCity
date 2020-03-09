@@ -31,5 +31,4 @@ public class EcoNewsDto {
     private EcoNewsAuthorDto author;
     @NotEmpty
     private List<TagDto> tags;
-
 }

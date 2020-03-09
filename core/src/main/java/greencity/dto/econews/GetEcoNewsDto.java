@@ -18,5 +18,4 @@ public class GetEcoNewsDto {
     private LanguageRequestDto language;
     @NotEmpty
     private List<TagDto> tags;
-
 }

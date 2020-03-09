@@ -116,6 +116,13 @@ public class EcoNewsController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    /**
+     * Method for getting all eco news by tags and language.
+     *
+     * @param getEcoNewsDto - - dto for search {@link EcoNewsDto} by tags and language
+     * @return list of {@link EcoNewsDto} instances.
+     * @author Kovaliv Taras.
+     */
     @ApiOperation(value = "Get eco news by tags")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
