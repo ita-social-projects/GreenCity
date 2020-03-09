@@ -1,8 +1,10 @@
 package greencity.mapping;
 
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
+import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.localization.EcoNewsTranslation;
 import org.modelmapper.AbstractConverter;
@@ -16,8 +18,17 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EcoNewsDtoMapper extends AbstractConverter<EcoNewsTranslation, EcoNewsDto> {
-    @Autowired
     TagDtoMapper tagDtoMapper;
+
+    /**
+     * All args constructor.
+     *
+     * @param tagDtoMapper needed to convert {@link Tag} to {@link TagDto}.
+     */
+    @Autowired
+    public EcoNewsDtoMapper(TagDtoMapper tagDtoMapper) {
+        this.tagDtoMapper = tagDtoMapper;
+    }
 
     /**
      * Method for converting {@link EcoNewsTranslation} into {@link EcoNewsDto}.

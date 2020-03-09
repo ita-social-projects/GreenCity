@@ -66,6 +66,7 @@ public class AddEcoNewsDtoRequestMapperTest {
         EcoNews actual = mapper.convert(request);
         actual.setAuthor(author);
         actual.setCreationDate(ecoNews.getCreationDate());
+        actual.setTags(new ArrayList<Tag>());
 
         Assert.assertEquals(ecoNews, actual);
     }

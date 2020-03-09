@@ -32,13 +32,13 @@ public class EcoNewsDtoMapperTest {
                     .dateOfRegistration(LocalDateTime.now())
                     .build();
 
-    private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper = new EcoNewsAuthorDtoMapper();
-
     private TagDtoMapper tagDtoMapper = new TagDtoMapper();
+
+    private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper = new EcoNewsAuthorDtoMapper();
 
     private EcoNewsAuthorDto ecoNewsAuthorDto = ecoNewsAuthorDtoMapper.convert(author);
 
-    private EcoNewsDtoMapper ecoNewsDtoMapper = new EcoNewsDtoMapper();
+    private EcoNewsDtoMapper ecoNewsDtoMapper = new EcoNewsDtoMapper(tagDtoMapper);
     private Language language = new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList());
     private EcoNews ecoNews = new EcoNews(1L, ZonedDateTime.now(), "imagePath", author,
@@ -48,9 +48,10 @@ public class EcoNewsDtoMapperTest {
 
     @Test
     public void convertTest() {
+        TagDtoMapper tagDtoMapperr = new TagDtoMapper();
         EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(), 1L,
                 ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(), ecoNewsAuthorDto,
-                tagDtoMapper.convert(ecoNews.getTags()));
+                tagDtoMapperr.convert(ecoNews.getTags()));
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNewsTranslation));
     }
