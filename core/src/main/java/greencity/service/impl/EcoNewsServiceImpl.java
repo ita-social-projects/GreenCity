@@ -6,6 +6,7 @@ import greencity.constant.RabbitConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.GetEcoNewsDto;
 import greencity.dto.tag.TagDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
@@ -108,12 +109,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public List<EcoNewsDto> find(List<TagDto> tags) {
+    public List<EcoNewsDto> find(GetEcoNewsDto getEcoNewsDto) {
         List<String> tagsStrings = new ArrayList<>();
-        for (TagDto tagDto : tags) {
+        for (TagDto tagDto : getEcoNewsDto.getTags()) {
             tagsStrings.add(tagDto.getName());
         }
-        return ecoNewsRepo.find(tagsStrings)
+        String languageCode = getEcoNewsDto.getLanguage().getCode();
+        return ecoNewsTranslationRepo.find(tagsStrings, (long) tagsStrings.size(), languageCode)
                 .stream()
                 .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
                 .collect(Collectors.toList());

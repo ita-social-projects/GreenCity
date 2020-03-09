@@ -5,7 +5,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.tag.TagDto;
+import greencity.dto.econews.GetEcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
@@ -122,10 +122,8 @@ public class EcoNewsController {
             @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @GetMapping("/tags")
-    public ResponseEntity<List<EcoNewsDto>> getEcoNews(
-            @ApiParam(value = "Query of the needed tag`s names.")
-            @RequestParam(required = false) List<TagDto> tags) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(tags));
+    @PostMapping("/tags")
+    public ResponseEntity<List<EcoNewsDto>> getEcoNews(@RequestBody GetEcoNewsDto getEcoNewsDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(getEcoNewsDto));
     }
 }

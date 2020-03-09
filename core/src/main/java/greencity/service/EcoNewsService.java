@@ -3,7 +3,7 @@ package greencity.service;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.tag.TagDto;
+import greencity.dto.econews.GetEcoNewsDto;
 import greencity.entity.EcoNews;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public interface EcoNewsService {
      */
     List<EcoNewsDto> findAll(String languageCode);
 
-    List<EcoNewsDto> find(List<TagDto> tags);
+    List<EcoNewsDto> find(GetEcoNewsDto getEcoNewsDto);
 
     /**
      * Method for getting the {@link EcoNews} instance by its id.
