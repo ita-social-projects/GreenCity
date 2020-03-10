@@ -1,14 +1,8 @@
 package greencity.config;
 
-import static greencity.constant.AppConstant.*;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
-import java.util.Arrays;
-import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +20,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+import static greencity.constant.AppConstant.*;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
 /**
  * Config for security.
@@ -100,8 +101,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/**"
             ).permitAll()
             .antMatchers(
-                HttpMethod.POST,
-                "/newsSubscriber"
+                    HttpMethod.POST,
+                    "/econews/tags",
+                    "/newsSubscriber"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
