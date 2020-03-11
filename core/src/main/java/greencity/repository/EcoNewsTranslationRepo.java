@@ -16,10 +16,11 @@ public interface EcoNewsTranslationRepo extends JpaRepository<EcoNewsTranslation
     /**
      * Method returns all {@link EcoNewsTranslation} for specific language.
      *
+     * @param page          parameters of to search.
      * @param languageCode code of the needed language.
-     * @return all {@link EcoNewsTranslation} for specific language.
+     * @return all {@link EcoNewsTranslation} for specific language by page.
      */
-    List<EcoNewsTranslation> findAllByLanguageCode(String languageCode);
+    Page<EcoNewsTranslation> findAllByLanguageCode(Pageable page, String languageCode);
 
     /**
      * Method returns n last {@link EcoNewsTranslation} for specific language.

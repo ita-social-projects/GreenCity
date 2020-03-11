@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.constant.AppConstant;
 import greencity.constant.RabbitConstants;
+import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
@@ -28,7 +29,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -138,13 +143,18 @@ public class EcoNewsServiceImplTest {
         EcoNewsTranslation ecoNewsTranslation =
                 new EcoNewsTranslation(1L, null, "test title", "test text", null);
         List<EcoNewsTranslation> ecoNewsTranslations = Collections.singletonList(ecoNewsTranslation);
+        PageRequest pageRequest = new PageRequest(0, 2);
+        Page<EcoNewsTranslation> pageTr = new PageImpl<EcoNewsTranslation>(ecoNewsTranslations, pageRequest, ecoNewsTranslations.size());
+
         List<EcoNewsDto> dtoList = Collections.singletonList(
                 new EcoNewsDto(now, "test image path", 1L, "test title", "test text", ecoNewsAuthorDto, tagDtos)
         );
-        when(ecoNewsTranslationRepo.findAllByLanguageCode(anyString())).thenReturn(ecoNewsTranslations);
+        PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);
+
+        when(ecoNewsTranslationRepo.findAllByLanguageCode(pageRequest, "en")).thenReturn(pageTr);
         when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class))
                 .thenReturn(dtoList.get(0));
-        Assert.assertEquals(dtoList, ecoNewsService.findAll("en"));
+        Assert.assertEquals(pageableDto, ecoNewsService.findAll(pageRequest, "en"));
     }
 
     @Test

@@ -100,16 +100,27 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     /**
      * {@inheritDoc}
      *
-     * @author Yuriy Olkhovskyi.
+     * @author Kovaliv Taras.
      */
     @Override
-    public List<EcoNewsDto> findAll(String languageCode) {
-        return ecoNewsTranslationRepo.findAllByLanguageCode(languageCode)
+    public PageableDto<EcoNewsDto> findAll(Pageable page, String languageCode) {
+        Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo.findAllByLanguageCode(page, languageCode);
+        List<EcoNewsDto> ecoNewsDtos = pages
                 .stream()
                 .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
                 .collect(Collectors.toList());
+        return new PageableDto<EcoNewsDto>(
+                ecoNewsDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber()
+        );
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kovaliv Taras.
+     */
     @Override
     public PageableDto<EcoNewsDto> find(Pageable page, GetEcoNewsDto getEcoNewsDto) {
         List<String> tagsStrings = new ArrayList<>();

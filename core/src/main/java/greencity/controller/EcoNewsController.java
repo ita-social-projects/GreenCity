@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -80,23 +81,27 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for getting all eco news.
+     * Method for getting all eco news by page.
      *
-     * @return list of {@link EcoNewsDto} instances.
-     * @author Yuriy Olkhovskyi.
+     * @return PageableDto of {@link EcoNewsDto} instances.
+     * @author Yuriy Olkhovskyi & Kovaliv Taras.
      */
-    @ApiOperation(value = "Find all eco news.")
+    @ApiOperation(value = "Find all eco news by page.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
             @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
-    public ResponseEntity<List<EcoNewsDto>> findAll(
-            @ApiParam(value = "Code of the needed language.",
-                    defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(language));
+    @ApiPageable
+    public ResponseEntity<PageableDto<EcoNewsDto>> findAll(@ApiIgnore Pageable page,
+                                                           @ApiParam(value = "Code of the needed language.",
+                                                                   defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+                                                           @RequestParam(required = false,
+                                                                   defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+                                                                   String language
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(page, language));
     }
 
     /**
@@ -133,8 +138,13 @@ public class EcoNewsController {
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/tags")
+    @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(@ApiIgnore Pageable page,
                                                               @RequestBody GetEcoNewsDto getEcoNewsDto) {
+        if (getEcoNewsDto.getTags() == null || getEcoNewsDto.getTags().size() == 0) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    ecoNewsService.findAll(page, getEcoNewsDto.getLanguage().getCode()));
+        }
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, getEcoNewsDto));
     }
 }

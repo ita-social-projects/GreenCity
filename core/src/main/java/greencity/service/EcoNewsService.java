@@ -29,12 +29,13 @@ public interface EcoNewsService {
     List<EcoNewsDto> getThreeLastEcoNews(String languageCode);
 
     /**
-     * Method for getting all eco news.
+     * Method for getting all eco news by page.
      *
+     * @param page          parameters of to search.
      * @param languageCode needed language code.
-     * @return list of {@link EcoNewsDto} instances.
+     * @return PageableDto of {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> findAll(String languageCode);
+    PageableDto<EcoNewsDto> findAll(Pageable page, String languageCode);
 
     /**
      * Method for getting all eco news by params.
