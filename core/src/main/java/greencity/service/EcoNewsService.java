@@ -1,10 +1,12 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.GetEcoNewsDto;
 import greencity.entity.EcoNews;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -38,9 +40,10 @@ public interface EcoNewsService {
      * Method for getting all eco news by params.
      *
      * @param getEcoNewsDto needed params to search.
-     * @return list of {@link EcoNewsDto} instances.
+     * @param page          parameters of to search.
+     * @return PageableDto with {@link EcoNewsDto} instance.
      */
-    List<EcoNewsDto> find(GetEcoNewsDto getEcoNewsDto);
+    PageableDto<EcoNewsDto> find(Pageable page, GetEcoNewsDto getEcoNewsDto);
 
     /**
      * Method for getting the {@link EcoNews} instance by its id.

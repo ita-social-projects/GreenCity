@@ -37,7 +37,7 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNewsTranslation, EcoN
      * @return converted object.
      */
     @Override
-    protected EcoNewsDto convert(EcoNewsTranslation ecoNewsTranslation) {
+    public EcoNewsDto convert(EcoNewsTranslation ecoNewsTranslation) {
         EcoNews ecoNews = ecoNewsTranslation.getEcoNews();
         User author = ecoNews.getAuthor();
         EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),

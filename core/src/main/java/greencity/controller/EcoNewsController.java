@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
@@ -13,9 +14,11 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -41,16 +44,16 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Add new eco news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+            @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
+            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping
     public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
                                                       @ApiParam(value = "Code of the needed language.",
-                                                          defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+                                                              defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
                                                       @RequestParam(required = false, defaultValue =
-                                                          AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+                                                              AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(addEcoNewsDtoRequest, language));
     }
 
@@ -63,15 +66,15 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Get three last eco news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/newest")
     public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews(
-        @ApiParam(value = "Code of the needed language.",
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language
+            @ApiParam(value = "Code of the needed language.",
+                    defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews(language));
     }
@@ -84,15 +87,15 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Find all eco news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
     public ResponseEntity<List<EcoNewsDto>> findAll(
-        @ApiParam(value = "Code of the needed language.",
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+            @ApiParam(value = "Code of the needed language.",
+                    defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(language));
     }
 
@@ -130,7 +133,8 @@ public class EcoNewsController {
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/tags")
-    public ResponseEntity<List<EcoNewsDto>> getEcoNews(@RequestBody GetEcoNewsDto getEcoNewsDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(getEcoNewsDto));
+    public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(@ApiIgnore Pageable page,
+                                                              @RequestBody GetEcoNewsDto getEcoNewsDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, getEcoNewsDto));
     }
 }

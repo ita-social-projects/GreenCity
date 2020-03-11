@@ -1,7 +1,10 @@
 package greencity.repository;
 
+import greencity.dto.PageableDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -62,5 +65,5 @@ public interface EcoNewsTranslationRepo extends JpaRepository<EcoNewsTranslation
             + "WHERE t.name IN :tags GROUP BY en.eco_news_id) as coun "
             + "WHERE coun.c = :countOfTags) "
             + "ORDER BY e.creation_date")
-    List<EcoNewsTranslation> find(List<String> tags, Long countOfTags, String language);
+    Page<EcoNewsTranslation> find(Pageable pageable, List<String> tags, Long countOfTags, String language);
 }

@@ -3,15 +3,15 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.GetEcoNewsDto;
+import greencity.dto.PageableDto;
+import greencity.dto.econews.*;
+import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.tag.TagDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.mapping.EcoNewsDtoMapper;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
@@ -22,6 +22,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -72,7 +74,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-            buildAddEcoNewsMessage(toSave));
+                buildAddEcoNewsMessage(toSave));
 
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
@@ -85,14 +87,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public List<EcoNewsDto> getThreeLastEcoNews(String languageCode) {
         List<EcoNewsTranslation> ecoNewsTranslations = ecoNewsTranslationRepo
-            .getNLastEcoNewsByLanguageCode(3, languageCode);
+                .getNLastEcoNewsByLanguageCode(3, languageCode);
         if (ecoNewsTranslations.isEmpty()) {
             throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
         }
         return ecoNewsTranslations
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+                .stream()
+                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -109,16 +111,22 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public List<EcoNewsDto> find(GetEcoNewsDto getEcoNewsDto) {
+    public PageableDto<EcoNewsDto> find(Pageable page, GetEcoNewsDto getEcoNewsDto) {
         List<String> tagsStrings = new ArrayList<>();
         for (TagDto tagDto : getEcoNewsDto.getTags()) {
             tagsStrings.add(tagDto.getName());
         }
         String languageCode = getEcoNewsDto.getLanguage().getCode();
-        return ecoNewsTranslationRepo.find(tagsStrings, (long) tagsStrings.size(), languageCode)
-                .stream()
+        Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo
+                .find(page, tagsStrings, (long) tagsStrings.size(), languageCode);
+        List<EcoNewsDto> ecoNewsDtos = pages.stream()
                 .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
                 .collect(Collectors.toList());
+        return new PageableDto<>(
+                ecoNewsDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber()
+        );
     }
 
     /**
@@ -151,7 +159,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
         addEcoNewsDtoResponse.setTitle(
-            ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
+                ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
+                        AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
 
         return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
     }
