@@ -4,14 +4,15 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
-import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.GetEcoNewsDto;
 import greencity.dto.tag.TagDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.mapping.EcoNewsDtoMapper;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
@@ -123,21 +124,31 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableDto<EcoNewsDto> find(Pageable page, GetEcoNewsDto getEcoNewsDto) {
-        List<String> tagsStrings = new ArrayList<>();
-        for (TagDto tagDto : getEcoNewsDto.getTags()) {
-            tagsStrings.add(tagDto.getName());
-        }
+        List<String> tagsStrings = parseTags(getEcoNewsDto.getTags());
         String languageCode = getEcoNewsDto.getLanguage().getCode();
+
         Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo
                 .find(page, tagsStrings, (long) tagsStrings.size(), languageCode);
+
         List<EcoNewsDto> ecoNewsDtos = pages.stream()
                 .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
                 .collect(Collectors.toList());
+
         return new PageableDto<>(
                 ecoNewsDtos,
                 pages.getTotalElements(),
                 pages.getPageable().getPageNumber()
         );
+    }
+
+    private List<String> parseTags(List<TagDto> tags) {
+        List<String> tagsStrings = new ArrayList<>();
+
+        for (TagDto tagDto : tags) {
+            tagsStrings.add(tagDto.getName());
+        }
+
+        return tagsStrings;
     }
 
     /**
