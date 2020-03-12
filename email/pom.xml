@@ -53,4 +53,36 @@
             <version>3.0.11.RELEASE</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.microsoft.azure</groupId>
+                <artifactId>azure-webapp-maven-plugin</artifactId>
+                <version>1.9.0</version>
+                <configuration>
+                    <schemaVersion>V2</schemaVersion>
+                    <resourceGroup>GreenCity</resourceGroup>
+                    <appName>greencity-mail</appName>
+                    <pricingTier>B1</pricingTier>
+                    <region>centralus</region>
+                    <runtime>
+                        <os>linux</os>
+                        <javaVersion>jre8</javaVersion>
+                        <webContainer>jre8</webContainer>
+                    </runtime>
+                    <deployment>
+                        <resources>
+                            <resource>
+                                <directory>${project.basedir}/target</directory>
+                                <includes>
+                                    <include>*.jar</include>
+                                </includes>
+                            </resource>
+                        </resources>
+                    </deployment>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
