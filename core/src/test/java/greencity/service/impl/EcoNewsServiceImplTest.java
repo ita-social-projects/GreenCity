@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.AppConstant;
-import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -14,7 +13,6 @@ import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.mapping.EcoNewsAuthorDtoMapper;
-import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.NewsSubscriberService;
@@ -94,8 +92,8 @@ public class EcoNewsServiceImplTest {
         when(ecoNewsRepo.save(entity)).thenReturn(entity);
         Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest));
         addEcoNewsDtoResponse.setTitle("Title");
-        verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-                new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
+        //    verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
+        //            new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
         addEcoNewsDtoResponse.setTitle("test title");
     }
 
