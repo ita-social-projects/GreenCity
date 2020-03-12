@@ -6,10 +6,8 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.localization.EcoNewsTranslation;
@@ -33,7 +31,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -82,7 +79,7 @@ public class EcoNewsServiceImplTest {
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest =
             new AddEcoNewsDtoRequest(Collections.emptyList(), "test image path");
     private EcoNews entity =
-            new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList(), new ArrayList<Tag>());
+            new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList(), Collections.emptyList());
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse =
             new AddEcoNewsDtoResponse(1L, "test title", "test text", ecoNewsAuthorDto, ZonedDateTime.now(), "test image path");
 
@@ -112,10 +109,9 @@ public class EcoNewsServiceImplTest {
     @Test
     public void getThreeLastEcoNews() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        List<TagDto> tagDtos = new ArrayList<>();
 
         EcoNewsDto ecoNewsDto =
-                new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text", ecoNewsAuthorDto, tagDtos);
+                new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text", ecoNewsAuthorDto, Collections.emptyList());
         EcoNewsTranslation ecoNewsTranslation =
                 new EcoNewsTranslation(1L, null, "test title", "test text", null);
 
@@ -139,19 +135,20 @@ public class EcoNewsServiceImplTest {
     @Test
     public void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
-        List<TagDto> tagDtos = new ArrayList<>();
+
         EcoNewsTranslation ecoNewsTranslation =
                 new EcoNewsTranslation(1L, null, "test title", "test text", null);
         List<EcoNewsTranslation> ecoNewsTranslations = Collections.singletonList(ecoNewsTranslation);
+
         PageRequest pageRequest = new PageRequest(0, 2);
-        Page<EcoNewsTranslation> pageTr = new PageImpl<EcoNewsTranslation>(ecoNewsTranslations, pageRequest, ecoNewsTranslations.size());
+        Page<EcoNewsTranslation> translationPage = new PageImpl<EcoNewsTranslation>(ecoNewsTranslations, pageRequest, ecoNewsTranslations.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
-                new EcoNewsDto(now, "test image path", 1L, "test title", "test text", ecoNewsAuthorDto, tagDtos)
+                new EcoNewsDto(now, "test image path", 1L, "test title", "test text", ecoNewsAuthorDto, Collections.emptyList())
         );
         PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);
 
-        when(ecoNewsTranslationRepo.findAllByLanguageCode(pageRequest, "en")).thenReturn(pageTr);
+        when(ecoNewsTranslationRepo.findAllByLanguageCode(pageRequest, "en")).thenReturn(translationPage);
         when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class))
                 .thenReturn(dtoList.get(0));
         Assert.assertEquals(pageableDto, ecoNewsService.findAll(pageRequest, "en"));
@@ -160,7 +157,7 @@ public class EcoNewsServiceImplTest {
     @Test
     public void findById() {
         EcoNews entity =
-                new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList(), new ArrayList<Tag>());
+                new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList(), Collections.emptyList());
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(entity));
         Assert.assertEquals(entity, ecoNewsService.findById(1L));
     }
@@ -170,7 +167,7 @@ public class EcoNewsServiceImplTest {
         doNothing().when(ecoNewsRepo).deleteById(1L);
         when(ecoNewsRepo.findById(anyLong()))
                 .thenReturn(Optional.of(new EcoNews(1L, ZonedDateTime.now(),
-                        "test image path", author, Collections.emptyList(), new ArrayList<Tag>())));
+                        "test image path", author, Collections.emptyList(), Collections.emptyList())));
         ecoNewsService.delete(1L);
         verify(ecoNewsRepo, times(1)).deleteById(1L);
     }

@@ -4,7 +4,6 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Language;
-import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.entity.localization.EcoNewsTranslation;
@@ -18,7 +17,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -54,7 +52,7 @@ public class AddEcoNewsDtoResponseMapperTest {
     private EcoNewsTranslation ecoNewsTranslation = new EcoNewsTranslation(1L, language, "title", "text", null);
 
     private EcoNews ecoNews = new EcoNews(null, ZonedDateTime.now(), "imagePath", author,
-            Collections.singletonList(ecoNewsTranslation), new ArrayList<Tag>());
+            Collections.singletonList(ecoNewsTranslation), Collections.emptyList());
 
     @Test
     public void convertTest() {
