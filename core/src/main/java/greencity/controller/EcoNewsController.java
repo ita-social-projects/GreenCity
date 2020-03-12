@@ -9,6 +9,8 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.GetEcoNewsDto;
 import greencity.entity.EcoNews;
+import greencity.mapping.EcoNewsAuthorDtoMapper;
+import greencity.repository.UserRepo;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,19 +23,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/econews")
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
+    private UserRepo userRepo;
+    private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
 
     /**
      * Constructor with parameters.
      */
     @Autowired
-    public EcoNewsController(EcoNewsService ecoNewsService) {
+    public EcoNewsController(EcoNewsService ecoNewsService, UserRepo userRepo,
+                             EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper) {
         this.ecoNewsService = ecoNewsService;
+        this.userRepo = userRepo;
+        this.ecoNewsAuthorDtoMapper = ecoNewsAuthorDtoMapper;
     }
 
     /**
@@ -41,7 +49,7 @@ public class EcoNewsController {
      *
      * @param addEcoNewsDtoRequest - dto for {@link EcoNews} entity.
      * @return dto {@link AddEcoNewsDtoResponse} instance.
-     * @author Yuriy Olkhovskyi.
+     * @author Yuriy Olkhovskyi & Kovaliv Taras.
      */
     @ApiOperation(value = "Add new eco news.")
     @ApiResponses(value = {
@@ -51,13 +59,11 @@ public class EcoNewsController {
     })
     @PostMapping
     public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-                                                      @ApiParam(value = "Code of the needed language.",
-                                                              defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-                                                      @RequestParam(required = false, defaultValue =
-                                                              AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(addEcoNewsDtoRequest, language));
+                                                      @ApiIgnore Principal principal) {
+        addEcoNewsDtoRequest.setAuthor(ecoNewsAuthorDtoMapper.convert(
+                userRepo.findByEmail(principal.getName()).get()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(addEcoNewsDtoRequest));
     }
-
 
     /**
      * Method for getting three last eco news.

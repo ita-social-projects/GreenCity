@@ -77,11 +77,11 @@ public class EcoNewsServiceImplTest {
     private EcoNewsAuthorDto ecoNewsAuthorDto = ecoNewsAuthorDtoMapper.convert(author);
 
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest =
-            new AddEcoNewsDtoRequest(Collections.emptyList(), "test image path");
+            new AddEcoNewsDtoRequest(Collections.emptyList(), Collections.emptyList(), null, "test image path");
     private EcoNews entity =
             new EcoNews(1L, ZonedDateTime.now(), "test image path", author, Collections.emptyList(), Collections.emptyList());
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse =
-            new AddEcoNewsDtoResponse(1L, "test title", "test text", ecoNewsAuthorDto, ZonedDateTime.now(), "test image path");
+            new AddEcoNewsDtoResponse(1L, "test title", "test text", ecoNewsAuthorDto, ZonedDateTime.now(), "test image path", Collections.emptyList());
 
     @Test
     public void save() {
@@ -92,7 +92,7 @@ public class EcoNewsServiceImplTest {
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
 
         when(ecoNewsRepo.save(entity)).thenReturn(entity);
-        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "en"));
+        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest));
         addEcoNewsDtoResponse.setTitle("Title");
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
                 new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
@@ -103,7 +103,7 @@ public class EcoNewsServiceImplTest {
     public void saveThrowsNotSavedException() {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(entity);
         when(ecoNewsRepo.save(entity)).thenThrow(DataIntegrityViolationException.class);
-        ecoNewsService.save(addEcoNewsDtoRequest, "en");
+        ecoNewsService.save(addEcoNewsDtoRequest);
     }
 
     @Test

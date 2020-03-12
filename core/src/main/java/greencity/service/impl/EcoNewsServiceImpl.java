@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -65,7 +64,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Override
-    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode) {
+    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setCreationDate(ZonedDateTime.now());
         try {
@@ -74,8 +73,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
 
-        rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-                buildAddEcoNewsMessage(toSave));
+        //        rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
+        //                buildAddEcoNewsMessage(toSave));
 
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
@@ -110,7 +109,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 .stream()
                 .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<EcoNewsDto>(
+        return new PageableDto<>(
                 ecoNewsDtos,
                 pages.getTotalElements(),
                 pages.getPageable().getPageNumber()

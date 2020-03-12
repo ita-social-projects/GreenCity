@@ -131,17 +131,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
-                "/category/**",
-                "/place/save/favorite/**",
-                "/habit/statistic/",
-                "/user/{userId}/goals",
-                "/user/{userId}/habits",
-                "/user/{userId}/habit",
-                "/user/{userId}/habits/statistic",
-                "/user/{userId}/goals/*",
-                "/user/{userId}/habit-dictionary/available",
-                "/user/{userId}/goals",
-                "/user/{userId}/customGoals"
+                    "/category/**",
+                    "/place/save/favorite/**",
+                    "/habit/statistic/",
+                    "/user/{userId}/goals",
+                    "/user/{userId}/habits",
+                    "/user/{userId}/habit",
+                    "/user/{userId}/habits/statistic",
+                    "/user/{userId}/goals/*",
+                    "/user/{userId}/habit-dictionary/available",
+                    "/user/{userId}/goals",
+                    "/econews",
+                    "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
@@ -151,7 +152,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate",
-                "/econews",
                 "/files/image"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers("/advices/*", "/facts/*").hasAnyRole(ADMIN, MODERATOR)

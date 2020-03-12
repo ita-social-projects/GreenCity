@@ -1,19 +1,23 @@
 package greencity.dto.econews;
 
-import java.io.Serializable;
-import java.time.ZonedDateTime;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import greencity.dto.tag.TagDto;
+import greencity.dto.user.EcoNewsAuthorDto;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-@Data
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.util.List;
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class AddEcoNewsDtoResponse implements Serializable {
     @Min(1)
     private Long id;
@@ -22,8 +26,12 @@ public class AddEcoNewsDtoResponse implements Serializable {
     @NotEmpty
     private String text;
     @NotEmpty
+    private EcoNewsAuthorDto ecoNewsAuthorDto;
+    @NotEmpty
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime creationDate;
     @NotEmpty
     private String imagePath;
+    @NotEmpty
+    private List<TagDto> tags;
 }

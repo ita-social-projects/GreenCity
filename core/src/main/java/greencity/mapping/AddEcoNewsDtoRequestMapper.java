@@ -6,6 +6,8 @@ import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.repository.LanguageRepository;
+import greencity.repository.TagRepo;
+import greencity.repository.UserRepo;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +23,22 @@ import java.util.stream.Collectors;
 @Component
 public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoRequest, EcoNews> {
     private LanguageRepository languageRepository;
+    private UserRepo userRepo;
+    private TagRepo tagRepo;
 
     /**
      * All args constructor.
      *
      * @param languageRepository repository for getting language.
+     * @param userRepo           repository for getting author.
+     * @param tagRepo            repository for getting tags.
      */
     @Autowired
-    public AddEcoNewsDtoRequestMapper(LanguageRepository languageRepository) {
+    public AddEcoNewsDtoRequestMapper(LanguageRepository languageRepository,
+                                      UserRepo userRepo, TagRepo tagRepo) {
         this.languageRepository = languageRepository;
+        this.userRepo = userRepo;
+        this.tagRepo = tagRepo;
     }
 
     /**
@@ -41,17 +50,26 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
     @Override
     protected EcoNews convert(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews ecoNews = EcoNews.builder()
-            .creationDate(ZonedDateTime.now())
-            .imagePath(addEcoNewsDtoRequest.getImagePath())
-            .build();
+                .creationDate(ZonedDateTime.now())
+                .author(userRepo.findById(addEcoNewsDtoRequest.getAuthor().getId()).get())
+                .imagePath(addEcoNewsDtoRequest.getImagePath())
+                .build();
+
+        ecoNews.setTags(addEcoNewsDtoRequest.getTags()
+                .stream()
+                .map(tag -> tagRepo.findByName(tag.getName()).get())
+                .collect(Collectors.toList())
+        );
 
         ecoNews.setTranslations(addEcoNewsDtoRequest.getTranslations()
-            .stream()
-            .map(translation ->
-                    new EcoNewsTranslation(null, languageRepository.findByCode(translation.getLanguage().getCode())
-                            .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE)),
-                            translation.getTitle(), translation.getText(), ecoNews))
-            .collect(Collectors.toList()));
+                .stream()
+                .map(translation ->
+                        new EcoNewsTranslation(null,
+                                languageRepository.findByCode(translation.getLanguage().getCode())
+                                        .orElseThrow(() ->
+                                                new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE)),
+                                translation.getTitle(), translation.getText(), ecoNews))
+                .collect(Collectors.toList()));
 
         return ecoNews;
     }

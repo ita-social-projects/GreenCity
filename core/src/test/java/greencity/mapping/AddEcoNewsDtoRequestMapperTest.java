@@ -3,6 +3,7 @@ package greencity.mapping;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsTranslationDto;
 import greencity.dto.language.LanguageRequestDto;
+import greencity.dto.tag.TagDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Language;
 import greencity.entity.Tag;
@@ -20,8 +21,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -51,22 +52,24 @@ public class AddEcoNewsDtoRequestMapperTest {
                     .build();
 
     private EcoNews ecoNews = new EcoNews(null, ZonedDateTime.now(), "imagePath", author,
-            Collections.singletonList(ecoNewsTranslation), new ArrayList<Tag>());
+            Collections.singletonList(ecoNewsTranslation), Collections.emptyList());
 
     private EcoNewsTranslationDto ecoNewsTranslationDto = new EcoNewsTranslationDto(
             new LanguageRequestDto("en"), "title", "text");
 
+    private List<TagDto> tagDtos = new TagDtoMapper().convert(Collections.singletonList(new Tag()));
+
     @Test
     public void convertTest() {
         AddEcoNewsDtoRequest request = new AddEcoNewsDtoRequest(Collections.singletonList(
-                ecoNewsTranslationDto), ecoNews.getImagePath());
+                ecoNewsTranslationDto), tagDtos, null, ecoNews.getImagePath());
 
         when(languageRepository.findByCode(anyString())).thenReturn(Optional.of(language));
 
         EcoNews actual = mapper.convert(request);
         actual.setAuthor(author);
         actual.setCreationDate(ecoNews.getCreationDate());
-        actual.setTags(new ArrayList<Tag>());
+        actual.setTags(Collections.emptyList());
 
         Assert.assertEquals(ecoNews, actual);
     }
@@ -74,7 +77,7 @@ public class AddEcoNewsDtoRequestMapperTest {
     @Test(expected = LanguageNotFoundException.class)
     public void convertFailsWithLanguageNotFoundException() {
         AddEcoNewsDtoRequest request = new AddEcoNewsDtoRequest(Collections.singletonList(
-                ecoNewsTranslationDto), ecoNews.getImagePath());
+                ecoNewsTranslationDto), tagDtos, null, ecoNews.getImagePath());
 
         when(languageRepository.findByCode(anyString())).thenReturn(Optional.of(language));
 

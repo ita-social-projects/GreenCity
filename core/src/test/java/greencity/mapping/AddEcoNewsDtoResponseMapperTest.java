@@ -1,6 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Language;
@@ -18,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -49,6 +51,8 @@ public class AddEcoNewsDtoResponseMapperTest {
 
     private EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDtoMapper().convert(author);
 
+    private List<TagDto> tagDtos = new TagDtoMapper().convert(Collections.emptyList());
+
     private EcoNewsTranslation ecoNewsTranslation = new EcoNewsTranslation(1L, language, "title", "text", null);
 
     private EcoNews ecoNews = new EcoNews(null, ZonedDateTime.now(), "imagePath", author,
@@ -62,7 +66,8 @@ public class AddEcoNewsDtoResponseMapperTest {
         when(ecoNewsAuthorDtoMapper.convert(author)).thenReturn(ecoNewsAuthorDto);
 
         AddEcoNewsDtoResponse expected = new AddEcoNewsDtoResponse(ecoNews.getId(), ecoNewsTranslation.getTitle(),
-                ecoNewsTranslation.getText(), ecoNewsAuthorDto, ecoNews.getCreationDate(), ecoNews.getImagePath());
+                ecoNewsTranslation.getText(), ecoNewsAuthorDto, ecoNews.getCreationDate(), ecoNews.getImagePath(),
+                tagDtos);
 
         assertEquals(expected, mapper.convert(ecoNews));
     }

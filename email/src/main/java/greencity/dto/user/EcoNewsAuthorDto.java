@@ -14,4 +14,3 @@ public class EcoNewsAuthorDto implements Serializable {
     private String firstName;
     private String lastName;
 }
-
