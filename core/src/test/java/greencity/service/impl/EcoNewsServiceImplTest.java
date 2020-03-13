@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import greencity.constant.AppConstant;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -23,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -49,9 +47,6 @@ public class EcoNewsServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
-
-    @Mock
-    RabbitTemplate rabbitTemplate;
 
     @Mock
     NewsSubscriberService newsSubscriberService;
@@ -85,9 +80,9 @@ public class EcoNewsServiceImplTest {
     public void save() {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(entity);
         when(modelMapper.map(entity, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
-        when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(entity, AppConstant.DEFAULT_LANGUAGE_CODE))
-                .thenReturn(new EcoNewsTranslation(null, null, "Title", "Text", null));
-        when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
+        //    when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(entity, AppConstant.DEFAULT_LANGUAGE_CODE))
+        //            .thenReturn(new EcoNewsTranslation(null, null, "Title", "Text", null));
+        //    when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
 
         when(ecoNewsRepo.save(entity)).thenReturn(entity);
         Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest));
