@@ -16,7 +16,7 @@ public interface EcoNewsService {
      * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text, image path.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
-    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest);
+    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email);
 
     /**
      * Method for getting last three eco news.

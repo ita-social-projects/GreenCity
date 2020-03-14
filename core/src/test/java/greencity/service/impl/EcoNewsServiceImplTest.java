@@ -17,6 +17,7 @@ import greencity.mapping.EcoNewsAuthorDtoMapper;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
+import greencity.repository.UserRepo;
 import greencity.service.NewsSubscriberService;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -56,6 +57,9 @@ public class EcoNewsServiceImplTest {
     @Mock
     NewsSubscriberService newsSubscriberService;
 
+    @Mock
+    UserRepo userRepo;
+
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
 
@@ -90,9 +94,10 @@ public class EcoNewsServiceImplTest {
         when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(entity, AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(new EcoNewsTranslation(null, null, "Title", "Text", null));
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
-
         when(ecoNewsRepo.save(entity)).thenReturn(entity);
-        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest));
+        when(userRepo.findByEmail("taras@gmail.com")).thenReturn(Optional.ofNullable(author));
+
+        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com"));
         addEcoNewsDtoResponse.setTitle("Title");
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
@@ -103,7 +108,8 @@ public class EcoNewsServiceImplTest {
     public void saveThrowsNotSavedException() {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(entity);
         when(ecoNewsRepo.save(entity)).thenThrow(DataIntegrityViolationException.class);
-        ecoNewsService.save(addEcoNewsDtoRequest);
+        when(userRepo.findByEmail("taras@gmail.com")).thenReturn(Optional.ofNullable(author));
+        ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com");
     }
 
     @Test

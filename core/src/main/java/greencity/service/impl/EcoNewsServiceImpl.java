@@ -9,13 +9,16 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.GetEcoNewsDto;
 import greencity.dto.tag.TagDto;
+import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
+import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
+import greencity.repository.UserRepo;
 import greencity.service.EcoNewsService;
 import greencity.service.NewsSubscriberService;
 import java.time.ZonedDateTime;
@@ -34,6 +37,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
+    private final UserRepo userRepo;
     private final ModelMapper modelMapper;
     private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
     private RabbitTemplate rabbitTemplate;
@@ -47,11 +51,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Autowired
-    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
+    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, UserRepo userRepo, ModelMapper modelMapper,
                               EcoNewsTranslationRepo ecoNewsTranslationRepo,
                               RabbitTemplate rabbitTemplate,
                               NewsSubscriberService newsSubscriberService) {
         this.ecoNewsRepo = ecoNewsRepo;
+        this.userRepo = userRepo;
         this.modelMapper = modelMapper;
         this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
         this.rabbitTemplate = rabbitTemplate;
@@ -64,9 +69,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Override
-    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
+    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email) {
+        addEcoNewsDtoRequest.setAuthor(modelMapper.map(
+            userRepo.findByEmail(email).orElseThrow(() -> new BadEmailException(
+                ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)), EcoNewsAuthorDto.class));
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setCreationDate(ZonedDateTime.now());
+
         try {
             ecoNewsRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
