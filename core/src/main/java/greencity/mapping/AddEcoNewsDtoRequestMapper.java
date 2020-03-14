@@ -5,6 +5,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.LanguageNotFoundException;
+import greencity.exception.exceptions.TagNotFoundException;
 import greencity.repository.LanguageRepository;
 import greencity.repository.TagRepo;
 import greencity.repository.UserRepo;
@@ -56,7 +57,8 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
 
         ecoNews.setTags(addEcoNewsDtoRequest.getTags()
             .stream()
-            .map(tag -> tagRepo.findByName(tag.getName()).get())
+            .map(tag -> tagRepo.findByName(tag.getName()).orElseThrow(() ->
+                new TagNotFoundException(ErrorMessage.TAG_NOT_FOUND + tag.getName())))
             .collect(Collectors.toList())
         );
 

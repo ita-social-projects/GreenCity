@@ -103,6 +103,7 @@ public final class ErrorMessage {
     public static final String CAN_NOT_CREATE_EVENT_INSTANCE = "Can not create instance of events. "
         + "used constructor that differ from events superclass.";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
+    public static final String TAG_NOT_FOUND = "The tag does not exist by this name: ";
 
     private ErrorMessage() {
     }

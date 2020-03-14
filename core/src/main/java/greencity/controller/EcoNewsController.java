@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -9,6 +10,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.GetEcoNewsDto;
 import greencity.entity.EcoNews;
+import greencity.exception.exceptions.BadEmailException;
 import greencity.mapping.EcoNewsAuthorDtoMapper;
 import greencity.repository.UserRepo;
 import greencity.service.EcoNewsService;
@@ -60,7 +62,8 @@ public class EcoNewsController {
     public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
                                                       @ApiIgnore Principal principal) {
         addEcoNewsDtoRequest.setAuthor(ecoNewsAuthorDtoMapper.convert(
-            userRepo.findByEmail(principal.getName()).get()));
+            userRepo.findByEmail(principal.getName()).orElseThrow(
+                () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()))));
         return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(addEcoNewsDtoRequest));
     }
 
@@ -99,12 +102,13 @@ public class EcoNewsController {
     })
     @GetMapping("")
     @ApiPageable
-    public ResponseEntity<PageableDto<EcoNewsDto>> findAll(@ApiIgnore Pageable page,
-                                                           @ApiParam(value = "Code of the needed language.",
-                                                               defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-                                                           @RequestParam(required = false,
-                                                               defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-                                                               String language
+    public ResponseEntity<PageableDto<EcoNewsDto>> findAll(
+        @ApiIgnore Pageable page,
+        @ApiParam(value = "Code of the needed language.",
+            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false,
+            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+            String language
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(page, language));
     }
