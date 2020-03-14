@@ -1,13 +1,10 @@
 package greencity.dto.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class EcoNewsAuthorDto implements Serializable {
     private Long id;

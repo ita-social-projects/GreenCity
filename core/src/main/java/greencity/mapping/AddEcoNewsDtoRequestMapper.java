@@ -4,6 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
+import greencity.exception.exceptions.BadIdException;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.repository.LanguageRepository;
@@ -51,7 +52,9 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
     protected EcoNews convert(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews ecoNews = EcoNews.builder()
             .creationDate(ZonedDateTime.now())
-            .author(userRepo.findById(addEcoNewsDtoRequest.getAuthor().getId()).get())
+            .author(userRepo.findById(addEcoNewsDtoRequest.getAuthor().getId()).orElseThrow(
+                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + addEcoNewsDtoRequest.getAuthor().getId())
+            ))
             .imagePath(addEcoNewsDtoRequest.getImagePath())
             .build();
 
@@ -67,8 +70,7 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
             .map(translation ->
                 new EcoNewsTranslation(null,
                     languageRepository.findByCode(translation.getLanguage().getCode())
-                        .orElseThrow(() ->
-                            new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE)),
+                        .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE)),
                     translation.getTitle(), translation.getText(), ecoNews))
             .collect(Collectors.toList()));
 

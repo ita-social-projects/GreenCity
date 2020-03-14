@@ -104,12 +104,8 @@ public class EcoNewsController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsDto>> findAll(
         @ApiIgnore Pageable page,
-        @ApiParam(value = "Code of the needed language.",
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false,
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-            String language
-    ) {
+        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(page, language));
     }
 

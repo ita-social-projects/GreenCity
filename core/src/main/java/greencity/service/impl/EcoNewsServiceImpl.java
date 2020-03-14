@@ -180,8 +180,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
         addEcoNewsDtoResponse.setTitle(
-            ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
-                AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
+            ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
 
         return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
     }
