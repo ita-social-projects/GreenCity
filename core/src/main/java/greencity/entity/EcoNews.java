@@ -7,14 +7,14 @@ import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-@Entity
 @Data
+@Entity
+@Table(name = "eco_news")
+@ToString(exclude = "translations")
+@EqualsAndHashCode(exclude = "translations")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = "translations")
-@ToString(exclude = "translations")
-@Table(name = "eco_news")
 public class EcoNews {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

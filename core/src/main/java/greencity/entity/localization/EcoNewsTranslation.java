@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Table(name = "eco_news_translations")
-@Entity
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "eco_news_translations")
 public class EcoNewsTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
