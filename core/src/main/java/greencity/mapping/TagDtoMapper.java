@@ -2,11 +2,10 @@ package greencity.mapping;
 
 import greencity.dto.tag.TagDto;
 import greencity.entity.Tag;
-import org.modelmapper.AbstractConverter;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.modelmapper.AbstractConverter;
+import org.springframework.stereotype.Component;
 
 @Component
 public class TagDtoMapper extends AbstractConverter<List<Tag>, List<TagDto>> {

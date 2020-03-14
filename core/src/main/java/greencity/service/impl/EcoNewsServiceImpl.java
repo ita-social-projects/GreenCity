@@ -18,6 +18,10 @@ import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.EcoNewsService;
 import greencity.service.NewsSubscriberService;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +30,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EcoNewsServiceImpl implements EcoNewsService {
@@ -75,7 +74,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-                buildAddEcoNewsMessage(toSave));
+            buildAddEcoNewsMessage(toSave));
 
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
@@ -88,14 +87,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public List<EcoNewsDto> getThreeLastEcoNews(String languageCode) {
         List<EcoNewsTranslation> ecoNewsTranslations = ecoNewsTranslationRepo
-                .getNLastEcoNewsByLanguageCode(3, languageCode);
+            .getNLastEcoNewsByLanguageCode(3, languageCode);
         if (ecoNewsTranslations.isEmpty()) {
             throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
         }
         return ecoNewsTranslations
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -107,13 +106,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableDto<EcoNewsDto> findAll(Pageable page, String languageCode) {
         Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo.findAllByLanguageCode(page, languageCode);
         List<EcoNewsDto> ecoNewsDtos = pages
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
         return new PageableDto<>(
-                ecoNewsDtos,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber()
+            ecoNewsDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber()
         );
     }
 
@@ -128,16 +127,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String languageCode = getEcoNewsDto.getLanguage().getCode();
 
         Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo
-                .find(page, tagsStrings, (long) tagsStrings.size(), languageCode);
+            .find(page, tagsStrings, (long) tagsStrings.size(), languageCode);
 
         List<EcoNewsDto> ecoNewsDtos = pages.stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
 
         return new PageableDto<>(
-                ecoNewsDtos,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber()
+            ecoNewsDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber()
         );
     }
 
@@ -159,8 +158,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNews findById(Long id) {
         return ecoNewsRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -181,8 +180,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
         addEcoNewsDtoResponse.setTitle(
-                ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
-                        AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
+            ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
+                AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
 
         return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
     }

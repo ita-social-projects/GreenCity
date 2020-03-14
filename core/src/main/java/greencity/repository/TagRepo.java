@@ -1,9 +1,8 @@
 package greencity.repository;
 
 import greencity.entity.Tag;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TagRepo extends JpaRepository<Tag, Long> {
     /**

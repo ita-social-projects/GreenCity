@@ -16,6 +16,6 @@ public class EcoNewsAuthorDtoMapper extends AbstractConverter<User, EcoNewsAutho
     @Override
     public EcoNewsAuthorDto convert(User author) {
         return new EcoNewsAuthorDto(author.getId(),
-                author.getFirstName(), author.getLastName());
+            author.getFirstName(), author.getLastName());
     }
 }

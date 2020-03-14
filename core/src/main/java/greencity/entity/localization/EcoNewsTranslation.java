@@ -2,11 +2,10 @@ package greencity.entity.localization;
 
 import greencity.entity.EcoNews;
 import greencity.entity.Language;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Data
 @Entity

@@ -7,12 +7,11 @@ import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.LanguageService;
+import java.util.List;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Class that used by {@link ModelMapper} to map {@link EcoNews} into
@@ -50,11 +49,11 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
     @Override
     protected AddEcoNewsDtoResponse convert(EcoNews ecoNews) {
         EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
-                languageService.extractLanguageCodeFromRequest());
+            languageService.extractLanguageCodeFromRequest());
         EcoNewsAuthorDto ecoNewsAuthorDto = ecoNewsAuthorDtoMapper.convert(ecoNews.getAuthor());
         List<TagDto> tags = tagDtoMapper.convert(ecoNews.getTags());
 
         return new AddEcoNewsDtoResponse(ecoNews.getId(), translation.getTitle(), translation.getText(),
-                ecoNewsAuthorDto, ecoNews.getCreationDate(), ecoNews.getImagePath(), tags);
+            ecoNewsAuthorDto, ecoNews.getCreationDate(), ecoNews.getImagePath(), tags);
     }
 }

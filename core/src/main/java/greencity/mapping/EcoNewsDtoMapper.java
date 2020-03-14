@@ -41,10 +41,10 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNewsTranslation, EcoN
         EcoNews ecoNews = ecoNewsTranslation.getEcoNews();
         User author = ecoNews.getAuthor();
         EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
-                author.getFirstName(), author.getLastName());
+            author.getFirstName(), author.getLastName());
 
         return new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(), ecoNews.getId(),
-                ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(), ecoNewsAuthorDto,
-                tagDtoMapper.convert(ecoNews.getTags()));
+            ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(), ecoNewsAuthorDto,
+            tagDtoMapper.convert(ecoNews.getTags()));
     }
 }

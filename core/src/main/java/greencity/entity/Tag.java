@@ -1,9 +1,8 @@
 package greencity.entity;
 
-import lombok.Data;
-
-import javax.persistence.*;
 import java.util.List;
+import javax.persistence.*;
+import lombok.Data;
 
 @Data
 @Entity

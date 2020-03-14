@@ -1,8 +1,13 @@
 package greencity.config;
 
+import static greencity.constant.AppConstant.*;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
+import java.util.Arrays;
+import java.util.Collections;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,13 +25,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import static greencity.constant.AppConstant.*;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
 /**
  * Config for security.
@@ -101,9 +99,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/**"
             ).permitAll()
             .antMatchers(
-                    HttpMethod.POST,
-                    "/econews/tags",
-                    "/newsSubscriber"
+                HttpMethod.POST,
+                "/econews/tags",
+                "/newsSubscriber"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
@@ -131,18 +129,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
-                    "/category/**",
-                    "/place/save/favorite/**",
-                    "/habit/statistic/",
-                    "/user/{userId}/goals",
-                    "/user/{userId}/habits",
-                    "/user/{userId}/habit",
-                    "/user/{userId}/habits/statistic",
-                    "/user/{userId}/goals/*",
-                    "/user/{userId}/habit-dictionary/available",
-                    "/user/{userId}/goals",
-                    "/econews",
-                    "/user/{userId}/customGoals"
+                "/category/**",
+                "/place/save/favorite/**",
+                "/habit/statistic/",
+                "/user/{userId}/goals",
+                "/user/{userId}/habits",
+                "/user/{userId}/habit",
+                "/user/{userId}/habits/statistic",
+                "/user/{userId}/goals/*",
+                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/goals",
+                "/econews",
+                "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",

@@ -16,15 +16,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/econews")
@@ -53,15 +52,15 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Add new eco news.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping
     public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
                                                       @ApiIgnore Principal principal) {
         addEcoNewsDtoRequest.setAuthor(ecoNewsAuthorDtoMapper.convert(
-                userRepo.findByEmail(principal.getName()).get()));
+            userRepo.findByEmail(principal.getName()).get()));
         return ResponseEntity.status(HttpStatus.CREATED).body(ecoNewsService.save(addEcoNewsDtoRequest));
     }
 
@@ -73,15 +72,15 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Get three last eco news.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/newest")
     public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews(
-            @ApiParam(value = "Code of the needed language.",
-                    defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language
+        @ApiParam(value = "Code of the needed language.",
+            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews(language));
     }
@@ -94,18 +93,18 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Find all eco news by page.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsDto>> findAll(@ApiIgnore Pageable page,
                                                            @ApiParam(value = "Code of the needed language.",
-                                                                   defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+                                                               defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
                                                            @RequestParam(required = false,
-                                                                   defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-                                                                   String language
+                                                               defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+                                                               String language
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(page, language));
     }
@@ -119,10 +118,10 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Delete eco news.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{econewsId}")
     public ResponseEntity<Object> delete(@PathVariable Long econewsId) {
@@ -139,9 +138,9 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Get eco news by tags")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/tags")
     @ApiPageable
@@ -149,7 +148,7 @@ public class EcoNewsController {
                                                               @RequestBody GetEcoNewsDto getEcoNewsDto) {
         if (getEcoNewsDto.getTags() == null || getEcoNewsDto.getTags().size() == 0) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    ecoNewsService.findAll(page, getEcoNewsDto.getLanguage().getCode()));
+                ecoNewsService.findAll(page, getEcoNewsDto.getLanguage().getCode()));
         }
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, getEcoNewsDto));
     }
