@@ -18,10 +18,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-        "verifyEmail", "estimates", "restorePasswordEmail"})
+        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews"})
 @ToString(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-        "verifyEmail", "estimates", "restorePasswordEmail"})
+        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

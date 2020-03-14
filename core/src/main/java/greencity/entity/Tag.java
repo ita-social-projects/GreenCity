@@ -3,10 +3,14 @@ package greencity.entity;
 import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Entity
 @Table(name = "tags")
+@ToString(exclude = "ecoNews")
+@EqualsAndHashCode(exclude = "ecoNews")
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

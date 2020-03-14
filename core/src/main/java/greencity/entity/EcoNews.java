@@ -9,8 +9,8 @@ import lombok.*;
 @Data
 @Entity
 @Table(name = "eco_news")
-@ToString(exclude = "translations")
-@EqualsAndHashCode(exclude = "translations")
+@ToString(exclude = {"translations", "author", "tags"})
+@EqualsAndHashCode(exclude = {"translations", "author", "tags"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
