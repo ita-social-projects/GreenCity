@@ -1,17 +1,10 @@
 package greencity.mapping;
 
+import greencity.ModelUtils;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.tag.TagDto;
-import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Language;
-import greencity.entity.Tag;
-import greencity.entity.User;
-import greencity.entity.enums.ROLE;
 import greencity.entity.localization.EcoNewsTranslation;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -33,37 +26,20 @@ public class EcoNewsDtoMapperTest {
     @InjectMocks
     EcoNewsDtoMapper ecoNewsDtoMapper;
 
-    private User author =
-        User.builder()
-            .id(1L)
-            .email("Nazar.stasyuk@gmail.com")
-            .firstName("Nazar")
-            .lastName("Stasyuk")
-            .role(ROLE.ROLE_USER)
-            .lastVisit(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
-            .build();
-
-    private EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(1L, "Nazar", "Stasyuk");
-
-    private Tag tag = new Tag(1L, "tag", Collections.emptyList());
-
-    private TagDto tagDto = new TagDto("tag");
-
-    private Language language = new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyList());
-    private EcoNews ecoNews = new EcoNews(1L, ZonedDateTime.now(), "imagePath", author,
-        Collections.emptyList(), Collections.singletonList(tag));
-    private EcoNewsTranslation ecoNewsTranslation = new EcoNewsTranslation(1L, language, "title", "text", ecoNews);
-
-
     @Test
     public void convertTest() {
-        when(modelMapper.map(tag, TagDto.class)).thenReturn(tagDto);
-        when(tagDtoMapper.convert(tag)).thenReturn(tagDto);
+        when(modelMapper.map(ModelUtils.getTag(), TagDto.class))
+            .thenReturn(ModelUtils.getTagDto());
+        when(tagDtoMapper.convert(ModelUtils.getTag()))
+            .thenReturn(ModelUtils.getTagDto());
+
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsTranslation ecoNewsTranslation = ModelUtils.getEcoNewsTranslation();
+        ecoNewsTranslation.setEcoNews(ecoNews);
 
         EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(), 1L,
-            ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(), ecoNewsAuthorDto,
+            ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(),
+            ModelUtils.getEcoNewsAuthorDto(),
             ecoNews.getTags().stream()
                 .map(tag -> modelMapper.map(tag, TagDto.class))
                 .collect(Collectors.toList())
