@@ -134,7 +134,7 @@ public class EcoNewsController {
     @PostMapping("/tags")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(@ApiIgnore Pageable page,
-                                                              @RequestBody SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
+                                              @RequestBody SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
         if (searchCriteriaEcoNewsDto.getTags() == null || searchCriteriaEcoNewsDto.getTags().size() == 0) {
             return ResponseEntity.status(HttpStatus.OK).body(
                 ecoNewsService.findAll(page, searchCriteriaEcoNewsDto.getLanguage().getCode()));
