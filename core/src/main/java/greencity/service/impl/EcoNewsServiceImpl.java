@@ -7,8 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.GetEcoNewsDto;
-import greencity.dto.tag.TagDto;
+import greencity.dto.econews.SearchCriteriaEcoNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
@@ -22,7 +21,6 @@ import greencity.repository.UserRepo;
 import greencity.service.EcoNewsService;
 import greencity.service.NewsSubscriberService;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
@@ -131,9 +129,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public PageableDto<EcoNewsDto> find(Pageable page, GetEcoNewsDto getEcoNewsDto) {
-        List<String> tagsStrings = parseTags(getEcoNewsDto.getTags());
-        String languageCode = getEcoNewsDto.getLanguage().getCode();
+    public PageableDto<EcoNewsDto> find(Pageable page, SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
+        List<String> tagsStrings = searchCriteriaEcoNewsDto.getTags()
+            .stream()
+            .map(tag -> tag.getName())
+            .collect(Collectors.toList());
+        String languageCode = searchCriteriaEcoNewsDto.getLanguage().getCode();
 
         Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo
             .find(page, tagsStrings, (long) tagsStrings.size(), languageCode);
@@ -147,16 +148,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             pages.getTotalElements(),
             pages.getPageable().getPageNumber()
         );
-    }
-
-    private List<String> parseTags(List<TagDto> tags) {
-        List<String> tagsStrings = new ArrayList<>();
-
-        for (TagDto tagDto : tags) {
-            tagsStrings.add(tagDto.getName());
-        }
-
-        return tagsStrings;
     }
 
     /**

@@ -7,7 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.GetEcoNewsDto;
+import greencity.dto.econews.SearchCriteriaEcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
@@ -121,7 +121,7 @@ public class EcoNewsController {
     /**
      * Method for getting all eco news by tags and language.
      *
-     * @param getEcoNewsDto - - dto for search {@link EcoNewsDto} by tags and language
+     * @param searchCriteriaEcoNewsDto - - dto for search {@link EcoNewsDto} by tags and language
      * @return list of {@link EcoNewsDto} instances.
      * @author Kovaliv Taras.
      */
@@ -134,11 +134,11 @@ public class EcoNewsController {
     @PostMapping("/tags")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(@ApiIgnore Pageable page,
-                                                              @RequestBody GetEcoNewsDto getEcoNewsDto) {
-        if (getEcoNewsDto.getTags() == null || getEcoNewsDto.getTags().size() == 0) {
+                                                              @RequestBody SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
+        if (searchCriteriaEcoNewsDto.getTags() == null || searchCriteriaEcoNewsDto.getTags().size() == 0) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                ecoNewsService.findAll(page, getEcoNewsDto.getLanguage().getCode()));
+                ecoNewsService.findAll(page, searchCriteriaEcoNewsDto.getLanguage().getCode()));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, getEcoNewsDto));
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, searchCriteriaEcoNewsDto));
     }
 }

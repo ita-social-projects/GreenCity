@@ -2,7 +2,7 @@ package greencity.exception.exceptions;
 
 public class TagNotFoundException extends RuntimeException {
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Exception that we get when we try to get a tag that is not in the database.
      */
     public TagNotFoundException(String message) {
         super(message);

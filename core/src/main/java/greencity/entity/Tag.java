@@ -2,13 +2,11 @@ package greencity.entity;
 
 import java.util.List;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @Entity
+@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tags")
 @ToString(exclude = "ecoNews")

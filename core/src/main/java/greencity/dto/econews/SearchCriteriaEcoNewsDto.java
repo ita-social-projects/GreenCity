@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetEcoNewsDto {
+public class SearchCriteriaEcoNewsDto {
     @NotNull
     private LanguageRequestDto language;
     @NotEmpty
