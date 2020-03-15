@@ -8,6 +8,7 @@ import greencity.entity.localization.EcoNewsTranslation;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.LanguageService;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,10 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
         EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
             languageService.extractLanguageCodeFromRequest());
         EcoNewsAuthorDto ecoNewsAuthorDto = ecoNewsAuthorDtoMapper.convert(ecoNews.getAuthor());
-        List<TagDto> tags = tagDtoMapper.convert(ecoNews.getTags());
+        List<TagDto> tags = ecoNews.getTags()
+            .stream()
+            .map(tag -> tagDtoMapper.convert(tag))
+            .collect(Collectors.toList());
 
         return new AddEcoNewsDtoResponse(ecoNews.getId(), translation.getTitle(), translation.getText(),
             ecoNewsAuthorDto, ecoNews.getCreationDate(), ecoNews.getImagePath(), tags);
