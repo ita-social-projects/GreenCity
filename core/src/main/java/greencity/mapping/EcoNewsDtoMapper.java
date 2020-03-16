@@ -1,10 +1,16 @@
 package greencity.mapping;
 
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.tag.TagDto;
+import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.entity.localization.EcoNewsTranslation;
+import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,6 +19,18 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EcoNewsDtoMapper extends AbstractConverter<EcoNewsTranslation, EcoNewsDto> {
+    TagDtoMapper tagDtoMapper;
+
+    /**
+     * All args constructor.
+     *
+     * @param tagDtoMapper needed to convert {@link Tag} to {@link TagDto}.
+     */
+    @Autowired
+    public EcoNewsDtoMapper(TagDtoMapper tagDtoMapper) {
+        this.tagDtoMapper = tagDtoMapper;
+    }
+
     /**
      * Method for converting {@link EcoNewsTranslation} into {@link EcoNewsDto}.
      *
@@ -20,10 +38,17 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNewsTranslation, EcoN
      * @return converted object.
      */
     @Override
-    protected EcoNewsDto convert(EcoNewsTranslation ecoNewsTranslation) {
+    public EcoNewsDto convert(EcoNewsTranslation ecoNewsTranslation) {
         EcoNews ecoNews = ecoNewsTranslation.getEcoNews();
+        User author = ecoNews.getAuthor();
+        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
+            author.getFirstName(), author.getLastName());
 
-        return new EcoNewsDto(ecoNews.getId(), ecoNewsTranslation.getTitle(),
-            ecoNews.getCreationDate(), ecoNews.getText(), ecoNews.getImagePath());
+        return new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(), ecoNews.getId(),
+            ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(), ecoNewsAuthorDto,
+            ecoNews.getTags()
+                .stream()
+                .map(tag -> tagDtoMapper.convert(tag))
+                .collect(Collectors.toList()));
     }
 }

@@ -1,24 +1,21 @@
 package greencity.mapping;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
+import greencity.ModelUtils;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.EcoNewsTranslationDto;
-import greencity.dto.language.LanguageRequestDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Language;
-import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.LanguageNotFoundException;
-import greencity.repository.LanguageRepository;
-import java.time.ZonedDateTime;
+import greencity.repository.LanguageRepo;
+import greencity.repository.TagRepo;
+import greencity.repository.UserRepo;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,40 +23,45 @@ public class AddEcoNewsDtoRequestMapperTest {
     @InjectMocks
     private AddEcoNewsDtoRequestMapper mapper;
     @Mock
-    private LanguageRepository languageRepository;
+    private LanguageRepo languageRepo;
+    @Mock
+    private UserRepo userRepo;
+    @Mock
+    private TagRepo tagRepo;
 
-    private Language language = new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyList());
-
-    private EcoNewsTranslation ecoNewsTranslation = new EcoNewsTranslation(1L, language, "title", null);
-
-    private EcoNews ecoNews = new EcoNews(null, ZonedDateTime.now(), "text", "imagePath",
-        Collections.singletonList(ecoNewsTranslation));
-
-    private EcoNewsTranslationDto ecoNewsTranslationDto = new EcoNewsTranslationDto(
-        new LanguageRequestDto("en"), "title");
+    private EcoNews ecoNews = ModelUtils.getEcoNews();
 
     @Test
     public void convertTest() {
-        AddEcoNewsDtoRequest request = new AddEcoNewsDtoRequest(Collections.singletonList(
-            ecoNewsTranslationDto), ecoNews.getText(), ecoNews.getImagePath());
+        AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
-        when(languageRepository.findByCode(anyString())).thenReturn(Optional.of(language));
+        when(languageRepo.findByCode(anyString()))
+            .thenReturn(Optional.of(ModelUtils.getLanguage()));
+        when(userRepo.findById(request.getAuthor().getId()))
+            .thenReturn(Optional.of(ModelUtils.getUser()));
+        when(tagRepo.findByName(ModelUtils.getTagDto().getName()))
+            .thenReturn(Optional.of(ModelUtils.getTag()));
 
         EcoNews actual = mapper.convert(request);
+        actual.setId(1L);
+        actual.setAuthor(ModelUtils.getUser());
         actual.setCreationDate(ecoNews.getCreationDate());
+        actual.setTags(Collections.singletonList(ModelUtils.getTag()));
 
         Assert.assertEquals(ecoNews, actual);
     }
 
     @Test(expected = LanguageNotFoundException.class)
     public void convertFailsWithLanguageNotFoundException() {
-        AddEcoNewsDtoRequest request = new AddEcoNewsDtoRequest(Collections.singletonList(
-            ecoNewsTranslationDto), ecoNews.getText(), ecoNews.getImagePath());
+        AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
-        when(languageRepository.findByCode(anyString())).thenReturn(Optional.of(language));
-
-        when(languageRepository.findByCode(anyString())).thenThrow(LanguageNotFoundException.class);
+        when(languageRepo.findByCode(anyString()))
+            .thenReturn(Optional.of(ModelUtils.getLanguage()));
+        when(userRepo.findById(request.getAuthor().getId()))
+            .thenReturn(Optional.of(ModelUtils.getUser()));
+        when(tagRepo.findByName(ModelUtils.getTagDto().getName()))
+            .thenReturn(Optional.of(ModelUtils.getTag()));
+        when(languageRepo.findByCode(anyString())).thenThrow(LanguageNotFoundException.class);
 
         mapper.convert(request);
     }

@@ -1,9 +1,10 @@
 package greencity.dto.econews;
 
+import greencity.dto.language.LanguageRequestDto;
 import greencity.dto.tag.TagDto;
-import greencity.dto.user.EcoNewsAuthorDto;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,13 +12,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddEcoNewsDtoRequest {
-    @NotEmpty
-    private List<EcoNewsTranslationDto> translations;
+public class SearchCriteriaEcoNewsDto {
+    @NotNull
+    private LanguageRequestDto language;
     @NotEmpty
     private List<TagDto> tags;
-
-    private EcoNewsAuthorDto author;
-    @NotEmpty
-    private String imagePath;
 }

@@ -18,10 +18,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-    "verifyEmail", "estimates", "restorePasswordEmail"})
+        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews"})
 @ToString(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-    "verifyEmail", "estimates", "restorePasswordEmail"})
+        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,10 +50,10 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime dateOfRegistration;
 
-    @OneToMany(mappedBy = "author",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<Place> places = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
@@ -61,6 +61,9 @@ public class User {
 
     @OneToMany(mappedBy = "author")
     private List<Place> addedPlaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author")
+    private List<EcoNews> addedEcoNews = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private OwnSecurity ownSecurity;
@@ -82,7 +85,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Habit> habits = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserGoal> userGoals = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

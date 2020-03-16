@@ -1,31 +1,49 @@
 package greencity.mapping;
 
-import static org.junit.Assert.assertEquals;
-
+import greencity.ModelUtils;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.tag.TagDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Language;
 import greencity.entity.localization.EcoNewsTranslation;
-import java.time.ZonedDateTime;
-import java.util.Collections;
+import java.util.stream.Collectors;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EcoNewsDtoMapperTest {
-    private EcoNewsDtoMapper ecoNewsDtoMapper = new EcoNewsDtoMapper();
-    private Language language = new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
-        Collections.emptyList());
-    private EcoNews ecoNews = new EcoNews(1L, ZonedDateTime.now(), "text", "imagePath",
-        Collections.emptyList());
-    private EcoNewsTranslation ecoNewsTranslation = new EcoNewsTranslation(1L, language, "title", ecoNews);
+    @Mock
+    ModelMapper modelMapper;
 
+    @Mock
+    TagDtoMapper tagDtoMapper;
+
+    @InjectMocks
+    EcoNewsDtoMapper ecoNewsDtoMapper;
 
     @Test
     public void convertTest() {
-        EcoNewsDto expected = new EcoNewsDto(1L, ecoNewsTranslation.getTitle(), ecoNews.getCreationDate(),
-            ecoNews.getText(), ecoNews.getImagePath());
+        when(modelMapper.map(ModelUtils.getTag(), TagDto.class))
+            .thenReturn(ModelUtils.getTagDto());
+        when(tagDtoMapper.convert(ModelUtils.getTag()))
+            .thenReturn(ModelUtils.getTagDto());
+
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsTranslation ecoNewsTranslation = ModelUtils.getEcoNewsTranslation();
+        ecoNewsTranslation.setEcoNews(ecoNews);
+
+        EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(), 1L,
+            ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(),
+            ModelUtils.getEcoNewsAuthorDto(),
+            ecoNews.getTags().stream()
+                .map(tag -> modelMapper.map(tag, TagDto.class))
+                .collect(Collectors.toList())
+        );
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNewsTranslation));
     }

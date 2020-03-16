@@ -3,16 +3,22 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
+import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.SearchCriteriaEcoNewsDto;
+import greencity.dto.tag.TagDto;
+import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
+import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
+import greencity.repository.UserRepo;
 import greencity.service.EcoNewsService;
 import greencity.service.NewsSubscriberService;
 import java.time.ZonedDateTime;
@@ -23,11 +29,14 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
+    private final UserRepo userRepo;
     private final ModelMapper modelMapper;
     private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
     private RabbitTemplate rabbitTemplate;
@@ -41,11 +50,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Autowired
-    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, ModelMapper modelMapper,
+    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, UserRepo userRepo, ModelMapper modelMapper,
                               EcoNewsTranslationRepo ecoNewsTranslationRepo,
                               RabbitTemplate rabbitTemplate,
                               NewsSubscriberService newsSubscriberService) {
         this.ecoNewsRepo = ecoNewsRepo;
+        this.userRepo = userRepo;
         this.modelMapper = modelMapper;
         this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
         this.rabbitTemplate = rabbitTemplate;
@@ -58,9 +68,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Override
-    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String languageCode) {
+    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email) {
+        addEcoNewsDtoRequest.setAuthor(modelMapper.map(
+            userRepo.findByEmail(email).orElseThrow(() -> new BadEmailException(
+                ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)), EcoNewsAuthorDto.class));
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setCreationDate(ZonedDateTime.now());
+
         try {
             ecoNewsRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
@@ -94,14 +108,47 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     /**
      * {@inheritDoc}
      *
-     * @author Yuriy Olkhovskyi.
+     * @author Kovaliv Taras.
      */
     @Override
-    public List<EcoNewsDto> findAll(String languageCode) {
-        return ecoNewsTranslationRepo.findAllByLanguageCode(languageCode)
+    public PageableDto<EcoNewsDto> findAll(Pageable page, String languageCode) {
+        Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo.findAllByLanguageCode(page, languageCode);
+        List<EcoNewsDto> ecoNewsDtos = pages
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
+        return new PageableDto<>(
+            ecoNewsDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber()
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kovaliv Taras.
+     */
+    @Override
+    public PageableDto<EcoNewsDto> find(Pageable page, SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
+        List<String> tagsStrings = searchCriteriaEcoNewsDto.getTags()
+            .stream()
+            .map(TagDto::getName)
+            .collect(Collectors.toList());
+        String languageCode = searchCriteriaEcoNewsDto.getLanguage().getCode();
+
+        Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo
+            .find(page, tagsStrings, (long) tagsStrings.size(), languageCode);
+
+        List<EcoNewsDto> ecoNewsDtos = pages.stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            ecoNewsDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber()
+        );
     }
 
     /**

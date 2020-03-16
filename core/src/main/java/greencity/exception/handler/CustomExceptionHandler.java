@@ -237,13 +237,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Method intercept exception {@link NotDeleteLastHabit}.
-     * @param ex  Exception witch should be intercepted.
+     *
+     * @param ex      Exception witch should be intercepted.
      * @param request contain  detail about occur exception.
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      */
     @ExceptionHandler(NotDeleteLastHabit.class)
     public final ResponseEntity<Object> handleUserHabitWhereNotDeleteException(NotDeleteLastHabit ex,
-                                                                              WebRequest request) {
+                                                                               WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.OK).body(exceptionResponse);
@@ -264,17 +265,31 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Method intercept exception {@link TagNotFoundException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     */
+    @ExceptionHandler(TagNotFoundException.class)
+    public final ResponseEntity<Object> handleTagNotFoundException(TagNotFoundException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
      * Customize the response for HttpMessageNotReadableException.
      *
-     * @param ex the exception
+     * @param ex      the exception
      * @param headers the headers to be written to the response
-     * @param status the selected response status
+     * @param status  the selected response status
      * @param request the current request
      * @return a {@code ResponseEntity} message
      */
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
-            HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

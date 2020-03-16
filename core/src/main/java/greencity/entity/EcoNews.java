@@ -6,14 +6,14 @@ import java.util.List;
 import javax.persistence.*;
 import lombok.*;
 
-@Entity
 @Data
+@Entity
+@Table(name = "eco_news")
+@ToString(exclude = {"translations", "author", "tags"})
+@EqualsAndHashCode(exclude = {"translations", "author", "tags"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = "translations")
-@ToString(exclude = "translations")
-@Table(name = "eco_news")
 public class EcoNews {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +23,15 @@ public class EcoNews {
     private ZonedDateTime creationDate;
 
     @Column(nullable = false)
-    private String text;
-
-    @Column(nullable = false)
     private String imagePath;
+
+    @ManyToOne
+    private User author;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ecoNews", cascade = {CascadeType.REMOVE, CascadeType.PERSIST,
         CascadeType.REFRESH})
     private List<EcoNewsTranslation> translations;
+
+    @ManyToMany
+    private List<Tag> tags;
 }

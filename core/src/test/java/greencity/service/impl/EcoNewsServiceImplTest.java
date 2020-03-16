@@ -1,10 +1,9 @@
 package greencity.service.impl;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
+import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.constant.RabbitConstants;
+import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
@@ -15,6 +14,7 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
+import greencity.repository.UserRepo;
 import greencity.service.NewsSubscriberService;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -24,12 +24,17 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EcoNewsServiceImplTest {
@@ -48,26 +53,27 @@ public class EcoNewsServiceImplTest {
     @Mock
     NewsSubscriberService newsSubscriberService;
 
+    @Mock
+    UserRepo userRepo;
+
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
 
-    private AddEcoNewsDtoRequest addEcoNewsDtoRequest =
-        new AddEcoNewsDtoRequest(Collections.emptyList(), "test text", "test image path");
-    private EcoNews entity =
-        new EcoNews(1L, ZonedDateTime.now(), "test text", "test image path", Collections.emptyList());
-    private AddEcoNewsDtoResponse addEcoNewsDtoResponse =
-        new AddEcoNewsDtoResponse(1L, "test title", "test text", ZonedDateTime.now(), "test image path");
+    private AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
+    private EcoNews ecoNews = ModelUtils.getEcoNews();
+    private AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
 
     @Test
     public void save() {
-        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(entity);
-        when(modelMapper.map(entity, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
-        when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(entity, AppConstant.DEFAULT_LANGUAGE_CODE))
-            .thenReturn(new EcoNewsTranslation(null, null, "Title", null));
+        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
+        when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
+        when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE))
+            .thenReturn(ModelUtils.getEcoNewsTranslation());
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
+        when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
+        when(userRepo.findByEmail("taras@gmail.com")).thenReturn(Optional.ofNullable(ModelUtils.getUser()));
 
-        when(ecoNewsRepo.save(entity)).thenReturn(entity);
-        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "en"));
+        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com"));
         addEcoNewsDtoResponse.setTitle("Title");
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
@@ -76,9 +82,10 @@ public class EcoNewsServiceImplTest {
 
     @Test(expected = NotSavedException.class)
     public void saveThrowsNotSavedException() {
-        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(entity);
-        when(ecoNewsRepo.save(entity)).thenThrow(DataIntegrityViolationException.class);
-        ecoNewsService.save(addEcoNewsDtoRequest, "en");
+        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
+        when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
+        when(userRepo.findByEmail("taras@gmail.com")).thenReturn(Optional.ofNullable(ModelUtils.getUser()));
+        ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com");
     }
 
     @Test
@@ -86,9 +93,10 @@ public class EcoNewsServiceImplTest {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
         EcoNewsDto ecoNewsDto =
-            new EcoNewsDto(1L, "test title", zonedDateTime, "test text", "test image path");
+            new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text",
+                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList());
         EcoNewsTranslation ecoNewsTranslation =
-            new EcoNewsTranslation(1L, null, "test title", null);
+            new EcoNewsTranslation(1L, null, "test title", "test text", null);
 
         List<EcoNewsDto> dtoList = Collections.singletonList(ecoNewsDto);
 
@@ -110,32 +118,39 @@ public class EcoNewsServiceImplTest {
     @Test
     public void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
+
         EcoNewsTranslation ecoNewsTranslation =
-            new EcoNewsTranslation(1L, null, "test title", null);
+            new EcoNewsTranslation(1L, null, "test title", "test text", null);
         List<EcoNewsTranslation> ecoNewsTranslations = Collections.singletonList(ecoNewsTranslation);
+
+        PageRequest pageRequest = new PageRequest(0, 2);
+        Page<EcoNewsTranslation> translationPage = new PageImpl<EcoNewsTranslation>(ecoNewsTranslations,
+            pageRequest, ecoNewsTranslations.size());
+
         List<EcoNewsDto> dtoList = Collections.singletonList(
-            new EcoNewsDto(1L, "test title", now, "test text", "test image path")
+            new EcoNewsDto(now, "test image path", 1L, "test title", "test text",
+                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList())
         );
-        when(ecoNewsTranslationRepo.findAllByLanguageCode(anyString())).thenReturn(ecoNewsTranslations);
+        PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);
+
+        when(ecoNewsTranslationRepo.findAllByLanguageCode(pageRequest, "en")).thenReturn(translationPage);
         when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class))
             .thenReturn(dtoList.get(0));
-        Assert.assertEquals(dtoList, ecoNewsService.findAll("en"));
+        Assert.assertEquals(pageableDto, ecoNewsService.findAll(pageRequest, "en"));
     }
 
     @Test
     public void findById() {
-        EcoNews entity =
-            new EcoNews(1L, ZonedDateTime.now(), "test text", "test image path", Collections.emptyList());
-        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(entity));
-        Assert.assertEquals(entity, ecoNewsService.findById(1L));
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        Assert.assertEquals(ecoNews, ecoNewsService.findById(1L));
     }
 
     @Test
     public void delete() {
         doNothing().when(ecoNewsRepo).deleteById(1L);
         when(ecoNewsRepo.findById(anyLong()))
-            .thenReturn(Optional.of(new EcoNews(1L, ZonedDateTime.now(), "test text",
-                "test image path", Collections.emptyList())));
+            .thenReturn(Optional.of(ModelUtils.getEcoNews()));
         ecoNewsService.delete(1L);
         verify(ecoNewsRepo, times(1)).deleteById(1L);
     }

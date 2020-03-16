@@ -18,4 +18,8 @@ public class EcoNewsTranslationDto {
     @NotEmpty
     @Size(max = 255)
     private String title;
+
+    @NotEmpty
+    @Size(max = 255)
+    private String text;
 }

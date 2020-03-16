@@ -1,14 +1,13 @@
 package greencity.config;
 
 import static greencity.constant.AppConstant.*;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -101,6 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
+                "/econews/tags",
                 "/newsSubscriber"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
@@ -139,6 +139,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/goals/*",
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/goals",
+                "/econews",
                 "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
@@ -149,7 +150,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
                 "/place/filter/predicate",
-                "/econews",
                 "/files/image"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers("/advices/*", "/facts/*").hasAnyRole(ADMIN, MODERATOR)

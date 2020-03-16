@@ -7,11 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Table(name = "eco_news_translations")
-@Entity
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "eco_news_translations")
 public class EcoNewsTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +22,9 @@ public class EcoNewsTranslation {
 
     @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
+    private String text;
 
     @ManyToOne
     private EcoNews ecoNews;

@@ -4,8 +4,10 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
-import greencity.exception.exceptions.LanguageNotFoundException;
-import greencity.repository.LanguageRepository;
+import greencity.exception.exceptions.BadIdException;
+import greencity.repository.UserRepo;
+import greencity.service.LanguageService;
+import greencity.service.TagService;
 import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
@@ -19,16 +21,23 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoRequest, EcoNews> {
-    private LanguageRepository languageRepository;
+    private final LanguageService languageService;
+    private final TagService tagService;
+    private UserRepo userRepo;
 
     /**
      * All args constructor.
      *
-     * @param languageRepository repository for getting language.
+     * @param languageService service for getting language.
+     * @param tagService      service for getting tags.
+     * @param userRepo        repository for getting author.
      */
     @Autowired
-    public AddEcoNewsDtoRequestMapper(LanguageRepository languageRepository) {
-        this.languageRepository = languageRepository;
+    public AddEcoNewsDtoRequestMapper(LanguageService languageService,
+                                      TagService tagService, UserRepo userRepo) {
+        this.languageService = languageService;
+        this.tagService = tagService;
+        this.userRepo = userRepo;
     }
 
     /**
@@ -41,16 +50,24 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
     protected EcoNews convert(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews ecoNews = EcoNews.builder()
             .creationDate(ZonedDateTime.now())
-            .text(addEcoNewsDtoRequest.getText())
+            .author(userRepo.findById(addEcoNewsDtoRequest.getAuthor().getId()).orElseThrow(
+                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + addEcoNewsDtoRequest.getAuthor().getId())
+            ))
             .imagePath(addEcoNewsDtoRequest.getImagePath())
             .build();
+
+        ecoNews.setTags(addEcoNewsDtoRequest.getTags()
+            .stream()
+            .map(tag -> tagService.findByName(tag.getName()))
+            .collect(Collectors.toList())
+        );
 
         ecoNews.setTranslations(addEcoNewsDtoRequest.getTranslations()
             .stream()
             .map(translation ->
-                new EcoNewsTranslation(null, languageRepository.findByCode(translation.getLanguage().getCode())
-                    .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE)),
-                    translation.getTitle(), ecoNews))
+                new EcoNewsTranslation(null,
+                    languageService.findByCode(translation.getLanguage().getCode()),
+                    translation.getTitle(), translation.getText(), ecoNews))
             .collect(Collectors.toList()));
 
         return ecoNews;
