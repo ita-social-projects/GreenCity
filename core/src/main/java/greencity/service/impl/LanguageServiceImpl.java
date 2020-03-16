@@ -1,8 +1,10 @@
 package greencity.service.impl;
 
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.Language;
+import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.repository.LanguageRepo;
 import greencity.service.LanguageService;
 import java.util.List;
@@ -31,8 +33,9 @@ public class LanguageServiceImpl implements LanguageService {
      * @author Vitaliy Dzen
      */
     @Autowired
-    public LanguageServiceImpl(LanguageRepo languageRepo,
-                               @Lazy ModelMapper modelMapper, HttpServletRequest request) {
+    public LanguageServiceImpl(
+        LanguageRepo languageRepo,
+        @Lazy ModelMapper modelMapper, HttpServletRequest request) {
         this.languageRepo = languageRepo;
         this.modelMapper = modelMapper;
         this.request = request;
@@ -62,5 +65,14 @@ public class LanguageServiceImpl implements LanguageService {
         }
 
         return languageCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Language findByCode(String code) {
+        return languageRepo.findByCode(code)
+            .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE));
     }
 }

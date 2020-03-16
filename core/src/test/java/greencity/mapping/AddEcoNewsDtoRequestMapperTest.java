@@ -4,7 +4,7 @@ import greencity.ModelUtils;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.LanguageNotFoundException;
-import greencity.repository.LanguageRepository;
+import greencity.repository.LanguageRepo;
 import greencity.repository.TagRepo;
 import greencity.repository.UserRepo;
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class AddEcoNewsDtoRequestMapperTest {
     @InjectMocks
     private AddEcoNewsDtoRequestMapper mapper;
     @Mock
-    private LanguageRepository languageRepository;
+    private LanguageRepo languageRepo;
     @Mock
     private UserRepo userRepo;
     @Mock
@@ -35,7 +35,7 @@ public class AddEcoNewsDtoRequestMapperTest {
     public void convertTest() {
         AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
-        when(languageRepository.findByCode(anyString()))
+        when(languageRepo.findByCode(anyString()))
             .thenReturn(Optional.of(ModelUtils.getLanguage()));
         when(userRepo.findById(request.getAuthor().getId()))
             .thenReturn(Optional.of(ModelUtils.getUser()));
@@ -55,13 +55,13 @@ public class AddEcoNewsDtoRequestMapperTest {
     public void convertFailsWithLanguageNotFoundException() {
         AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
-        when(languageRepository.findByCode(anyString()))
+        when(languageRepo.findByCode(anyString()))
             .thenReturn(Optional.of(ModelUtils.getLanguage()));
         when(userRepo.findById(request.getAuthor().getId()))
             .thenReturn(Optional.of(ModelUtils.getUser()));
         when(tagRepo.findByName(ModelUtils.getTagDto().getName()))
             .thenReturn(Optional.of(ModelUtils.getTag()));
-        when(languageRepository.findByCode(anyString())).thenThrow(LanguageNotFoundException.class);
+        when(languageRepo.findByCode(anyString())).thenThrow(LanguageNotFoundException.class);
 
         mapper.convert(request);
     }

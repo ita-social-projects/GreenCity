@@ -5,11 +5,9 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.BadIdException;
-import greencity.exception.exceptions.LanguageNotFoundException;
-import greencity.exception.exceptions.TagNotFoundException;
-import greencity.repository.LanguageRepository;
-import greencity.repository.TagRepo;
 import greencity.repository.UserRepo;
+import greencity.service.LanguageService;
+import greencity.service.TagService;
 import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
@@ -23,23 +21,23 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoRequest, EcoNews> {
-    private LanguageRepository languageRepository;
+    private final LanguageService languageService;
+    private final TagService tagService;
     private UserRepo userRepo;
-    private TagRepo tagRepo;
 
     /**
      * All args constructor.
      *
-     * @param languageRepository repository for getting language.
-     * @param userRepo           repository for getting author.
-     * @param tagRepo            repository for getting tags.
+     * @param languageService service for getting language.
+     * @param tagService      service for getting tags.
+     * @param userRepo        repository for getting author.
      */
     @Autowired
-    public AddEcoNewsDtoRequestMapper(LanguageRepository languageRepository,
-                                      UserRepo userRepo, TagRepo tagRepo) {
-        this.languageRepository = languageRepository;
+    public AddEcoNewsDtoRequestMapper(LanguageService languageService,
+                                      TagService tagService, UserRepo userRepo) {
+        this.languageService = languageService;
+        this.tagService = tagService;
         this.userRepo = userRepo;
-        this.tagRepo = tagRepo;
     }
 
     /**
@@ -60,8 +58,7 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
 
         ecoNews.setTags(addEcoNewsDtoRequest.getTags()
             .stream()
-            .map(tag -> tagRepo.findByName(tag.getName()).orElseThrow(() ->
-                new TagNotFoundException(ErrorMessage.TAG_NOT_FOUND + tag.getName())))
+            .map(tag -> tagService.findByName(tag.getName()))
             .collect(Collectors.toList())
         );
 
@@ -69,8 +66,7 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
             .stream()
             .map(translation ->
                 new EcoNewsTranslation(null,
-                    languageRepository.findByCode(translation.getLanguage().getCode())
-                        .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE)),
+                    languageService.findByCode(translation.getLanguage().getCode()),
                     translation.getTitle(), translation.getText(), ecoNews))
             .collect(Collectors.toList()));
 

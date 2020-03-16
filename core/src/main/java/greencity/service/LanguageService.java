@@ -24,4 +24,12 @@ public interface LanguageService {
      * @return language code
      */
     String extractLanguageCodeFromRequest();
+
+    /**
+     * Method for getting {@link Language} by code.
+     *
+     * @param code code of language.
+     * @return {@link Language} by language code.
+     */
+    Language findByCode(String code);
 }

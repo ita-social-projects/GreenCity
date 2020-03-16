@@ -8,6 +8,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.SearchCriteriaEcoNewsDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
@@ -132,7 +133,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableDto<EcoNewsDto> find(Pageable page, SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
         List<String> tagsStrings = searchCriteriaEcoNewsDto.getTags()
             .stream()
-            .map(tag -> tag.getName())
+            .map(TagDto::getName)
             .collect(Collectors.toList());
         String languageCode = searchCriteriaEcoNewsDto.getLanguage().getCode();
 
