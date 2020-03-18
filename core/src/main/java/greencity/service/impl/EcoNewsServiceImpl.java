@@ -169,7 +169,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public EcoNewsDto findDto(Long id, String language) {
+    public EcoNewsDto findById(Long id, String language) {
         EcoNews ecoNews = findById(id);
         EcoNewsTranslation ecoNewsTranslation = null;
 
