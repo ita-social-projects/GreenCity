@@ -166,6 +166,30 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     /**
      * {@inheritDoc}
      *
+     * @author Kovaliv Taras.
+     */
+    @Override
+    public EcoNewsDto findById(Long id, String language) {
+        EcoNews ecoNews = findById(id);
+        EcoNewsTranslation ecoNewsTranslation = null;
+
+        for (EcoNewsTranslation ent : ecoNews.getTranslations()) {
+            if (ent.getLanguage().getCode().equals(language)) {
+                ecoNewsTranslation = ent;
+                break;
+            }
+        }
+
+        if (ecoNewsTranslation == null) {
+            ecoNewsTranslation = ecoNews.getTranslations().get(0);
+        }
+
+        return modelMapper.map(ecoNewsTranslation, EcoNewsDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Yuriy Olkhovskyi.
      */
     public void delete(Long id) {

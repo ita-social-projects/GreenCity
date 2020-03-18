@@ -53,6 +53,15 @@ public interface EcoNewsService {
     EcoNews findById(Long id);
 
     /**
+     * Method for getting the {@link EcoNewsDto} instance by its id.
+     *
+     * @param id       {@link EcoNewsDto} instance id.
+     * @param language {@link EcoNewsDto} instance language.
+     * @return {@link EcoNewsDto} instance.
+     */
+    EcoNewsDto findById(Long id, String language);
+
+    /**
      * Method for deleting the {@link EcoNews} instance by its id.
      *
      * @param id - {@link EcoNews} instance id which will be deleted.

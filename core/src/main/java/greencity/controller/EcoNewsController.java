@@ -78,6 +78,27 @@ public class EcoNewsController {
     }
 
     /**
+     * Method for getting eco news by id and language.
+     *
+     * @return {@link EcoNewsDto} instance.
+     * @author Kovaliv Taras
+     */
+    @ApiOperation(value = "Get eco news by id and language.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<EcoNewsDto> getEcoNewsById(
+        @PathVariable Long id,
+        @ApiParam(value = "Code of the needed language.",
+            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findById(id, language));
+    }
+
+    /**
      * Method for getting all eco news by page.
      *
      * @return PageableDto of {@link EcoNewsDto} instances.
