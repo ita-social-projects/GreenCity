@@ -47,9 +47,8 @@ public interface EcoNewsTranslationRepo extends JpaRepository<EcoNewsTranslation
     /**
      * Method returns {@link EcoNewsTranslation} for specific language and tags.
      *
-     * @param tags        list of tags to search.
-     * @param countOfTags count of needed tags.
-     * @param language    code of language to join.
+     * @param tags     list of tags to search.
+     * @param language code of language to join.
      * @return {@link EcoNewsTranslation} for specific language and tags.
      */
     @Query(nativeQuery = true, value = ""
@@ -62,7 +61,7 @@ public interface EcoNewsTranslationRepo extends JpaRepository<EcoNewsTranslation
         + "FROM eco_news_tags as en "
         + "INNER JOIN tags as t on en.tags_id = t.id "
         + "WHERE t.name IN :tags GROUP BY en.eco_news_id) as coun "
-        + "WHERE coun.c = :countOfTags) "
+        + "WHERE coun.c > 0) "
         + "ORDER BY e.creation_date")
-    Page<EcoNewsTranslation> find(Pageable pageable, List<String> tags, Long countOfTags, String language);
+    Page<EcoNewsTranslation> find(Pageable pageable, List<String> tags, String language);
 }
