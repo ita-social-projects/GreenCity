@@ -1,6 +1,5 @@
 package greencity.dto.econews;
 
-import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -30,5 +29,5 @@ public class AddEcoNewsDtoResponse implements Serializable {
     @NotEmpty
     private String imagePath;
     @NotEmpty
-    private List<TagDto> tags;
+    private List<String> tags;
 }

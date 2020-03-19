@@ -39,7 +39,7 @@ public class AddEcoNewsDtoRequestMapperTest {
             .thenReturn(ModelUtils.getLanguage());
         when(userRepo.findById(request.getAuthor().getId()))
             .thenReturn(Optional.of(ModelUtils.getUser()));
-        when(tagService.findByName(ModelUtils.getTagDto().getName()))
+        when(tagService.findByName("tag"))
             .thenReturn(ModelUtils.getTag());
 
         EcoNews actual = mapper.convert(request);
@@ -59,7 +59,7 @@ public class AddEcoNewsDtoRequestMapperTest {
             .thenReturn(ModelUtils.getLanguage());
         when(userRepo.findById(request.getAuthor().getId()))
             .thenReturn(Optional.of(ModelUtils.getUser()));
-        when(tagService.findByName(ModelUtils.getTagDto().getName()))
+        when(tagService.findByName("tag"))
             .thenReturn(ModelUtils.getTag());
         when(languageService.findByCode(anyString()))
             .thenThrow(LanguageNotFoundException.class);
