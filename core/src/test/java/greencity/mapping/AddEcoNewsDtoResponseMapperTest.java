@@ -18,8 +18,6 @@ public class AddEcoNewsDtoResponseMapperTest {
     @Mock
     private LanguageService languageService;
     @Mock
-    private TagDtoMapper tagDtoMapper;
-    @Mock
     private EcoNewsTranslationRepo ecoNewsTranslationRepo;
     @Mock
     private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
@@ -35,8 +33,6 @@ public class AddEcoNewsDtoResponseMapperTest {
             .thenReturn(ModelUtils.getEcoNewsTranslation());
         when(ecoNewsAuthorDtoMapper.convert(ecoNews.getAuthor()))
             .thenReturn(ModelUtils.getEcoNewsAuthorDto());
-        when(tagDtoMapper.convert(ModelUtils.getTag()))
-            .thenReturn(ModelUtils.getTagDto());
 
         AddEcoNewsDtoResponse expected = ModelUtils.getAddEcoNewsDtoResponse();
         expected.setCreationDate(ecoNews.getCreationDate());

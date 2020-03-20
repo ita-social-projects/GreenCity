@@ -7,8 +7,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.SearchCriteriaEcoNewsDto;
-import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
@@ -130,15 +128,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public PageableDto<EcoNewsDto> find(Pageable page, SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
-        List<String> tagsStrings = searchCriteriaEcoNewsDto.getTags()
-            .stream()
-            .map(TagDto::getName)
-            .collect(Collectors.toList());
-        String languageCode = searchCriteriaEcoNewsDto.getLanguage().getCode();
-
+    public PageableDto<EcoNewsDto> find(Pageable page, String language, List<String> tags) {
         Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo
-            .find(page, tagsStrings, (long) tagsStrings.size(), languageCode);
+            .find(page, tags, language);
 
         List<EcoNewsDto> ecoNewsDtos = pages.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
