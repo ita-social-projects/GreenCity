@@ -2,7 +2,6 @@ package greencity.aspects;
 
 import greencity.annotations.CurrentUserId;
 import greencity.constant.ErrorMessage;
-import greencity.entity.User;
 import greencity.exception.exceptions.NotCurrentUserException;
 import greencity.service.UserService;
 import java.lang.annotation.Annotation;
@@ -49,11 +48,10 @@ public class CurrentUserIdValidationAspect {
     public void validateCurrentUserIdParameter(JoinPoint joinPoint) throws NoSuchMethodException {
         getAnnotatedArgument(joinPoint).ifPresent(userId -> {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            userService.findByEmail(authentication.getName()).map(User::getId).ifPresent(currentUserId -> {
-                if (!currentUserId.equals(userId)) {
-                    throw new NotCurrentUserException(ErrorMessage.NOT_A_CURRENT_USER);
-                }
-            });
+            Long currentUserId = userService.findByEmail(authentication.getName()).getId();
+            if (!currentUserId.equals(userId)) {
+                throw new NotCurrentUserException(ErrorMessage.NOT_A_CURRENT_USER);
+            }
         });
     }
 

@@ -1,9 +1,6 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -23,10 +20,13 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 import junit.framework.TestCase;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -109,8 +109,8 @@ public class UserServiceImplTest {
 
     @Test
     public void saveTest() {
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        when(userService.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        when(userService.findByEmail(user.getEmail())).thenThrow(new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         when(userRepo.save(user)).thenReturn(user);
         assertEquals(user, userService.save(user));
     }
@@ -148,7 +148,7 @@ public class UserServiceImplTest {
 
     @Test(expected = BadUpdateRequestException.class)
     public void updateRoleOnTheSameUserTest() {
-        when(userService.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        when(userService.findByEmail(user.getEmail())).thenReturn(user);
         userService.updateRole(user.getId(), null, user.getEmail());
     }
 

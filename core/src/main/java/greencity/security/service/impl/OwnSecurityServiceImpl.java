@@ -2,7 +2,6 @@ package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
 import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
-
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -83,10 +82,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         try {
             User savedUser = userService.save(user);
             rabbitTemplate.convertAndSend(
-                    sendEmailTopic,
-                    VERIFY_EMAIL_ROUTING_KEY,
-                    new VerifyEmailMessage(savedUser.getId(), savedUser.getFirstName(), savedUser.getEmail(),
-                            savedUser.getVerifyEmail().getToken())
+                sendEmailTopic,
+                VERIFY_EMAIL_ROUTING_KEY,
+                new VerifyEmailMessage(savedUser.getId(), savedUser.getFirstName(), savedUser.getEmail(),
+                    savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
@@ -132,10 +131,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
-        User user = userService
-            .findByEmail(dto.getEmail())
-            .filter(u -> isPasswordCorrect(dto, u))
-            .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
+        User user = userService.findByEmail(dto.getEmail());
+        if (!isPasswordCorrect(dto, user)) {
+            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
+        }
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
@@ -167,9 +166,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         } catch (ExpiredJwtException e) {
             throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
         }
-        User user = userService
-            .findByEmail(email)
-            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userService.findByEmail(email);
         checkUserStatus(user);
         String newRefreshTokenKey = jwtTool.generateTokenKey();
         userService.updateUserRefreshToken(newRefreshTokenKey, user.getId());
@@ -210,9 +207,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
-        User user = userService
-                .findByEmail(email)
-                .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userService.findByEmail(email);
         if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
         }

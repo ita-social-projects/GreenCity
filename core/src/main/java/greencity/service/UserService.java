@@ -13,7 +13,6 @@ import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -50,9 +49,9 @@ public interface UserService {
      * Method that allow you to find {@link User} by email.
      *
      * @param email a value of {@link String}
-     * @return Optional of {@link User}
+     * @return {@link User} with this email.
      */
-    Optional<User> findByEmail(String email);
+    User findByEmail(String email);
 
     /**
      * Find User's id by User email.

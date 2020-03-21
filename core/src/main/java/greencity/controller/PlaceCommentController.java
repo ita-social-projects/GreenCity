@@ -9,7 +9,6 @@ import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
@@ -54,10 +53,9 @@ public class PlaceCommentController {
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity<Object> save(@PathVariable Long placeId,
-                               @Valid @RequestBody AddCommentDto addCommentDto,
-                               @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName())
-            .orElseThrow(() -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + principal.getName()));
+                                       @Valid @RequestBody AddCommentDto addCommentDto,
+                                       @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        User user = userService.findByEmail(principal.getName());
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }

@@ -1,8 +1,7 @@
 package greencity.service.impl;
 
-import static greencity.constant.ErrorMessage.*;
-
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -26,9 +25,12 @@ import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -42,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     /**
      * Autowired repository.
@@ -60,8 +62,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Autowired mapper.
      */
-    private ModelMapper modelMapper;
-    private HabitMapper habitMapper;
+    private final ModelMapper modelMapper;
+    private final HabitMapper habitMapper;
 
     /**
      * {@inheritDoc}
@@ -109,8 +111,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public Optional<User> findByEmail(String email) {
-        return userRepo.findByEmail(email);
+    public User findByEmail(String email) {
+        return userRepo.findByEmail(email)
+            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**
@@ -383,7 +386,7 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void checkUpdatableUser(Long id, String email) {
-        User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        User user = findByEmail(email);
         if (id.equals(user.getId())) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
@@ -397,7 +400,7 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void accessForUpdateUserStatus(Long id, String email) {
-        User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        User user = findByEmail(email);
         if (user.getRole() == ROLE.ROLE_MODERATOR) {
             ROLE role = findById(id).getRole();
             if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
