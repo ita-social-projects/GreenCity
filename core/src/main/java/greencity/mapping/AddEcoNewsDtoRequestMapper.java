@@ -1,13 +1,11 @@
 package greencity.mapping;
 
-import greencity.constant.ErrorMessage;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
-import greencity.exception.exceptions.BadIdException;
-import greencity.repository.UserRepo;
 import greencity.service.LanguageService;
 import greencity.service.TagService;
+import greencity.service.UserService;
 import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
@@ -23,21 +21,21 @@ import org.springframework.stereotype.Component;
 public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoRequest, EcoNews> {
     private final LanguageService languageService;
     private final TagService tagService;
-    private UserRepo userRepo;
+    private final UserService userService;
 
     /**
      * All args constructor.
      *
      * @param languageService service for getting language.
      * @param tagService      service for getting tags.
-     * @param userRepo        repository for getting author.
+     * @param userService     service for getting author.
      */
     @Autowired
     public AddEcoNewsDtoRequestMapper(LanguageService languageService,
-                                      TagService tagService, UserRepo userRepo) {
+                                      TagService tagService, UserService userService) {
         this.languageService = languageService;
         this.tagService = tagService;
-        this.userRepo = userRepo;
+        this.userService = userService;
     }
 
     /**
@@ -50,9 +48,7 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
     protected EcoNews convert(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
         EcoNews ecoNews = EcoNews.builder()
             .creationDate(ZonedDateTime.now())
-            .author(userRepo.findById(addEcoNewsDtoRequest.getAuthor().getId()).orElseThrow(
-                () -> new BadIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + addEcoNewsDtoRequest.getAuthor().getId())
-            ))
+            .author(userService.findById(addEcoNewsDtoRequest.getAuthor().getId()))
             .imagePath(addEcoNewsDtoRequest.getImagePath())
             .build();
 
