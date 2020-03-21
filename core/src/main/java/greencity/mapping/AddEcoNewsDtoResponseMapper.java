@@ -1,9 +1,9 @@
 package greencity.mapping;
 
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
+import greencity.entity.Tag;
 import greencity.entity.localization.EcoNewsTranslation;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.LanguageService;
@@ -23,22 +23,19 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
     private LanguageService languageService;
     private EcoNewsTranslationRepo ecoNewsTranslationRepo;
     private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
-    private TagDtoMapper tagDtoMapper;
 
     /**
      * All args constructor.
      *
      * @param languageService        service to extract language from request.
      * @param ecoNewsTranslationRepo repository for getting {@link EcoNewsTranslation}.
-     * @param tagDtoMapper           mapper to map Tag to TagDto
      */
     @Autowired
     public AddEcoNewsDtoResponseMapper(LanguageService languageService, EcoNewsTranslationRepo ecoNewsTranslationRepo,
-                                       EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper, TagDtoMapper tagDtoMapper) {
+                                       EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper) {
         this.languageService = languageService;
         this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
         this.ecoNewsAuthorDtoMapper = ecoNewsAuthorDtoMapper;
-        this.tagDtoMapper = tagDtoMapper;
     }
 
     /**
@@ -52,9 +49,9 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
         EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
             languageService.extractLanguageCodeFromRequest());
         EcoNewsAuthorDto ecoNewsAuthorDto = ecoNewsAuthorDtoMapper.convert(ecoNews.getAuthor());
-        List<TagDto> tags = ecoNews.getTags()
+        List<String> tags = ecoNews.getTags()
             .stream()
-            .map(tag -> tagDtoMapper.convert(tag))
+            .map(Tag::getName)
             .collect(Collectors.toList());
 
         return new AddEcoNewsDtoResponse(ecoNews.getId(), translation.getTitle(), translation.getText(),

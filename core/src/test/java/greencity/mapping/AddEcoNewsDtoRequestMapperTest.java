@@ -4,9 +4,9 @@ import greencity.ModelUtils;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.LanguageNotFoundException;
-import greencity.repository.LanguageRepo;
-import greencity.repository.TagRepo;
 import greencity.repository.UserRepo;
+import greencity.service.LanguageService;
+import greencity.service.TagService;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Assert;
@@ -23,11 +23,11 @@ public class AddEcoNewsDtoRequestMapperTest {
     @InjectMocks
     private AddEcoNewsDtoRequestMapper mapper;
     @Mock
-    private LanguageRepo languageRepo;
+    private LanguageService languageService;
     @Mock
     private UserRepo userRepo;
     @Mock
-    private TagRepo tagRepo;
+    private TagService tagService;
 
     private EcoNews ecoNews = ModelUtils.getEcoNews();
 
@@ -35,12 +35,12 @@ public class AddEcoNewsDtoRequestMapperTest {
     public void convertTest() {
         AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
-        when(languageRepo.findByCode(anyString()))
-            .thenReturn(Optional.of(ModelUtils.getLanguage()));
+        when(languageService.findByCode(anyString()))
+            .thenReturn(ModelUtils.getLanguage());
         when(userRepo.findById(request.getAuthor().getId()))
             .thenReturn(Optional.of(ModelUtils.getUser()));
-        when(tagRepo.findByName(ModelUtils.getTagDto().getName()))
-            .thenReturn(Optional.of(ModelUtils.getTag()));
+        when(tagService.findByName("tag"))
+            .thenReturn(ModelUtils.getTag());
 
         EcoNews actual = mapper.convert(request);
         actual.setId(1L);
@@ -55,13 +55,14 @@ public class AddEcoNewsDtoRequestMapperTest {
     public void convertFailsWithLanguageNotFoundException() {
         AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
-        when(languageRepo.findByCode(anyString()))
-            .thenReturn(Optional.of(ModelUtils.getLanguage()));
+        when(languageService.findByCode(anyString()))
+            .thenReturn(ModelUtils.getLanguage());
         when(userRepo.findById(request.getAuthor().getId()))
             .thenReturn(Optional.of(ModelUtils.getUser()));
-        when(tagRepo.findByName(ModelUtils.getTagDto().getName()))
-            .thenReturn(Optional.of(ModelUtils.getTag()));
-        when(languageRepo.findByCode(anyString())).thenThrow(LanguageNotFoundException.class);
+        when(tagService.findByName("tag"))
+            .thenReturn(ModelUtils.getTag());
+        when(languageService.findByCode(anyString()))
+            .thenThrow(LanguageNotFoundException.class);
 
         mapper.convert(request);
     }

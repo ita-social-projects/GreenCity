@@ -7,7 +7,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.SearchCriteriaEcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
@@ -142,7 +141,6 @@ public class EcoNewsController {
     /**
      * Method for getting all eco news by tags and language.
      *
-     * @param searchCriteriaEcoNewsDto - - dto for search {@link EcoNewsDto} by tags and language
      * @return list of {@link EcoNewsDto} instances.
      * @author Kovaliv Taras.
      */
@@ -152,14 +150,20 @@ public class EcoNewsController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PostMapping("/tags")
+    @GetMapping("/tags")
     @ApiPageable
-    public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(@ApiIgnore Pageable page,
-                                              @RequestBody SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
-        if (searchCriteriaEcoNewsDto.getTags() == null || searchCriteriaEcoNewsDto.getTags().size() == 0) {
+    public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(
+        @ApiIgnore Pageable page,
+        @ApiParam(value = "Code of the needed language.",
+            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
+        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language,
+        @ApiParam(value = "Tags to filter")
+        @RequestParam(required = false) List<String> tags
+    ) {
+        if (tags == null || tags.size() == 0) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                ecoNewsService.findAll(page, searchCriteriaEcoNewsDto.getLanguage().getCode()));
+                ecoNewsService.findAll(page, language));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, searchCriteriaEcoNewsDto));
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, language, tags));
     }
 }
