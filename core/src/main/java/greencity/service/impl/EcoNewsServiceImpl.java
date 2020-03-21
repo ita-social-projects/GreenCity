@@ -20,47 +20,43 @@ import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.service.EcoNewsService;
+import greencity.service.LanguageService;
 import greencity.service.NewsSubscriberService;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import greencity.service.TagService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
 public class EcoNewsServiceImpl implements EcoNewsService {
-    private final EcoNewsRepo ecoNewsRepo;
-    private final UserRepo userRepo;
-    private final ModelMapper modelMapper;
-    private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
-    private RabbitTemplate rabbitTemplate;
-    private NewsSubscriberService newsSubscriberService;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
 
-    /**
-     * Constructor with parameters.
-     *
-     * @author Yuriy Olkhovskyi.
-     */
-    @Autowired
-    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, UserRepo userRepo, ModelMapper modelMapper,
-                              EcoNewsTranslationRepo ecoNewsTranslationRepo,
-                              RabbitTemplate rabbitTemplate,
-                              NewsSubscriberService newsSubscriberService) {
-        this.ecoNewsRepo = ecoNewsRepo;
-        this.userRepo = userRepo;
-        this.modelMapper = modelMapper;
-        this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
-        this.rabbitTemplate = rabbitTemplate;
-        this.newsSubscriberService = newsSubscriberService;
-    }
+    private final EcoNewsRepo ecoNewsRepo;
+
+    private final UserRepo userRepo;
+
+    private final ModelMapper modelMapper;
+
+    private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
+
+    private final RabbitTemplate rabbitTemplate;
+
+    private final NewsSubscriberService newsSubscriberService;
+
+    private final LanguageService languageService;
+
+    private final TagService tagService;
 
     /**
      * {@inheritDoc}
