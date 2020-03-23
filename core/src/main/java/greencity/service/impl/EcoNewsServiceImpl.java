@@ -7,20 +7,17 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
-import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
-import greencity.repository.UserRepo;
-import greencity.service.EcoNewsService;
-import greencity.service.LanguageService;
-import greencity.service.NewsSubscriberService;
-import greencity.service.TagService;
+import greencity.service.*;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -30,10 +27,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class EcoNewsServiceImpl implements EcoNewsService {
@@ -42,7 +35,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private final EcoNewsRepo ecoNewsRepo;
 
-    private final UserRepo userRepo;
+    private final UserService userService;
 
     private final ModelMapper modelMapper;
 
@@ -63,11 +56,24 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email) {
-        addEcoNewsDtoRequest.setAuthor(modelMapper.map(
-            userRepo.findByEmail(email).orElseThrow(() -> new BadEmailException(
-                ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)), EcoNewsAuthorDto.class));
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
+        toSave.setAuthor(userService.findByEmail(email));
         toSave.setCreationDate(ZonedDateTime.now());
+
+        toSave.setTags(addEcoNewsDtoRequest.getTags()
+            .stream()
+            .map(tag -> tagService.findByName(tag))
+            .collect(Collectors.toList())
+        );
+
+        toSave.setTranslations(toSave.getTranslations()
+            .stream()
+            .map(translation ->
+                new EcoNewsTranslation(null,
+                    languageService.findByCode(translation.getLanguage().getCode()),
+                    translation.getTitle(), translation.getText(), toSave))
+            .collect(Collectors.toList())
+        );
 
         try {
             ecoNewsRepo.save(toSave);

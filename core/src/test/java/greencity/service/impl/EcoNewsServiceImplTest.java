@@ -14,8 +14,10 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
-import greencity.repository.UserRepo;
+import greencity.service.LanguageService;
 import greencity.service.NewsSubscriberService;
+import greencity.service.TagService;
+import greencity.service.UserService;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +56,13 @@ public class EcoNewsServiceImplTest {
     NewsSubscriberService newsSubscriberService;
 
     @Mock
-    UserRepo userRepo;
+    UserService userService;
+
+    @Mock
+    TagService tagService;
+
+    @Mock
+    LanguageService languageService;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -70,8 +78,11 @@ public class EcoNewsServiceImplTest {
         when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(ModelUtils.getEcoNewsTranslation());
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
+        when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
+        when(tagService.findByName("tag")).thenReturn(ModelUtils.getTag());
+        when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
+            .thenReturn(ModelUtils.getLanguage());
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
-        when(userRepo.findByEmail("taras@gmail.com")).thenReturn(Optional.ofNullable(ModelUtils.getUser()));
 
         Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com"));
         addEcoNewsDtoResponse.setTitle("Title");
@@ -84,7 +95,7 @@ public class EcoNewsServiceImplTest {
     public void saveThrowsNotSavedException() {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
-        when(userRepo.findByEmail("taras@gmail.com")).thenReturn(Optional.ofNullable(ModelUtils.getUser()));
+        when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
         ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com");
     }
 

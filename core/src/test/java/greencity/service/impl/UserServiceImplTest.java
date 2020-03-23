@@ -38,7 +38,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class UserServiceImplTest {
     @Mock
     UserRepo userRepo;
@@ -148,7 +148,7 @@ public class UserServiceImplTest {
 
     @Test(expected = BadUpdateRequestException.class)
     public void updateRoleOnTheSameUserTest() {
-        when(userService.findByEmail(user.getEmail())).thenReturn(user);
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         userService.updateRole(user.getId(), null, user.getEmail());
     }
 
