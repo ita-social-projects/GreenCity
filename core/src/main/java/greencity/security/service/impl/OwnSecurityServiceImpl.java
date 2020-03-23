@@ -2,7 +2,6 @@ package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
 import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
-
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -83,10 +82,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         try {
             User savedUser = userService.save(user);
             rabbitTemplate.convertAndSend(
-                    sendEmailTopic,
-                    VERIFY_EMAIL_ROUTING_KEY,
-                    new VerifyEmailMessage(savedUser.getId(), savedUser.getFirstName(), savedUser.getEmail(),
-                            savedUser.getVerifyEmail().getToken())
+                sendEmailTopic,
+                VERIFY_EMAIL_ROUTING_KEY,
+                new VerifyEmailMessage(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
+                    savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
@@ -95,8 +94,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey) {
         return User.builder()
-            .firstName(dto.getFirstName())
-            .lastName(dto.getLastName())
+            .name(dto.getName())
             .email(dto.getEmail())
             .dateOfRegistration(LocalDateTime.now())
             .role(ROLE.ROLE_USER)
@@ -145,7 +143,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         appEventPublisher.publishEvent(new SignInEvent(user));
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
-        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), true);
+        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), true);
     }
 
     private boolean isPasswordCorrect(OwnSignInDto signInDto, User user) {
@@ -211,8 +209,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
         User user = userService
-                .findByEmail(email)
-                .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .findByEmail(email)
+            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
         }

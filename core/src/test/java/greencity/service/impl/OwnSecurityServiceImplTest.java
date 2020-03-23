@@ -100,7 +100,7 @@ public class OwnSecurityServiceImplTest {
             refEq(VERIFY_EMAIL_ROUTING_KEY),
             refEq(new VerifyEmailMessage(
                     user.getId(),
-                    user.getFirstName(),
+                    user.getName(),
                     user.getEmail(),
                     user.getVerifyEmail().getToken()
                 )

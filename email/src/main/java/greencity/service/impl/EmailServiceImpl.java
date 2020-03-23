@@ -67,12 +67,12 @@ public class EmailServiceImpl implements EmailService {
      * @author Nazar Vladyka && Yurii Olkhovskyi
      */
     @Override
-    public void sendChangePlaceStatusEmail(String authorFirstName, String placeName,
+    public void sendChangePlaceStatusEmail(String authorName, String placeName,
                                            String placeStatus, String authorEmail) {
         log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, placeName);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
-        model.put(EmailConstants.USER_NAME, authorFirstName);
+        model.put(EmailConstants.USER_NAME, authorName);
         model.put(EmailConstants.PLACE_NAME, placeName);
         model.put(EmailConstants.STATUS, placeStatus);
 
@@ -96,7 +96,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.REPORT_TYPE, notification);
 
         for (PlaceAuthorDto user : subscribers) {
-            model.put(EmailConstants.USER_NAME, user.getFirstName());
+            model.put(EmailConstants.USER_NAME, user.getName());
             String template = createEmailTemplate(model, EmailConstants.NEW_PLACES_REPORT_EMAIL_PAGE);
             sendEmail(user.getEmail(), EmailConstants.NEW_PLACES, template);
         }
@@ -151,10 +151,10 @@ public class EmailServiceImpl implements EmailService {
      * @param token        password recovery token.
      */
     @Override
-    public void sendRestoreEmail(Long userId, String userFistName, String userEmail, String token) {
+    public void sendRestoreEmail(Long userId, String userName, String userEmail, String token) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
-        model.put(EmailConstants.USER_NAME, userFistName);
+        model.put(EmailConstants.USER_NAME, userName);
         model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" + token
             + "&user_id=" + userId);
         String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);

@@ -1,6 +1,7 @@
 package greencity.security.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import static greencity.constant.RabbitConstants.PASSWORD_RECOVERY_ROUTING_KEY;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
@@ -23,10 +24,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static greencity.constant.ErrorMessage.EMAIL_TOKEN_EXPIRED;
-import static greencity.constant.ErrorMessage.NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN;
-import static greencity.constant.ErrorMessage.PASSWORD_RESTORE_LINK_ALREADY_SENT;
-
 /**
  * Service for password recovery functionality.
  * It manages recovery tokens creation and persistence as well as minimal validation,
@@ -48,6 +45,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
 
     /**
      * Constructor with all essentials beans for password recovery functionality.
+     *
      * @param restorePasswordEmailRepo  {@link RestorePasswordEmailRepo} - Used for storing recovery tokens
      * @param applicationEventPublisher {@link ApplicationEventPublisher} - Used for publishing events,
      *                                  such as email sending or password update
@@ -127,7 +125,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             PASSWORD_RECOVERY_ROUTING_KEY,
             new PasswordRecoveryMessage(
                 user.getId(),
-                user.getFirstName(),
+                user.getName(),
                 user.getEmail(),
                 token
             )

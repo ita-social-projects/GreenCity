@@ -1,14 +1,12 @@
 package greencity.security.service.impl;
 
-import static greencity.constant.AppConstant.GOOGLE_FAMILY_NAME;
-import static greencity.constant.AppConstant.GOOGLE_GIVEN_NAME;
-import static greencity.constant.ErrorMessage.BAD_GOOGLE_TOKEN;
-import static greencity.constant.ErrorMessage.USER_DEACTIVATED;
-
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import static greencity.constant.AppConstant.*;
+import static greencity.constant.ErrorMessage.BAD_GOOGLE_TOKEN;
+import static greencity.constant.ErrorMessage.USER_DEACTIVATED;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
@@ -16,7 +14,6 @@ import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.events.SignInEvent;
-import greencity.security.events.SignUpEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.service.GoogleSecurityService;
 import greencity.service.UserService;
@@ -48,7 +45,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
      * Constructor.
      *
      * @param userService {@link UserService} - service of {@link User} logic.
-     * @param jwtTool   {@link JwtTool} - tool for jwt logic.
+     * @param jwtTool     {@link JwtTool} - tool for jwt logic.
      * @param clientId    {@link String} - google client id.
      */
     @Autowired
@@ -77,8 +74,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             if (googleIdToken != null) {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
-                String familyName = (String) payload.get(GOOGLE_FAMILY_NAME);
-                String givenName = (String) payload.get(GOOGLE_GIVEN_NAME);
+                String username = (String) payload.get(GOOGLE_USER_NAME);
                 Optional<User> byEmail = userService.findByEmail(email);
                 if (byEmail.isPresent()) {
                     User user = byEmail.get();
@@ -88,7 +84,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                     log.info("Google sign-in exist user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 } else {
-                    User user = createNewUser(email, familyName, givenName);
+                    User user = createNewUser(email, username);
                     User savedUser = userService.save(user);
                     appEventPublisher.publishEvent(new SignInEvent(savedUser));
                     log.info("Google sign-up and sign-in user - {}", user.getEmail());
@@ -101,11 +97,10 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
         }
     }
 
-    private User createNewUser(String email, String familyName, String givenName) {
+    private User createNewUser(String email, String userName) {
         return User.builder()
             .email(email)
-            .lastName(familyName)
-            .firstName(givenName)
+            .name(userName)
             .role(ROLE.ROLE_USER)
             .dateOfRegistration(LocalDateTime.now())
             .lastVisit(LocalDateTime.now())
@@ -118,6 +113,6 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private SuccessSignInDto getSuccessSignInDto(User user) {
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
-        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), false);
+        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), false);
     }
 }

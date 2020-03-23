@@ -53,8 +53,7 @@ public class PlaceServiceImplTest {
         User.builder()
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
-            .firstName("Nazar")
-            .lastName("Stasyuk")
+            .name("Nazar Stasyuk")
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
@@ -179,7 +178,7 @@ public class PlaceServiceImplTest {
 
     @Test
     public void updateStatusTest() {
-        User user = User.builder().firstName("test fname").email("test.ua").build();
+        User user = User.builder().name("test fname").email("test.ua").build();
         Place genericEntity = Place.builder()
             .id(1L)
             .name("test")

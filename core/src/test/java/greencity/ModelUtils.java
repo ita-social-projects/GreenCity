@@ -29,8 +29,7 @@ public class ModelUtils {
         return User.builder()
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
-            .firstName("Nazar")
-            .lastName("Stasyuk")
+            .name("Nazar Stasyuk")
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
@@ -38,7 +37,7 @@ public class ModelUtils {
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
-        return new EcoNewsAuthorDto(1L, "Nazar", "Stasyuk");
+        return new EcoNewsAuthorDto(1L, "Nazar Stasyuk");
     }
 
     public static EcoNewsTranslation getEcoNewsTranslation() {

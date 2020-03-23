@@ -20,19 +20,12 @@ public class UserForListDto {
     @NotNull
     private Long id;
 
-    @NotBlank(message = ValidationConstants.EMPTY_FIRSTNAME)
+    @NotBlank(message = ValidationConstants.EMPTY_USERNAME)
     @Size(
-        min = ValidationConstants.FIRSTNAME_MIN_LENGTH,
-        max = ValidationConstants.FIRSTNAME_MAX_LENGTH,
-        message = ValidationConstants.INVALID_FIRSTNAME_LENGTH)
-    private String firstName;
-
-    @NotBlank(message = ValidationConstants.EMPTY_LASTNAME)
-    @Size(
-        min = ValidationConstants.LASTNAME_MIN_LENGTH,
-        max = ValidationConstants.LASTNAME_MAX_LENGTH,
-        message = ValidationConstants.INVALID_LASTNAME_LENGTH)
-    private String lastName;
+        min = ValidationConstants.USERNAME_MIN_LENGTH,
+        max = ValidationConstants.USERNAME_MAX_LENGTH,
+        message = ValidationConstants.INVALID_USERNAME_LENGTH)
+    private String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime dateOfRegistration;

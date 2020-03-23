@@ -262,7 +262,7 @@ public class PlaceServiceImpl implements PlaceService {
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             rabbitTemplate.convertAndSend(sendEmailTopic, CHANGE_PLACE_STATUS_ROUTING_KEY,
-                new SendChangePlaceStatusEmailMessage(updatable.getAuthor().getFirstName(),
+                new SendChangePlaceStatusEmailMessage(updatable.getAuthor().getName(),
                     updatable.getName(), updatable.getStatus().toString().toLowerCase(),
                     updatable.getAuthor().getEmail()));
         }
