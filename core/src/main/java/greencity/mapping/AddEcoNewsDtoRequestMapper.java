@@ -58,7 +58,7 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
 
         ecoNews.setTags(addEcoNewsDtoRequest.getTags()
             .stream()
-            .map(tag -> tagService.findByName(tag.getName()))
+            .map(tag -> tagService.findByName(tag))
             .collect(Collectors.toList())
         );
 

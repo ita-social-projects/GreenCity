@@ -4,7 +4,6 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsTranslationDto;
 import greencity.dto.language.LanguageRequestDto;
-import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Language;
@@ -19,10 +18,6 @@ import java.util.Collections;
 public class ModelUtils {
     public static Tag getTag() {
         return new Tag(1L, "tag", Collections.emptyList());
-    }
-
-    public static TagDto getTagDto() {
-        return new TagDto("tag");
     }
 
     public static User getUser() {
@@ -65,7 +60,7 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest(Collections.singletonList(getEcoNewsTranslationDto()),
-            Collections.singletonList(getTagDto()),
+            Collections.singletonList("tag"),
             getEcoNewsAuthorDto(), "imagePath");
     }
 
@@ -73,6 +68,6 @@ public class ModelUtils {
         return new AddEcoNewsDtoResponse(1L, getEcoNewsTranslation().getTitle(),
             getEcoNewsTranslation().getText(), getEcoNewsAuthorDto(),
             getEcoNews().getCreationDate(), "imagePath",
-            Collections.singletonList(getTagDto()));
+            Collections.singletonList("tag"));
     }
 }

@@ -1,6 +1,5 @@
 package greencity.dto.econews;
 
-import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -29,5 +28,5 @@ public class EcoNewsDto {
     @NotEmpty
     private EcoNewsAuthorDto author;
     @NotEmpty
-    private List<TagDto> tags;
+    private List<String> tags;
 }

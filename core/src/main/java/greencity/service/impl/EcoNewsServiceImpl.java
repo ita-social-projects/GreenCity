@@ -7,8 +7,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.SearchCriteriaEcoNewsDto;
-import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
@@ -130,15 +128,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public PageableDto<EcoNewsDto> find(Pageable page, SearchCriteriaEcoNewsDto searchCriteriaEcoNewsDto) {
-        List<String> tagsStrings = searchCriteriaEcoNewsDto.getTags()
-            .stream()
-            .map(TagDto::getName)
-            .collect(Collectors.toList());
-        String languageCode = searchCriteriaEcoNewsDto.getLanguage().getCode();
-
+    public PageableDto<EcoNewsDto> find(Pageable page, String language, List<String> tags) {
         Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo
-            .find(page, tagsStrings, (long) tagsStrings.size(), languageCode);
+            .find(page, tags, language);
 
         List<EcoNewsDto> ecoNewsDtos = pages.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
@@ -161,6 +153,30 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return ecoNewsRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Kovaliv Taras.
+     */
+    @Override
+    public EcoNewsDto findById(Long id, String language) {
+        EcoNews ecoNews = findById(id);
+        EcoNewsTranslation ecoNewsTranslation = null;
+
+        for (EcoNewsTranslation ent : ecoNews.getTranslations()) {
+            if (ent.getLanguage().getCode().equals(language)) {
+                ecoNewsTranslation = ent;
+                break;
+            }
+        }
+
+        if (ecoNewsTranslation == null) {
+            ecoNewsTranslation = ecoNews.getTranslations().get(0);
+        }
+
+        return modelMapper.map(ecoNewsTranslation, EcoNewsDto.class);
     }
 
     /**
