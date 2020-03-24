@@ -84,7 +84,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             buildAddEcoNewsMessage(toSave));
 
-        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+
+        EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(toSave,
+            languageService.extractLanguageCodeFromRequest());
+        addEcoNewsDtoResponse.setTitle(translation.getTitle());
+        addEcoNewsDtoResponse.setText(translation.getText());
+
+        return addEcoNewsDtoResponse;
     }
 
     /**
