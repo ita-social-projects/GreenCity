@@ -7,11 +7,11 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author Nazar Stasyuk
  */
-public class BadEmailOrPasswordException extends AuthenticationException {
+public class WrongEmailOrPasswordException extends AuthenticationException {
     /**
      * Constructor.
      */
-    public BadEmailOrPasswordException(String message) {
+    public WrongEmailOrPasswordException(String message) {
         super(message);
     }
 }

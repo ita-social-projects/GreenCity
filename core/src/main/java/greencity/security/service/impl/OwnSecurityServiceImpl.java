@@ -133,7 +133,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
         User user = userService.findByEmail(dto.getEmail());
         if (!isPasswordCorrect(dto, user)) {
-            throw new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
+            throw new WrongEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
         }
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");

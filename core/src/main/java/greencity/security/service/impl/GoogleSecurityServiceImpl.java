@@ -12,8 +12,8 @@ import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.UserDeactivatedException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.events.SignInEvent;
 import greencity.security.jwt.JwtTool;
@@ -86,7 +86,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                     }
                     log.info("Google sign-in exist user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
-                } catch (BadEmailException e) {
+                } catch (WrongEmailException e) {
                     User user = createNewUser(email, familyName, givenName);
                     User savedUser = userService.save(user);
                     appEventPublisher.publishEvent(new SignInEvent(savedUser));

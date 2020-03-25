@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return userRepo.findById(id)
-            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return userRepo.findByEmail(email)
-            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
     public Long findIdByEmail(String email) {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
         return userRepo.findIdByEmail(email).orElseThrow(
-            () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+            () -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
     }
 
     /**
@@ -201,7 +201,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserUpdateDto getUserUpdateDtoByEmail(String email) {
         return modelMapper.map(
-            userRepo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
+            userRepo.findByEmail(email).orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
             UserUpdateDto.class
         );
     }
@@ -213,7 +213,7 @@ public class UserServiceImpl implements UserService {
     public User update(UserUpdateDto dto, String email) {
         User user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmailNotification(dto.getEmailNotification());
@@ -263,7 +263,7 @@ public class UserServiceImpl implements UserService {
         List<UserGoalDto> goals = bulkDto.getUserGoals();
         List<UserCustomGoalDto> customGoals = bulkDto.getUserCustomGoal();
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
         if (goals == null && customGoals != null) {
             saveCustomGoalsForUserGoals(user, customGoals);
         }
@@ -352,7 +352,7 @@ public class UserServiceImpl implements UserService {
     public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {
         UserGoal userGoal;
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
             if (userGoal.getStatus().equals(GoalStatus.DONE)) {
@@ -432,11 +432,11 @@ public class UserServiceImpl implements UserService {
     public List<HabitCreateDto> createUserHabit(Long userId, List<HabitIdDto> habitIdDto, String language) {
         if (checkHabitId(userId, habitIdDto)) {
             User user = userRepo.findById(userId)
-                .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
+                .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
             List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
             return convertToHabitCreateDto(habits, language);
         } else {
-            throw new BadIdException(ErrorMessage.HABIT_IS_SAVED);
+            throw new WrongIdException(ErrorMessage.HABIT_IS_SAVED);
         }
     }
 
@@ -519,7 +519,7 @@ public class UserServiceImpl implements UserService {
             throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);
         }
         Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
         int countHabit = habitRepo.countHabitByUserId(userId);
         if (!habitStatisticRepo.findAllByHabitId(habit.getId()).isEmpty() && countHabit > 1) {
             habitRepo.updateHabitStatusById(habit.getId(), false);
