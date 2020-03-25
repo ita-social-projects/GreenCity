@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.AppConstant;
+import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
@@ -26,6 +27,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +68,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email) {
         addEcoNewsDtoRequest.setAuthor(modelMapper.map(
@@ -90,6 +94,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @Cacheable(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, key = "#languageCode")
     @Override
     public List<EcoNewsDto> getThreeLastEcoNews(String languageCode) {
         List<EcoNewsTranslation> ecoNewsTranslations = ecoNewsTranslationRepo
@@ -184,6 +189,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
+    @Override
     public void delete(Long id) {
         ecoNewsRepo.deleteById(findById(id).getId());
     }
