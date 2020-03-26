@@ -3,26 +3,21 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.entity.EcoNews;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.Mockito.when;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AddEcoNewsDtoResponseMapperTest {
-    @Mock
-    private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
+
     @InjectMocks
     private AddEcoNewsDtoResponseMapper mapper;
 
     @Test
     public void convertTest() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
-        when(ecoNewsAuthorDtoMapper.convert(ecoNews.getAuthor()))
-            .thenReturn(ModelUtils.getEcoNewsAuthorDto());
 
         AddEcoNewsDtoResponse expected = ModelUtils.getAddEcoNewsDtoResponse();
         expected.setCreationDate(ecoNews.getCreationDate());

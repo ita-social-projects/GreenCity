@@ -4,14 +4,15 @@ import greencity.ModelUtils;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import java.util.Collections;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AddEcoNewsDtoRequestMapperTest {
+
     @InjectMocks
     private AddEcoNewsDtoRequestMapper mapper;
 
@@ -26,6 +27,6 @@ public class AddEcoNewsDtoRequestMapperTest {
         actual.setCreationDate(ecoNews.getCreationDate());
         actual.setTags(Collections.singletonList(ModelUtils.getTag()));
 
-        Assert.assertEquals(ecoNews, actual);
+        assertEquals(ecoNews, actual);
     }
 }
