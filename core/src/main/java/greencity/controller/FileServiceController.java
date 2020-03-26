@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import static greencity.constant.AppConstant.VALIDATION_FOLDER;
+
 import greencity.constant.HttpStatuses;
 import greencity.entity.EcoNews;
 import greencity.service.FileService;
@@ -8,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.IOException;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -45,6 +47,7 @@ public class FileServiceController {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR),
     })
     @PostMapping("/image")
     public ResponseEntity<String> uploadImage(@RequestParam("Image to save") @NotEmpty MultipartFile multipartFile,
@@ -53,6 +56,10 @@ public class FileServiceController {
                                               @RequestParam("folder name")
                                               @Pattern(regexp = VALIDATION_FOLDER, message = "invalid folder name")
                                               @NotNull(message = "can not be null") String folderName) {
-        return ResponseEntity.status(HttpStatus.OK).body(fileService.uploadImage(multipartFile, folderName));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(multipartFile).toString());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

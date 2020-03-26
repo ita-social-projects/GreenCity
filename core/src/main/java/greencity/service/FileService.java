@@ -1,5 +1,7 @@
 package greencity.service;
 
+import java.io.IOException;
+import java.net.URL;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -7,11 +9,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public interface FileService {
     /**
-     * Method for saving a photo.
-     *
-     * @param multipartFile   file for saving.
-     * @param imageFolderName name of folder in which the photo will be saved.
-     * @return url of the saved photo.
-     */
-    String uploadImage(MultipartFile multipartFile, String imageFolderName);
+     * Upload file to Google Cloud Storage.
+     * @param multipartFile image file to save.
+     * @return public image url.
+     * @throws IllegalArgumentException exception.
+     **/
+    URL upload(MultipartFile multipartFile) throws IOException;
 }
