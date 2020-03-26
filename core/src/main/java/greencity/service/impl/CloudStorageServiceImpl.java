@@ -35,7 +35,8 @@ public class CloudStorageServiceImpl implements FileService {
     /**
      * Constructor with parameters.
      */
-    public CloudStorageServiceImpl(final String projectId, @Value("${BUCKET_NAME}") final String bucketName) {
+    public CloudStorageServiceImpl(@Value("${PROJECT_ID}") final String projectId,
+                                   @Value("${BUCKET_NAME}") final String bucketName) {
         this.projectId = projectId;
         this.bucketName = bucketName;
         this.optionsBuilder = StorageOptions.newBuilder();
