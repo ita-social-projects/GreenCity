@@ -14,17 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * Upload file to Google Cloud Storage.
- *
- * <p>This class is based from <a
- * href="https://github.com/googleapis/google-cloud-java/blob/master/google-cloud-examples/src/main/java/com/google/cloud/examples/storage/StorageExample.java">
- * StorageExample.java</a>.
- *
- * <p>See the <a
- * href="https://github.com/googleapis/google-cloud-java/blob/master/google-cloud-examples/README.md">
- * README</a> for compilation instructions. Run this code with
- **/
 @Service
 public class CloudStorageServiceImpl implements FileService {
     final String projectId;
@@ -57,14 +46,14 @@ public class CloudStorageServiceImpl implements FileService {
             final String blob = UUID.randomUUID().toString();
             final BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, blob).setContentType(contentType).build();
 
-            return run(storage, blobInfo, multipartFile);
+            return write(storage, blobInfo, multipartFile);
         } catch (IOException ex) {
             throw ex;
         }
     }
 
-    private static URL run(final Storage storage,
-                           final BlobInfo blobInfo, final MultipartFile multipartFile) throws IOException {
+    private static URL write(final Storage storage,
+                             final BlobInfo blobInfo, final MultipartFile multipartFile) throws IOException {
         try (WriteChannel writer = storage.writer(blobInfo)) {
             final byte[] buffer = new byte[1024];
             try (InputStream input = multipartFile.getInputStream()) {
