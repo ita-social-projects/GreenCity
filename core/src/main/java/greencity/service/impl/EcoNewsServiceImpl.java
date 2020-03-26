@@ -67,7 +67,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         toSave.setTags(addEcoNewsDtoRequest.getTags()
             .stream()
-            .map(tag -> tagService.findByName(tag))
+            .map(tagService::findByName)
             .collect(Collectors.toList())
         );
 
