@@ -33,7 +33,9 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
             .stream()
             .map(translation ->
                 new EcoNewsTranslation(null,
-                    new Language(null, translation.getLanguage().getCode(), null, null, null),
+                    Language.builder()
+                        .code(translation.getLanguage().getCode())
+                        .build(),
                     translation.getTitle(), translation.getText(), ecoNews))
             .collect(Collectors.toList())
         );
