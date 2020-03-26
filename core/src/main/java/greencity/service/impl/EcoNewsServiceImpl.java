@@ -17,6 +17,7 @@ import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -70,14 +71,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .collect(Collectors.toList())
         );
 
-        toSave.setTranslations(toSave.getTranslations()
-            .stream()
-            .map(translation ->
-                new EcoNewsTranslation(null,
-                    languageService.findByCode(translation.getLanguage().getCode()),
-                    translation.getTitle(), translation.getText(), toSave))
-            .collect(Collectors.toList())
-        );
+        List<EcoNewsTranslation> translations = new ArrayList<>();
+
+        for (EcoNewsTranslation translation : toSave.getTranslations()) {
+            translation.setLanguage(languageService.findByCode(translation.getLanguage().getCode()));
+            translation.setEcoNews(toSave);
+
+            translations.add(translation);
+        }
+        toSave.setTranslations(translations);
 
         try {
             ecoNewsRepo.save(toSave);
