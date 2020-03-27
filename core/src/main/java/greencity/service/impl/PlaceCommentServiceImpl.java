@@ -11,7 +11,10 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
-import greencity.service.*;
+import greencity.service.PhotoService;
+import greencity.service.PlaceCommentService;
+import greencity.service.PlaceService;
+import greencity.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -56,8 +59,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
         Place place = placeService.findById(placeId);
-        User user = userService.findByEmail(email).orElseThrow(() ->
-            new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        User user = userService.findByEmail(email);
         Comment comment = modelMapper.map(addCommentDto, Comment.class);
         comment.setPlace(place);
         comment.setUser(user);

@@ -1,9 +1,6 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -23,10 +20,13 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 import junit.framework.TestCase;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -38,7 +38,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class UserServiceImplTest {
     @Mock
     UserRepo userRepo;
@@ -109,8 +109,8 @@ public class UserServiceImplTest {
 
     @Test
     public void saveTest() {
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        when(userService.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        when(userService.findByEmail(user.getEmail())).thenThrow(new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         when(userRepo.save(user)).thenReturn(user);
         assertEquals(user, userService.save(user));
     }
@@ -148,7 +148,7 @@ public class UserServiceImplTest {
 
     @Test(expected = BadUpdateRequestException.class)
     public void updateRoleOnTheSameUserTest() {
-        when(userService.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         userService.updateRole(user.getId(), null, user.getEmail());
     }
 
@@ -165,18 +165,18 @@ public class UserServiceImplTest {
         verify(userRepo, times(1)).findById(id);
     }
 
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void findByIdBadIdTest() {
-        when(userRepo.findById(any())).thenThrow(BadIdException.class);
+        when(userRepo.findById(any())).thenThrow(WrongIdException.class);
         userService.findById(1L);
     }
 
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void deleteByIdExceptionBadIdTest() {
         userService.deleteById(1L);
     }
 
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void deleteByNullIdExceptionTest() {
         userService.deleteById(null);
         verifyZeroInteractions(userRepo);
@@ -202,7 +202,7 @@ public class UserServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = BadEmailException.class)
+    @Test(expected = WrongEmailException.class)
     public void findIdByEmailNotFound() {
         userService.findIdByEmail(any());
     }
@@ -503,7 +503,7 @@ public class UserServiceImplTest {
         assertEquals(Collections.emptyList(), userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(2L)), "en"));
     }
 
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void createUserHabitWithExistentHabitTest() {
         when(habitRepo.findByUserIdAndStatusHabit(user.getId()))
             .thenReturn(
@@ -543,7 +543,7 @@ public class UserServiceImplTest {
         assertEquals(userService.getAvailableCustomGoals(user.getId()), customGoalsDtos);
     }
 
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void deleteHabitByUserIdAndHabitDictionaryEmptyHabitTest() {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
         userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L);
@@ -556,7 +556,7 @@ public class UserServiceImplTest {
         userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L);
     }
 
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void deleteHabitByUserIdAndHabitDictionaryExceptionTest() {
         userService.deleteHabitByUserIdAndHabitDictionary(null, 1L);
     }

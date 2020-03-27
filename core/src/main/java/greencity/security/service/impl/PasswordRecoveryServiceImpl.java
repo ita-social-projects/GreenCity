@@ -1,13 +1,14 @@
 package greencity.security.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import static greencity.constant.RabbitConstants.PASSWORD_RECOVERY_ROUTING_KEY;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
-import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.message.PasswordRecoveryMessage;
 import greencity.repository.UserRepo;
 import greencity.security.events.UpdatePasswordEvent;
@@ -22,10 +23,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static greencity.constant.ErrorMessage.EMAIL_TOKEN_EXPIRED;
-import static greencity.constant.ErrorMessage.NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN;
-import static greencity.constant.ErrorMessage.PASSWORD_RESTORE_LINK_ALREADY_SENT;
 
 /**
  * Service for password recovery functionality.
@@ -79,7 +76,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         RestorePasswordEmail restorePasswordEmail = user.getRestorePasswordEmail();
         if (restorePasswordEmail != null) {
-            throw new BadEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
+            throw new WrongEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
         }
         savePasswordRestorationTokenForUser(user, jwtTool.generateTokenKey());
     }

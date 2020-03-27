@@ -5,13 +5,13 @@ package greencity.exception.exceptions;
  *
  * @author Nazar Stasyuk
  */
-public class BadIdException extends RuntimeException {
+public class WrongIdException extends RuntimeException {
     /**
      * Constructor.
      *
      * @param message {@link String}
      */
-    public BadIdException(String message) {
+    public WrongIdException(String message) {
         super(message);
     }
 }
