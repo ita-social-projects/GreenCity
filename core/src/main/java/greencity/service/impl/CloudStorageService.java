@@ -34,7 +34,9 @@ public class CloudStorageService implements FileService {
         this.storage = StorageOptions.newBuilder().build().getService();
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public URL upload(final MultipartFile multipartFile) {
         try {
             final String contentType = multipartFile.getContentType();
@@ -48,12 +50,13 @@ public class CloudStorageService implements FileService {
     }
 
     private URL write(final BlobInfo blobInfo, final MultipartFile multipartFile) throws IOException {
-        WriteChannel writer = storage.writer(blobInfo);
-        final byte[] buffer = new byte[1024];
-        InputStream input = multipartFile.getInputStream();
-        int limit;
-        while ((limit = input.read(buffer)) >= 0) {
-            writer.write(ByteBuffer.wrap(buffer, 0, limit));
+        try (WriteChannel writer = storage.writer(blobInfo)) {
+            final byte[] buffer = new byte[1024];
+            InputStream input = multipartFile.getInputStream();
+            int limit;
+            while ((limit = input.read(buffer)) >= 0) {
+                writer.write(ByteBuffer.wrap(buffer, 0, limit));
+            }
         }
         return getURL(blobInfo);
     }
