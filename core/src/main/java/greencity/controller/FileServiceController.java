@@ -39,7 +39,6 @@ public class FileServiceController {
      * Method for uploading an image.
      *
      * @param multipartFile file to save.
-     * @param folderName    specified folder the image will be saved to.
      * @return url of the saved image.
      */
     @ApiOperation(value = "Upload an image.")
@@ -50,12 +49,7 @@ public class FileServiceController {
         @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR),
     })
     @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestParam("Image to save") @NotEmpty MultipartFile multipartFile,
-                                              @ApiParam(value = "Folder name where the image will be saved('eco_news') "
-                                                  + "The maximum size of an image is not more than 2 mb.")
-                                              @RequestParam("folder name")
-                                              @Pattern(regexp = VALIDATION_FOLDER, message = "invalid folder name")
-                                              @NotNull(message = "can not be null") String folderName) {
+    public ResponseEntity<String> uploadImage(@RequestParam("ImageToSave") @NotEmpty MultipartFile multipartFile) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(multipartFile).toString());
         } catch (IOException e) {
