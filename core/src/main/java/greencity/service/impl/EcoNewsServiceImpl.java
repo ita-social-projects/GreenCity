@@ -30,6 +30,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +54,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private final TagService tagService;
 
+    private final FileService fileService;
+
     /**
      * {@inheritDoc}
      *
@@ -60,10 +63,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email) {
+    public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+                                      MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setAuthor(userService.findByEmail(email));
         toSave.setCreationDate(ZonedDateTime.now());
+        toSave.setImagePath(fileService.upload(image).getPath());
 
         toSave.setTags(addEcoNewsDtoRequest.getTags()
             .stream()

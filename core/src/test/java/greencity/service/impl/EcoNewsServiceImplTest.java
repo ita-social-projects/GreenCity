@@ -14,10 +14,8 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
-import greencity.service.LanguageService;
-import greencity.service.NewsSubscriberService;
-import greencity.service.TagService;
-import greencity.service.UserService;
+import greencity.service.*;
+import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +36,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(SpringExtension.class)
 public class EcoNewsServiceImplTest {
@@ -65,6 +64,9 @@ public class EcoNewsServiceImplTest {
     @Mock
     LanguageService languageService;
 
+    @Mock
+    FileService fileService;
+
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
 
@@ -73,7 +75,8 @@ public class EcoNewsServiceImplTest {
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
 
     @Test
-    public void save() {
+    public void save() throws MalformedURLException {
+        MultipartFile image = ModelUtils.getFile();
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
@@ -85,8 +88,10 @@ public class EcoNewsServiceImplTest {
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(ModelUtils.getLanguage());
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
+        when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
-        assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com"));
+        assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest,
+            image, "taras@gmail.com"));
         addEcoNewsDtoResponse.setTitle("Title");
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
@@ -94,13 +99,15 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test()
-    public void saveThrowsNotSavedException() {
+    public void saveThrowsNotSavedException() throws MalformedURLException {
+        MultipartFile image = ModelUtils.getFile();
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
         when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
+        when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
         assertThrows(NotSavedException.class, () ->
-            ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com")
+            ecoNewsService.save(addEcoNewsDtoRequest, image, "taras@gmail.com")
         );
     }
 

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -50,9 +51,10 @@ public class EcoNewsController {
     })
     @PostMapping
     public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+                                                      @RequestPart MultipartFile image,
                                                       @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            ecoNewsService.save(addEcoNewsDtoRequest, principal.getName()));
+            ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
     }
 
     /**
