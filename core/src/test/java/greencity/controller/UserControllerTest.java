@@ -9,9 +9,11 @@ import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,10 +22,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,7 +45,7 @@ public class UserControllerTest {
     public void getUserHabitsWithValidUserIdTest() throws Exception {
         long userId = 1L;
         HabitDto userHabitDto = new HabitDto();
-        when(userService.findByEmail("user")).thenReturn(Optional.of(User.builder().id(userId).build()));
+        when(userService.findByEmail("user")).thenReturn(User.builder().id(userId).build());
         when(habitStatisticService.findAllHabitsAndTheirStatistics(userId, true, "en"))
             .thenReturn(Collections.singletonList(userHabitDto));
         MvcResult requestResult = mockMvc.perform(get("/user/" + userId + "/habits").param("language", "en"))
@@ -65,7 +63,7 @@ public class UserControllerTest {
     @WithMockUser
     public void getUserHabitsWithDifferentUserIdStatusCodeTest() throws Exception {
         long userId = 1L;
-        when(userService.findByEmail("user")).thenReturn(Optional.of(User.builder().id(userId).build()));
+        when(userService.findByEmail("user")).thenReturn(User.builder().id(userId).build());
         mockMvc.perform(get("/user/" + 2L + "/habits").param("language", "en"))
             .andExpect(status().isBadRequest());
     }
@@ -75,7 +73,7 @@ public class UserControllerTest {
     public void findInfoAboutUserHabitsWithValidUserIdTest() throws Exception {
         long userId = 1L;
         CalendarUsefulHabitsDto calendarUsefulHabitsDto = new CalendarUsefulHabitsDto();
-        when(userService.findByEmail("user")).thenReturn(Optional.of(User.builder().id(userId).build()));
+        when(userService.findByEmail("user")).thenReturn(User.builder().id(userId).build());
         when(habitStatisticService.getInfoAboutUserHabits(userId))
             .thenReturn(calendarUsefulHabitsDto);
         MvcResult requestResult = mockMvc.perform(get("/user/" + userId + "/habits/statistic"))
@@ -94,7 +92,7 @@ public class UserControllerTest {
     public void findInfoAboutUserHabitsWithDifferentUserIdStatusCodeTest() throws Exception {
         long userId = 1L;
         CalendarUsefulHabitsDto calendarUsefulHabitsDto = new CalendarUsefulHabitsDto();
-        when(userService.findByEmail("user")).thenReturn(Optional.of(User.builder().id(userId).build()));
+        when(userService.findByEmail("user")).thenReturn(User.builder().id(userId).build());
         when(habitStatisticService.getInfoAboutUserHabits(userId))
             .thenReturn(calendarUsefulHabitsDto);
         mockMvc.perform(get("/user/" + 2L + "/habits/statistic"))
@@ -125,8 +123,8 @@ public class UserControllerTest {
     @Test
     @WithMockUser
     public void bulkDeleteUserGoalsWithValidInputIdTest() throws Exception {
-        when(userService.findByEmail(anyString())).thenReturn(Optional.of(User.builder().id(1L).build()));
-        when(userService.findByEmail(anyString())).thenReturn(Optional.of(User.builder().id(1L).build()));
+        when(userService.findByEmail(anyString())).thenReturn(User.builder().id(1L).build());
+        when(userService.findByEmail(anyString())).thenReturn(User.builder().id(1L).build());
         when(userService.deleteUserGoals("1")).thenReturn(Collections.emptyList());
         mockMvc.perform(delete("/user/1/userGoals").param("ids", "1"))
             .andExpect(status().isOk());

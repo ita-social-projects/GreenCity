@@ -171,7 +171,7 @@ public class PlaceServiceImplTest {
     @Test
     public void saveTest() {
         when(proposePlaceMapper.convertToEntity(any())).thenReturn(place);
-        when(userService.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userService.findByEmail(anyString())).thenReturn(user);
         when(placeRepo.save(place)).thenReturn(place);
 
         assertEquals(place, placeService.save(placeAddDto, user.getEmail()));

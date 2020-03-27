@@ -1,8 +1,7 @@
 package greencity.service.impl;
 
-import static greencity.constant.ErrorMessage.*;
-
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -26,9 +25,12 @@ import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -42,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     /**
      * Autowired repository.
@@ -60,8 +62,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Autowired mapper.
      */
-    private ModelMapper modelMapper;
-    private HabitMapper habitMapper;
+    private final ModelMapper modelMapper;
+    private final HabitMapper habitMapper;
 
     /**
      * {@inheritDoc}
@@ -77,7 +79,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return userRepo.findById(id)
-            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -109,8 +111,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public Optional<User> findByEmail(String email) {
-        return userRepo.findByEmail(email);
+    public User findByEmail(String email) {
+        return userRepo.findByEmail(email)
+            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**
@@ -122,7 +125,7 @@ public class UserServiceImpl implements UserService {
     public Long findIdByEmail(String email) {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
         return userRepo.findIdByEmail(email).orElseThrow(
-            () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+            () -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
     }
 
     /**
@@ -198,7 +201,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserUpdateDto getUserUpdateDtoByEmail(String email) {
         return modelMapper.map(
-            userRepo.findByEmail(email).orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
+            userRepo.findByEmail(email).orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
             UserUpdateDto.class
         );
     }
@@ -210,7 +213,7 @@ public class UserServiceImpl implements UserService {
     public User update(UserUpdateDto dto, String email) {
         User user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmailNotification(dto.getEmailNotification());
@@ -260,7 +263,7 @@ public class UserServiceImpl implements UserService {
         List<UserGoalDto> goals = bulkDto.getUserGoals();
         List<UserCustomGoalDto> customGoals = bulkDto.getUserCustomGoal();
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
         if (goals == null && customGoals != null) {
             saveCustomGoalsForUserGoals(user, customGoals);
         }
@@ -349,7 +352,7 @@ public class UserServiceImpl implements UserService {
     public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {
         UserGoal userGoal;
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
             if (userGoal.getStatus().equals(GoalStatus.DONE)) {
@@ -383,7 +386,7 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void checkUpdatableUser(Long id, String email) {
-        User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        User user = findByEmail(email);
         if (id.equals(user.getId())) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
@@ -397,7 +400,7 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void accessForUpdateUserStatus(Long id, String email) {
-        User user = findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        User user = findByEmail(email);
         if (user.getRole() == ROLE.ROLE_MODERATOR) {
             ROLE role = findById(id).getRole();
             if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
@@ -429,11 +432,11 @@ public class UserServiceImpl implements UserService {
     public List<HabitCreateDto> createUserHabit(Long userId, List<HabitIdDto> habitIdDto, String language) {
         if (checkHabitId(userId, habitIdDto)) {
             User user = userRepo.findById(userId)
-                .orElseThrow(() -> new BadIdException(USER_NOT_FOUND_BY_ID + userId));
+                .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
             List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
             return convertToHabitCreateDto(habits, language);
         } else {
-            throw new BadIdException(ErrorMessage.HABIT_IS_SAVED);
+            throw new WrongIdException(ErrorMessage.HABIT_IS_SAVED);
         }
     }
 
@@ -516,7 +519,7 @@ public class UserServiceImpl implements UserService {
             throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);
         }
         Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new BadIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
         int countHabit = habitRepo.countHabitByUserId(userId);
         if (!habitStatisticRepo.findAllByHabitId(habit.getId()).isEmpty() && countHabit > 1) {
             habitRepo.updateHabitStatusById(habit.getId(), false);

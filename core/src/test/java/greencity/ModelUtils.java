@@ -61,8 +61,7 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest(Collections.singletonList(getEcoNewsTranslationDto()),
-            Collections.singletonList("tag"),
-            getEcoNewsAuthorDto(), "imagePath");
+            Collections.singletonList("tag"), "imagePath");
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
