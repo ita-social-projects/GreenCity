@@ -4,6 +4,8 @@ import com.google.cloud.WriteChannel;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import greencity.constant.ErrorMessage;
+import greencity.exception.exceptions.NotSavedException;
 import greencity.service.FileService;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,15 +13,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class CloudStorageServiceImpl implements FileService {
-    final String staticUrl;
-    final String projectId;
-    final StorageOptions.Builder optionsBuilder;
+@RequiredArgsConstructor
+public class CloudStorageService implements FileService {
+    private final String staticUrl;
     private final String bucketName;
     private final Storage storage;
 
@@ -27,24 +29,24 @@ public class CloudStorageServiceImpl implements FileService {
     /**
      * Constructor with parameters.
      */
-    public CloudStorageServiceImpl(@Value("${PROJECT_ID}") final String projectId,
-                                   @Value("${BUCKET_NAME}") final String bucketName,
-                                   @Value("${STATIC_URL") String staticUrl) {
-        this.projectId = projectId;
+    public CloudStorageService(@Value("${BUCKET_NAME}") final String bucketName,
+                               @Value("${STATIC_URL}") final String staticUrl) {
         this.bucketName = bucketName;
         this.staticUrl = staticUrl;
-        this.optionsBuilder = StorageOptions.newBuilder();
-        this.storage = optionsBuilder.build().getService();
+        this.storage = StorageOptions.newBuilder().build().getService();
     }
 
 
-    @Override
-    public URL upload(final MultipartFile multipartFile) throws IOException {
-        final String contentType = multipartFile.getContentType();
-        final String destinationName = UUID.randomUUID().toString();
-        final BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, destinationName).setContentType(contentType).build();
+    public URL upload(final MultipartFile multipartFile) {
+        try {
+            final String contentType = multipartFile.getContentType();
+            final String blob = UUID.randomUUID().toString();
+            final BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, blob).setContentType(contentType).build();
 
-        return write(blobInfo, multipartFile);
+            return write(blobInfo, multipartFile);
+        } catch (IOException ex) {
+            throw new NotSavedException(ErrorMessage.FILE_NOT_SAVED);
+        }
     }
 
     private URL write(final BlobInfo blobInfo, final MultipartFile multipartFile) throws IOException {
@@ -59,9 +61,6 @@ public class CloudStorageServiceImpl implements FileService {
     }
 
     private URL getURL(BlobInfo blobInfo) throws MalformedURLException {
-        StringBuilder newURL = new StringBuilder(staticUrl);
-        newURL.replace(34, 34, blobInfo.getName());
-        newURL.replace(33, 33, blobInfo.getBucket());
-        return new URL(newURL.toString());
+        return new URL(staticUrl + blobInfo.getBucket() + "/" + blobInfo.getName());
     }
 }
