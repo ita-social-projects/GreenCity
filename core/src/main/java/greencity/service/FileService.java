@@ -12,7 +12,7 @@ public interface FileService {
      * Upload file to Google Cloud Storage.
      * @param multipartFile image file to save.
      * @return public image url.
-     * @throws IllegalArgumentException exception.
+     * @throws IOException exception.
      **/
     URL upload(MultipartFile multipartFile) throws IOException;
 }
