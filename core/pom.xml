@@ -25,7 +25,6 @@
         <swagger.version>2.9.2</swagger.version>
         <cloudstorage.version>1.105.0</cloudstorage.version>
         <tngtech.version>1.13.1</tngtech.version>
-        <cloudstorage.version>1.105.0</cloudstorage.version>
     </properties>
 
     <dependencies>
