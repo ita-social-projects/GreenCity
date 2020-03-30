@@ -1,6 +1,5 @@
 package greencity.dto.econews;
 
-import greencity.dto.user.EcoNewsAuthorDto;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -15,8 +14,6 @@ public class AddEcoNewsDtoRequest {
     private List<EcoNewsTranslationDto> translations;
     @NotEmpty
     private List<String> tags;
-
-    private EcoNewsAuthorDto author;
     @NotEmpty
     private String imagePath;
 }

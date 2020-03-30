@@ -84,7 +84,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             rabbitTemplate.convertAndSend(
                 sendEmailTopic,
                 VERIFY_EMAIL_ROUTING_KEY,
-                new VerifyEmailMessage(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
+                new VerifyEmailMessage(savedUser.getId(), savedUser.getFirstName(), savedUser.getEmail(),
                     savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
@@ -94,7 +94,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey) {
         return User.builder()
-            .name(dto.getName())
+            .firstName(dto.getFirstName())
+            .lastName(dto.getLastName())
             .email(dto.getEmail())
             .dateOfRegistration(LocalDateTime.now())
             .role(ROLE.ROLE_USER)
@@ -130,10 +131,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
-        User user = userService
-            .findByEmail(dto.getEmail())
-            .filter(u -> isPasswordCorrect(dto, u))
-            .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
+        User user = userService.findByEmail(dto.getEmail());
+        if (!isPasswordCorrect(dto, user)) {
+            throw new WrongEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
+        }
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
@@ -143,7 +144,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         appEventPublisher.publishEvent(new SignInEvent(user));
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
-        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), true);
+        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), true);
     }
 
     private boolean isPasswordCorrect(OwnSignInDto signInDto, User user) {
@@ -165,9 +166,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         } catch (ExpiredJwtException e) {
             throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
         }
-        User user = userService
-            .findByEmail(email)
-            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userService.findByEmail(email);
         checkUserStatus(user);
         String newRefreshTokenKey = jwtTool.generateTokenKey();
         userService.updateUserRefreshToken(newRefreshTokenKey, user.getId());
@@ -208,9 +207,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
-        User user = userService
-            .findByEmail(email)
-            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userService.findByEmail(email);
         if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
         }

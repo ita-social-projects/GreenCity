@@ -1,16 +1,13 @@
 package greencity.service.impl;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 import greencity.GreenCityApplication;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.exception.exceptions.BadIdException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.PlaceService;
@@ -20,8 +17,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +44,7 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void saveFavoritePlaceAlreadyExistTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
@@ -66,7 +65,7 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void saveBadUserEmailTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
@@ -85,7 +84,7 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void saveBadPlaceIdTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
@@ -152,7 +151,7 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void deleteByIdAndUserEmail_FavoritePlaceNotExist() {
         Long id = 9L;
         String userEmail = "email";
@@ -186,7 +185,7 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void updateFavoritePlaceNotExistTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         dto.setPlaceId(8L);
@@ -248,7 +247,7 @@ public class FavoritePlaceServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = BadIdException.class)
+    @Test(expected = WrongIdException.class)
     public void getFavoritePlaceInfo_FavoritePlaceNotExist() {
         FavoritePlace fp = new FavoritePlace();
         favoritePlaceService.getInfoFavoritePlace(2L);
