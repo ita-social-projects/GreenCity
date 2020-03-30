@@ -1,6 +1,7 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
 import java.util.Collections;
@@ -23,6 +24,7 @@ public class AddEcoNewsDtoRequestMapperTest {
         AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
         EcoNews actual = mapper.convert(request);
+        actual.setImagePath(TestConst.site);
         actual.setId(1L);
         actual.setCreationDate(ecoNews.getCreationDate());
         actual.setTags(Collections.singletonList(ModelUtils.getTag()));

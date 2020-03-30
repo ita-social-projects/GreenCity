@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.constant.AppConstant;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
@@ -83,7 +84,7 @@ public class EcoNewsServiceImplTest {
         when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(ModelUtils.getEcoNewsTranslation());
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
-        when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
+        when(userService.findByEmail(TestConst.email)).thenReturn(ModelUtils.getUser());
         when(tagService.findByName("tag")).thenReturn(ModelUtils.getTag());
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(ModelUtils.getLanguage());
@@ -91,7 +92,7 @@ public class EcoNewsServiceImplTest {
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
         assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest,
-            image, "taras@gmail.com"));
+            image, TestConst.email));
         addEcoNewsDtoResponse.setTitle("Title");
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
@@ -103,11 +104,11 @@ public class EcoNewsServiceImplTest {
         MultipartFile image = ModelUtils.getFile();
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
-        when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
+        when(userService.findByEmail(TestConst.email)).thenReturn(ModelUtils.getUser());
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
         assertThrows(NotSavedException.class, () ->
-            ecoNewsService.save(addEcoNewsDtoRequest, image, "taras@gmail.com")
+            ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.email)
         );
     }
 

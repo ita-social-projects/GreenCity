@@ -31,8 +31,8 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
-            .email("Nazar.stasyuk@gmail.com")
-            .firstName("Nazar")
+            .email(TestConst.email)
+            .firstName(TestConst.name)
             .lastName("Stasyuk")
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
@@ -41,7 +41,7 @@ public class ModelUtils {
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
-        return new EcoNewsAuthorDto(1L, "Nazar", "Stasyuk");
+        return new EcoNewsAuthorDto(1L, TestConst.name, "Stasyuk");
     }
 
     public static EcoNewsTranslation getEcoNewsTranslation() {
@@ -62,7 +62,7 @@ public class ModelUtils {
     }
 
     public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), "https://google.com", getUser(),
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.site, getUser(),
             Collections.singletonList(getEcoNewsTranslation()),
             Collections.singletonList(getTag()));
     }
@@ -75,14 +75,13 @@ public class ModelUtils {
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
         return new AddEcoNewsDtoResponse(1L, getEcoNewsTranslation().getTitle(),
             getEcoNewsTranslation().getText(), getEcoNewsAuthorDto(),
-            getEcoNews().getCreationDate(), "https://google.com",
+            getEcoNews().getCreationDate(), TestConst.site,
             Collections.singletonList("tag"));
     }
 
     public static MultipartFile getFile() {
         Path path = Paths.get("src/test/resources/test.jpg");
-        String name = "Screenshot.png";
-        String originalFileName = "Screenshot.png";
+        String name = TestConst.imgName;
         String contentType = "photo/plain";
         byte[] content = null;
         try {
@@ -90,10 +89,10 @@ public class ModelUtils {
         } catch (final IOException e) {
         }
         return new MockMultipartFile(name,
-            originalFileName, contentType, content);
+            name, contentType, content);
     }
 
     public static URL getUrl() throws MalformedURLException {
-        return new URL("https://google.com");
+        return new URL(TestConst.site);
     }
 }
