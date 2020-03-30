@@ -68,7 +68,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setAuthor(userService.findByEmail(email));
         toSave.setCreationDate(ZonedDateTime.now());
-        toSave.setImagePath(fileService.upload(image).getPath());
+        toSave.setImagePath(fileService.upload(image).toString());
 
         toSave.setTags(addEcoNewsDtoRequest.getTags()
             .stream()

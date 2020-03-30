@@ -50,7 +50,7 @@ public class EcoNewsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping
-    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
                                                       @RequestPart MultipartFile image,
                                                       @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
