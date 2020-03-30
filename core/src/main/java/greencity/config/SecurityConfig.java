@@ -140,7 +140,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/goals",
                 "/econews",
-                "/user/{userId}/customGoals"
+                "/user/{userId}/customGoals",
+                "/files/image"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
@@ -149,8 +150,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",
-                "/place/filter/predicate",
-                "/files/image"
+                "/place/filter/predicate"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers("/advices/*", "/facts/*").hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
