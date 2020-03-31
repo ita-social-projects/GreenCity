@@ -31,8 +31,8 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
-            .email(TestConst.email)
-            .firstName(TestConst.name)
+            .email(TestConst.EMAIL)
+            .firstName(TestConst.NAME)
             .lastName("Stasyuk")
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
@@ -41,7 +41,7 @@ public class ModelUtils {
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
-        return new EcoNewsAuthorDto(1L, TestConst.name, "Stasyuk");
+        return new EcoNewsAuthorDto(1L, TestConst.NAME, "Stasyuk");
     }
 
     public static EcoNewsTranslation getEcoNewsTranslation() {
@@ -62,7 +62,7 @@ public class ModelUtils {
     }
 
     public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.site, getUser(),
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, getUser(),
             Collections.singletonList(getEcoNewsTranslation()),
             Collections.singletonList(getTag()));
     }
@@ -75,13 +75,13 @@ public class ModelUtils {
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
         return new AddEcoNewsDtoResponse(1L, getEcoNewsTranslation().getTitle(),
             getEcoNewsTranslation().getText(), getEcoNewsAuthorDto(),
-            getEcoNews().getCreationDate(), TestConst.site,
+            getEcoNews().getCreationDate(), TestConst.SITE,
             Collections.singletonList("tag"));
     }
 
     public static MultipartFile getFile() {
         Path path = Paths.get("src/test/resources/test.jpg");
-        String name = TestConst.imgName;
+        String name = TestConst.IMG_NAME;
         String contentType = "photo/plain";
         byte[] content = null;
         try {
@@ -93,6 +93,6 @@ public class ModelUtils {
     }
 
     public static URL getUrl() throws MalformedURLException {
-        return new URL(TestConst.site);
+        return new URL(TestConst.SITE);
     }
 }

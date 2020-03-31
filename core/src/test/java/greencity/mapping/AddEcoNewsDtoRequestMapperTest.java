@@ -24,7 +24,7 @@ public class AddEcoNewsDtoRequestMapperTest {
         AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
         EcoNews actual = mapper.convert(request);
-        actual.setImagePath(TestConst.site);
+        actual.setImagePath(TestConst.SITE);
         actual.setId(1L);
         actual.setCreationDate(ecoNews.getCreationDate());
         actual.setTags(Collections.singletonList(ModelUtils.getTag()));
