@@ -23,6 +23,7 @@
         <jackson.version>2.10.1</jackson.version>
         <powermock.version>2.0.4</powermock.version>
         <swagger.version>2.9.2</swagger.version>
+        <cloudstorage.version>1.105.0</cloudstorage.version>
         <tngtech.version>1.13.1</tngtech.version>
     </properties>
 
@@ -136,11 +137,6 @@
             <version>1.30.7</version>
         </dependency>
         <dependency>
-            <groupId>com.cloudinary</groupId>
-            <artifactId>cloudinary-http44</artifactId>
-            <version>1.3.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
@@ -162,6 +158,15 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-storage</artifactId>
+            <version>${cloudstorage.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
         </dependency>
     </dependencies>
 

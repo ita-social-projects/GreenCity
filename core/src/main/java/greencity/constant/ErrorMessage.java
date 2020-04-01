@@ -96,6 +96,7 @@ public final class ErrorMessage {
     public static final String NEWS_SUBSCRIBER_NOT_DELETED = "The subscriber was not delete.";
     public static final String NEWS_SUBSCRIBER_NOT_SAVED = "The subscriber was not saved.";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved because of constraint violation";
+    public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_DELETED = "Eco news hasn't been deleted";
