@@ -4,14 +4,10 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
-import greencity.entity.localization.EcoNewsTranslation;
-import greencity.repository.EcoNewsTranslationRepo;
-import greencity.service.LanguageService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,24 +16,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddEcoNewsDtoResponse> {
-    private LanguageService languageService;
-    private EcoNewsTranslationRepo ecoNewsTranslationRepo;
-    private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
-
-    /**
-     * All args constructor.
-     *
-     * @param languageService        service to extract language from request.
-     * @param ecoNewsTranslationRepo repository for getting {@link EcoNewsTranslation}.
-     */
-    @Autowired
-    public AddEcoNewsDtoResponseMapper(LanguageService languageService, EcoNewsTranslationRepo ecoNewsTranslationRepo,
-                                       EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper) {
-        this.languageService = languageService;
-        this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
-        this.ecoNewsAuthorDtoMapper = ecoNewsAuthorDtoMapper;
-    }
-
     /**
      * Method for converting {@link EcoNews} into {@link AddEcoNewsDtoResponse}.
      *
@@ -46,15 +24,23 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
      */
     @Override
     protected AddEcoNewsDtoResponse convert(EcoNews ecoNews) {
-        EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews,
-            languageService.extractLanguageCodeFromRequest());
-        EcoNewsAuthorDto ecoNewsAuthorDto = ecoNewsAuthorDtoMapper.convert(ecoNews.getAuthor());
+        EcoNewsAuthorDto ecoNewsAuthorDto = EcoNewsAuthorDto.builder()
+            .id(ecoNews.getAuthor().getId())
+            .firstName(ecoNews.getAuthor().getFirstName())
+            .lastName(ecoNews.getAuthor().getLastName())
+            .build();
+
         List<String> tags = ecoNews.getTags()
             .stream()
             .map(Tag::getName)
             .collect(Collectors.toList());
 
-        return new AddEcoNewsDtoResponse(ecoNews.getId(), translation.getTitle(), translation.getText(),
-            ecoNewsAuthorDto, ecoNews.getCreationDate(), ecoNews.getImagePath(), tags);
+        return AddEcoNewsDtoResponse.builder()
+            .id(ecoNews.getId())
+            .ecoNewsAuthorDto(ecoNewsAuthorDto)
+            .creationDate(ecoNews.getCreationDate())
+            .imagePath(ecoNews.getImagePath())
+            .tags(tags)
+            .build();
     }
 }

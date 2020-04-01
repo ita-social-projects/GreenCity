@@ -14,29 +14,32 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
-import greencity.repository.UserRepo;
+import greencity.service.LanguageService;
 import greencity.service.NewsSubscriberService;
+import greencity.service.TagService;
+import greencity.service.UserService;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class EcoNewsServiceImplTest {
     @Mock
     EcoNewsRepo ecoNewsRepo;
@@ -54,7 +57,13 @@ public class EcoNewsServiceImplTest {
     NewsSubscriberService newsSubscriberService;
 
     @Mock
-    UserRepo userRepo;
+    UserService userService;
+
+    @Mock
+    TagService tagService;
+
+    @Mock
+    LanguageService languageService;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -67,25 +76,32 @@ public class EcoNewsServiceImplTest {
     public void save() {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
+        when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
         when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(ModelUtils.getEcoNewsTranslation());
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
+        when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
+        when(tagService.findByName("tag")).thenReturn(ModelUtils.getTag());
+        when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
+            .thenReturn(ModelUtils.getLanguage());
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
-        when(userRepo.findByEmail("taras@gmail.com")).thenReturn(Optional.ofNullable(ModelUtils.getUser()));
 
-        Assert.assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com"));
+        assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com"));
         addEcoNewsDtoResponse.setTitle("Title");
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
         addEcoNewsDtoResponse.setTitle("test title");
     }
 
-    @Test(expected = NotSavedException.class)
+    @Test()
     public void saveThrowsNotSavedException() {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
-        when(userRepo.findByEmail("taras@gmail.com")).thenReturn(Optional.ofNullable(ModelUtils.getUser()));
-        ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com");
+        when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
+
+        assertThrows(NotSavedException.class, () ->
+            ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com")
+        );
     }
 
     @Test
@@ -103,16 +119,20 @@ public class EcoNewsServiceImplTest {
         when(ecoNewsTranslationRepo.getNLastEcoNewsByLanguageCode(3, "en"))
             .thenReturn(Collections.singletonList(ecoNewsTranslation));
         when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-        Assert.assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews("en"));
+        assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews("en"));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getThreeLastEcoNewsNotFound() {
         List<EcoNewsTranslation> ecoNewsTranslations = new ArrayList<>();
         List<EcoNewsDto> ecoNewsDtoList = new ArrayList<>();
+
         when(ecoNewsTranslationRepo.getNLastEcoNewsByLanguageCode(anyInt(), anyString()))
             .thenReturn(ecoNewsTranslations);
-        Assert.assertEquals(ecoNewsDtoList, ecoNewsService.getThreeLastEcoNews("en"));
+
+        assertThrows(NotFoundException.class, () ->
+            assertEquals(ecoNewsDtoList, ecoNewsService.getThreeLastEcoNews("en"))
+        );
     }
 
     @Test
@@ -136,14 +156,14 @@ public class EcoNewsServiceImplTest {
         when(ecoNewsTranslationRepo.findAllByLanguageCode(pageRequest, "en")).thenReturn(translationPage);
         when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class))
             .thenReturn(dtoList.get(0));
-        Assert.assertEquals(pageableDto, ecoNewsService.findAll(pageRequest, "en"));
+        assertEquals(pageableDto, ecoNewsService.findAll(pageRequest, "en"));
     }
 
     @Test
     public void findById() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        Assert.assertEquals(ecoNews, ecoNewsService.findById(1L));
+        assertEquals(ecoNews, ecoNewsService.findById(1L));
     }
 
     @Test

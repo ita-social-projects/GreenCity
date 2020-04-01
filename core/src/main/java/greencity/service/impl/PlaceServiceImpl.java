@@ -13,7 +13,6 @@ import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
-import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.mapping.DiscountValueMapper;
@@ -127,8 +126,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private User setUserToPlaceByEmail(String email, Place place) {
-        User user = userService.findByEmail(email).orElseThrow(
-            () -> new BadEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        User user = userService.findByEmail(email);
         place.setAuthor(user);
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(PlaceStatus.APPROVED);

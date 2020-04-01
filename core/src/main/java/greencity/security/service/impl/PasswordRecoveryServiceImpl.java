@@ -5,10 +5,10 @@ import static greencity.constant.ErrorMessage.*;
 import static greencity.constant.RabbitConstants.PASSWORD_RECOVERY_ROUTING_KEY;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
-import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.message.PasswordRecoveryMessage;
 import greencity.repository.UserRepo;
 import greencity.security.events.UpdatePasswordEvent;
@@ -77,7 +77,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         RestorePasswordEmail restorePasswordEmail = user.getRestorePasswordEmail();
         if (restorePasswordEmail != null) {
-            throw new BadEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
+            throw new WrongEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
         }
         savePasswordRestorationTokenForUser(user, jwtTool.generateTokenKey());
     }

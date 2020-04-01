@@ -4,7 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import static greencity.constant.AppConstant.*;
+import static greencity.constant.AppConstant.GOOGLE_USER_NAME;
 import static greencity.constant.ErrorMessage.BAD_GOOGLE_TOKEN;
 import static greencity.constant.ErrorMessage.USER_DEACTIVATED;
 import greencity.entity.User;
@@ -12,6 +12,7 @@ import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.events.SignInEvent;
 import greencity.security.jwt.JwtTool;
@@ -21,7 +22,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,15 +75,16 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
                 String username = (String) payload.get(GOOGLE_USER_NAME);
-                Optional<User> byEmail = userService.findByEmail(email);
-                if (byEmail.isPresent()) {
-                    User user = byEmail.get();
+                User byEmail;
+                try {
+                    byEmail = userService.findByEmail(email);
+                    User user = byEmail;
                     if (user.getUserStatus() == UserStatus.DEACTIVATED) {
                         throw new UserDeactivatedException(USER_DEACTIVATED);
                     }
                     log.info("Google sign-in exist user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
-                } else {
+                } catch (WrongEmailException e) {
                     User user = createNewUser(email, username);
                     User savedUser = userService.save(user);
                     appEventPublisher.publishEvent(new SignInEvent(savedUser));

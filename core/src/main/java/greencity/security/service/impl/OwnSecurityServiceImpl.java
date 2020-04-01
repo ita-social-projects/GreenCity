@@ -130,10 +130,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
-        User user = userService
-            .findByEmail(dto.getEmail())
-            .filter(u -> isPasswordCorrect(dto, u))
-            .orElseThrow(() -> new BadEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD));
+        User user = userService.findByEmail(dto.getEmail());
+        if (!isPasswordCorrect(dto, user)) {
+            throw new WrongEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
+        }
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
         }
@@ -165,9 +165,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         } catch (ExpiredJwtException e) {
             throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
         }
-        User user = userService
-            .findByEmail(email)
-            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userService.findByEmail(email);
         checkUserStatus(user);
         String newRefreshTokenKey = jwtTool.generateTokenKey();
         userService.updateUserRefreshToken(newRefreshTokenKey, user.getId());
@@ -208,9 +206,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
-        User user = userService
-            .findByEmail(email)
-            .orElseThrow(() -> new BadEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        User user = userService.findByEmail(email);
         if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
         }

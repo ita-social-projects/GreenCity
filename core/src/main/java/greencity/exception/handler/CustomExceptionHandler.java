@@ -52,7 +52,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link BadEmailOrPasswordException}.
+     * Method intercept exception {@link WrongEmailOrPasswordException}.
      *
      * @param request contain  detail about occur exception
      * @return ResponseEntity witch  contain http status and body  with message of exception.

@@ -1,77 +1,85 @@
 package greencity.service.impl;
 
 import greencity.constant.AppConstant;
+import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.localization.EcoNewsTranslation;
-import greencity.exception.exceptions.BadEmailException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsTranslationRepo;
-import greencity.repository.UserRepo;
-import greencity.service.EcoNewsService;
-import greencity.service.NewsSubscriberService;
+import greencity.service.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EcoNewsServiceImpl implements EcoNewsService {
-    private final EcoNewsRepo ecoNewsRepo;
-    private final UserRepo userRepo;
-    private final ModelMapper modelMapper;
-    private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
-    private RabbitTemplate rabbitTemplate;
-    private NewsSubscriberService newsSubscriberService;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
 
-    /**
-     * Constructor with parameters.
-     *
-     * @author Yuriy Olkhovskyi.
-     */
-    @Autowired
-    public EcoNewsServiceImpl(EcoNewsRepo ecoNewsRepo, UserRepo userRepo, ModelMapper modelMapper,
-                              EcoNewsTranslationRepo ecoNewsTranslationRepo,
-                              RabbitTemplate rabbitTemplate,
-                              NewsSubscriberService newsSubscriberService) {
-        this.ecoNewsRepo = ecoNewsRepo;
-        this.userRepo = userRepo;
-        this.modelMapper = modelMapper;
-        this.ecoNewsTranslationRepo = ecoNewsTranslationRepo;
-        this.rabbitTemplate = rabbitTemplate;
-        this.newsSubscriberService = newsSubscriberService;
-    }
+    private final EcoNewsRepo ecoNewsRepo;
+
+    private final UserService userService;
+
+    private final ModelMapper modelMapper;
+
+    private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
+
+    private final RabbitTemplate rabbitTemplate;
+
+    private final NewsSubscriberService newsSubscriberService;
+
+    private final LanguageService languageService;
+
+    private final TagService tagService;
 
     /**
      * {@inheritDoc}
      *
      * @author Yuriy Olkhovskyi.
      */
+    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email) {
-        addEcoNewsDtoRequest.setAuthor(modelMapper.map(
-            userRepo.findByEmail(email).orElseThrow(() -> new BadEmailException(
-                ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)), EcoNewsAuthorDto.class));
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
+        toSave.setAuthor(userService.findByEmail(email));
         toSave.setCreationDate(ZonedDateTime.now());
+
+        toSave.setTags(addEcoNewsDtoRequest.getTags()
+            .stream()
+            .map(tagService::findByName)
+            .collect(Collectors.toList())
+        );
+
+        List<EcoNewsTranslation> translations = new ArrayList<>();
+
+        for (EcoNewsTranslation translation : toSave.getTranslations()) {
+            translation.setLanguage(languageService.findByCode(translation.getLanguage().getCode()));
+            translation.setEcoNews(toSave);
+
+            translations.add(translation);
+        }
+        toSave.setTranslations(translations);
 
         try {
             ecoNewsRepo.save(toSave);
@@ -82,7 +90,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             buildAddEcoNewsMessage(toSave));
 
-        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+
+        EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(toSave,
+            languageService.extractLanguageCodeFromRequest());
+        addEcoNewsDtoResponse.setTitle(translation.getTitle());
+        addEcoNewsDtoResponse.setText(translation.getText());
+
+        return addEcoNewsDtoResponse;
     }
 
     /**
@@ -90,6 +105,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @Cacheable(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, key = "#languageCode")
     @Override
     public List<EcoNewsDto> getThreeLastEcoNews(String languageCode) {
         List<EcoNewsTranslation> ecoNewsTranslations = ecoNewsTranslationRepo
@@ -184,6 +200,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
+    @Override
     public void delete(Long id) {
         ecoNewsRepo.deleteById(findById(id).getId());
     }
