@@ -26,8 +26,7 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
     protected AddEcoNewsDtoResponse convert(EcoNews ecoNews) {
         EcoNewsAuthorDto ecoNewsAuthorDto = EcoNewsAuthorDto.builder()
             .id(ecoNews.getAuthor().getId())
-            .firstName(ecoNews.getAuthor().getFirstName())
-            .lastName(ecoNews.getAuthor().getLastName())
+            .name(ecoNews.getAuthor().getName())
             .build();
 
         List<String> tags = ecoNews.getTags()
