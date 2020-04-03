@@ -4,7 +4,9 @@ import greencity.constant.ErrorMessage;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionaryTranslation;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitDictionaryTranslationRepo;
+import greencity.repository.HabitRepo;
 import greencity.service.HabitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class HabitServiceImpl implements HabitService {
     private HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
+    private HabitRepo habitRepo;
 
     /**
      * Method {@link HabitDictionaryTranslation} by {@link Habit} and languageCode.
@@ -30,5 +33,18 @@ public class HabitServiceImpl implements HabitService {
         return habitDictionaryTranslationRepo
             .findByHabitDictionaryAndLanguageCode(habit.getHabitDictionary(), languageCode)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_DICTIONARY_TRANSLATION_NOT_FOUND));
+    }
+
+    /**
+     * Method find {@link Habit} by id.
+     *
+     * @param id - id of Habit
+     * @return {@link Habit}
+     * @author Kovaliv Taras
+     */
+    @Override
+    public Habit getById(Long id) {
+        return habitRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
     }
 }

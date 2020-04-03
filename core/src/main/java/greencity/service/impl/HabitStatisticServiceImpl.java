@@ -13,9 +13,9 @@ import greencity.entity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.mapping.HabitStatisticMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
+import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
 import java.time.LocalDate;
 import java.time.Period;
@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitStatisticRepo habitStatisticRepo;
     private final HabitRepo habitRepo;
-    private final HabitStatisticMapper habitStatisticMapper;
+    private final HabitService habitService;
     private final ModelMapper modelMapper;
     private final DateService dateService;
 
@@ -48,12 +48,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Autowired
     public HabitStatisticServiceImpl(HabitStatisticRepo habitStatisticRepo,
                                      HabitRepo habitRepo,
-                                     HabitStatisticMapper habitStatisticMapper,
-                                     ModelMapper modelMapper,
+                                     HabitService habitService, ModelMapper modelMapper,
                                      DateService dateService) {
         this.habitStatisticRepo = habitStatisticRepo;
         this.habitRepo = habitRepo;
-        this.habitStatisticMapper = habitStatisticMapper;
+        this.habitService = habitService;
         this.modelMapper = modelMapper;
         this.dateService = dateService;
     }
@@ -76,7 +75,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
                 .toLocalDate()
         );
         if (proceed) {
-            HabitStatistic habitStatistic = habitStatisticMapper.convertToEntity(dto);
+            HabitStatistic habitStatistic = modelMapper.map(dto, HabitStatistic.class);
+            habitStatistic.setHabit(habitService.getById(dto.getHabitId()));
             return modelMapper.map(habitStatisticRepo.save(habitStatistic), AddHabitStatisticDto.class);
         }
         throw new BadRequestException(ErrorMessage.WRONG_DATE);

@@ -15,6 +15,7 @@ public class MapperConfig {
     private GoalDtoMapper goalDtoMapper;
     private EcoNewsDtoMapper ecoNewsDtoMapper;
     private HabitCreateDtoMapper habitCreateDtoMapper;
+    private HabitStatisticMapper habitStatisticMapper;
     private AddHabitStatisticDtoMapper addHabitStatisticDtoMapper;
     private AddEcoNewsDtoRequestMapper addEcoNewsDtoRequestMapper;
     private AddEcoNewsDtoResponseMapper addEcoNewsDtoResponseMapper;
@@ -55,5 +56,6 @@ public class MapperConfig {
         modelMapper.addConverter(addHabitStatisticDtoMapper);
         modelMapper.addConverter(ecoNewsAuthorDtoMapper);
         modelMapper.addConverter(habitCreateDtoMapper);
+        modelMapper.addConverter(habitStatisticMapper);
     }
 }

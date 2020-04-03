@@ -11,9 +11,9 @@ import greencity.entity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.mapping.HabitStatisticMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
+import greencity.service.HabitService;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,7 +33,7 @@ public class HabitStatisticServiceImplTest {
     private HabitStatisticRepo habitStatisticRepo;
 
     @Mock
-    HabitStatisticMapper habitStatisticMapper;
+    HabitService habitService;
 
     @Mock
     HabitRepo habitRepo;
@@ -59,7 +59,7 @@ public class HabitStatisticServiceImplTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
         habitStatisticService = new HabitStatisticServiceImpl(habitStatisticRepo, habitRepo,
-            habitStatisticMapper, modelMapper, dateService);
+            habitService, modelMapper, dateService);
     }
 
     private HabitStatistic habitStatistic = new HabitStatistic(
@@ -68,6 +68,9 @@ public class HabitStatisticServiceImplTest {
     @Test
     public void saveTest() {
         when(dateService.convertToDatasourceTimezone(any())).thenReturn(ZonedDateTime.now());
+        when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
+        when(habitService.getById(anyLong())).thenReturn(habit);
+        when(modelMapper.map(habitStatistic, AddHabitStatisticDto.class)).thenReturn(addhs);
         when(habitStatisticService.save(addhs)).thenReturn(addhs);
         assertEquals(addhs, habitStatisticService.save(addhs));
     }
@@ -75,6 +78,9 @@ public class HabitStatisticServiceImplTest {
     @Test
     public void saveBeforeDayTest() {
         when(dateService.convertToDatasourceTimezone(any())).thenReturn(ZonedDateTime.now().minusDays(1));
+        when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
+        when(habitService.getById(anyLong())).thenReturn(habit);
+        when(modelMapper.map(habitStatistic, AddHabitStatisticDto.class)).thenReturn(addhs);
         when(habitStatisticService.save(addhs)).thenReturn(addhs);
         assertEquals(addhs, habitStatisticService.save(addhs));
     }
@@ -93,7 +99,7 @@ public class HabitStatisticServiceImplTest {
         when(habitStatisticRepo.findHabitStatByDate(addhs.getCreatedOn(),
             addhs.getHabitId())).thenReturn(Optional.empty());
         when(dateService.convertToDatasourceTimezone(addhs.getCreatedOn())).thenReturn(ZonedDateTime.now().plusDays(2));
-        when(habitStatisticMapper.convertToEntity(addhs)).thenReturn(new HabitStatistic());
+        when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(new HabitStatistic());
         when(modelMapper.map(new HabitStatistic(), AddHabitStatisticDto.class)).thenReturn(addhs);
         when(habitStatisticRepo.save(new HabitStatistic())).thenReturn(new HabitStatistic());
         assertThrows(BadRequestException.class, () ->
@@ -106,7 +112,7 @@ public class HabitStatisticServiceImplTest {
         when(habitStatisticRepo.findHabitStatByDate(addhs.getCreatedOn(),
             addhs.getHabitId())).thenReturn(Optional.empty());
         when(dateService.convertToDatasourceTimezone(addhs.getCreatedOn())).thenReturn(ZonedDateTime.now().minusDays(2));
-        when(habitStatisticMapper.convertToEntity(addhs)).thenReturn(new HabitStatistic());
+        when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(new HabitStatistic());
         when(modelMapper.map(new HabitStatistic(), AddHabitStatisticDto.class)).thenReturn(addhs);
         when(habitStatisticRepo.save(new HabitStatistic())).thenReturn(new HabitStatistic());
         assertThrows(BadRequestException.class, () ->
