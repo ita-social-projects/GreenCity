@@ -11,10 +11,7 @@ import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitDictionaryDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
-import greencity.entity.Habit;
-import greencity.entity.HabitDictionaryTranslation;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
@@ -24,6 +21,7 @@ import greencity.exception.exceptions.*;
 import greencity.mapping.HabitMapper;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
+import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
@@ -60,6 +58,7 @@ public class UserServiceImpl implements UserService {
     private final HabitService habitService;
     private final HabitStatisticRepo habitStatisticRepo;
     private final GoalTranslationRepo goalTranslationRepo;
+    private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
 
     /**
@@ -451,10 +450,21 @@ public class UserServiceImpl implements UserService {
      * @return list habits.
      */
     private List<Habit> convertToHabit(List<HabitIdDto> habitIdDtos, final User user) {
-        return habitIdDtos.stream()
-            .map(HabitIdDto::getHabitDictionaryId)
-            .map(id -> habitMapper.convertToEntity(id, user))
-            .collect(Collectors.toList());
+        List<HabitDictionary> habitDictionaries =
+            habitIdDtos.stream()
+                .map(HabitIdDto::getHabitDictionaryId)
+                .map(id -> habitDictionaryService.findById(id))
+                .collect(Collectors.toList());
+
+        List<Habit> habits = new ArrayList<>();
+
+        for (HabitDictionary habitDictionary : habitDictionaries) {
+            Habit habit = modelMapper.map(user, Habit.class);
+            habit.setHabitDictionary(habitDictionary);
+            habits.add(habit);
+        }
+
+        return habits;
     }
 
     /**

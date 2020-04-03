@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @AllArgsConstructor
 public class MapperConfig {
     private UserGoalResponseDtoMapper userGoalResponseDtoMapper;
+    private HabitMapper habitMapper;
     private GoalDtoMapper goalDtoMapper;
     private EcoNewsDtoMapper ecoNewsDtoMapper;
     private HabitCreateDtoMapper habitCreateDtoMapper;
@@ -57,5 +58,6 @@ public class MapperConfig {
         modelMapper.addConverter(ecoNewsAuthorDtoMapper);
         modelMapper.addConverter(habitCreateDtoMapper);
         modelMapper.addConverter(habitStatisticMapper);
+        modelMapper.addConverter(habitMapper);
     }
 }

@@ -16,6 +16,7 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.mapping.HabitMapper;
 import greencity.repository.*;
+import greencity.service.HabitDictionaryService;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -57,6 +58,9 @@ public class UserServiceImplTest {
 
     @Mock
     HabitStatisticRepo habitStatisticRepo;
+
+    @Mock
+    HabitDictionaryService habitDictionaryService;
 
     @Mock
     HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
@@ -520,6 +524,8 @@ public class UserServiceImplTest {
     public void createUserHabitWithExistentHabitIdsNotMatchingTest() {
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null)));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(habitDictionaryService.findById(1L)).thenReturn(new HabitDictionary(1L, null, null, null));
+        when(modelMapper.map(user, Habit.class)).thenReturn(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null));
         assertEquals(Collections.emptyList(), userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(2L)), "en"));
     }
 
@@ -541,7 +547,7 @@ public class UserServiceImplTest {
 
     @Test
     public void addDefaultHabitTest() {
-        when(habitMapper.convertToEntity(1L, user)).thenReturn(new Habit());
+        when(modelMapper.map(user, Habit.class)).thenReturn(new Habit());
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         userService.addDefaultHabit(user.getId(), "en");
