@@ -415,7 +415,6 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      *
-     * @return
      * @author Bogdan Kuzenko
      */
     @Transactional
