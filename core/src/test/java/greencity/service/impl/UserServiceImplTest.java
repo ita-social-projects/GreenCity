@@ -20,14 +20,13 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 import junit.framework.TestCase;
-import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.powermock.api.mockito.PowerMockito;
@@ -36,9 +35,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@ExtendWith(SpringExtension.class)
 public class UserServiceImplTest {
     @Mock
     UserRepo userRepo;
@@ -126,12 +126,14 @@ public class UserServiceImplTest {
             userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, any()).getUserStatus());
     }
 
-    @Test(expected = LowRoleLevelException.class)
+    @Test
     public void updateUserStatusLowRoleLevelException() {
         user.setRole(ROLE.ROLE_MODERATOR);
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
-        userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, "email");
+        assertThrows(LowRoleLevelException.class, () ->
+            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, "email")
+        );
     }
 
     @Test
@@ -146,10 +148,12 @@ public class UserServiceImplTest {
         verify(userRepo, times(1)).save(any());
     }
 
-    @Test(expected = BadUpdateRequestException.class)
+    @Test
     public void updateRoleOnTheSameUserTest() {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        userService.updateRole(user.getId(), null, user.getEmail());
+        assertThrows(BadUpdateRequestException.class, () ->
+            userService.updateRole(user.getId(), null, user.getEmail())
+        );
     }
 
     @Test
@@ -165,21 +169,27 @@ public class UserServiceImplTest {
         verify(userRepo, times(1)).findById(id);
     }
 
-    @Test(expected = WrongIdException.class)
+    @Test
     public void findByIdBadIdTest() {
         when(userRepo.findById(any())).thenThrow(WrongIdException.class);
-        userService.findById(1L);
+        assertThrows(WrongIdException.class, () ->
+            userService.findById(1L)
+        );
     }
 
-    @Test(expected = WrongIdException.class)
+    @Test
     public void deleteByIdExceptionBadIdTest() {
-        userService.deleteById(1L);
+        assertThrows(WrongIdException.class, () ->
+            userService.deleteById(1L)
+        );
     }
 
-    @Test(expected = WrongIdException.class)
+    @Test
     public void deleteByNullIdExceptionTest() {
-        userService.deleteById(null);
-        verifyZeroInteractions(userRepo);
+        when(userRepo.findById(null)).thenThrow(new WrongIdException(""));
+        assertThrows(WrongIdException.class, () ->
+            userService.deleteById(null)
+        );
     }
 
     @Test
@@ -202,9 +212,11 @@ public class UserServiceImplTest {
     /**
      * @author Zakhar Skaletskyi
      */
-    @Test(expected = WrongEmailException.class)
+    @Test
     public void findIdByEmailNotFound() {
-        userService.findIdByEmail(any());
+        assertThrows(WrongEmailException.class, () ->
+            userService.findIdByEmail(any())
+        );
     }
 
     @Test
@@ -324,10 +336,12 @@ public class UserServiceImplTest {
         assertEquals(userService.getUserGoals(user.getId(), "en"), userGoalDto);
     }
 
-    @Test(expected = UserHasNoGoalsException.class)
+    @Test
     public void getUserGoalsUserHasNoGoalTest() {
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
-        userService.getUserGoals(user.getId(), "en");
+        assertThrows(UserHasNoGoalsException.class, () ->
+            userService.getUserGoals(user.getId(), "en")
+        );
     }
 
     @Test
@@ -337,11 +351,13 @@ public class UserServiceImplTest {
         assertEquals(1, updatedRows);
     }
 
-    @Test(expected = UserGoalStatusNotUpdatedException.class)
+    @Test
     public void updateUserGoalStatusWithNonExistentGoalIdTest() {
         user.setUserGoals(Collections.singletonList(new UserGoal(1L, null, null, null, null, null)));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        userService.updateUserGoalStatus(user.getId(), 2L, "en");
+        assertThrows(UserGoalStatusNotUpdatedException.class, () ->
+            userService.updateUserGoalStatus(user.getId(), 2L, "en")
+        );
         verifyZeroInteractions(userGoalRepo);
     }
 
@@ -469,16 +485,20 @@ public class UserServiceImplTest {
         assertEquals(deletedGoals, expectedDeletedGoals);
     }
 
-    @Test(expected = UserHasNoAvailableGoalsException.class)
+    @Test
     public void getAvailableGoalsNoAvailableGoalsTest() {
         when(goalTranslationRepo.findAvailableByUserId(user.getId(), language)).thenReturn(Collections.emptyList());
-        userService.getAvailableGoals(user.getId(), language);
+        assertThrows(UserHasNoAvailableGoalsException.class, () ->
+            userService.getAvailableGoals(user.getId(), language)
+        );
     }
 
-    @Test(expected = UserHasNoAvailableHabitDictionaryException.class)
+    @Test
     public void getAvailableHabitDictionaryNoAvailable() {
         when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en")).thenReturn(Collections.emptyList());
-        userService.getAvailableHabitDictionary(user.getId(), "en");
+        assertThrows(UserHasNoAvailableHabitDictionaryException.class, () ->
+            userService.getAvailableHabitDictionary(user.getId(), "en")
+        );
     }
 
     @Test
@@ -503,7 +523,7 @@ public class UserServiceImplTest {
         assertEquals(Collections.emptyList(), userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(2L)), "en"));
     }
 
-    @Test(expected = WrongIdException.class)
+    @Test
     public void createUserHabitWithExistentHabitTest() {
         when(habitRepo.findByUserIdAndStatusHabit(user.getId()))
             .thenReturn(
@@ -513,7 +533,9 @@ public class UserServiceImplTest {
                         .build()
                 )
             );
-        userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(1L)), "en");
+        assertThrows(WrongIdException.class, () ->
+            userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(1L)), "en")
+        );
         verify(habitRepo, times(0)).saveAll(any());
     }
 
@@ -543,22 +565,28 @@ public class UserServiceImplTest {
         assertEquals(userService.getAvailableCustomGoals(user.getId()), customGoalsDtos);
     }
 
-    @Test(expected = WrongIdException.class)
+    @Test
     public void deleteHabitByUserIdAndHabitDictionaryEmptyHabitTest() {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
-        userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L);
+        assertThrows(WrongIdException.class, () ->
+            userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L)
+        );
     }
 
-    @Test(expected = NotDeletedException.class)
+    @Test
     public void deleteHabitByUserIdAndHabitDictionaryNotDeletedExceptionTest() {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(new Habit()));
         when(habitRepo.countHabitByUserId(user.getId())).thenReturn(1);
-        userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L);
+        assertThrows(NotDeletedException.class, () ->
+            userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L)
+        );
     }
 
-    @Test(expected = WrongIdException.class)
+    @Test
     public void deleteHabitByUserIdAndHabitDictionaryExceptionTest() {
-        userService.deleteHabitByUserIdAndHabitDictionary(null, 1L);
+        assertThrows(WrongIdException.class, () ->
+            userService.deleteHabitByUserIdAndHabitDictionary(null, 1L)
+        );
     }
 
     @Test
@@ -570,14 +598,18 @@ public class UserServiceImplTest {
         verify(habitRepo, times(1)).deleteById(habit.getId());
     }
 
-    @Test(expected = NotDeletedException.class)
+    @Test
     public void deleteHabitByUserAndNullHabit() {
-        userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), null);
+        assertThrows(NotDeletedException.class, () ->
+            userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), null)
+        );
     }
 
-    @Test(expected = NotDeletedException.class)
+    @Test
     public void deleteHabitByNullUserAndNullHabit() {
-        userService.deleteHabitByUserIdAndHabitDictionary(null, null);
+        assertThrows(NotDeletedException.class, () ->
+            userService.deleteHabitByUserIdAndHabitDictionary(null, null)
+        );
     }
 
     @Test
