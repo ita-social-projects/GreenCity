@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
-public class HabitStatisticMapper implements MapperToDto<HabitStatistic, AddHabitStatisticDto>,
-    MapperToEntity<AddHabitStatisticDto, HabitStatistic> {
+public class HabitStatisticMapper implements MapperToEntity<AddHabitStatisticDto, HabitStatistic> {
     private ModelMapper modelMapper;
     private HabitRepo habitRepo;
 
@@ -25,12 +24,5 @@ public class HabitStatisticMapper implements MapperToDto<HabitStatistic, AddHabi
         HabitStatistic habitStatistic = modelMapper.map(dto, HabitStatistic.class);
         habitStatistic.setHabit(habit);
         return habitStatistic;
-    }
-
-    @Override
-    public AddHabitStatisticDto convertToDto(HabitStatistic entity) {
-        AddHabitStatisticDto addHabitStatisticDto = modelMapper.map(entity, AddHabitStatisticDto.class);
-        addHabitStatisticDto.setHabitId(entity.getHabit().getId());
-        return addHabitStatisticDto;
     }
 }

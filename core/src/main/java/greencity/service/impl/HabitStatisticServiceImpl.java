@@ -77,7 +77,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         );
         if (proceed) {
             HabitStatistic habitStatistic = habitStatisticMapper.convertToEntity(dto);
-            return habitStatisticMapper.convertToDto(habitStatisticRepo.save(habitStatistic));
+            return modelMapper.map(habitStatisticRepo.save(habitStatistic), AddHabitStatisticDto.class);
         }
         throw new BadRequestException(ErrorMessage.WRONG_DATE);
     }
