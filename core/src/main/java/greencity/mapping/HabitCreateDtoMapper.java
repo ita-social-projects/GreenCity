@@ -5,11 +5,13 @@ import greencity.dto.habitstatistic.HabitDictionaryDto;
 import greencity.entity.Habit;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 /**
  * Class that used by {@link ModelMapper} to map {@link Habit} into
  * {@link HabitCreateDto}.
  */
+@Component
 public class HabitCreateDtoMapper extends AbstractConverter<Habit, HabitCreateDto> {
     /**
      * Method convert {@link Habit} to {@link HabitCreateDto}.
