@@ -1,10 +1,12 @@
 package greencity;
 
+import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsTranslationDto;
 import greencity.dto.language.LanguageRequestDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
 import greencity.entity.Language;
 import greencity.entity.Tag;
@@ -69,5 +71,13 @@ public class ModelUtils {
             getEcoNewsTranslation().getText(), getEcoNewsAuthorDto(),
             getEcoNews().getCreationDate(), "imagePath",
             Collections.singletonList("tag"));
+    }
+
+    public static DiscountValue getDiscountValue() {
+        return new DiscountValue(null, 33, null, null);
+    }
+
+    public static DiscountValueDto getDiscountValueDto() {
+        return new DiscountValueDto(33, null);
     }
 }
