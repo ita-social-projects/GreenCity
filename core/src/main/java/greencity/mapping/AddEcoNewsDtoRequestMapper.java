@@ -2,10 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.entity.EcoNews;
-import greencity.entity.Language;
-import greencity.entity.localization.EcoNewsTranslation;
 import java.time.ZonedDateTime;
-import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -24,21 +21,10 @@ public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoR
      */
     @Override
     protected EcoNews convert(AddEcoNewsDtoRequest addEcoNewsDtoRequest) {
-        EcoNews ecoNews = EcoNews.builder()
+        return EcoNews.builder()
+            .title(addEcoNewsDtoRequest.getTitle())
+            .text(addEcoNewsDtoRequest.getText())
             .creationDate(ZonedDateTime.now())
             .build();
-
-        ecoNews.setTranslations(addEcoNewsDtoRequest.getTranslations()
-            .stream()
-            .map(translation ->
-                new EcoNewsTranslation(null,
-                    Language.builder()
-                        .code(translation.getLanguage().getCode())
-                        .build(),
-                    translation.getTitle(), translation.getText(), ecoNews))
-            .collect(Collectors.toList())
-        );
-
-        return ecoNews;
     }
 }
