@@ -96,7 +96,8 @@ public class ModelUtils {
 
     public static URL getUrl() throws MalformedURLException {
         return new URL(TestConst.SITE);
-      
+    }
+    
     public static DiscountValue getDiscountValue() {
         return new DiscountValue(null, 33, null, null);
     }
