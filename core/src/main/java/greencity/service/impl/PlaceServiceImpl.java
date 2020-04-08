@@ -15,7 +15,6 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
-import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.ProposePlaceMapper;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
@@ -48,7 +47,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final ProposePlaceMapper placeMapper;
     private final CategoryService categoryService;
     private final LocationService locationService;
-    private final DiscountValueMapper discountValueMapper;
+    private final SpecificationService specificationService;
     private final UserService userService;
     private final OpenHoursService openingHoursService;
     private final DiscountService discountService;
@@ -67,7 +66,7 @@ public class PlaceServiceImpl implements PlaceService {
                             ProposePlaceMapper placeMapper,
                             CategoryService categoryService,
                             LocationService locationService,
-                            DiscountValueMapper discountValueMapper,
+                            SpecificationService specificationService,
                             UserService userService,
                             OpenHoursService openingHoursService,
                             DiscountService discountService,
@@ -79,7 +78,7 @@ public class PlaceServiceImpl implements PlaceService {
         this.placeMapper = placeMapper;
         this.categoryService = categoryService;
         this.locationService = locationService;
-        this.discountValueMapper = discountValueMapper;
+        this.specificationService = specificationService;
         this.userService = userService;
         this.openingHoursService = openingHoursService;
         this.discountService = discountService;
@@ -172,7 +171,8 @@ public class PlaceServiceImpl implements PlaceService {
         discountService.deleteAllByPlaceId(updatedPlace.getId());
         Set<DiscountValue> newDiscounts = new HashSet<>();
         discounts.forEach(d -> {
-            DiscountValue discount = discountValueMapper.convertToEntity(d);
+            DiscountValue discount = modelMapper.map(d, DiscountValue.class);
+            discount.setSpecification(specificationService.findByName(d.getSpecification().getName()));
             discount.setPlace(updatedPlace);
             discountService.save(discount);
             newDiscounts.add(discount);

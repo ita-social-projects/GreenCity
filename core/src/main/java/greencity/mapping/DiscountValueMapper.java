@@ -5,9 +5,8 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.entity.DiscountValue;
 import greencity.entity.Specification;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.service.SpecificationService;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,16 +17,11 @@ import org.springframework.stereotype.Component;
  */
 @AllArgsConstructor
 @Component
-public class DiscountValueMapper implements MapperToEntity<DiscountValueDto, DiscountValue> {
-    private ModelMapper modelMapper;
-    private SpecificationService specificationService;
-
+public class DiscountValueMapper extends AbstractConverter<DiscountValueDto, DiscountValue> {
     @Override
-    public DiscountValue convertToEntity(DiscountValueDto dto) {
-        DiscountValue discount = modelMapper.map(dto, DiscountValue.class);
-        Specification specification = specificationService.findByName(dto.getSpecification().getName())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME));
-        discount.setSpecification(specification);
-        return discount;
+    protected DiscountValue convert(DiscountValueDto discountValueDto) {
+        return DiscountValue.builder()
+            .value(discountValueDto.getValue())
+            .build();
     }
 }

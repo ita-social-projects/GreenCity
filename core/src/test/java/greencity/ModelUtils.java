@@ -1,8 +1,10 @@
 package greencity;
 
+import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
 import greencity.entity.Language;
 import greencity.entity.Tag;
@@ -78,5 +80,13 @@ public class ModelUtils {
 
     public static URL getUrl() throws MalformedURLException {
         return new URL(TestConst.SITE);
+    }
+
+    public static DiscountValue getDiscountValue() {
+        return new DiscountValue(null, 33, null, null);
+    }
+
+    public static DiscountValueDto getDiscountValueDto() {
+        return new DiscountValueDto(33, null);
     }
 }
