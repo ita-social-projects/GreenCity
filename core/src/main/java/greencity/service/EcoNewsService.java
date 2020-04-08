@@ -7,6 +7,7 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface EcoNewsService {
     /**
@@ -15,7 +16,7 @@ public interface EcoNewsService {
      * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text, image path.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
-    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email);
+    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
     /**
      * Method for getting last three eco news.

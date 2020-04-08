@@ -8,7 +8,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SpecificationRepo;
 import greencity.service.SpecificationService;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,8 +82,10 @@ public class SpecificationServiceImpl implements SpecificationService {
      * @author Kateryna Horokh
      */
     @Override
-    public Optional<Specification> findByName(String name) {
-        return specificationRepo.findByName(name);
+    public Specification findByName(String specificationName) {
+        return specificationRepo
+            .findByName(specificationName)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME));
     }
 
     /**
