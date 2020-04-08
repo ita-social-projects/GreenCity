@@ -8,12 +8,10 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDictionaryDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
-import greencity.entity.Habit;
-import greencity.entity.HabitDictionaryTranslation;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
@@ -23,6 +21,8 @@ import greencity.exception.exceptions.*;
 import greencity.mapping.HabitMapper;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
+import greencity.service.HabitDictionaryService;
+import greencity.service.HabitService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,8 +55,10 @@ public class UserServiceImpl implements UserService {
     private final HabitDictionaryRepo habitDictionaryRepo;
     private final CustomGoalRepo customGoalRepo;
     private final HabitRepo habitRepo;
+    private final HabitService habitService;
     private final HabitStatisticRepo habitStatisticRepo;
     private final GoalTranslationRepo goalTranslationRepo;
+    private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
 
     /**
@@ -416,7 +418,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<HabitDictionaryDto> getAvailableHabitDictionary(Long userId, String language) {
+    public List<greencity.dto.user.HabitDictionaryDto> getAvailableHabitDictionary(Long userId, String language) {
         List<HabitDictionaryTranslation> availableHabitDictionary = habitDictionaryTranslationRepo
             .findAvailableHabitDictionaryByUser(userId, language);
         if (availableHabitDictionary.isEmpty()) {
@@ -448,23 +450,50 @@ public class UserServiceImpl implements UserService {
      * @return list habits.
      */
     private List<Habit> convertToHabit(List<HabitIdDto> habitIdDtos, final User user) {
-        return habitIdDtos.stream()
-            .map(HabitIdDto::getHabitDictionaryId)
-            .map(id -> habitMapper.convertToEntity(id, user))
-            .collect(Collectors.toList());
+        List<HabitDictionary> habitDictionaries =
+            habitIdDtos.stream()
+                .map(HabitIdDto::getHabitDictionaryId)
+                .map(habitDictionaryService::findById)
+                .collect(Collectors.toList());
+
+        List<Habit> habits = new ArrayList<>();
+
+        for (HabitDictionary habitDictionary : habitDictionaries) {
+            Habit habit = modelMapper.map(user, Habit.class);
+            habit.setHabitDictionary(habitDictionary);
+            habits.add(habit);
+        }
+
+        return habits;
     }
 
     /**
      * Method convert {@link Habit} in list {@link HabitCreateDto}.
      *
-     * @param habits - list {@link Habit}.
-     * @return List {@link HabitCreateDto}
+     * @param habits   - list {@link Habit}.
+     * @param language - languageCode.
+     * @return List {@link HabitCreateDto}.
      */
     private List<HabitCreateDto> convertToHabitCreateDto(List<Habit> habits, String language) {
-        return habits
+        List<HabitCreateDto> habitCreateDtos = habits
             .stream()
-            .map(habit -> habitMapper.convertToDto(habit, language))
+            .map(habit -> modelMapper.map(habit, HabitCreateDto.class))
             .collect(Collectors.toList());
+
+        List<HabitCreateDto> habitCreateDtoResultList = new ArrayList<>();
+
+        for (int i = 0; i < habits.size(); i++) {
+            HabitDictionaryTranslation htd = habitService.getHabitDictionaryTranslation(
+                habits.get(i), language);
+            HabitCreateDto habitCreateDto = habitCreateDtos.get(i);
+            HabitDictionaryDto habitDictionaryDto = habitCreateDto.getHabitDictionary();
+            habitDictionaryDto.setName(htd.getName());
+            habitDictionaryDto.setDescription(htd.getDescription());
+            habitCreateDto.setHabitDictionary(habitDictionaryDto);
+            habitCreateDtoResultList.add(habitCreateDto);
+        }
+
+        return habitCreateDtoResultList;
     }
 
     /**
@@ -542,11 +571,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private List<HabitDictionaryDto> habitDictionaryDtos(
+    private List<greencity.dto.user.HabitDictionaryDto> habitDictionaryDtos(
         List<HabitDictionaryTranslation> habitDictionaryTranslations) {
-        List<HabitDictionaryDto> habitDictionaryDtos = new ArrayList<>();
+        List<greencity.dto.user.HabitDictionaryDto> habitDictionaryDtos = new ArrayList<>();
         for (HabitDictionaryTranslation hdt : habitDictionaryTranslations) {
-            HabitDictionaryDto hd = new HabitDictionaryDto();
+            greencity.dto.user.HabitDictionaryDto hd = new greencity.dto.user.HabitDictionaryDto();
             hd.setId(hdt.getHabitDictionary().getId());
             hd.setName(hdt.getName());
             hd.setDescription(hdt.getDescription());
