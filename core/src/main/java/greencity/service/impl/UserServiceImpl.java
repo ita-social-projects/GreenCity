@@ -453,7 +453,7 @@ public class UserServiceImpl implements UserService {
         List<HabitDictionary> habitDictionaries =
             habitIdDtos.stream()
                 .map(HabitIdDto::getHabitDictionaryId)
-                .map(id -> habitDictionaryService.findById(id))
+                .map(habitDictionaryService::findById)
                 .collect(Collectors.toList());
 
         List<Habit> habits = new ArrayList<>();
