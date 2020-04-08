@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.entity.Specification;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Provides the interface to manage {@code Specification} entity.
@@ -46,7 +45,7 @@ public interface SpecificationService {
      * @param name to find by.
      * @return a specification by name.
      */
-    Optional<Specification> findByName(String name);
+    Specification findByName(String name);
 
     /**
      * Method for finding all SpecificationNameDto.
