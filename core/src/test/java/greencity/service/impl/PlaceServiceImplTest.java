@@ -12,7 +12,6 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
-import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.ProposePlaceMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
@@ -20,13 +19,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.Mock;
@@ -40,7 +36,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @Slf4j
-public class PlaceServiceImplTest {
+class PlaceServiceImplTest {
     Category category = Category.builder()
         .id(1L)
         .name("test").build();
@@ -130,7 +126,7 @@ public class PlaceServiceImplTest {
     private ProposePlaceMapper proposePlaceMapper;
 
     @Mock
-    private DiscountValueMapper discountValueMapper;
+    private SpecificationService specificationService;
 
     @Mock
     private DiscountService discountService;
@@ -160,16 +156,16 @@ public class PlaceServiceImplTest {
         .modifiedDate(ZonedDateTime.now())
         .build();
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, proposePlaceMapper, categoryService,
-            locationService, discountValueMapper, userService, openingHoursService, discountService,
+            locationService, specificationService, userService, openingHoursService, discountService,
             notificationService, zoneId, rabbitTemplate);
     }
 
     @Test
-    public void saveTest() {
+    void saveTest() {
         when(proposePlaceMapper.convertToEntity(any())).thenReturn(place);
         when(userService.findByEmail(anyString())).thenReturn(user);
         when(placeRepo.save(place)).thenReturn(place);
@@ -178,7 +174,7 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void updateStatusTest() {
+    void updateStatusTest() {
         User user = User.builder().firstName("test fname").email("test.ua").build();
         Place genericEntity = Place.builder()
             .id(1L)
@@ -195,7 +191,7 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void getPlacesByStatusTest() {
+    void getPlacesByStatusTest() {
         int pageNumber = 0;
         int pageSize = 1;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -215,37 +211,43 @@ public class PlaceServiceImplTest {
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any(), any())).thenReturn(placesPage);
         when(modelMapper.map(any(), any())).thenReturn(dto);
 
-        Assert.assertEquals(pageableDto, placeService.getPlacesByStatus(any(), any()));
+        assertEquals(pageableDto, placeService.getPlacesByStatus(any(), any()));
         verify(placeRepo, times(1)).findAllByStatusOrderByModifiedDateDesc(any(), any());
     }
 
-    @Test(expected = PlaceStatusException.class)
-    public void updateStatusGivenTheSameStatusThenThrowException() {
-        Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-        placeService.updateStatus(1L, PlaceStatus.PROPOSED);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void updateStatusGivenPlaceIdNullThenThrowException() {
-        placeService.updateStatus(null, PlaceStatus.PROPOSED);
+    @Test
+    void updateStatusGivenTheSameStatusThenThrowException() {
+        assertThrows(PlaceStatusException.class, () -> {
+            Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
+            when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+            placeService.updateStatus(1L, PlaceStatus.PROPOSED);
+        });
     }
 
     @Test
-    public void findByIdTest() {
+    void updateStatusGivenPlaceIdNullThenThrowException() {
+        assertThrows(NotFoundException.class, () -> {
+            placeService.updateStatus(null, PlaceStatus.PROPOSED);
+        });
+    }
+
+    @Test
+    void findByIdTest() {
         Place genericEntity = new Place();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         Place foundEntity = placeService.findById(anyLong());
         assertEquals(genericEntity, foundEntity);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void findByIdGivenIdNullThenThrowException() {
-        placeService.findById(null);
+    @Test
+    void findByIdGivenIdNullThenThrowException() {
+        assertThrows(NotFoundException.class, () -> {
+            placeService.findById(null);
+        });
     }
 
     @Test
-    public void getInfoByIdTest() {
+    void getInfoByIdTest() {
         PlaceInfoDto gen = new PlaceInfoDto();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
         when(modelMapper.map(any(), any())).thenReturn(gen);
@@ -254,16 +256,18 @@ public class PlaceServiceImplTest {
         assertEquals(gen, res);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void getInfoByIdNotFoundTest() {
-        placeService.getInfoById(null);
+    @Test
+    void getInfoByIdNotFoundTest() {
+        assertThrows(NotFoundException.class, () -> {
+            placeService.getInfoById(null);
+        });
     }
 
     /**
      * @author Zakhar Skaletskyi
      */
     @Test
-    public void existsById() {
+    void existsById() {
         when(placeRepo.existsById(anyLong())).thenReturn(true);
         assertTrue(placeService.existsById(3L));
         when(placeRepo.existsById(anyLong())).thenReturn(false);
@@ -274,14 +278,14 @@ public class PlaceServiceImplTest {
      * @author Zakhar Skaletskyi
      */
     @Test
-    public void averageRate() {
+    void averageRate() {
         Double averageRate = 4.0;
         when(placeRepo.getAverageRate(anyLong())).thenReturn(averageRate);
         assertEquals(averageRate, placeService.averageRate(2L));
     }
 
     @Test
-    public void updateStatusesTest() {
+    void updateStatusesTest() {
         BulkUpdatePlaceStatusDto requestDto = new BulkUpdatePlaceStatusDto(
             Arrays.asList(1L, 2L),
             PlaceStatus.DECLINED
@@ -303,7 +307,7 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void getStatusesTest() {
+    void getStatusesTest() {
         List<PlaceStatus> placeStatuses =
             Arrays.asList(PlaceStatus.PROPOSED, PlaceStatus.DECLINED, PlaceStatus.APPROVED, PlaceStatus.DELETED);
 
@@ -311,7 +315,7 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void bulkDelete() {
+    void bulkDelete() {
         List<Long> request = Arrays.asList(1L, 2L);
 
         when(placeRepo.findById(anyLong()))
@@ -325,7 +329,7 @@ public class PlaceServiceImplTest {
     }
 
     @Test
-    public void findAllTest() {
+    void findAllTest() {
         List<Place> expectedList = Arrays.asList(new Place(), new Place());
 
         when(placeRepo.findAll()).thenReturn(expectedList);
