@@ -63,10 +63,7 @@ public class ProposePlaceMapper implements MapperToEntity<PlaceAddDto, Place> {
 
     private void saveDiscountValuesWithPlace(Set<DiscountValue> discountValues, Place place) {
         discountValues.forEach(disc -> {
-            Specification specification = specService.findByName(disc.getSpecification().getName())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME
-                    + disc.getSpecification().getName()));
-            disc.setSpecification(specification);
+            disc.setSpecification(specService.findByName(disc.getSpecification().getName()));
             disc.setPlace(place);
         });
     }

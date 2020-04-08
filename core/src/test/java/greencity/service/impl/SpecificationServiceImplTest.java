@@ -1,11 +1,11 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-
-import greencity.GreenCityApplication;
 import greencity.entity.Specification;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SpecificationRepo;
@@ -13,16 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
-public class SpecificationServiceImplTest {
+@ExtendWith(SpringExtension.class)
+class SpecificationServiceImplTest {
     @Mock
     private SpecificationRepo specificationRepo;
 
@@ -30,7 +26,7 @@ public class SpecificationServiceImplTest {
     private SpecificationServiceImpl specificationService;
 
     @Test
-    public void saveTest() {
+    void saveTest() {
         Specification genericEntity = new Specification();
 
         when(specificationRepo.save(genericEntity)).thenReturn(genericEntity);
@@ -39,7 +35,7 @@ public class SpecificationServiceImplTest {
     }
 
     @Test
-    public void findByIdTest() {
+    void findByIdTest() {
         Specification genericEntity = new Specification();
 
         when(specificationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
@@ -49,13 +45,15 @@ public class SpecificationServiceImplTest {
         assertEquals(genericEntity, foundEntity);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void findByIdGivenIdNullThenThrowException() {
-        specificationService.findById(null);
+    @Test
+    void findByIdGivenIdNullThenThrowException() {
+        assertThrows(NotFoundException.class, () -> {
+            specificationService.findById(null);
+        });
     }
 
     @Test
-    public void findAllTest() {
+    void findAllTest() {
         List<Specification> genericEntities =
             new ArrayList<>(Arrays.asList(new Specification(), new Specification()));
 
@@ -67,25 +65,27 @@ public class SpecificationServiceImplTest {
     }
 
     @Test
-    public void deleteByIdTest() {
+    void deleteByIdTest() {
         when(specificationRepo.findById(anyLong())).thenReturn(Optional.of(new Specification()));
 
         assertEquals(new Long(1), specificationService.deleteById(1L));
     }
 
-    @Test(expected = NotFoundException.class)
-    public void deleteByIdGivenIdNullThenThrowException() {
-        specificationService.deleteById(null);
+    @Test
+    void deleteByIdGivenIdNullThenThrowException() {
+        assertThrows(NotFoundException.class, () -> {
+            specificationService.deleteById(null);
+        });
     }
 
     @Test
-    public void findByNameTest() {
+    void findByNameTest() {
         Specification genericEntity = new Specification();
 
         when(specificationRepo.findByName(anyString())).thenReturn(Optional.of(genericEntity));
 
-        Optional<Specification> foundEntity = specificationService.findByName(anyString());
+        Specification foundEntity = specificationService.findByName(anyString());
 
-        assertEquals(Optional.of(genericEntity), foundEntity);
+        assertEquals(genericEntity, foundEntity);
     }
 }
