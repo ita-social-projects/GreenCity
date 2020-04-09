@@ -21,8 +21,6 @@ public class AddEcoNewsDtoResponseMapperTest {
 
         AddEcoNewsDtoResponse expected = ModelUtils.getAddEcoNewsDtoResponse();
         expected.setCreationDate(ecoNews.getCreationDate());
-        expected.setTitle(null);
-        expected.setText(null);
 
         assertEquals(expected, mapper.convert(ecoNews));
     }

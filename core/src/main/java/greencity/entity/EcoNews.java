@@ -1,6 +1,5 @@
 package greencity.entity;
 
-import greencity.entity.localization.EcoNewsTranslation;
 import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.*;
@@ -28,9 +27,11 @@ public class EcoNews {
     @ManyToOne
     private User author;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ecoNews", cascade = {CascadeType.REMOVE, CascadeType.PERSIST,
-        CascadeType.REFRESH})
-    private List<EcoNewsTranslation> translations;
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String text;
 
     @ManyToMany
     private List<Tag> tags;

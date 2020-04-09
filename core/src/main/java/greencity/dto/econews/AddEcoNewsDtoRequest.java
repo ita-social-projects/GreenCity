@@ -11,7 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AddEcoNewsDtoRequest {
     @NotEmpty
-    private List<EcoNewsTranslationDto> translations;
+    private String title;
+
+    @NotEmpty
+    private String text;
+
     @NotEmpty
     private List<String> tags;
 }
