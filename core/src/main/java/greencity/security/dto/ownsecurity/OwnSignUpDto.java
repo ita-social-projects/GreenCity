@@ -18,12 +18,8 @@ import org.hibernate.validator.constraints.Length;
 @Builder
 public class OwnSignUpDto {
     @NotBlank
-    @Length(max = 20)
-    private String firstName;
-
-    @NotBlank
-    @Length(max = 20)
-    private String lastName;
+    @Length(max = 50)
+    private String name;
 
     @NotBlank
     @Email(message = INVALID_EMAIL)

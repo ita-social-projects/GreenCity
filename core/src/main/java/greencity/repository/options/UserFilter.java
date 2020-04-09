@@ -55,8 +55,7 @@ public class UserFilter implements Specification<User> {
     private Predicate hasFieldsLike(Root<User> r, CriteriaBuilder cb, String reg) {
         reg = replaceCriteria(reg);
         return cb.or(
-            cb.like(r.get(RepoConstants.FIRST_NAME), reg),
-            cb.like(r.get(RepoConstants.LAST_NAME), reg),
+            cb.like(r.get(RepoConstants.NAME), reg),
             cb.like(r.get(RepoConstants.EMAIL), reg),
             cb.like(r.get(RepoConstants.REGISTRATION_DATE).as(String.class), reg)
         );

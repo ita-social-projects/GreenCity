@@ -12,7 +12,7 @@ public final class EmailConstants {
     public static final String CLIENT_LINK = "clientLink";
     public static final String ECO_NEWS_LINK = "ecoNewsLink";
     public static final String UNSUBSCRIBE_LINK = "unsubscribeLink";
-    public static final String USER_NAME = "userFirstName";
+    public static final String USER_NAME = "userName";
     public static final String PLACE_NAME = "placeName";
     public static final String STATUS = "status";
     public static final String VERIFY_ADDRESS = "verifyAddress";

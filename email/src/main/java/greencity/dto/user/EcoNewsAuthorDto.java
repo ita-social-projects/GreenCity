@@ -8,6 +8,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class EcoNewsAuthorDto implements Serializable {
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String name;
 }

@@ -31,8 +31,7 @@ public class ModelUtils {
         return User.builder()
             .id(1L)
             .email(TestConst.EMAIL)
-            .firstName(TestConst.NAME)
-            .lastName("Stasyuk")
+            .name(TestConst.NAME)
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
@@ -40,7 +39,7 @@ public class ModelUtils {
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
-        return new EcoNewsAuthorDto(1L, TestConst.NAME, "Stasyuk");
+        return new EcoNewsAuthorDto(1L, TestConst.NAME);
     }
 
     public static Language getLanguage() {

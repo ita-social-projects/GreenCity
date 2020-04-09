@@ -39,8 +39,7 @@ public class EmailServiceImplTest {
         placeAuthorDto = PlaceAuthorDto.builder()
             .id(1L)
             .email("testEmail@gmail.com")
-            .firstName("testName")
-            .lastName("testLastName")
+            .name("testName")
             .build();
 
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));

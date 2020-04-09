@@ -68,8 +68,7 @@ public class UserServiceImplTest {
     private User user =
         User.builder()
             .id(1L)
-            .firstName("test")
-            .lastName("test")
+            .name("Test Testing")
             .email("test@gmail.com")
             .role(ROLE.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
@@ -80,8 +79,7 @@ public class UserServiceImplTest {
     private User user2 =
         User.builder()
             .id(2L)
-            .firstName("test")
-            .lastName("test")
+            .name("Test Testing")
             .email("test@gmail.com")
             .role(ROLE.ROLE_MODERATOR)
             .userStatus(UserStatus.ACTIVATED)
@@ -230,10 +228,10 @@ public class UserServiceImplTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         User user = new User();
-        user.setFirstName("Roman");
+        user.setName("Roman Romanovich");
 
         UserForListDto userForListDto = new UserForListDto();
-        userForListDto.setFirstName("Roman");
+        userForListDto.setName("Roman Romanovich");
 
         Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
@@ -281,10 +279,10 @@ public class UserServiceImplTest {
         FilterUserDto filterUserDto = new FilterUserDto();
 
         User user = new User();
-        user.setFirstName("Roman");
+        user.setName("Roman Bezos");
 
         UserForListDto userForListDto = new UserForListDto();
-        userForListDto.setFirstName("Roman");
+        userForListDto.setName("Roman Bezos");
 
         Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
@@ -305,13 +303,11 @@ public class UserServiceImplTest {
     public void getUserUpdateDtoByEmail() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         UserUpdateDto userUpdateDto = new UserUpdateDto();
-        userUpdateDto.setFirstName(user.getFirstName());
-        userUpdateDto.setLastName(user.getLastName());
+        userUpdateDto.setName(user.getName());
         userUpdateDto.setEmailNotification(user.getEmailNotification());
         when(modelMapper.map(any(), any())).thenReturn(userUpdateDto);
         UserUpdateDto userInitialsByEmail = userService.getUserUpdateDtoByEmail("");
-        assertEquals(userInitialsByEmail.getFirstName(), user.getFirstName());
-        assertEquals(userInitialsByEmail.getLastName(), user.getLastName());
+        assertEquals(userInitialsByEmail.getName(), user.getName());
         assertEquals(userInitialsByEmail.getEmailNotification(), user.getEmailNotification());
     }
 
@@ -320,12 +316,10 @@ public class UserServiceImplTest {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
         UserUpdateDto userUpdateDto = new UserUpdateDto();
-        userUpdateDto.setFirstName(user.getFirstName());
-        userUpdateDto.setLastName(user.getLastName());
+        userUpdateDto.setName(user.getName());
         userUpdateDto.setEmailNotification(user.getEmailNotification());
         User user = userService.update(userUpdateDto, "");
-        assertEquals(userUpdateDto.getFirstName(), user.getFirstName());
-        assertEquals(userUpdateDto.getLastName(), user.getLastName());
+        assertEquals(userUpdateDto.getName(), user.getName());
         assertEquals(userUpdateDto.getEmailNotification(), user.getEmailNotification());
         verify(userRepo, times(1)).save(any());
     }
