@@ -4,7 +4,6 @@ import greencity.ModelUtils;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
-import greencity.entity.localization.EcoNewsTranslation;
 import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -20,17 +19,15 @@ public class EcoNewsDtoMapperTest {
     @Test
     public void convertTest() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
-        EcoNewsTranslation ecoNewsTranslation = ModelUtils.getEcoNewsTranslation();
-        ecoNewsTranslation.setEcoNews(ecoNews);
 
-        EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(), 1L,
-            ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(),
+        EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
+            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(),
             ModelUtils.getEcoNewsAuthorDto(),
             ecoNews.getTags().stream()
                 .map(Tag::getName)
                 .collect(Collectors.toList())
         );
 
-        assertEquals(expected, ecoNewsDtoMapper.convert(ecoNewsTranslation));
+        assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));
     }
 }

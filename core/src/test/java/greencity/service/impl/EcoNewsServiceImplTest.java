@@ -9,12 +9,10 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
-import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.*;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
@@ -43,9 +41,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class EcoNewsServiceImplTest {
     @Mock
     EcoNewsRepo ecoNewsRepo;
-
-    @Mock
-    EcoNewsTranslationRepo ecoNewsTranslationRepo;
 
     @Mock
     ModelMapper modelMapper;
@@ -81,8 +76,6 @@ public class EcoNewsServiceImplTest {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
-        when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE))
-            .thenReturn(ModelUtils.getEcoNewsTranslation());
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         when(tagService.findByName("tag")).thenReturn(ModelUtils.getTag());
@@ -119,27 +112,25 @@ public class EcoNewsServiceImplTest {
         EcoNewsDto ecoNewsDto =
             new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text",
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList());
-        EcoNewsTranslation ecoNewsTranslation =
-            new EcoNewsTranslation(1L, null, "test title", "test text", null);
+        EcoNews ecoNews = ModelUtils.getEcoNews();
 
         List<EcoNewsDto> dtoList = Collections.singletonList(ecoNewsDto);
 
-        when(ecoNewsTranslationRepo.getNLastEcoNewsByLanguageCode(3, "en"))
-            .thenReturn(Collections.singletonList(ecoNewsTranslation));
-        when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-        assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews("en"));
+        when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+        assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews());
     }
 
     @Test
     public void getThreeLastEcoNewsNotFound() {
-        List<EcoNewsTranslation> ecoNewsTranslations = new ArrayList<>();
+        List<EcoNews> ecoNews = new ArrayList<>();
         List<EcoNewsDto> ecoNewsDtoList = new ArrayList<>();
 
-        when(ecoNewsTranslationRepo.getNLastEcoNewsByLanguageCode(anyInt(), anyString()))
-            .thenReturn(ecoNewsTranslations);
+        when(ecoNewsRepo.getThreeLastEcoNews())
+            .thenReturn(ecoNews);
 
         assertThrows(NotFoundException.class, () ->
-            assertEquals(ecoNewsDtoList, ecoNewsService.getThreeLastEcoNews("en"))
+            assertEquals(ecoNewsDtoList, ecoNewsService.getThreeLastEcoNews())
         );
     }
 
@@ -147,13 +138,11 @@ public class EcoNewsServiceImplTest {
     public void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
 
-        EcoNewsTranslation ecoNewsTranslation =
-            new EcoNewsTranslation(1L, null, "test title", "test text", null);
-        List<EcoNewsTranslation> ecoNewsTranslations = Collections.singletonList(ecoNewsTranslation);
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
 
         PageRequest pageRequest = new PageRequest(0, 2);
-        Page<EcoNewsTranslation> translationPage = new PageImpl<EcoNewsTranslation>(ecoNewsTranslations,
-            pageRequest, ecoNewsTranslations.size());
+        Page<EcoNews> translationPage = new PageImpl<EcoNews>(ecoNews,
+            pageRequest, ecoNews.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
             new EcoNewsDto(now, "test image path", 1L, "test title", "test text",
@@ -161,10 +150,9 @@ public class EcoNewsServiceImplTest {
         );
         PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);
 
-        when(ecoNewsTranslationRepo.findAllByLanguageCode(pageRequest, "en")).thenReturn(translationPage);
-        when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class))
-            .thenReturn(dtoList.get(0));
-        assertEquals(pageableDto, ecoNewsService.findAll(pageRequest, "en"));
+        when(ecoNewsRepo.findAll(pageRequest)).thenReturn(translationPage);
+        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        assertEquals(pageableDto, ecoNewsService.findAll(pageRequest));
     }
 
     @Test

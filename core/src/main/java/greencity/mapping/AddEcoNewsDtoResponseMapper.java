@@ -4,7 +4,6 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
-import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -24,22 +23,20 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
      */
     @Override
     protected AddEcoNewsDtoResponse convert(EcoNews ecoNews) {
-        EcoNewsAuthorDto ecoNewsAuthorDto = EcoNewsAuthorDto.builder()
-            .id(ecoNews.getAuthor().getId())
-            .name(ecoNews.getAuthor().getName())
-            .build();
-
-        List<String> tags = ecoNews.getTags()
-            .stream()
-            .map(Tag::getName)
-            .collect(Collectors.toList());
-
         return AddEcoNewsDtoResponse.builder()
             .id(ecoNews.getId())
-            .ecoNewsAuthorDto(ecoNewsAuthorDto)
-            .creationDate(ecoNews.getCreationDate())
+            .text(ecoNews.getText())
+            .title(ecoNews.getTitle())
             .imagePath(ecoNews.getImagePath())
-            .tags(tags)
+            .creationDate(ecoNews.getCreationDate())
+            .ecoNewsAuthorDto(EcoNewsAuthorDto.builder()
+                .id(ecoNews.getAuthor().getId())
+                .name(ecoNews.getAuthor().getName())
+                .build())
+            .tags(ecoNews.getTags()
+                .stream()
+                .map(Tag::getName)
+                .collect(Collectors.toList()))
             .build();
     }
 }
