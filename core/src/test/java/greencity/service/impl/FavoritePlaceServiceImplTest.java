@@ -49,7 +49,7 @@ public class FavoritePlaceServiceImplTest {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
         dto.setName("a");
-        dto.setFavoritePlaceId(1L);
+        dto.setPlaceId(1L);
         FavoritePlace fp = new FavoritePlace();
         fp.setName("a");
         fp.setUser(new User());
@@ -70,7 +70,7 @@ public class FavoritePlaceServiceImplTest {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
         dto.setName("a");
-        dto.setFavoritePlaceId(1L);
+        dto.setPlaceId(1L);
         FavoritePlace fp = new FavoritePlace();
         fp.setName("a");
         fp.setUser(new User());
@@ -89,7 +89,7 @@ public class FavoritePlaceServiceImplTest {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
         dto.setName("a");
-        dto.setFavoritePlaceId(1L);
+        dto.setPlaceId(1L);
         FavoritePlace fp = new FavoritePlace();
         fp.setName("a");
         fp.setUser(new User());
@@ -109,7 +109,7 @@ public class FavoritePlaceServiceImplTest {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         String userEmail = "email";
         dto.setName("a");
-        dto.setFavoritePlaceId(1L);
+        dto.setPlaceId(1L);
         FavoritePlace fp = new FavoritePlace();
         fp.setName("a");
         fp.setUser(new User());
@@ -168,7 +168,7 @@ public class FavoritePlaceServiceImplTest {
     public void updateTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
         dto.setName("a");
-        dto.setFavoritePlaceId(1L);
+        dto.setPlaceId(1L);
         String userEmail = "email";
         FavoritePlace fp = new FavoritePlace();
         fp.setName("a");
@@ -188,7 +188,7 @@ public class FavoritePlaceServiceImplTest {
     @Test(expected = WrongIdException.class)
     public void updateFavoritePlaceNotExistTest() {
         FavoritePlaceDto dto = new FavoritePlaceDto();
-        dto.setFavoritePlaceId(8L);
+        dto.setPlaceId(8L);
         when(repo.findByPlaceIdAndUserEmail(any(), any())).thenReturn(null);
         favoritePlaceService.update(dto, "setEmail()");
     }
@@ -205,7 +205,7 @@ public class FavoritePlaceServiceImplTest {
         favoritePlace = new FavoritePlace();
         favoritePlaceDto = new FavoritePlaceDto();
         favoritePlaceDto.setName("a");
-        favoritePlaceDto.setFavoritePlaceId((long) 1);
+        favoritePlaceDto.setPlaceId((long) 1);
         for (long i = 0; i < 5; i++) {
             favoritePlaces.add(favoritePlace);
             favoritePlaceDtos.add(favoritePlaceDto);

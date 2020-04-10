@@ -24,11 +24,11 @@ public class FavoritePlaceDtoMapperTest {
     @Test
     public void convertToEntityTest() {
         FavoritePlaceDto favoritePlaceDto = ModelUtils.getFavoritePlaceDto();
-        Place place = Place.builder().id(favoritePlaceDto.getFavoritePlaceId()).build();
-        User user = User.builder().id(favoritePlaceDto.getFavoritePlaceId()).build();
+        Place place = Place.builder().id(favoritePlaceDto.getPlaceId()).build();
+        User user = User.builder().id(favoritePlaceDto.getPlaceId()).build();
 
         FavoritePlace expected =
-            new FavoritePlace(favoritePlaceDto.getFavoritePlaceId(), favoritePlaceDto.getName(), user, place);
+            new FavoritePlace(favoritePlaceDto.getPlaceId(), favoritePlaceDto.getName(), user, place);
 
         assertEquals(expected, favoritePlaceDtoMapper.convertToEntity(favoritePlaceDto));
     }

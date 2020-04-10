@@ -5,7 +5,6 @@ import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.entity.User;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,17 +20,17 @@ public class FavoritePlaceDtoMapper
     @Override
     public FavoritePlace convertToEntity(FavoritePlaceDto dto) {
         FavoritePlace favoritePlace = new FavoritePlace();
-        favoritePlace.setId(dto.getFavoritePlaceId());
+        favoritePlace.setId(dto.getPlaceId());
         favoritePlace.setName(dto.getName());
-        favoritePlace.setUser(User.builder().id(dto.getFavoritePlaceId()).build());
-        favoritePlace.setPlace(Place.builder().id(dto.getFavoritePlaceId()).build());
+        favoritePlace.setUser(User.builder().id(dto.getPlaceId()).build());
+        favoritePlace.setPlace(Place.builder().id(dto.getPlaceId()).build());
         return favoritePlace;
     }
 
     @Override
     public FavoritePlaceDto convertToDto(FavoritePlace entity) {
         FavoritePlaceDto favoritePlaceDto = new FavoritePlaceDto();
-        favoritePlaceDto.setFavoritePlaceId(entity.getPlace().getId());
+        favoritePlaceDto.setPlaceId(entity.getPlace().getId());
         favoritePlaceDto.setName(entity.getName());
         return favoritePlaceDto;
     }
