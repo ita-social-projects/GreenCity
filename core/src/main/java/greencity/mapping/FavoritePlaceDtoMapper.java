@@ -19,11 +19,9 @@ public class FavoritePlaceDtoMapper
     implements MapperToDto<FavoritePlace, FavoritePlaceDto>, MapperToEntity<FavoritePlaceDto, FavoritePlace> {
     @Override
     public FavoritePlace convertToEntity(FavoritePlaceDto dto) {
-        FavoritePlace favoritePlace = new FavoritePlace();
-        favoritePlace.setId(dto.getPlaceId());
-        favoritePlace.setName(dto.getName());
-        favoritePlace.setUser(User.builder().id(dto.getPlaceId()).build());
-        favoritePlace.setPlace(Place.builder().id(dto.getPlaceId()).build());
+        FavoritePlace favoritePlace = FavoritePlace.builder().id(dto.getPlaceId()).name(dto.getName())
+            .user(User.builder().id(dto.getPlaceId()).build()).place(Place.builder().id(dto.getPlaceId()).build())
+            .build();
         return favoritePlace;
     }
 
