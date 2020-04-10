@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ValidTags;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -145,7 +146,7 @@ public class EcoNewsController {
     public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(
         @ApiIgnore Pageable page,
         @ApiParam(value = "Tags to filter")
-        @RequestParam(required = false) List<String> tags
+        @RequestParam(required = false) @ValidTags List<String> tags
     ) {
         if (tags == null || tags.size() == 0) {
             return ResponseEntity.status(HttpStatus.OK).body(
