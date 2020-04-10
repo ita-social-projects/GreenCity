@@ -45,9 +45,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
             throw new WrongIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
-        if (repo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail) != null) {
+        if (repo.findByPlaceIdAndUserEmail(favoritePlaceDto.getFavoritePlaceId(), userEmail) != null) {
             throw new WrongIdException(String.format(
-                ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS, favoritePlaceDto.getPlaceId(), userEmail));
+                ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS, favoritePlaceDto.getFavoritePlaceId(), userEmail));
         }
         favoritePlace.setUser(User.builder().email(userEmail).id(userService.findIdByEmail(userEmail)).build());
         return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
@@ -62,9 +62,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, String userEmail) {
         log.info(LogMessage.IN_UPDATE, favoritePlaceDto);
 
-        FavoritePlace favoritePlace = repo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail);
+        FavoritePlace favoritePlace = repo.findByPlaceIdAndUserEmail(favoritePlaceDto.getFavoritePlaceId(), userEmail);
         if (favoritePlace == null) {
-            throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceDto.getPlaceId());
+            throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceDto.getFavoritePlaceId());
         }
         favoritePlace.setName(favoritePlaceDto.getName());
         return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));

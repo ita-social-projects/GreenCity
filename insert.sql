@@ -364,18 +364,29 @@ VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green Ci
        ('ach8', 'get ach 8', 'info'),
        ('ach9', 'get ach 9', 'info');
 
-INSERT INTO eco_news(creation_date, text, image_path)
-VALUES ('2019-11-14 14:10:16.769000', 'Опис лекції про сміття', 'шлях до картинки'),
-       ('2019-11-22 11:10:16.769000', 'опис майстер класу', 'шлях до картинки'),
-       ('2019-11-22 11:10:16.769000', 'опис заходу', 'шлях до картинки');
+INSERT INTO tags(name)
+VALUES ('News'),
+       ('Events'),
+       ('Courses'),
+       ('Ads');
 
-INSERT INTO eco_news_translations(title, eco_news_id, language_id)
-VALUES ('Лекція про сортування сміття', 1, 1),
-       ('Lecture about sorting garbage', 1, 2),
-       ('Лекция о сортировке мусора', 1, 3),
-       ('Майстер-клас по приготу-ванню вегетаріанської лазаньї від шефа', 2, 1),
-       ('Chef''s vegetarian lasagna master class', 2, 2),
-       ('Мастер-класс по приготовлению вегетарианской лазаньи от шефа', 2, 3),
-       ('Розважальний захід для малих еко-активістів', 3, 1),
-       ('The entertaining event for small eco-activists', 3, 2),
-       ('Развлекательное мероприятие для малых эко-активистов', 3, 3)
+INSERT INTO eco_news(creation_date, image_path, author_id)
+VALUES ('2019-11-14 14:10:16.769000', 'шлях до картинки', 1),
+       ('2019-11-22 11:10:16.769000', 'шлях до картинки', 2),
+       ('2019-11-22 11:10:16.769000', 'шлях до картинки', 3);
+
+INSERT INTO eco_news_tags(eco_news_id, tags_id)
+VALUES (1, 4),
+       (2, 3),
+       (3, 2);
+
+INSERT INTO eco_news_translations(title, eco_news_id, language_id, text)
+VALUES ('Лекція про сортування сміття', 1, 1, 'Чому потрібен роздільний збір та сортування?'),
+       ('Lecture about sorting garbage', 1, 2, 'Why do you need separate collection and sorting?'),
+       ('Лекция о сортировке мусора', 1, 3, 'Зачем вам нужен раздельный сбор и сортировка?'),
+       ('Майстер-клас по приготуванню вегетаріанської лазаньї від шефа', 2, 1, 'Вегетаріанська лазанья, яка стане прекрасним обідом для всієї родини і буде до смаку навіть фанатичним м''ясоїдам'),
+       ('Chef''s vegetarian lasagna master class', 2, 2, 'A vegetarian lasagna as a great dish for the whole family. It will be appreciated even by fanatical meat eaters'),
+       ('Мастер-класс по приготовлению вегетарианской лазаньи от шефа', 2, 3, 'Вегетарианская лазанья, которая станет прекрасным обедом для всей семьи и придется по вкусу даже фанатичным мясоедам'),
+       ('Розважальний захід для малих еко-активістів', 3, 1, 'Серія навчальних ігор від "Зеленої коробки" у Шевченківському гаю'),
+       ('The entertaining event for small eco-activists', 3, 2, 'A series of educational games from the Green Box in Shevchenkivskyi Hai'),
+       ('Развлекательное мероприятие для малых эко-активистов', 3, 3, 'Серия обучающих игр от "Зеленой коробки" в Шевченковском гаю')

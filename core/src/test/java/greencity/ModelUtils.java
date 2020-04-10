@@ -3,12 +3,10 @@ package greencity;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsTranslationDto;
+import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.language.LanguageRequestDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.entity.EcoNews;
-import greencity.entity.Language;
-import greencity.entity.Tag;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.entity.enums.ROLE;
 import greencity.entity.localization.EcoNewsTranslation;
 import java.time.LocalDateTime;
@@ -69,5 +67,25 @@ public class ModelUtils {
             getEcoNewsTranslation().getText(), getEcoNewsAuthorDto(),
             getEcoNews().getCreationDate(), "imagePath",
             Collections.singletonList("tag"));
+    }
+
+    public static Place getPlace() {
+        return Place.builder()
+                .id(2L)
+                .name("Forum")
+                .description("Shopping center")
+                .phone("0322 489 850")
+                .email("forum_lviv@gmail.com")
+                .author(getUser())
+                .modifiedDate(ZonedDateTime.now())
+                .build();
+    }
+
+    public static FavoritePlace getFavoritePlace() {
+        return new FavoritePlace(1L, "name", getUser(), getPlace());
+    }
+
+    public static FavoritePlaceDto getFavoritePlaceDto() {
+        return new FavoritePlaceDto("name", 1L);
     }
 }
