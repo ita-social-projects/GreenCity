@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
-import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -49,10 +49,11 @@ public class EcoNewsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping
-    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+                                                      @RequestPart MultipartFile image,
                                                       @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            ecoNewsService.save(addEcoNewsDtoRequest, principal.getName()));
+            ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
     }
 
     /**
@@ -68,12 +69,8 @@ public class EcoNewsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/newest")
-    public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews(
-        @ApiParam(value = "Code of the needed language.",
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language
-    ) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews(language));
+    public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews() {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews());
     }
 
     /**
@@ -89,12 +86,8 @@ public class EcoNewsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<EcoNewsDto> getEcoNewsById(
-        @PathVariable Long id,
-        @ApiParam(value = "Code of the needed language.",
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findById(id, language));
+    public ResponseEntity<EcoNewsDto> getEcoNewsById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findDtoById(id));
     }
 
     /**
@@ -111,11 +104,8 @@ public class EcoNewsController {
     })
     @GetMapping("")
     @ApiPageable
-    public ResponseEntity<PageableDto<EcoNewsDto>> findAll(
-        @ApiIgnore Pageable page,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(page, language));
+    public ResponseEntity<PageableDto<EcoNewsDto>> findAll(@ApiIgnore Pageable page) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(page));
     }
 
     /**
@@ -154,16 +144,13 @@ public class EcoNewsController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(
         @ApiIgnore Pageable page,
-        @ApiParam(value = "Code of the needed language.",
-            defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language,
         @ApiParam(value = "Tags to filter")
         @RequestParam(required = false) List<String> tags
     ) {
         if (tags == null || tags.size() == 0) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                ecoNewsService.findAll(page, language));
+                ecoNewsService.findAll(page));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, language, tags));
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, tags));
     }
 }

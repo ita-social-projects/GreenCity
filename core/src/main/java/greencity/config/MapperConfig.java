@@ -12,11 +12,16 @@ import org.springframework.context.annotation.Configuration;
 @AllArgsConstructor
 public class MapperConfig {
     private UserGoalResponseDtoMapper userGoalResponseDtoMapper;
+    private HabitMapper habitMapper;
     private GoalDtoMapper goalDtoMapper;
     private EcoNewsDtoMapper ecoNewsDtoMapper;
+    private HabitCreateDtoMapper habitCreateDtoMapper;
+    private HabitStatisticMapper habitStatisticMapper;
+    private AddHabitStatisticDtoMapper addHabitStatisticDtoMapper;
     private AddEcoNewsDtoRequestMapper addEcoNewsDtoRequestMapper;
     private AddEcoNewsDtoResponseMapper addEcoNewsDtoResponseMapper;
     private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
+    private DiscountValueMapper discountValueMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -50,6 +55,11 @@ public class MapperConfig {
         modelMapper.addConverter(ecoNewsDtoMapper);
         modelMapper.addConverter(addEcoNewsDtoRequestMapper);
         modelMapper.addConverter(addEcoNewsDtoResponseMapper);
+        modelMapper.addConverter(addHabitStatisticDtoMapper);
         modelMapper.addConverter(ecoNewsAuthorDtoMapper);
+        modelMapper.addConverter(discountValueMapper);
+        modelMapper.addConverter(habitCreateDtoMapper);
+        modelMapper.addConverter(habitStatisticMapper);
+        modelMapper.addConverter(habitMapper);
     }
 }

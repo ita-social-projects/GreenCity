@@ -7,6 +7,7 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface EcoNewsService {
     /**
@@ -15,34 +16,31 @@ public interface EcoNewsService {
      * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text, image path.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
-    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, String email);
+    AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
     /**
      * Method for getting last three eco news.
      *
-     * @param languageCode needed language code.
      * @return list of {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> getThreeLastEcoNews(String languageCode);
+    List<EcoNewsDto> getThreeLastEcoNews();
 
     /**
      * Method for getting all eco news by page.
      *
-     * @param page         parameters of to search.
-     * @param languageCode needed language code.
+     * @param page parameters of to search.
      * @return PageableDto of {@link EcoNewsDto} instances.
      */
-    PageableDto<EcoNewsDto> findAll(Pageable page, String languageCode);
+    PageableDto<EcoNewsDto> findAll(Pageable page);
 
     /**
      * Method for getting eco news by params.
      *
-     * @param page     parameters of to search.
-     * @param tags     tags to search.
-     * @param language language to search.
+     * @param page parameters of to search.
+     * @param tags tags to search.
      * @return PageableDto with {@link EcoNewsDto} instance.
      */
-    PageableDto<EcoNewsDto> find(Pageable page, String language, List<String> tags);
+    PageableDto<EcoNewsDto> find(Pageable page, List<String> tags);
 
     /**
      * Method for getting the {@link EcoNews} instance by its id.
@@ -55,11 +53,10 @@ public interface EcoNewsService {
     /**
      * Method for getting the {@link EcoNewsDto} instance by its id.
      *
-     * @param id       {@link EcoNewsDto} instance id.
-     * @param language {@link EcoNewsDto} instance language.
+     * @param id {@link EcoNewsDto} instance id.
      * @return {@link EcoNewsDto} instance.
      */
-    EcoNewsDto findById(Long id, String language);
+    EcoNewsDto findDtoById(Long id);
 
     /**
      * Method for deleting the {@link EcoNews} instance by its id.

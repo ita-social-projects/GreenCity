@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.constant.AppConstant;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
@@ -8,16 +9,12 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
-import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsTranslationRepo;
-import greencity.service.LanguageService;
-import greencity.service.NewsSubscriberService;
-import greencity.service.TagService;
-import greencity.service.UserService;
+import greencity.service.*;
+import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,14 +35,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(SpringExtension.class)
 public class EcoNewsServiceImplTest {
     @Mock
     EcoNewsRepo ecoNewsRepo;
-
-    @Mock
-    EcoNewsTranslationRepo ecoNewsTranslationRepo;
 
     @Mock
     ModelMapper modelMapper;
@@ -65,6 +60,9 @@ public class EcoNewsServiceImplTest {
     @Mock
     LanguageService languageService;
 
+    @Mock
+    FileService fileService;
+
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
 
@@ -73,20 +71,21 @@ public class EcoNewsServiceImplTest {
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
 
     @Test
-    public void save() {
+    public void save() throws MalformedURLException {
+        MultipartFile image = ModelUtils.getFile();
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
-        when(ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE))
-            .thenReturn(ModelUtils.getEcoNewsTranslation());
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
-        when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         when(tagService.findByName("tag")).thenReturn(ModelUtils.getTag());
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(ModelUtils.getLanguage());
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
+        when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
-        assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com"));
+        assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest,
+            image, TestConst.EMAIL));
         addEcoNewsDtoResponse.setTitle("Title");
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
@@ -94,13 +93,15 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test()
-    public void saveThrowsNotSavedException() {
+    public void saveThrowsNotSavedException() throws MalformedURLException {
+        MultipartFile image = ModelUtils.getFile();
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
-        when(userService.findByEmail("taras@gmail.com")).thenReturn(ModelUtils.getUser());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
+        when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
         assertThrows(NotSavedException.class, () ->
-            ecoNewsService.save(addEcoNewsDtoRequest, "taras@gmail.com")
+            ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL)
         );
     }
 
@@ -111,27 +112,25 @@ public class EcoNewsServiceImplTest {
         EcoNewsDto ecoNewsDto =
             new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text",
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList());
-        EcoNewsTranslation ecoNewsTranslation =
-            new EcoNewsTranslation(1L, null, "test title", "test text", null);
+        EcoNews ecoNews = ModelUtils.getEcoNews();
 
         List<EcoNewsDto> dtoList = Collections.singletonList(ecoNewsDto);
 
-        when(ecoNewsTranslationRepo.getNLastEcoNewsByLanguageCode(3, "en"))
-            .thenReturn(Collections.singletonList(ecoNewsTranslation));
-        when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-        assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews("en"));
+        when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+        assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews());
     }
 
     @Test
     public void getThreeLastEcoNewsNotFound() {
-        List<EcoNewsTranslation> ecoNewsTranslations = new ArrayList<>();
+        List<EcoNews> ecoNews = new ArrayList<>();
         List<EcoNewsDto> ecoNewsDtoList = new ArrayList<>();
 
-        when(ecoNewsTranslationRepo.getNLastEcoNewsByLanguageCode(anyInt(), anyString()))
-            .thenReturn(ecoNewsTranslations);
+        when(ecoNewsRepo.getThreeLastEcoNews())
+            .thenReturn(ecoNews);
 
         assertThrows(NotFoundException.class, () ->
-            assertEquals(ecoNewsDtoList, ecoNewsService.getThreeLastEcoNews("en"))
+            assertEquals(ecoNewsDtoList, ecoNewsService.getThreeLastEcoNews())
         );
     }
 
@@ -139,13 +138,11 @@ public class EcoNewsServiceImplTest {
     public void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
 
-        EcoNewsTranslation ecoNewsTranslation =
-            new EcoNewsTranslation(1L, null, "test title", "test text", null);
-        List<EcoNewsTranslation> ecoNewsTranslations = Collections.singletonList(ecoNewsTranslation);
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
 
         PageRequest pageRequest = new PageRequest(0, 2);
-        Page<EcoNewsTranslation> translationPage = new PageImpl<EcoNewsTranslation>(ecoNewsTranslations,
-            pageRequest, ecoNewsTranslations.size());
+        Page<EcoNews> translationPage = new PageImpl<EcoNews>(ecoNews,
+            pageRequest, ecoNews.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
             new EcoNewsDto(now, "test image path", 1L, "test title", "test text",
@@ -153,10 +150,9 @@ public class EcoNewsServiceImplTest {
         );
         PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);
 
-        when(ecoNewsTranslationRepo.findAllByLanguageCode(pageRequest, "en")).thenReturn(translationPage);
-        when(modelMapper.map(ecoNewsTranslation, EcoNewsDto.class))
-            .thenReturn(dtoList.get(0));
-        assertEquals(pageableDto, ecoNewsService.findAll(pageRequest, "en"));
+        when(ecoNewsRepo.findAll(pageRequest)).thenReturn(translationPage);
+        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        assertEquals(pageableDto, ecoNewsService.findAll(pageRequest));
     }
 
     @Test

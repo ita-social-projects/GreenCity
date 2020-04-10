@@ -80,7 +80,7 @@ public class PasswordRecoveryServiceImplTest {
             refEq(PASSWORD_RECOVERY_ROUTING_KEY),
             refEq(new PasswordRecoveryMessage(
                 user.getId(),
-                user.getFirstName(),
+                user.getName(),
                 user.getEmail(),
                 token
             ))

@@ -13,6 +13,6 @@ public class SuccessSignInDto {
     private Long userId;
     private String accessToken;
     private String refreshToken;
-    private String firstName;
+    private String name;
     private boolean ownRegistrations;
 }
