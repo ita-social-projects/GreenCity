@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,8 +27,8 @@ public class FavoritePlaceDtoMapperTest {
         Place place = Place.builder().id(favoritePlaceDto.getFavoritePlaceId()).build();
         User user = User.builder().id(favoritePlaceDto.getFavoritePlaceId()).build();
 
-        FavoritePlace expected = new FavoritePlace(favoritePlaceDto.getFavoritePlaceId(), favoritePlaceDto.getName(),
-                user, place);
+        FavoritePlace expected =
+            new FavoritePlace(favoritePlaceDto.getFavoritePlaceId(), favoritePlaceDto.getName(), user, place);
 
         assertEquals(expected, favoritePlaceDtoMapper.convertToEntity(favoritePlaceDto));
     }

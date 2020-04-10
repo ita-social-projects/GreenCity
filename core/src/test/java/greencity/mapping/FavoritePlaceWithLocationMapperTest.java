@@ -25,7 +25,7 @@ public class FavoritePlaceWithLocationMapperTest {
     public void convertTest() {
         FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
         PlaceByBoundsDto expected = new PlaceByBoundsDto(favoritePlace.getPlace().getId(), favoritePlace.getName(),
-                modelMapper.map(favoritePlace.getPlace().getLocation(), LocationDto.class));
+            modelMapper.map(favoritePlace.getPlace().getLocation(), LocationDto.class));
 
         assertEquals(expected, favoritePlaceWithLocationMapper.convertToDto(favoritePlace));
     }

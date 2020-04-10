@@ -19,15 +19,8 @@ public class ModelUtils {
     }
 
     public static User getUser() {
-        return User.builder()
-            .id(1L)
-            .email("Nazar.stasyuk@gmail.com")
-            .firstName("Nazar")
-            .lastName("Stasyuk")
-            .role(ROLE.ROLE_USER)
-            .lastVisit(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
-            .build();
+        return User.builder().id(1L).email("Nazar.stasyuk@gmail.com").firstName("Nazar").lastName("Stasyuk")
+            .role(ROLE.ROLE_USER).lastVisit(LocalDateTime.now()).dateOfRegistration(LocalDateTime.now()).build();
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
@@ -43,8 +36,7 @@ public class ModelUtils {
     }
 
     public static Language getLanguage() {
-        return new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList());
+        return new Language(1L, "en", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
 
     public static LanguageRequestDto getLanguageRequestDto() {
@@ -53,8 +45,7 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), "imagePath", getUser(),
-            Collections.singletonList(getEcoNewsTranslation()),
-            Collections.singletonList(getTag()));
+            Collections.singletonList(getEcoNewsTranslation()), Collections.singletonList(getTag()));
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
@@ -63,22 +54,13 @@ public class ModelUtils {
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
-        return new AddEcoNewsDtoResponse(1L, getEcoNewsTranslation().getTitle(),
-            getEcoNewsTranslation().getText(), getEcoNewsAuthorDto(),
-            getEcoNews().getCreationDate(), "imagePath",
-            Collections.singletonList("tag"));
+        return new AddEcoNewsDtoResponse(1L, getEcoNewsTranslation().getTitle(), getEcoNewsTranslation().getText(),
+            getEcoNewsAuthorDto(), getEcoNews().getCreationDate(), "imagePath", Collections.singletonList("tag"));
     }
 
     public static Place getPlace() {
-        return Place.builder()
-                .id(2L)
-                .name("Forum")
-                .description("Shopping center")
-                .phone("0322 489 850")
-                .email("forum_lviv@gmail.com")
-                .author(getUser())
-                .modifiedDate(ZonedDateTime.now())
-                .build();
+        return Place.builder().id(2L).name("Forum").description("Shopping center").phone("0322 489 850")
+            .email("forum_lviv@gmail.com").author(getUser()).modifiedDate(ZonedDateTime.now()).build();
     }
 
     public static FavoritePlace getFavoritePlace() {

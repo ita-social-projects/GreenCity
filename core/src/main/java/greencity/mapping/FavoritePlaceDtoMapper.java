@@ -16,9 +16,8 @@ import org.springframework.stereotype.Component;
  */
 @AllArgsConstructor
 @Component
-public class FavoritePlaceDtoMapper implements MapperToDto<FavoritePlace, FavoritePlaceDto>,
-    MapperToEntity<FavoritePlaceDto, FavoritePlace> {
-
+public class FavoritePlaceDtoMapper
+    implements MapperToDto<FavoritePlace, FavoritePlaceDto>, MapperToEntity<FavoritePlaceDto, FavoritePlace> {
     @Override
     public FavoritePlace convertToEntity(FavoritePlaceDto dto) {
         FavoritePlace favoritePlace = new FavoritePlace();
