@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.entity.Tag;
+import java.util.List;
 
 /**
  * Provides the interface to manage {@link Tag} entity.
@@ -16,4 +17,11 @@ public interface TagService {
      * @return {@link Tag}
      */
     Tag findByName(String name);
+
+    /**
+     * Method that allow you to find all {@link Tag}.
+     *
+     * @return list of {@link Tag}'s names
+     */
+    List<String> findAll();
 }

@@ -5,6 +5,8 @@ import greencity.entity.Tag;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.repository.TagRepo;
 import greencity.service.TagService;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +31,18 @@ public class TagServiceImpl implements TagService {
     public Tag findByName(String name) {
         return tagRepo.findByName(name).orElseThrow(() ->
             new TagNotFoundException(ErrorMessage.TAG_NOT_FOUND + name));
+    }
+
+    /**
+     * Method that allow you to find all {@link Tag}.
+     *
+     * @return list of {@link Tag}'s names
+     */
+    @Override
+    public List<String> findAll() {
+        return tagRepo.findAll().stream()
+            .filter(tag -> tag.getEcoNews().size() > 0)
+            .map(Tag::getName)
+            .collect(Collectors.toList());
     }
 }
