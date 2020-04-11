@@ -28,7 +28,7 @@ public class FavoritePlaceDtoMapper
     @Override
     public FavoritePlaceDto convertToDto(FavoritePlace entity) {
         FavoritePlaceDto favoritePlaceDto = new FavoritePlaceDto();
-        favoritePlaceDto.setPlaceId(entity.getPlace().getId());
+        favoritePlaceDto.setPlaceId(entity.getId());
         favoritePlaceDto.setName(entity.getName());
         return favoritePlaceDto;
     }

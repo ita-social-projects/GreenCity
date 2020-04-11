@@ -5,19 +5,14 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.entity.User;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.modelmapper.ModelMapper;
-
 import static org.junit.Assert.assertEquals;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class FavoritePlaceDtoMapperTest {
-    @Mock
-    private ModelMapper modelMapper;
     @InjectMocks
     private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
 
@@ -37,7 +32,7 @@ public class FavoritePlaceDtoMapperTest {
     public void convertToDtoTest() {
         FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
 
-        FavoritePlaceDto expected = new FavoritePlaceDto(favoritePlace.getName(), favoritePlace.getPlace().getId());
+        FavoritePlaceDto expected = new FavoritePlaceDto(favoritePlace.getName(), favoritePlace.getId());
 
         assertEquals(expected, favoritePlaceDtoMapper.convertToDto(favoritePlace));
     }

@@ -59,15 +59,15 @@ public class ModelUtils {
     }
 
     public static Place getPlace() {
-        return Place.builder().id(2L).name("Forum").description("Shopping center").phone("0322 489 850")
+        return Place.builder().id(1L).name("Forum").description("Shopping center").phone("0322 489 850")
             .email("forum_lviv@gmail.com").author(getUser()).modifiedDate(ZonedDateTime.now()).build();
     }
 
     public static FavoritePlace getFavoritePlace() {
-        return new FavoritePlace(1L, "name", getUser(), getPlace());
+        return new FavoritePlace(3L, "name", getUser(), getPlace());
     }
 
     public static FavoritePlaceDto getFavoritePlaceDto() {
-        return new FavoritePlaceDto("name", 1L);
+        return new FavoritePlaceDto("name", 3L);
     }
 }

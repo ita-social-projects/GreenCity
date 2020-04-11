@@ -1,20 +1,19 @@
 package greencity.mapping;
 
-
 import greencity.ModelUtils;
 import greencity.dto.location.LocationDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.FavoritePlace;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 
 import static org.junit.Assert.assertEquals;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class FavoritePlaceWithLocationMapperTest {
     @Mock
     private ModelMapper modelMapper;
