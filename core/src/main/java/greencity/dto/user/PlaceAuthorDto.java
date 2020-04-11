@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PlaceAuthorDto implements Serializable {
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String name;
     private String email;
 }

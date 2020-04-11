@@ -5,33 +5,31 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.entity.localization.EcoNewsTranslation;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link EcoNewsTranslation} into
+ * Class that used by {@link ModelMapper} to map {@link EcoNews} into
  * {@link EcoNewsDto}.
  */
 @Component
-public class EcoNewsDtoMapper extends AbstractConverter<EcoNewsTranslation, EcoNewsDto> {
+public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
     /**
-     * Method for converting {@link EcoNewsTranslation} into {@link EcoNewsDto}.
+     * Method for converting {@link EcoNews} into {@link EcoNewsDto}.
      *
-     * @param ecoNewsTranslation object ot convert.
+     * @param ecoNews object ot convert.
      * @return converted object.
      */
     @Override
-    public EcoNewsDto convert(EcoNewsTranslation ecoNewsTranslation) {
-        EcoNews ecoNews = ecoNewsTranslation.getEcoNews();
+    public EcoNewsDto convert(EcoNews ecoNews) {
         User author = ecoNews.getAuthor();
         EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
-            author.getFirstName(), author.getLastName());
+            author.getName());
 
-        return new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(), ecoNews.getId(),
-            ecoNewsTranslation.getTitle(), ecoNewsTranslation.getText(), ecoNewsAuthorDto,
+        return new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
+            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNewsAuthorDto,
             ecoNews.getTags()
                 .stream()
                 .map(Tag::getName)

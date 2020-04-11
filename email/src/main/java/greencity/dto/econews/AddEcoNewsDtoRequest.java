@@ -15,6 +15,4 @@ public class AddEcoNewsDtoRequest {
     private List<EcoNewsTranslationDto> translations;
     @NotEmpty
     private List<TagDto> tags;
-    @NotEmpty
-    private String imagePath;
 }
