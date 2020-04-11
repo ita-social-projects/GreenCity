@@ -3,7 +3,6 @@ package greencity;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsTranslationDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.language.LanguageRequestDto;
 import greencity.dto.user.EcoNewsAuthorDto;

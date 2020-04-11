@@ -1,72 +1,31 @@
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-03 11:42:37.823000', 'nazar.stasyuk@gmail.com', 'Назар', 'Стасюк', '2019-09-03 11:42:37.823000', 0,
-        2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$mAzH0BvVs/g2m6zl8CYxDuiLCu1V.PZjuGhKzHRdVxndDfExts4oO', 1);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-03 12:17:18.345000', 'dovgal.dmytr@gmail.com', 'Dima', 'Dovhal', '2019-09-03 12:17:18.346000', 0,
-        2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$HqJME/hE.0THMpGbzBci5usUe9T7t4dfLyL./JbndpWgGhjD2qyqC', 2);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:20:31.755000', 'rapac@clockus.ru', 'Paul', 'Kos', '2019-09-04 13:20:31.757000', 1, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$Mdu2vmDtmjgATCh0EpZ6V.Q3uhJn5Kz4biDu.Ol3EX55Pv4D7Ltla', 3);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:38:44.518000', 'rsssac@clockus.ru', 'Roman', 'KOcak', '2019-09-04 13:38:44.518000', 0, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$5ms4Ni.xuIfSXp1RxScQjOlQvLbrCUlZUNNtkQm23jc99NQXkppMe', 4);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:39:25.827000', 'rsssasssc@clockus.ru', 'Misha', 'Pavluv', '2019-09-04 13:39:25.827000', 0, 2,
-        0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$QCM1BwKCmM2GCSeK6pTpOeaXrcYOLCleifvrytgwgB3FnoE497dV.', 5);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:40:21.531000', '1warsssasssc@clockus.ru', 'Taras', 'Tymkiv', '2019-09-04 13:40:21.531000', 0,
-        2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$bQggp0SIPwHh5D/ahmm4reKJtsod6dcEo79WJBO0aIAUIs/j9JGrC', 6);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:43:00.061000', '1warssssssssasssc@clockus.ru', 'Ihor', 'Zdebskiy',
-        '2019-09-04 13:43:00.061000', 0, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$v.k/53rC6NnIsosZEH0ezecuKWrG8fL4yOHXW5w3AudFeFUub0It2', 7);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:44:08.939000', '1warssssssssassssc@clockus.ru', 'Amon', 'Azarov',
-        '2019-09-04 13:44:08.939000', 0, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$hSKDmeUboTyvBpUnXj8c2ulIXBeHq5rd4h.H0Oj8gpzYlwS0L78qO', 8);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 14:04:14.931000', 'rostuk.khasanov@gmail.com', 'Rostyslav', 'Khasanov',
-        '2019-09-04 14:04:14.931000', 1, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$cgaNMFjdAFX6k810YSZDSuvKVlWFcq6/F7p2lcgLzK6sFB48dky2W', 9);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status)
-VALUES ('2019-10-01 19:22:25.209000', 'milanmarian@mail.ru', 'Marian', 'Milian', '2019-10-01 19:22:25.209000', 1,
-        2);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 10);
+INSERT INTO users (date_of_registration, email, email_notification, name, last_visit, role, user_status,
+                   refresh_token_key)
+VALUES ('2019-09-03 11:42:37.823000', 'nazar.stasyuk@gmail.com', 0, 'Назар Стасюк', '2019-09-03 11:42:37.823000', 0, 2, 'a06b0b4e-8696-419c-a776-611c36f79d39'),
+       ('2019-09-03 12:17:18.345000', 'dovgal.dmytr@gmail.com', 0, 'Dima Dovhal', '2019-09-03 12:17:18.346000', 0, 2, 'f9aef11e-2bfd-4136-aafd-e0c7b92f396a'),
+       ('2019-09-04 13:20:31.755000', 'rapac@clockus.ru', 0, 'Paul Kos', '2019-09-04 13:20:31.757000', 1, 2, '6f9d42f5-2324-492e-8d99-75e5834aa739'),
+       ('2019-09-04 13:38:44.518000', 'rsssac@clockus.ru', 0, 'Roman KOcak', '2019-09-04 13:38:44.518000', 0, 2, 'b3ad7c1d-a058-40ee-908c-65902ef96371'),
+       ('2019-09-04 13:39:25.827000', 'rsssasssc@clockus.ru', 0, 'Misha Pavluv', '2019-09-04 13:39:25.827000', 0, 2, '8171edb1-3a9c-4074-a305-fcdc24de470f'),
+       ('2019-09-04 13:40:21.531000', '1warsssasssc@clockus.ru', 0, 'Taras Tymkiv', '2019-09-04 13:40:21.531000', 0, 2, 'c7e5ea40-610a-4908-8085-c3a96127e38d'),
+       ('2019-09-04 13:43:00.061000', '1warssssssssasssc@clockus.ru', 0, 'Ihor Zdebskiy', '2019-09-04 13:43:00.061000', 0, 2, 'dba595ab-6d07-45a7-8f32-2e7956e68e46'),
+       ('2019-09-04 13:44:08.939000', '1warssssssssassssc@clockus.ru', 0, 'Amon Azarov', '2019-09-04 13:44:08.939000', 0, 2, 'c3d9f0ed-d639-4e00-9928-07b7afe3d779'),
+       ('2019-09-04 14:04:14.931000', 'rostuk.khasanov@gmail.com', 0, 'Rostyslav Khasanov', '2019-09-04 14:04:14.931000', 1, 2, '4238c90e-ea52-4331-8b62-be2511f3ac09'),
+       ('2019-10-01 19:22:25.209000', 'milanmarian@mail.ru', 0, 'Marian Milian', '2019-10-01 19:22:25.209000', 1, 2, '16a02c58-915f-4a7d-b69b-2d86038fa66f'),
+       ('2019-10-01 19:22:25.209000', 'milan@mail.ru', 0, 'M M', '2019-10-01 19:22:25.209000', 1, 2, '827947d3-da8b-4c66-a290-720e6c111531'),
+       ('2019-10-01 19:22:25.209000', 'greencity448@gmail.com', 0, 'greencity 448', '2019-10-01 19:22:25.209000', 1, 2, '91e9d3f7-f92a-4557-9f5b-462133fa1090');
 
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status)
-VALUES ('2019-10-01 19:22:25.209000', 'milan@mail.ru', 'M', 'M', '2019-10-01 19:22:25.209000', 1, 2);
 INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 11);
-
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status)
-VALUES ('2019-10-01 19:22:25.209000', 'greencity448@gmail.com', 'greencity', '448', '2019-10-01 19:22:25.209000', 1, 2);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$MwSE7uTZuKhCOjRddnpZ6eXiJT7sE3n8YsiHDJCo9MCv3yvy64Cf6', 12);
-
-
+VALUES ('$2a$10$mAzH0BvVs/g2m6zl8CYxDuiLCu1V.PZjuGhKzHRdVxndDfExts4oO', 1),
+       ('$2a$10$HqJME/hE.0THMpGbzBci5usUe9T7t4dfLyL./JbndpWgGhjD2qyqC', 2),
+       ('$2a$10$Mdu2vmDtmjgATCh0EpZ6V.Q3uhJn5Kz4biDu.Ol3EX55Pv4D7Ltla', 3),
+       ('$2a$10$5ms4Ni.xuIfSXp1RxScQjOlQvLbrCUlZUNNtkQm23jc99NQXkppMe', 4),
+       ('$2a$10$QCM1BwKCmM2GCSeK6pTpOeaXrcYOLCleifvrytgwgB3FnoE497dV.', 5),
+       ('$2a$10$bQggp0SIPwHh5D/ahmm4reKJtsod6dcEo79WJBO0aIAUIs/j9JGrC', 6),
+       ('$2a$10$v.k/53rC6NnIsosZEH0ezecuKWrG8fL4yOHXW5w3AudFeFUub0It2', 7),
+       ('$2a$10$hSKDmeUboTyvBpUnXj8c2ulIXBeHq5rd4h.H0Oj8gpzYlwS0L78qO', 8),
+       ('$2a$10$cgaNMFjdAFX6k810YSZDSuvKVlWFcq6/F7p2lcgLzK6sFB48dky2W', 9),
+       ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 10),
+       ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 11),
+       ('$2a$10$MwSE7uTZuKhCOjRddnpZ6eXiJT7sE3n8YsiHDJCo9MCv3yvy64Cf6', 12);
 
 INSERT INTO categories (name)
 values ('Food');
@@ -370,23 +329,12 @@ VALUES ('News'),
        ('Courses'),
        ('Ads');
 
-INSERT INTO eco_news(creation_date, image_path, author_id)
-VALUES ('2019-11-14 14:10:16.769000', 'шлях до картинки', 1),
-       ('2019-11-22 11:10:16.769000', 'шлях до картинки', 2),
-       ('2019-11-22 11:10:16.769000', 'шлях до картинки', 3);
+INSERT INTO eco_news(creation_date, image_path, author_id, text, title)
+VALUES ('2019-11-14 14:10:16.769000', 'шлях до картинки', 1, 'Чому потрібен роздільний збір та сортування?', 'Лекція про сортування сміття'),
+       ('2019-11-22 11:10:16.769000', 'шлях до картинки', 2, 'Вегетаріанська лазанья, яка стане прекрасним обідом для всієї родини і буде до смаку навіть фанатичним м''ясоїдам', 'Майстер-клас по приготуванню вегетаріанської лазаньї від шефа'),
+       ('2019-11-22 11:10:16.769000', 'шлях до картинки', 3, 'Серія навчальних ігор від "Зеленої коробки" у Шевченківському гаю', 'Розважальний захід для малих еко-активістів');
 
 INSERT INTO eco_news_tags(eco_news_id, tags_id)
 VALUES (1, 4),
        (2, 3),
-       (3, 2);
-
-INSERT INTO eco_news_translations(title, eco_news_id, language_id, text)
-VALUES ('Лекція про сортування сміття', 1, 1, 'Чому потрібен роздільний збір та сортування?'),
-       ('Lecture about sorting garbage', 1, 2, 'Why do you need separate collection and sorting?'),
-       ('Лекция о сортировке мусора', 1, 3, 'Зачем вам нужен раздельный сбор и сортировка?'),
-       ('Майстер-клас по приготуванню вегетаріанської лазаньї від шефа', 2, 1, 'Вегетаріанська лазанья, яка стане прекрасним обідом для всієї родини і буде до смаку навіть фанатичним м''ясоїдам'),
-       ('Chef''s vegetarian lasagna master class', 2, 2, 'A vegetarian lasagna as a great dish for the whole family. It will be appreciated even by fanatical meat eaters'),
-       ('Мастер-класс по приготовлению вегетарианской лазаньи от шефа', 2, 3, 'Вегетарианская лазанья, которая станет прекрасным обедом для всей семьи и придется по вкусу даже фанатичным мясоедам'),
-       ('Розважальний захід для малих еко-активістів', 3, 1, 'Серія навчальних ігор від "Зеленої коробки" у Шевченківському гаю'),
-       ('The entertaining event for small eco-activists', 3, 2, 'A series of educational games from the Green Box in Shevchenkivskyi Hai'),
-       ('Развлекательное мероприятие для малых эко-активистов', 3, 3, 'Серия обучающих игр от "Зеленой коробки" в Шевченковском гаю')
+       (3, 2)
