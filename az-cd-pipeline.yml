@@ -69,9 +69,8 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'greencity-mail'
     packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
-    StartupCommand: 'java -jar *.jar --server.port=80'
+    StartupCommand: 'java -jar *.jar'
     
-
 - task: AzureRmWebAppDeployment@4
   displayName: Deploy core
   inputs:
@@ -80,4 +79,4 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'greencity'
     packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
-    StartupCommand: 'java -jar *.jar --server.port=80'
+    StartupCommand: 'java -jar *.jar'
