@@ -60,3 +60,23 @@ steps:
   displayName: Publish Artifact
   inputs:
     PathtoPublish: $(build.artifactstagingdirectory)  
+
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'GreenCity'
+    appType: 'webAppLinux'
+    WebAppName: 'greencity'
+    packageForLinux: '$(build.artifactstagingdirectory)/drop/core/target/*.jar'
+    RuntimeStack: 'JAVA|8-jre8'
+
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'GreenCity'
+    appType: 'webAppLinux'
+    WebAppName: 'greencity-mail'
+    packageForLinux: '$(build.artifactstagingdirectory)/drop/email/target/*.jar'
+    RuntimeStack: 'JAVA|8-jre8'
