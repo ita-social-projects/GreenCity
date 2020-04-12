@@ -41,7 +41,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<String> findAll() {
         return tagRepo.findAll().stream()
-            .filter(tag -> tag.getEcoNews().size() > 0)
+            .filter(tag -> !tag.getEcoNews().isEmpty())
             .map(Tag::getName)
             .collect(Collectors.toList());
     }
