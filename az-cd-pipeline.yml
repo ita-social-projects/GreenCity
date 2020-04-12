@@ -50,6 +50,12 @@ steps:
     mavenVersionOption: 'Default'
     options: '-Dspring.profiles.active=prod'
     mavenOptions: '-Xmx3072m'
+    
+- script: mv core/target/*.jar core/target/app.jar 
+  displayName: Rename core jar to app
+
+- script: mv email/target/*.jar email/target/app.jar 
+  displayName: Rename email jar to app
 
 - task: CopyFiles@2
   displayName: Copy Files
@@ -71,7 +77,7 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'greencity-mail'
     packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
-    StartupCommand: 'java -jar *.jar'
+#     StartupCommand: 'java -jar *.jar'
     
 - task: AzureRmWebAppDeployment@4
   displayName: Deploy core
@@ -81,4 +87,4 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'greencity'
     packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
-    StartupCommand: 'java -jar *.jar'
+#     StartupCommand: 'java -jar *.jar'
