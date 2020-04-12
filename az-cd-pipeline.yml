@@ -69,7 +69,7 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'greencity-mail'
     packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
-    StartupCommand: 'java -jar *.jar'
+    StartupCommand: 'java -jar -Dspring.profiles.active=production *.jar'
     
 - task: AzureRmWebAppDeployment@4
   displayName: Deploy core
@@ -79,4 +79,4 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'greencity'
     packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
-    StartupCommand: 'java -jar *.jar'
+    StartupCommand: 'java -jar -Dspring.profiles.active=production *.jar'
