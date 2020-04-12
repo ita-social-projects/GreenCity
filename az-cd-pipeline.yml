@@ -70,6 +70,7 @@ steps:
     WebAppName: 'greencity'
     packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
     RuntimeStack: 'JAVA|8-jre8'
+    DeploymentType: webDeploy
 
 
 - task: AzureRmWebAppDeployment@4
@@ -80,3 +81,4 @@ steps:
     WebAppName: 'greencity-mail'
     packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
     RuntimeStack: 'JAVA|8-jre8'
+    DeploymentType: webDeploy
