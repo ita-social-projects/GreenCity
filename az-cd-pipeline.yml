@@ -62,7 +62,7 @@ steps:
     PathtoPublish: $(build.artifactstagingdirectory)  
 
 - task: AzureRmWebAppDeployment@4
-  displayName: Deploy core
+  displayName: Deploy mail
   inputs:
     ConnectionType: 'AzureRM'
     azureSubscription: 'GreenCity'
@@ -72,7 +72,7 @@ steps:
     
 
 - task: AzureRmWebAppDeployment@4
-  displayName: Deploy mail
+  displayName: Deploy core
   inputs:
     ConnectionType: 'AzureRM'
     azureSubscription: 'GreenCity'
