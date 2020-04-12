@@ -48,6 +48,8 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
     mavenVersionOption: 'Default'
+    options: '-Dspring.profiles.active=prod'
+    mavenOptions: '-Xmx3072m'
 
 - task: CopyFiles@2
   displayName: Copy Files
@@ -69,7 +71,7 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'greencity-mail'
     packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
-    StartupCommand: 'java -jar -Dspring.profiles.active=production *.jar'
+    StartupCommand: 'java -jar *.jar'
     
 - task: AzureRmWebAppDeployment@4
   displayName: Deploy core
@@ -79,4 +81,4 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'greencity'
     packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
-    StartupCommand: 'java -jar -Dspring.profiles.active=production *.jar'
+    StartupCommand: 'java -jar *.jar'
