@@ -26,14 +26,8 @@ public class ModelUtils {
     }
 
     public static User getUser() {
-        return User.builder()
-            .id(1L)
-            .email(TestConst.EMAIL)
-            .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
-            .lastVisit(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
-            .build();
+        return User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER)
+            .lastVisit(LocalDateTime.now()).dateOfRegistration(LocalDateTime.now()).build();
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
@@ -41,25 +35,21 @@ public class ModelUtils {
     }
 
     public static Language getLanguage() {
-        return new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList());
+        return new Language(1L, "en", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
 
     public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, getUser(),
-            "title", "text", Collections.singletonList(getTag()));
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, getUser(), "title", "text",
+            Collections.singletonList(getTag()));
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
-        return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"));
+        return new AddEcoNewsDtoRequest("title", "text", Collections.singletonList("tag"));
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
-        return new AddEcoNewsDtoResponse(1L, getEcoNews().getTitle(),
-            getEcoNews().getText(), getEcoNewsAuthorDto(),
-            getEcoNews().getCreationDate(), TestConst.SITE,
-            Collections.singletonList("tag"));
+        return new AddEcoNewsDtoResponse(1L, getEcoNews().getTitle(), getEcoNews().getText(), getEcoNewsAuthorDto(),
+            getEcoNews().getCreationDate(), TestConst.SITE, Collections.singletonList("tag"));
     }
 
     public static Place getPlace() {
@@ -84,8 +74,7 @@ public class ModelUtils {
             content = Files.readAllBytes(path);
         } catch (final IOException e) {
         }
-        return new MockMultipartFile(name,
-            name, contentType, content);
+        return new MockMultipartFile(name, name, contentType, content);
     }
 
     public static URL getUrl() throws MalformedURLException {
