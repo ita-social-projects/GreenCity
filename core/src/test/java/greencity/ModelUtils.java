@@ -26,8 +26,14 @@ public class ModelUtils {
     }
 
     public static User getUser() {
-        return User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER)
-            .lastVisit(LocalDateTime.now()).dateOfRegistration(LocalDateTime.now()).build();
+        return User.builder()
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(ROLE.ROLE_USER)
+            .lastVisit(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .build();
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
@@ -53,8 +59,15 @@ public class ModelUtils {
     }
 
     public static Place getPlace() {
-        return Place.builder().id(1L).name("Forum").description("Shopping center").phone("0322 489 850")
-            .email("forum_lviv@gmail.com").author(getUser()).modifiedDate(ZonedDateTime.now()).build();
+        return Place.builder()
+            .id(1L)
+            .name("Forum")
+            .description("Shopping center")
+            .phone("0322 489 850")
+            .email("forum_lviv@gmail.com")
+            .author(getUser())
+            .modifiedDate(ZonedDateTime.now())
+            .build();
     }
 
     public static FavoritePlace getFavoritePlace() {
@@ -73,6 +86,7 @@ public class ModelUtils {
         try {
             content = Files.readAllBytes(path);
         } catch (final IOException e) {
+            e.printStackTrace();
         }
         return new MockMultipartFile(name, name, contentType, content);
     }
