@@ -10,7 +10,6 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class TagsValidator implements ConstraintValidator<ValidTags, List<String>> {
-    private List<String> tags;
     @Autowired
     private TagService tagService;
 
