@@ -1,1 +1,62 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - dev
+  paths:
+    exclude:
+    - README.md
 
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: AzureCLI@2
+  displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
+  inputs:
+    azureSubscription: 'GreenCity'
+    scriptType: 'bash'
+    scriptLocation: inlineScript
+    inlineScript: |
+      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file ./core/google-creds.json
+
+- task: AzureAppServiceSettings@1
+  displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+  inputs:
+    azureSubscription: 'GreenCity'
+    appName: 'greencity'
+    resourceGroupName: 'GreenCity'
+    appSettings: |
+      [
+        {
+          "name": "GOOGLE_APPLICATION_CREDENTIALS",
+          "value": "google-creds.json", 
+          "slotSetting": false
+        }
+      ]
+
+- script: echo "spring.profiles.active=prod" > ./core/src/main/resources/application.properties
+  displayName: Change dev -> prod for core app
+
+- script: echo "spring.profiles.active=prod" > ./email/src/main/resources/application.properties
+  displayName: Change dev -> prod for email app
+
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    mavenVersionOption: 'Default'
+
+- task: CopyFiles@2
+  displayName: Copy Files
+  inputs:
+    SourceFolder: $(system.defaultworkingdirectory)
+    Contents: '**/target/*.jar'
+    TargetFolder: $(build.artifactstagingdirectory)
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Artifact
+  inputs:
+    PathtoPublish: $(build.artifactstagingdirectory)  
