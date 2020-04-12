@@ -68,7 +68,7 @@ steps:
     azureSubscription: 'GreenCity'
     appType: 'webAppLinux'
     WebAppName: 'greencity'
-    packageForLinux: '$(build.artifactstagingdirectory)/drop/core/target/*.jar'
+    packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
     RuntimeStack: 'JAVA|8-jre8'
 
 
@@ -78,5 +78,5 @@ steps:
     azureSubscription: 'GreenCity'
     appType: 'webAppLinux'
     WebAppName: 'greencity-mail'
-    packageForLinux: '$(build.artifactstagingdirectory)/drop/email/target/*.jar'
+    packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
     RuntimeStack: 'JAVA|8-jre8'
