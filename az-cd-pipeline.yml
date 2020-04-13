@@ -49,7 +49,6 @@ steps:
     jdkVersionOption: '1.8'
     mavenVersionOption: 'Default'
     options: '-Dspring.profiles.active=prod'
-    mavenOptions: '-Xmx3072m'
     
 - script: mv core/target/*.jar core/target/app.jar 
   displayName: Rename core jar to app
