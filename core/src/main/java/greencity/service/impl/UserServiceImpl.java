@@ -25,10 +25,7 @@ import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -114,8 +111,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User findByEmail(String email) {
-        return userRepo.findByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        Optional<User> optionalUser = userRepo.findByEmail(email);
+        return optionalUser.orElse(null);
     }
 
     /**
