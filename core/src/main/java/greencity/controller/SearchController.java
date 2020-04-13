@@ -36,7 +36,7 @@ public class SearchController {
     })
     @GetMapping("")
     public ResponseEntity<List<SearchResponseDto>> search(
-        @ApiParam(value = "Query to serch") @RequestParam String searchQuery) {
+        @ApiParam(value = "Query to search") @RequestParam String searchQuery) {
         return ResponseEntity.status(HttpStatus.OK).body(searchService.search(searchQuery));
     }
 }

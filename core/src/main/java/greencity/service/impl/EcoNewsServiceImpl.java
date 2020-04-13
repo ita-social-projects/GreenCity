@@ -174,6 +174,18 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
+     * Method for getting EcoNews by searchQuery
+     *
+     * @param searchQuery query to search
+     * @return list of {@link EcoNewsDto}
+     * @author Kovaliv Taras
+     */
+    @Override
+    public List<EcoNewsDto> search(String searchQuery) {
+        return null;
+    }
+
+    /**
      * Method for building message for sending email about adding new eco news.
      *
      * @param ecoNews {@link EcoNews} which was added.

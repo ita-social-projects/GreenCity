@@ -64,4 +64,13 @@ public interface EcoNewsService {
      * @param id - {@link EcoNews} instance id which will be deleted.
      */
     void delete(Long id);
+
+    /**
+     * Method for getting EcoNews by searchQuery
+     *
+     * @param searchQuery query to search
+     * @return list of {@link EcoNewsDto}
+     * @author Kovaliv Taras
+     */
+    List<EcoNewsDto> search(String searchQuery);
 }
