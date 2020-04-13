@@ -2,7 +2,6 @@ package greencity.validator;
 
 import greencity.annotations.ValidTags;
 import greencity.constant.ValidationConstants;
-import greencity.exception.exceptions.TagNotFoundException;
 import greencity.service.TagService;
 import java.util.List;
 import javax.validation.ConstraintValidator;
@@ -22,13 +21,6 @@ public class TagsValidator implements ConstraintValidator<ValidTags, List<String
         if (tags.size() > ValidationConstants.MAX_AMOUNT_OF_TAGS) {
             return false;
         }
-        for (String tag : tags) {
-            try {
-                tagService.findByName(tag);
-            } catch (TagNotFoundException e) {
-                return false;
-            }
-        }
-        return true;
+        return tagService.isAllValid(tags);
     }
 }

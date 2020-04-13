@@ -5,6 +5,7 @@ import greencity.entity.Tag;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.repository.TagRepo;
 import greencity.service.TagService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +30,20 @@ public class TagServiceImpl implements TagService {
     public Tag findByName(String name) {
         return tagRepo.findByName(name).orElseThrow(() ->
             new TagNotFoundException(ErrorMessage.TAG_NOT_FOUND + name));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean isAllValid(List<String> tags) {
+        for (String tag : tags) {
+            try {
+                findByName(tag);
+            } catch (TagNotFoundException e) {
+                return false;
+            }
+        }
+        return true;
     }
 }
