@@ -66,7 +66,7 @@ public interface EcoNewsService {
     void delete(Long id);
 
     /**
-     * Method for getting EcoNews by searchQuery
+     * Method for getting EcoNews by searchQuery.
      *
      * @param searchQuery query to search
      * @return list of {@link EcoNewsDto}

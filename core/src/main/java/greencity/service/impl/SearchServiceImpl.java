@@ -3,7 +3,6 @@ package greencity.service.impl;
 import greencity.dto.search.SearchResponseDto;
 import greencity.service.EcoNewsService;
 import greencity.service.SearchService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,7 @@ public class SearchServiceImpl implements SearchService {
      * @return list of {@link SearchResponseDto}
      */
     @Override
-    public List<SearchResponseDto> search(String searchQuery) {
+    public SearchResponseDto search(String searchQuery) {
         return SearchResponseDto.builder()
             .ecoNews(ecoNewsService.search(searchQuery))
             .build();

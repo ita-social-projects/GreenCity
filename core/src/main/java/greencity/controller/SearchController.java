@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +34,7 @@ public class SearchController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("")
-    public ResponseEntity<List<SearchResponseDto>> search(
+    public ResponseEntity<SearchResponseDto> search(
         @ApiParam(value = "Query to search") @RequestParam String searchQuery) {
         return ResponseEntity.status(HttpStatus.OK).body(searchService.search(searchQuery));
     }
