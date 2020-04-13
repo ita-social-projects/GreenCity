@@ -36,11 +36,11 @@ steps:
         }
       ]
 
-- script: echo "spring.profiles.active=production" > ./core/src/main/resources/application.properties
-  displayName: Change dev -> prod for core app
+# - script: echo "spring.profiles.active=production" > ./core/src/main/resources/application.properties
+#   displayName: Change dev -> prod for core app
 
-- script: echo "spring.profiles.active=production" > ./email/src/main/resources/application.properties
-  displayName: Change dev -> prod for email app
+# - script: echo "spring.profiles.active=production" > ./email/src/main/resources/application.properties
+#   displayName: Change dev -> prod for email app
 
 - task: Maven@3
   inputs:
@@ -69,22 +69,22 @@ steps:
   inputs:
     PathtoPublish: $(build.artifactstagingdirectory)  
 
-- task: AzureRmWebAppDeployment@4
-  displayName: Deploy mail
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'GreenCity'
-    appType: 'webAppLinux'
-    WebAppName: 'greencity-mail'
-    packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
-#     StartupCommand: 'java -jar *.jar'
+# - task: AzureRmWebAppDeployment@4
+#   displayName: Deploy mail
+#   inputs:
+#     ConnectionType: 'AzureRM'
+#     azureSubscription: 'GreenCity'
+#     appType: 'webAppLinux'
+#     WebAppName: 'greencity-mail'
+#     packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
+# #     StartupCommand: 'java -jar *.jar'
     
-- task: AzureRmWebAppDeployment@4
-  displayName: Deploy core
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'GreenCity'
-    appType: 'webAppLinux'
-    WebAppName: 'greencity'
-    packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
-#     StartupCommand: 'java -jar *.jar'
+# - task: AzureRmWebAppDeployment@4
+#   displayName: Deploy core
+#   inputs:
+#     ConnectionType: 'AzureRM'
+#     azureSubscription: 'GreenCity'
+#     appType: 'webAppLinux'
+#     WebAppName: 'greencity'
+#     packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
+# #     StartupCommand: 'java -jar *.jar'
