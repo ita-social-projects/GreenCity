@@ -19,7 +19,7 @@ steps:
     scriptType: 'bash'
     scriptLocation: inlineScript
     inlineScript: |
-      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file ./core/google-creds.json
+      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file ./core/src/main/resources/google-creds.json
 
 - task: AzureAppServiceSettings@1
   displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
@@ -31,7 +31,7 @@ steps:
       [
         {
           "name": "GOOGLE_APPLICATION_CREDENTIALS",
-          "value": "google-creds.json", 
+          "value": "сlasspath:google-creds.json", 
           "slotSetting": false
         }
       ]
