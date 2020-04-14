@@ -150,7 +150,7 @@ public class EcoNewsServiceImplTest {
         );
         PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);
 
-        when(ecoNewsRepo.findAll(pageRequest)).thenReturn(translationPage);
+        when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
         assertEquals(pageableDto, ecoNewsService.findAll(pageRequest));
     }

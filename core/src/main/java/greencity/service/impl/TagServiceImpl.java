@@ -45,4 +45,19 @@ public class TagServiceImpl implements TagService {
             .map(Tag::getName)
             .collect(Collectors.toList());
     }
+      
+     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean isAllValid(List<String> tags) {
+        for (String tag : tags) {
+            try {
+                findByName(tag);
+            } catch (TagNotFoundException e) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

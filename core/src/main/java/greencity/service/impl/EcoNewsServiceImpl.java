@@ -105,7 +105,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableDto<EcoNewsDto> findAll(Pageable page) {
-        Page<EcoNews> pages = ecoNewsRepo.findAll(page);
+        Page<EcoNews> pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
         List<EcoNewsDto> ecoNewsDtos = pages
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))

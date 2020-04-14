@@ -24,4 +24,12 @@ public interface TagService {
      * @return list of {@link Tag}'s names
      */
     List<String> findAll();
+  
+    /**
+     * Method that allow you to check is valid all {@link Tag} by name.
+     *
+     * @param tags list of {@link String}
+     * @return {@link Boolean}
+     */
+    Boolean isAllValid(List<String> tags);
 }
