@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ValidTags;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -18,10 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+@Validated
 @RestController
 @RequestMapping("/econews")
 public class EcoNewsController {
@@ -74,12 +77,12 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for getting eco news by id and language.
+     * Method for getting eco news by id.
      *
      * @return {@link EcoNewsDto} instance.
      * @author Kovaliv Taras
      */
-    @ApiOperation(value = "Get eco news by id and language.")
+    @ApiOperation(value = "Get eco news by id.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -145,7 +148,7 @@ public class EcoNewsController {
     public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(
         @ApiIgnore Pageable page,
         @ApiParam(value = "Tags to filter")
-        @RequestParam(required = false) List<String> tags
+        @RequestParam(required = false) @ValidTags List<String> tags
     ) {
         if (tags == null || tags.size() == 0) {
             return ResponseEntity.status(HttpStatus.OK).body(
