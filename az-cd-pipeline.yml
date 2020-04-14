@@ -36,11 +36,11 @@ steps:
         }
       ]
 
-- script: echo "spring.profiles.active=production" > ./core/src/main/resources/application.properties
-  displayName: Change dev -> prod for core app
+# - script: echo "spring.profiles.active=production" > ./core/src/main/resources/application.properties
+#   displayName: Change dev -> prod for core app
 
-- script: echo "spring.profiles.active=production" > ./email/src/main/resources/application.properties
-  displayName: Change dev -> prod for email app
+# - script: echo "spring.profiles.active=production" > ./email/src/main/resources/application.properties
+#   displayName: Change dev -> prod for email app
 
 - task: Maven@3
   inputs:
