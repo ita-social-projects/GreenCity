@@ -7,7 +7,6 @@ import greencity.entity.HabitFact;
 import greencity.repository.FactTranslationRepo;
 import greencity.service.FactTranslationService;
 import greencity.service.HabitFactService;
-import java.util.Collections;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -53,11 +52,7 @@ public class FactTranslationServiceImpl implements FactTranslationService {
             new TypeToken<List<FactTranslation>>() {
             }.getType());
 
-        List<FactTranslation> factTranslationsList = Collections.emptyList();
-        for (FactTranslation factTranslation : factTranslations) {
-            factTranslation.setHabitFact(habitFact);
-            factTranslationsList.add(factTranslation);
-        }
+        factTranslations.forEach(a -> a.setHabitFact(habitFact));
 
         return saveFactTranslation(factTranslationsList);
     }

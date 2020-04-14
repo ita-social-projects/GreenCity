@@ -5,7 +5,6 @@ import greencity.entity.Advice;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.repository.AdviceTranslationRepo;
 import greencity.service.AdviceTranslationService;
-import java.util.Collections;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -62,11 +61,8 @@ public class AdviceTranslationServiceImpl implements AdviceTranslationService {
             new TypeToken<List<AdviceTranslation>>() {
             }.getType());
 
-        List<AdviceTranslation> adviceTranslationsList = Collections.emptyList();
-        for (AdviceTranslation adviceTranslation : adviceTranslations) {
-            adviceTranslation.setAdvice(advice);
-            adviceTranslationsList.add(adviceTranslation);
-        }
-        return saveAdviceTranslation(adviceTranslationsList);
+        adviceTranslations.forEach(a -> a.setAdvice(advice));
+
+        return saveAdviceTranslation(adviceTranslations);
     }
 }
