@@ -41,9 +41,6 @@ steps:
 
 - script: echo "spring.profiles.active=production" > ./email/src/main/resources/application.properties
   displayName: Change dev -> prod for email app
-  
-- script: echo "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration" >> ./email/src/main/resources/application-prod.properties
-  displayName: Disable datasorce autoconfig
 
 - task: Maven@3
   inputs:
