@@ -54,7 +54,7 @@ public class FactTranslationServiceImpl implements FactTranslationService {
 
         factTranslations.forEach(a -> a.setHabitFact(habitFact));
 
-        return saveFactTranslation(factTranslationsList);
+        return saveFactTranslation(factTranslations);
     }
 
     /**
