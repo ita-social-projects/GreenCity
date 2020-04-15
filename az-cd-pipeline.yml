@@ -23,20 +23,20 @@ steps:
     inlineScript: |
       az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(GOOGLE_APPLICATION_CREDENTIALS)
 
-# - task: AzureAppServiceSettings@1
-#   displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
-#   inputs:
-#     azureSubscription: 'GreenCity'
-#     appName: 'greencity'
-#     resourceGroupName: 'GreenCity'
-#     appSettings: |
-#       [
-#         {
-#           "name": "GOOGLE_APPLICATION_CREDENTIALS",
-#           "value": "сlasspath:google-creds.json", 
-#           "slotSetting": false
-#         }
-#       ]
+- task: AzureAppServiceSettings@1
+  displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+  inputs:
+    azureSubscription: 'GreenCity'
+    appName: 'greencity'
+    resourceGroupName: 'GreenCity'
+    appSettings: |
+      [
+        {
+          "name": "GOOGLE_APPLICATION_CREDENTIALS",
+          "value": "сlasspath:$(GOOGLE_APPLICATION_CREDENTIALS)", 
+          "slotSetting": false
+        }
+      ]
 
 - script: |
    cp $(GOOGLE_APPLICATION_CREDENTIALS) ./core/$(GOOGLE_APPLICATION_CREDENTIALS)
