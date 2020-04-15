@@ -25,11 +25,10 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -37,14 +36,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 /**
  * The class provides implementation of the {@code PlaceService}.
  */
 @Slf4j
-@Setter
 @Service
-@AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
@@ -56,11 +52,40 @@ public class PlaceServiceImpl implements PlaceService {
     private final OpenHoursService openingHoursService;
     private final DiscountService discountService;
     private final NotificationService notificationService;
-    @Qualifier(value = "datasourceTimezone")
-    private ZoneId datasourceTimezone;
+    private final ZoneId datasourceTimezone;
     private final RabbitTemplate rabbitTemplate;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
+
+    /**
+     * Constructor.
+     */
+    @Autowired
+    public PlaceServiceImpl(PlaceRepo placeRepo,
+                            ModelMapper modelMapper,
+                            ProposePlaceMapper placeMapper,
+                            CategoryService categoryService,
+                            LocationService locationService,
+                            SpecificationService specificationService,
+                            UserService userService,
+                            OpenHoursService openingHoursService,
+                            DiscountService discountService,
+                            NotificationService notificationService,
+                            @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
+                            RabbitTemplate rabbitTemplate) {
+        this.placeRepo = placeRepo;
+        this.modelMapper = modelMapper;
+        this.placeMapper = placeMapper;
+        this.categoryService = categoryService;
+        this.locationService = locationService;
+        this.specificationService = specificationService;
+        this.userService = userService;
+        this.openingHoursService = openingHoursService;
+        this.discountService = discountService;
+        this.notificationService = notificationService;
+        this.datasourceTimezone = datasourceTimezone;
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     /**
      * {@inheritDoc}

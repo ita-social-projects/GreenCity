@@ -19,13 +19,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-import lombok.extern.slf4j.Slf4j;
 import static org.junit.jupiter.api.Assertions.*;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
@@ -139,8 +138,7 @@ class PlaceServiceImplTest {
 
     private ZoneId zoneId = ZoneId.of("Europe/Kiev");
 
-    @InjectMocks
-    private PlaceServiceImpl placeService;
+    private PlaceService placeService;
 
     private final Place genericEntity1 = Place.builder()
         .id(1L)
@@ -160,7 +158,9 @@ class PlaceServiceImplTest {
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
-        placeService.setDatasourceTimezone(zoneId);
+        placeService = new PlaceServiceImpl(placeRepo, modelMapper, proposePlaceMapper, categoryService,
+            locationService, specificationService, userService, openingHoursService, discountService,
+            notificationService, zoneId, rabbitTemplate);
     }
 
     @Test

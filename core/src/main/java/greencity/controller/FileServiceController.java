@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
+import greencity.entity.EcoNews;
 import greencity.service.FileService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -36,7 +37,7 @@ public class FileServiceController {
      */
     @ApiOperation(value = "Upload an image.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = String.class),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR),
