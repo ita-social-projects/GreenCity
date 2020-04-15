@@ -47,7 +47,7 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Add new eco news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddEcoNewsDtoResponse.class),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })

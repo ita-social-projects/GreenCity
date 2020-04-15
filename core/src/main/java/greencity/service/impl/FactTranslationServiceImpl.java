@@ -8,6 +8,7 @@ import greencity.repository.FactTranslationRepo;
 import greencity.service.FactTranslationService;
 import greencity.service.HabitFactService;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +52,10 @@ public class FactTranslationServiceImpl implements FactTranslationService {
         List<FactTranslation> factTranslations = modelMapper.map(habitFactPostDTO.getTranslations(),
             new TypeToken<List<FactTranslation>>() {
             }.getType());
-
-        factTranslations.forEach(a -> a.setHabitFact(habitFact));
-
+        factTranslations = factTranslations
+            .stream()
+            .peek(a -> a.setHabitFact(habitFact))
+            .collect(Collectors.toList());
         return saveFactTranslation(factTranslations);
     }
 

@@ -1,5 +1,9 @@
 package greencity.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
+
 import greencity.dto.category.CategoryDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
@@ -9,18 +13,14 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CategoryRepo;
 import java.util.*;
 import java.util.stream.Collectors;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CategoryServiceImplTest {
     @Mock
     private CategoryRepo categoryRepo;
@@ -44,12 +44,10 @@ public class CategoryServiceImplTest {
         assertEquals(genericEntity, categoryService.save(genericDto));
     }
 
-    @Test
+    @Test(expected = BadCategoryRequestException.class)
     public void saveDtoWhenFindByNameTrueTest() {
         when(categoryRepo.findByName(any())).thenReturn(new Category());
-        assertThrows(BadCategoryRequestException.class, () -> {
-            categoryService.save(new CategoryDto());
-        });
+        categoryService.save(new CategoryDto());
     }
 
     @Test
@@ -60,12 +58,10 @@ public class CategoryServiceImplTest {
         assertEquals(genericEntity, foundEntity);
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void findByNameWhenCategoryNullTest() {
         when(categoryRepo.findByName(anyString())).thenReturn(null);
-        assertThrows(NotFoundException.class, () -> {
-            categoryService.findByName(anyString());
-        });
+        categoryService.findByName(anyString());
     }
 
     @Test
@@ -94,11 +90,9 @@ public class CategoryServiceImplTest {
         assertEquals(genericEntity, foundEntity);
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void findByIdGivenIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            categoryService.findById(null);
-        });
+        categoryService.findById(null);
     }
 
     @Test
@@ -111,11 +105,9 @@ public class CategoryServiceImplTest {
         assertEquals(updated, foundEntity);
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void updateGivenIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            categoryService.update(null, new Category());
-        });
+        categoryService.update(null, new Category());
     }
 
     @Test
@@ -124,20 +116,16 @@ public class CategoryServiceImplTest {
         assertEquals(new Long(1), categoryService.deleteById(1L));
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void deleteByIdGivenIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            categoryService.deleteById(null);
-        });
+        categoryService.deleteById(null);
     }
 
-    @Test
+    @Test(expected = BadRequestException.class)
     public void deleteByIdGivenCategoryRelatedToExistencePlaceThrowException() {
         Category generatedEntity = Category.builder().places(Collections.singletonList(new Place())).build();
         when(categoryRepo.findById(anyLong())).thenReturn(Optional.of(generatedEntity));
-        assertThrows(BadRequestException.class, () -> {
-            categoryService.deleteById(1L);
-        });
+        categoryService.deleteById(1L);
     }
 
     @Test
