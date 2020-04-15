@@ -11,7 +11,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  GOOGLE_APPLICATION_CREDENTIALS: google-creds.json
+  jsonFile: google-creds.json
+  GOOGLE_APPLICATION_CREDENTIALS: $(system.defaultworkingdirectory)/$(jsonFile)
 
 steps:
 - task: AzureCLI@2
@@ -21,7 +22,7 @@ steps:
     scriptType: 'bash'
     scriptLocation: inlineScript
     inlineScript: |
-      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(GOOGLE_APPLICATION_CREDENTIALS)
+      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(jsonFile)
 
 - task: AzureAppServiceSettings@1
   displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
@@ -39,8 +40,8 @@ steps:
       ]
 
 - script: |
-   cp $(GOOGLE_APPLICATION_CREDENTIALS) ./core/$(GOOGLE_APPLICATION_CREDENTIALS)
-   cp $(GOOGLE_APPLICATION_CREDENTIALS) ./core/src/main/resources/$(GOOGLE_APPLICATION_CREDENTIALS)
+   cp $(jsonFile) ./core/$(jsonFile)
+   cp $(jsonFile) ./core/src/main/resources/$(jsonFile)
   displayName: cpx2
   
  
