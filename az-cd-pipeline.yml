@@ -33,7 +33,7 @@ steps:
       [
         {
           "name": "GOOGLE_APPLICATION_CREDENTIALS",
-          "value": "сlasspath:$(GOOGLE_APPLICATION_CREDENTIALS)", 
+          "value": "$(GOOGLE_APPLICATION_CREDENTIALS)", 
           "slotSetting": false
         }
       ]
