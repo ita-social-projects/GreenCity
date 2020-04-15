@@ -1,9 +1,5 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
 import greencity.entity.BreakTime;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -13,13 +9,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class BreakTimeServiceImplTest {
     @Mock
     private BreakTimeRepo breakTimeRepo;
@@ -46,9 +46,11 @@ public class BreakTimeServiceImplTest {
         assertEquals(validBreakTime, breakTimeService.save(validBreakTime));
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test()
     public void saveNotValidBreakTime() {
-        breakTimeService.save(notValidBreakTime);
+        assertThrows(BadRequestException.class, () -> {
+            breakTimeService.save(notValidBreakTime);
+        });
     }
 
     @Test
@@ -58,11 +60,12 @@ public class BreakTimeServiceImplTest {
         assertEquals(validBreakTime, breakTimeService.findById(validBreakTime.getId()));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void findByNotExistingId() {
         when(breakTimeRepo.findById(anyLong())).thenReturn(Optional.empty());
-
-        breakTimeService.findById(13L);
+        assertThrows(NotFoundException.class, () -> {
+            breakTimeService.findById(13L);
+        });
     }
 
     @Test
@@ -73,11 +76,12 @@ public class BreakTimeServiceImplTest {
         verify(breakTimeRepo, times(1)).delete(validBreakTime);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteByNotExistingId() {
         when(breakTimeRepo.findById(anyLong())).thenReturn(Optional.empty());
-
-        breakTimeService.deleteById(13L);
+        assertThrows(NotFoundException.class, () -> {
+            breakTimeService.deleteById(13L);
+        });
     }
 
     @Test

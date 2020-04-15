@@ -1,8 +1,5 @@
 package greencity.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
@@ -17,13 +14,15 @@ import greencity.service.LanguageService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.when;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class UserGoalResponseDtoMapperTest {
     @Mock
     private LanguageService languageService;
