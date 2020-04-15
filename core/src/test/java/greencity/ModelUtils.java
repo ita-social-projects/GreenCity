@@ -1,14 +1,11 @@
 package greencity;
 
+import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.Language;
-import greencity.entity.Tag;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.entity.enums.ROLE;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -87,5 +84,14 @@ public class ModelUtils {
 
     public static DiscountValueDto getDiscountValueDto() {
         return new DiscountValueDto(33, null);
+    }
+
+    public static Comment getComment(){
+        return new Comment(1L, "text", null,
+                null, null, null, null, null, null, null);
+    }
+
+    public static CommentReturnDto getCommentReturnDto(){
+        return new CommentReturnDto(1L, "text", null, null, null);
     }
 }
