@@ -3,8 +3,6 @@ package greencity;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsTranslationDto;
-import greencity.dto.language.LanguageRequestDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
@@ -12,7 +10,6 @@ import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
-import greencity.entity.localization.EcoNewsTranslation;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,8 +31,7 @@ public class ModelUtils {
         return User.builder()
             .id(1L)
             .email(TestConst.EMAIL)
-            .firstName(TestConst.NAME)
-            .lastName("Stasyuk")
+            .name(TestConst.NAME)
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
@@ -43,15 +39,7 @@ public class ModelUtils {
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
-        return new EcoNewsAuthorDto(1L, TestConst.NAME, "Stasyuk");
-    }
-
-    public static EcoNewsTranslation getEcoNewsTranslation() {
-        return new EcoNewsTranslation(1L, getLanguage(), "title", "text", null);
-    }
-
-    public static EcoNewsTranslationDto getEcoNewsTranslationDto() {
-        return new EcoNewsTranslationDto(getLanguageRequestDto(), "title", "text");
+        return new EcoNewsAuthorDto(1L, TestConst.NAME);
     }
 
     public static Language getLanguage() {
@@ -59,24 +47,19 @@ public class ModelUtils {
             Collections.emptyList());
     }
 
-    public static LanguageRequestDto getLanguageRequestDto() {
-        return new LanguageRequestDto("en");
-    }
-
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, getUser(),
-            Collections.singletonList(getEcoNewsTranslation()),
-            Collections.singletonList(getTag()));
+            "title", "text", Collections.singletonList(getTag()));
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
-        return new AddEcoNewsDtoRequest(Collections.singletonList(getEcoNewsTranslationDto()),
+        return new AddEcoNewsDtoRequest("title", "text",
             Collections.singletonList("tag"));
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
-        return new AddEcoNewsDtoResponse(1L, getEcoNewsTranslation().getTitle(),
-            getEcoNewsTranslation().getText(), getEcoNewsAuthorDto(),
+        return new AddEcoNewsDtoResponse(1L, getEcoNews().getTitle(),
+            getEcoNews().getText(), getEcoNewsAuthorDto(),
             getEcoNews().getCreationDate(), TestConst.SITE,
             Collections.singletonList("tag"));
     }

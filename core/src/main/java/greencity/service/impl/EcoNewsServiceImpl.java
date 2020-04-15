@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import greencity.constant.AppConstant;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
@@ -9,15 +8,11 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
-import greencity.entity.localization.EcoNewsTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsTranslationRepo;
 import greencity.service.*;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -44,13 +39,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private final ModelMapper modelMapper;
 
-    private final EcoNewsTranslationRepo ecoNewsTranslationRepo;
-
     private final RabbitTemplate rabbitTemplate;
 
     private final NewsSubscriberService newsSubscriberService;
-
-    private final LanguageService languageService;
 
     private final TagService tagService;
 
@@ -67,24 +58,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                                       MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setAuthor(userService.findByEmail(email));
-        toSave.setCreationDate(ZonedDateTime.now());
-        toSave.setImagePath(fileService.upload(image).toString());
+        toSave.setImagePath(" ");
 
         toSave.setTags(addEcoNewsDtoRequest.getTags()
             .stream()
             .map(tagService::findByName)
             .collect(Collectors.toList())
         );
-
-        List<EcoNewsTranslation> translations = new ArrayList<>();
-
-        for (EcoNewsTranslation translation : toSave.getTranslations()) {
-            translation.setLanguage(languageService.findByCode(translation.getLanguage().getCode()));
-            translation.setEcoNews(toSave);
-
-            translations.add(translation);
-        }
-        toSave.setTranslations(translations);
 
         try {
             ecoNewsRepo.save(toSave);
@@ -95,14 +75,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             buildAddEcoNewsMessage(toSave));
 
-        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
-
-        EcoNewsTranslation translation = ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(toSave,
-            languageService.extractLanguageCodeFromRequest());
-        addEcoNewsDtoResponse.setTitle(translation.getTitle());
-        addEcoNewsDtoResponse.setText(translation.getText());
-
-        return addEcoNewsDtoResponse;
+        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
     /**
@@ -110,15 +83,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
-    @Cacheable(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, key = "#languageCode")
+    @Cacheable(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME)
     @Override
-    public List<EcoNewsDto> getThreeLastEcoNews(String languageCode) {
-        List<EcoNewsTranslation> ecoNewsTranslations = ecoNewsTranslationRepo
-            .getNLastEcoNewsByLanguageCode(3, languageCode);
-        if (ecoNewsTranslations.isEmpty()) {
+    public List<EcoNewsDto> getThreeLastEcoNews() {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeLastEcoNews();
+
+        if (ecoNewsList.isEmpty()) {
             throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
         }
-        return ecoNewsTranslations
+
+        return ecoNewsList
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
@@ -130,12 +104,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public PageableDto<EcoNewsDto> findAll(Pageable page, String languageCode) {
-        Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo.findAllByLanguageCode(page, languageCode);
+    public PageableDto<EcoNewsDto> findAll(Pageable page) {
+        Page<EcoNews> pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
         List<EcoNewsDto> ecoNewsDtos = pages
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
+
         return new PageableDto<>(
             ecoNewsDtos,
             pages.getTotalElements(),
@@ -149,9 +124,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public PageableDto<EcoNewsDto> find(Pageable page, String language, List<String> tags) {
-        Page<EcoNewsTranslation> pages = ecoNewsTranslationRepo
-            .find(page, tags, language);
+    public PageableDto<EcoNewsDto> find(Pageable page, List<String> tags) {
+        Page<EcoNews> pages = ecoNewsRepo.find(page, tags);
 
         List<EcoNewsDto> ecoNewsDtos = pages.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
@@ -182,22 +156,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public EcoNewsDto findById(Long id, String language) {
+    public EcoNewsDto findDtoById(Long id) {
         EcoNews ecoNews = findById(id);
-        EcoNewsTranslation ecoNewsTranslation = null;
 
-        for (EcoNewsTranslation ent : ecoNews.getTranslations()) {
-            if (ent.getLanguage().getCode().equals(language)) {
-                ecoNewsTranslation = ent;
-                break;
-            }
-        }
-
-        if (ecoNewsTranslation == null) {
-            ecoNewsTranslation = ecoNews.getTranslations().get(0);
-        }
-
-        return modelMapper.map(ecoNewsTranslation, EcoNewsDto.class);
+        return modelMapper.map(ecoNews, EcoNewsDto.class);
     }
 
     /**
@@ -219,8 +181,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
-        addEcoNewsDtoResponse.setTitle(
-            ecoNewsTranslationRepo.findByEcoNewsAndLanguageCode(ecoNews, AppConstant.DEFAULT_LANGUAGE_CODE).getTitle());
 
         return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
     }

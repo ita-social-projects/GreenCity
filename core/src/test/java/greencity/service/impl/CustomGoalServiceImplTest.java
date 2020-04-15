@@ -47,8 +47,7 @@ public class CustomGoalServiceImplTest {
     private User user =
         User.builder()
             .id(1L)
-            .firstName("test")
-            .lastName("test")
+            .name("Test Testing")
             .email("test@gmail.com")
             .role(ROLE.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)

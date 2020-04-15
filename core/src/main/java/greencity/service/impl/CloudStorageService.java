@@ -27,8 +27,8 @@ public class CloudStorageService implements FileService {
     /**
      * Constructor with parameters.
      */
-    public CloudStorageService(@Value("${BUCKET_NAME}") final String bucketName,
-                               @Value("${STATIC_URL}") final String staticUrl) {
+    public CloudStorageService(@Value("${bucketName}") final String bucketName,
+                               @Value("${staticUrl}") final String staticUrl) {
         this.bucketName = bucketName;
         this.staticUrl = staticUrl;
         this.storage = StorageOptions.newBuilder().build().getService();

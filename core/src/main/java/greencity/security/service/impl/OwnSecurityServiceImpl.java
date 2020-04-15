@@ -84,7 +84,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             rabbitTemplate.convertAndSend(
                 sendEmailTopic,
                 VERIFY_EMAIL_ROUTING_KEY,
-                new VerifyEmailMessage(savedUser.getId(), savedUser.getFirstName(), savedUser.getEmail(),
+                new VerifyEmailMessage(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
                     savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
@@ -94,8 +94,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey) {
         return User.builder()
-            .firstName(dto.getFirstName())
-            .lastName(dto.getLastName())
+            .name(dto.getName())
             .email(dto.getEmail())
             .dateOfRegistration(LocalDateTime.now())
             .role(ROLE.ROLE_USER)
@@ -144,7 +143,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         appEventPublisher.publishEvent(new SignInEvent(user));
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
-        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getFirstName(), true);
+        return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), true);
     }
 
     private boolean isPasswordCorrect(OwnSignInDto signInDto, User user) {
