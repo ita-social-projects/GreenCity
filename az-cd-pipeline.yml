@@ -10,8 +10,10 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
+variables:
+  GOOGLE_APPLICATION_CREDENTIALS: google-creds.json
 
+steps:
 - task: AzureCLI@2
   displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
   inputs:
@@ -19,29 +21,29 @@ steps:
     scriptType: 'bash'
     scriptLocation: inlineScript
     inlineScript: |
-      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file ./core/src/main/resources/google-creds.json
+      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(GOOGLE_APPLICATION_CREDENTIALS)
 
-- task: AzureAppServiceSettings@1
-  displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
-  inputs:
-    azureSubscription: 'GreenCity'
-    appName: 'greencity'
-    resourceGroupName: 'GreenCity'
-    appSettings: |
-      [
-        {
-          "name": "GOOGLE_APPLICATION_CREDENTIALS",
-          "value": "сlasspath:google-creds.json", 
-          "slotSetting": false
-        }
-      ]
+# - task: AzureAppServiceSettings@1
+#   displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+#   inputs:
+#     azureSubscription: 'GreenCity'
+#     appName: 'greencity'
+#     resourceGroupName: 'GreenCity'
+#     appSettings: |
+#       [
+#         {
+#           "name": "GOOGLE_APPLICATION_CREDENTIALS",
+#           "value": "сlasspath:google-creds.json", 
+#           "slotSetting": false
+#         }
+#       ]
 
-# - script: echo "spring.profiles.active=production" > ./core/src/main/resources/application.properties
-#   displayName: Change dev -> prod for core app
-
-# - script: echo "spring.profiles.active=production" > ./email/src/main/resources/application.properties
-#   displayName: Change dev -> prod for email app
-
+- script: |
+   cp $(GOOGLE_APPLICATION_CREDENTIALS) ./core/$(GOOGLE_APPLICATION_CREDENTIALS)
+   cp $(GOOGLE_APPLICATION_CREDENTIALS) ./core/src/main/resources/$(GOOGLE_APPLICATION_CREDENTIALS)
+  displayName: cpx2
+  
+ 
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
