@@ -12,7 +12,7 @@ pool:
 
 variables:
   jsonFile: google-creds.json
-  GOOGLE_APPLICATION_CREDENTIALS: $(system.defaultworkingdirectory)/core/src/main/resources/$(jsonFile)
+  GOOGLE_APPLICATION_CREDENTIALS: classpath:$(jsonFile)
 
 steps:
 - task: AzureCLI@2
