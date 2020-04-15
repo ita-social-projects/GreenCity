@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <include file="db/changelog/logs/liquibase-outputChangeLog.xml"/>
+    <include file="db/changelog/logs/ch-change-tables-names-1.xml"/>
+    <include file="db/changelog/logs/ch-add-column-Koval-1.xml"/>
+    <include file="db/changelog/logs/ch-habit-dictionary-kuzenko-1.xml"/>
+    <include file="db/changelog/logs/ch-habits-turko-1.xml"/>
+    <include file="db/changelog/logs/ch-habit-statistics-olkhovskyi-1.xml"/>
+    <include file="db/changelog/logs/ch-user-goals-skolozdra-1.xml"/>
+    <include file="db/changelog/logs/ch-advice-dzen-1.xml"/>
+    <include file="db/changelog/logs/ch-update-habit-dictionary-dzen-2.xml"/>
+    <include file="db/changelog/logs/ch-habit_facts-dzen-3.xml"/>
+    <include file="db/changelog/logs/ch-add-constraints-Koval-2.xml"/>
+    <include file="db/changelog/logs/ch-custom-goals-Kuzenko-1.xml"/>
+    <include file="db/changelog/logs/ch-change-table-Kuzenko-1.xml"/>
+    <include file="db/changelog/logs/ch-user-achievements-olkhovskyi-1.xml"/>
+    <include file="db/changelog/logs/ch-news-subscriber-table-Kuzenko-1.xml"/>
+    <include file="db/changelog/logs/ch-econews-olkhovskyi-2.xml"/>
+    <include file="db/changelog/logs/ch-advice-localization-kopylchak-1.xml"/>
+    <include file="db/changelog/logs/ch-fact-localization-dzen-4.xml"/>
+    <include file="db/changelog/logs/ch-goals-localization-Kopylchak-1.xml"/>
+    <include file="db/changelog/logs/ch-modify-column-Koval-3.xml"/>
+    <include file="db/changelog/logs/ch-update-habit-dictionary-turko.xml"/>
+    <include file="db/changelog/logs/ch-habit-dictionary-translation-turko.xml"/>
+    <include file="db/changelog/logs/ch-eco-news-localization-Kopylchak-1.xml"/>
+    <include file="db/changelog/logs/ch-eco-news-Kovaliv-1.xml"/>
+    <include file="db/changelog/logs/ch-eco-news-Kovaliv-2.xml"/>
+    <include file="db/changelog/logs/ch-change-table-users-Yurchuk-1.xml"/>
+    <include file="db/changelog/logs/ch-eco-news-Kovaliv-3.xml"/>
+</databaseChangeLog>
