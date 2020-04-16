@@ -4,9 +4,11 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.*;
+import greencity.entity.enums.HabitRate;
 import greencity.entity.enums.ROLE;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -106,5 +108,15 @@ public class ModelUtils {
 
     public static FavoritePlaceDto getFavoritePlaceDto() {
         return new FavoritePlaceDto("name", 3L);
+    }
+
+    public static AddHabitStatisticDto addHabitStatisticDto() {
+        return AddHabitStatisticDto.builder()
+            .id(1L)
+            .amountOfItems(5)
+            .habitRate(HabitRate.DEFAULT)
+            .habitId(13L)
+            .createdOn(ZonedDateTime.now())
+            .build();
     }
 }
