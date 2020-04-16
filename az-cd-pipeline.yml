@@ -12,7 +12,7 @@ pool:
 
 variables:
   jsonFile: google-creds.json
-  GOOGLE_APPLICATION_CREDENTIALS: classpath:$(jsonFile)
+  GOOGLE_APPLICATION_CREDENTIALS: /home/vsts/$(jsonFile)
 
 steps:
 - task: AzureCLI@2
@@ -22,22 +22,22 @@ steps:
     scriptType: 'bash'
     scriptLocation: inlineScript
     inlineScript: |
-      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file ./core/src/main/resources/$(jsonFile)
+      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(GOOGLE_APPLICATION_CREDENTIALS)
 
-- task: AzureAppServiceSettings@1
-  displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
-  inputs:
-    azureSubscription: 'GreenCity'
-    appName: 'greencity'
-    resourceGroupName: 'GreenCity'
-    appSettings: |
-      [
-        {
-          "name": "GOOGLE_APPLICATION_CREDENTIALS",
-          "value": "$(GOOGLE_APPLICATION_CREDENTIALS)", 
-          "slotSetting": false
-        }
-      ]
+# - task: AzureAppServiceSettings@1
+#   displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+#   inputs:
+#     azureSubscription: 'GreenCity'
+#     appName: 'greencity'
+#     resourceGroupName: 'GreenCity'
+#     appSettings: |
+#       [
+#         {
+#           "name": "GOOGLE_APPLICATION_CREDENTIALS",
+#           "value": "$(GOOGLE_APPLICATION_CREDENTIALS)", 
+#           "slotSetting": false
+#         }
+#       ]
   
  
 - task: Maven@3
@@ -63,24 +63,4 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: Publish Artifact
   inputs:
-    PathtoPublish: $(build.artifactstagingdirectory)  
-
-# - task: AzureRmWebAppDeployment@4
-#   displayName: Deploy mail
-#   inputs:
-#     ConnectionType: 'AzureRM'
-#     azureSubscription: 'GreenCity'
-#     appType: 'webAppLinux'
-#     WebAppName: 'greencity-mail'
-#     packageForLinux: '$(build.artifactstagingdirectory)/email/target/*.jar'
-# #     StartupCommand: 'java -jar *.jar'
-    
-# - task: AzureRmWebAppDeployment@4
-#   displayName: Deploy core
-#   inputs:
-#     ConnectionType: 'AzureRM'
-#     azureSubscription: 'GreenCity'
-#     appType: 'webAppLinux'
-#     WebAppName: 'greencity'
-#     packageForLinux: '$(build.artifactstagingdirectory)/core/target/*.jar'
-# #     StartupCommand: 'java -jar *.jar'
+    PathtoPublish: $(build.artifactstagingdirectory)
