@@ -12,32 +12,32 @@ pool:
 
 variables:
   jsonFile: google-creds.json
-  GOOGLE_APPLICATION_CREDENTIALS: /home/vsts/$(jsonFile)
+  GOOGLE_APPLICATION_CREDENTIALS: /home/site/wwwroot/greencity-google.json
 
 steps:
-- task: AzureCLI@2
-  displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
-  inputs:
-    azureSubscription: 'GreenCity'
-    scriptType: 'bash'
-    scriptLocation: inlineScript
-    inlineScript: |
-      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(GOOGLE_APPLICATION_CREDENTIALS)
-
-# - task: AzureAppServiceSettings@1
-#   displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+# - task: AzureCLI@2
+#   displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
 #   inputs:
 #     azureSubscription: 'GreenCity'
-#     appName: 'greencity'
-#     resourceGroupName: 'GreenCity'
-#     appSettings: |
-#       [
-#         {
-#           "name": "GOOGLE_APPLICATION_CREDENTIALS",
-#           "value": "$(GOOGLE_APPLICATION_CREDENTIALS)", 
-#           "slotSetting": false
-#         }
-#       ]
+#     scriptType: 'bash'
+#     scriptLocation: inlineScript
+#     inlineScript: |
+#       az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(GOOGLE_APPLICATION_CREDENTIALS)
+
+- task: AzureAppServiceSettings@1
+  displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+  inputs:
+    azureSubscription: 'GreenCity'
+    appName: 'greencity'
+    resourceGroupName: 'GreenCity'
+    appSettings: |
+      [
+        {
+          "name": "GOOGLE_APPLICATION_CREDENTIALS",
+          "value": "/home/site/wwwroot/greencity-google.json", 
+          "slotSetting": false
+        }
+      ]
   
  
 - task: Maven@3
