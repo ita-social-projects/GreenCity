@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.entity.*;
 import static org.junit.Assert.assertEquals;

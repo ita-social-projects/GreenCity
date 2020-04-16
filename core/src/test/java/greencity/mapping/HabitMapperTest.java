@@ -1,9 +1,7 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.entity.Habit;
-import greencity.entity.HabitStatistic;
 import greencity.entity.User;
 import java.time.ZonedDateTime;
 import static org.junit.Assert.assertEquals;

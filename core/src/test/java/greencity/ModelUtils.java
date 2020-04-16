@@ -5,7 +5,6 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.location.LocationDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.*;
 import greencity.entity.enums.HabitRate;
@@ -117,6 +116,16 @@ public class ModelUtils {
             .habitRate(HabitRate.DEFAULT)
             .habitId(13L)
             .createdOn(ZonedDateTime.now())
+            .build();
+    }
+
+    public static HabitStatistic getHabitStatistic() {
+        return HabitStatistic.builder()
+            .id(1L)
+            .habitRate(HabitRate.DEFAULT)
+            .createdOn(ZonedDateTime.now())
+            .amountOfItems(5)
+            .habit(Habit.builder().id(13L).build())
             .build();
     }
 }
