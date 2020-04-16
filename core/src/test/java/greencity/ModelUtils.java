@@ -3,12 +3,10 @@ package greencity;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.location.LocationDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.Language;
-import greencity.entity.Tag;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.entity.enums.ROLE;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -80,12 +78,33 @@ public class ModelUtils {
     public static URL getUrl() throws MalformedURLException {
         return new URL(TestConst.SITE);
     }
-    
+
     public static DiscountValue getDiscountValue() {
         return new DiscountValue(null, 33, null, null);
     }
 
     public static DiscountValueDto getDiscountValueDto() {
         return new DiscountValueDto(33, null);
+    }
+
+    public static Place getPlace() {
+        Place place = new Place();
+        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", place));
+        place.setId(1L);
+        place.setName("Forum");
+        place.setDescription("Shopping center");
+        place.setPhone("0322 489 850");
+        place.setEmail("forum_lviv@gmail.com");
+        place.setAuthor(getUser());
+        place.setModifiedDate(ZonedDateTime.now());
+        return place;
+    }
+
+    public static FavoritePlace getFavoritePlace() {
+        return new FavoritePlace(3L, "name", getUser(), getPlace());
+    }
+
+    public static FavoritePlaceDto getFavoritePlaceDto() {
+        return new FavoritePlaceDto("name", 3L);
     }
 }

@@ -147,6 +147,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         if (favoritePlace == null) {
             throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
-        return favoritePlaceWithLocationMapper.convertToDto(repo.findByPlaceIdAndUserEmail(placeId, email));
+        return favoritePlaceWithLocationMapper.convert(repo.findByPlaceIdAndUserEmail(placeId, email));
     }
 }
