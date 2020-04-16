@@ -51,7 +51,7 @@ steps:
       [
         {
           "name": "GOOGLE_APPLICATION_CREDENTIALS",
-          "value": "$(jsonLocation)/$(jsonFile)", 
+          "value": "/home$(jsonLocation)/$(jsonFile)", 
           "slotSetting": false
         }
       ]
