@@ -12,17 +12,34 @@ pool:
 
 variables:
   jsonFile: google-creds.json
-  GOOGLE_APPLICATION_CREDENTIALS: /home/site/wwwroot/greencity-google.json
+  jsonLocation: /site/wwwroot
 
 steps:
-# - task: AzureCLI@2
-#   displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
-#   inputs:
-#     azureSubscription: 'GreenCity'
-#     scriptType: 'bash'
-#     scriptLocation: inlineScript
-#     inlineScript: |
-#       az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(GOOGLE_APPLICATION_CREDENTIALS)
+- task: AzureCLI@2
+  displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
+  inputs:
+    azureSubscription: 'GreenCity'
+    scriptType: 'bash'
+    scriptLocation: inlineScript
+    inlineScript: |
+      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(jsonFile)
+      
+- task: AzureKeyVault@1
+  displayName: Get FTP credentials from Azure Key Vault
+  inputs:
+    azureSubscription: 'GreenCity'
+    KeyVaultName: 'key-vault-greencity'
+    SecretsFilter: 'ftpHost, ftpUser, ftpPass'
+    
+- task: FtpUpload@2
+  displayName: Upload json to app service via FTP
+  inputs:
+    credentialsOption: 'inputs'
+    serverUrl: '$(ftpHost)'
+    username: '$(ftpUser)'
+    password: '$(ftpPass)'
+    filePatterns: '$(jsonFile)'
+    remoteDirectory: '$(jsonLocation)'
 
 - task: AzureAppServiceSettings@1
   displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
@@ -34,13 +51,14 @@ steps:
       [
         {
           "name": "GOOGLE_APPLICATION_CREDENTIALS",
-          "value": "/home/site/wwwroot/greencity-google.json", 
+          "value": "$(jsonLocation)/$(jsonFile)", 
           "slotSetting": false
         }
       ]
   
  
 - task: Maven@3
+  displayName: Maven package
   inputs:
     mavenPomFile: 'pom.xml'
     javaHomeOption: 'JDKVersion'
