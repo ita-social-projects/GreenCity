@@ -56,9 +56,9 @@ public class ModelUtils {
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
-        return new AddEcoNewsDtoResponse(1L, getEcoNews().getTitle(),
-            getEcoNews().getText(), getEcoNewsAuthorDto(),
-            getEcoNews().getCreationDate(), TestConst.SITE,
+        return new AddEcoNewsDtoResponse(1L, "title",
+            "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
+            ZonedDateTime.now(), TestConst.SITE,
             Collections.singletonList("tag"));
     }
 
