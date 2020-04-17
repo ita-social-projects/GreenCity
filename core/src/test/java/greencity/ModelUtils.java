@@ -128,4 +128,14 @@ public class ModelUtils {
             .habit(Habit.builder().id(13L).build())
             .build();
     }
+
+    public static Habit getHabit() {
+        return Habit.builder()
+            .id(13L)
+            .statusHabit(true)
+            .createDate(ZonedDateTime.now())
+            .user(getUser())
+            .habitDictionary(HabitDictionary.builder().id(2L).image("cup").build())
+            .build();
+    }
 }
