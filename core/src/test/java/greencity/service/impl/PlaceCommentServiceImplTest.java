@@ -99,5 +99,4 @@ public class PlaceCommentServiceImplTest {
         assertEquals(result, placeCommentService.getAllComments(pageRequest));
     }
 
-
 }
