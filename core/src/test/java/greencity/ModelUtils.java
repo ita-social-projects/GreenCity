@@ -1,5 +1,6 @@
 package greencity;
 
+import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -88,10 +89,26 @@ public class ModelUtils {
 
     public static Comment getComment(){
         return new Comment(1L, "text", null,
-                null, null, null, null, null, null, null);
+                null, null, null, Collections.emptyList(), null, null, null);
     }
 
     public static CommentReturnDto getCommentReturnDto(){
         return new CommentReturnDto(1L, "text", null, null, null);
     }
+
+    public static Place getPlace(){
+        return new Place(1L, "name", "description", null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null );
+    }
+
+    public static Estimate getEstimate(){
+        return new Estimate(1L, (byte) 10, getUser(), getPlace(), getComment());
+    }
+
+    public static AddCommentDto getAddCommentDto(){
+        return new AddCommentDto("comment", null, null);
+    }
+
+
 }
