@@ -9,10 +9,19 @@ trigger:
 
 
 variables:
+  agentOS: ubuntu-latest
+  
+  azKeyVault: key-vault-greencity
+  jsonSecret: google-credentials
   jsonFile: google-creds.json
   jsonLocation: /site/wwwroot
-  agentOS: ubuntu-latest
+  
+  artifactName: drop
 
+  azureSub: GreenCity
+  resourceGroup: GreenCity
+  coreServiceName: greencity
+  mailServiceName: greencity-mail
 
 stages:
 - stage: Build
@@ -24,17 +33,17 @@ stages:
     - task: AzureCLI@2
       displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
       inputs:
-        azureSubscription: 'GreenCity'
+        azureSubscription: '$(azureSub)'
         scriptType: 'bash'
         scriptLocation: inlineScript
         inlineScript: |
-          az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(jsonFile)
+          az keyvault secret download --name $(jsonSecret) --vault-name $(azKeyVault) --file $(jsonFile)
           
     - task: AzureKeyVault@1
       displayName: Get FTP credentials from Azure Key Vault
       inputs:
-        azureSubscription: 'GreenCity'
-        KeyVaultName: 'key-vault-greencity'
+        azureSubscription: '$(azureSub)'
+        KeyVaultName: '$(azKeyVault)'
         SecretsFilter: 'ftpHost, ftpUser, ftpPass'
         
     - task: FtpUpload@2
@@ -50,9 +59,9 @@ stages:
     - task: AzureAppServiceSettings@1
       displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
       inputs:
-        azureSubscription: 'GreenCity'
-        appName: 'greencity'
-        resourceGroupName: 'GreenCity'
+        azureSubscription: '$(azureSub)'
+        appName: '$(coreServiceName)'
+        resourceGroupName: '$(resourceGroup)'
         appSettings: |
           [
             {
@@ -88,7 +97,7 @@ stages:
       displayName: Publish Artifact
       inputs:
         PathtoPublish: $(build.artifactstagingdirectory)
-        artifactName: drop
+        artifactName: $(artifactName)
 
 - stage: Deploy
   jobs:
@@ -106,17 +115,17 @@ stages:
               inputs:
                 buildType: 'current'
                 downloadType: 'single'
-                artifactName: drop
+                artifactName: $(artifactName)
                 downloadPath: '$(System.ArtifactsDirectory)'
             - task: AzureRmWebAppDeployment@4
               displayName: 'Deploy Azure App Service'
               inputs:
-                azureSubscription: 'GreenCity'
+                azureSubscription: '$(azureSub)'
                 appType: 'webAppLinux'
-                WebAppName: 'greencity'
+                WebAppName: '$(coreServiceName)'
                 deployToSlotOrASE: true
-                ResourceGroupName: GreenCity
-                packageForLinux: '$(System.ArtifactsDirectory)/drop/core/target/app.jar'
+                ResourceGroupName: $(resourceGroup)
+                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/core/target/app.jar'
 
     - deployment: DeployMail
       displayName: Deploy mail app service
@@ -132,14 +141,14 @@ stages:
               inputs:
                 buildType: 'current'
                 downloadType: 'single'
-                artifactName: drop
+                artifactName: $(artifactName)
                 downloadPath: '$(System.ArtifactsDirectory)'
             - task: AzureRmWebAppDeployment@4
               displayName: 'Deploy Azure App Service'
               inputs:
-                azureSubscription: 'GreenCity'
+                azureSubscription: '$(azureSub)'
                 appType: 'webAppLinux'
-                WebAppName: 'greencity-mail'
+                WebAppName: '$(mailServiceName)'
                 deployToSlotOrASE: true
-                ResourceGroupName: GreenCity
-                packageForLinux: '$(System.ArtifactsDirectory)/drop/email/target/app.jar'
+                ResourceGroupName: $(resourceGroup)
+                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/email/target/app.jar'
