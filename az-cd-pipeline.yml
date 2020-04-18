@@ -14,7 +14,7 @@ variables:
   azKeyVault: key-vault-greencity
   jsonSecret: google-credentials
   jsonFile: google-creds.json
-  jsonLocation: site/wwwroot
+  jsonLocation: /site/wwwroot
   
   artifactName: drop
   coreRepoName: core
@@ -69,7 +69,7 @@ stages:
           [
             {
               "name": "GOOGLE_APPLICATION_CREDENTIALS",
-              "value": "/home/$(jsonLocation)/$(jsonFile)", 
+              "value": "/home$(jsonLocation)/$(jsonFile)", 
               "slotSetting": false
             }
           ]
