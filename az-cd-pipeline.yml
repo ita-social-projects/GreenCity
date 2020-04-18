@@ -101,6 +101,8 @@ stages:
         runOnce:
           deploy:
             steps:
+            - script: ls $(System.ArtifactsDirectory)
+              displayName: ls
             - task: DownloadBuildArtifacts@0
               inputs:
                 buildType: 'current'
@@ -127,6 +129,8 @@ stages:
         runOnce:
           deploy:
             steps:
+            - script: ls $(System.ArtifactsDirectory)
+              displayName: ls
             - task: DownloadBuildArtifacts@0
               inputs:
                 buildType: 'current'
