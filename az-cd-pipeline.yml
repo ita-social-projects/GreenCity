@@ -80,6 +80,7 @@ stages:
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.8'
         mavenVersionOption: 'Default'
+        options: '-Dmaven.test.skip=true'
         
     - script: mv $(coreRepoName)/target/*.jar $(coreRepoName)/target/$(onbootJarName)
       displayName: Rename core jar to app
