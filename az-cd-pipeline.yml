@@ -90,7 +90,7 @@ stages:
 
 - stage: deploy
   jobs:
-    - deployment: Deploy core
+    - deployment: DeployCore
       displayName: deploy Web App
       pool:
         vmImage: 'Ubuntu-16.04'
@@ -116,7 +116,7 @@ stages:
                 ResourceGroupName: GreenCity
                 packageForLinux: '$(System.ArtifactsDirectory)core/target/app.jar'
 
-    - deployment: Deploy mail
+    - deployment: DeployMail
       displayName: deploy Web App
       pool:
         vmImage: 'Ubuntu-16.04'
