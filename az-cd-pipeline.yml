@@ -14,10 +14,13 @@ variables:
   azKeyVault: key-vault-greencity
   jsonSecret: google-credentials
   jsonFile: google-creds.json
-  jsonLocation: /site/wwwroot
+  jsonLocation: site/wwwroot
   
   artifactName: drop
-
+  coreRepoName: core
+  mailRepoName: email
+  onbootJarName: app.jar
+  
   azureSub: GreenCity
   resourceGroup: GreenCity
   coreServiceName: greencity
@@ -66,12 +69,11 @@ stages:
           [
             {
               "name": "GOOGLE_APPLICATION_CREDENTIALS",
-              "value": "/home$(jsonLocation)/$(jsonFile)", 
+              "value": "/home/$(jsonLocation)/$(jsonFile)", 
               "slotSetting": false
             }
           ]
-      
-    
+     
     - task: Maven@3
       displayName: Maven package
       inputs:
@@ -80,24 +82,24 @@ stages:
         jdkVersionOption: '1.8'
         mavenVersionOption: 'Default'
         
-    - script: mv core/target/*.jar core/target/app.jar 
+    - script: mv $(coreRepoName)/target/*.jar $(coreRepoName)/target/$(onbootJarName)
       displayName: Rename core jar to app
 
-    - script: mv email/target/*.jar email/target/app.jar 
+    - script: mv $(mailRepoName)/target/*.jar $(mailRepoName)/target/$(onbootJarName) 
       displayName: Rename email jar to app
 
     - task: CopyFiles@2
       displayName: Copy Files
       inputs:
-        SourceFolder: $(system.defaultworkingdirectory)
+        SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/target/*.jar'
-        TargetFolder: $(build.artifactstagingdirectory)
+        TargetFolder: '$(build.artifactstagingdirectory)'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
       inputs:
-        PathtoPublish: $(build.artifactstagingdirectory)
-        artifactName: $(artifactName)
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+        artifactName: '$(artifactName)'
 
 - stage: Deploy
   jobs:
@@ -111,12 +113,14 @@ stages:
           deploy:
             steps:
             - download: none
+            
             - task: DownloadBuildArtifacts@0
               inputs:
                 buildType: 'current'
                 downloadType: 'single'
-                artifactName: $(artifactName)
+                artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
+                
             - task: AzureRmWebAppDeployment@4
               displayName: 'Deploy Azure App Service'
               inputs:
@@ -124,8 +128,8 @@ stages:
                 appType: 'webAppLinux'
                 WebAppName: '$(coreServiceName)'
                 deployToSlotOrASE: true
-                ResourceGroupName: $(resourceGroup)
-                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/core/target/app.jar'
+                ResourceGroupName: '$(resourceGroup)'
+                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
 
     - deployment: DeployMail
       displayName: Deploy mail app service
@@ -137,12 +141,14 @@ stages:
           deploy:
             steps:
             - download: none
+            
             - task: DownloadBuildArtifacts@0
               inputs:
                 buildType: 'current'
                 downloadType: 'single'
-                artifactName: $(artifactName)
+                artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
+                
             - task: AzureRmWebAppDeployment@4
               displayName: 'Deploy Azure App Service'
               inputs:
@@ -150,5 +156,5 @@ stages:
                 appType: 'webAppLinux'
                 WebAppName: '$(mailServiceName)'
                 deployToSlotOrASE: true
-                ResourceGroupName: $(resourceGroup)
-                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/email/target/app.jar'
+                ResourceGroupName: '$(resourceGroup)'
+                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
