@@ -87,6 +87,7 @@ stages:
       displayName: Publish Artifact
       inputs:
         PathtoPublish: $(build.artifactstagingdirectory)
+        artifactName: drop
 
 - stage: deploy
   jobs:
@@ -107,6 +108,7 @@ stages:
               inputs:
                 buildType: 'current'
                 downloadType: 'single'
+                artifactName: drop
                 downloadPath: '$(System.ArtifactsDirectory)'
             - task: AzureRmWebAppDeployment@4
               displayName: 'Deploy Azure App Service'
@@ -135,6 +137,7 @@ stages:
               inputs:
                 buildType: 'current'
                 downloadType: 'single'
+                artifactName: drop
                 downloadPath: '$(System.ArtifactsDirectory)'
             - task: AzureRmWebAppDeployment@4
               displayName: 'Deploy Azure App Service'
