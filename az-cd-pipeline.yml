@@ -11,6 +11,7 @@ trigger:
 variables:
   jsonFile: google-creds.json
   jsonLocation: /site/wwwroot
+  agentOS: ubuntu-latest
 
 
 stages:
@@ -18,7 +19,7 @@ stages:
   jobs: 
   - job: Build
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: $(agentOS)
     steps:
     - task: AzureCLI@2
       displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
@@ -89,21 +90,18 @@ stages:
         PathtoPublish: $(build.artifactstagingdirectory)
         artifactName: drop
 
-- stage: deploy
+- stage: Deploy
   jobs:
     - deployment: DeployCore
-      displayName: deploy Web App
+      displayName: Deploy core app service
       pool:
-        vmImage: 'Ubuntu-16.04'
-      # creates an environment if it doesn't exist
+        vmImage: $(agentOS)
       environment: 'prod'
       strategy:
-        # default deployment strategy, more coming...
         runOnce:
           deploy:
             steps:
-            - script: ls $(System.ArtifactsDirectory)
-              displayName: ls
+            - download: none
             - task: DownloadBuildArtifacts@0
               inputs:
                 buildType: 'current'
@@ -118,21 +116,18 @@ stages:
                 WebAppName: 'greencity'
                 deployToSlotOrASE: true
                 ResourceGroupName: GreenCity
-                packageForLinux: '$(System.ArtifactsDirectory)core/target/app.jar'
+                packageForLinux: '$(System.ArtifactsDirectory)/drop/core/target/app.jar'
 
     - deployment: DeployMail
-      displayName: deploy Web App
+      displayName: Deploy mail app service
       pool:
-        vmImage: 'Ubuntu-16.04'
-      # creates an environment if it doesn't exist
+        vmImage: $(agentOS)
       environment: 'prod'
       strategy:
-        # default deployment strategy, more coming...
         runOnce:
           deploy:
             steps:
-            - script: ls $(System.ArtifactsDirectory)
-              displayName: ls
+            - download: none
             - task: DownloadBuildArtifacts@0
               inputs:
                 buildType: 'current'
@@ -147,4 +142,4 @@ stages:
                 WebAppName: 'greencity-mail'
                 deployToSlotOrASE: true
                 ResourceGroupName: GreenCity
-                packageForLinux: '$(System.ArtifactsDirectory)email/target/app.jar'
+                packageForLinux: '$(System.ArtifactsDirectory)/drop/email/target/app.jar'
