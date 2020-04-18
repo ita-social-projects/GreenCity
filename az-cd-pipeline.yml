@@ -7,7 +7,6 @@ trigger:
     exclude:
     - README.md
 
-
 variables:
   agentOS: ubuntu-latest
   
