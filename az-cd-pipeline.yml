@@ -150,7 +150,7 @@ stages:
                 downloadPath: '$(System.ArtifactsDirectory)'
                 
             - task: AzureRmWebAppDeployment@4
-              displayName: 'Deploy Azure App Service'
+              displayName: 'Deploy core App Service'
               inputs:
                 azureSubscription: '$(azureSub)'
                 appType: 'webAppLinux'
