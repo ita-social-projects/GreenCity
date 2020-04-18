@@ -7,78 +7,137 @@ trigger:
     exclude:
     - README.md
 
-pool:
-  vmImage: 'ubuntu-latest'
 
 variables:
   jsonFile: google-creds.json
   jsonLocation: /site/wwwroot
 
-steps:
-- task: AzureCLI@2
-  displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
-  inputs:
-    azureSubscription: 'GreenCity'
-    scriptType: 'bash'
-    scriptLocation: inlineScript
-    inlineScript: |
-      az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(jsonFile)
+
+stages:
+- stage: Build
+  jobs: 
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: AzureCLI@2
+      displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
+      inputs:
+        azureSubscription: 'GreenCity'
+        scriptType: 'bash'
+        scriptLocation: inlineScript
+        inlineScript: |
+          az keyvault secret download --name google-credentials --vault-name key-vault-greencity --file $(jsonFile)
+          
+    - task: AzureKeyVault@1
+      displayName: Get FTP credentials from Azure Key Vault
+      inputs:
+        azureSubscription: 'GreenCity'
+        KeyVaultName: 'key-vault-greencity'
+        SecretsFilter: 'ftpHost, ftpUser, ftpPass'
+        
+    - task: FtpUpload@2
+      displayName: Upload json to app service via FTP
+      inputs:
+        credentialsOption: 'inputs'
+        serverUrl: '$(ftpHost)'
+        username: '$(ftpUser)'
+        password: '$(ftpPass)'
+        filePatterns: '$(jsonFile)'
+        remoteDirectory: '$(jsonLocation)'
+
+    - task: AzureAppServiceSettings@1
+      displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+      inputs:
+        azureSubscription: 'GreenCity'
+        appName: 'greencity'
+        resourceGroupName: 'GreenCity'
+        appSettings: |
+          [
+            {
+              "name": "GOOGLE_APPLICATION_CREDENTIALS",
+              "value": "/home$(jsonLocation)/$(jsonFile)", 
+              "slotSetting": false
+            }
+          ]
       
-- task: AzureKeyVault@1
-  displayName: Get FTP credentials from Azure Key Vault
-  inputs:
-    azureSubscription: 'GreenCity'
-    KeyVaultName: 'key-vault-greencity'
-    SecretsFilter: 'ftpHost, ftpUser, ftpPass'
     
-- task: FtpUpload@2
-  displayName: Upload json to app service via FTP
-  inputs:
-    credentialsOption: 'inputs'
-    serverUrl: '$(ftpHost)'
-    username: '$(ftpUser)'
-    password: '$(ftpPass)'
-    filePatterns: '$(jsonFile)'
-    remoteDirectory: '$(jsonLocation)'
+    - task: Maven@3
+      displayName: Maven package
+      inputs:
+        mavenPomFile: 'pom.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.8'
+        mavenVersionOption: 'Default'
+        
+    - script: mv core/target/*.jar core/target/app.jar 
+      displayName: Rename core jar to app
 
-- task: AzureAppServiceSettings@1
-  displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
-  inputs:
-    azureSubscription: 'GreenCity'
-    appName: 'greencity'
-    resourceGroupName: 'GreenCity'
-    appSettings: |
-      [
-        {
-          "name": "GOOGLE_APPLICATION_CREDENTIALS",
-          "value": "/home$(jsonLocation)/$(jsonFile)", 
-          "slotSetting": false
-        }
-      ]
-  
- 
-- task: Maven@3
-  displayName: Maven package
-  inputs:
-    mavenPomFile: 'pom.xml'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    mavenVersionOption: 'Default'
-    
-- script: mv core/target/*.jar core/target/app.jar 
-  displayName: Rename core jar to app
+    - script: mv email/target/*.jar email/target/app.jar 
+      displayName: Rename email jar to app
 
-- script: mv email/target/*.jar email/target/app.jar 
-  displayName: Rename email jar to app
+    - task: CopyFiles@2
+      displayName: Copy Files
+      inputs:
+        SourceFolder: $(system.defaultworkingdirectory)
+        Contents: '**/target/*.jar'
+        TargetFolder: $(build.artifactstagingdirectory)
 
-- task: CopyFiles@2
-  displayName: Copy Files
-  inputs:
-    SourceFolder: $(system.defaultworkingdirectory)
-    Contents: '**/target/*.jar'
-    TargetFolder: $(build.artifactstagingdirectory)
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifact
+      inputs:
+        PathtoPublish: $(build.artifactstagingdirectory)
 
-- task: PublishBuildArtifacts@1
-  displayName: Publish Artifact
-  inputs:
-    PathtoPublish: $(build.artifactstagingdirectory)
+- stage: deploy
+  jobs:
+    - deployment: Deploy core
+      displayName: deploy Web App
+      pool:
+        vmImage: 'Ubuntu-16.04'
+      # creates an environment if it doesn't exist
+      environment: 'prod'
+      strategy:
+        # default deployment strategy, more coming...
+        runOnce:
+          deploy:
+            steps:
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                downloadPath: '$(System.ArtifactsDirectory)'
+            - task: AzureRmWebAppDeployment@4
+              displayName: 'Deploy Azure App Service'
+              inputs:
+                azureSubscription: 'GreenCity'
+                appType: 'webAppLinux'
+                WebAppName: 'greencity'
+                deployToSlotOrASE: true
+                ResourceGroupName: GreenCity
+                packageForLinux: '$(System.ArtifactsDirectory)core/target/app.jar'
+
+    - deployment: Deploy mail
+      displayName: deploy Web App
+      pool:
+        vmImage: 'Ubuntu-16.04'
+      # creates an environment if it doesn't exist
+      environment: 'prod'
+      strategy:
+        # default deployment strategy, more coming...
+        runOnce:
+          deploy:
+            steps:
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                downloadPath: '$(System.ArtifactsDirectory)'
+            - task: AzureRmWebAppDeployment@4
+              displayName: 'Deploy Azure App Service'
+              inputs:
+                azureSubscription: 'GreenCity'
+                appType: 'webAppLinux'
+                WebAppName: 'greencity-mail'
+                deployToSlotOrASE: true
+                ResourceGroupName: GreenCity
+                packageForLinux: '$(System.ArtifactsDirectory)email/target/app.jar'
