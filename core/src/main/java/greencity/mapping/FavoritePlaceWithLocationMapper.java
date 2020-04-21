@@ -1,11 +1,9 @@
 package greencity.mapping;
 
+import greencity.dto.location.LocationDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.entity.FavoritePlace;
-import lombok.AllArgsConstructor;
 import org.modelmapper.AbstractConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,10 +17,15 @@ import org.springframework.stereotype.Component;
 public class FavoritePlaceWithLocationMapper extends AbstractConverter<FavoritePlace, PlaceByBoundsDto> {
     @Override
     public PlaceByBoundsDto convert(FavoritePlace entity) {
-        return PlaceByBoundsDto.builder()
-            .id(entity.getId())
-            .name(entity.getName())
-            .location(entity.getPlace().getLocation())
-            .build();
+        PlaceByBoundsDto placeByBoundsDto = new PlaceByBoundsDto();
+        placeByBoundsDto.setId(entity.getId());
+        placeByBoundsDto.setName(entity.getName());
+        LocationDto location = new LocationDto();
+        location.setId(entity.getPlace().getLocation().getId());
+        location.setLng(entity.getPlace().getLocation().getLng());
+        location.setLat(entity.getPlace().getLocation().getLat());
+        location.setAddress(entity.getPlace().getLocation().getAddress());
+        placeByBoundsDto.setLocation(location);
+        return placeByBoundsDto;
     }
 }

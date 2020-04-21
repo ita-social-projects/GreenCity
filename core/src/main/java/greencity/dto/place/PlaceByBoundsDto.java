@@ -1,6 +1,6 @@
 package greencity.dto.place;
 
-import greencity.entity.Location;
+import greencity.dto.location.LocationDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class PlaceByBoundsDto {
     private Long id;
     private String name;
-    private Location location;
+    private LocationDto location;
 }
