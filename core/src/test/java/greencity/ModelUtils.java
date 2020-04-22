@@ -142,8 +142,8 @@ public class ModelUtils {
     }
 
     public static Comment getComment(){
-        return new Comment(1L, "text", null,
-            null, null, null, Collections.emptyList(), null, null, null);
+        return new Comment(1L, "text", getUser(),
+            getPlace(), null, null, Collections.emptyList(), null, null, null);
     }
 
     public static CommentReturnDto getCommentReturnDto(){
