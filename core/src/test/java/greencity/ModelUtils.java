@@ -1,5 +1,7 @@
 package greencity;
 
+import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -138,4 +140,18 @@ public class ModelUtils {
             .habitDictionary(HabitDictionary.builder().id(2L).image("cup").build())
             .build();
     }
+
+    public static Comment getComment(){
+        return new Comment(1L, "text", null,
+            null, null, null, Collections.emptyList(), null, null, null);
+    }
+
+    public static CommentReturnDto getCommentReturnDto(){
+        return new CommentReturnDto(1L, "text", null, null, null);
+    }
+
+    public static AddCommentDto getAddCommentDto(){
+        return new AddCommentDto("comment", null, null);
+    }
 }
+ 
