@@ -22,6 +22,7 @@ public class MapperConfig {
     private AddEcoNewsDtoResponseMapper addEcoNewsDtoResponseMapper;
     private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
     private DiscountValueMapper discountValueMapper;
+    private FavoritePlaceWithLocationMapper favoritePlaceWithLocationMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -61,5 +62,6 @@ public class MapperConfig {
         modelMapper.addConverter(habitCreateDtoMapper);
         modelMapper.addConverter(habitStatisticMapper);
         modelMapper.addConverter(habitMapper);
+        modelMapper.addConverter(favoritePlaceWithLocationMapper);
     }
 }
