@@ -17,6 +17,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,27 +37,6 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for creating {@link EcoNews}.
-     *
-     * @param addEcoNewsDtoRequest - dto for {@link EcoNews} entity.
-     * @return dto {@link AddEcoNewsDtoResponse} instance.
-     * @author Yuriy Olkhovskyi & Kovaliv Taras.
-     */
-    @ApiOperation(value = "Add new eco news.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @PostMapping
-    public ResponseEntity<AddEcoNewsDtoResponse> save(@RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-                                                      @RequestPart MultipartFile image,
-                                                      @ApiIgnore Principal principal) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-            ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
-    }
-
-    /**
      * Method for getting three last eco news.
      *
      * @return list of {@link EcoNewsDto} instances.
@@ -71,6 +51,31 @@ public class EcoNewsController {
     @GetMapping("/newest")
     public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews() {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews());
+    }
+
+    /**
+     * Method for creating {@link EcoNews}.
+     *
+     * @param addEcoNewsDtoRequest - dto for {@link EcoNews} entity.
+     * @return dto {@link AddEcoNewsDtoResponse} instance.
+     * @author Yuriy Olkhovskyi & Kovaliv Taras.
+     */
+
+
+    @ApiOperation(value = "Add new eco news.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<AddEcoNewsDtoResponse> save(
+        @ApiParam(value = "Add Eco News Request", required = true)
+        @RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+        @RequestPart MultipartFile image,
+        @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
     }
 
     /**
@@ -111,7 +116,7 @@ public class EcoNewsController {
     /**
      * Method for deleting {@link EcoNews} by its id.
      *
-     * @param econewsId - {@link EcoNews} id which will be deleted.
+     * @param econewsId {@link EcoNews} id which will be deleted.
      * @return id of deleted {@link EcoNews}.
      * @author Yuriy Olkhovskyi.
      */
@@ -129,7 +134,7 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for getting all eco news by tags and language.
+     * Method for getting all eco news by tags.
      *
      * @return list of {@link EcoNewsDto} instances.
      * @author Kovaliv Taras.
@@ -144,7 +149,7 @@ public class EcoNewsController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(
         @ApiIgnore Pageable page,
-        @ApiParam(value = "Tags to filter")
+        @ApiParam(value = "Tags to filter (if do not input tags get all)")
         @RequestParam(required = false) List<String> tags
     ) {
         if (tags == null || tags.size() == 0) {

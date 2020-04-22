@@ -7,6 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -181,7 +182,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras
      */
     @Override
-    public List<EcoNewsDto> search(String searchQuery) {
+    public List<SearchNewsDto> search(String searchQuery) {
         return null;
     }
 
