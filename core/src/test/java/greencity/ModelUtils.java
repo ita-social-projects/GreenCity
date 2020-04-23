@@ -9,6 +9,7 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.*;
 import greencity.entity.enums.HabitRate;
 import greencity.entity.enums.ROLE;
+import greencity.entity.localization.AdviceTranslation;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -137,5 +138,16 @@ public class ModelUtils {
             .user(getUser())
             .habitDictionary(HabitDictionary.builder().id(2L).image("cup").build())
             .build();
+    }
+
+    public static AdviceTranslation getAdviceTranslation() {
+        AdviceTranslation adviceTranslation = new AdviceTranslation();
+        adviceTranslation.setId(5L);
+        adviceTranslation.setLanguage(new Language(2L, "en", Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList()));
+        adviceTranslation.setAdvice(
+            Advice.builder().id(2L).habitDictionary(HabitDictionary.builder().id(2L).image("cup").build()).build());
+        adviceTranslation.setContent("Don't take a cup");
+        return adviceTranslation;
     }
 }
