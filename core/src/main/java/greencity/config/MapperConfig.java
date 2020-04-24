@@ -24,6 +24,8 @@ public class MapperConfig {
     private DiscountValueMapper discountValueMapper;
     private FavoritePlaceWithLocationMapper favoritePlaceWithLocationMapper;
     private AdviceTranslateMapper adviceTranslateMapper;
+    private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
+    private FavoritePlaceMapper favoritePlaceMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -65,5 +67,7 @@ public class MapperConfig {
         modelMapper.addConverter(habitMapper);
         modelMapper.addConverter(favoritePlaceWithLocationMapper);
         modelMapper.addConverter(adviceTranslateMapper);
+        modelMapper.addConverter(favoritePlaceDtoMapper);
+        modelMapper.addConverter(favoritePlaceMapper);
     }
 }

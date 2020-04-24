@@ -9,6 +9,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.FavoritePlaceDtoMapper;
+import greencity.mapping.FavoritePlaceMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
@@ -37,6 +38,8 @@ public class FavoritePlaceServiceImplTest {
     @Mock
     private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
     @Mock
+    private FavoritePlaceMapper favoritePlaceMapper;
+    @Mock
     private ModelMapper modelMapper;
     @InjectMocks
     private FavoritePlaceServiceImpl favoritePlaceService;
@@ -58,7 +61,7 @@ public class FavoritePlaceServiceImplTest {
         fp.getPlace().setId(2L);
         when(placeService.existsById(any())).thenReturn(true);
         when(repo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(new FavoritePlace());
-        when(favoritePlaceDtoMapper.convertToEntity(any(FavoritePlaceDto.class))).thenReturn(fp);
+        when(favoritePlaceMapper.convert(any(FavoritePlaceDto.class))).thenReturn(fp);
         favoritePlaceService.save(dto, userEmail);
     }
 
@@ -77,7 +80,7 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        when(favoritePlaceDtoMapper.convertToEntity(any(FavoritePlaceDto.class))).thenReturn(fp);
+        when(favoritePlaceMapper.convert(any(FavoritePlaceDto.class))).thenReturn(fp);
         favoritePlaceService.save(dto, userEmail);
     }
 
@@ -96,7 +99,7 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        when(favoritePlaceDtoMapper.convertToEntity(any(FavoritePlaceDto.class))).thenReturn(fp);
+        when(favoritePlaceMapper.convert(any(FavoritePlaceDto.class))).thenReturn(fp);
         when(placeService.existsById(any())).thenReturn(false);
         favoritePlaceService.save(dto, userEmail);
     }
@@ -116,8 +119,8 @@ public class FavoritePlaceServiceImplTest {
         fp.getUser().setEmail("setEmail()");
         fp.setPlace(new Place());
         fp.getPlace().setId(2L);
-        when(favoritePlaceDtoMapper.convertToDto(any(FavoritePlace.class))).thenReturn(dto);
-        when(favoritePlaceDtoMapper.convertToEntity(any(FavoritePlaceDto.class))).thenReturn(fp);
+        when(favoritePlaceDtoMapper.convert(any(FavoritePlace.class))).thenReturn(dto);
+        when(favoritePlaceMapper.convert(any(FavoritePlaceDto.class))).thenReturn(fp);
         when(placeService.existsById(any())).thenReturn(true);
         when(repo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
         when(repo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
@@ -127,8 +130,8 @@ public class FavoritePlaceServiceImplTest {
         verify(placeService, times(1)).existsById(any());
         verify(repo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
         verify(repo, times(1)).save(any(FavoritePlace.class));
-        verify(favoritePlaceDtoMapper, times(1)).convertToEntity(any(FavoritePlaceDto.class));
-        verify(favoritePlaceDtoMapper, times(1)).convertToDto(any(FavoritePlace.class));
+        verify(favoritePlaceMapper, times(1)).convert(any(FavoritePlaceDto.class));
+        verify(favoritePlaceDtoMapper, times(1)).convert(any(FavoritePlace.class));
         verify(userService, times(1)).findIdByEmail(anyString());
         Assert.assertEquals(dto, dto2);
     }
@@ -211,7 +214,7 @@ public class FavoritePlaceServiceImplTest {
             favoritePlaceDtos.add(favoritePlaceDto);
         }
         when(repo.findAllByUserEmail(anyString())).thenReturn(favoritePlaces);
-        when(favoritePlaceDtoMapper.convertToDto(any(FavoritePlace.class))).thenReturn(favoritePlaceDto);
+        when(favoritePlaceDtoMapper.convert(any(FavoritePlace.class))).thenReturn(favoritePlaceDto);
         Assert.assertEquals(favoritePlaceDtos, favoritePlaceService.findAllByUserEmail("aas"));
     }
 

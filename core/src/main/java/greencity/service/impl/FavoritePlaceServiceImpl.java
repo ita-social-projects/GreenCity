@@ -9,6 +9,7 @@ import greencity.entity.FavoritePlace;
 import greencity.entity.User;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.FavoritePlaceDtoMapper;
+import greencity.mapping.FavoritePlaceMapper;
 import greencity.mapping.FavoritePlaceWithLocationMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.FavoritePlaceService;
@@ -30,6 +31,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     private UserService userService;
     private PlaceService placeService;
     FavoritePlaceDtoMapper favoritePlaceDtoMapper;
+    FavoritePlaceMapper favoritePlaceMapper;
     FavoritePlaceWithLocationMapper favoritePlaceWithLocationMapper;
     ModelMapper modelMapper;
 
@@ -41,7 +43,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      */
     public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail) {
         log.info(LogMessage.IN_SAVE, favoritePlaceDto);
-        FavoritePlace favoritePlace = favoritePlaceDtoMapper.convertToEntity(favoritePlaceDto);
+        FavoritePlace favoritePlace = favoritePlaceMapper.convert(favoritePlaceDto);
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
             throw new WrongIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
@@ -50,7 +52,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
                 ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS, favoritePlaceDto.getPlaceId(), userEmail));
         }
         favoritePlace.setUser(User.builder().email(userEmail).id(userService.findIdByEmail(userEmail)).build());
-        return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
+        return favoritePlaceDtoMapper.convert(repo.save(favoritePlace));
     }
 
     /**
@@ -67,7 +69,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
             throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceDto.getPlaceId());
         }
         favoritePlace.setName(favoritePlaceDto.getName());
-        return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
+        return favoritePlaceDtoMapper.convert(repo.save(favoritePlace));
     }
 
 
@@ -79,7 +81,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     @Override
     public List<FavoritePlaceDto> findAllByUserEmail(String email) {
         log.info(LogMessage.IN_FIND_ALL);
-        return repo.findAllByUserEmail(email).stream().map(fp -> favoritePlaceDtoMapper.convertToDto(fp))
+        return repo.findAllByUserEmail(email).stream().map(fp -> favoritePlaceDtoMapper.convert(fp))
             .collect(Collectors.toList());
     }
 
