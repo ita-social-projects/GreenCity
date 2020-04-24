@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString(exclude = {"userGoals", "user"})
 @Table(name = "custom_goals")
+@Builder
 public class CustomGoal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

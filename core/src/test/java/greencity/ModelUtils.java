@@ -7,6 +7,7 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.*;
+import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.HabitRate;
 import greencity.entity.enums.ROLE;
 import greencity.entity.localization.AdviceTranslation;
@@ -159,6 +160,15 @@ public class ModelUtils {
                 Collections.emptyList()))
             .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
             .text("Buy a bamboo toothbrush")
+            .build();
+    }
+
+    public static UserGoal getUserGoal() {
+        return UserGoal.builder()
+            .id(1L)
+            .status(GoalStatus.ACTIVE)
+            .customGoal(CustomGoal.builder().id(8L).text("buy electric car").build())
+            .dateCompleted(LocalDateTime.now())
             .build();
     }
 }

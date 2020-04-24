@@ -4,10 +4,7 @@ import greencity.entity.enums.GoalStatus;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -15,8 +12,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "user_goals")
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(
-    exclude = {"user"})
+@ToString(exclude = {"user"})
+@Builder
 public class UserGoal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
