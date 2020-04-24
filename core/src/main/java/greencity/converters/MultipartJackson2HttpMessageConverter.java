@@ -8,7 +8,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MultipartJackson2HttpMessageConverter extends AbstractJackson2HttpMessageConverter {
-
+    /**
+     * Multipart Jackson2 HttpMessage Converter.
+     *
+     * @param objectMapper object mapper
+     */
     public MultipartJackson2HttpMessageConverter(ObjectMapper objectMapper) {
         super(objectMapper, MediaType.APPLICATION_OCTET_STREAM);
     }
