@@ -1,32 +1,24 @@
 package greencity.mapping;
 
-import static org.junit.Assert.assertEquals;
-
-import greencity.dto.goal.GoalDto;
-import greencity.entity.Goal;
-import greencity.entity.Language;
+import greencity.ModelUtils;
 import greencity.entity.localization.GoalTranslation;
-import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.assertEquals;
+import greencity.dto.goal.GoalDto;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(SpringExtension.class)
 public class GoalDtoMapperTest {
+    @InjectMocks
     private GoalDtoMapper goalDtoMapper;
-    private String language = "uk";
-    private GoalTranslation goalTranslation = new GoalTranslation(2L, new Language(1L, language,
-        Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "TEST",
-        new Goal(2L, Collections.emptyList(), Collections.emptyList()));
-
-    @Before
-    public void setUp() {
-        goalDtoMapper = new GoalDtoMapper();
-    }
 
     @Test
     public void convertTest() {
+        GoalTranslation goalTranslation = ModelUtils.getGoalTranslation();
+
         GoalDto expected = new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getText());
 
         assertEquals(expected, goalDtoMapper.convert(goalTranslation));

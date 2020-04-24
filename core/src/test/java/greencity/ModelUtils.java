@@ -10,6 +10,7 @@ import greencity.entity.*;
 import greencity.entity.enums.HabitRate;
 import greencity.entity.enums.ROLE;
 import greencity.entity.localization.AdviceTranslation;
+import greencity.entity.localization.GoalTranslation;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -149,5 +150,15 @@ public class ModelUtils {
             Advice.builder().id(2L).habitDictionary(HabitDictionary.builder().id(2L).image("cup").build()).build());
         adviceTranslation.setContent("Don't take a cup");
         return adviceTranslation;
+    }
+
+    public static GoalTranslation getGoalTranslation() {
+        return GoalTranslation.builder()
+            .id(2L)
+            .language(new Language(2L, "en", Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList()))
+            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+            .text("Buy a bamboo toothbrush")
+            .build();
     }
 }

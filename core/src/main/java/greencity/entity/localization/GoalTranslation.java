@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = "goal")
 @ToString(exclude = "goal")
+@Builder
 public class GoalTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
