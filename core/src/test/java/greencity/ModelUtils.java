@@ -1,5 +1,6 @@
 package greencity;
 
+import greencity.constant.AppConstant;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -20,7 +21,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +48,7 @@ public class ModelUtils {
     }
 
     public static Language getLanguage() {
-        return new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
+        return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList());
     }
 
@@ -145,8 +148,9 @@ public class ModelUtils {
     public static AdviceTranslation getAdviceTranslation() {
         AdviceTranslation adviceTranslation = new AdviceTranslation();
         adviceTranslation.setId(5L);
-        adviceTranslation.setLanguage(new Language(2L, "en", Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()));
+        adviceTranslation.setLanguage(
+            new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList()));
         adviceTranslation.setAdvice(
             Advice.builder().id(2L).habitDictionary(HabitDictionary.builder().id(2L).image("cup").build()).build());
         adviceTranslation.setContent("Don't take a cup");
@@ -156,19 +160,41 @@ public class ModelUtils {
     public static GoalTranslation getGoalTranslation() {
         return GoalTranslation.builder()
             .id(2L)
-            .language(new Language(2L, "en", Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList()))
+            .language(
+                new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList()))
             .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
             .text("Buy a bamboo toothbrush")
             .build();
     }
 
-    public static UserGoal getUserGoal() {
+    public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
             .id(1L)
             .status(GoalStatus.ACTIVE)
-            .customGoal(CustomGoal.builder().id(8L).text("buy electric car").build())
+            .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
             .dateCompleted(LocalDateTime.now())
             .build();
+    }
+
+    public static UserGoal getPredefinedUserGoal() {
+        return UserGoal.builder()
+            .id(2L)
+            .status(GoalStatus.ACTIVE)
+            .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
+            .dateCompleted(LocalDateTime.now())
+            .build();
+    }
+
+    public static List<GoalTranslation> getGoalTranslations() {
+        return Arrays.asList(
+            new GoalTranslation(2L,
+                new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList()), "Buy a bamboo toothbrush",
+                new Goal(1L, Collections.emptyList(), Collections.emptyList())),
+            new GoalTranslation(11L,
+                new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList()), "Start recycling batteries",
+                new Goal(4L, Collections.emptyList(), Collections.emptyList())));
     }
 }

@@ -13,6 +13,7 @@ import lombok.*;
     exclude = {"userGoals"})
 @EqualsAndHashCode(exclude = {"userGoals", "translations"})
 @Table(name = "goals")
+@Builder
 public class Goal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

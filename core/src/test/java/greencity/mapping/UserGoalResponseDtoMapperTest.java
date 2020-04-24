@@ -16,7 +16,7 @@ public class UserGoalResponseDtoMapperTest {
 
     @Test
     public void convertTest() {
-        UserGoal userGoal = ModelUtils.getUserGoal();
+        UserGoal userGoal = ModelUtils.getCustomUserGoal();
 
         UserGoalResponseDto expected = UserGoalResponseDto.builder()
             .id(userGoal.getId())
