@@ -2,8 +2,6 @@ package greencity.service;
 
 import greencity.dto.goal.GoalDto;
 import greencity.dto.user.UserGoalResponseDto;
-import greencity.entity.Habit;
-import greencity.entity.Language;
 import greencity.entity.UserGoal;
 import java.util.List;
 import org.springframework.stereotype.Service;
