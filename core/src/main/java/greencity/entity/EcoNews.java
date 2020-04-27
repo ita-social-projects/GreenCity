@@ -5,13 +5,14 @@ import java.util.List;
 import javax.persistence.*;
 import lombok.*;
 
-@Data
 @Entity
 @Table(name = "eco_news")
-@ToString(exclude = {"translations", "author", "tags"})
-@EqualsAndHashCode(exclude = {"translations", "author", "tags"})
+@ToString(exclude = {"author", "tags"})
+@EqualsAndHashCode(exclude = {"author", "tags"})
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class EcoNews {
     @Id
