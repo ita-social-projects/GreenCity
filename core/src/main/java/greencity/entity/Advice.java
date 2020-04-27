@@ -3,15 +3,14 @@ package greencity.entity;
 import greencity.entity.localization.AdviceTranslation;
 import java.util.List;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Builder
 @Table(name = "advices")
 public class Advice {
