@@ -4,11 +4,11 @@ import greencity.ModelUtils;
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.user.HabitDictionaryDto;
 import greencity.entity.localization.AdviceTranslation;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static org.junit.Assert.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 public class AdviceTranslateMapperTest {

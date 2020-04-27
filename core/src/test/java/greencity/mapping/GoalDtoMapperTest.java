@@ -1,9 +1,9 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.entity.localization.GoalTranslation;
-import static org.junit.Assert.assertEquals;
 import greencity.dto.goal.GoalDto;
+import greencity.entity.localization.GoalTranslation;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
