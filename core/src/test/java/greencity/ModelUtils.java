@@ -1,6 +1,8 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -197,4 +199,18 @@ public class ModelUtils {
                     Collections.emptyList()), "Start recycling batteries",
                 new Goal(4L, Collections.emptyList(), Collections.emptyList())));
     }
+  
+    public static Comment getComment() {
+        return new Comment(1L, "text", getUser(),
+            getPlace(), null, null, Collections.emptyList(), null, null, null);
+    }
+
+    public static CommentReturnDto getCommentReturnDto() {
+        return new CommentReturnDto(1L, "text", null, null, null);
+    }
+
+    public static AddCommentDto getAddCommentDto() {
+        return new AddCommentDto("comment", null, null);
+    }
 }
+ 
