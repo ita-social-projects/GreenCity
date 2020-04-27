@@ -4,9 +4,10 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
 @EqualsAndHashCode(exclude = {"value"})
 @Table(name = "discount_values")
