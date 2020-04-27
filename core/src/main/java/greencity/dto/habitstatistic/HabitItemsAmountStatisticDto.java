@@ -1,13 +1,12 @@
 package greencity.dto.habitstatistic;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Builder
 public class HabitItemsAmountStatisticDto {
     private String habitItem;

@@ -6,9 +6,10 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(

@@ -3,14 +3,13 @@ package greencity.dto.habitstatistic;
 import greencity.dto.user.HabitLogItemDto;
 import java.time.ZonedDateTime;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Builder
 public class CalendarUsefulHabitsDto {
     private ZonedDateTime creationDate;

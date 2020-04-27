@@ -1,12 +1,12 @@
 package greencity.dto.habitstatistic;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 public class HabitIdDto {
     Long habitDictionaryId;
 }

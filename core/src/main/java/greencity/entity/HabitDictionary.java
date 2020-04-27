@@ -5,9 +5,10 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @ToString(exclude = "habit")
 @EqualsAndHashCode(exclude = "habit")
 @Table(name = "habit_dictionary")

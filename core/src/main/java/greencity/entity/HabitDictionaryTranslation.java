@@ -4,9 +4,10 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
 @Table(name = "habit_dictionary_translation")
 @EqualsAndHashCode(

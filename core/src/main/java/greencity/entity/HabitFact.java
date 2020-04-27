@@ -2,16 +2,15 @@ package greencity.entity;
 
 import java.util.List;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
+@EqualsAndHashCode
 @Table(name = "habit_facts")
 public class HabitFact {
     @Id

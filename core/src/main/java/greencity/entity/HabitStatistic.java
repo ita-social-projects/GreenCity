@@ -5,10 +5,11 @@ import java.time.ZonedDateTime;
 import javax.persistence.*;
 import lombok.*;
 
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Table(name = "habit_statistics")
 @EqualsAndHashCode(exclude = "habit")
 @ToString(exclude = "habit")
