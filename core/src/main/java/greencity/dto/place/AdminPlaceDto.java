@@ -8,13 +8,13 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.enums.PlaceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 public class AdminPlaceDto {
     private Long id;
     private String name;

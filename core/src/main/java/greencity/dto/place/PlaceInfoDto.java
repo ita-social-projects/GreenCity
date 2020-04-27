@@ -5,13 +5,13 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 public class PlaceInfoDto {
     private Long id;
     private String name;

@@ -10,9 +10,10 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
 @EqualsAndHashCode(
     exclude = {"discountValues", "author", "openingHoursList", "comments", "photos",
