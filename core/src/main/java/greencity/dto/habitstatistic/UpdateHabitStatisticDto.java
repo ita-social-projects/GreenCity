@@ -4,7 +4,12 @@ import greencity.constant.ValidationConstants;
 import greencity.entity.enums.HabitRate;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
 @NoArgsConstructor

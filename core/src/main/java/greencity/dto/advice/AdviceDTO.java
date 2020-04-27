@@ -4,7 +4,11 @@ import greencity.constant.ValidationConstants;
 import greencity.dto.user.HabitDictionaryDto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @NoArgsConstructor

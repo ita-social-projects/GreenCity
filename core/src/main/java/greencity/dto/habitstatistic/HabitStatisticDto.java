@@ -3,7 +3,12 @@ package greencity.dto.habitstatistic;
 import greencity.entity.HabitStatistic;
 import greencity.entity.enums.HabitRate;
 import java.time.ZonedDateTime;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor

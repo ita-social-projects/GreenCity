@@ -8,7 +8,11 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.enums.PlaceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
