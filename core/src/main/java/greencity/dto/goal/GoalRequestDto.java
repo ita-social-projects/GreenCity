@@ -2,9 +2,13 @@ package greencity.dto.goal;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class GoalRequestDto {
     @NotNull
     @Min(value = 1, message = "Goal id must be a positive number")

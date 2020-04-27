@@ -6,9 +6,11 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @ToString(exclude = {"userGoals", "user"})
 @Table(name = "custom_goals")
 @Builder
