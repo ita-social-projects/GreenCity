@@ -1,14 +1,13 @@
 package greencity.dto.user;
 
 import greencity.entity.enums.GoalStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 @Builder
 public class UserGoalResponseDto {
     private Long id;

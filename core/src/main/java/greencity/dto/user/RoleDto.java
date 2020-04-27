@@ -1,11 +1,13 @@
 package greencity.dto.user;
 
 import greencity.entity.enums.ROLE;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 public class RoleDto {
     private ROLE[] roles;
 }

@@ -1,12 +1,12 @@
 package greencity.dto.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class HabitLogItemDto {
     private String habitItemName;
     private Integer habitItemAmount;

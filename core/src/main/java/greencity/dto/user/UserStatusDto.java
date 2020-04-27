@@ -2,13 +2,13 @@ package greencity.dto.user;
 
 import greencity.entity.enums.UserStatus;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
 public class UserStatusDto {
     @NotNull
     private Long id;
