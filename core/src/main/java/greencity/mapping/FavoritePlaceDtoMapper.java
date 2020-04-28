@@ -3,8 +3,7 @@ package greencity.mapping;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
-import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
+import greencity.entity.User;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,23 +12,25 @@ import org.springframework.stereotype.Component;
  *
  * @author Zakhar Skaletskyi
  */
-@AllArgsConstructor
-@Component
-public class FavoritePlaceDtoMapper implements MapperToDto<FavoritePlace, FavoritePlaceDto>,
-    MapperToEntity<FavoritePlaceDto, FavoritePlace> {
-    private ModelMapper modelMapper;
 
+@Component
+public class FavoritePlaceDtoMapper
+    implements MapperToDto<FavoritePlace, FavoritePlaceDto>, MapperToEntity<FavoritePlaceDto, FavoritePlace> {
     @Override
-    public FavoritePlace convertToEntity(FavoritePlaceDto dto) {
-        FavoritePlace favoritePlace = modelMapper.map(dto, FavoritePlace.class);
-        favoritePlace.setPlace(Place.builder().id(dto.getPlaceId()).build());
-        return favoritePlace;
+    public FavoritePlaceDto convertToDto(FavoritePlace entity) {
+        return FavoritePlaceDto.builder()
+            .placeId(entity.getId())
+            .name(entity.getName())
+            .build();
     }
 
     @Override
-    public FavoritePlaceDto convertToDto(FavoritePlace entity) {
-        FavoritePlaceDto favoritePlaceDto = modelMapper.map(entity, FavoritePlaceDto.class);
-        favoritePlaceDto.setPlaceId(entity.getPlace().getId());
-        return favoritePlaceDto;
+    public FavoritePlace convertToEntity(FavoritePlaceDto dto) {
+        return FavoritePlace.builder()
+            .id(dto.getPlaceId())
+            .name(dto.getName())
+            .user(User.builder().id(dto.getPlaceId()).build())
+            .place(Place.builder().id(dto.getPlaceId()).build())
+            .build();
     }
 }

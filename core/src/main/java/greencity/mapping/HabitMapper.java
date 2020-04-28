@@ -16,10 +16,10 @@ public class HabitMapper extends AbstractConverter<User, Habit> {
      */
     @Override
     protected Habit convert(User user) {
-        Habit habit = new Habit();
-        habit.setUser(user);
-        habit.setCreateDate(ZonedDateTime.now());
-        habit.setStatusHabit(true);
-        return habit;
+        return Habit.builder()
+            .user(user)
+            .createDate(ZonedDateTime.now())
+            .statusHabit(true)
+            .build();
     }
 }

@@ -1,186 +1,102 @@
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-03 11:42:37.823000', 'nazar.stasyuk@gmail.com', 'Назар', 'Стасюк', '2019-09-03 11:42:37.823000', 0,
-        2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$mAzH0BvVs/g2m6zl8CYxDuiLCu1V.PZjuGhKzHRdVxndDfExts4oO', 1);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-03 12:17:18.345000', 'dovgal.dmytr@gmail.com', 'Dima', 'Dovhal', '2019-09-03 12:17:18.346000', 0,
-        2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$HqJME/hE.0THMpGbzBci5usUe9T7t4dfLyL./JbndpWgGhjD2qyqC', 2);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:20:31.755000', 'rapac@clockus.ru', 'Paul', 'Kos', '2019-09-04 13:20:31.757000', 1, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$Mdu2vmDtmjgATCh0EpZ6V.Q3uhJn5Kz4biDu.Ol3EX55Pv4D7Ltla', 3);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:38:44.518000', 'rsssac@clockus.ru', 'Roman', 'KOcak', '2019-09-04 13:38:44.518000', 0, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$5ms4Ni.xuIfSXp1RxScQjOlQvLbrCUlZUNNtkQm23jc99NQXkppMe', 4);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:39:25.827000', 'rsssasssc@clockus.ru', 'Misha', 'Pavluv', '2019-09-04 13:39:25.827000', 0, 2,
-        0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$QCM1BwKCmM2GCSeK6pTpOeaXrcYOLCleifvrytgwgB3FnoE497dV.', 5);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:40:21.531000', '1warsssasssc@clockus.ru', 'Taras', 'Tymkiv', '2019-09-04 13:40:21.531000', 0,
-        2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$bQggp0SIPwHh5D/ahmm4reKJtsod6dcEo79WJBO0aIAUIs/j9JGrC', 6);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:43:00.061000', '1warssssssssasssc@clockus.ru', 'Ihor', 'Zdebskiy',
-        '2019-09-04 13:43:00.061000', 0, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$v.k/53rC6NnIsosZEH0ezecuKWrG8fL4yOHXW5w3AudFeFUub0It2', 7);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 13:44:08.939000', '1warssssssssassssc@clockus.ru', 'Amon', 'Azarov',
-        '2019-09-04 13:44:08.939000', 0, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$hSKDmeUboTyvBpUnXj8c2ulIXBeHq5rd4h.H0Oj8gpzYlwS0L78qO', 8);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status,
-                   email_notification)
-VALUES ('2019-09-04 14:04:14.931000', 'rostuk.khasanov@gmail.com', 'Rostyslav', 'Khasanov',
-        '2019-09-04 14:04:14.931000', 1, 2, 0);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$cgaNMFjdAFX6k810YSZDSuvKVlWFcq6/F7p2lcgLzK6sFB48dky2W', 9);
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status)
-VALUES ('2019-10-01 19:22:25.209000', 'milanmarian@mail.ru', 'Marian', 'Milian', '2019-10-01 19:22:25.209000', 1,
-        2);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 10);
+INSERT INTO users (date_of_registration, email, email_notification, name, last_visit, role, user_status, refresh_token_key)
+VALUES ('2019-09-03 11:42:37.823000', 'nazar.stasyuk@gmail.com', 0, 'Назар Стасюк', '2019-09-03 11:42:37.823000', 0, 2, 'a06b0b4e-8696-419c-a776-611c36f79d39'),
+       ('2019-09-03 12:17:18.345000', 'dovgal.dmytr@gmail.com', 0, 'Dima Dovhal', '2019-09-03 12:17:18.346000', 0, 2, 'f9aef11e-2bfd-4136-aafd-e0c7b92f396a'),
+       ('2019-09-04 13:20:31.755000', 'rapac@clockus.ru', 0, 'Paul Kos', '2019-09-04 13:20:31.757000', 1, 2, '6f9d42f5-2324-492e-8d99-75e5834aa739'),
+       ('2019-09-04 13:38:44.518000', 'rsssac@clockus.ru', 0, 'Roman KOcak', '2019-09-04 13:38:44.518000', 0, 2, 'b3ad7c1d-a058-40ee-908c-65902ef96371'),
+       ('2019-09-04 13:39:25.827000', 'rsssasssc@clockus.ru', 0, 'Misha Pavluv', '2019-09-04 13:39:25.827000', 0, 2, '8171edb1-3a9c-4074-a305-fcdc24de470f'),
+       ('2019-09-04 13:40:21.531000', '1warsssasssc@clockus.ru', 0, 'Taras Tymkiv', '2019-09-04 13:40:21.531000', 0, 2, 'c7e5ea40-610a-4908-8085-c3a96127e38d'),
+       ('2019-09-04 13:43:00.061000', '1warssssssssasssc@clockus.ru', 0, 'Ihor Zdebskiy', '2019-09-04 13:43:00.061000', 0, 2, 'dba595ab-6d07-45a7-8f32-2e7956e68e46'),
+       ('2019-09-04 13:44:08.939000', '1warssssssssassssc@clockus.ru', 0, 'Amon Azarov', '2019-09-04 13:44:08.939000', 0, 2, 'c3d9f0ed-d639-4e00-9928-07b7afe3d779'),
+       ('2019-09-04 14:04:14.931000', 'rostuk.khasanov@gmail.com', 0, 'Rostyslav Khasanov', '2019-09-04 14:04:14.931000', 1, 2, '4238c90e-ea52-4331-8b62-be2511f3ac09'),
+       ('2019-10-01 19:22:25.209000', 'milanmarian@mail.ru', 0, 'Marian Milian', '2019-10-01 19:22:25.209000', 1, 2, '16a02c58-915f-4a7d-b69b-2d86038fa66f'),
+       ('2019-10-01 19:22:25.209000', 'milan@mail.ru', 0, 'M M', '2019-10-01 19:22:25.209000', 1, 2, '827947d3-da8b-4c66-a290-720e6c111531'),
+       ('2019-10-01 19:22:25.209000', 'greencity448@gmail.com', 0, 'greencity 448', '2019-10-01 19:22:25.209000', 1, 2, '91e9d3f7-f92a-4557-9f5b-462133fa1090');
 
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status)
-VALUES ('2019-10-01 19:22:25.209000', 'milan@mail.ru', 'M', 'M', '2019-10-01 19:22:25.209000', 1, 2);
 INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 11);
-
-INSERT INTO users (date_of_registration, email, first_name, last_name, last_visit, role, user_status)
-VALUES ('2019-10-01 19:22:25.209000', 'greencity448@gmail.com', 'greencity', '448', '2019-10-01 19:22:25.209000', 1, 2);
-INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$MwSE7uTZuKhCOjRddnpZ6eXiJT7sE3n8YsiHDJCo9MCv3yvy64Cf6', 12);
-
-
+VALUES ('$2a$10$mAzH0BvVs/g2m6zl8CYxDuiLCu1V.PZjuGhKzHRdVxndDfExts4oO', 1),
+       ('$2a$10$HqJME/hE.0THMpGbzBci5usUe9T7t4dfLyL./JbndpWgGhjD2qyqC', 2),
+       ('$2a$10$Mdu2vmDtmjgATCh0EpZ6V.Q3uhJn5Kz4biDu.Ol3EX55Pv4D7Ltla', 3),
+       ('$2a$10$5ms4Ni.xuIfSXp1RxScQjOlQvLbrCUlZUNNtkQm23jc99NQXkppMe', 4),
+       ('$2a$10$QCM1BwKCmM2GCSeK6pTpOeaXrcYOLCleifvrytgwgB3FnoE497dV.', 5),
+       ('$2a$10$bQggp0SIPwHh5D/ahmm4reKJtsod6dcEo79WJBO0aIAUIs/j9JGrC', 6),
+       ('$2a$10$v.k/53rC6NnIsosZEH0ezecuKWrG8fL4yOHXW5w3AudFeFUub0It2', 7),
+       ('$2a$10$hSKDmeUboTyvBpUnXj8c2ulIXBeHq5rd4h.H0Oj8gpzYlwS0L78qO', 8),
+       ('$2a$10$cgaNMFjdAFX6k810YSZDSuvKVlWFcq6/F7p2lcgLzK6sFB48dky2W', 9),
+       ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 10),
+       ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 11),
+       ('$2a$10$MwSE7uTZuKhCOjRddnpZ6eXiJT7sE3n8YsiHDJCo9MCv3yvy64Cf6', 12);
 
 INSERT INTO categories (name)
-values ('Food');
+VALUES ('Food');
 
 INSERT INTO locations (address, lat, lng)
-VALUES ('вулиця Під Дубом', 49.84988, 24.022533);
-INSERT INTO locations (address, lat, lng)
-VALUES ('Вулиця Кульпарківська, 226а, Львів, Львівська область, 79000', 49.807129, 23.977985);
-INSERT INTO locations (address, lat, lng)
-VALUES ('Площа Ринок, Львів, Львівська область, 79000', 49.842042, 24.030359);
-INSERT INTO locations (address, lat, lng)
-VALUES ('Проспект В''ячеслава Чорновола, 2, Львів, Львівська область, 79000', 49.847489, 24.025975);
-INSERT INTO locations (address, lat, lng)
-VALUES ('Площа Ринок, 14 (підвал), Львів, Львівська область, 79000', 49.841311, 24.03229);
+VALUES ('вулиця Під Дубом', 49.84988, 24.022533),
+       ('Вулиця Кульпарківська, 226а, Львів, Львівська область, 79000', 49.807129, 23.977985),
+       ('Площа Ринок, Львів, Львівська область, 79000', 49.842042, 24.030359),
+       ('Проспект В''ячеслава Чорновола, 2, Львів, Львівська область, 79000', 49.847489, 24.025975),
+       ('Площа Ринок, 14 (підвал), Львів, Львівська область, 79000', 49.841311, 24.03229);
 
 INSERT INTO places (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
-values ('Forum', '0322 489 850', 'forum_lviv@gmail.com', '2004-05-23T14:25:10', 2, 1, 1, 'Shopping center', 1);
-INSERT INTO places (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
-values ('Victoria Gardens', '0322 590 202', 'victoria_gardens@gmail.com', '2005-05-23T14:25:10', 2, 1, 1,
-        'Shopping center',
-        2);
-INSERT INTO places (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
-values ('Pravda', '0322 157 694', 'pravda_lviv@gmail.com', '2016-09-23T14:25:10', 2, 1, 1, 'Restaurant', 3);
-INSERT INTO places (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
-values ('Malevych', '0322 849 348', 'malevych_lviv@gmail.com', '2011-08-23T14:25:10', 2, 1, 1, 'Restaurant', 4);
-INSERT INTO places (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
-values ('Kryivka', '067 310 3145', 'kryivka_lviv@gmail.com', '2009-07-23T14:25:10', 2, 1, 1, 'Restaurant', 5);
+VALUES ('Forum', '0322 489 850', 'forum_lviv@gmail.com', '2004-05-23T14:25:10', 2, 1, 1, 'Shopping center', 1),
+       ('Victoria Gardens', '0322 590 202', 'victoria_gardens@gmail.com', '2005-05-23T14:25:10', 2, 1, 1, 'Shopping center', 2),
+       ('Pravda', '0322 157 694', 'pravda_lviv@gmail.com', '2016-09-23T14:25:10', 2, 1, 1, 'Restaurant', 3),
+       ('Malevych', '0322 849 348', 'malevych_lviv@gmail.com', '2011-08-23T14:25:10', 2, 1, 1, 'Restaurant', 4),
+       ('Kryivka', '067 310 3145', 'kryivka_lviv@gmail.com', '2009-07-23T14:25:10', 2, 1, 1, 'Restaurant', 5);
 
 INSERT INTO specifications (name)
-VALUES ('Animal');
-INSERT INTO specifications (name)
-VALUES ('Own cup');
-INSERT INTO specifications (name)
-VALUES ('Karaoke');
-INSERT INTO specifications (name)
-VALUES ('Shopping');
-INSERT INTO specifications (name)
-VALUES ('Ukrainian food');
-INSERT INTO specifications (name)
-VALUES ('Dance');
-
+VALUES ('Animal'),
+       ('Own cup'),
+       ('Karaoke'),
+       ('Shopping'),
+       ('Ukrainian food'),
+       ('Dance');
 
 INSERT INTO favorite_places (place_id, user_id, name)
-values (1, 1, 'Forum');
-INSERT INTO favorite_places (place_id, user_id, name)
-values (2, 2, 'Victoria Gardens');
-INSERT INTO favorite_places (place_id, user_id, name)
-values (3, 3, 'Pravda');
+VALUES (1, 1, 'Forum'),
+       (2, 2, 'Victoria Gardens'),
+       (3, 3, 'Pravda');
 
 INSERT INTO estimates (rate, place_id, user_id)
-values (5, 1, 1);
-INSERT INTO estimates (rate, place_id, user_id)
-values (4, 2, 2);
-INSERT INTO estimates (rate, place_id, user_id)
-values (2, 3, 1);
-INSERT INTO estimates (rate, place_id, user_id)
-values (3, 4, 2);
-INSERT INTO estimates (rate, place_id, user_id)
-values (5, 5, 1);
+VALUES (5, 1, 1),
+       (4, 2, 2),
+       (2, 3, 1),
+       (3, 4, 2),
+       (5, 5, 1);
 
 INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 1);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 1, 1);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 2, 1);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 3, 1);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 4, 1);
+VALUES ('20:00:00', '06:00:00', 0, 1),
+       ('20:00:00', '06:00:00', 1, 1),
+       ('20:00:00', '06:00:00', 2, 1),
+       ('20:00:00', '06:00:00', 3, 1),
+       ('20:00:00', '06:00:00', 4, 1);
 
 INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 2);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 1, 2);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 2, 2);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 3, 2);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 4, 2);
+VALUES ('20:00:00', '06:00:00', 0, 2),
+       ('20:00:00', '06:00:00', 1, 2),
+       ('20:00:00', '06:00:00', 2, 2),
+       ('20:00:00', '06:00:00', 3, 2),
+       ('20:00:00', '06:00:00', 4, 2);
 
 INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 3);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 1, 3);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 2, 3);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 3, 3);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 4, 3);
+VALUES ('20:00:00', '06:00:00', 0, 3),
+       ('20:00:00', '06:00:00', 1, 3),
+       ('20:00:00', '06:00:00', 2, 3),
+       ('20:00:00', '06:00:00', 3, 3),
+       ('20:00:00', '06:00:00', 4, 3);
 
 INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 4);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 1, 4);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 2, 4);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 3, 4);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 4, 4);
+VALUES ('20:00:00', '06:00:00', 0, 4),
+       ('20:00:00', '06:00:00', 1, 4),
+       ('20:00:00', '06:00:00', 2, 4),
+       ('20:00:00', '06:00:00', 3, 4),
+       ('20:00:00', '06:00:00', 4, 4);
 
 INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 5);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 1, 5);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 2, 5);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 3, 5);
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 4, 5);
+VALUES ('20:00:00', '06:00:00', 0, 5),
+       ('20:00:00', '06:00:00', 1, 5),
+       ('20:00:00', '06:00:00', 2, 5),
+       ('20:00:00', '06:00:00', 3, 5),
+       ('20:00:00', '06:00:00', 4, 5);
 
 INSERT INTO discount_values(id, value, place_id, specification_id)
 VALUES (1, 3, 1, 1),
@@ -299,49 +215,30 @@ VALUES (1, 1, 'Покладіть по одній еко-сумці в кожн�
        (3, 6, 'Эко-сумки очень популярны у спортсменов и тех, кто ведет здоровый образ жизни.');
 
 INSERT INTO fact_translations(language_id, habit_fact_id, content)
-VALUES (1, 1,
-        'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
-       (2, 1,
-        'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
-       (3, 1,
-        'Положите в каждой сумки или рюкзаке одну эко-сумку, так она будет всегда с вами, если вы неожиданно зайдете в магазин.'),
-       (1, 2,
-        'Більшість шкідливих речовин містяться навіть не в стаканчиках, а в кришечках та трубочках. Їх переважно виготовляють з 6-го або 7-го типів пластику. Вони виділяють токсичну речовину — Дисанол-А.'),
-       (2, 2,
-        'Most harmful substances are not even contained in cups but in lids and tubes. They are preferably made of 6 or 7 types of plastic. They secrete a toxic substance - Disanol-A.'),
-       (3, 2,
-        'Большинство вредных веществ содержатся даже не в стаканчиках, а в крышечках и трубочках. Их преимущественно изготавливают из 6-го или 7-го типов пластика. Они выделяют токсическое вещество - Дисанол-А.'),
-       (1, 3,
-        'На заводі зі стаканчиків знімається плівка, і картон вдається переробити. Але наразі виникають проблеми з логістикою між Львовом та Харківською областю. На це поки що немає фінансів'),
-       (2, 3,
-        'At the factory, the film is removed from the cups and the cardboard can be recycled. But now there are problems with logistics between Lviv and Kharkiv region. There is no finance for this yet'),
-       (3, 3,
-        'На заводе по стаканчиков снимается пленка, и картон удается переделать. Но пока возникают проблемы с логистикой между Львовом и Харьковской области. На это пока нет денег'),
+VALUES (1, 1, 'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
+       (2, 1, 'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
+       (3, 1, 'Положите в каждой сумки или рюкзаке одну эко-сумку, так она будет всегда с вами, если вы неожиданно зайдете в магазин.'),
+       (1, 2, 'Більшість шкідливих речовин містяться навіть не в стаканчиках, а в кришечках та трубочках. Їх переважно виготовляють з 6-го або 7-го типів пластику. Вони виділяють токсичну речовину — Дисанол-А.'),
+       (2, 2, 'Most harmful substances are not even contained in cups but in lids and tubes. They are preferably made of 6 or 7 types of plastic. They secrete a toxic substance - Disanol-A.'),
+       (3, 2, 'Большинство вредных веществ содержатся даже не в стаканчиках, а в крышечках и трубочках. Их преимущественно изготавливают из 6-го или 7-го типов пластика. Они выделяют токсическое вещество - Дисанол-А.'),
+       (1, 3, 'На заводі зі стаканчиків знімається плівка, і картон вдається переробити. Але наразі виникають проблеми з логістикою між Львовом та Харківською областю. На це поки що немає фінансів'),
+       (2, 3, 'At the factory, the film is removed from the cups and the cardboard can be recycled. But now there are problems with logistics between Lviv and Kharkiv region. There is no finance for this yet'),
+       (3, 3, 'На заводе по стаканчиков снимается пленка, и картон удается переделать. Но пока возникают проблемы с логистикой между Львовом и Харьковской области. На это пока нет денег'),
        (1, 4, 'Сміттєспалювального заводу, який би утилізовував небезпечні стаканчики, в Україні поки що не збудували'),
        (2, 4, 'A waste incineration plant that would dispose of hazardous cups in Ukraine has not yet been built'),
        (3, 4, 'Мусоросжигательного завода, который бы утилизовував опасные стаканчики, в Украине пока не построили'),
-       (1, 5,
-        'Культура кави з собою дуже глибоко вкорінилася в нашому житті, і через це щодня тисячі паперових стаканчиків опиняються на смітнику.'),
-       (2, 5,
-        'The coffee culture is deeply rooted in our lives, and because of this, thousands of paper cups are thrown into the dump every day.'),
-       (3, 5,
-        'Культура кофе с собой очень глубоко укоренилась в нашей жизни, и поэтому каждый день тысячи бумажных стаканчиков оказываются на свалке.'),
-       (1, 6,
-        'Одноразові пакети на касі в супермаркетах коштують 2-3 гривні. Вони не тільки забруднюють навколишнє середовище, а ще й з’їдають частину вашого бюджету. Набагато практичніше носити з собою складну сумочку з тканини, ще зовсім недавно так робили всі люди.'),
-       (2, 6,
-        'Disposable packages at checkout in supermarkets cost 2-3 hryvnias. Not only do they pollute the environment, they also eat up part of your budget. It is much more practical to carry a sophisticated fabric bag with you, as recently as all people have done.'),
-       (3, 6,
-        'Одноразовые пакеты на кассе в супермаркетах стоят 2-3 гривны. Они не только загрязняют окружающую среду, но и съедают часть вашего бюджета. Гораздо практичнее носить с собой сложную сумочку из ткани, еще совсем недавно так делали все люди.'),
-       (1, 7,
-        'За даними ООН, приблизно 5 трильйонів поліетиленових пакетів споживаються у світі щороку, або близько 10 мільйонів - щохвилини.'),
-       (2, 7,
-        'According to the UN, about 5 trillion plastic bags are consumed in the world each year, or about 10 million every minute.'),
-       (3, 7,
-        'По данным ООН, примерно 5000000000000 полиэтиленовых пакетов потребляются в мире ежегодно, или около 10000000 - ежеминутно.'),
+       (1, 5, 'Культура кави з собою дуже глибоко вкорінилася в нашому житті, і через це щодня тисячі паперових стаканчиків опиняються на смітнику.'),
+       (2, 5, 'The coffee culture is deeply rooted in our lives, and because of this, thousands of paper cups are thrown into the dump every day.'),
+       (3, 5, 'Культура кофе с собой очень глубоко укоренилась в нашей жизни, и поэтому каждый день тысячи бумажных стаканчиков оказываются на свалке.'),
+       (1, 6, 'Одноразові пакети на касі в супермаркетах коштують 2-3 гривні. Вони не тільки забруднюють навколишнє середовище, а ще й з’їдають частину вашого бюджету. Набагато практичніше носити з собою складну сумочку з тканини, ще зовсім недавно так робили всі люди.'),
+       (2, 6, 'Disposable packages at checkout in supermarkets cost 2-3 hryvnias. Not only do they pollute the environment, they also eat up part of your budget. It is much more practical to carry a sophisticated fabric bag with you, as recently as all people have done.'),
+       (3, 6, 'Одноразовые пакеты на кассе в супермаркетах стоят 2-3 гривны. Они не только загрязняют окружающую среду, но и съедают часть вашего бюджета. Гораздо практичнее носить с собой сложную сумочку из ткани, еще совсем недавно так делали все люди.'),
+       (1, 7, 'За даними ООН, приблизно 5 трильйонів поліетиленових пакетів споживаються у світі щороку, або близько 10 мільйонів - щохвилини.'),
+       (2, 7, 'According to the UN, about 5 trillion plastic bags are consumed in the world each year, or about 10 million every minute.'),
+       (3, 7, 'По данным ООН, примерно 5000000000000 полиэтиленовых пакетов потребляются в мире ежегодно, или около 10000000 - ежеминутно.'),
        (1, 8, 'Наразі, близько 60 країн світу почали боротьбу із пластиком на законодавчому рівні.'),
        (2, 8, 'Currently, around 60 countries have begun to fight plastic at the legislative level.'),
-       (3, 8, 'Сейчас около 60 стран мира начали борьбу с пластиком на законодательном уровне.')
-;
+       (3, 8, 'Сейчас около 60 стран мира начали борьбу с пластиком на законодательном уровне.');
 
 INSERT INTO user_goals(user_id, goal_id, custom_goal_id, status, date_completed)
 VALUES (1, 1, null, 'ACTIVE', null),
@@ -353,10 +250,8 @@ VALUES (1, 1, null, 'ACTIVE', null),
 
 INSERT INTO achievements(title, description, message)
 VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!'),
-       ('Eco friend', 'Start to track a habit',
-        'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
-       ('Сonscious', 'Made first habit',
-        'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
+       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
+       ('Сonscious', 'Made first habit', 'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
        ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!'),
        ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!'),
        ('ach6', 'get ach 6', 'info'),
@@ -364,18 +259,35 @@ VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green Ci
        ('ach8', 'get ach 8', 'info'),
        ('ach9', 'get ach 9', 'info');
 
-INSERT INTO eco_news(creation_date, text, image_path)
-VALUES ('2019-11-14 14:10:16.769000', 'Опис лекції про сміття', 'шлях до картинки'),
-       ('2019-11-22 11:10:16.769000', 'опис майстер класу', 'шлях до картинки'),
-       ('2019-11-22 11:10:16.769000', 'опис заходу', 'шлях до картинки');
+INSERT INTO tags(name)
+VALUES ('news'),
+       ('events'),
+       ('courses'),
+       ('initiatives'),
+       ('ads');
 
-INSERT INTO eco_news_translations(title, eco_news_id, language_id)
-VALUES ('Лекція про сортування сміття', 1, 1),
-       ('Lecture about sorting garbage', 1, 2),
-       ('Лекция о сортировке мусора', 1, 3),
-       ('Майстер-клас по приготу-ванню вегетаріанської лазаньї від шефа', 2, 1),
-       ('Chef''s vegetarian lasagna master class', 2, 2),
-       ('Мастер-класс по приготовлению вегетарианской лазаньи от шефа', 2, 3),
-       ('Розважальний захід для малих еко-активістів', 3, 1),
-       ('The entertaining event for small eco-activists', 3, 2),
-       ('Развлекательное мероприятие для малых эко-активистов', 3, 3)
+INSERT INTO eco_news(creation_date, image_path, author_id, text, title)
+VALUES ('2020-04-11 18:33:51', 'шлях до картинки', 1, 'No matter where you live , you can make a difference in the impact of big agriculture. Purchasing foods produced by small, local farms, opting for organic produce whenever possible','A New Way To Buy Food'),
+       ('2020-04-11 18:55:18', 'шлях до картинки', 2, 'The benefits of biodegradable substances are only felt when they are disposed of properly. Compost piles capture and return all of the recycled nutrients to the environment, and help to sustain new life. ','Why Biodegradable Products are Better for the Planet'),
+       ('2020-04-11 19:06:36', 'шлях до картинки', 3, 'Over six gallons of water are required to produce one gallon of wine.','Sustainable Wine Is Less Damaging to the Environment, But How Can You Spot It?'),
+       ('2020-04-11 19:14:15', 'шлях до картинки', 4, 'Instead of trying to get rid of those lawn and garden weeds, harvest them for free homegrown meals.', 'Please eat the dandelions: 9 edible garden weeds'),
+       ('2020-04-11 19:22:57', 'шлях до картинки', 5, 'Weather happens hour by hour, day by day—it''s a thunderstorm, a heat wave, a windy afternoon. Taken as averages over decades and centuries, those patterns of precipitation, temperature, and wind for a given region comprise our climate.', 'Climate Change'),
+       ('2020-04-11 19:31:35', 'шлях до картинки', 6, 'According to the Environmental Protection Agency, food waste in the United States has tripled since 1960. In landfills, its decomposition generates methane, a potent greenhouse gas.', 'A Growing Problem'),
+       ('2020-04-11 19:44:19', 'шлях до картинки', 7, 'Global warming — a component of climate change — is the rapid increase in recorded temperatures of the ocean, land, and air caused by rising levels of carbon dioxide and other greenhouse gases in the atmosphere.','Global Warming'),
+       ('2020-04-11 19:50:56', 'шлях до картинки', 8, 'Researchers have found evidence of rainforests near the South Pole 90 million years ago, suggesting the climate was exceptionally warm at the time','Traces of ancient rainforest in Antarctica point to a warmer prehistoric world'),
+       ('2020-04-11 19:55:05', 'шлях до картинки', 9, 'Rising sea surface temperatures and acidic waters could eliminate nearly all existing coral reef habitats by 2100, suggesting restoration projects in these areas will likely meet serious challenges','Warming, acidic oceans may nearly eliminate coral reef habitats by 2100'),
+       ('2020-04-11 20:12:56', 'шлях до картинки', 10, 'Four fossilized monkey teeth discovered deep in the Peruvian Amazon provide new evidence that more than one group of ancient primates journeyed across the Atlantic Ocean from Africa.', 'Ancient Teeth from Peru Hint Now-Extinct Monkeys Crossed Atlantic from Africa'),
+       ('2020-04-11 20:15:03', 'шлях до картинки', 11, 'Researchers from Cambridge University and University of California San Diego have 3D printed coral-inspired structures that are capable of growing dense populations of microscopic algae', '3D-printed corals could improve bioenergy and help coral reefs');
+
+INSERT INTO eco_news_tags(eco_news_id, tags_id)
+VALUES (1, 4),
+       (2, 4),
+       (3, 1),
+       (4, 4),
+       (5, 1),
+       (6, 1),
+       (7, 1),
+       (8, 1),
+       (9, 1),
+       (10, 1),
+       (11, 1)

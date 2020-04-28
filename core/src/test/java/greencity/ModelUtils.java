@@ -1,14 +1,15 @@
 package greencity;
 
+import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.Language;
-import greencity.entity.Tag;
-import greencity.entity.User;
+import greencity.entity.*;
+import greencity.entity.enums.HabitRate;
 import greencity.entity.enums.ROLE;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -58,9 +59,9 @@ public class ModelUtils {
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
-        return new AddEcoNewsDtoResponse(1L, getEcoNews().getTitle(),
-            getEcoNews().getText(), getEcoNewsAuthorDto(),
-            getEcoNews().getCreationDate(), TestConst.SITE,
+        return new AddEcoNewsDtoResponse(1L, "title",
+            "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
+            ZonedDateTime.now(), TestConst.SITE,
             Collections.singletonList("tag"));
     }
 
@@ -80,7 +81,7 @@ public class ModelUtils {
     public static URL getUrl() throws MalformedURLException {
         return new URL(TestConst.SITE);
     }
-    
+
     public static DiscountValue getDiscountValue() {
         return new DiscountValue(null, 33, null, null);
     }
@@ -88,4 +89,69 @@ public class ModelUtils {
     public static DiscountValueDto getDiscountValueDto() {
         return new DiscountValueDto(33, null);
     }
+
+    public static Place getPlace() {
+        Place place = new Place();
+        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", place));
+        place.setId(1L);
+        place.setName("Forum");
+        place.setDescription("Shopping center");
+        place.setPhone("0322 489 850");
+        place.setEmail("forum_lviv@gmail.com");
+        place.setAuthor(getUser());
+        place.setModifiedDate(ZonedDateTime.now());
+        return place;
+    }
+
+    public static FavoritePlace getFavoritePlace() {
+        return new FavoritePlace(3L, "name", getUser(), getPlace());
+    }
+
+    public static FavoritePlaceDto getFavoritePlaceDto() {
+        return new FavoritePlaceDto("name", 3L);
+    }
+
+    public static AddHabitStatisticDto addHabitStatisticDto() {
+        return AddHabitStatisticDto.builder()
+            .id(1L)
+            .amountOfItems(5)
+            .habitRate(HabitRate.DEFAULT)
+            .habitId(13L)
+            .createdOn(ZonedDateTime.now())
+            .build();
+    }
+
+    public static HabitStatistic getHabitStatistic() {
+        return HabitStatistic.builder()
+            .id(1L)
+            .habitRate(HabitRate.DEFAULT)
+            .createdOn(ZonedDateTime.now())
+            .amountOfItems(5)
+            .habit(Habit.builder().id(13L).build())
+            .build();
+    }
+
+    public static Habit getHabit() {
+        return Habit.builder()
+            .id(13L)
+            .statusHabit(true)
+            .createDate(ZonedDateTime.now())
+            .user(getUser())
+            .habitDictionary(HabitDictionary.builder().id(2L).image("cup").build())
+            .build();
+    }
+
+    public static Comment getComment(){
+        return new Comment(1L, "text", getUser(),
+            getPlace(), null, null, Collections.emptyList(), null, null, null);
+    }
+
+    public static CommentReturnDto getCommentReturnDto(){
+        return new CommentReturnDto(1L, "text", null, null, null);
+    }
+
+    public static AddCommentDto getAddCommentDto(){
+        return new AddCommentDto("comment", null, null);
+    }
 }
+ 

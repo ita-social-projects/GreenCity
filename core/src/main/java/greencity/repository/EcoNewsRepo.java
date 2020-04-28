@@ -38,6 +38,8 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
      * @param page page of news.
      * @return all {@link EcoNews} by page.
      */
+    Page<EcoNews> findAllByOrderByCreationDateDesc(Pageable page);
+
     @Query("SELECT en FROM EcoNews en ORDER BY en.creationDate DESC")
     Page<EcoNews> findAll(Pageable page);
 
