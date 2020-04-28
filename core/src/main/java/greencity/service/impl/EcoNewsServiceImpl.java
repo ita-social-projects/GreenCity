@@ -24,6 +24,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -183,7 +184,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<SearchNewsDto> search(String searchQuery) {
-        return null;
+        return ecoNewsRepo.searchEcoNews(new PageRequest(0, 3), searchQuery)
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, SearchNewsDto.class))
+            .collect(Collectors.toList());
     }
 
     /**
