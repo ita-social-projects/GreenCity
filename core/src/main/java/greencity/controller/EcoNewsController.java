@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
-import greencity.annotations.ValidTags;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -67,7 +66,8 @@ public class EcoNewsController {
 
     @ApiOperation(value = "Add new eco news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = EcoNews.class),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED
+            , response = AddEcoNewsDtoResponse.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
