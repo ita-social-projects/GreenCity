@@ -184,7 +184,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<SearchNewsDto> search(String searchQuery) {
-        return ecoNewsRepo.searchEcoNews(new PageRequest(0, 3), searchQuery)
+        return ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery)
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, SearchNewsDto.class))
             .collect(Collectors.toList());
