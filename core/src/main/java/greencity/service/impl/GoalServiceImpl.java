@@ -7,7 +7,6 @@ import greencity.entity.Goal;
 import greencity.entity.UserGoal;
 import greencity.exception.exceptions.GoalNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.mapping.UserGoalResponseDtoMapper;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
@@ -29,7 +28,6 @@ public class GoalServiceImpl implements GoalService {
     private final CustomGoalRepo customGoalRepo;
     private final GoalRepo goalRepo;
     private final ModelMapper modelMapper;
-    private final UserGoalResponseDtoMapper userGoalResponseDtoMapper;
     private final LanguageService languageService;
 
     /**
@@ -38,13 +36,11 @@ public class GoalServiceImpl implements GoalService {
     @Autowired
     public GoalServiceImpl(GoalTranslationRepo goalTranslationRepo, CustomGoalRepo customGoalRepo, GoalRepo goalRepo,
                            ModelMapper modelMapper,
-                           UserGoalResponseDtoMapper userGoalResponseDtoMapper,
                            LanguageService languageService) {
         this.goalTranslationRepo = goalTranslationRepo;
         this.customGoalRepo = customGoalRepo;
         this.goalRepo = goalRepo;
         this.modelMapper = modelMapper;
-        this.userGoalResponseDtoMapper = userGoalResponseDtoMapper;
         this.languageService = languageService;
     }
 
@@ -62,7 +58,7 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     public UserGoalResponseDto getUserGoalResponseDtoFromPredefinedGoal(UserGoal userGoal) {
-        UserGoalResponseDto userGoalResponseDto = userGoalResponseDtoMapper.convert(userGoal);
+        UserGoalResponseDto userGoalResponseDto = modelMapper.map(userGoal, UserGoalResponseDto.class);
         String languageCode = languageService.extractLanguageCodeFromRequest();
         if (userGoal.getCustomGoal() == null) {
             Goal goal = goalRepo
@@ -76,7 +72,7 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     public UserGoalResponseDto getUserGoalResponseDtoFromCustomGoal(UserGoal userGoal) {
-        UserGoalResponseDto userGoalResponseDto = userGoalResponseDtoMapper.convert(userGoal);
+        UserGoalResponseDto userGoalResponseDto = modelMapper.map(userGoal, UserGoalResponseDto.class);
         if (userGoal.getGoal() == null) {
             CustomGoal customGoal = customGoalRepo.findById(userGoal
                 .getCustomGoal().getId()).orElseThrow(() -> new NotFoundException(CUSTOM_GOAL_NOT_FOUND_BY_ID));
