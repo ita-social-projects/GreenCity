@@ -2,26 +2,27 @@ package greencity.service.impl;
 
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.UserGoal;
+import greencity.entity.localization.GoalTranslation;
 import greencity.mapping.UserGoalResponseDtoMapper;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
+import greencity.repository.GoalTranslationRepo;
 import greencity.service.LanguageService;
+import java.util.List;
 import java.util.Optional;
-import static org.junit.Assert.assertEquals;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.Mockito.when;
-import greencity.dto.goal.GoalDto;
-import greencity.entity.localization.GoalTranslation;
-import greencity.repository.GoalTranslationRepo;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class GoalServiceImplTest {

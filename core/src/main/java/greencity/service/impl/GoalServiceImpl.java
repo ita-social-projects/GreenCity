@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import static greencity.constant.ErrorMessage.*;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.CustomGoal;
@@ -19,6 +18,10 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static greencity.constant.ErrorMessage.CUSTOM_GOAL_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.GOAL_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.GOAL_NOT_FOUND_BY_LANGUAGE_CODE;
 
 @Service
 public class GoalServiceImpl implements GoalService {
@@ -58,7 +61,7 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public UserGoalResponseDto getUserGoalResponseDto(UserGoal userGoal) {
+    public UserGoalResponseDto getUserGoalResponseDtoFromPredefinedGoal(UserGoal userGoal) {
         UserGoalResponseDto userGoalResponseDto = userGoalResponseDtoMapper.convert(userGoal);
         String languageCode = languageService.extractLanguageCodeFromRequest();
         if (userGoal.getCustomGoal() == null) {
@@ -67,7 +70,14 @@ public class GoalServiceImpl implements GoalService {
                     .getGoal().getId()).orElseThrow(() -> new GoalNotFoundException(GOAL_NOT_FOUND_BY_ID));
             userGoalResponseDto.setText(goalTranslationRepo.findByGoalAndLanguageCode(goal, languageCode)
                 .orElseThrow(() -> new GoalNotFoundException(GOAL_NOT_FOUND_BY_LANGUAGE_CODE)).getText());
-        } else if (userGoal.getGoal() == null) {
+        }
+        return userGoalResponseDto;
+    }
+
+    @Override
+    public UserGoalResponseDto getUserGoalResponseDtoFromCustomGoal(UserGoal userGoal) {
+        UserGoalResponseDto userGoalResponseDto = userGoalResponseDtoMapper.convert(userGoal);
+        if (userGoal.getGoal() == null) {
             CustomGoal customGoal = customGoalRepo.findById(userGoal
                 .getCustomGoal().getId()).orElseThrow(() -> new NotFoundException(CUSTOM_GOAL_NOT_FOUND_BY_ID));
             userGoalResponseDto.setText(customGoal.getText());
