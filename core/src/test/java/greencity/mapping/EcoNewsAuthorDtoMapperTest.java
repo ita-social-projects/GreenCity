@@ -1,26 +1,25 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.goal.GoalDto;
-import greencity.entity.localization.GoalTranslation;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.entity.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-
 @ExtendWith(SpringExtension.class)
-public class GoalDtoMapperTest {
+public class EcoNewsAuthorDtoMapperTest {
     @InjectMocks
-    private GoalDtoMapper goalDtoMapper;
+    private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
 
     @Test
     public void convertTest() {
-        GoalTranslation goalTranslation = ModelUtils.getGoalTranslation();
+        User author = ModelUtils.getUser();
 
-        GoalDto expected = new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getText());
+        EcoNewsAuthorDto expected = new EcoNewsAuthorDto(author.getId(), author.getName());
 
-        assertEquals(expected, goalDtoMapper.convert(goalTranslation));
+        assertEquals(expected, ecoNewsAuthorDtoMapper.convert(author));
     }
 }

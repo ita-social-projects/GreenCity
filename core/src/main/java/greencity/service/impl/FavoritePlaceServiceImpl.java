@@ -8,8 +8,6 @@ import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.User;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.mapping.FavoritePlaceDtoMapper;
-import greencity.mapping.FavoritePlaceWithLocationMapper;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
@@ -26,22 +24,20 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @Slf4j
 public class FavoritePlaceServiceImpl implements FavoritePlaceService {
-    private FavoritePlaceRepo repo;
-    private UserService userService;
-    private PlaceService placeService;
-    FavoritePlaceDtoMapper favoritePlaceDtoMapper;
-    FavoritePlaceWithLocationMapper favoritePlaceWithLocationMapper;
-    ModelMapper modelMapper;
+    private final FavoritePlaceRepo repo;
+    private final UserService userService;
+    private final PlaceService placeService;
+    private final ModelMapper modelMapper;
 
-    @Override
     /**
-     * @author Zakhar Skaletskyi
-     *
      * {@inheritDoc}
+     *
+     * @author Zakhar Skaletskyi
      */
+    @Override
     public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail) {
         log.info(LogMessage.IN_SAVE, favoritePlaceDto);
-        FavoritePlace favoritePlace = favoritePlaceDtoMapper.convertToEntity(favoritePlaceDto);
+        FavoritePlace favoritePlace = modelMapper.map(favoritePlaceDto, FavoritePlace.class);
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
             throw new WrongIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
@@ -50,7 +46,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
                 ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS, favoritePlaceDto.getPlaceId(), userEmail));
         }
         favoritePlace.setUser(User.builder().email(userEmail).id(userService.findIdByEmail(userEmail)).build());
-        return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
+        return modelMapper.map(repo.save(favoritePlace), FavoritePlaceDto.class);
     }
 
     /**
@@ -67,9 +63,8 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
             throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceDto.getPlaceId());
         }
         favoritePlace.setName(favoritePlaceDto.getName());
-        return favoritePlaceDtoMapper.convertToDto(repo.save(favoritePlace));
+        return modelMapper.map(repo.save(favoritePlace), FavoritePlaceDto.class);
     }
-
 
     /**
      * {@inheritDoc}
@@ -79,7 +74,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     @Override
     public List<FavoritePlaceDto> findAllByUserEmail(String email) {
         log.info(LogMessage.IN_FIND_ALL);
-        return repo.findAllByUserEmail(email).stream().map(fp -> favoritePlaceDtoMapper.convertToDto(fp))
+        return repo.findAllByUserEmail(email).stream().map(fp -> modelMapper.map(fp, FavoritePlaceDto.class))
             .collect(Collectors.toList());
     }
 
@@ -147,6 +142,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         if (favoritePlace == null) {
             throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
-        return favoritePlaceWithLocationMapper.convert(repo.findByPlaceIdAndUserEmail(placeId, email));
+        return modelMapper.map(repo.findByPlaceIdAndUserEmail(placeId, email), PlaceByBoundsDto.class);
     }
 }

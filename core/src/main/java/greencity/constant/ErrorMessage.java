@@ -6,12 +6,14 @@ public final class ErrorMessage {
     public static final String USER_WITH_EMAIL_EXIST = "The user already exists by this email: ";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
-    public static final String FAVORITE_PLACE_ALREADY_EXISTS = "Favorite place already exist for this placeId:  %d and user with email: %s";
+    public static final String FAVORITE_PLACE_ALREADY_EXISTS =
+        "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String SPECIFICATION_NOT_FOUND_BY_ID = "The specification does not exist by this id: ";
-    public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID = "The specification value does not exist by this id: ";
+    public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID =
+        "The specification value does not exist by this id: ";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String BREAK_TIME_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
@@ -19,10 +21,12 @@ public final class ErrorMessage {
     public static final String OPENING_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String CATEGORY_ALREADY_EXISTS_BY_THIS_NAME = "Category by this name already exists.";
     public static final String SPECIFICATION_ALREADY_EXISTS_BY_THIS_NAME = "Specification by this name already exists.";
-    public static final String SPECIFICATION_VALUE_ALREADY_EXISTS_BY_THIS_NAME = "Specification value by this name already exists.";
+    public static final String SPECIFICATION_VALUE_ALREADY_EXISTS_BY_THIS_NAME =
+        "Specification value by this name already exists.";
     public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email is already registered";
     public static final String NO_ANY_OWN_SECURITY_TO_DELETE = "No any ownSecurity to delete with this id: ";
-    public static final String LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES = "Location by this coordinates already exists.";
+    public static final String LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES =
+        "Location by this coordinates already exists.";
     public static final String BAD_EMAIL_OR_PASSWORD = "Bad email or password";
     public static final String USER_NOT_VERIFIED = "User not verified";
     public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";

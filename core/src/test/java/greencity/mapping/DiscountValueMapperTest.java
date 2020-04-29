@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.entity.DiscountValue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

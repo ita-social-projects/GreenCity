@@ -2,24 +2,22 @@ INSERT INTO users (id,
                    date_of_registration,
                    email,
                    email_notification,
-                   first_name,
-                   last_name,
+                   name,
                    last_visit,
                    role,
                    user_status,
                    refresh_token_key)
-VALUES (1, current_date, 'foo@bar.com', 1, 'foo', 'bar', current_date, 1, 1, 'quux');
+VALUES (1, current_date, 'foo@bar.com', 1, 'foo', current_date, 1, 1, 'quux');
 INSERT INTO users (id,
                    date_of_registration,
                    email,
                    email_notification,
-                   first_name,
-                   last_name,
+                   name,
                    last_visit,
                    role,
                    user_status,
                    refresh_token_key)
-VALUES (2, current_date, 'baz@bar.com', 1, 'foo', 'barbar', current_date, 1, 1, 'quuxbaz');
+VALUES (2, current_date, 'baz@bar.com', 1, 'foofoo', current_date, 1, 1, 'quuxbaz');
 
 INSERT INTO languages (id, code)
 VALUES (1, 'en');

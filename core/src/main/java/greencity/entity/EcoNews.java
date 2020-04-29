@@ -2,16 +2,30 @@ package greencity.entity;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.persistence.*;
-import lombok.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
 @Entity
 @Table(name = "eco_news")
-@ToString(exclude = {"translations", "author", "tags"})
-@EqualsAndHashCode(exclude = {"translations", "author", "tags"})
+@ToString(exclude = {"author", "tags"})
+@EqualsAndHashCode(exclude = {"author", "tags"})
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class EcoNews {
     @Id
