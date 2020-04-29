@@ -68,11 +68,10 @@ public class GoalServiceImplTest {
             .thenReturn(Optional.of(goalTranslation));
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
 
-        UserGoalResponseDto expected = new UserGoalResponseDto(predefinedUserGoal.getId(), goalTranslation.getText(),
-            predefinedUserGoal.getStatus());
+        UserGoalResponseDto expected =
+            new UserGoalResponseDto(predefinedUserGoal.getId(), null, predefinedUserGoal.getStatus());
 
         UserGoalResponseDto actual = userGoalResponseDtoMapper.convert(predefinedUserGoal);
-        actual.setText(goalTranslation.getText());
 
         assertEquals(expected, actual);
     }
@@ -84,11 +83,9 @@ public class GoalServiceImplTest {
             .thenReturn(Optional.of(customUserGoal.getCustomGoal()));
 
         UserGoalResponseDto expected =
-            new UserGoalResponseDto(customUserGoal.getId(), customUserGoal.getCustomGoal().getText(),
-                customUserGoal.getStatus());
+            new UserGoalResponseDto(customUserGoal.getId(), null, customUserGoal.getStatus());
 
         UserGoalResponseDto actual = userGoalResponseDtoMapper.convert(customUserGoal);
-        actual.setText(customUserGoal.getCustomGoal().getText());
 
         assertEquals(expected, actual);
     }

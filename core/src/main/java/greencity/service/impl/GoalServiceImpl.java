@@ -14,14 +14,15 @@ import greencity.service.GoalService;
 import greencity.service.LanguageService;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static greencity.constant.ErrorMessage.CUSTOM_GOAL_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.GOAL_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.GOAL_NOT_FOUND_BY_LANGUAGE_CODE;
 
+@RequiredArgsConstructor
 @Service
 public class GoalServiceImpl implements GoalService {
     private final GoalTranslationRepo goalTranslationRepo;
@@ -29,20 +30,6 @@ public class GoalServiceImpl implements GoalService {
     private final GoalRepo goalRepo;
     private final ModelMapper modelMapper;
     private final LanguageService languageService;
-
-    /**
-     * Constructor with parameters.
-     */
-    @Autowired
-    public GoalServiceImpl(GoalTranslationRepo goalTranslationRepo, CustomGoalRepo customGoalRepo, GoalRepo goalRepo,
-                           ModelMapper modelMapper,
-                           LanguageService languageService) {
-        this.goalTranslationRepo = goalTranslationRepo;
-        this.customGoalRepo = customGoalRepo;
-        this.goalRepo = goalRepo;
-        this.modelMapper = modelMapper;
-        this.languageService = languageService;
-    }
 
     /**
      * {@inheritDoc}
