@@ -216,9 +216,6 @@ public class ModelUtils {
         return new AddCommentDto("comment", null, null);
     }
 
-    public static AdviceTranslation getAdviceTranslation(){
-        return new AdviceTranslation(1L, getLanguage(), null, "Content");
-    }
 
     public static Advice getAdvice(){
         return new Advice(1L, null, null);
