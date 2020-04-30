@@ -2,8 +2,9 @@ package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.entity.*;
-import static org.junit.Assert.assertEquals;
+import greencity.entity.Habit;
+import greencity.entity.HabitStatistic;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

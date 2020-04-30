@@ -1,9 +1,13 @@
 package greencity.dto.user;
 
 import greencity.dto.goal.CustomGoalRequestDto;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class UserCustomGoalDto {
     private CustomGoalRequestDto customGoal;
 }

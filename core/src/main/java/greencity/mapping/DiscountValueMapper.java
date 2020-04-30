@@ -1,10 +1,7 @@
 package greencity.mapping;
 
-import greencity.constant.ErrorMessage;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.entity.DiscountValue;
-import greencity.entity.Specification;
-import greencity.exception.exceptions.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;

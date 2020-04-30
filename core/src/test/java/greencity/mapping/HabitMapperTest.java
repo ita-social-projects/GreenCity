@@ -4,7 +4,7 @@ import greencity.ModelUtils;
 import greencity.entity.Habit;
 import greencity.entity.User;
 import java.time.ZonedDateTime;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -21,8 +21,12 @@ public class MapperConfig {
     private AddEcoNewsDtoRequestMapper addEcoNewsDtoRequestMapper;
     private AddEcoNewsDtoResponseMapper addEcoNewsDtoResponseMapper;
     private EcoNewsAuthorDtoMapper ecoNewsAuthorDtoMapper;
+    private SearchNewsDtoMapper searchNewsDtoMapper;
     private DiscountValueMapper discountValueMapper;
     private FavoritePlaceWithLocationMapper favoritePlaceWithLocationMapper;
+    private AdviceTranslateMapper adviceTranslateMapper;
+    private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
+    private FavoritePlaceMapper favoritePlaceMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -54,6 +58,7 @@ public class MapperConfig {
         modelMapper.addConverter(goalDtoMapper);
         modelMapper.addConverter(userGoalResponseDtoMapper);
         modelMapper.addConverter(ecoNewsDtoMapper);
+        modelMapper.addConverter(searchNewsDtoMapper);
         modelMapper.addConverter(addEcoNewsDtoRequestMapper);
         modelMapper.addConverter(addEcoNewsDtoResponseMapper);
         modelMapper.addConverter(addHabitStatisticDtoMapper);
@@ -63,5 +68,8 @@ public class MapperConfig {
         modelMapper.addConverter(habitStatisticMapper);
         modelMapper.addConverter(habitMapper);
         modelMapper.addConverter(favoritePlaceWithLocationMapper);
+        modelMapper.addConverter(adviceTranslateMapper);
+        modelMapper.addConverter(favoritePlaceDtoMapper);
+        modelMapper.addConverter(favoritePlaceMapper);
     }
 }

@@ -1,42 +1,50 @@
 package greencity.service.impl;
 
+import greencity.ModelUtils;
+import greencity.constant.AppConstant;
+import greencity.dto.goal.GoalDto;
+import greencity.dto.user.UserGoalResponseDto;
+import greencity.entity.UserGoal;
+import greencity.entity.localization.GoalTranslation;
+import greencity.mapping.UserGoalResponseDtoMapper;
+import greencity.repository.CustomGoalRepo;
+import greencity.repository.GoalRepo;
+import greencity.repository.GoalTranslationRepo;
+import greencity.service.LanguageService;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import greencity.dto.goal.GoalDto;
-import greencity.entity.Goal;
-import greencity.entity.Language;
-import greencity.entity.localization.GoalTranslation;
-import greencity.repository.GoalTranslationRepo;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.modelmapper.ModelMapper;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class GoalServiceImplTest {
     @Mock
-    GoalTranslationRepo goalTranslationRepo;
-    @InjectMocks
-    private GoalServiceImpl goalService;
+    private GoalTranslationRepo goalTranslationRepo;
     @Mock
     private ModelMapper modelMapper;
-
-    private String language = "uk";
-    private List<GoalTranslation> goalTranslations = Arrays.asList(
-        new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(1L, Collections.emptyList(), Collections.emptyList())),
-        new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(2L, Collections.emptyList(), Collections.emptyList())));
+    @Mock
+    private LanguageService languageService;
+    @Mock
+    private GoalRepo goalRepo;
+    @Mock
+    private CustomGoalRepo customGoalRepo;
+    @InjectMocks
+    private GoalServiceImpl goalService;
+    @InjectMocks
+    private UserGoalResponseDtoMapper userGoalResponseDtoMapper;
 
     @Test
     public void findAllTest() {
+        List<GoalTranslation> goalTranslations = ModelUtils.getGoalTranslations();
+
         List<GoalDto> goalsDto = goalTranslations
             .stream()
             .map(goalTranslation -> new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getText()))
@@ -45,7 +53,40 @@ public class GoalServiceImplTest {
         when(modelMapper.map(goalTranslations.get(0), GoalDto.class)).thenReturn(goalsDto.get(0));
         when(modelMapper.map(goalTranslations.get(1), GoalDto.class)).thenReturn(goalsDto.get(1));
 
-        when(goalTranslationRepo.findAllByLanguageCode(language)).thenReturn(goalTranslations);
-        assertEquals(goalService.findAll(language), goalsDto);
+        when(goalTranslationRepo.findAllByLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE)).thenReturn(goalTranslations);
+        assertEquals(goalService.findAll(AppConstant.DEFAULT_LANGUAGE_CODE), goalsDto);
+    }
+
+    @Test
+    public void convertTestWhenGoalIsPredefined() {
+        UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
+        GoalTranslation goalTranslation = ModelUtils.getGoalTranslation();
+        when(goalRepo.findById(predefinedUserGoal.getGoal().getId()))
+            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
+        when(goalTranslationRepo
+            .findByGoalAndLanguageCode(predefinedUserGoal.getGoal(), AppConstant.DEFAULT_LANGUAGE_CODE))
+            .thenReturn(Optional.of(goalTranslation));
+        when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
+
+        UserGoalResponseDto expected =
+            new UserGoalResponseDto(predefinedUserGoal.getId(), null, predefinedUserGoal.getStatus());
+
+        UserGoalResponseDto actual = userGoalResponseDtoMapper.convert(predefinedUserGoal);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void convertTestWhenGoalIsCustom() {
+        UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
+        when(customGoalRepo.findById(customUserGoal.getCustomGoal().getId()))
+            .thenReturn(Optional.of(customUserGoal.getCustomGoal()));
+
+        UserGoalResponseDto expected =
+            new UserGoalResponseDto(customUserGoal.getId(), null, customUserGoal.getStatus());
+
+        UserGoalResponseDto actual = userGoalResponseDtoMapper.convert(customUserGoal);
+
+        assertEquals(expected, actual);
     }
 }
