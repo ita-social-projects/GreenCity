@@ -140,7 +140,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         if (user.getUserStatus() == UserStatus.DEACTIVATED) {
             throw new UserDeactivatedException(USER_DEACTIVATED);
         }
-        appEventPublisher.publishEvent(new SignInEvent(user));
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), true);
