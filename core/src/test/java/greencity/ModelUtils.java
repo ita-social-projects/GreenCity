@@ -147,6 +147,32 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitDictionary getHabitDictionary(){
+        return HabitDictionary.builder()
+                .id(1L)
+                .image("imagePath")
+                .habit(Collections.singletonList(ModelUtils.getHabit()))
+                .build();
+    }
+
+    public static HabitDictionaryTranslation getHabitDictionaryTranslation(){
+        return HabitDictionaryTranslation.builder()
+                .id(1L)
+                .name("habit")
+                .description("description")
+                .habitItem("habitItem")
+                .language(ModelUtils.getLanguage())
+                .habitDictionary(ModelUtils.getHabitDictionary())
+                .build();
+    }
+
+    public static Category getCategory(){
+        return Category.builder()
+                .id(12L)
+                .name("category")
+                .build();
+    }
+
     public static AdviceTranslation getAdviceTranslation() {
         AdviceTranslation adviceTranslation = new AdviceTranslation();
         adviceTranslation.setId(5L);
@@ -199,7 +225,7 @@ public class ModelUtils {
                     Collections.emptyList()), "Start recycling batteries",
                 new Goal(4L, Collections.emptyList(), Collections.emptyList())));
     }
-  
+
     public static Comment getComment() {
         return new Comment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
