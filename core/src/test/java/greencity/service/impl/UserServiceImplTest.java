@@ -6,28 +6,54 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitIdDto;
-import greencity.dto.user.*;
-import greencity.entity.*;
+import greencity.dto.user.BulkSaveUserGoalDto;
+import greencity.dto.user.RoleDto;
+import greencity.dto.user.UserCustomGoalDto;
+import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserGoalDto;
+import greencity.dto.user.UserGoalResponseDto;
+import greencity.dto.user.UserUpdateDto;
+import greencity.entity.Goal;
+import greencity.entity.Habit;
+import greencity.entity.HabitDictionary;
+import greencity.entity.Language;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.entity.localization.GoalTranslation;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.UserGoalStatusNotUpdatedException;
+import greencity.exception.exceptions.UserHasNoAvailableGoalsException;
+import greencity.exception.exceptions.UserHasNoAvailableHabitDictionaryException;
+import greencity.exception.exceptions.UserHasNoGoalsException;
+import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.HabitMapper;
-import greencity.repository.*;
+import greencity.repository.CustomGoalRepo;
+import greencity.repository.GoalTranslationRepo;
+import greencity.repository.HabitDictionaryTranslationRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.HabitStatisticRepo;
+import greencity.repository.UserGoalRepo;
+import greencity.repository.UserRepo;
 import greencity.service.HabitDictionaryService;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import junit.framework.TestCase;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.powermock.api.mockito.PowerMockito;
@@ -38,6 +64,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceImplTest {
@@ -356,7 +396,7 @@ public class UserServiceImplTest {
         assertThrows(UserGoalStatusNotUpdatedException.class, () ->
             userService.updateUserGoalStatus(user.getId(), 2L, "en")
         );
-        verifyZeroInteractions(userGoalRepo);
+        verifyNoInteractions(userGoalRepo);
     }
 
     @Test
