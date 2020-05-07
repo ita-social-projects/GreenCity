@@ -2,6 +2,7 @@ package greencity.security.dto.ownsecurity;
 
 import static greencity.constant.ValidationConstants.INVALID_EMAIL;
 import static greencity.constant.ValidationConstants.INVALID_PASSWORD;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;

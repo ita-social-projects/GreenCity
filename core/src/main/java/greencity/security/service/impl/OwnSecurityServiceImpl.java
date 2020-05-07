@@ -2,6 +2,7 @@ package greencity.security.service.impl;
 
 import static greencity.constant.ErrorMessage.*;
 import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
+
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;

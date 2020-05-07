@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
  */
 public class UserAlreadyRegisteredException extends RuntimeException {
     private String lang;
+
     /**
      * Generated javadoc, must be replaced with real one.
      */
