@@ -73,5 +73,5 @@ public interface EcoNewsService {
      * @return list of {@link SearchNewsDto}
      * @author Kovaliv Taras
      */
-    List<SearchNewsDto> search(String searchQuery);
+    PageableDto<SearchNewsDto> search(String searchQuery);
 }
