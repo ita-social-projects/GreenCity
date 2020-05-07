@@ -1,10 +1,13 @@
 package greencity.service.impl;
 
+import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.goal.CustomGoalRequestDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.BulkSaveUserGoalDto;
 import greencity.dto.user.RoleDto;
@@ -13,6 +16,7 @@ import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserGoalDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserUpdateDto;
+import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionary;
@@ -33,7 +37,6 @@ import greencity.exception.exceptions.UserHasNoAvailableHabitDictionaryException
 import greencity.exception.exceptions.UserHasNoGoalsException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.mapping.HabitMapper;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalTranslationRepo;
 import greencity.repository.HabitDictionaryTranslationRepo;
@@ -146,13 +149,12 @@ public class UserServiceImplTest {
     private UserServiceImpl userService;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private HabitMapper habitMapper;
 
     @Test
     public void saveTest() {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
-        when(userService.findByEmail(user.getEmail())).thenThrow(new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        when(userService.findByEmail(user.getEmail()))
+            .thenThrow(new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         when(userRepo.save(user)).thenReturn(user);
         assertEquals(user, userService.save(user));
     }
@@ -366,11 +368,26 @@ public class UserServiceImplTest {
 
     @Test
     public void getUserGoalsTest() {
-        List<UserGoal> userGoals = new ArrayList<>(Arrays.asList(new UserGoal(), new UserGoal()));
-        List<UserGoalResponseDto> userGoalDto = Arrays.asList(new UserGoalResponseDto(), new UserGoalResponseDto());
+        UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
+        UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
+        List<UserGoal> userGoals = Arrays.asList(customUserGoal, predefinedUserGoal);
+        UserGoalResponseDto customUserGoalDto = ModelUtils.getCustomUserGoalDto();
+        UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
+        List<UserGoalResponseDto> userGoalDto = Arrays.asList(customUserGoalDto, predefinedUserGoalDto);
+        List<GoalTranslation> goalTranslations = ModelUtils.getGoalTranslations();
+        CustomGoal customGoal = CustomGoal.builder().id(8L).text("Buy electric car").build();
 
-        when(modelMapper.map(any(UserGoal.class), eq(UserGoalResponseDto.class))).thenReturn(new UserGoalResponseDto());
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
+        when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDto.get(0));
+        when(modelMapper.map(userGoals.get(1), UserGoalResponseDto.class)).thenReturn(userGoalDto.get(1));
+        when(
+            goalTranslationRepo
+                .findByUserIdAndLanguageAndUserGoalId(user.getId(), language, userGoalDto.get(1).getId()))
+            .thenReturn(goalTranslations.get(0));
+        when(
+            customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(userGoalDto.get(0).getId(), user.getId()))
+            .thenReturn(customGoal);
+
         assertEquals(userService.getUserGoals(user.getId(), "en"), userGoalDto);
     }
 
@@ -420,7 +437,8 @@ public class UserServiceImplTest {
             .thenReturn(new UserGoalResponseDto(1L, "foo", GoalStatus.DONE));
         user.setUserGoals(Collections.singletonList(userGoal));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        UserGoalResponseDto userGoalResponseDto = userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
+        UserGoalResponseDto userGoalResponseDto =
+            userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
         assertEquals(GoalStatus.DONE, userGoal.getStatus());
         assertEquals(userGoalResponseDto, new UserGoalResponseDto(1L, "foo", GoalStatus.DONE));
         verify(userGoalRepo).save(userGoal);
@@ -435,7 +453,8 @@ public class UserServiceImplTest {
             .thenReturn(new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
         user.setUserGoals(Collections.singletonList(userGoal));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        UserGoalResponseDto userGoalResponseDto = userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
+        UserGoalResponseDto userGoalResponseDto =
+            userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
         assertEquals(GoalStatus.ACTIVE, userGoal.getStatus());
         assertEquals(userGoalResponseDto, expectedUserGoalResponseDto);
         verify(userGoalRepo).save(userGoal);
@@ -455,17 +474,25 @@ public class UserServiceImplTest {
     @Test
     public void saveUserGoalsWithNullUserGoalsAndExistentCustomGoalsTest() {
         user.setUserGoals(new ArrayList<>());
-        when(modelMapper.map(any(), eq(UserGoal.class)))
-            .thenReturn(new UserGoal(1L, user, new Goal(1L, null, null), null, null, null));
-        when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
-            new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
-        when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
-        UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto();
+        UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto(new CustomGoalRequestDto(8L));
         BulkSaveUserGoalDto nullUserGoalsDto =
             new BulkSaveUserGoalDto(null, Collections.singletonList(userCustomGoalDto));
+        UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
+        List<UserGoal> userGoals = Collections.singletonList(customUserGoal);
+        UserGoalResponseDto customUserGoalDto = ModelUtils.getCustomUserGoalDto();
+        List<UserGoalResponseDto> userGoalDtos = Collections.singletonList(customUserGoalDto);
+        CustomGoal customGoal = CustomGoal.builder().id(8L).text("Buy electric car").build();
+
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(modelMapper.map(userCustomGoalDto, UserGoal.class)).thenReturn(customUserGoal);
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
+        when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(0));
+        when(
+            customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(userGoalDtos.get(0).getId(), user.getId()))
+            .thenReturn(customGoal);
+
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), nullUserGoalsDto, "en");
-        assertEquals("foo", result.get(0).getText());
+        assertEquals("Buy electric car", result.get(0).getText());
         verify(userGoalRepo).saveAll(user.getUserGoals());
         verify(modelMapper).map(userCustomGoalDto, UserGoal.class);
     }
@@ -473,17 +500,26 @@ public class UserServiceImplTest {
     @Test
     public void saveUserGoalsWithExistentUserGoalsAndNullCustomGoalsTest() {
         user.setUserGoals(new ArrayList<>());
-        when(modelMapper.map(any(), eq(UserGoal.class)))
-            .thenReturn(new UserGoal(1L, user, new Goal(1L, null, null), null, null, null));
-        when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
-            new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
-        when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
-        UserGoalDto userGoalDto = new UserGoalDto();
-        BulkSaveUserGoalDto nullCustomGoalsDto =
-            new BulkSaveUserGoalDto(Collections.singletonList(userGoalDto), null);
+        UserGoalDto userGoalDto = new UserGoalDto(new GoalRequestDto(2L));
+        BulkSaveUserGoalDto nullCustomGoalsDto = new BulkSaveUserGoalDto(
+            Collections.singletonList(userGoalDto), null);
+        UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
+        List<UserGoal> userGoals = Collections.singletonList(predefinedUserGoal);
+        UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
+        List<UserGoalResponseDto> userGoalDtos = Collections.singletonList(predefinedUserGoalDto);
+        List<GoalTranslation> goalTranslations = ModelUtils.getGoalTranslations();
+
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(modelMapper.map(userGoalDto, UserGoal.class)).thenReturn(predefinedUserGoal);
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
+        when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(0));
+        when(
+            goalTranslationRepo
+                .findByUserIdAndLanguageAndUserGoalId(user.getId(), language, userGoalDtos.get(0).getId()))
+            .thenReturn(goalTranslations.get(0));
+
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), nullCustomGoalsDto, "en");
-        assertEquals("foo", result.get(0).getText());
+        assertEquals("Buy a bamboo toothbrush", result.get(0).getText());
         verify(userGoalRepo).saveAll(user.getUserGoals());
         verify(modelMapper).map(userGoalDto, UserGoal.class);
     }
@@ -491,19 +527,35 @@ public class UserServiceImplTest {
     @Test
     public void saveUserGoalsWithExistentUserGoalsAndExistentCustomGoalsTest() {
         user.setUserGoals(new ArrayList<>());
-        when(modelMapper.map(any(), eq(UserGoal.class)))
-            .thenReturn(new UserGoal(1L, user, new Goal(1L, null, null), null, null, null));
-        when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
-            new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
-        when(userGoalRepo.saveAll(any())).thenReturn(Collections.emptyList());
-        UserGoalDto userGoalDto = new UserGoalDto();
-        UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto();
+        UserGoalDto userGoalDto = new UserGoalDto(new GoalRequestDto(2L));
+        UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto(new CustomGoalRequestDto(8L));
         BulkSaveUserGoalDto userGoalsAndCustomGoalsDto = new BulkSaveUserGoalDto(
-            Collections.singletonList(userGoalDto), Collections.singletonList(userCustomGoalDto)
-        );
+            Collections.singletonList(userGoalDto), Collections.singletonList(userCustomGoalDto));
+        UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
+        UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
+        List<UserGoal> userGoals = Arrays.asList(customUserGoal, predefinedUserGoal);
+        UserGoalResponseDto customUserGoalDto = ModelUtils.getCustomUserGoalDto();
+        UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
+        List<UserGoalResponseDto> userGoalDtos = Arrays.asList(customUserGoalDto, predefinedUserGoalDto);
+        List<GoalTranslation> goalTranslations = ModelUtils.getGoalTranslations();
+        CustomGoal customGoal = CustomGoal.builder().id(8L).text("Buy electric car").build();
+
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(modelMapper.map(userGoalDto, UserGoal.class)).thenReturn(predefinedUserGoal);
+        when(modelMapper.map(userCustomGoalDto, UserGoal.class)).thenReturn(customUserGoal);
+        when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
+        when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(0));
+        when(modelMapper.map(userGoals.get(1), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(1));
+        when(
+            goalTranslationRepo
+                .findByUserIdAndLanguageAndUserGoalId(user.getId(), language, userGoalDtos.get(1).getId()))
+            .thenReturn(goalTranslations.get(0));
+        when(
+            customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(userGoalDtos.get(0).getId(), user.getId()))
+            .thenReturn(customGoal);
+
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), userGoalsAndCustomGoalsDto, "en");
-        assertEquals("foo", result.get(0).getText());
+        assertEquals("Buy electric car", result.get(0).getText());
         verify(userGoalRepo, times(2)).saveAll(user.getUserGoals());
         verify(modelMapper).map(userGoalDto, UserGoal.class);
         verify(modelMapper).map(userCustomGoalDto, UserGoal.class);
@@ -533,7 +585,8 @@ public class UserServiceImplTest {
 
     @Test
     public void getAvailableHabitDictionaryNoAvailable() {
-        when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en")).thenReturn(Collections.emptyList());
+        when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en"))
+            .thenReturn(Collections.emptyList());
         assertThrows(UserHasNoAvailableHabitDictionaryException.class, () ->
             userService.getAvailableHabitDictionary(user.getId(), "en")
         );
@@ -544,7 +597,8 @@ public class UserServiceImplTest {
         when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        assertEquals(Collections.emptyList(), userService.createUserHabit(user.getId(), Collections.emptyList(), anyString()));
+        assertEquals(Collections.emptyList(),
+            userService.createUserHabit(user.getId(), Collections.emptyList(), anyString()));
     }
 
     @Test
@@ -556,11 +610,14 @@ public class UserServiceImplTest {
 
     @Test
     public void createUserHabitWithExistentHabitIdsNotMatchingTest() {
-        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null)));
+        when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections
+            .singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null)));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitDictionaryService.findById(1L)).thenReturn(new HabitDictionary(1L, null, null, null));
-        when(modelMapper.map(user, Habit.class)).thenReturn(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null));
-        assertEquals(Collections.emptyList(), userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(2L)), "en"));
+        when(modelMapper.map(user, Habit.class))
+            .thenReturn(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null));
+        assertEquals(Collections.emptyList(),
+            userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(2L)), "en"));
     }
 
     @Test
