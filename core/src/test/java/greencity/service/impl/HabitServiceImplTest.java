@@ -30,11 +30,10 @@ class HabitServiceImplTest {
     @Mock
     private HabitRepo habitRepo;
 
-    private Habit habit = ModelUtils.getHabit();
-    private HabitDictionaryTranslation habitDictionaryTranslation = ModelUtils.getHabitDictionaryTranslation();
-
     @Test
     void getHabitDictionaryTranslation() {
+        Habit habit = ModelUtils.getHabit();
+        HabitDictionaryTranslation habitDictionaryTranslation = ModelUtils.getHabitDictionaryTranslation();
         when(habitDictionaryTranslationRepo.findByHabitDictionaryAndLanguageCode(any(HabitDictionary.class), anyString()))
                 .thenReturn(Optional.of(habitDictionaryTranslation));
         assertEquals(habitDictionaryTranslation, habitService.getHabitDictionaryTranslation(habit, "en"));
@@ -42,6 +41,7 @@ class HabitServiceImplTest {
 
     @Test
     void getById() {
+        Habit habit = ModelUtils.getHabit();
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
         assertEquals(habit, habitService.getById(1L));
     }

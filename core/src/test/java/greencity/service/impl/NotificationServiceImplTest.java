@@ -11,7 +11,6 @@ import greencity.entity.enums.EmailNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,42 +46,16 @@ class NotificationServiceImplTest {
     @Mock
     private RabbitTemplate rabbitTemplate;
 
-    private EmailNotification emailNotification;
-    private Category category = ModelUtils.getCategory();
-    private User user = ModelUtils.getUser();
-
-    @BeforeEach
-    void setUp() {
-        Place testPlace1 = ModelUtils.getPlace();
-        testPlace1.setCategory(category);
-        testPlace1.setId(1L);
-
-        Place testPlace2 = ModelUtils.getPlace();
-        testPlace1.setCategory(category);
-        testPlace1.setId(2L);
-
-        List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
-
-        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
-                .thenReturn(testPlaces);
-        when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category")));
-        when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1")));
-        when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category"));
-        when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category1"));
-    }
-
     @Test
     void sendImmediatelyReportTest() {
-        emailNotification = EmailNotification.IMMEDIATELY;
+        EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
+        Category category = ModelUtils.getCategory();
+        User user = ModelUtils.getUser();
+        user.setEmailNotification(emailNotification);
 
         Place place = ModelUtils.getPlace();
         place.setCategory(category);
 
-        user.setEmailNotification(emailNotification);
 
         when(userRepo.findAllByEmailNotification(emailNotification))
                 .thenReturn(Collections.singletonList(user));
@@ -101,14 +74,35 @@ class NotificationServiceImplTest {
 
     @Test
     void sendDailyReportTest() {
-        emailNotification = EmailNotification.DAILY;
-
+        EmailNotification emailNotification = EmailNotification.DAILY;
+        Category category = ModelUtils.getCategory();
+        User user = ModelUtils.getUser();
         user.setEmailNotification(emailNotification);
+
+        Place testPlace1 = ModelUtils.getPlace();
+        testPlace1.setCategory(category);
+        testPlace1.setId(1L);
+
+        Place testPlace2 = ModelUtils.getPlace();
+        testPlace1.setCategory(category);
+        testPlace1.setId(2L);
+
+        List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
 
         when(userRepo.findAllByEmailNotification(emailNotification))
                 .thenReturn(Collections.singletonList(user));
         when(modelMapper.map(user, PlaceAuthorDto.class))
                 .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
+                .thenReturn(testPlaces);
+        when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
+                .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category")));
+        when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
+                .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1")));
+        when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
+                .thenReturn(new CategoryDto("category"));
+        when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
+                .thenReturn(new CategoryDto("category1"));
 
         notificationService.sendDailyReport();
 
@@ -119,14 +113,35 @@ class NotificationServiceImplTest {
 
     @Test
     void sendWeeklyReportTest() {
-        emailNotification = EmailNotification.WEEKLY;
-
+        EmailNotification emailNotification = EmailNotification.WEEKLY;
+        Category category = ModelUtils.getCategory();
+        User user = ModelUtils.getUser();
         user.setEmailNotification(emailNotification);
+
+        Place testPlace1 = ModelUtils.getPlace();
+        testPlace1.setCategory(category);
+        testPlace1.setId(1L);
+
+        Place testPlace2 = ModelUtils.getPlace();
+        testPlace1.setCategory(category);
+        testPlace1.setId(2L);
+
+        List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
 
         when(userRepo.findAllByEmailNotification(emailNotification))
                 .thenReturn(Collections.singletonList(user));
         when(modelMapper.map(user, PlaceAuthorDto.class))
                 .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
+                .thenReturn(testPlaces);
+        when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
+                .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category")));
+        when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
+                .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1")));
+        when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
+                .thenReturn(new CategoryDto("category"));
+        when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
+                .thenReturn(new CategoryDto("category1"));
 
         notificationService.sendWeeklyReport();
 
@@ -137,14 +152,35 @@ class NotificationServiceImplTest {
 
     @Test
     void sendMonthlyReportTest() {
-        emailNotification = EmailNotification.MONTHLY;
-
+        EmailNotification emailNotification = EmailNotification.MONTHLY;
+        Category category = ModelUtils.getCategory();
+        User user = ModelUtils.getUser();
         user.setEmailNotification(emailNotification);
+
+        Place testPlace1 = ModelUtils.getPlace();
+        testPlace1.setCategory(category);
+        testPlace1.setId(1L);
+
+        Place testPlace2 = ModelUtils.getPlace();
+        testPlace1.setCategory(category);
+        testPlace1.setId(2L);
+
+        List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
 
         when(userRepo.findAllByEmailNotification(emailNotification))
                 .thenReturn(Collections.singletonList(user));
         when(modelMapper.map(user, PlaceAuthorDto.class))
                 .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
+                .thenReturn(testPlaces);
+        when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
+                .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category")));
+        when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
+                .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1")));
+        when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
+                .thenReturn(new CategoryDto("category"));
+        when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
+                .thenReturn(new CategoryDto("category1"));
 
         notificationService.sendMonthlyReport();
 

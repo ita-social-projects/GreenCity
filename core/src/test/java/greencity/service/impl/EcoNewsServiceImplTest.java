@@ -8,6 +8,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -169,6 +170,18 @@ public class EcoNewsServiceImplTest {
             .thenReturn(Optional.of(ModelUtils.getEcoNews()));
         ecoNewsService.delete(1L);
         verify(ecoNewsRepo, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void search(){
+        SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
+
+        when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "test"))
+                .thenReturn(Collections.singletonList(ecoNews));
+        when(modelMapper.map(ecoNews, SearchNewsDto.class))
+                .thenReturn(searchNewsDto);
+
+        assertEquals(searchNewsDto, ecoNewsService.search("test").get(0));
     }
 }
 
