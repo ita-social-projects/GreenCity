@@ -1,7 +1,7 @@
 package greencity;
 
-import greencity.dto.advice.AdvicePostDTO;
 import greencity.constant.AppConstant;
+import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -18,10 +18,12 @@ import greencity.entity.Comment;
 import greencity.entity.CustomGoal;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
+import greencity.entity.FactTranslation;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Goal;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionary;
+import greencity.entity.HabitFact;
 import greencity.entity.HabitStatistic;
 import greencity.entity.Language;
 import greencity.entity.Location;
@@ -262,7 +264,7 @@ public class ModelUtils {
         return new AdvicePostDTO(null, getHabitDictionaryIdDto());
     }
 
-    public static  FactTranslation getFactTranslation(){
+    public static FactTranslation getFactTranslation() {
         return new FactTranslation(1L, getLanguage(), null, "Content");
     }
 
