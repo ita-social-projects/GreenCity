@@ -7,6 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -23,6 +24,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -171,6 +173,28 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void delete(Long id) {
         ecoNewsRepo.deleteById(findById(id).getId());
+    }
+
+    /**
+     * Method for getting EcoNews by searchQuery.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link EcoNewsDto}
+     * @author Kovaliv Taras
+     */
+    @Override
+    public PageableDto<SearchNewsDto> search(String searchQuery) {
+        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery);
+
+        List<SearchNewsDto> ecoNews = page.stream()
+            .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            ecoNews,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber()
+        );
     }
 
     /**

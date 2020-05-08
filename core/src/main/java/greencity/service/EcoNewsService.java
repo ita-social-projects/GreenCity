@@ -4,6 +4,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -64,4 +65,13 @@ public interface EcoNewsService {
      * @param id - {@link EcoNews} instance id which will be deleted.
      */
     void delete(Long id);
+
+    /**
+     * Method for getting EcoNews by searchQuery.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link SearchNewsDto}
+     * @author Kovaliv Taras
+     */
+    PageableDto<SearchNewsDto> search(String searchQuery);
 }

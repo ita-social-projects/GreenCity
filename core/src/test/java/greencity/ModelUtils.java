@@ -1,14 +1,17 @@
 package greencity;
 
+import greencity.dto.advice.AdvicePostDTO;
 import greencity.constant.AppConstant;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.Advice;
 import greencity.entity.Comment;
@@ -245,5 +248,33 @@ public class ModelUtils {
     public static AddCommentDto getAddCommentDto() {
         return new AddCommentDto("comment", null, null);
     }
+
+
+    public static Advice getAdvice(){
+        return new Advice(1L, null, null);
+    }
+
+    public static HabitDictionaryIdDto getHabitDictionaryIdDto(){
+        return new HabitDictionaryIdDto(1L);
+    }
+
+    public static AdvicePostDTO getAdvicePostDTO(){
+        return new AdvicePostDTO(null, getHabitDictionaryIdDto());
+    }
+
+    public static  FactTranslation getFactTranslation(){
+        return new FactTranslation(1L, getLanguage(), null, "Content");
+    }
+
+    public static HabitFact getHabitFact(){
+        return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
+    }
+
+    public static HabitFactPostDTO getHabitFactPostDTO(){
+        return new HabitFactPostDTO(null, getHabitDictionaryIdDto());
+    }
+
+
+
 }
  

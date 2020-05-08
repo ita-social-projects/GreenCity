@@ -31,6 +31,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
         + "ORDER BY en.creationDate DESC")
     Page<EcoNews> find(Pageable pageable, List<String> tags);
 
+
     /**
      * Method returns all {@link EcoNews} by page.
      *
@@ -38,4 +39,15 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
      * @return all {@link EcoNews} by page.
      */
     Page<EcoNews> findAllByOrderByCreationDateDesc(Pageable page);
+
+    /**
+     * Method returns {@link EcoNews} by search query and page.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link EcoNews}
+     */
+    @Query("select en from EcoNews as en "
+        + "where en.title like CONCAT('%', :searchQuery, '%') "
+        + "or en.text like CONCAT('%', :searchQuery, '%')")
+    Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery);
 }

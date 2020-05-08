@@ -100,7 +100,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/about/{id}/**",
                 "/specification/**",
                 "/newsSubscriber/unsubscribe",
-                "/econews/**"
+                "/econews/**",
+                "/search",
+                "/tags"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
