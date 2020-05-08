@@ -49,5 +49,5 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
     @Query("select en from EcoNews as en "
         + "where en.title like CONCAT('%', :searchQuery, '%') "
         + "or en.text like CONCAT('%', :searchQuery, '%')")
-    List<EcoNews> searchEcoNews(Pageable pageable, String searchQuery);
+    Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery);
 }
