@@ -25,5 +25,4 @@ public class UserAlreadyRegisteredException extends RuntimeException {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("resources", new Locale(lang));
         return resourceBundle.getString("userAlreadyRegisteredErrorMessage");
     }
-
 }
