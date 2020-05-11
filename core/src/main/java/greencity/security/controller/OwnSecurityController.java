@@ -1,9 +1,8 @@
 package greencity.security.controller;
 
-import static greencity.constant.ErrorMessage.*;
-
 import greencity.constant.HttpStatuses;
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
@@ -11,7 +10,9 @@ import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.service.OwnSecurityService;
 import greencity.security.service.PasswordRecoveryService;
 import greencity.security.service.VerifyEmailService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -28,6 +29,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.ValidationConstants.USER_CREATED;
 
 /**
  * Controller that provides our sign-up and sign-in logic.
@@ -71,13 +75,12 @@ public class OwnSecurityController {
      */
     @ApiOperation("Sign-up by own security logic")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 200, message = USER_CREATED, response = SuccessSignUpDto.class),
         @ApiResponse(code = 400, message = USER_ALREADY_REGISTERED_WITH_THIS_EMAIL)
     })
     @PostMapping("/signUp")
-    public ResponseEntity<Object> singUp(@Valid @RequestBody OwnSignUpDto dto) {
-        service.signUp(dto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public SuccessSignUpDto singUp(@Valid @RequestBody OwnSignUpDto dto) {
+        return service.signUp(dto);
     }
 
     /**

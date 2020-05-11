@@ -2,6 +2,7 @@ package greencity.security.service;
 
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
@@ -17,9 +18,10 @@ public interface OwnSecurityService {
      * Method that allow you sign-up user.
      *
      * @param dto a value of {@link OwnSignUpDto}
+     * @return {@link SuccessSignUpDto}
      * @author Yurii Koval
      */
-    void signUp(OwnSignUpDto dto);
+    SuccessSignUpDto signUp(OwnSignUpDto dto);
 
     /**
      * Method that allow you sign-in user.
@@ -49,7 +51,7 @@ public interface OwnSecurityService {
      * Method for updating current password.
      *
      * @param updatePasswordDto {@link UpdatePasswordDto}
-     * @param email        {@link String} - user email.
+     * @param email             {@link String} - user email.
      * @author Dmytro Dovhal
      */
     void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email);
