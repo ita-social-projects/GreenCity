@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "greencity-c5a3a",
+  "private_key_id": "3020c1e44b3fbce113def660d41372542746525c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCx4Icmq23HYcxp\nXOHh+ZoBMIS5ooJpbZzMryrgNjwvcctrB+Lubftzrj2WZGAUm8a4AY3PwQ7I/iwF\nYeJD8f8x9exHt1jvr5i+M636QqTciDqUp3YxedvA5YLUVzwMkeQPNWdVYDutO+Ra\nz10w7qc5a80RPCdPNLD+ukPhxvHoum3H0vlhPY8P7Ce/t6m25ABHJtn0cF6HjHSo\n3wCX7yr3zD9BVbXBDNxRGNfG9VY8Ra2sIvc9w2yvCnSr3av2sgLgzfFlq0WvrCfK\nrw49OyWEGRrHOyCuKHSJTy0gWqcBTdKkMnHWL4THImhyr4ZUrLKvt09BYG7K/Oak\noETUwlk5AgMBAAECggEAIDGglHWjhVokio9WjLVF0+BJrWWFz/oYTo2Hp5P5Wabx\nZ7pCLuA2Cg5ntDAPmbtGAKi7V3Y8LFGgewrnzl9ezlaRwLsk/CCedxJYczqbpxR6\n8cvLXxIMnYGMp8zwH+BJ1BzYyoGD24tC/dKZLdGL758cuvlVrga94CSrQ5Jj1ziV\nCXEEo7HES0OqZKfzjajMwiibdP6Zsp9a/Cr5zbQLLCDQOFIV9I+Dj6CeqKmb6mDQ\nqx9PZcK62eUeSj9RhUpTZxxaAubNLOHrhAp39Jr5Xg6rSydOQMPo/SVWJre/ONX4\nNiJLUxZMYY3ir5ijTWimhRzcOD3eUoDgKjsqpOKvPwKBgQDuwiRxLszDM1JrQcHB\njFDWqeOIlbt+9315XfQPEFUFuvVp+3lkoEaVD+ra+Ilikm1CIjK/nEPxrakJH0ga\nwsPiyB9N5R+RQYCq5jY+4cUQwhHVSCxQGQ2fFNHYKtHWDZXhPTfTUa3XEb4wZkEF\nIjR7OdaCDSC/+xWyLKbWhuBRXwKBgQC+uOPqFyFMNjYvFnnmiNFVIBk6yB/rAeTW\n78EgzVlbkVWv5mfc6g2NO4rv1wnABFipcEb9MeR5GntIXKW3QtjRwOlnrlN7HT6X\nK4AB/7R/gQKy/6TTUmaar1O5ruL038s3DqyhyjcUXlrFfUo80rAS0ZAZApt19Lqy\nxwuS15fkZwKBgQDIdVgDbzeb7EsWom77AcQddyYCVzTEtSYz8B4pR50a4o2KHgkd\n4zNfk62ri2BN0oLJM81H8vtYvmVds1Xmof+1ODCQRf7rBgPxeLeys/uwxkASwjXy\nShaVqfVFeS4UefOM2Mk2My2xlMQJ/tA4by+BBl6DcmI8zaK5paOuGi/cIQKBgQCG\n8wQxixRAfMtyHhE7Eewss32mnhwXiUuG2jZpI2Pq6rcas4kiQ2o7WLpCYoG/oFOr\n8IoKddcX6aj51rRbK62HHV0Jw8vF/Tdgd6MnxurMnVhvl3vlGxUGtrAjXp+wbPm5\nh2SXRiIbA3hu7OwuhVWYuzeeur2NhRDllvmVeX88WQKBgGZy8HGf9H2XALD92ovq\nQbW3M5ksmNbSdKMGgv21Nyk1gBuRhqsUBC1rkmtBnKXx2+pTkmQSxkX31Ia1Cpv5\n84Hc6QjJ4FcDZ0om7PnXXM5i5wt52hoN6OKaHcxu8OahRJlWushX8u2yY6kg8kmo\nP4Lh9ZrJMXIRaZzLd/vKT0Mv\n-----END PRIVATE KEY-----\n",
+  "client_email": "julia-test@greencity-c5a3a.iam.gserviceaccount.com",
+  "client_id": "118119201444220693237",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/julia-test%40greencity-c5a3a.iam.gserviceaccount.com"
+}

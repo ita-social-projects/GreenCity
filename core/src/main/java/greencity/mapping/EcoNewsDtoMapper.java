@@ -29,7 +29,8 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
             author.getName());
 
         return new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
-            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNewsAuthorDto,
+            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getSource(),
+            ecoNewsAuthorDto,
             ecoNews.getTags()
                 .stream()
                 .map(Tag::getName)

@@ -55,7 +55,7 @@ public class ModelUtils {
     }
 
     public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, getUser(),
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
             "title", "text", Collections.singletonList(getTag()));
     }
 
@@ -199,7 +199,7 @@ public class ModelUtils {
                     Collections.emptyList()), "Start recycling batteries",
                 new Goal(4L, Collections.emptyList(), Collections.emptyList())));
     }
-  
+
     public static Comment getComment() {
         return new Comment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
