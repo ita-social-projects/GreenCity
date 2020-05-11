@@ -74,9 +74,9 @@ public class EcoNewsController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AddEcoNewsDtoResponse> save(
         @ApiParam(value = "Add Eco News Request", required = true)
-        @RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        @ApiParam(value = "Image of eco news", required = false)
-        @RequestPart MultipartFile image,
+        @RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+        @ApiParam(value = "Image of eco news")
+        @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
