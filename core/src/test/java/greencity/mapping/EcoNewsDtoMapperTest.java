@@ -21,7 +21,7 @@ public class EcoNewsDtoMapperTest {
         EcoNews ecoNews = ModelUtils.getEcoNews();
 
         EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
-            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(),
+            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getSource(),
             ModelUtils.getEcoNewsAuthorDto(),
             ecoNews.getTags().stream()
                 .map(Tag::getName)

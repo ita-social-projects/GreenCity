@@ -61,13 +61,13 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"));
+            Collections.singletonList("tag"), null);
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
         return new AddEcoNewsDtoResponse(1L, "title",
             "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
-            ZonedDateTime.now(), TestConst.SITE,
+            ZonedDateTime.now(), TestConst.SITE, null,
             Collections.singletonList("tag"));
     }
 
