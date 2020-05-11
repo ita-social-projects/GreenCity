@@ -1,7 +1,5 @@
 package greencity.security.service.impl;
 
-import static greencity.constant.ErrorMessage.*;
-import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -31,6 +29,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 
 /**
  * {@inheritDoc}
@@ -131,8 +132,11 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
         User user = userService.findByEmail(dto.getEmail());
+        if (user == null) {
+            throw new WrongEmailException(USER_NOT_FOUND_BY_EMAIL);
+        }
         if (!isPasswordCorrect(dto, user)) {
-            throw new WrongEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
+            throw new WrongPasswordException(BAD_PASSWORD);
         }
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
