@@ -2,8 +2,6 @@ package greencity.security.service.impl;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import static greencity.constant.AppConstant.GOOGLE_USER_NAME;
-import static greencity.constant.ErrorMessage.*;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
@@ -22,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.AppConstant.GOOGLE_USER_NAME;
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * {@inheritDoc}
