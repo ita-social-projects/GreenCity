@@ -60,8 +60,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                                       MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setAuthor(userService.findByEmail(email));
-        toSave.setImagePath(fileService.upload(image).toString());
-
+        if (image != null) {
+            toSave.setImagePath(fileService.upload(image).toString());
+        }
         toSave.setTags(addEcoNewsDtoRequest.getTags()
             .stream()
             .map(tagService::findByName)
@@ -183,11 +184,18 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras
      */
     @Override
-    public List<SearchNewsDto> search(String searchQuery) {
-        return ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery)
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, SearchNewsDto.class))
+    public PageableDto<SearchNewsDto> search(String searchQuery) {
+        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery);
+
+        List<SearchNewsDto> ecoNews = page.stream()
+            .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
             .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            ecoNews,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber()
+        );
     }
 
     /**

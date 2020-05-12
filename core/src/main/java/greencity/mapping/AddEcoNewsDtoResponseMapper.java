@@ -27,6 +27,7 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
             .id(ecoNews.getId())
             .text(ecoNews.getText())
             .title(ecoNews.getTitle())
+            .source(ecoNews.getSource())
             .imagePath(ecoNews.getImagePath())
             .creationDate(ecoNews.getCreationDate())
             .ecoNewsAuthorDto(EcoNewsAuthorDto.builder()
