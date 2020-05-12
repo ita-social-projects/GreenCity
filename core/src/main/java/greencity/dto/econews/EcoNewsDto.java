@@ -6,12 +6,7 @@ import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +27,8 @@ public class EcoNewsDto {
     private String title;
     @NotEmpty
     private String text;
+
+    private String source;
     @NotEmpty
     private EcoNewsAuthorDto author;
     @NotEmpty

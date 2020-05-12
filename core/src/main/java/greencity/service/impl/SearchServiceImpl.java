@@ -1,5 +1,7 @@
 package greencity.service.impl;
 
+import greencity.dto.PageableDto;
+import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import greencity.service.EcoNewsService;
 import greencity.service.SearchService;
@@ -19,8 +21,11 @@ public class SearchServiceImpl implements SearchService {
      */
     @Override
     public SearchResponseDto search(String searchQuery) {
+        PageableDto<SearchNewsDto> ecoNews = ecoNewsService.search(searchQuery);
+
         return SearchResponseDto.builder()
-            .ecoNews(ecoNewsService.search(searchQuery))
+            .ecoNews(ecoNews.getPage())
+            .countOfResults(ecoNews.getTotalElements())
             .build();
     }
 }
