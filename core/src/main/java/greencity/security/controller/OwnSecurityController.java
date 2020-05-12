@@ -75,12 +75,12 @@ public class OwnSecurityController {
      */
     @ApiOperation("Sign-up by own security logic")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = USER_CREATED, response = SuccessSignUpDto.class),
+        @ApiResponse(code = 201, message = USER_CREATED, response = SuccessSignUpDto.class),
         @ApiResponse(code = 400, message = USER_ALREADY_REGISTERED_WITH_THIS_EMAIL)
     })
     @PostMapping("/signUp")
-    public SuccessSignUpDto singUp(@Valid @RequestBody OwnSignUpDto dto) {
-        return service.signUp(dto);
+    public ResponseEntity<SuccessSignUpDto> singUp(@Valid @RequestBody OwnSignUpDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto));
     }
 
     /**
