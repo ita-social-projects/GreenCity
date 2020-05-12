@@ -110,7 +110,7 @@ public class EcoNewsServiceImplTest {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
         EcoNewsDto ecoNewsDto =
-            new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text",
+            new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList());
         EcoNews ecoNews = ModelUtils.getEcoNews();
 
@@ -145,7 +145,7 @@ public class EcoNewsServiceImplTest {
             pageRequest, ecoNews.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
-            new EcoNewsDto(now, "test image path", 1L, "test title", "test text",
+            new EcoNewsDto(now, "test image path", 1L, "test title", "test text", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList())
         );
         PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);

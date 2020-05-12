@@ -74,8 +74,9 @@ public class EcoNewsController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AddEcoNewsDtoResponse> save(
         @ApiParam(value = "Add Eco News Request", required = true)
-        @RequestBody AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        @RequestPart MultipartFile image,
+        @RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+        @ApiParam(value = "Image of eco news")
+        @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
@@ -155,7 +156,7 @@ public class EcoNewsController {
         @ApiParam(value = "Tags to filter (if do not input tags get all)")
         @RequestParam(required = false) List<String> tags
     ) {
-        if (tags == null || tags.size() == 0) {
+        if (tags == null || tags.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(
                 ecoNewsService.findAll(page));
         }
