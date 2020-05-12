@@ -1,6 +1,5 @@
 package greencity.security.service.impl;
 
-
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
