@@ -1,7 +1,7 @@
 package greencity.service;
 
-import greencity.dto.search.SearchRequestDto;
 import greencity.dto.search.SearchResponseDto;
+import greencity.dto.search.SortingType;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -22,9 +22,9 @@ public interface SearchService {
     /**
      * Method that allow you to search all results in {@link SearchResponseDto} by page .
      *
-     * @param page             page of request
-     * @param searchRequestDto search query and sort method
+     * @param page  page of request
+     * @param query search query
      * @return {@link SearchResponseDto} with results of search
      */
-    SearchResponseDto search(Pageable page, SearchRequestDto searchRequestDto);
+    SearchResponseDto search(Pageable page, String query, SortingType type);
 }

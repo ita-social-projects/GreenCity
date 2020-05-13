@@ -60,7 +60,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
     @Query("select en from EcoNews as en "
         + "where en.title like CONCAT('%', :searchQuery, '%') "
         + "or en.text like CONCAT('%', :searchQuery, '%') "
-        + "order by en.creationDate desc ")
+        + "order by en.creationDate")
     Page<EcoNews> searchEcoNewsLatest(Pageable pageable, String searchQuery);
 
     /**
@@ -72,6 +72,6 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
     @Query("select en from EcoNews as en "
         + "where en.title like CONCAT('%', :searchQuery, '%') "
         + "or en.text like CONCAT('%', :searchQuery, '%') "
-        + "order by en.creationDate")
+        + "order by en.creationDate desc")
     Page<EcoNews> searchEcoNewsNewest(Pageable pageable, String searchQuery);
 }

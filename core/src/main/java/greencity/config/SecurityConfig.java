@@ -101,6 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/specification/**",
                 "/newsSubscriber/unsubscribe",
                 "/econews/**",
+                "/search/all",
                 "/search",
                 "/tags"
             ).permitAll()

@@ -2,8 +2,8 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
-import greencity.dto.search.SearchRequestDto;
 import greencity.dto.search.SearchResponseDto;
+import greencity.dto.search.SortingType;
 import greencity.service.SearchService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -13,7 +13,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -43,7 +46,6 @@ public class SearchController {
     /**
      * Method for search all by page.
      *
-     * @param searchRequestDto query to search.
      * @return list of {@link SearchResponseDto}.
      */
     @ApiOperation(value = "Search all by page.")
@@ -55,9 +57,11 @@ public class SearchController {
     @ApiPageable
     @GetMapping("/all")
     public ResponseEntity<SearchResponseDto> searchAll(
-        @ApiParam(value = "Query to search and sort parameter (by default - relevance)")
-        @RequestBody SearchRequestDto searchRequestDto,
+        @ApiParam(value = "Query to search", required = true)
+        @RequestParam String query,
+        @ApiParam(defaultValue = "RELEVANCE", value = "Sort parameter")
+        @RequestParam SortingType type,
         @ApiIgnore Pageable page) {
-        return ResponseEntity.status(HttpStatus.OK).body(searchService.search(page, searchRequestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(searchService.search(page, query, type));
     }
 }

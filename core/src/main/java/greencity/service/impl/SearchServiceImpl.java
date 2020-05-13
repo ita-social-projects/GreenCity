@@ -4,6 +4,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchRequestDto;
 import greencity.dto.search.SearchResponseDto;
+import greencity.dto.search.SortingType;
 import greencity.service.EcoNewsService;
 import greencity.service.SearchService;
 import lombok.AllArgsConstructor;
@@ -35,12 +36,13 @@ public class SearchServiceImpl implements SearchService {
     /**
      * Method that allow you to search all results in {@link SearchResponseDto} by page .
      *
-     * @param page             page of request
-     * @param searchRequestDto search query and sort method
+     * @param page  page of request
+     * @param query search query
      * @return {@link SearchResponseDto} with results of search
      */
     @Override
-    public SearchResponseDto search(Pageable page, SearchRequestDto searchRequestDto) {
+    public SearchResponseDto search(Pageable page, String query, SortingType type) {
+        SearchRequestDto searchRequestDto = new SearchRequestDto(query, type);
         PageableDto<SearchNewsDto> ecoNews = ecoNewsService.search(searchRequestDto, page);
 
         return SearchResponseDto.builder()
