@@ -37,8 +37,7 @@ public class CloudStorageService implements FileService {
     /**
      * {@inheritDoc}
      */
-    public URL
-    upload(final MultipartFile multipartFile) {
+    public URL upload(final MultipartFile multipartFile) {
         try {
             final String contentType = multipartFile.getContentType();
             final String blob = UUID.randomUUID().toString();

@@ -222,17 +222,17 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableDto<SearchNewsDto> search(SearchRequestDto searchRequestDto, Pageable pageable) {
         Page<EcoNews> page;
         switch (searchRequestDto.getSortingType()) {
-            case RELEVANCE:
-                page = ecoNewsRepo.searchEcoNews(pageable, searchRequestDto.getQuery());
-                break;
-            case NEWEST:
-                page = ecoNewsRepo.searchEcoNewsNewest(pageable, searchRequestDto.getQuery());
-                break;
-            case LATEST:
-                page = ecoNewsRepo.searchEcoNewsLatest(pageable, searchRequestDto.getQuery());
-                break;
-            default:
-                page = ecoNewsRepo.searchEcoNews(pageable, searchRequestDto.getQuery());
+          case RELEVANCE:
+              page = ecoNewsRepo.searchEcoNews(pageable, searchRequestDto.getQuery());
+              break;
+          case NEWEST:
+              page = ecoNewsRepo.searchEcoNewsNewest(pageable, searchRequestDto.getQuery());
+              break;
+          case LATEST:
+              page = ecoNewsRepo.searchEcoNewsLatest(pageable, searchRequestDto.getQuery());
+              break;
+          default:
+              page = ecoNewsRepo.searchEcoNews(pageable, searchRequestDto.getQuery());
         }
 
         List<SearchNewsDto> ecoNews = page.stream()
