@@ -40,8 +40,12 @@ public class SearchServiceImpl implements SearchService {
      * @return {@link SearchResponseDto} with results of search
      */
     @Override
-    public SearchResponseDto searchAll(Pageable page, SearchRequestDto searchRequestDto) {
-//        TODO do this method
-        return null;
+    public SearchResponseDto search(Pageable page, SearchRequestDto searchRequestDto) {
+        PageableDto<SearchNewsDto> ecoNews = ecoNewsService.search(searchRequestDto, page);
+
+        return SearchResponseDto.builder()
+            .ecoNews(ecoNews.getPage())
+            .countOfResults(ecoNews.getTotalElements())
+            .build();
     }
 }

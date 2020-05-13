@@ -58,6 +58,6 @@ public class SearchController {
         @ApiParam(value = "Query to search and sort parameter (by default - relevance)")
         @RequestBody SearchRequestDto searchRequestDto,
         @ApiIgnore Pageable page) {
-        return ResponseEntity.status(HttpStatus.OK).body(searchService.searchAll(page, searchRequestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(searchService.search(page, searchRequestDto));
     }
 }

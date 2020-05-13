@@ -8,6 +8,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.search.SearchRequestDto;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -78,6 +79,18 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             buildAddEcoNewsMessage(toSave));
 
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+    }
+
+    /**
+     * Method for building message for sending email about adding new eco news.
+     *
+     * @param ecoNews {@link EcoNews} which was added.
+     * @return {@link AddEcoNewsMessage} which contains needed info about {@link EcoNews} and subscribers.
+     */
+    private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
+        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
+
+        return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
     }
 
     /**
@@ -198,14 +211,38 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * Method for building message for sending email about adding new eco news.
+     * Method for getting EcoNews by searchQuery.
      *
-     * @param ecoNews {@link EcoNews} which was added.
-     * @return {@link AddEcoNewsMessage} which contains needed info about {@link EcoNews} and subscribers.
+     * @param searchRequestDto query to search and sort parameter
+     * @param pageable         page of request
+     * @return list of {@link SearchNewsDto}
+     * @author Kovaliv Taras
      */
-    private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
-        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
+    @Override
+    public PageableDto<SearchNewsDto> search(SearchRequestDto searchRequestDto, Pageable pageable) {
+        Page<EcoNews> page;
+        switch (searchRequestDto.getSortingType()) {
+            case RELEVANCE:
+                page = ecoNewsRepo.searchEcoNews(pageable, searchRequestDto.getQuery());
+                break;
+            case NEWEST:
+                page = ecoNewsRepo.searchEcoNewsNewest(pageable, searchRequestDto.getQuery());
+                break;
+            case LATEST:
+                page = ecoNewsRepo.searchEcoNewsLatest(pageable, searchRequestDto.getQuery());
+                break;
+            default:
+                page = ecoNewsRepo.searchEcoNews(pageable, searchRequestDto.getQuery());
+        }
 
-        return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
+        List<SearchNewsDto> ecoNews = page.stream()
+            .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            ecoNews,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber()
+        );
     }
 }

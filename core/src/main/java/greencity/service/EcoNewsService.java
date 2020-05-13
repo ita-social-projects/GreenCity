@@ -5,6 +5,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.search.SearchRequestDto;
 import greencity.entity.EcoNews;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -75,4 +76,14 @@ public interface EcoNewsService {
      * @author Kovaliv Taras
      */
     PageableDto<SearchNewsDto> search(String searchQuery, Pageable page);
+
+    /**
+     * Method for getting EcoNews by searchQuery.
+     *
+     * @param page             page of request
+     * @param searchRequestDto query to search and sort parameter
+     * @return list of {@link SearchNewsDto}
+     * @author Kovaliv Taras
+     */
+    PageableDto<SearchNewsDto> search(SearchRequestDto searchRequestDto, Pageable page);
 }

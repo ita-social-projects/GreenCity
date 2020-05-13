@@ -26,5 +26,5 @@ public interface SearchService {
      * @param searchRequestDto search query and sort method
      * @return {@link SearchResponseDto} with results of search
      */
-    SearchResponseDto searchAll(Pageable page, SearchRequestDto searchRequestDto);
+    SearchResponseDto search(Pageable page, SearchRequestDto searchRequestDto);
 }
