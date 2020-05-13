@@ -24,7 +24,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -184,8 +183,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras
      */
     @Override
-    public PageableDto<SearchNewsDto> search(String searchQuery) {
-        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery);
+    public PageableDto<SearchNewsDto> search(String searchQuery, Pageable pageable) {
+        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(pageable, searchQuery);
 
         List<SearchNewsDto> ecoNews = page.stream()
             .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))

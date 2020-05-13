@@ -69,9 +69,10 @@ public interface EcoNewsService {
     /**
      * Method for getting EcoNews by searchQuery.
      *
+     * @param page        page of request
      * @param searchQuery query to search
      * @return list of {@link SearchNewsDto}
      * @author Kovaliv Taras
      */
-    PageableDto<SearchNewsDto> search(String searchQuery);
+    PageableDto<SearchNewsDto> search(String searchQuery, Pageable page);
 }

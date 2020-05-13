@@ -50,4 +50,28 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
         + "where en.title like CONCAT('%', :searchQuery, '%') "
         + "or en.text like CONCAT('%', :searchQuery, '%')")
     Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery);
+
+    /**
+     * Method returns latest {@link EcoNews} by search query and page.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link EcoNews}
+     */
+    @Query("select en from EcoNews as en "
+        + "where en.title like CONCAT('%', :searchQuery, '%') "
+        + "or en.text like CONCAT('%', :searchQuery, '%') "
+        + "order by en.creationDate desc ")
+    Page<EcoNews> searchEcoNewsLatest(Pageable pageable, String searchQuery);
+
+    /**
+     * Method returns newest {@link EcoNews} by search query and page.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link EcoNews}
+     */
+    @Query("select en from EcoNews as en "
+        + "where en.title like CONCAT('%', :searchQuery, '%') "
+        + "or en.text like CONCAT('%', :searchQuery, '%') "
+        + "order by en.creationDate")
+    Page<EcoNews> searchEcoNewsNewest(Pageable pageable, String searchQuery);
 }
