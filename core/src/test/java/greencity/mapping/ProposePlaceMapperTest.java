@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.breaktime.BreakTimeDto;
+import greencity.ModelUtils;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -14,8 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,14 +26,7 @@ class ProposePlaceMapperTest {
 
     @Test
     void convert() {
-        OpeningHoursDto openingHours = new OpeningHoursDto();
-        openingHours.setOpenTime(LocalTime.of(7, 20, 45, 342123342));
-        openingHours.setCloseTime(LocalTime.of(7, 20, 45, 342123342));
-        openingHours.setBreakTime(BreakTimeDto.builder()
-                .startTime(LocalTime.of(7, 20, 45, 342123342))
-                .endTime(LocalTime.of(7, 20, 45, 342123342))
-                .build());
-        openingHours.setWeekDay(DayOfWeek.MONDAY);
+        OpeningHoursDto openingHours = ModelUtils.getOpeningHoursDto();
 
         CategoryDto category = CategoryDto.builder()
                 .name("category")
@@ -44,15 +35,10 @@ class ProposePlaceMapperTest {
         PhotoAddDto photo = new PhotoAddDto();
         photo.setName("photo");
 
-        DiscountValueDto discountValue = new DiscountValueDto();
-        discountValue.setValue(11);
+        DiscountValueDto discountValue = ModelUtils.getDiscountValueDto();
         discountValue.setSpecification(new SpecificationNameDto("specif"));
 
-        LocationAddressAndGeoDto address = LocationAddressAndGeoDto.builder()
-                .address("address")
-                .lat(12.56d)
-                .lng(12.56d)
-                .build();
+        LocationAddressAndGeoDto address = ModelUtils.getLocationAddressAndGeoDto();
 
         PlaceAddDto placeAddDto = PlaceAddDto.builder()
                 .category(category)
@@ -63,38 +49,22 @@ class ProposePlaceMapperTest {
                 .openingHoursList(Collections.singleton(openingHours))
                 .build();
 
+        OpeningHours openingHours1 = ModelUtils.getOpeningHours();
 
-        OpeningHours openingHours1 = new OpeningHours();
-        openingHours1.setOpenTime(LocalTime.of(7, 20, 45, 342123342));
-        openingHours1.setCloseTime(LocalTime.of(7, 20, 45, 342123342));
-        openingHours1.setBreakTime(BreakTime.builder()
-                .startTime(LocalTime.of(7, 20, 45, 342123342))
-                .endTime(LocalTime.of(7, 20, 45, 342123342))
-                .build());
-        openingHours1.setWeekDay(DayOfWeek.MONDAY);
+        DiscountValue discountValue1 = ModelUtils.getDiscountValue();
+        discountValue1.setSpecification(ModelUtils.getSpecification());
 
-        DiscountValue discountValue1 = new DiscountValue();
-        discountValue1.setValue(11);
-        discountValue1.setSpecification(Specification.builder()
-                .name("specif")
-                .build());
-
-        Photo photo1 = new Photo();
-        photo1.setName("photo");
+        Photo photoTest = ModelUtils.getPhoto();
 
         Place place = new Place();
         place.setName("place");
-        place.setLocation(Location.builder()
-                .address("address")
-                .lat(12.56d)
-                .lng(12.56d)
-                .build());
+        place.setLocation(ModelUtils.getLocation());
         place.setCategory(Category.builder()
                 .name("category")
                 .build());
         place.setOpeningHoursList(Collections.singleton(openingHours1));
         place.setDiscountValues(Collections.singleton(discountValue1));
-        place.setPhotos(Collections.singletonList(photo1));
+        place.setPhotos(Collections.singletonList(photoTest));
         place.getOpeningHoursList().forEach(h -> h.setPlace(place));
         place.getPhotos().forEach(photo11 -> photo11.setUser(place.getAuthor()));
 

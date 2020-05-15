@@ -2,6 +2,7 @@ package greencity;
 
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.constant.AppConstant;
+import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -10,6 +11,8 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.entity.*;
@@ -24,7 +27,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -241,7 +246,58 @@ public class ModelUtils {
         return new HabitFactPostDTO(null, getHabitDictionaryIdDto());
     }
 
+    public static LocationAddressAndGeoDto getLocationAddressAndGeoDto(){
+        return LocationAddressAndGeoDto.builder()
+                .address("address")
+                .lat(12.12d)
+                .lng(12.12d)
+                .build();
+    }
 
+    public static OpeningHoursDto getOpeningHoursDto(){
+        OpeningHoursDto openingHours = new OpeningHoursDto();
+        openingHours.setOpenTime(LocalTime.of(7, 20, 45, 342123342));
+        openingHours.setCloseTime(LocalTime.of(7, 20, 45, 342123342));
+        openingHours.setBreakTime(BreakTimeDto.builder()
+                .startTime(LocalTime.of(7, 20, 45, 342123342))
+                .endTime(LocalTime.of(7, 20, 45, 342123342))
+                .build());
+        openingHours.setWeekDay(DayOfWeek.MONDAY);
+        return openingHours;
+    }
 
+    public static OpeningHours getOpeningHours(){
+        OpeningHours openingHoursTest = new OpeningHours();
+        openingHoursTest.setOpenTime(LocalTime.of(7, 20, 45, 342123342));
+        openingHoursTest.setCloseTime(LocalTime.of(7, 20, 45, 342123342));
+        openingHoursTest.setBreakTime(BreakTime.builder()
+                .startTime(LocalTime.of(7, 20, 45, 342123342))
+                .endTime(LocalTime.of(7, 20, 45, 342123342))
+                .build());
+        openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
+        return openingHoursTest;
+    }
+
+    public static Location getLocation(){
+        return Location.builder()
+                .address("address")
+                .lng(12.12d)
+                .lat(12.12d)
+                .build();
+    }
+
+    public static Specification getSpecification(){
+        return Specification.builder()
+                .id(1L)
+                .name("specification")
+                .build();
+    }
+
+    public static Photo getPhoto(){
+        return Photo.builder()
+                .id(1L)
+                .name("photo")
+                .build();
+    }
 }
  

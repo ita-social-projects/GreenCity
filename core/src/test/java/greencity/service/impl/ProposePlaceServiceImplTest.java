@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.ModelUtils;
-import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.entity.*;
@@ -15,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Optional;
@@ -42,17 +40,8 @@ class ProposePlaceServiceImplTest {
 
     @Test
     void checkLocationValues() {
-        Location location = Location.builder()
-                .address("address")
-                .lng(12.12d)
-                .lat(12.12d)
-                .build();
-
-        LocationAddressAndGeoDto address = LocationAddressAndGeoDto.builder()
-                .address("address")
-                .lat(12.12d)
-                .lng(12.12d)
-                .build();
+        Location location = ModelUtils.getLocation();
+        LocationAddressAndGeoDto address = ModelUtils.getLocationAddressAndGeoDto();
 
         when(locationService.findByLatAndLng(12.12d, 12.12d)).thenReturn(Optional.of(location));
         assertThrows(BadRequestException.class, () -> proposePlaceService.checkLocationValues(address));
@@ -60,14 +49,8 @@ class ProposePlaceServiceImplTest {
 
     @Test
     void checkInputTime() {
-        OpeningHoursDto openingHours = new OpeningHoursDto();
+        OpeningHoursDto openingHours = ModelUtils.getOpeningHoursDto();
         openingHours.setOpenTime(LocalTime.of(8, 20, 45, 342123342));
-        openingHours.setCloseTime(LocalTime.of(7, 20, 45, 342123342));
-        openingHours.setBreakTime(BreakTimeDto.builder()
-                .startTime(LocalTime.of(7, 20, 45, 342123342))
-                .endTime(LocalTime.of(7, 20, 45, 342123342))
-                .build());
-        openingHours.setWeekDay(DayOfWeek.MONDAY);
 
         assertThrows(BadRequestException.class, () -> proposePlaceService.checkInputTime(Collections.singleton(openingHours)));
     }
@@ -75,16 +58,10 @@ class ProposePlaceServiceImplTest {
     @Test
     void savePhotosWithPlace() {
         Place place = ModelUtils.getPlace();
-        Photo photo = Photo.builder()
-                .id(1L)
-                .name("photo")
-                .build();
+        Photo photo = ModelUtils.getPhoto();
 
-        Photo photoTest = Photo.builder()
-                .id(1L)
-                .name("photo")
-                .place(place)
-                .build();
+        Photo photoTest = ModelUtils.getPhoto();
+        photoTest.setPlace(place);
 
         when(photoService.findByName(anyString())).thenReturn(Optional.empty());
         proposePlaceService.savePhotosWithPlace(Collections.singletonList(photo), place);
@@ -94,19 +71,14 @@ class ProposePlaceServiceImplTest {
     @Test
     void saveDiscountValuesWithPlace() {
         Place place = ModelUtils.getPlace();
-        Specification specification = Specification.builder().id(1L).name("specification").build();
-        DiscountValue discountValue = DiscountValue.builder()
-                .id(1L)
-                .value(11)
-                .specification(specification)
-                .build();
+        Specification specification = ModelUtils.getSpecification();
 
-        DiscountValue discountValueTest = DiscountValue.builder()
-                .id(1L)
-                .value(11)
-                .place(place)
-                .specification(specification)
-                .build();
+        DiscountValue discountValue = ModelUtils.getDiscountValue();
+        discountValue.setSpecification(ModelUtils.getSpecification());
+
+        DiscountValue discountValueTest = ModelUtils.getDiscountValue();
+        discountValueTest.setSpecification(specification);
+        discountValueTest.setPlace(place);
 
         when(specService.findByName(discountValue.getSpecification().getName())).thenReturn(specification);
         proposePlaceService.saveDiscountValuesWithPlace(Collections.singleton(discountValue), place);
