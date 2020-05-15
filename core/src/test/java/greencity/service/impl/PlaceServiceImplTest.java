@@ -12,7 +12,6 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
-import greencity.mapping.ProposePlaceMapper;
 import greencity.repository.PlaceRepo;
 import greencity.service.*;
 import java.time.LocalDateTime;
@@ -122,7 +121,7 @@ class PlaceServiceImplTest {
     private UserService userService;
 
     @Mock
-    private ProposePlaceMapper proposePlaceMapper;
+    private ProposePlaceServiceImpl proposePlaceMapper;
 
     @Mock
     private SpecificationService specificationService;
@@ -158,15 +157,16 @@ class PlaceServiceImplTest {
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
-        placeService = new PlaceServiceImpl(placeRepo, modelMapper, proposePlaceMapper, categoryService,
+        placeService = new PlaceServiceImpl(placeRepo, modelMapper , categoryService,
             locationService, specificationService, userService, openingHoursService, discountService,
-            notificationService, zoneId, rabbitTemplate);
+            notificationService, zoneId, rabbitTemplate,proposePlaceMapper);
     }
 
     @Test
     void saveTest() {
-        when(proposePlaceMapper.convertToEntity(any())).thenReturn(place);
+        when(modelMapper.map(placeAddDto,Place.class)).thenReturn(place);
         when(userService.findByEmail(anyString())).thenReturn(user);
+        when(categoryService.findByName(anyString())).thenReturn(category);
         when(placeRepo.save(place)).thenReturn(place);
 
         assertEquals(place, placeService.save(placeAddDto, user.getEmail()));
