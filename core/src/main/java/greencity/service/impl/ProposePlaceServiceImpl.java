@@ -24,7 +24,6 @@ import java.util.Set;
  */
 @Service
 public class ProposePlaceServiceImpl implements ProposePlaceService {
-
     private final SpecificationService specService;
     private final PhotoService photoService;
     private final LocationService locationService;

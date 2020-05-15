@@ -16,13 +16,11 @@ import java.util.stream.Collectors;
  */
 @Component
 public class ProposePlaceMapper extends AbstractConverter<PlaceAddDto, Place> {
-
     /**
      * Method convert {@link PlaceAddDto} to {@link Place}.
      *
      * @return {@link Place}
      */
-
     @Override
     protected Place convert(PlaceAddDto placeAddDto) {
         Place place = new Place();

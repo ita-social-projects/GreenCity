@@ -12,7 +12,6 @@ import java.util.Set;
 
 @Service
 public interface ProposePlaceService {
-
     /**
      * Method check if input location is new.
      */
