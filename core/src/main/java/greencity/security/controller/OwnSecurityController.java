@@ -2,6 +2,7 @@ package greencity.security.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import static greencity.constant.ErrorMessage.*;
-import static greencity.constant.ValidationConstants.INVALID_RESTORE_EMAIL_ADDRESS;
+import static greencity.constant.ValidationConstants.USER_CREATED;
 
 /**
  * Controller that provides our sign-up and sign-in logic.
@@ -74,13 +75,12 @@ public class OwnSecurityController {
      */
     @ApiOperation("Sign-up by own security logic")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 201, message = USER_CREATED, response = SuccessSignUpDto.class),
         @ApiResponse(code = 400, message = USER_ALREADY_REGISTERED_WITH_THIS_EMAIL)
     })
     @PostMapping("/signUp")
-    public ResponseEntity<Object> singUp(@Valid @RequestBody OwnSignUpDto dto) {
-        service.signUp(dto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<SuccessSignUpDto> singUp(@Valid @RequestBody OwnSignUpDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto));
     }
 
     /**
@@ -148,7 +148,7 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = USER_NOT_FOUND_BY_EMAIL)
     })
     @GetMapping("/restorePassword")
-    public ResponseEntity<Object> restore(@RequestParam @Email(message = INVALID_RESTORE_EMAIL_ADDRESS) String email) {
+    public ResponseEntity<Object> restore(@RequestParam @Email String email) {
         passwordRecoveryService.sendPasswordRecoveryEmailTo(email);
         return ResponseEntity.ok().build();
     }
