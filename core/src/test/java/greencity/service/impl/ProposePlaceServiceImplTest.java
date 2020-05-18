@@ -50,7 +50,7 @@ class ProposePlaceServiceImplTest {
     @Test
     void checkInputTime() {
         OpeningHoursDto openingHours = ModelUtils.getOpeningHoursDto();
-        openingHours.setOpenTime(LocalTime.of(8, 20, 45, 342123342));
+        openingHours.setOpenTime(ModelUtils.getLocalTime().plusHours(1L));
 
         assertThrows(BadRequestException.class, () -> proposePlaceService.checkInputTime(Collections.singleton(openingHours)));
     }

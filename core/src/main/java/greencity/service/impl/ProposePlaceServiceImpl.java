@@ -11,7 +11,7 @@ import greencity.service.LocationService;
 import greencity.service.PhotoService;
 import greencity.service.ProposePlaceService;
 import greencity.service.SpecificationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,24 +23,11 @@ import java.util.Set;
  * @author Marian Datsko
  */
 @Service
+@AllArgsConstructor
 public class ProposePlaceServiceImpl implements ProposePlaceService {
     private final SpecificationService specService;
     private final PhotoService photoService;
     private final LocationService locationService;
-
-    /**
-     * Constructor with parameters.
-     *
-     * @author Marian Datsko
-     */
-    @Autowired
-    public ProposePlaceServiceImpl(SpecificationService specService,
-                                   PhotoService photoService,
-                                   LocationService locationService) {
-        this.specService = specService;
-        this.photoService = photoService;
-        this.locationService = locationService;
-    }
 
     /**
      * Method check if input location is new.

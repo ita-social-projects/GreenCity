@@ -254,13 +254,17 @@ public class ModelUtils {
                 .build();
     }
 
+    public static LocalTime getLocalTime(){
+        return LocalTime.of(7, 20, 45, 342123342);
+    }
+
     public static OpeningHoursDto getOpeningHoursDto(){
         OpeningHoursDto openingHours = new OpeningHoursDto();
-        openingHours.setOpenTime(LocalTime.of(7, 20, 45, 342123342));
-        openingHours.setCloseTime(LocalTime.of(7, 20, 45, 342123342));
+        openingHours.setOpenTime(getLocalTime());
+        openingHours.setCloseTime(getLocalTime());
         openingHours.setBreakTime(BreakTimeDto.builder()
-                .startTime(LocalTime.of(7, 20, 45, 342123342))
-                .endTime(LocalTime.of(7, 20, 45, 342123342))
+                .startTime(getLocalTime())
+                .endTime(getLocalTime())
                 .build());
         openingHours.setWeekDay(DayOfWeek.MONDAY);
         return openingHours;
@@ -268,11 +272,11 @@ public class ModelUtils {
 
     public static OpeningHours getOpeningHours(){
         OpeningHours openingHoursTest = new OpeningHours();
-        openingHoursTest.setOpenTime(LocalTime.of(7, 20, 45, 342123342));
-        openingHoursTest.setCloseTime(LocalTime.of(7, 20, 45, 342123342));
+        openingHoursTest.setOpenTime(getLocalTime());
+        openingHoursTest.setCloseTime(getLocalTime());
         openingHoursTest.setBreakTime(BreakTime.builder()
-                .startTime(LocalTime.of(7, 20, 45, 342123342))
-                .endTime(LocalTime.of(7, 20, 45, 342123342))
+                .startTime(getLocalTime())
+                .endTime(getLocalTime())
                 .build());
         openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
         return openingHoursTest;
