@@ -1,7 +1,6 @@
 package greencity.repository;
 
 import greencity.entity.Goal;
-import greencity.entity.User;
 import greencity.entity.localization.GoalTranslation;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +19,7 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
     /**
      * Method returns available goal translations for specific user and language code.
      *
-     * @param userId         target user id
+     * @param userId       target user id
      * @param languageCode code of needed language
      * @return List of available {@link GoalTranslation}'s.
      */
@@ -28,6 +27,17 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
         + "(SELECT ug.goal FROM UserGoal ug WHERE ug.user.id = ?1 AND ug.status = 'ACTIVE') "
         + "AND g.language.code = ?2")
     List<GoalTranslation> findAvailableByUserId(Long userId, String languageCode);
+
+    /**
+     * Method returns goal translation for particular selected goal for specific user and language code.
+     *
+     * @param userId       target user id
+     * @param languageCode code of needed language
+     * @return {@link GoalTranslation}
+     */
+    @Query("SELECT g FROM GoalTranslation g WHERE g.goal.id IN "
+        + "(SELECT ug.goal FROM UserGoal ug WHERE ug.user.id = ?1 AND ug.id = ?3) AND g.language.code = ?2")
+    GoalTranslation findByUserIdAndLanguageAndUserGoalId(Long userId, String languageCode, Long userGoalId);
 
     /**
      * Method returns goal translations for specific goal and language code.

@@ -3,16 +3,9 @@ package greencity.service.impl;
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.entity.UserGoal;
 import greencity.entity.localization.GoalTranslation;
-import greencity.mapping.UserGoalResponseDtoMapper;
-import greencity.repository.CustomGoalRepo;
-import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
-import greencity.service.LanguageService;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,16 +23,8 @@ public class GoalServiceImplTest {
     private GoalTranslationRepo goalTranslationRepo;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private LanguageService languageService;
-    @Mock
-    private GoalRepo goalRepo;
-    @Mock
-    private CustomGoalRepo customGoalRepo;
     @InjectMocks
     private GoalServiceImpl goalService;
-    @InjectMocks
-    private UserGoalResponseDtoMapper userGoalResponseDtoMapper;
 
     @Test
     public void findAllTest() {
@@ -55,38 +40,5 @@ public class GoalServiceImplTest {
 
         when(goalTranslationRepo.findAllByLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE)).thenReturn(goalTranslations);
         assertEquals(goalService.findAll(AppConstant.DEFAULT_LANGUAGE_CODE), goalsDto);
-    }
-
-    @Test
-    public void convertTestWhenGoalIsPredefined() {
-        UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
-        GoalTranslation goalTranslation = ModelUtils.getGoalTranslation();
-        when(goalRepo.findById(predefinedUserGoal.getGoal().getId()))
-            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
-        when(goalTranslationRepo
-            .findByGoalAndLanguageCode(predefinedUserGoal.getGoal(), AppConstant.DEFAULT_LANGUAGE_CODE))
-            .thenReturn(Optional.of(goalTranslation));
-        when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
-
-        UserGoalResponseDto expected =
-            new UserGoalResponseDto(predefinedUserGoal.getId(), null, predefinedUserGoal.getStatus());
-
-        UserGoalResponseDto actual = userGoalResponseDtoMapper.convert(predefinedUserGoal);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void convertTestWhenGoalIsCustom() {
-        UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
-        when(customGoalRepo.findById(customUserGoal.getCustomGoal().getId()))
-            .thenReturn(Optional.of(customUserGoal.getCustomGoal()));
-
-        UserGoalResponseDto expected =
-            new UserGoalResponseDto(customUserGoal.getId(), null, customUserGoal.getStatus());
-
-        UserGoalResponseDto actual = userGoalResponseDtoMapper.convert(customUserGoal);
-
-        assertEquals(expected, actual);
     }
 }

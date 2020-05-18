@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -10,22 +9,52 @@ import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitDictionaryDto;
 import greencity.dto.habitstatistic.HabitIdDto;
-import greencity.dto.user.*;
-import greencity.entity.*;
+import greencity.dto.user.BulkSaveUserGoalDto;
+import greencity.dto.user.RoleDto;
+import greencity.dto.user.UserCustomGoalDto;
+import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserGoalDto;
+import greencity.dto.user.UserGoalResponseDto;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserUpdateDto;
+import greencity.entity.Habit;
+import greencity.entity.HabitDictionary;
+import greencity.entity.HabitDictionaryTranslation;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.entity.localization.GoalTranslation;
-import greencity.exception.exceptions.*;
-import greencity.mapping.HabitMapper;
-import greencity.repository.*;
+import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserGoalStatusNotUpdatedException;
+import greencity.exception.exceptions.UserHasNoAvailableGoalsException;
+import greencity.exception.exceptions.UserHasNoAvailableHabitDictionaryException;
+import greencity.exception.exceptions.UserHasNoGoalsException;
+import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
+import greencity.repository.CustomGoalRepo;
+import greencity.repository.GoalTranslationRepo;
+import greencity.repository.HabitDictionaryTranslationRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.HabitStatisticRepo;
+import greencity.repository.UserGoalRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +64,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.ErrorMessage.USER_GOAL_NOT_FOUND;
+import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_GOALS;
+import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY;
+import static greencity.constant.ErrorMessage.USER_HAS_NO_GOALS;
+import static greencity.constant.ErrorMessage.USER_HAS_NO_SUCH_GOAL;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -48,8 +85,6 @@ public class UserServiceImpl implements UserService {
      */
     private final UserRepo userRepo;
     private final UserGoalRepo userGoalRepo;
-    private final GoalRepo goalRepo;
-    private final HabitDictionaryRepo habitDictionaryRepo;
     private final CustomGoalRepo customGoalRepo;
     private final HabitRepo habitRepo;
     private final HabitService habitService;
@@ -62,7 +97,6 @@ public class UserServiceImpl implements UserService {
      * Autowired mapper.
      */
     private final ModelMapper modelMapper;
-    private final HabitMapper habitMapper;
 
     /**
      * {@inheritDoc}
@@ -224,15 +258,25 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<UserGoalResponseDto> getUserGoals(Long userId, String language) {
-        List<UserGoalResponseDto> userGoalResponseDto = userGoalRepo
+        List<UserGoalResponseDto> userGoalResponseDtos = userGoalRepo
             .findAllByUserId(userId)
             .stream()
             .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
             .collect(Collectors.toList());
-        if (userGoalResponseDto.isEmpty()) {
+        for (UserGoalResponseDto el1 : userGoalResponseDtos) {
+            if (el1.getText() == null) {
+                if (goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, el1.getId()) != null) {
+                    el1.setText(goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, el1.getId())
+                        .getText());
+                } else {
+                    el1.setText(customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(el1.getId(), userId).getText());
+                }
+            }
+        }
+        if (userGoalResponseDtos.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
         }
-        return userGoalResponseDto;
+        return userGoalResponseDtos;
     }
 
     /**
@@ -258,23 +302,21 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto bulkDto, String language) {
-        List<UserGoalDto> goals = bulkDto.getUserGoals();
-        List<UserCustomGoalDto> customGoals = bulkDto.getUserCustomGoal();
+        List<UserGoalDto> goalDtos = bulkDto.getUserGoals();
+        List<UserCustomGoalDto> customGoalDtos = bulkDto.getUserCustomGoal();
         User user = userRepo.findById(userId)
             .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
-        if (goals == null && customGoals != null) {
-            saveCustomGoalsForUserGoals(user, customGoals);
+        if (goalDtos == null && customGoalDtos != null) {
+            saveCustomGoalsForUserGoals(user, customGoalDtos);
         }
-        if (goals != null && customGoals == null) {
-            saveGoalForUserGoal(user, goals);
+        if (goalDtos != null && customGoalDtos == null) {
+            saveGoalForUserGoal(user, goalDtos);
         }
-        if (goals != null && customGoals != null) {
-            saveGoalForUserGoal(user, goals);
-            saveCustomGoalsForUserGoals(user, customGoals);
+        if (goalDtos != null && customGoalDtos != null) {
+            saveGoalForUserGoal(user, goalDtos);
+            saveCustomGoalsForUserGoals(user, customGoalDtos);
         }
-        return user.getUserGoals().stream()
-            .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
-            .collect(Collectors.toList());
+        return getUserGoals(userId, language);
     }
 
     /**
@@ -365,7 +407,19 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
         }
-        return modelMapper.map(userGoal, UserGoalResponseDto.class);
+        UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
+        if (updatedUserGoal.getText() == null) {
+            if (goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, updatedUserGoal.getId())
+                != null) {
+                updatedUserGoal.setText(
+                    goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, updatedUserGoal.getId())
+                        .getText());
+            } else {
+                updatedUserGoal.setText(
+                    customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(updatedUserGoal.getId(), userId).getText());
+            }
+        }
+        return updatedUserGoal;
     }
 
     /**

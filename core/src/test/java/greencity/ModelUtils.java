@@ -1,7 +1,7 @@
 package greencity;
 
-import greencity.dto.advice.AdvicePostDTO;
 import greencity.constant.AppConstant;
+import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -12,7 +12,25 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitDictionaryIdDto;
-import greencity.entity.*;
+import greencity.dto.user.UserGoalResponseDto;
+import greencity.entity.Advice;
+import greencity.entity.Comment;
+import greencity.entity.CustomGoal;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.FactTranslation;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Goal;
+import greencity.entity.Habit;
+import greencity.entity.HabitDictionary;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitStatistic;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.Place;
+import greencity.entity.Tag;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.HabitRate;
 import greencity.entity.enums.ROLE;
@@ -82,6 +100,7 @@ public class ModelUtils {
         try {
             content = Files.readAllBytes(path);
         } catch (final IOException e) {
+            e.printStackTrace();
         }
         return new MockMultipartFile(name,
             name, contentType, content);
@@ -176,18 +195,34 @@ public class ModelUtils {
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
             .id(1L)
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
             .status(GoalStatus.ACTIVE)
             .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
-            .dateCompleted(LocalDateTime.now())
+            .build();
+    }
+
+    public static UserGoalResponseDto getCustomUserGoalDto() {
+        return UserGoalResponseDto.builder()
+            .id(1L)
+            .text("Buy electric car")
+            .status(GoalStatus.ACTIVE)
             .build();
     }
 
     public static UserGoal getPredefinedUserGoal() {
         return UserGoal.builder()
             .id(2L)
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
-            .dateCompleted(LocalDateTime.now())
+            .build();
+    }
+
+    public static UserGoalResponseDto getPredefinedUserGoalDto() {
+        return UserGoalResponseDto.builder()
+            .id(2L)
+            .text("Buy a bamboo toothbrush")
+            .status(GoalStatus.ACTIVE)
             .build();
     }
 
@@ -229,7 +264,7 @@ public class ModelUtils {
         return new AdvicePostDTO(null, getHabitDictionaryIdDto());
     }
 
-    public static  FactTranslation getFactTranslation(){
+    public static FactTranslation getFactTranslation() {
         return new FactTranslation(1L, getLanguage(), null, "Content");
     }
 
