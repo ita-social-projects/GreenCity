@@ -14,7 +14,6 @@ import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
-import greencity.security.events.SignInEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
@@ -148,7 +147,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         if (user.getUserStatus() == UserStatus.DEACTIVATED) {
             throw new UserDeactivatedException(USER_DEACTIVATED);
         }
-        appEventPublisher.publishEvent(new SignInEvent(user));
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), true);
