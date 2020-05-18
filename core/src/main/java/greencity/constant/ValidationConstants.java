@@ -97,6 +97,8 @@ public final class ValidationConstants {
     public static final String BAD_COMMA_SEPARATED_NUMBERS =
         "Non-empty string can contain numbers separated by a comma only";
 
+    public static final String USER_CREATED = "User was created. Verification letter has been sent to your email address";
+
     private ValidationConstants() {
     }
 }

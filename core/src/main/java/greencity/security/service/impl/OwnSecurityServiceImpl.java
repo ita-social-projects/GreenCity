@@ -10,6 +10,7 @@ import greencity.exception.exceptions.*;
 import greencity.message.VerifyEmailMessage;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
@@ -71,10 +72,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     /**
      * {@inheritDoc}
+     *
+     * @return
      */
     @Transactional
     @Override
-    public void signUp(OwnSignUpDto dto) {
+    public SuccessSignUpDto signUp(OwnSignUpDto dto) {
         User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey());
         OwnSecurity ownSecurity = createOwnSecurity(dto, user);
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
@@ -91,6 +94,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
+        return new SuccessSignUpDto(user.getId(), user.getName(), user.getEmail(), true);
     }
 
     private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey) {
@@ -132,8 +136,11 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
         User user = userService.findByEmail(dto.getEmail());
+        if (user == null) {
+            throw new WrongEmailException(USER_NOT_FOUND_BY_EMAIL);
+        }
         if (!isPasswordCorrect(dto, user)) {
-            throw new WrongEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
+            throw new WrongPasswordException(BAD_PASSWORD);
         }
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
