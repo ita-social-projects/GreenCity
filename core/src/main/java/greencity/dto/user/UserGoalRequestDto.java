@@ -16,5 +16,5 @@ import lombok.Setter;
 public class UserGoalRequestDto {
     @NonNull
     @Min(value = 1, message = "Goal id must be a positive number")
-    private Long id = 0L;
+    private Long id;
 }

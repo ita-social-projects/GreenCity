@@ -109,7 +109,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserAlreadyRegisteredException.class)
     public final ResponseEntity<Object> handleBadEmailException(UserAlreadyRegisteredException ex) {
         ValidationExceptionDto validationExceptionDto =
-            new ValidationExceptionDto(AppConstant.REGISTRATION_EMAIL_FIELD_NAME, ex.getMessage());
+            new ValidationExceptionDto(AppConstant.REGISTRATION_EMAIL_FIELD_NAME, ex.getLocalizedMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(Collections.singletonList(validationExceptionDto));
     }

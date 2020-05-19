@@ -1,8 +1,8 @@
 package greencity;
 
-import greencity.dto.advice.AdvicePostDTO;
 import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
+import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -15,6 +15,7 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitDictionaryIdDto;
+import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.*;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.HabitRate;
@@ -87,6 +88,7 @@ public class ModelUtils {
         try {
             content = Files.readAllBytes(path);
         } catch (final IOException e) {
+            e.printStackTrace();
         }
         return new MockMultipartFile(name,
             name, contentType, content);
@@ -155,6 +157,32 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitDictionary getHabitDictionary(){
+        return HabitDictionary.builder()
+                .id(1L)
+                .image("imagePath")
+                .habit(Collections.singletonList(ModelUtils.getHabit()))
+                .build();
+    }
+
+    public static HabitDictionaryTranslation getHabitDictionaryTranslation(){
+        return HabitDictionaryTranslation.builder()
+                .id(1L)
+                .name("habit")
+                .description("description")
+                .habitItem("habitItem")
+                .language(ModelUtils.getLanguage())
+                .habitDictionary(ModelUtils.getHabitDictionary())
+                .build();
+    }
+
+    public static Category getCategory(){
+        return Category.builder()
+                .id(12L)
+                .name("category")
+                .build();
+    }
+
     public static AdviceTranslation getAdviceTranslation() {
         AdviceTranslation adviceTranslation = new AdviceTranslation();
         adviceTranslation.setId(5L);
@@ -181,18 +209,34 @@ public class ModelUtils {
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
             .id(1L)
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
             .status(GoalStatus.ACTIVE)
             .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
-            .dateCompleted(LocalDateTime.now())
+            .build();
+    }
+
+    public static UserGoalResponseDto getCustomUserGoalDto() {
+        return UserGoalResponseDto.builder()
+            .id(1L)
+            .text("Buy electric car")
+            .status(GoalStatus.ACTIVE)
             .build();
     }
 
     public static UserGoal getPredefinedUserGoal() {
         return UserGoal.builder()
             .id(2L)
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
-            .dateCompleted(LocalDateTime.now())
+            .build();
+    }
+
+    public static UserGoalResponseDto getPredefinedUserGoalDto() {
+        return UserGoalResponseDto.builder()
+            .id(2L)
+            .text("Buy a bamboo toothbrush")
+            .status(GoalStatus.ACTIVE)
             .build();
     }
 
@@ -234,7 +278,7 @@ public class ModelUtils {
         return new AdvicePostDTO(null, getHabitDictionaryIdDto());
     }
 
-    public static  FactTranslation getFactTranslation(){
+    public static FactTranslation getFactTranslation() {
         return new FactTranslation(1L, getLanguage(), null, "Content");
     }
 
