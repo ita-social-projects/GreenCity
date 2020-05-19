@@ -1,7 +1,5 @@
 package greencity.security.service.impl;
 
-import static greencity.constant.ErrorMessage.*;
-import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -12,10 +10,10 @@ import greencity.exception.exceptions.*;
 import greencity.message.VerifyEmailMessage;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
+import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
-import greencity.security.events.SignInEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
@@ -31,6 +29,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 
 /**
  * {@inheritDoc}
@@ -70,10 +71,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     /**
      * {@inheritDoc}
+     *
+     * @return
      */
     @Transactional
     @Override
-    public void signUp(OwnSignUpDto dto) {
+    public SuccessSignUpDto signUp(OwnSignUpDto dto) {
         User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey());
         OwnSecurity ownSecurity = createOwnSecurity(dto, user);
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
@@ -88,8 +91,9 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                     savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
-            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
+            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL, dto.getLang());
         }
+        return new SuccessSignUpDto(user.getId(), user.getName(), user.getEmail(), true);
     }
 
     private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey) {
@@ -131,8 +135,11 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
         User user = userService.findByEmail(dto.getEmail());
+        if (user == null) {
+            throw new WrongEmailException(USER_NOT_FOUND_BY_EMAIL);
+        }
         if (!isPasswordCorrect(dto, user)) {
-            throw new WrongEmailOrPasswordException(BAD_EMAIL_OR_PASSWORD);
+            throw new WrongPasswordException(BAD_PASSWORD);
         }
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
@@ -140,7 +147,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         if (user.getUserStatus() == UserStatus.DEACTIVATED) {
             throw new UserDeactivatedException(USER_DEACTIVATED);
         }
-        appEventPublisher.publishEvent(new SignInEvent(user));
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), true);

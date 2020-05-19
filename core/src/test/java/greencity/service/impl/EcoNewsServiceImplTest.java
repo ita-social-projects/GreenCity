@@ -8,6 +8,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -110,7 +111,7 @@ public class EcoNewsServiceImplTest {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
         EcoNewsDto ecoNewsDto =
-            new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text",
+            new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList());
         EcoNews ecoNews = ModelUtils.getEcoNews();
 
@@ -145,7 +146,7 @@ public class EcoNewsServiceImplTest {
             pageRequest, ecoNews.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
-            new EcoNewsDto(now, "test image path", 1L, "test title", "test text",
+            new EcoNewsDto(now, "test image path", 1L, "test title", "test text", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList())
         );
         PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);
@@ -169,6 +170,20 @@ public class EcoNewsServiceImplTest {
             .thenReturn(Optional.of(ModelUtils.getEcoNews()));
         ecoNewsService.delete(1L);
         verify(ecoNewsRepo, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void search(){
+        SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
+        PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto),4,1);
+        Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews),PageRequest.of(1,3),1);
+
+        when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "test"))
+                .thenReturn(page);
+        when(modelMapper.map(ecoNews, SearchNewsDto.class))
+                .thenReturn(searchNewsDto);
+
+        assertEquals(pageableDto, ecoNewsService.search("test"));
     }
 }
 

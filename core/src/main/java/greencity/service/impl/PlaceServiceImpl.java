@@ -44,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
-    private final ProposePlaceMapper placeMapper;
     private final CategoryService categoryService;
     private final LocationService locationService;
     private final SpecificationService specificationService;
@@ -54,6 +53,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
     private final RabbitTemplate rabbitTemplate;
+    private final ProposePlaceService proposePlaceService;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
 
@@ -63,7 +63,6 @@ public class PlaceServiceImpl implements PlaceService {
     @Autowired
     public PlaceServiceImpl(PlaceRepo placeRepo,
                             ModelMapper modelMapper,
-                            ProposePlaceMapper placeMapper,
                             CategoryService categoryService,
                             LocationService locationService,
                             SpecificationService specificationService,
@@ -72,10 +71,10 @@ public class PlaceServiceImpl implements PlaceService {
                             DiscountService discountService,
                             NotificationService notificationService,
                             @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
-                            RabbitTemplate rabbitTemplate) {
+                            RabbitTemplate rabbitTemplate,
+                            ProposePlaceServiceImpl proposePlaceService) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
-        this.placeMapper = placeMapper;
         this.categoryService = categoryService;
         this.locationService = locationService;
         this.specificationService = specificationService;
@@ -85,6 +84,7 @@ public class PlaceServiceImpl implements PlaceService {
         this.notificationService = notificationService;
         this.datasourceTimezone = datasourceTimezone;
         this.rabbitTemplate = rabbitTemplate;
+        this.proposePlaceService = proposePlaceService;
     }
 
     /**
@@ -104,15 +104,23 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * {@inheritDoc}
      *
-     * @author Kateryna Horokh
+     * @author Marian Datsko
      */
     @Transactional
     @Override
     public Place save(PlaceAddDto dto, String email) {
         log.info(LogMessage.IN_SAVE, dto.getName(), email);
-        Place place = placeMapper.convertToEntity(dto);
+
+        proposePlaceService.checkLocationValues(dto.getLocation());
+        proposePlaceService.checkInputTime(dto.getOpeningHoursList());
+
+        Place place = modelMapper.map(dto,Place.class);
         setUserToPlaceByEmail(email, place);
-        place.getPhotos().forEach(photo -> photo.setUser(place.getAuthor()));
+
+        place.setCategory(categoryService.findByName(dto.getCategory().getName()));
+        proposePlaceService.saveDiscountValuesWithPlace(place.getDiscountValues(), place);
+        proposePlaceService.savePhotosWithPlace(place.getPhotos(), place);
+
         return placeRepo.save(place);
     }
 

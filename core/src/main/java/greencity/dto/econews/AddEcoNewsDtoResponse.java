@@ -6,12 +6,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Builder
@@ -34,6 +29,8 @@ public class AddEcoNewsDtoResponse implements Serializable {
     private ZonedDateTime creationDate;
     @NotEmpty
     private String imagePath;
+
+    private String source;
     @NotEmpty
     private List<String> tags;
 }

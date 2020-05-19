@@ -7,6 +7,7 @@ public final class ValidationConstants {
     public static final int USERNAME_MAX_LENGTH = 50;
 
     public static final String EMPTY_EMAIL = "The email field can not be empty";
+    public static final String INVALID_RESTORE_EMAIL_ADDRESS = "Must be a well-formed email address";
     public static final String INVALID_EMAIL = "The email is invalid";
     public static final String INVALID_PASSWORD = "Password has contain at least one character of "
         + "Uppercase letter (A-Z), "
@@ -95,6 +96,8 @@ public final class ValidationConstants {
 
     public static final String BAD_COMMA_SEPARATED_NUMBERS =
         "Non-empty string can contain numbers separated by a comma only";
+
+    public static final String USER_CREATED = "User was created. Verification letter has been sent to your email address";
 
     private ValidationConstants() {
     }

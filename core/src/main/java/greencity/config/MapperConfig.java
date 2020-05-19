@@ -27,6 +27,7 @@ public class MapperConfig {
     private AdviceTranslateMapper adviceTranslateMapper;
     private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
     private FavoritePlaceMapper favoritePlaceMapper;
+    private ProposePlaceMapper proposePlaceMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -71,5 +72,6 @@ public class MapperConfig {
         modelMapper.addConverter(adviceTranslateMapper);
         modelMapper.addConverter(favoritePlaceDtoMapper);
         modelMapper.addConverter(favoritePlaceMapper);
+        modelMapper.addConverter(proposePlaceMapper);
     }
 }

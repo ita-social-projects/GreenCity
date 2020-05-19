@@ -27,7 +27,8 @@ public final class ErrorMessage {
     public static final String NO_ANY_OWN_SECURITY_TO_DELETE = "No any ownSecurity to delete with this id: ";
     public static final String LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES =
         "Location by this coordinates already exists.";
-    public static final String BAD_EMAIL_OR_PASSWORD = "Bad email or password";
+    public static final String BAD_EMAIL = "Bad email";
+    public static final String BAD_PASSWORD = "Bad password";
     public static final String USER_NOT_VERIFIED = "User not verified";
     public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
     public static final String REFRESH_TOKEN_NOT_VALID = "Refresh token not valid!";
