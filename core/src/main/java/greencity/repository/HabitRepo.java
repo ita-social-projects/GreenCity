@@ -2,6 +2,8 @@ package greencity.repository;
 
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionary;
+import greencity.entity.User;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,6 +27,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
 
     /**
      * Find {@link Habit} by user and statusHabit > 0.
+     *
      * @param userId id current user.
      * @return List {@link Habit}
      */
@@ -34,7 +37,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
     /**
      * Find habits by userId and HabitDictionary.id.
      *
-     * @param userId id current user.
+     * @param userId            id current user.
      * @param habitDictionaryId id {@link HabitDictionary}
      * @return {@link Habit}
      */
@@ -44,7 +47,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
     /**
      * Method update habit by id and statusHabit.
      *
-     * @param id {@link Habit}
+     * @param id     {@link Habit}
      * @param status {@link Habit}
      */
     @Modifying
@@ -53,9 +56,23 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
 
     /**
      * method count user habits.
+     *
      * @param userId id current user
      * @return count habits by user
      */
     @Query("SELECT COUNT(h) FROM Habit h WHERE h.user.id = ?1 AND h.statusHabit = true")
     int countHabitByUserId(Long userId);
+
+
+    /**
+     * counts user habits that were not marked during period between start and end.
+     *
+     * @param userId id of {@link User}
+     * @param start  first day of period
+     * @param end    last day of period
+     * @return count of user habits that were marked during some period
+     */
+    @Query("SELECT COUNT(h) FROM Habit h WHERE h.user.id = ?1 AND h.statusHabit = true AND h.createDate < ?2 AND h.id "
+        + "IN(SELECT hs.habit.id FROM HabitStatistic hs WHERE hs.createdOn BETWEEN ?2 and ?3)  ")
+    int countMarkedHabitsByUserIdByPeriod(Long userId, ZonedDateTime start, ZonedDateTime end);
 }
