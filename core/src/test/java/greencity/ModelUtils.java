@@ -196,7 +196,7 @@ public class ModelUtils {
         return UserGoal.builder()
             .id(1L)
             .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
-            .status(GoalStatus.ACTIVE)
+            .status(GoalStatus.DONE)
             .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
             .build();
     }
@@ -237,7 +237,7 @@ public class ModelUtils {
                     Collections.emptyList()), "Start recycling batteries",
                 new Goal(4L, Collections.emptyList(), Collections.emptyList())));
     }
-  
+
     public static Comment getComment() {
         return new Comment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
@@ -252,15 +252,15 @@ public class ModelUtils {
     }
 
 
-    public static Advice getAdvice(){
+    public static Advice getAdvice() {
         return new Advice(1L, null, null);
     }
 
-    public static HabitDictionaryIdDto getHabitDictionaryIdDto(){
+    public static HabitDictionaryIdDto getHabitDictionaryIdDto() {
         return new HabitDictionaryIdDto(1L);
     }
 
-    public static AdvicePostDTO getAdvicePostDTO(){
+    public static AdvicePostDTO getAdvicePostDTO() {
         return new AdvicePostDTO(null, getHabitDictionaryIdDto());
     }
 
@@ -268,14 +268,13 @@ public class ModelUtils {
         return new FactTranslation(1L, getLanguage(), null, "Content");
     }
 
-    public static HabitFact getHabitFact(){
+    public static HabitFact getHabitFact() {
         return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
     }
 
-    public static HabitFactPostDTO getHabitFactPostDTO(){
+    public static HabitFactPostDTO getHabitFactPostDTO() {
         return new HabitFactPostDTO(null, getHabitDictionaryIdDto());
     }
-
 
 
 }

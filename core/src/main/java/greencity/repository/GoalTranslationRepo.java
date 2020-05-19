@@ -37,7 +37,7 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
      */
     @Query("SELECT g FROM GoalTranslation g WHERE g.goal.id IN "
         + "(SELECT ug.goal FROM UserGoal ug WHERE ug.user.id = ?1 AND ug.id = ?3) AND g.language.code = ?2")
-    GoalTranslation findByUserIdAndLanguageAndUserGoalId(Long userId, String languageCode, Long userGoalId);
+    GoalTranslation findByUserIdLangAndUserGoalId(Long userId, String languageCode, Long userGoalId);
 
     /**
      * Method returns goal translations for specific goal and language code.
