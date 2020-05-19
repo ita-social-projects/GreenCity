@@ -70,7 +70,7 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"), null);
+            Collections.singletonList("tag"), null, null);
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
@@ -266,15 +266,15 @@ public class ModelUtils {
     }
 
 
-    public static Advice getAdvice(){
+    public static Advice getAdvice() {
         return new Advice(1L, null, null);
     }
 
-    public static HabitDictionaryIdDto getHabitDictionaryIdDto(){
+    public static HabitDictionaryIdDto getHabitDictionaryIdDto() {
         return new HabitDictionaryIdDto(1L);
     }
 
-    public static AdvicePostDTO getAdvicePostDTO(){
+    public static AdvicePostDTO getAdvicePostDTO() {
         return new AdvicePostDTO(null, getHabitDictionaryIdDto());
     }
 
@@ -282,11 +282,11 @@ public class ModelUtils {
         return new FactTranslation(1L, getLanguage(), null, "Content");
     }
 
-    public static HabitFact getHabitFact(){
+    public static HabitFact getHabitFact() {
         return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
     }
 
-    public static HabitFactPostDTO getHabitFactPostDTO(){
+    public static HabitFactPostDTO getHabitFactPostDTO() {
         return new HabitFactPostDTO(null, getHabitDictionaryIdDto());
     }
 
