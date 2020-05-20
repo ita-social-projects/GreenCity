@@ -91,7 +91,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                     savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
-            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL, dto.getLang());
+            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
         return new SuccessSignUpDto(user.getId(), user.getName(), user.getEmail(), true);
     }

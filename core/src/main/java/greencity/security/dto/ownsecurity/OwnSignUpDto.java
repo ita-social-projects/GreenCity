@@ -35,7 +35,4 @@ public class OwnSignUpDto {
         message = INVALID_PASSWORD
     )
     private String password;
-
-    @NotBlank
-    private String lang;
 }
