@@ -8,7 +8,6 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
-import greencity.security.events.SignInEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.service.GoogleSecurityService;
 import greencity.service.UserService;
@@ -21,7 +20,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static greencity.constant.AppConstant.GOOGLE_USER_NAME;
+import static greencity.constant.AppConstant.GOOGLE_USERNAME;
 import static greencity.constant.ErrorMessage.*;
 
 /**
@@ -67,7 +66,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             if (googleIdToken != null) {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
-                String userName = (String) payload.get(GOOGLE_USER_NAME);
+                String userName = (String) payload.get(GOOGLE_USERNAME);
                 User byEmail;
                 byEmail = userService.findByEmail(email);
                 User user = byEmail;
@@ -75,7 +74,6 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                     log.info(USER_NOT_FOUND_BY_EMAIL + email);
                     user = createNewUser(email, userName);
                     User savedUser = userService.save(user);
-                    appEventPublisher.publishEvent(new SignInEvent(savedUser));
                     log.info("Google sign-up and sign-in user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 } else {
@@ -85,8 +83,9 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                     log.info("Google sign-in exist user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 }
+            } else {
+                throw new IllegalArgumentException(BAD_GOOGLE_TOKEN);
             }
-            throw new IllegalArgumentException(BAD_GOOGLE_TOKEN);
         } catch (GeneralSecurityException | IOException e) {
             throw new IllegalArgumentException(BAD_GOOGLE_TOKEN + ". " + e.getMessage());
         }
