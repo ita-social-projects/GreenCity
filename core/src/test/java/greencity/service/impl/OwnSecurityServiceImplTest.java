@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -10,8 +9,6 @@ import greencity.exception.exceptions.EmailNotVerified;
 import greencity.message.VerifyEmailMessage;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.events.SignInEvent;
-import greencity.security.events.SignUpEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.service.OwnSecurityService;
@@ -19,14 +16,15 @@ import greencity.security.service.impl.OwnSecurityServiceImpl;
 import greencity.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class OwnSecurityServiceImplTest {
 
@@ -41,9 +39,6 @@ public class OwnSecurityServiceImplTest {
 
     @Mock
     JwtTool jwtTool;
-
-    @Mock
-    ApplicationEventPublisher appEventPublisher;
 
     @Mock
     RabbitTemplate rabbitTemplate;
@@ -61,7 +56,7 @@ public class OwnSecurityServiceImplTest {
     public void init() {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
-            jwtTool, 1, appEventPublisher, rabbitTemplate);
+            jwtTool, 1, rabbitTemplate);
 
         verifiedUser = User.builder()
             .email("test@gmail.com")
@@ -111,13 +106,11 @@ public class OwnSecurityServiceImplTest {
     public void signIn() {
         when(userService.findByEmail(anyString())).thenReturn(verifiedUser);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        doNothing().when(appEventPublisher).publishEvent(any(SignUpEvent.class));
         when(jwtTool.createAccessToken(anyString(), any(ROLE.class))).thenReturn("new-access-token");
         when(jwtTool.createRefreshToken(any(User.class))).thenReturn("new-refresh-token");
 
         ownSecurityService.signIn(ownSignInDto);
 
-        verify(appEventPublisher, times(1)).publishEvent(any(SignInEvent.class));
         verify(userService, times(1)).findByEmail(anyString());
         verify(passwordEncoder, times(1)).matches(anyString(), anyString());
         verify(jwtTool, times(1)).createAccessToken(anyString(), any(ROLE.class));
@@ -128,7 +121,6 @@ public class OwnSecurityServiceImplTest {
     public void signInNotVerifiedUser() {
         when(userService.findByEmail(anyString())).thenReturn(notVerifiedUser);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        doNothing().when(appEventPublisher).publishEvent(any(SignUpEvent.class));
         when(jwtTool.createAccessToken(anyString(), any(ROLE.class))).thenReturn("new-access-token");
         when(jwtTool.createRefreshToken(any(User.class))).thenReturn("new-refresh-token");
 
