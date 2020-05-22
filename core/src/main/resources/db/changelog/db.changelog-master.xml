@@ -32,4 +32,5 @@
     <include file="db/changelog/logs/ch-change-table-users-Yurchuk-1.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-3.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-4.xml"/>
+    <include file="db/changelog/logs/ch-users-friends-Datsko.xml"/>
 </databaseChangeLog>
