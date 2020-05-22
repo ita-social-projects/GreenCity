@@ -247,4 +247,10 @@ public interface UserService {
      * @author Shevtsiv Rostyslav
      */
     long getActivatedUsersAmount();
+
+    List<User> getAllUserFriends(Long userId);
+
+    void deleteUserFriendById(Long userId, Long friendId);
+
+    void addNewFriend(Long userId, Long friendId);
 }

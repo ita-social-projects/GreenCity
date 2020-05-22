@@ -635,4 +635,36 @@ public class UserServiceImpl implements UserService {
         }
         return habitDictionaryDtos;
     }
+
+    @Override
+    public List<User> getAllUserFriends(Long userId) {
+        findById(userId);
+        return userRepo.getAllUserFriends(userId);
+    }
+
+    @Override
+    public void deleteUserFriendById(Long userId, Long friendId) {
+        if (friendId == null) {
+            throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);  ///question!!!
+        }
+        userRepo.deleteUserFriendById(userId,friendId);
+    }
+
+    @Override
+    public void addNewFriend(Long userId, Long friendId) {
+        List<User> allUserFriends = getAllUserFriends(userId);
+
+        if (friendId == null) {
+            throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);   ///question!!!
+        }
+
+        if (!allUserFriends.isEmpty()) {
+            getAllUserFriends(userId).forEach(user -> {
+                if (user.getId().equals(friendId)) {
+                    throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);  ///question!!!
+                }
+            });
+        }
+        userRepo.addNewFriend(userId,friendId);
+    }
 }

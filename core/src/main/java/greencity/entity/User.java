@@ -88,4 +88,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CustomGoal> customGoals = new ArrayList<>();
+
+    @OneToMany
+    @JoinTable(name = "users_friends",
+            joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "friends",referencedColumnName = "id"))
+    private List<User> userFriends = new ArrayList<>();
 }

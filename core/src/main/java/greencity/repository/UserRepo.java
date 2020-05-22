@@ -71,4 +71,24 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return amount of user with given {@link UserStatus}.
      */
     long countAllByUserStatus(UserStatus userStatus);
+
+    /**
+     * Get all user friends{@link User}.
+     * @return list of {@link User}.
+     */
+    @Query(value = "SELECT * FROM public.users_friends WHERE user_id= :userId",nativeQuery = true)
+    List<User> getAllUserFriends(Long userId);
+
+    /**
+     * Delete friend {@link User}.
+     */
+    @Query(value = "DELETE FROM public.users_friends WHERE user_id= :userId AND friends= :friendId",nativeQuery = true)
+    void deleteUserFriendById(Long userId, Long friendId);
+
+    /**
+     * Add new friend {@link User}.
+     * @return new Friend {@link User}.
+     */
+    @Query(value = "INSERT INTO public.users_friends(user_id, friends) VALUES (:userId, :friendId)", nativeQuery = true)
+    void addNewFriend(Long userId, Long friendId);
 }
