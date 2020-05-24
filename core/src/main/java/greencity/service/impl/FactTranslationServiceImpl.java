@@ -1,9 +1,12 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.FactTranslationRepo;
 import greencity.service.FactTranslationService;
 import greencity.service.HabitFactService;
@@ -70,4 +73,19 @@ public class FactTranslationServiceImpl implements FactTranslationService {
     public List<FactTranslation> saveFactTranslation(List<FactTranslation> factTranslations) {
         return factTranslationRepo.saveAll(factTranslations);
     }
+
+    /**
+     * Method to get today's fact of day by language id.
+     *
+     * @param languageId id of language of the fact.
+     * @return {@link LanguageTranslationDTO} of today's fact of day.
+     */
+    @Override
+    public LanguageTranslationDTO getFactOfTheDay(Long languageId) {
+        return modelMapper.map(
+            factTranslationRepo.findAllByFactOfDayStatusAndLanguageId(1, languageId).orElseThrow(()
+                -> new NotFoundException(ErrorMessage.FACT_OF_DAY_NOT_FOUND_BY_LANGUAGE_ID + languageId)).get(0),
+            LanguageTranslationDTO.class);
+    }
 }
+

@@ -279,7 +279,7 @@ public class ModelUtils {
     }
 
     public static FactTranslation getFactTranslation() {
-        return new FactTranslation(1L, getLanguage(), null, "Content");
+        return new FactTranslation(1L, getLanguage(),1, null, "Content");
     }
 
     public static HabitFact getHabitFact() {

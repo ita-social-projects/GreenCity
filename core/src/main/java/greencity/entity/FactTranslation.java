@@ -20,6 +20,9 @@ public class FactTranslation {
     @ManyToOne
     private Language language;
 
+    @Column(nullable = false)
+    private int factOfDayStatus;
+
     @ManyToOne
     private HabitFact habitFact;
 

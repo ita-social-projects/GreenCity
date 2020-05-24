@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
 import java.util.List;
@@ -30,4 +31,6 @@ public interface FactTranslationService {
      * @author Vitaliy Dzen
      */
     List<FactTranslation> saveHabitFactAndFactTranslation(HabitFactPostDTO habitFactPostDTO);
+
+    LanguageTranslationDTO getFactOfTheDay(Long languageId);
 }
