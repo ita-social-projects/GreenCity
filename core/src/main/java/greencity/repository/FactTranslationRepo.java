@@ -45,7 +45,13 @@ public interface FactTranslationRepo extends JpaRepository<FactTranslation, Long
         + "(select habit_fact_id from fact_translations where fact_of_day_status = 0 order by RANDOM() LIMIT 1)")
     Optional<List<FactTranslation>> findRandomFact();
 
-
+    /**
+     * Method to get list of {@link FactTranslation} specified by status and language.
+     *
+     * @param factOfDayStatus   status that shows if fact was, is or will be in future fact of the day.
+     * @param languageId of {@link Language}
+     * @return  list of {@link FactTranslation} that satisfy the conditions.
+     */
     Optional<List<FactTranslation>> findAllByFactOfDayStatusAndLanguageId(int factOfDayStatus, Long languageId);
 
     /**

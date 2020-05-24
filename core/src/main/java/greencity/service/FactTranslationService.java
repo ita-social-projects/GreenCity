@@ -32,5 +32,11 @@ public interface FactTranslationService {
      */
     List<FactTranslation> saveHabitFactAndFactTranslation(HabitFactPostDTO habitFactPostDTO);
 
+    /**
+     * Method to get today's fact of day by language id.
+     *
+     * @param languageId id of language of the fact.
+     * @return {@link LanguageTranslationDTO} of today's fact of day.
+     */
     LanguageTranslationDTO getFactOfTheDay(Long languageId);
 }
