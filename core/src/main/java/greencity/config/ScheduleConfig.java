@@ -29,8 +29,7 @@ public class ScheduleConfig {
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void chooseNewFactOfTheDay() {
-        Optional<List<FactTranslation>> list =
-            factTranslationRepo.findRandomFact();
+        Optional<List<FactTranslation>> list = factTranslationRepo.findRandomFact();
         if (list.isPresent()) {
             factTranslationRepo.updateFactOfDayStatus(1, 2);
         } else {
