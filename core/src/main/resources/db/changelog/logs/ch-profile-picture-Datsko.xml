@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+<changeSet author="Marian Datsko" id="1531227598316-81">
+        <createTable tableName="profile_picture">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="picture_url" type="VARCHAR(255)"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Marian Datsko" id="1571227598316-82">
+        <createIndex indexName="FK_profile_picture_ma" tableName="profile_picture">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Marian Datsko" id="1573227598316-83">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="profile_picture"
+                                 constraintName="FK_profile_picture_ma" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>
