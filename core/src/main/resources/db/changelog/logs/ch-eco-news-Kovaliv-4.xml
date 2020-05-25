@@ -11,11 +11,7 @@
         <dropNotNullConstraint tableName="eco_news" columnName="image_path"/>
     </changeSet>
     <changeSet id="taraskovaliv9" author="Kovaliv Taras">
-        <update tableName="eco_news">
-            <column name="text" type="varchar(63206)"/>
-        </update>
-        <update tableName="eco_news">
-            <column name="title" type="varchar(200)"/>
-        </update>
+        <modifyDataType tableName="eco_news" columnName="text" newDataType="varchar(63206)"/>
+        <modifyDataType tableName="eco_news" columnName="title" newDataType="varchar(200)"/>
     </changeSet>
 </databaseChangeLog>
