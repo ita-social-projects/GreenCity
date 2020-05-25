@@ -38,7 +38,7 @@ public class ScheduleConfig {
      * Invoke {@link sendHabitNotification} from EmailMessageReceiver to send email letters
      * to each user that hasn't marked any habit during last 3 days.
      *
-     * @param users     list of potential {@link User} to send notifications.
+     * @param users list of potential {@link User} to send notifications.
      */
     private void sendHabitNotificationIfNeed(List<User> users) {
         ZonedDateTime end = ZonedDateTime.now();
