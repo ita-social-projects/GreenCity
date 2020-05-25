@@ -30,7 +30,7 @@ public class ScheduleConfig {
     @Scheduled(cron = "0 0 0 * * *")
     public void chooseNewFactOfTheDay() {
         Optional<List<FactTranslation>> list =
-            factTranslationRepo.findRandomFact(); // usage = 0 not used, u = 1 - current, u = 2 - was used
+            factTranslationRepo.findRandomFact();
         if (list.isPresent()) {
             factTranslationRepo.updateFactOfDayStatus(1, 2);
         } else {
