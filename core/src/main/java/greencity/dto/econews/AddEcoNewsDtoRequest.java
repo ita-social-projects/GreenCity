@@ -21,5 +21,5 @@ public class AddEcoNewsDtoRequest {
 
     private String source;
 
-    private String imagePath;
+    private String image;
 }
