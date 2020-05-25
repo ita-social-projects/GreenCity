@@ -59,4 +59,12 @@ public interface EmailService {
      * @param token        password recovery token.
      */
     void sendRestoreEmail(Long userId, String userFistName, String userEmail, String token);
+
+    /**
+     * Sends email notification about not marked habits during 3 last days.
+     *
+     * @param name          user name is used in email letter.
+     * @param email         letter is sent to this email.
+     */
+    void sendHabitNotification(String name, String email);
 }
