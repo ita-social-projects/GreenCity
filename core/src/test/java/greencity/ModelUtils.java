@@ -347,5 +347,12 @@ public class ModelUtils {
                 .name("photo")
                 .build();
     }
+
+    public static ProfilePicture getProfilePicture(){
+        return ProfilePicture.builder()
+                .id(2L)
+                .url(TestConst.SITE)
+                .build();
+    }
 }
  
