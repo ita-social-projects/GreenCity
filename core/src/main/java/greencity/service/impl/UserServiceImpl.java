@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
     private final FileService fileService;
     private final ProfilePictureService profilePictureService;
 
-    private final static String defaultProfilePicture = "https://storage.cloud.google.com"
+    private final String defaultProfilePicture = "https://storage.cloud.google.com"
             + "/staging.greencity-c5a3a.appspot.com"
             + "/d333665a-9269-49ef-bc77-2d8d4090290f";
 
