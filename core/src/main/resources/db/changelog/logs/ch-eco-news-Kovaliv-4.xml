@@ -10,4 +10,12 @@
         </addColumn>
         <dropNotNullConstraint tableName="eco_news" columnName="image_path"/>
     </changeSet>
+    <changeSet id="taraskovaliv9" author="Kovaliv Taras">
+        <update tableName="eco_news">
+            <column name="text" type="varchar(63206)"/>
+        </update>
+        <update tableName="eco_news">
+            <column name="title" type="varchar(200)"/>
+        </update>
+    </changeSet>
 </databaseChangeLog>
