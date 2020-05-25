@@ -40,7 +40,7 @@ public class ScheduleConfig {
      *
      * @param users     list of potential {@link User} to send notifications.
      */
-    public void sendHabitNotificationIfNeedBe(List<User> users) {
+    private void sendHabitNotificationIfNeed(List<User> users) {
         ZonedDateTime end = ZonedDateTime.now();
         ZonedDateTime start = end.minusDays(3);
         for (User user : users) {
@@ -63,7 +63,7 @@ public class ScheduleConfig {
     void sendHabitNotificationEveryDay() {
         List<User> users = userRepo.findAllByEmailNotification(IMMEDIATELY);
         users.addAll(userRepo.findAllByEmailNotification(DAILY));
-        sendHabitNotificationIfNeedBe(users);
+        sendHabitNotificationIfNeed(users);
     }
 
     /**
@@ -73,7 +73,7 @@ public class ScheduleConfig {
     @Scheduled(cron = "0 0 19 * * FRI")
     void sendHabitNotificationEveryWeek() {
         List<User> users = userRepo.findAllByEmailNotification(WEEKLY);
-        sendHabitNotificationIfNeedBe(users);
+        sendHabitNotificationIfNeed(users);
     }
 
     /**
@@ -83,6 +83,6 @@ public class ScheduleConfig {
     @Scheduled(cron = "0 0 19 25 * *")
     void sendHabitNotificationEveryMonth() {
         List<User> users = userRepo.findAllByEmailNotification(MONTHLY);
-        sendHabitNotificationIfNeedBe(users);
+        sendHabitNotificationIfNeed(users);
     }
 }
