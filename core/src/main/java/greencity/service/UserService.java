@@ -14,6 +14,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -140,7 +141,7 @@ public interface UserService {
      * @return {@link User}.
      * @author Nazar Stasyuk
      */
-    User update(UserUpdateDto dto, String email);
+    User update(UserUpdateDto dto, String email, MultipartFile image);
 
     /**
      * Updates refresh token for a given user.

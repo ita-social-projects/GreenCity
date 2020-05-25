@@ -18,11 +18,7 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitDictionary;
-import greencity.entity.HabitDictionaryTranslation;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
@@ -46,9 +42,9 @@ import greencity.repository.HabitStatisticRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
-import greencity.service.HabitDictionaryService;
-import greencity.service.HabitService;
-import greencity.service.UserService;
+import greencity.service.*;
+
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,8 +58,10 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import static greencity.constant.ErrorMessage.USER_GOAL_NOT_FOUND;
 import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_GOALS;
@@ -92,6 +90,12 @@ public class UserServiceImpl implements UserService {
     private final GoalTranslationRepo goalTranslationRepo;
     private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
+    private final FileService fileService;
+    private final ProfilePictureService profilePictureService;
+
+    private final String defaultProfilePicture = "https://storage.cloud.google.com"
+            + "/staging.greencity-c5a3a.appspot.com"
+            + "/d333665a-9269-49ef-bc77-2d8d4090290f";
 
     /**
      * Autowired mapper.
@@ -243,12 +247,21 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User update(UserUpdateDto dto, String email) {
+    public User update(UserUpdateDto dto, String email, MultipartFile image) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setName(dto.getName());
         user.setEmailNotification(dto.getEmailNotification());
+
+        String url = image != null ? fileService.upload(image).toString() : defaultProfilePicture;
+
+        ProfilePicture profilePicture = profilePictureService.getProfilePictureByUserId(user.getId())
+                .orElse(new ProfilePicture());
+        profilePicture.setUrl(url);
+        profilePicture.setUser(user);
+
+        user.setProfilePicture(profilePicture);
         return userRepo.save(user);
     }
 

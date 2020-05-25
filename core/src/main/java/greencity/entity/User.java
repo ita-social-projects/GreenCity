@@ -88,4 +88,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CustomGoal> customGoals = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
+    private ProfilePicture profilePicture;
 }
