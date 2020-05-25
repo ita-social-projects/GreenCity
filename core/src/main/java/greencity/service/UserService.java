@@ -7,6 +7,7 @@ import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
+import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
@@ -248,4 +249,11 @@ public interface UserService {
      * @author Shevtsiv Rostyslav
      */
     long getActivatedUsersAmount();
+
+    /**
+     * Get profile picture path {@link String}.
+     *
+     * @return profile picture path {@link String}
+     */
+    String getProfilePicturePathByUserId(Long id);
 }

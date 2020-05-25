@@ -41,7 +41,6 @@ import greencity.repository.UserRepo;
 import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
 
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -50,10 +49,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import greencity.service.ProfilePictureService;
 import junit.framework.TestCase;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -68,10 +65,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.print.DocFlavor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -116,8 +110,6 @@ public class UserServiceImplTest {
     @Mock
     FileService fileService;
 
-    @Mock
-    ProfilePictureService profilePictureService;
 
     private User user =
         User.builder()
@@ -364,14 +356,13 @@ public class UserServiceImplTest {
         assertEquals(userInitialsByEmail.getEmailNotification(), user.getEmailNotification());
     }
 
+
     @SneakyThrows
     @Test
     public void update() {
         MultipartFile multipartFile = ModelUtils.getFile();
-        ProfilePicture profilePicture = ModelUtils.getProfilePicture();
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        when(profilePictureService.getProfilePictureByUserId(anyLong())).thenReturn(Optional.of(profilePicture));
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         UserUpdateDto userUpdateDto = new UserUpdateDto();
         userUpdateDto.setName(user.getName());
@@ -379,7 +370,7 @@ public class UserServiceImplTest {
         User user = userService.update(userUpdateDto, "",multipartFile);
         assertEquals(userUpdateDto.getName(), user.getName());
         assertEquals(userUpdateDto.getEmailNotification(), user.getEmailNotification());
-        assertEquals(profilePicture,user.getProfilePicture());
+        assertEquals(ModelUtils.getUrl().toString(),user.getProfilePicturePath());
         verify(userRepo, times(1)).save(any());
     }
 

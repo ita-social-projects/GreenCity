@@ -89,7 +89,6 @@ public class UserServiceImpl implements UserService {
     private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private final FileService fileService;
-    private final ProfilePictureService profilePictureService;
 
     private final String defaultProfilePicture = "https://storage.cloud.google.com"
             + "/staging.greencity-c5a3a.appspot.com"
@@ -253,13 +252,7 @@ public class UserServiceImpl implements UserService {
         user.setEmailNotification(dto.getEmailNotification());
 
         String url = image != null ? fileService.upload(image).toString() : defaultProfilePicture;
-
-        ProfilePicture profilePicture = profilePictureService.getProfilePictureByUserId(user.getId())
-                .orElse(new ProfilePicture());
-        profilePicture.setUrl(url);
-        profilePicture.setUser(user);
-
-        user.setProfilePicture(profilePicture);
+        user.setProfilePicturePath(url);
         return userRepo.save(user);
     }
 
@@ -640,5 +633,19 @@ public class UserServiceImpl implements UserService {
             habitDictionaryDtos.add(hd);
         }
         return habitDictionaryDtos;
+    }
+
+    /**
+     * Get profile picture path {@link String}.
+     *
+     * @return profile picture path {@link String}
+     */
+    @Override
+    public String getProfilePicturePathByUserId(Long id) {
+        String profilePicturePathByUserId = userRepo.getProfilePicturePathByUserId(id);
+        if (profilePicturePathByUserId == null){
+            throw new NotFoundException(id.toString());
+        }
+        return profilePicturePathByUserId;
     }
 }

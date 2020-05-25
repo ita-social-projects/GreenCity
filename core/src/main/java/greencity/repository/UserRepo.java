@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
@@ -71,4 +72,12 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return amount of user with given {@link UserStatus}.
      */
     long countAllByUserStatus(UserStatus userStatus);
+
+    /**
+     * Get profile picture path {@link String}.
+     *
+     * @return profile picture path {@link String}
+     */
+    @Query("SELECT profilePicturePath FROM User WHERE id=:id")
+    String getProfilePicturePathByUserId(Long id);
 }

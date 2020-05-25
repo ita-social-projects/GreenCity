@@ -207,7 +207,7 @@ public class UserController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PutMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PatchMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity updateUser(@Valid @RequestPart UserUpdateDto dto,
                                      @ApiParam(value = "Profile picture")
                                      @RequestPart(required = false) MultipartFile image,
