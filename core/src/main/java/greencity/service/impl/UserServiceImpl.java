@@ -44,7 +44,6 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import greencity.service.*;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +57,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,7 +91,7 @@ public class UserServiceImpl implements UserService {
     private final FileService fileService;
     private final ProfilePictureService profilePictureService;
 
-    private final String defaultProfilePicture = "https://storage.cloud.google.com"
+    private final static String defaultProfilePicture = "https://storage.cloud.google.com"
             + "/staging.greencity-c5a3a.appspot.com"
             + "/d333665a-9269-49ef-bc77-2d8d4090290f";
 
