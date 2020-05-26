@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.entity.enums.FactOfDayStatus;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +21,8 @@ public class FactTranslation {
     @ManyToOne
     private Language language;
 
-    @Column(nullable = false)
-    private int factOfDayStatus;
+    @Enumerated(value = EnumType.ORDINAL)
+    private FactOfDayStatus factOfDayStatus;
 
     @ManyToOne
     private HabitFact habitFact;

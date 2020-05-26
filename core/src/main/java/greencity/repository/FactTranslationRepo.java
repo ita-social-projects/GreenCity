@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
 import greencity.entity.Language;
+import greencity.entity.enums.FactOfDayStatus;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,11 +49,12 @@ public interface FactTranslationRepo extends JpaRepository<FactTranslation, Long
     /**
      * Method to get list of {@link FactTranslation} specified by status and language.
      *
-     * @param factOfDayStatus   status that shows if fact was, is or will be in future fact of the day.
-     * @param languageId of {@link Language}
-     * @return  list of {@link FactTranslation} that satisfy the conditions.
+     * @param factOfDayStatus status that shows if fact was, is or will be in future fact of the day.
+     * @param languageId      of {@link Language}
+     * @return list of {@link FactTranslation} that satisfy the conditions.
      */
-    Optional<List<FactTranslation>> findAllByFactOfDayStatusAndLanguageId(int factOfDayStatus, Long languageId);
+    Optional<List<FactTranslation>> findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus factOfDayStatus,
+                                                                          Long languageId);
 
     /**
      * Method to replace all outdated factOfDay statuses by updated.
@@ -62,7 +64,7 @@ public interface FactTranslationRepo extends JpaRepository<FactTranslation, Long
      */
     @Modifying
     @Query("UPDATE FactTranslation f set f.factOfDayStatus = ?2 where f.factOfDayStatus = ?1")
-    void updateFactOfDayStatus(int outdated, int updated);
+    void updateFactOfDayStatus(FactOfDayStatus outdated, FactOfDayStatus updated);
 
     /**
      * Method to change fact of day status for all facts with certain habit fact id.
@@ -72,5 +74,5 @@ public interface FactTranslationRepo extends JpaRepository<FactTranslation, Long
      */
     @Modifying
     @Query("UPDATE FactTranslation f set f.factOfDayStatus = ?1 WHERE f.habitFact.id = ?2")
-    void updateFactOfDayStatusByHabitfactId(int status, Long habitfactId);
+    void updateFactOfDayStatusByHabitfactId(FactOfDayStatus status, Long habitfactId);
 }
