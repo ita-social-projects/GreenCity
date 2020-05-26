@@ -33,4 +33,5 @@
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-3.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-4.xml"/>
     <include file="db/changelog/logs/ch-change-fact-translations-Patsula.xml"/>
+    <include file="db/changelog/logs/ch-change-users-addColumn-datsko.xml"/>
 </databaseChangeLog>

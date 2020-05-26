@@ -18,11 +18,7 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitDictionary;
-import greencity.entity.HabitDictionaryTranslation;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
@@ -46,9 +42,8 @@ import greencity.repository.HabitStatisticRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
-import greencity.service.HabitDictionaryService;
-import greencity.service.HabitService;
-import greencity.service.UserService;
+import greencity.service.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,14 +59,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import static greencity.constant.ErrorMessage.USER_GOAL_NOT_FOUND;
-import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_GOALS;
-import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY;
-import static greencity.constant.ErrorMessage.USER_HAS_NO_GOALS;
-import static greencity.constant.ErrorMessage.USER_HAS_NO_SUCH_GOAL;
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -92,6 +82,7 @@ public class UserServiceImpl implements UserService {
     private final GoalTranslationRepo goalTranslationRepo;
     private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
+    private final FileService fileService;
 
     /**
      * Autowired mapper.
@@ -263,20 +254,25 @@ public class UserServiceImpl implements UserService {
             .stream()
             .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
             .collect(Collectors.toList());
-        for (UserGoalResponseDto el1 : userGoalResponseDtos) {
-            if (el1.getText() == null) {
-                if (goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, el1.getId()) != null) {
-                    el1.setText(goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, el1.getId())
-                        .getText());
-                } else {
-                    el1.setText(customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(el1.getId(), userId).getText());
-                }
-            }
-        }
         if (userGoalResponseDtos.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
         }
+        userGoalResponseDtos.stream().forEach(el -> setTextForAnyUserGoal(el, userId, language));
         return userGoalResponseDtos;
+    }
+
+    /**
+     * Method for setting text either for UserGoal with localization or for CustomGoal.
+     *
+     * @param userId id of the current user.
+     * @param dto    {@link UserGoalResponseDto}
+     */
+    private UserGoalResponseDto setTextForAnyUserGoal(UserGoalResponseDto dto, Long userId, String language) {
+        String text = userGoalRepo.findGoalByUserGoalId(dto.getId()).isPresent()
+            ? goalTranslationRepo.findByUserIdLangAndUserGoalId(userId, language, dto.getId()).getText()
+            : customGoalRepo.findByUserGoalIdAndUserId(dto.getId(), userId).getText();
+        dto.setText(text);
+        return dto;
     }
 
     /**
@@ -336,7 +332,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Metgod save user goals with custom goal dictionary.
+     * Method save user goals with custom goal dictionary.
      *
      * @param user        {@link User} current user
      * @param customGoals list {@link UserCustomGoalDto} for saving
@@ -408,17 +404,7 @@ public class UserServiceImpl implements UserService {
             throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
         }
         UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
-        if (updatedUserGoal.getText() == null) {
-            if (goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, updatedUserGoal.getId())
-                != null) {
-                updatedUserGoal.setText(
-                    goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, updatedUserGoal.getId())
-                        .getText());
-            } else {
-                updatedUserGoal.setText(
-                    customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(updatedUserGoal.getId(), userId).getText());
-            }
-        }
+        setTextForAnyUserGoal(updatedUserGoal, userId, language);
         return updatedUserGoal;
     }
 
@@ -634,5 +620,37 @@ public class UserServiceImpl implements UserService {
             habitDictionaryDtos.add(hd);
         }
         return habitDictionaryDtos;
+    }
+
+    /**
+     * Get profile picture path {@link String}.
+     *
+     * @return profile picture path {@link String}
+     */
+    @Override
+    public String getProfilePicturePathByUserId(Long id) {
+        String profilePicturePathByUserId = userRepo.getProfilePicturePathByUserId(id);
+        if (profilePicturePathByUserId == null) {
+            throw new NotFoundException(PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString());
+        }
+        return profilePicturePathByUserId;
+    }
+
+    /**
+     * Update user profile picture {@link User}.
+     *
+     * @param image {@link MultipartFile}
+     * @param email {@link String} - email of user that need to update.
+     * @return {@link User}.
+     * @author Marian Datsko
+     */
+    @Override
+    public User updateUserProfilePicture(MultipartFile image, String email) {
+        User user = userRepo
+                .findByEmail(email)
+                .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        String url = fileService.upload(image).toString();
+        user.setProfilePicturePath(url);
+        return userRepo.save(user);
     }
 }

@@ -33,8 +33,7 @@ public interface CustomGoalRepo extends JpaRepository<CustomGoal, Long> {
     @Query("SELECT cg FROM CustomGoal cg WHERE cg.id IN"
         + "(SELECT ug.customGoal FROM UserGoal ug WHERE ug.user.id=:userId AND ug.id=:userGoalId) "
         + "AND cg.user.id=:userId")
-    CustomGoal findCustomGoalsForUserIdAndUserGoalId(@Param("userGoalId") Long userGoalId,
-                                                     @Param("userId") Long userId);
+    CustomGoal findByUserGoalIdAndUserId(@Param("userGoalId") Long userGoalId, @Param("userId") Long userId);
 
     /**
      * Method find all custom goals by user.
