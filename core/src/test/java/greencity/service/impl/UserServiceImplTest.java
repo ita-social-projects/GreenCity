@@ -38,7 +38,6 @@ import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
-import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
 
 import java.time.LocalDateTime;
@@ -50,7 +49,6 @@ import java.util.List;
 import java.util.Optional;
 
 import junit.framework.TestCase;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
