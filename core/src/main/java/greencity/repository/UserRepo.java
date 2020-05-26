@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
