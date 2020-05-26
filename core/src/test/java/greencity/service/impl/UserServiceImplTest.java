@@ -351,8 +351,6 @@ public class UserServiceImplTest {
         assertEquals(userInitialsByEmail.getEmailNotification(), user.getEmailNotification());
     }
 
-
-    @SneakyThrows
     @Test
     public void update() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));

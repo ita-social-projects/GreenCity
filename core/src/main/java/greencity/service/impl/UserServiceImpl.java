@@ -61,13 +61,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import static greencity.constant.ErrorMessage.USER_GOAL_NOT_FOUND;
-import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_GOALS;
-import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY;
-import static greencity.constant.ErrorMessage.USER_HAS_NO_GOALS;
-import static greencity.constant.ErrorMessage.USER_HAS_NO_SUCH_GOAL;
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -637,7 +631,7 @@ public class UserServiceImpl implements UserService {
     public String getProfilePicturePathByUserId(Long id) {
         String profilePicturePathByUserId = userRepo.getProfilePicturePathByUserId(id);
         if (profilePicturePathByUserId == null) {
-            throw new NotFoundException(id.toString());
+            throw new NotFoundException(PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString());
         }
         return profilePicturePathByUserId;
     }

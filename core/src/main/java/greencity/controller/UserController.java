@@ -202,7 +202,7 @@ public class UserController {
      */
     @ApiOperation(value = "Update User")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
@@ -212,7 +212,7 @@ public class UserController {
                                      @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.update(dto, email);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
@@ -575,7 +575,7 @@ public class UserController {
      */
     @ApiOperation(value = "Update user profile picture")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
             @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
             @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
@@ -587,6 +587,6 @@ public class UserController {
                                      @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.updateUserProfilePicture(image,email);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
