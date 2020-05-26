@@ -17,9 +17,6 @@ import greencity.repository.HabitRepo;
 import greencity.repository.UserRepo;
 import java.time.ZonedDateTime;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import static greencity.entity.enums.FactOfDayStatus.USED;
 import static greencity.entity.enums.FactOfDayStatus.CURRENT;
@@ -100,6 +97,7 @@ public class ScheduleConfig {
     void sendHabitNotificationEveryMonth() {
         List<User> users = userRepo.findAllByEmailNotification(MONTHLY);
         sendHabitNotificationIfNeed(users);
+    }
 
     /**
      * Once a day randomly chooses new fact of day that has not been fact of day during this iteration.
