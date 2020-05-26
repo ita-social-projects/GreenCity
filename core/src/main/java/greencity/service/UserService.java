@@ -14,7 +14,6 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -248,21 +247,4 @@ public interface UserService {
      * @author Shevtsiv Rostyslav
      */
     long getActivatedUsersAmount();
-
-    /**
-     * Get profile picture path {@link String}.
-     *
-     * @return profile picture path {@link String}
-     */
-    String getProfilePicturePathByUserId(Long id);
-
-    /**
-     * Update user profile picture {@link User}.
-     *
-     * @param image   {@link MultipartFile}
-     * @param email {@link String} - email of user that need to update.
-     * @return {@link User}.
-     * @author Marian Datsko
-     */
-    User updateUserProfilePicture(MultipartFile image, String email);
 }

@@ -51,14 +51,12 @@ public class OwnSecurityServiceImplTest {
 
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
-    @Value("${defaultProfilePicture}")
-    private String defaultProfilePicture;
 
     @Before
     public void init() {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
-            jwtTool, 1, rabbitTemplate,defaultProfilePicture);
+            jwtTool, 1, rabbitTemplate);
 
         verifiedUser = User.builder()
             .email("test@gmail.com")
