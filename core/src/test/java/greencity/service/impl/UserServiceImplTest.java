@@ -65,7 +65,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -106,10 +105,6 @@ public class UserServiceImplTest {
 
     @Mock
     HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
-
-    @Mock
-    FileService fileService;
-
 
     private User user =
         User.builder()
@@ -360,17 +355,14 @@ public class UserServiceImplTest {
     @SneakyThrows
     @Test
     public void update() {
-        MultipartFile multipartFile = ModelUtils.getFile();
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userRepo.save(any())).thenReturn(user);
-        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         UserUpdateDto userUpdateDto = new UserUpdateDto();
         userUpdateDto.setName(user.getName());
         userUpdateDto.setEmailNotification(user.getEmailNotification());
-        User user = userService.update(userUpdateDto, "",multipartFile);
+        User user = userService.update(userUpdateDto, "");
         assertEquals(userUpdateDto.getName(), user.getName());
         assertEquals(userUpdateDto.getEmailNotification(), user.getEmailNotification());
-        assertEquals(ModelUtils.getUrl().toString(),user.getProfilePicturePath());
         verify(userRepo, times(1)).save(any());
     }
 

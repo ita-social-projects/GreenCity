@@ -7,7 +7,6 @@ import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
-import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
@@ -142,7 +141,7 @@ public interface UserService {
      * @return {@link User}.
      * @author Nazar Stasyuk
      */
-    User update(UserUpdateDto dto, String email, MultipartFile image);
+    User update(UserUpdateDto dto, String email);
 
     /**
      * Updates refresh token for a given user.
@@ -256,4 +255,14 @@ public interface UserService {
      * @return profile picture path {@link String}
      */
     String getProfilePicturePathByUserId(Long id);
+
+    /**
+     * Update user profile picture {@link User}.
+     *
+     * @param image   {@link MultipartFile}
+     * @param email {@link String} - email of user that need to update.
+     * @return {@link User}.
+     * @author Marian Datsko
+     */
+    User updateUserProfilePicture(MultipartFile image, String email);
 }

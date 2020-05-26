@@ -195,10 +195,10 @@ public class UserController {
     }
 
     /**
-     * Update, add or change profile picture {@link User}.
+     * Update  {@link User}.
      *
      * @return {@link ResponseEntity}.
-     * @author Nazar Stasyuk, Datsko Marian
+     * @author Nazar Stasyuk
      */
     @ApiOperation(value = "Update User")
     @ApiResponses(value = {
@@ -207,13 +207,11 @@ public class UserController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PatchMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity updateUser(@Valid @RequestPart UserUpdateDto dto,
-                                     @ApiParam(value = "Profile picture")
-                                     @RequestPart(required = false) MultipartFile image,
+    @PatchMapping
+    public ResponseEntity updateUser(@Valid @RequestBody UserUpdateDto dto,
                                      @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
-        userService.update(dto, email, image);
+        userService.update(dto, email);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -567,5 +565,28 @@ public class UserController {
     public ResponseEntity<Long> getActivatedUsersAmount() {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.getActivatedUsersAmount());
+    }
+
+    /**
+     * Update user profile picture  {@link User}.
+     *
+     * @return {@link ResponseEntity}.
+     * @author Datsko Marian
+     */
+    @ApiOperation(value = "Update user profile picture")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping(path = "/profilePicture",
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<HttpStatus> updateUserProfilePicture(@ApiParam(value = "Profile picture")
+                                     @RequestPart(required = false) MultipartFile image,
+                                     @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        String email = principal.getName();
+        userService.updateUserProfilePicture(image,email);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

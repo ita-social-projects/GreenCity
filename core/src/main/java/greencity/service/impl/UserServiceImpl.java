@@ -90,10 +90,6 @@ public class UserServiceImpl implements UserService {
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private final FileService fileService;
 
-    private final String defaultProfilePicture = "https://storage.cloud.google.com"
-            + "/staging.greencity-c5a3a.appspot.com"
-            + "/d333665a-9269-49ef-bc77-2d8d4090290f";
-
     /**
      * Autowired mapper.
      */
@@ -244,15 +240,12 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User update(UserUpdateDto dto, String email, MultipartFile image) {
+    public User update(UserUpdateDto dto, String email) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setName(dto.getName());
         user.setEmailNotification(dto.getEmailNotification());
-
-        String url = image != null ? fileService.upload(image).toString() : defaultProfilePicture;
-        user.setProfilePicturePath(url);
         return userRepo.save(user);
     }
 
@@ -647,5 +640,23 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException(id.toString());
         }
         return profilePicturePathByUserId;
+    }
+
+    /**
+     * Update user profile picture {@link User}.
+     *
+     * @param image {@link MultipartFile}
+     * @param email {@link String} - email of user that need to update.
+     * @return {@link User}.
+     * @author Marian Datsko
+     */
+    @Override
+    public User updateUserProfilePicture(MultipartFile image, String email) {
+        User user = userRepo
+                .findByEmail(email)
+                .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        String url = fileService.upload(image).toString();
+        user.setProfilePicturePath(url);
+        return userRepo.save(user);
     }
 }
