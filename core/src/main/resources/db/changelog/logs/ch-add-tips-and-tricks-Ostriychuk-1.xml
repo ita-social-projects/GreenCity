@@ -13,7 +13,7 @@
             <column name="text" type="varchar(63206)">
                 <constraints nullable="false"/>
             </column>
-            <column name="creation_date" type="datetime(6)">
+            <column name="creation_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
             <column name="author_id" type="BIGINT">

@@ -1,6 +1,24 @@
 package greencity.config;
 
-import greencity.mapping.*;
+import greencity.mapping.AddEcoNewsDtoRequestMapper;
+import greencity.mapping.AddEcoNewsDtoResponseMapper;
+import greencity.mapping.AddHabitStatisticDtoMapper;
+import greencity.mapping.AddTipsAndTricksDtoRequestMapper;
+import greencity.mapping.AddTipsAndTricksDtoResponseMapper;
+import greencity.mapping.AdviceTranslateMapper;
+import greencity.mapping.DiscountValueMapper;
+import greencity.mapping.EcoNewsAuthorDtoMapper;
+import greencity.mapping.EcoNewsDtoMapper;
+import greencity.mapping.FavoritePlaceDtoMapper;
+import greencity.mapping.FavoritePlaceMapper;
+import greencity.mapping.FavoritePlaceWithLocationMapper;
+import greencity.mapping.GoalDtoMapper;
+import greencity.mapping.HabitCreateDtoMapper;
+import greencity.mapping.HabitMapper;
+import greencity.mapping.HabitStatisticMapper;
+import greencity.mapping.ProposePlaceMapper;
+import greencity.mapping.SearchNewsDtoMapper;
+import greencity.mapping.UserGoalResponseDtoMapper;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
@@ -28,6 +46,8 @@ public class MapperConfig {
     private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
     private FavoritePlaceMapper favoritePlaceMapper;
     private ProposePlaceMapper proposePlaceMapper;
+    private AddTipsAndTricksDtoRequestMapper addTipsAndTricksDtoRequestMapper;
+    private AddTipsAndTricksDtoResponseMapper addTipsAndTricksDtoResponseMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -73,5 +93,7 @@ public class MapperConfig {
         modelMapper.addConverter(favoritePlaceDtoMapper);
         modelMapper.addConverter(favoritePlaceMapper);
         modelMapper.addConverter(proposePlaceMapper);
+        modelMapper.addConverter(addTipsAndTricksDtoRequestMapper);
+        modelMapper.addConverter(addTipsAndTricksDtoResponseMapper);
     }
 }
