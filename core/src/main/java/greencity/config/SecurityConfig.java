@@ -133,7 +133,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/statistic/*",
                 "/user/{userId}/goals/*",
                 "/user/{userId}/customGoals",
-                "/user/{userId}/customGoals",
                 "/user/profilePicture"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
