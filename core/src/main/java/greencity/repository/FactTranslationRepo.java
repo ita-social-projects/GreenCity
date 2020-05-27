@@ -69,7 +69,7 @@ public interface FactTranslationRepo extends JpaRepository<FactTranslation, Long
     /**
      * Method to change fact of day status for all facts with certain habit fact id.
      *
-     * @param status      new fact of day status.
+     * @param status new fact of day status.
      * @param habitfactId habit fact id of group of facts in which method will change fact of day status
      */
     @Modifying
