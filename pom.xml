@@ -73,6 +73,8 @@
     <modules>
         <module>core</module>
         <module>email</module>
+        <module>storage</module>
     </modules>
+
 
 </project>
