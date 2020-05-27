@@ -71,12 +71,4 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return amount of user with given {@link UserStatus}.
      */
     long countAllByUserStatus(UserStatus userStatus);
-
-    /**
-     * Get profile picture path {@link String}.
-     *
-     * @return profile picture path {@link String}
-     */
-    @Query("SELECT profilePicturePath FROM User WHERE id=:id")
-    String getProfilePicturePathByUserId(Long id);
 }

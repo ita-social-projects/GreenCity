@@ -88,7 +88,4 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CustomGoal> customGoals = new ArrayList<>();
-
-    @Column(name = "profile_picture")
-    private String profilePicturePath;
 }
