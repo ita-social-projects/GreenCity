@@ -30,12 +30,10 @@ import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -195,24 +193,24 @@ public class UserController {
     }
 
     /**
-     * Update  {@link User}.
+     * Update {@link User}.
      *
      * @return {@link ResponseEntity}.
      * @author Nazar Stasyuk
      */
     @ApiOperation(value = "Update User")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PatchMapping
+    @PutMapping
     public ResponseEntity updateUser(@Valid @RequestBody UserUpdateDto dto,
                                      @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.update(dto, email);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
@@ -565,28 +563,5 @@ public class UserController {
     public ResponseEntity<Long> getActivatedUsersAmount() {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.getActivatedUsersAmount());
-    }
-
-    /**
-     * Update user profile picture  {@link User}.
-     *
-     * @return {@link ResponseEntity}.
-     * @author Datsko Marian
-     */
-    @ApiOperation(value = "Update user profile picture")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @PatchMapping(path = "/profilePicture",
-            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpStatus> updateUserProfilePicture(@ApiParam(value = "Profile picture")
-                                     @RequestPart(required = false) MultipartFile image,
-                                     @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        String email = principal.getName();
-        userService.updateUserProfilePicture(image,email);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

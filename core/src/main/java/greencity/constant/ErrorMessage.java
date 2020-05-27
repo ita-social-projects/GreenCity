@@ -111,7 +111,6 @@ public final class ErrorMessage {
         + "used constructor that differ from events superclass.";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
     public static final String TAG_NOT_FOUND = "The tag does not exist by this name: ";
-    public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
 
     private ErrorMessage() {
     }

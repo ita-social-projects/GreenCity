@@ -18,7 +18,11 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
-import greencity.entity.*;
+import greencity.entity.Habit;
+import greencity.entity.HabitDictionary;
+import greencity.entity.HabitDictionaryTranslation;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
@@ -42,8 +46,9 @@ import greencity.repository.HabitStatisticRepo;
 import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
-import greencity.service.*;
-
+import greencity.service.HabitDictionaryService;
+import greencity.service.HabitService;
+import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,9 +64,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.ErrorMessage.USER_GOAL_NOT_FOUND;
+import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_GOALS;
+import static greencity.constant.ErrorMessage.USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY;
+import static greencity.constant.ErrorMessage.USER_HAS_NO_GOALS;
+import static greencity.constant.ErrorMessage.USER_HAS_NO_SUCH_GOAL;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_EMAIL;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -82,7 +92,6 @@ public class UserServiceImpl implements UserService {
     private final GoalTranslationRepo goalTranslationRepo;
     private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
-    private final FileService fileService;
 
     /**
      * Autowired mapper.
@@ -620,37 +629,5 @@ public class UserServiceImpl implements UserService {
             habitDictionaryDtos.add(hd);
         }
         return habitDictionaryDtos;
-    }
-
-    /**
-     * Get profile picture path {@link String}.
-     *
-     * @return profile picture path {@link String}
-     */
-    @Override
-    public String getProfilePicturePathByUserId(Long id) {
-        String profilePicturePathByUserId = userRepo.getProfilePicturePathByUserId(id);
-        if (profilePicturePathByUserId == null) {
-            throw new NotFoundException(PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString());
-        }
-        return profilePicturePathByUserId;
-    }
-
-    /**
-     * Update user profile picture {@link User}.
-     *
-     * @param image {@link MultipartFile}
-     * @param email {@link String} - email of user that need to update.
-     * @return {@link User}.
-     * @author Marian Datsko
-     */
-    @Override
-    public User updateUserProfilePicture(MultipartFile image, String email) {
-        User user = userRepo
-                .findByEmail(email)
-                .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
-        String url = fileService.upload(image).toString();
-        user.setProfilePicturePath(url);
-        return userRepo.save(user);
     }
 }

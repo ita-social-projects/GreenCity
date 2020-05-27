@@ -137,8 +137,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.PATCH,
                 "/habit/statistic/*",
                 "/user/{userId}/goals/*",
-                "/user/{userId}/customGoals",
-                "/user/profilePicture"
+                "/user/{userId}/customGoals"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
