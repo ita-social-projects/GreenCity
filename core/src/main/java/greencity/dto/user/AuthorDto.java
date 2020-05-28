@@ -14,9 +14,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class TipsAndTricksAuthorDto {
+public class AuthorDto {
     @NotEmpty
     private Long id;
+
     @NotEmpty
     private String name;
 }

@@ -3,8 +3,6 @@ package greencity.config;
 import greencity.mapping.AddEcoNewsDtoRequestMapper;
 import greencity.mapping.AddEcoNewsDtoResponseMapper;
 import greencity.mapping.AddHabitStatisticDtoMapper;
-import greencity.mapping.AddTipsAndTricksDtoRequestMapper;
-import greencity.mapping.AddTipsAndTricksDtoResponseMapper;
 import greencity.mapping.AdviceTranslateMapper;
 import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.EcoNewsAuthorDtoMapper;
@@ -18,6 +16,8 @@ import greencity.mapping.HabitMapper;
 import greencity.mapping.HabitStatisticMapper;
 import greencity.mapping.ProposePlaceMapper;
 import greencity.mapping.SearchNewsDtoMapper;
+import greencity.mapping.TipsAndTricksDtoRequestMapper;
+import greencity.mapping.TipsAndTricksDtoResponseMapper;
 import greencity.mapping.UserGoalResponseDtoMapper;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -46,8 +46,8 @@ public class MapperConfig {
     private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
     private FavoritePlaceMapper favoritePlaceMapper;
     private ProposePlaceMapper proposePlaceMapper;
-    private AddTipsAndTricksDtoRequestMapper addTipsAndTricksDtoRequestMapper;
-    private AddTipsAndTricksDtoResponseMapper addTipsAndTricksDtoResponseMapper;
+    private TipsAndTricksDtoRequestMapper tipsAndTricksDtoRequestMapper;
+    private TipsAndTricksDtoResponseMapper tipsAndTricksDtoResponseMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -93,7 +93,7 @@ public class MapperConfig {
         modelMapper.addConverter(favoritePlaceDtoMapper);
         modelMapper.addConverter(favoritePlaceMapper);
         modelMapper.addConverter(proposePlaceMapper);
-        modelMapper.addConverter(addTipsAndTricksDtoRequestMapper);
-        modelMapper.addConverter(addTipsAndTricksDtoResponseMapper);
+        modelMapper.addConverter(tipsAndTricksDtoRequestMapper);
+        modelMapper.addConverter(tipsAndTricksDtoResponseMapper);
     }
 }

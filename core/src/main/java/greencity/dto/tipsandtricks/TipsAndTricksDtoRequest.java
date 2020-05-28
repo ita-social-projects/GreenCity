@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AddTipsAndTricksDtoRequest {
+public class TipsAndTricksDtoRequest {
     @NotEmpty
     @Size(min = 1, max = 200)
     private String title;

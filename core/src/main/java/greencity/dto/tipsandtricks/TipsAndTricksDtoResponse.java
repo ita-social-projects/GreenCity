@@ -1,6 +1,6 @@
 package greencity.dto.tipsandtricks;
 
-import greencity.dto.user.TipsAndTricksAuthorDto;
+import greencity.dto.user.AuthorDto;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AddTipsAndTricksDtoResponse implements Serializable {
+public class TipsAndTricksDtoResponse implements Serializable {
     @NotNull
     @Min(value = 1, message = "Tips and Tricks id must be a positive number")
     private Long id;
@@ -37,7 +37,7 @@ public class AddTipsAndTricksDtoResponse implements Serializable {
     private ZonedDateTime creationDate;
 
     @NotEmpty
-    private TipsAndTricksAuthorDto author;
+    private AuthorDto author;
 
     @NotEmpty
     private List<String> tipsAndTricksTags;
