@@ -1,7 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.TipsAndTricks;
-import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +20,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
         + "JOIN tt.tipsAndTricksTags ttt "
         + "WHERE ttt.name in :tags "
         + "ORDER BY tt.creationDate DESC")
-    Page<TipsAndTricks> find(Pageable pageable, List<String> tags);
+    Page<TipsAndTricks> find(Pageable pageable, Optional<String> tags);
 
 
     /**

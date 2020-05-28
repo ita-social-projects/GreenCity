@@ -21,8 +21,8 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "tips_and_tricks")
-@ToString(exclude = {"author", "imagePath", "tipsAndTricksTags"})
-@EqualsAndHashCode(exclude = {"author", "imagePath", "tipsAndTricksTags"})
+@ToString(exclude = {"author", "tipsAndTricksTags"})
+@EqualsAndHashCode(exclude = {"author", "tipsAndTricksTags"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
