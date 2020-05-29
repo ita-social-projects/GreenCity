@@ -54,6 +54,27 @@ public class HabitFactController {
     }
 
     /**
+     * The controller which return today's fact of the day.
+     *
+     * @param languageId id of language to display the fact.
+     * @return {@link LanguageTranslationDTO} of today's fact of the day.
+     */
+    @ApiOperation("Get fact of the day")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/dayFact/{languageId}")
+    public LanguageTranslationDTO getFactOfTheDay(
+        @PathVariable Long languageId
+    ) {
+        return factTranslationService.getFactOfTheDay(languageId);
+    }
+
+
+    /**
      * The controller which returns all {@link HabitFact}.
      *
      * @return List of {@link HabitFactDTO}

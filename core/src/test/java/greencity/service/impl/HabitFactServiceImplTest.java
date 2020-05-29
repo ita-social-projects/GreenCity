@@ -3,6 +3,7 @@ package greencity.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static greencity.entity.enums.FactOfDayStatus.CURRENT;
 
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.fact.HabitFactDTO;
@@ -49,7 +50,7 @@ public class HabitFactServiceImplTest {
 
     private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", null, null);
     private HabitFact habitFact = new HabitFact(1L, null, habitDictionary);
-    private FactTranslation factTranslation = new FactTranslation(1L, null, null, "test");
+    private FactTranslation factTranslation = new FactTranslation(1L, null,CURRENT, null, "test");
     private HabitFactDTO habitFactDTO = new HabitFactDTO(1L, "fact", null);
     private LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO(null, "test");
     private HabitFactPostDTO habitFactPostDTO = new HabitFactPostDTO(null, new HabitDictionaryIdDto(1L));
