@@ -14,6 +14,7 @@ import greencity.mapping.GoalDtoMapper;
 import greencity.mapping.HabitCreateDtoMapper;
 import greencity.mapping.HabitMapper;
 import greencity.mapping.HabitStatisticMapper;
+import greencity.mapping.MultipartBase64ImageMapper;
 import greencity.mapping.ProposePlaceMapper;
 import greencity.mapping.SearchNewsDtoMapper;
 import greencity.mapping.TipsAndTricksDtoRequestMapper;
@@ -48,6 +49,7 @@ public class MapperConfig {
     private ProposePlaceMapper proposePlaceMapper;
     private TipsAndTricksDtoRequestMapper tipsAndTricksDtoRequestMapper;
     private TipsAndTricksDtoResponseMapper tipsAndTricksDtoResponseMapper;
+    private MultipartBase64ImageMapper multipartBase64ImageMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -95,5 +97,6 @@ public class MapperConfig {
         modelMapper.addConverter(proposePlaceMapper);
         modelMapper.addConverter(tipsAndTricksDtoRequestMapper);
         modelMapper.addConverter(tipsAndTricksDtoResponseMapper);
+        modelMapper.addConverter(multipartBase64ImageMapper);
     }
 }
