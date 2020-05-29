@@ -4,7 +4,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
-import java.util.Optional;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +33,7 @@ public interface TipsAndTricksService {
      * @param tags used to search for.
      * @return PageableDto with {@link TipsAndTricksDtoResponse} instance.
      */
-    PageableDto<TipsAndTricksDtoResponse> find(Pageable page, Optional<String> tags);
+    PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags);
 
     /**
      * Method for getting the {@link TipsAndTricksDtoResponse} instance by its id.

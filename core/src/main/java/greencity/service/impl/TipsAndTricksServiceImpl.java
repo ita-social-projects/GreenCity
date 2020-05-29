@@ -12,25 +12,15 @@ import greencity.service.FileService;
 import greencity.service.TipsAndTricksService;
 import greencity.service.TipsAndTricksTagsService;
 import greencity.service.UserService;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 @Service
 @RequiredArgsConstructor
@@ -54,16 +44,13 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
         toSave.setAuthor(userService.findByEmail(email));
         if (tipsAndTricksDtoRequest.getImage() != null) {
-            image = convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
+            image = modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class);
         }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
-        toSave.setTipsAndTricksTags(tipsAndTricksDtoRequest.getTipsAndTricksTags()
-            .stream()
-            .map(tipsAndTricksTagsService::findByName)
-            .collect(Collectors.toList())
-        );
+        toSave.setTipsAndTricksTags(
+            tipsAndTricksTagsService.findAllByNames(tipsAndTricksDtoRequest.getTipsAndTricksTags()));
 
         try {
             tipsAndTricksRepo.save(toSave);
@@ -88,9 +75,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<TipsAndTricksDtoResponse> find(Pageable page, Optional<String> tags) {
+    public PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags) {
         Page<TipsAndTricks> pages;
-        if (tags.isPresent()) {
+        if (tags.isEmpty()) {
             pages = tipsAndTricksRepo.find(page, tags);
         } else {
             pages = tipsAndTricksRepo.findAllByOrderByCreationDateDesc(page);
@@ -132,19 +119,5 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         return tipsAndTricksRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TIPS_AND_TRICKS_NOT_FOUND_BY_ID + id));
-    }
-
-    private MultipartFile convertToMultipartImage(String image) {
-        String imageToConvert = image.substring(image.indexOf(',') + 1);
-        File tempFile = new File("tempImage.jpg");
-        byte[] imageByte = decodeBase64(imageToConvert);
-        ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-        try {
-            BufferedImage bufferedImage = ImageIO.read(bis);
-            ImageIO.write(bufferedImage, "png", tempFile);
-            return new MockMultipartFile(tempFile.getPath(), new FileInputStream(tempFile));
-        } catch (IOException e) {
-            throw new NotSavedException("Cannot convert to BASE64 image");
-        }
     }
 }

@@ -7,22 +7,13 @@ import greencity.repository.TipsAndTricksTagsRepo;
 import greencity.service.TipsAndTricksTagsService;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class TipsAndTricksTagsServiceImpl implements TipsAndTricksTagsService {
     private final TipsAndTricksTagsRepo tipsAndTricksTagsRepo;
-
-    /**
-     * All args constructor.
-     *
-     * @param tipsAndTricksTagsRepo Repo to get {@link TipsAndTricksTag}.
-     */
-    @Autowired
-    public TipsAndTricksTagsServiceImpl(TipsAndTricksTagsRepo tipsAndTricksTagsRepo) {
-        this.tipsAndTricksTagsRepo = tipsAndTricksTagsRepo;
-    }
 
     /**
      * {@inheritDoc}
@@ -42,5 +33,17 @@ public class TipsAndTricksTagsServiceImpl implements TipsAndTricksTagsService {
     public TipsAndTricksTag findByName(String name) {
         return tipsAndTricksTagsRepo.findByName(name).orElseThrow(() ->
             new TagNotFoundException(ErrorMessage.TAG_NOT_FOUND + name));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<TipsAndTricksTag> findAllByNames(List<String> tipsAndTricksTagsNames) {
+        List<TipsAndTricksTag> tags = tipsAndTricksTagsRepo.findAllByNames(tipsAndTricksTagsNames);
+        if (tags.isEmpty()) {
+            throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
+        }
+        return tags;
     }
 }

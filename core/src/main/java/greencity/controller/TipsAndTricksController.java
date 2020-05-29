@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -131,7 +130,7 @@ public class TipsAndTricksController {
     public ResponseEntity<PageableDto<TipsAndTricksDtoResponse>> getTipsAndTricks(
         @ApiIgnore Pageable page,
         @ApiParam(value = "Tags to filter (if no tags, get all)")
-        @RequestParam(required = false) Optional<String> tags
+        @RequestParam(required = false) List<String> tags
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.find(page, tags));
     }
