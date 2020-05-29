@@ -7,7 +7,7 @@ public final class CacheConstants {
     public static final String HABIT_ITEM_STATISTIC_CACHE = "habit_item_statistic_cache";
     public static final String NEWEST_ECO_NEWS_CACHE_NAME = "newest_eco_news_cache";
     public static final String ALL_ACHIEVEMENTS_CACHE_NAME = "achievements_cache";
-    public static final String NEWEST_TIPS_AND_TRICKS_CACHE_NAME = "newest_tips_and_tricks_cache";
+    public static final String TIPS_AND_TRICKS_CACHE_NAME = "tips_and_tricks_cache";
 
     private CacheConstants() {
     }

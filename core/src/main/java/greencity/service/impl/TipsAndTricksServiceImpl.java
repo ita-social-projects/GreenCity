@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
@@ -16,6 +17,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@EnableCaching
 @RequiredArgsConstructor
 public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private final TipsAndTricksRepo tipsAndTricksRepo;
@@ -38,6 +43,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * {@inheritDoc}
      */
+    @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
                                          String email) {
@@ -64,6 +70,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * {@inheritDoc}
      */
+    @Cacheable(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME)
     @Override
     public PageableDto<TipsAndTricksDtoResponse> findAll(Pageable page) {
         Page<TipsAndTricks> pages = tipsAndTricksRepo.findAllByOrderByCreationDateDesc(page);
@@ -110,6 +117,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * {@inheritDoc}
      */
+    @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public void delete(Long id) {
         tipsAndTricksRepo.deleteById(findById(id).getId());
