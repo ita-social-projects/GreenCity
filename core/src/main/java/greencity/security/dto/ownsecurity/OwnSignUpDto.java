@@ -1,18 +1,12 @@
 package greencity.security.dto.ownsecurity;
 
-import static greencity.constant.ValidationConstants.INVALID_EMAIL;
-import static greencity.constant.ValidationConstants.INVALID_PASSWORD;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
+
+import static greencity.constant.ValidationConstants.*;
 
 @Getter
 @Setter
@@ -21,11 +15,14 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @Builder
 public class OwnSignUpDto {
-    @NotBlank
-    @Length(max = 50)
+    @NotBlank(message = EMPTY_USERNAME)
+    @Length(
+        min = USERNAME_MIN_LENGTH,
+        max = USERNAME_MAX_LENGTH,
+        message = INVALID_USERNAME_LENGTH)
     private String name;
 
-    @NotBlank
+    @NotBlank(message = EMPTY_EMAIL)
     @Email(message = INVALID_EMAIL)
     private String email;
 
