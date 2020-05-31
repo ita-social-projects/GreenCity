@@ -29,4 +29,20 @@ public interface TipsAndTricksTagsService {
      * @return list of {@link TipsAndTricksTag}
      */
     List<TipsAndTricksTag> findAllByNames(List<String> tipsAndTricksTagsNames);
+
+    /**
+     * Method that checks if all {@link TipsAndTricksTag}s are unique.
+     *
+     * @param tipsAndTricksTagsNames list of {@link String} values
+     * @return {@link Boolean}
+     */
+    Boolean isAllValid(List<String> tipsAndTricksTagsNames);
+
+    /**
+     * Method that checks if there is allowed amount (less than 3) of unique {@link TipsAndTricksTag}s .
+     *
+     * @param tipsAndTricksTagsNames list of {@link String} values
+     * @return {@link Boolean}
+     */
+    Boolean isValidNumOfUniqueTags(List<String> tipsAndTricksTagsNames);
 }

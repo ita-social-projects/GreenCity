@@ -118,9 +118,13 @@ public final class ErrorMessage {
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
     public static final String TAG_NOT_FOUND = "The tag does not exist by this name: ";
     public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
+    public static final String INVALID_NUM_OF_TAGS =
+        "Invalid tags. You must have less than " + ValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
+    public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
     public static final String TIPS_AND_TRICKS_NOT_FOUND_BY_ID = "Tips & tricks advice doesn't exist by this id: ";
     public static final String TIPS_AND_TRICKS_NOT_SAVED =
         "Tips & tricks advice hasn't been saved due to constraint violation";
+    public static final String INVALID_URL = "String could not be parsed as a URI reference or malformed URL";
 
     private ErrorMessage() {
     }
