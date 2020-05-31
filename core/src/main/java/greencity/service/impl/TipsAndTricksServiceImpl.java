@@ -85,9 +85,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags) {
         Page<TipsAndTricks> pages;
         if (tags.isEmpty()) {
-            pages = tipsAndTricksRepo.find(page, tags);
-        } else {
             pages = tipsAndTricksRepo.findAllByOrderByCreationDateDesc(page);
+        } else {
+            pages = tipsAndTricksRepo.find(page, tags);
         }
         return getPagesWithTipsAndTricksResponseDto(pages);
     }
