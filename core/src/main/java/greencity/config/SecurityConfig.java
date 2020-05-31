@@ -3,11 +3,13 @@ package greencity.config;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -126,7 +128,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/customGoals",
                 "/user/{userId}/customGoals/*",
-                "/achievements"
+                "/achievements",
+                "/facts/dayFact/*"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
