@@ -70,7 +70,7 @@ public class TipsAndTricksTagsServiceImpl implements TipsAndTricksTagsService {
      */
     @Override
     public Boolean isValidNumOfUniqueTags(List<String> tipsAndTricksTagsNames) {
-        Set tagsSet = new HashSet(tipsAndTricksTagsNames);
+        Set<String> tagsSet = new HashSet<>(tipsAndTricksTagsNames);
         if (tagsSet.size() < tipsAndTricksTagsNames.size()) {
             throw new DuplicatedTagException(ErrorMessage.DUPLICATED_TAG);
         }
