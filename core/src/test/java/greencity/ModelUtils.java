@@ -1,6 +1,7 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.entity.enums.FactOfDayStatus;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.comment.AddCommentDto;
@@ -279,7 +280,7 @@ public class ModelUtils {
     }
 
     public static FactTranslation getFactTranslation() {
-        return new FactTranslation(1L, getLanguage(), null, "Content");
+        return new FactTranslation(1L, getLanguage(),FactOfDayStatus.CURRENT, null, "Content");
     }
 
     public static HabitFact getHabitFact() {

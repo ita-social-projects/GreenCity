@@ -16,6 +16,7 @@ public class EmailMessageReceiver {
     public static final String VERIFY_EMAIL_ROUTING_QUEUE = "verify-email-queue";
     private static final String ADD_ECO_NEWS_QUEUE_NAME = "eco_news_queue";
     public static final String SEND_REPORT_QUEUE = "send-report";
+    public static final String SEND_HABIT_NOTIFICATION = "send-habit-notification-queue";
     private final EmailService emailService;
 
     /**
@@ -79,5 +80,14 @@ public class EmailMessageReceiver {
     public void sendReportEmail(SendReportEmailMessage message) {
         emailService.sendAddedNewPlacesReportEmail(message.getSubscribers(),
             message.getCategoriesDtoWithPlacesDtoMap(), message.getEmailNotification());
+    }
+
+    /**
+     * Method that is invoked on {@link SendHabitNotification} receiving.
+     * It is responsible for sending notification letters about not marking habits.
+     */
+    @RabbitListener(queues = SEND_HABIT_NOTIFICATION)
+    public void sendHabitNotification(SendHabitNotification sendHabitNotification) {
+        emailService.sendHabitNotification(sendHabitNotification.getName(), sendHabitNotification.getEmail());
     }
 }

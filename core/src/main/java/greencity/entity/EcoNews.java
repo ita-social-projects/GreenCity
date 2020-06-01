@@ -3,6 +3,7 @@ package greencity.entity;
 import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import lombok.*;
 
 @Entity
@@ -32,9 +33,11 @@ public class EcoNews {
     private User author;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 200)
     private String title;
 
     @Column(nullable = false)
+    @Size(min = 20, max = 63206)
     private String text;
 
     @ManyToMany

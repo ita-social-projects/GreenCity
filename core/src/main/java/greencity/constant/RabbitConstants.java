@@ -7,6 +7,7 @@ public final class RabbitConstants {
     public static final String EMAIL_TOPIC_EXCHANGE_NAME = "email-topic-exchange";
     public static final String VERIFY_EMAIL_ROUTING_KEY = "verify.email";
     public static final String SEND_REPORT_ROUTING_KEY = "send.report";
+    public static final String SEND_HABIT_NOTIFICATION_ROUTING_KEY = "send.habit.notification";
 
     private RabbitConstants() {
     }

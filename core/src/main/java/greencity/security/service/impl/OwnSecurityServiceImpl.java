@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTool jwtTool;
     private final Integer expirationTime;
-    private final ApplicationEventPublisher appEventPublisher;
     private final RabbitTemplate rabbitTemplate;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
@@ -58,14 +56,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   PasswordEncoder passwordEncoder,
                                   JwtTool jwtTool,
                                   @Value("${verifyEmailTimeHour}") Integer expirationTime,
-                                  ApplicationEventPublisher appEventPublisher,
                                   RabbitTemplate rabbitTemplate) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTool = jwtTool;
         this.expirationTime = expirationTime;
-        this.appEventPublisher = appEventPublisher;
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -91,7 +87,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                     savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
-            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL, dto.getLang());
+            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
         return new SuccessSignUpDto(user.getId(), user.getName(), user.getEmail(), true);
     }

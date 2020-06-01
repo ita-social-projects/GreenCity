@@ -8,7 +8,7 @@ import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitDictionaryTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.service.HabitService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  * @author Kovaliv Taras
  */
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class HabitServiceImpl implements HabitService {
     private HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private HabitRepo habitRepo;
