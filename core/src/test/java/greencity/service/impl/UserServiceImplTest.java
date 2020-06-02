@@ -371,24 +371,27 @@ public class UserServiceImplTest {
         UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
         UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
         List<UserGoal> userGoals = Arrays.asList(customUserGoal, predefinedUserGoal);
+        UserGoalResponseDto customDtoWithoutText =
+            UserGoalResponseDto.builder().id(1L).status(GoalStatus.ACTIVE).build();
+        UserGoalResponseDto predefinedDtoWithoutText =
+            UserGoalResponseDto.builder().id(2L).status(GoalStatus.ACTIVE).build();
         UserGoalResponseDto customUserGoalDto = ModelUtils.getCustomUserGoalDto();
         UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
-        List<UserGoalResponseDto> userGoalDto = Arrays.asList(customUserGoalDto, predefinedUserGoalDto);
+        List<UserGoalResponseDto> userGoalDtos = Arrays.asList(customUserGoalDto, predefinedUserGoalDto);
         List<GoalTranslation> goalTranslations = ModelUtils.getGoalTranslations();
         CustomGoal customGoal = CustomGoal.builder().id(8L).text("Buy electric car").build();
 
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
-        when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDto.get(0));
-        when(modelMapper.map(userGoals.get(1), UserGoalResponseDto.class)).thenReturn(userGoalDto.get(1));
-        when(
-            goalTranslationRepo
-                .findByUserIdAndLanguageAndUserGoalId(user.getId(), language, userGoalDto.get(1).getId()))
+        when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(customDtoWithoutText);
+        when(modelMapper.map(userGoals.get(1), UserGoalResponseDto.class)).thenReturn(predefinedDtoWithoutText);
+        when(userGoalRepo.findGoalByUserGoalId(userGoals.get(0).getId())).thenReturn(Optional.empty());
+        when(userGoalRepo.findGoalByUserGoalId(userGoals.get(1).getId()))
+            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
+        when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
             .thenReturn(goalTranslations.get(0));
-        when(
-            customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(userGoalDto.get(0).getId(), user.getId()))
-            .thenReturn(customGoal);
+        when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customGoal);
 
-        assertEquals(userService.getUserGoals(user.getId(), "en"), userGoalDto);
+        assertEquals(userService.getUserGoals(user.getId(), "en"), userGoalDtos);
     }
 
     @Test
@@ -418,12 +421,15 @@ public class UserServiceImplTest {
 
     @Test
     public void updateUserGoalStatusWithDisabledGoalStateTest() {
-        UserGoal userGoal = new UserGoal(1L, null, new Goal(1L, null, null), null, GoalStatus.DISABLED, null);
+        CustomGoal customgoal = CustomGoal.builder().id(3L).text("foo").build();
+        UserGoal userGoal = new UserGoal(1L, null, null, customgoal, GoalStatus.DISABLED, null);
         when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
         user.setUserGoals(Collections.singletonList(userGoal));
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
-            new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
+            new UserGoalResponseDto(1L, null, GoalStatus.ACTIVE));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.empty());
+        when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customgoal);
         UserGoalResponseDto result = userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
         assertEquals("foo", result.getText());
         verify(userGoalRepo, times(0)).save(userGoal);
@@ -431,30 +437,39 @@ public class UserServiceImplTest {
 
     @Test
     public void updateUserGoalStatusWithActiveGoalStateTest() {
-        UserGoal userGoal = new UserGoal(1L, null, new Goal(1L, null, null), null, GoalStatus.ACTIVE, null);
+        UserGoal userGoal = ModelUtils.getPredefinedUserGoal();
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
-            .thenReturn(new UserGoalResponseDto(1L, "foo", GoalStatus.DONE));
+            .thenReturn(new UserGoalResponseDto(2L, null, GoalStatus.DONE));
         user.setUserGoals(Collections.singletonList(userGoal));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.of(userGoal.getGoal()));
+        when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
+            .thenReturn(goalTranslations.get(0));
         UserGoalResponseDto userGoalResponseDto =
             userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
+
         assertEquals(GoalStatus.DONE, userGoal.getStatus());
-        assertEquals(userGoalResponseDto, new UserGoalResponseDto(1L, "foo", GoalStatus.DONE));
+        assertEquals(userGoalResponseDto,
+            new UserGoalResponseDto(2L, goalTranslations.get(0).getText(), GoalStatus.DONE));
         verify(userGoalRepo).save(userGoal);
     }
 
     @Test
     public void updateUserGoalStatusWithDoneGoalStateTest() {
-        UserGoal userGoal = new UserGoal(1L, null, new Goal(1L, null, null), null, GoalStatus.DONE, null);
+        CustomGoal customgoal = CustomGoal.builder().id(3L).text("foo").build();
+        UserGoal userGoal = new UserGoal(1L, null, null, customgoal, GoalStatus.DONE, null);
         when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
-        UserGoalResponseDto expectedUserGoalResponseDto = new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE);
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
-            .thenReturn(new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE));
+            .thenReturn(new UserGoalResponseDto(1L, null, GoalStatus.ACTIVE));
         user.setUserGoals(Collections.singletonList(userGoal));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.empty());
+        when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customgoal);
         UserGoalResponseDto userGoalResponseDto =
             userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
+        UserGoalResponseDto expectedUserGoalResponseDto = new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE);
+
         assertEquals(GoalStatus.ACTIVE, userGoal.getStatus());
         assertEquals(userGoalResponseDto, expectedUserGoalResponseDto);
         verify(userGoalRepo).save(userGoal);
@@ -487,8 +502,7 @@ public class UserServiceImplTest {
         when(modelMapper.map(userCustomGoalDto, UserGoal.class)).thenReturn(customUserGoal);
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
         when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(0));
-        when(
-            customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(userGoalDtos.get(0).getId(), user.getId()))
+        when(customGoalRepo.findByUserGoalIdAndUserId(userGoalDtos.get(0).getId(), user.getId()))
             .thenReturn(customGoal);
 
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), nullUserGoalsDto, "en");
@@ -513,9 +527,9 @@ public class UserServiceImplTest {
         when(modelMapper.map(userGoalDto, UserGoal.class)).thenReturn(predefinedUserGoal);
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
         when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(0));
-        when(
-            goalTranslationRepo
-                .findByUserIdAndLanguageAndUserGoalId(user.getId(), language, userGoalDtos.get(0).getId()))
+        when(userGoalRepo.findGoalByUserGoalId(userGoals.get(0).getId()))
+            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
+        when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
             .thenReturn(goalTranslations.get(0));
 
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), nullCustomGoalsDto, "en");
@@ -546,13 +560,12 @@ public class UserServiceImplTest {
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
         when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(0));
         when(modelMapper.map(userGoals.get(1), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(1));
-        when(
-            goalTranslationRepo
-                .findByUserIdAndLanguageAndUserGoalId(user.getId(), language, userGoalDtos.get(1).getId()))
+        when(userGoalRepo.findGoalByUserGoalId(userGoals.get(0).getId())).thenReturn(Optional.empty());
+        when(userGoalRepo.findGoalByUserGoalId(userGoals.get(1).getId()))
+            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
+        when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
             .thenReturn(goalTranslations.get(0));
-        when(
-            customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(userGoalDtos.get(0).getId(), user.getId()))
-            .thenReturn(customGoal);
+        when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customGoal);
 
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), userGoalsAndCustomGoalsDto, "en");
         assertEquals("Buy electric car", result.get(0).getText());

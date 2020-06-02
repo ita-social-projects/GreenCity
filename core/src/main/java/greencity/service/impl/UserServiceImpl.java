@@ -263,20 +263,25 @@ public class UserServiceImpl implements UserService {
             .stream()
             .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
             .collect(Collectors.toList());
-        for (UserGoalResponseDto el1 : userGoalResponseDtos) {
-            if (el1.getText() == null) {
-                if (goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, el1.getId()) != null) {
-                    el1.setText(goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, el1.getId())
-                        .getText());
-                } else {
-                    el1.setText(customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(el1.getId(), userId).getText());
-                }
-            }
-        }
         if (userGoalResponseDtos.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
         }
+        userGoalResponseDtos.stream().forEach(el -> setTextForAnyUserGoal(el, userId, language));
         return userGoalResponseDtos;
+    }
+
+    /**
+     * Method for setting text either for UserGoal with localization or for CustomGoal.
+     *
+     * @param userId id of the current user.
+     * @param dto    {@link UserGoalResponseDto}
+     */
+    private UserGoalResponseDto setTextForAnyUserGoal(UserGoalResponseDto dto, Long userId, String language) {
+        String text = userGoalRepo.findGoalByUserGoalId(dto.getId()).isPresent()
+            ? goalTranslationRepo.findByUserIdLangAndUserGoalId(userId, language, dto.getId()).getText()
+            : customGoalRepo.findByUserGoalIdAndUserId(dto.getId(), userId).getText();
+        dto.setText(text);
+        return dto;
     }
 
     /**
@@ -336,7 +341,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Metgod save user goals with custom goal dictionary.
+     * Method save user goals with custom goal dictionary.
      *
      * @param user        {@link User} current user
      * @param customGoals list {@link UserCustomGoalDto} for saving
@@ -408,17 +413,7 @@ public class UserServiceImpl implements UserService {
             throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
         }
         UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
-        if (updatedUserGoal.getText() == null) {
-            if (goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, updatedUserGoal.getId())
-                != null) {
-                updatedUserGoal.setText(
-                    goalTranslationRepo.findByUserIdAndLanguageAndUserGoalId(userId, language, updatedUserGoal.getId())
-                        .getText());
-            } else {
-                updatedUserGoal.setText(
-                    customGoalRepo.findCustomGoalsForUserIdAndUserGoalId(updatedUserGoal.getId(), userId).getText());
-            }
-        }
+        setTextForAnyUserGoal(updatedUserGoal, userId, language);
         return updatedUserGoal;
     }
 

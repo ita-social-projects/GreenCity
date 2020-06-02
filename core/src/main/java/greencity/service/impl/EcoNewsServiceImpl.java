@@ -14,22 +14,32 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@EnableCaching
 @RequiredArgsConstructor
 public class EcoNewsServiceImpl implements EcoNewsService {
     @Value("${messaging.rabbit.email.topic}")
@@ -60,6 +70,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                                       MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setAuthor(userService.findByEmail(email));
+        if (addEcoNewsDtoRequest.getImage() != null) {
+            image = convertToMultipartImage(addEcoNewsDtoRequest.getImage());
+        }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
@@ -208,5 +221,19 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
 
         return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
+    }
+
+    private MultipartFile convertToMultipartImage(String image) {
+        String imageToConvert = image.substring(image.indexOf(',') + 1);
+        File tempFile = new File("tempImage.jpg");
+        byte[] imageByte = decodeBase64(imageToConvert);
+        ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+        try {
+            BufferedImage bufferedImage = ImageIO.read(bis);
+            ImageIO.write(bufferedImage, "png", tempFile);
+            return new MockMultipartFile(tempFile.getPath(), new FileInputStream(tempFile));
+        } catch (IOException e) {
+            throw new NotSavedException("Cannot to convert BASE64 image");
+        }
     }
 }

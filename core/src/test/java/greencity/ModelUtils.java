@@ -1,6 +1,8 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.entity.enums.FactOfDayStatus;
+import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
@@ -10,6 +12,8 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.dto.user.UserGoalResponseDto;
@@ -25,7 +29,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,7 +71,7 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"), null);
+            Collections.singletonList("tag"), null, null);
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
@@ -205,7 +211,7 @@ public class ModelUtils {
         return UserGoal.builder()
             .id(1L)
             .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
-            .status(GoalStatus.ACTIVE)
+            .status(GoalStatus.DONE)
             .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
             .build();
     }
@@ -261,31 +267,86 @@ public class ModelUtils {
     }
 
 
-    public static Advice getAdvice(){
+    public static Advice getAdvice() {
         return new Advice(1L, null, null);
     }
 
-    public static HabitDictionaryIdDto getHabitDictionaryIdDto(){
+    public static HabitDictionaryIdDto getHabitDictionaryIdDto() {
         return new HabitDictionaryIdDto(1L);
     }
 
-    public static AdvicePostDTO getAdvicePostDTO(){
+    public static AdvicePostDTO getAdvicePostDTO() {
         return new AdvicePostDTO(null, getHabitDictionaryIdDto());
     }
 
     public static FactTranslation getFactTranslation() {
-        return new FactTranslation(1L, getLanguage(), null, "Content");
+        return new FactTranslation(1L, getLanguage(),FactOfDayStatus.CURRENT, null, "Content");
     }
 
-    public static HabitFact getHabitFact(){
+    public static HabitFact getHabitFact() {
         return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
     }
 
-    public static HabitFactPostDTO getHabitFactPostDTO(){
+    public static HabitFactPostDTO getHabitFactPostDTO() {
         return new HabitFactPostDTO(null, getHabitDictionaryIdDto());
     }
 
+    public static LocationAddressAndGeoDto getLocationAddressAndGeoDto(){
+        return LocationAddressAndGeoDto.builder()
+                .address("address")
+                .lat(12.12d)
+                .lng(12.12d)
+                .build();
+    }
 
+    public static LocalTime getLocalTime(){
+        return LocalTime.of(7, 20, 45, 342123342);
+    }
 
+    public static OpeningHoursDto getOpeningHoursDto(){
+        OpeningHoursDto openingHours = new OpeningHoursDto();
+        openingHours.setOpenTime(getLocalTime());
+        openingHours.setCloseTime(getLocalTime());
+        openingHours.setBreakTime(BreakTimeDto.builder()
+                .startTime(getLocalTime())
+                .endTime(getLocalTime())
+                .build());
+        openingHours.setWeekDay(DayOfWeek.MONDAY);
+        return openingHours;
+    }
+
+    public static OpeningHours getOpeningHours(){
+        OpeningHours openingHoursTest = new OpeningHours();
+        openingHoursTest.setOpenTime(getLocalTime());
+        openingHoursTest.setCloseTime(getLocalTime());
+        openingHoursTest.setBreakTime(BreakTime.builder()
+                .startTime(getLocalTime())
+                .endTime(getLocalTime())
+                .build());
+        openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
+        return openingHoursTest;
+    }
+
+    public static Location getLocation(){
+        return Location.builder()
+                .address("address")
+                .lng(12.12d)
+                .lat(12.12d)
+                .build();
+    }
+
+    public static Specification getSpecification(){
+        return Specification.builder()
+                .id(1L)
+                .name("specification")
+                .build();
+    }
+
+    public static Photo getPhoto(){
+        return Photo.builder()
+                .id(1L)
+                .name("photo")
+                .build();
+    }
 }
  
