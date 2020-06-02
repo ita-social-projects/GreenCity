@@ -1,9 +1,12 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.FactTranslationRepo;
 import greencity.service.FactTranslationService;
 import greencity.service.HabitFactService;
@@ -12,13 +15,19 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
+
+import static greencity.entity.enums.FactOfDayStatus.CURRENT;
+import static greencity.constant.CacheConstants.FACT_OF_DAY_CACHE_NAME;
 
 /**
  * Implementation of {@link FactTranslationService}.
  *
  * @author Vitaliy Dzen
  */
+@EnableCaching
 @Service
 public class FactTranslationServiceImpl implements FactTranslationService {
     private final FactTranslationRepo factTranslationRepo;
@@ -70,4 +79,20 @@ public class FactTranslationServiceImpl implements FactTranslationService {
     public List<FactTranslation> saveFactTranslation(List<FactTranslation> factTranslations) {
         return factTranslationRepo.saveAll(factTranslations);
     }
+
+    /**
+     * Method to get today's fact of day by language id.
+     *
+     * @param languageId id of language of the fact.
+     * @return {@link LanguageTranslationDTO} of today's fact of day.
+     */
+    @Cacheable(value = FACT_OF_DAY_CACHE_NAME)
+    @Override
+    public LanguageTranslationDTO getFactOfTheDay(Long languageId) {
+        return modelMapper.map(
+            factTranslationRepo.findAllByFactOfDayStatusAndLanguageId(CURRENT, languageId).orElseThrow(()
+                -> new NotFoundException(ErrorMessage.FACT_OF_DAY_NOT_FOUND_BY_LANGUAGE_ID + languageId)).get(0),
+            LanguageTranslationDTO.class);
+    }
 }
+
