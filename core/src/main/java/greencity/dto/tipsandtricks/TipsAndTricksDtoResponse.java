@@ -1,11 +1,12 @@
-package greencity.dto.econews;
+package greencity.dto.tipsandtricks;
 
-import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.AuthorDto;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -20,8 +21,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AddEcoNewsDtoResponse implements Serializable {
-    @Min(1)
+public class TipsAndTricksDtoResponse implements Serializable {
+    @NotNull
+    @Min(value = 1, message = "Tips and Tricks id must be a positive number")
     private Long id;
 
     @NotEmpty
@@ -31,17 +33,16 @@ public class AddEcoNewsDtoResponse implements Serializable {
     private String text;
 
     @NotEmpty
-    private EcoNewsAuthorDto ecoNewsAuthorDto;
-
-    @NotEmpty
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime creationDate;
 
     @NotEmpty
+    private AuthorDto author;
+
+    @NotEmpty
+    private List<String> tipsAndTricksTags;
+
     private String imagePath;
 
     private String source;
-
-    @NotEmpty
-    private List<String> tags;
 }
