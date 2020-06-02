@@ -78,5 +78,5 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return profile picture path {@link String}
      */
     @Query("SELECT profilePicturePath FROM User WHERE id=:id")
-    String getProfilePicturePathByUserId(Long id);
+    Optional<String> getProfilePicturePathByUserId(Long id);
 }

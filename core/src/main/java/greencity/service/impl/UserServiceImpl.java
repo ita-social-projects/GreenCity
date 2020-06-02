@@ -635,11 +635,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public String getProfilePicturePathByUserId(Long id) {
-        String profilePicturePathByUserId = userRepo.getProfilePicturePathByUserId(id);
-        if (profilePicturePathByUserId == null) {
-            throw new NotFoundException(PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString());
-        }
-        return profilePicturePathByUserId;
+        return userRepo
+                .getProfilePicturePathByUserId(id)
+                .orElseThrow(() -> new NotFoundException(PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString()));
     }
 
     /**
