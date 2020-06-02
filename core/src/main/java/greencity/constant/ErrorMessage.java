@@ -126,6 +126,7 @@ public final class ErrorMessage {
     public static final String TIPS_AND_TRICKS_NOT_SAVED =
         "Tips & tricks advice hasn't been saved due to constraint violation";
     public static final String INVALID_URL = "String could not be parsed as a URI reference or malformed URL";
+    public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
 
     private ErrorMessage() {
     }
