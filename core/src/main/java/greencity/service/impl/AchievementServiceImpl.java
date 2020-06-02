@@ -9,10 +9,12 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@EnableCaching
 public class AchievementServiceImpl implements AchievementService {
     private AchievementRepo achievementRepo;
     private ModelMapper modelMapper;
