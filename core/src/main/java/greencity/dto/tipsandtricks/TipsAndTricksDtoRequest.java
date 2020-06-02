@@ -16,7 +16,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class TipsAndTricksDtoRequest {
     @NotEmpty
-    @Size(min = 1, max = 200)
+    @Size(min = 1, max = 170)
     private String title;
 
     @NotEmpty
