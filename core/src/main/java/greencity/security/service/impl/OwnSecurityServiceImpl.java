@@ -47,6 +47,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final RabbitTemplate rabbitTemplate;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
+    private final String defaultProfilePicture;
 
     /**
      * Constructor.
@@ -57,13 +58,15 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   PasswordEncoder passwordEncoder,
                                   JwtTool jwtTool,
                                   @Value("${verifyEmailTimeHour}") Integer expirationTime,
-                                  RabbitTemplate rabbitTemplate) {
+                                  RabbitTemplate rabbitTemplate,
+                                  @Value("${defaultProfilePicture}") String defaultProfilePicture) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTool = jwtTool;
         this.expirationTime = expirationTime;
         this.rabbitTemplate = rabbitTemplate;
+        this.defaultProfilePicture = defaultProfilePicture;
     }
 
     /**
@@ -79,7 +82,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
         user.setOwnSecurity(ownSecurity);
         user.setVerifyEmail(verifyEmail);
-        user.setProfilePicturePath(AppConstant.DEFAULT_PROFILE_PICTURE);
+        user.setProfilePicturePath(defaultProfilePicture);
         try {
             User savedUser = userService.save(user);
             rabbitTemplate.convertAndSend(
