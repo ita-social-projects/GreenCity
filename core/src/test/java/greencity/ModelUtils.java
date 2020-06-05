@@ -358,5 +358,22 @@ public class ModelUtils {
     public static LanguageTranslationDTO getLanguageTranslationDTO() {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
+
+    public static TipsAndTricksTag getTipsAndTricksTag() {
+        return new TipsAndTricksTag(1L, "tipsAndTricksTag", Collections.emptyList());
+    }
+
+    public static TipsAndTricks getTipsAndTricks() {
+        return TipsAndTricks.builder()
+            .id(1L)
+            .title("title")
+            .text("text")
+            .creationDate(ZonedDateTime.now())
+            .author(getUser())
+            .tipsAndTricksTags(Collections.singletonList(getTipsAndTricksTag()))
+            .imagePath("imagePath")
+            .source("source")
+            .build();
+    }
 }
  
