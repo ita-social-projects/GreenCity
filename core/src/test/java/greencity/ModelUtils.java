@@ -15,6 +15,9 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.dto.user.UserGoalResponseDto;
@@ -373,6 +376,30 @@ public class ModelUtils {
             .tipsAndTricksTags(Collections.singletonList(getTipsAndTricksTag()))
             .imagePath("imagePath")
             .source("source")
+            .build();
+    }
+
+    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
+        return new TipsAndTricksDtoRequest("title", "text", Collections.singletonList("tipsAndTricksTag"), null, null);
+    }
+
+    public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
+        return TipsAndTricksDtoResponse.builder()
+            .id(1L)
+            .title("title")
+            .text("text")
+            .creationDate(ZonedDateTime.now())
+            .author(getAuthorDto())
+            .tipsAndTricksTags(Collections.singletonList("tipsAndTricksTag"))
+            .imagePath(TestConst.SITE)
+            .source(null)
+            .build();
+    }
+
+    private static AuthorDto getAuthorDto() {
+        return AuthorDto.builder()
+            .id(1L)
+            .name("author")
             .build();
     }
 }
