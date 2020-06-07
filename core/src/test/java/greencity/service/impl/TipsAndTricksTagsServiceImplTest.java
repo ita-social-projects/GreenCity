@@ -20,7 +20,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class TipsAndTricksTagsServiceImplTest {
+class TipsAndTricksTagsServiceImplTest {
     @Mock
     private TipsAndTricksTagsRepo tipsAndTricksTagsRepo;
 
@@ -28,7 +28,7 @@ public class TipsAndTricksTagsServiceImplTest {
     private TipsAndTricksTagsServiceImpl tipsAndTricksTagsService;
 
     @Test
-    public void findAllTest() {
+    void findAllTest() {
         TipsAndTricksTag tipsAndTricksTag = ModelUtils.getTipsAndTricksTag();
         tipsAndTricksTag.setTipsAndTricks(Collections.singletonList(ModelUtils.getTipsAndTricks()));
         when(tipsAndTricksTagsRepo.findAll()).thenReturn(Collections.singletonList(tipsAndTricksTag));
@@ -37,21 +37,21 @@ public class TipsAndTricksTagsServiceImplTest {
     }
 
     @Test
-    public void findAllWithoutTipsAndTricksTest() {
+    void findAllWithoutTipsAndTricksTest() {
         when(tipsAndTricksTagsRepo.findAll()).thenReturn(Collections.singletonList(ModelUtils.getTipsAndTricksTag()));
         List<String> expected = Collections.emptyList();
         assertEquals(expected, tipsAndTricksTagsService.findAll());
     }
 
     @Test
-    public void findByNameTest() {
+    void findByNameTest() {
         TipsAndTricksTag expected = ModelUtils.getTipsAndTricksTag();
         when(tipsAndTricksTagsRepo.findByName(expected.getName())).thenReturn(Optional.of(expected));
         assertEquals(expected, tipsAndTricksTagsService.findByName(expected.getName()));
     }
 
     @Test
-    public void findByNameFailedTest() {
+    void findByNameFailedTest() {
         String name = ModelUtils.getTipsAndTricksTag().getName();
         when(tipsAndTricksTagsRepo.findByName(name)).thenReturn(Optional.empty());
         assertThrows(TagNotFoundException.class, () -> {
@@ -60,7 +60,7 @@ public class TipsAndTricksTagsServiceImplTest {
     }
 
     @Test
-    public void findAllByNamesTest() {
+    void findAllByNamesTest() {
         TipsAndTricksTag tipsAndTricksTag = ModelUtils.getTipsAndTricksTag();
         List<TipsAndTricksTag> expected = Collections.singletonList(tipsAndTricksTag);
         when(tipsAndTricksTagsRepo.findAllByNames(Collections.singletonList(tipsAndTricksTag.getName())))
@@ -70,7 +70,7 @@ public class TipsAndTricksTagsServiceImplTest {
     }
 
     @Test
-    public void findAllByNamesFailedTest() {
+    void findAllByNamesFailedTest() {
         String name = ModelUtils.getTipsAndTricksTag().getName();
         when(tipsAndTricksTagsRepo.findAllByNames(Collections.singletonList(name))).thenReturn(Collections.emptyList());
         assertThrows(TagNotFoundException.class, () -> {
@@ -79,7 +79,7 @@ public class TipsAndTricksTagsServiceImplTest {
     }
 
     @Test
-    public void isAllValidTrueTest() {
+    void isAllValidTrueTest() {
         String name = ModelUtils.getTipsAndTricksTag().getName();
         List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
         when(tipsAndTricksTagsRepo.findAllByNames(tipsAndTricksTagsNames))
@@ -88,7 +88,7 @@ public class TipsAndTricksTagsServiceImplTest {
     }
 
     @Test
-    public void isAllValidFalseTest() {
+    void isAllValidFalseTest() {
         String name = ModelUtils.getTipsAndTricksTag().getName();
         List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
         when(tipsAndTricksTagsRepo.findAllByNames(tipsAndTricksTagsNames))
@@ -97,13 +97,13 @@ public class TipsAndTricksTagsServiceImplTest {
     }
 
     @Test
-    public void isValidNumOfUniqueTagsTrueTest() {
+    void isValidNumOfUniqueTagsTrueTest() {
         String name = ModelUtils.getTipsAndTricksTag().getName();
         assertEquals(true, tipsAndTricksTagsService.isValidNumOfUniqueTags(Collections.singletonList(name)));
     }
 
     @Test
-    public void isValidNumOfUniqueTagsDuplicatedTagExceptionTest() {
+    void isValidNumOfUniqueTagsDuplicatedTagExceptionTest() {
         String name = ModelUtils.getTipsAndTricksTag().getName();
         assertThrows(DuplicatedTagException.class, () -> {
             tipsAndTricksTagsService.isValidNumOfUniqueTags(Arrays.asList(name, name));
@@ -111,7 +111,7 @@ public class TipsAndTricksTagsServiceImplTest {
     }
 
     @Test
-    public void isValidNumOfUniqueTagsInvalidNumOfTagsException() {
+    void isValidNumOfUniqueTagsInvalidNumOfTagsException() {
         assertThrows(InvalidNumOfTagsException.class, () -> {
             tipsAndTricksTagsService.isValidNumOfUniqueTags(Arrays.asList("name1", "name2", "name3", "name4"));
         });

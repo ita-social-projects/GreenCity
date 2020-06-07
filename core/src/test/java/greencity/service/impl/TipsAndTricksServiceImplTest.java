@@ -28,7 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class TipsAndTricksServiceImplTest {
+class TipsAndTricksServiceImplTest {
     @Mock
     private TipsAndTricksRepo tipsAndTricksRepo;
     @Mock
@@ -46,7 +46,7 @@ public class TipsAndTricksServiceImplTest {
     private TipsAndTricksTag tipsAndTricksTag = ModelUtils.getTipsAndTricksTag();
 
     @Test
-    public void saveTest() {
+    void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
         when(tipsAndTricksTagsService.findAllByNames(anyList()))
@@ -57,7 +57,7 @@ public class TipsAndTricksServiceImplTest {
     }
 
     @Test
-    public void findAllTest() {
+    void findAllTest() {
         List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
         PageRequest pageRequest = new PageRequest(0, 2);
         Page<TipsAndTricks> translationPage = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
@@ -69,7 +69,7 @@ public class TipsAndTricksServiceImplTest {
     }
 
     @Test
-    public void findTest() {
+    void findTest() {
         List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
         PageRequest pageRequest = new PageRequest(0, 2);
         Page<TipsAndTricks> translationPage = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
@@ -83,7 +83,7 @@ public class TipsAndTricksServiceImplTest {
     }
 
     @Test
-    public void findDtoByIdTest() {
+    void findDtoByIdTest() {
         TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
@@ -91,7 +91,7 @@ public class TipsAndTricksServiceImplTest {
     }
 
     @Test
-    public void findDtoByIdFailedTest() {
+    void findDtoByIdFailedTest() {
         TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.empty());
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
@@ -101,7 +101,7 @@ public class TipsAndTricksServiceImplTest {
     }
 
     @Test
-    public void delete() {
+    void delete() {
         doNothing().when(tipsAndTricksRepo).deleteById(1L);
         when(tipsAndTricksRepo.findById(anyLong()))
             .thenReturn(Optional.of(ModelUtils.getTipsAndTricks()));
