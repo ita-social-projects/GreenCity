@@ -1,8 +1,6 @@
 package greencity.service.impl;
 
 import greencity.ModelUtils;
-import greencity.TestConst;
-import greencity.constant.AppConstant;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
@@ -10,8 +8,7 @@ import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksTag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.TipsAndTricksRepo;
-import greencity.repository.TipsAndTricksTagsRepo;
-import java.net.MalformedURLException;
+import greencity.service.TipsAndTricksTagsService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -35,17 +32,11 @@ public class TipsAndTricksServiceImplTest {
     @Mock
     private TipsAndTricksRepo tipsAndTricksRepo;
     @Mock
-    private TipsAndTricksTagsRepo tipsAndTricksTagsRepo;
+    private TipsAndTricksTagsService tipsAndTricksTagsService;
     @Mock
     private ModelMapper modelMapper;
     @Mock
     private UserServiceImpl userService;
-    @Mock
-    private CloudStorageService fileService;
-    @Mock
-    private LanguageServiceImpl languageService;
-    @Mock
-    private NewsSubscriberServiceImpl newsSubscriberService;
     @InjectMocks
     private TipsAndTricksServiceImpl tipsAndTricksService;
 
@@ -55,19 +46,14 @@ public class TipsAndTricksServiceImplTest {
     private TipsAndTricksTag tipsAndTricksTag = ModelUtils.getTipsAndTricksTag();
 
     @Test
-    public void saveTest() throws MalformedURLException {
+    public void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
+        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
+        when(tipsAndTricksTagsService.findAllByNames(anyList()))
+            .thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
-        when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
-        when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
-        when(tipsAndTricksTagsRepo.findByName("tipsAndTricksTag"))
-            .thenReturn(Optional.of(tipsAndTricksTag));
-        when(fileService.upload(null)).thenReturn(ModelUtils.getUrl());
-        when(tipsAndTricksTagsRepo.findAllByNames(tipsAndTricksDtoRequest.getTipsAndTricksTags()))
-            .thenReturn(Collections.singletonList(ModelUtils.getTipsAndTricksTag()));
-        assertEquals(tipsAndTricks, tipsAndTricksService.save(tipsAndTricksDtoRequest,
-            null, TestConst.EMAIL));
+        assertEquals(tipsAndTricksDtoResponse, tipsAndTricksService.save(tipsAndTricksDtoRequest,
+            null, ModelUtils.getUser().getEmail()));
     }
 
     @Test

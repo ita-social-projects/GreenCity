@@ -374,8 +374,8 @@ public class ModelUtils {
             .creationDate(ZonedDateTime.now())
             .author(getUser())
             .tipsAndTricksTags(Collections.singletonList(getTipsAndTricksTag()))
-            .imagePath("imagePath")
-            .source("source")
+            .imagePath(null)
+            .source(null)
             .build();
     }
 
