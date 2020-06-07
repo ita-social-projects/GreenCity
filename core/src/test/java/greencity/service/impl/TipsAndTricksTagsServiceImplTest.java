@@ -72,9 +72,10 @@ class TipsAndTricksTagsServiceImplTest {
     @Test
     void findAllByNamesFailedTest() {
         String name = ModelUtils.getTipsAndTricksTag().getName();
-        when(tipsAndTricksTagsRepo.findAllByNames(Collections.singletonList(name))).thenReturn(Collections.emptyList());
+        List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
+        when(tipsAndTricksTagsRepo.findAllByNames(tipsAndTricksTagsNames)).thenReturn(Collections.emptyList());
         assertThrows(TagNotFoundException.class, () -> {
-            tipsAndTricksTagsService.findAllByNames(Collections.singletonList(name));
+            tipsAndTricksTagsService.findAllByNames(tipsAndTricksTagsNames);
         });
     }
 
@@ -105,15 +106,17 @@ class TipsAndTricksTagsServiceImplTest {
     @Test
     void isValidNumOfUniqueTagsDuplicatedTagExceptionTest() {
         String name = ModelUtils.getTipsAndTricksTag().getName();
+        List<String> tipsAndTricksTagsNames = Arrays.asList(name, name);
         assertThrows(DuplicatedTagException.class, () -> {
-            tipsAndTricksTagsService.isValidNumOfUniqueTags(Arrays.asList(name, name));
+            tipsAndTricksTagsService.isValidNumOfUniqueTags(tipsAndTricksTagsNames);
         });
     }
 
     @Test
     void isValidNumOfUniqueTagsInvalidNumOfTagsException() {
+        List<String> tipsAndTricksTagsNames = Arrays.asList("name1", "name2", "name3", "name4");
         assertThrows(InvalidNumOfTagsException.class, () -> {
-            tipsAndTricksTagsService.isValidNumOfUniqueTags(Arrays.asList("name1", "name2", "name3", "name4"));
+            tipsAndTricksTagsService.isValidNumOfUniqueTags(tipsAndTricksTagsNames);
         });
     }
 }
