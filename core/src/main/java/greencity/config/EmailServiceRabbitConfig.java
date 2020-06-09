@@ -150,4 +150,27 @@ public class EmailServiceRabbitConfig {
             .to(emailTopicExchange)
             .with(SEND_REPORT_ROUTING_KEY);
     }
+
+    /**
+     * Queue that is used for sending notifications about not marked habits .
+     *
+     * @return durable queue that is meant for sending notification email letters.
+     */
+    @Bean
+    public Queue sendHabitNotificationQueue() {
+        return new Queue("send-habit-notification-queue", true);
+    }
+
+    /**
+     * The binding that is used for linking email topic exchange to send habit notification email queue.
+     *
+     * @return Binding with topic exchange and send notification queue linked.
+     */
+    @Bean
+    public Binding sendHabitNotificationTopicBinding(TopicExchange emailTopicExchange) {
+        return BindingBuilder
+            .bind(sendHabitNotificationQueue())
+            .to(emailTopicExchange)
+            .with(SEND_HABIT_NOTIFICATION_ROUTING_KEY);
+    }
 }
