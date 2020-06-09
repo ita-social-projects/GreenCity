@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.ValidationConstants.INVALID_RESTORE_EMAIL_ADDRESS;
 import static greencity.constant.ValidationConstants.USER_CREATED;
 
 /**
@@ -148,7 +149,7 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = USER_NOT_FOUND_BY_EMAIL)
     })
     @GetMapping("/restorePassword")
-    public ResponseEntity<Object> restore(@RequestParam @Email String email) {
+    public ResponseEntity<Object> restore(@RequestParam @Email(message = INVALID_RESTORE_EMAIL_ADDRESS) String email) {
         passwordRecoveryService.sendPasswordRecoveryEmailTo(email);
         return ResponseEntity.ok().build();
     }
