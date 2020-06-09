@@ -63,7 +63,7 @@ class TipsAndTricksServiceImplTest {
         Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
         List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
         PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
-        when(tipsAndTricksRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
+        when(tipsAndTricksRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
         assertEquals(pageableDto, tipsAndTricksService.findAll(pageRequest));
     }
@@ -77,7 +77,7 @@ class TipsAndTricksServiceImplTest {
         PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
         when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
         when(tipsAndTricksRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTipsAndTricksTag().getName())))
-            .thenReturn(translationPage);
+            .thenReturn(page);
         assertEquals(pageableDto, tipsAndTricksService
             .find(pageRequest, Collections.singletonList(ModelUtils.getTipsAndTricksTag().getName())));
     }
