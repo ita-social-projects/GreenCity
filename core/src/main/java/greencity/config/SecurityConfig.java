@@ -4,16 +4,11 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
-import static greencity.constant.AppConstant.*;
-
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
-
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +28,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import static greencity.constant.AppConstant.ADMIN;
+import static greencity.constant.AppConstant.MODERATOR;
+import static greencity.constant.AppConstant.USER;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
 /**
  * Config for security.
@@ -105,12 +106,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/specification/**",
                 "/newsSubscriber/unsubscribe",
                 "/econews/**",
+                "/tipsandtricks/**",
                 "/search",
-                "/tags"
+                "/tags",
+                "/tipsandtricksTags"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
                 "/econews/tags",
+                "/tipsandtricks/tags",
                 "/newsSubscriber"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
@@ -155,7 +159,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/userFriend/*",
                 "/econews",
                 "/user/{userId}/customGoals",
-                "/files/image"
+                "/files/image",
+                "/tipsandtricks"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
@@ -186,7 +191,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/{id}/**",
                 "/place/**",
                 "/comments",
-                "/econews"
+                "/econews",
+                "/tipsandtricks"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/user/**",

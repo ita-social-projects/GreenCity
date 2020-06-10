@@ -45,7 +45,7 @@ public class TagServiceImpl implements TagService {
             .map(Tag::getName)
             .collect(Collectors.toList());
     }
-      
+
     /**
      * {@inheritDoc}
      */

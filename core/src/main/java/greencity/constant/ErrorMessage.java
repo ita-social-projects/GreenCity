@@ -45,8 +45,8 @@ public final class ErrorMessage {
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
     public static final String NOT_IMPLEMENTED_METHOD =
         "Method hasn't implementation, please create it before use this method again";
-    public static final String WRONG_DATE_TIME_FORMAT = "The date format is wrong. Should matches "
-        + AppConstant.DATE_FORMAT;
+    public static final String WRONG_DATE_TIME_FORMAT =
+        "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
     public static final String LINK_FOR_RESTORE_NOT_FOUND = "Link for sendEmailForRestore password by email not found";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
     public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
@@ -114,10 +114,18 @@ public final class ErrorMessage {
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_DELETED = "Eco news hasn't been deleted";
     public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
-    public static final String CAN_NOT_CREATE_EVENT_INSTANCE = "Can not create instance of events. "
-        + "used constructor that differ from events superclass.";
+    public static final String CAN_NOT_CREATE_EVENT_INSTANCE =
+        "Can not create instance of events, used constructor that differ from events superclass.";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
     public static final String TAG_NOT_FOUND = "The tag does not exist by this name: ";
+    public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
+    public static final String INVALID_NUM_OF_TAGS =
+        "Invalid tags. You must have less than " + ValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
+    public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
+    public static final String TIPS_AND_TRICKS_NOT_FOUND_BY_ID = "Tips & tricks advice doesn't exist by this id: ";
+    public static final String TIPS_AND_TRICKS_NOT_SAVED =
+        "Tips & tricks advice hasn't been saved due to constraint violation";
+    public static final String INVALID_URL = "String could not be parsed as a URI reference or malformed URL";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
