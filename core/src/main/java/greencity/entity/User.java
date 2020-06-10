@@ -94,7 +94,10 @@ public class User {
 
     @OneToMany
     @JoinTable(name = "users_friends",
-            joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "friends",referencedColumnName = "id"))
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "friends", referencedColumnName = "id"))
     private List<User> userFriends = new ArrayList<>();
+
+    @Column(name = "rating")
+    private Float rating;
 }

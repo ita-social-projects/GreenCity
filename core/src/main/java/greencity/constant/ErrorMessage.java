@@ -43,7 +43,8 @@ public final class ErrorMessage {
     public static final String CLOSE_TIME_LATE_THAN_OPEN_TIME = "Close time have to be late than open time";
     public static final String END_TIME_LATE_THAN_START_TIME = "End time have to be late than start time";
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
-    public static final String NOT_IMPLEMENTED_METHOD = "Method hasn't implementation, please create it before use this method again";
+    public static final String NOT_IMPLEMENTED_METHOD =
+        "Method hasn't implementation, please create it before use this method again";
     public static final String WRONG_DATE_TIME_FORMAT = "The date format is wrong. Should matches "
         + AppConstant.DATE_FORMAT;
     public static final String LINK_FOR_RESTORE_NOT_FOUND = "Link for sendEmailForRestore password by email not found";
@@ -55,14 +56,16 @@ public final class ErrorMessage {
     public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
     public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
     public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
-    public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT = "Password restore link already sent, please check your email: ";
+    public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT =
+        "Password restore link already sent, please check your email: ";
     public static final String HABIT_EXIST = "The Habit is already exist by this date:  ";
     public static final String HABIT_NOT_FOUND_BY_ID = "The Habit does not exist by this id : ";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "The Habit statistic does not exist by this id : ";
     public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
     public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
-    public static final String USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY = "This user is tracking all available habit dictionary";
+    public static final String USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY =
+        "This user is tracking all available habit dictionary";
     public static final String USER_HAS_NO_AVAILABLE_CUSTOM_GOALS = "This user is tracking all available custom goals";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
     public static final String USER_GOAL_NOT_FOUND = "UserGoal(s) with this id not found: ";
@@ -83,21 +86,25 @@ public final class ErrorMessage {
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
     public static final String USER_HAS_NOT_ANY_HABITS = "There is no habits for such user.";
-    public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS = "There is no active habits for such user with such status ";
+    public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS =
+        "There is no active habits for such user with such status ";
     public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
     public static final String HABIT_IS_SAVED = "This habit is saved to user";
-    public static final String HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID = "Habit with such userId and habitDictionaryId does not exist";
+    public static final String HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID =
+        "Habit with such userId and habitDictionaryId does not exist";
     public static final String DELETE_LIST_ID_CANNOT_BE_EMPTY = "List with id cann`t be empty.";
     public static final String NOT_DELETE_LAST_HABIT = "Can`t delete last habit.";
-    public static final String CUSTOM_GOAL_FOR_THIS_USER_ALREADY_EXIST = "Custom goal with same text for this user already exist.";
+    public static final String CUSTOM_GOAL_FOR_THIS_USER_ALREADY_EXIST =
+        "Custom goal with same text for this user already exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
     public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
     public static final String HABIT_DICTIONARY_TRANSLATION_NOT_FOUND = "Don`t found HabitDictionaryTranslation";
     public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
-    public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND = "Subscriber with this email address not found in the database.";
+    public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
+        "Subscriber with this email address not found in the database.";
     public static final String NEWS_SUBSCRIBERS_NOT_FOUND = "Not found any subscriber in the database.";
     public static final String NEWS_SUBSCRIBER_NOT_DELETED = "The subscriber was not delete.";
     public static final String NEWS_SUBSCRIBER_NOT_SAVED = "The subscriber was not saved.";
@@ -112,6 +119,8 @@ public final class ErrorMessage {
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
     public static final String TAG_NOT_FOUND = "The tag does not exist by this name: ";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
+    public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
+    public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
 
     private ErrorMessage() {
     }

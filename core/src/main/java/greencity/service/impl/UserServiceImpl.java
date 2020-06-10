@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -9,53 +10,22 @@ import greencity.dto.goal.GoalDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitDictionaryDto;
 import greencity.dto.habitstatistic.HabitIdDto;
-import greencity.dto.user.BulkSaveUserGoalDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserCustomGoalDto;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserGoalDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserUpdateDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitDictionary;
-import greencity.entity.HabitDictionaryTranslation;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.dto.user.*;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.entity.localization.GoalTranslation;
-import greencity.exception.exceptions.BadUpdateRequestException;
-import greencity.exception.exceptions.LowRoleLevelException;
-import greencity.exception.exceptions.NotDeletedException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.UserGoalStatusNotUpdatedException;
-import greencity.exception.exceptions.UserHasNoAvailableGoalsException;
-import greencity.exception.exceptions.UserHasNoAvailableHabitDictionaryException;
-import greencity.exception.exceptions.UserHasNoGoalsException;
-import greencity.exception.exceptions.WrongEmailException;
-import greencity.exception.exceptions.WrongIdException;
-import greencity.repository.CustomGoalRepo;
-import greencity.repository.GoalTranslationRepo;
-import greencity.repository.HabitDictionaryTranslationRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitStatisticRepo;
-import greencity.repository.UserGoalRepo;
-import greencity.repository.UserRepo;
+import greencity.exception.exceptions.*;
+import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,8 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -636,8 +604,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getProfilePicturePathByUserId(Long id) {
         return userRepo
-                .getProfilePicturePathByUserId(id)
-                .orElseThrow(() -> new NotFoundException(PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString()));
+            .getProfilePicturePathByUserId(id)
+            .orElseThrow(() -> new NotFoundException(PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString()));
     }
 
     /**
@@ -651,42 +619,75 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUserProfilePicture(MultipartFile image, String email) {
         User user = userRepo
-                .findByEmail(email)
-                .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .findByEmail(email)
+            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         String url = fileService.upload(image).toString();
         user.setProfilePicturePath(url);
         return userRepo.save(user);
     }
 
+    /**
+     * Get list user friends by user id {@link User}.
+     *
+     * @param userId {@link Long}
+     * @return {@link User}.
+     * @author Marian Datsko
+     */
     @Override
     public List<User> getAllUserFriends(Long userId) {
-        findById(userId);
         return userRepo.getAllUserFriends(userId);
     }
 
+    /**
+     * Delete user friend by id {@link User}.
+     *
+     * @param userId   {@link Long}
+     * @param friendId {@link Long}
+     * @author Marian Datsko
+     */
     @Override
+    @Transactional
     public void deleteUserFriendById(Long userId, Long friendId) {
-        if (friendId == null) {
-            throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);  ///question!!!
-        }
-        userRepo.deleteUserFriendById(userId,friendId);
+        userRepo.deleteUserFriendById(userId, friendId);
     }
 
+    /**
+     * Add new user friend {@link User}.
+     *
+     * @param userId   {@link Long}
+     * @param friendId {@link Long}
+     * @author Marian Datsko
+     */
     @Override
+    @Transactional
     public void addNewFriend(Long userId, Long friendId) {
         List<User> allUserFriends = getAllUserFriends(userId);
-
-        if (friendId == null) {
-            throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);   ///question!!!
-        }
-
+        findById(friendId);
         if (!allUserFriends.isEmpty()) {
             getAllUserFriends(userId).forEach(user -> {
                 if (user.getId().equals(friendId)) {
-                    throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);  ///question!!!
+                    throw new CheckRepeatingValueException(FRIEND_EXISTS + friendId);
                 }
             });
         }
-        userRepo.addNewFriend(userId,friendId);
+        userRepo.addNewFriend(userId, friendId);
+    }
+
+    /**
+     * Get six friends with the highest rating {@link User}.
+     *
+     * @param userId {@link Long}
+     * @author Marian Datsko
+     */
+    @Override
+    public List<UserProfilePictureDto> getSixFriendsWithTheHighestRating(Long userId) {
+        List<UserProfilePictureDto> userProfilePictureDtoList = userRepo.getSixFriendsWithTheHighestRating(userId)
+            .stream()
+            .map(user -> modelMapper.map(user, UserProfilePictureDto.class))
+            .collect(Collectors.toList());
+        if (userProfilePictureDtoList.isEmpty()) {
+            throw new NotFoundException(NOT_FOUND_ANY_FRIENDS + userId.toString());
+        }
+        return userProfilePictureDtoList;
     }
 }

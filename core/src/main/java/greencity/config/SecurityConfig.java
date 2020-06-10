@@ -125,7 +125,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals",
                 "/user/{userId}/customGoals/*",
                 "/achievements",
-                "/facts/dayFact/*"
+                "/facts/dayFact/*",
+                "/user/{userId}/sixUserFriends/"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
