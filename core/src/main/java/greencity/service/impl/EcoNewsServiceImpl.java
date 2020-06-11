@@ -9,6 +9,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
+import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
@@ -19,7 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +79,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
+
+        Set<String> tagsSet = new HashSet<>(addEcoNewsDtoRequest.getTags());
+
+        if (tagsSet.size() < addEcoNewsDtoRequest.getTags().size()) {
+            throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
+        }
+
         toSave.setTags(addEcoNewsDtoRequest.getTags()
             .stream()
             .map(tagService::findByName)
