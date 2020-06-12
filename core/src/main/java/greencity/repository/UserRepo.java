@@ -85,31 +85,32 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @return list of {@link User}.
      */
-    @Query(value = " SELECT * FROM public.users_friends "
-        + " LEFT JOIN public.users ON public.users.id = public.users_friends.friends "
-        + " WHERE public.users_friends.user_id = :userId ", nativeQuery = true)
+    @Query(value = " SELECT u.userFriends FROM User u WHERE u.id = :userId ")
     List<User> getAllUserFriends(Long userId);
 
     /**
      * Delete friend {@link User}.
      */
     @Modifying
-    @Query(value = "DELETE FROM public.users_friends WHERE user_id= :userId AND friends= :friendId", nativeQuery = true)
+    @Query(nativeQuery = true,
+        value = "DELETE FROM users_friends WHERE user_id= :userId AND friend_id= :friendId")
     void deleteUserFriendById(Long userId, Long friendId);
 
     /**
      * Add new friend {@link User}.
      */
     @Modifying
-    @Query(value = "INSERT INTO public.users_friends(user_id, friends) VALUES (:userId, :friendId)", nativeQuery = true)
+    @Query(nativeQuery = true,
+        value = "INSERT INTO users_friends(user_id, friend_id) VALUES (:userId, :friendId)")
     void addNewFriend(Long userId, Long friendId);
 
     /**
      * Get six friends with the highest rating {@link User}.
      */
-    @Query(value = " SELECT * FROM public.users_friends "
-        + " LEFT JOIN public.users ON public.users.id = public.users_friends.friends "
-        + " WHERE public.users_friends.user_id = :userId "
-        + " ORDER BY public.users.rating DESC LIMIT 6 ", nativeQuery = true)
+    @Query(nativeQuery = true,
+        value = " SELECT * FROM users_friends "
+            + " LEFT JOIN users ON users.id = users_friends.friend_id "
+            + " WHERE users_friends.user_id = :userId "
+            + " ORDER BY users.rating DESC LIMIT 6 ")
     List<User> getSixFriendsWithTheHighestRating(Long userId);
 }
