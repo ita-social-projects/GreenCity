@@ -13,7 +13,7 @@ public final class AppConstant {
     public static final String VALIDATION_EMAIL = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final String VALIDATION_FOLDER = "(^eco_news$)";
-    public static final String DEFAULT_PROFILE_PICTURE = "https://storage.cloud.google.com/staging.greencity-c5a3a.appspot.com\"/d333665a-9269-49ef-bc77-2d8d4090290f";
+    public static final Float DEFAULT_RATING = 0.0f;
 
     private AppConstant() {
     }

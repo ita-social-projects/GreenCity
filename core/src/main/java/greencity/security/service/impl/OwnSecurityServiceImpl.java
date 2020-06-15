@@ -1,6 +1,8 @@
 package greencity.security.service.impl;
 
 import greencity.constant.AppConstant;
+import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -29,9 +31,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static greencity.constant.ErrorMessage.*;
-import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 
 /**
  * {@inheritDoc}
@@ -82,7 +81,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
         user.setOwnSecurity(ownSecurity);
         user.setVerifyEmail(verifyEmail);
-        user.setProfilePicturePath(defaultProfilePicture);
         try {
             User savedUser = userService.save(user);
             rabbitTemplate.convertAndSend(
@@ -107,6 +105,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
+            .profilePicturePath(defaultProfilePicture)
+            .rating(AppConstant.DEFAULT_RATING)
             .build();
     }
 
