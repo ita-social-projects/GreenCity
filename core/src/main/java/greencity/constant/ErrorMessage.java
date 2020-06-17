@@ -128,6 +128,8 @@ public final class ErrorMessage {
     public static final String INVALID_URL = "String could not be parsed as a URI reference or malformed URL";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
     public static final String WRONG_COUNT_OF_TAGS_EXCEPTION = "Count of tags should be at least one but not more three";
+    public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
+    public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
 
     private ErrorMessage() {
     }

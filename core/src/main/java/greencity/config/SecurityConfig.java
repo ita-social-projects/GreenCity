@@ -129,7 +129,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals",
                 "/user/{userId}/customGoals/*",
                 "/achievements",
-                "/facts/dayFact/*"
+                "/facts/dayFact/*",
+                "/user/{userId}/sixUserFriends/"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -155,6 +156,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/goals/*",
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/goals",
+                "/user/{userId}/userFriend/*",
                 "/econews",
                 "/user/{userId}/customGoals",
                 "/files/image",
@@ -163,6 +165,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
                 "/user/{userId}/userGoals",
+                "/user/{userId}/userFriend/*",
                 "/user/{userId}/habit/{habitId}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,

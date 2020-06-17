@@ -2,6 +2,9 @@ package greencity.security.service.impl;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import greencity.constant.AppConstant;
+import static greencity.constant.AppConstant.GOOGLE_USERNAME;
+import static greencity.constant.ErrorMessage.*;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
@@ -16,12 +19,10 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static greencity.constant.AppConstant.GOOGLE_USERNAME;
-import static greencity.constant.ErrorMessage.*;
 
 /**
  * {@inheritDoc}
@@ -33,6 +34,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
     private final JwtTool jwtTool;
     private final ApplicationEventPublisher appEventPublisher;
+    private final String defaultProfilePicture;
 
 
     /**
@@ -47,12 +49,14 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     public GoogleSecurityServiceImpl(UserService userService,
                                      JwtTool jwtTool,
                                      GoogleIdTokenVerifier googleIdTokenVerifier,
-                                     ApplicationEventPublisher appEventPublisher
+                                     ApplicationEventPublisher appEventPublisher,
+                                     @Value("${defaultProfilePicture}") String defaultProfilePicture
     ) {
         this.userService = userService;
         this.jwtTool = jwtTool;
         this.googleIdTokenVerifier = googleIdTokenVerifier;
         this.appEventPublisher = appEventPublisher;
+        this.defaultProfilePicture = defaultProfilePicture;
     }
 
     /**
@@ -101,6 +105,8 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
             .refreshTokenKey(jwtTool.generateTokenKey())
+            .profilePicturePath(defaultProfilePicture)
+            .rating(AppConstant.DEFAULT_RATING)
             .build();
     }
 
