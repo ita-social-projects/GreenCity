@@ -21,7 +21,6 @@ import static greencity.validator.UrlValidator.isUrlValid;
 public class EcoNewsDtoRequestValidator implements ConstraintValidator<ValidEcoNewsDtoRequest, AddEcoNewsDtoRequest> {
     @Override
     public void initialize(ValidEcoNewsDtoRequest constraintAnnotation) {
-
     }
 
     @Override
