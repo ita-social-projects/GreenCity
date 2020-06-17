@@ -3,6 +3,7 @@ package greencity.dto.econews;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
 import lombok.*;
 
 @NoArgsConstructor
@@ -20,6 +21,7 @@ public class AddEcoNewsDtoRequest {
     private String text;
 
     @NotEmpty
+    @Size(min = 1, max = 3)
     private List<String> tags;
 
     private String source;
