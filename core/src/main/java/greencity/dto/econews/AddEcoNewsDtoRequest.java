@@ -21,7 +21,6 @@ public class AddEcoNewsDtoRequest {
     private String text;
 
     @NotEmpty
-    @Size(min = 1, max = 3)
     private List<String> tags;
 
     private String source;
