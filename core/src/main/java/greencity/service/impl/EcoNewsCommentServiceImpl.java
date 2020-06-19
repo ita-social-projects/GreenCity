@@ -113,7 +113,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (user.getRole() != ROLE.ROLE_ADMIN && user.getRole() != ROLE.ROLE_MODERATOR
-            && user.getId() != comment.getUser().getId()) {
+            && !user.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         ecoNewsCommentRepo.delete(comment);
@@ -131,7 +131,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public void update(String text, Long id, User user) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        if (user.getId() != comment.getUser().getId()) {
+        if (!user.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
         comment.setText(text);
