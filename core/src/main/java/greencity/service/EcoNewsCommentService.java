@@ -71,5 +71,11 @@ public interface EcoNewsCommentService {
      */
     int countLikes(Long id);
 
+    /**
+     * Method to count replies to certain {@link greencity.entity.EcoNewsComment}.
+     *
+     * @param id specifies parent comment to all replies
+     * @return amount of replies
+     */
     int countReplies(Long id);
 }

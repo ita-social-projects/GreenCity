@@ -169,6 +169,12 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         return comment.getUsersLiked().size();
     }
 
+    /**
+     * Method to count replies to certain {@link greencity.entity.EcoNewsComment}.
+     *
+     * @param id specifies parent comment to all replies
+     * @return amount of replies
+     */
     @Override
     public int countReplies(Long id) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id).orElseThrow(
