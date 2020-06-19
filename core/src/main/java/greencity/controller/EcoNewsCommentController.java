@@ -41,6 +41,13 @@ public class EcoNewsCommentController {
     private final UserService userService;
     private final EcoNewsService ecoNewsService;
 
+    /**
+     * Method for creating {@link greencity.entity.EcoNewsComment}.
+     *
+     * @param econewsId id of {@link greencity.entity.EcoNews} to add comment to.
+     * @param addEcoNewsCommentDtoRequest - dto for {@link greencity.entity.EcoNewsComment} entity.
+     * @return dto {@link greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse}
+     */
     @ApiOperation(value = "Add comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CommentReturnDto.class),
@@ -58,6 +65,12 @@ public class EcoNewsCommentController {
             .body(ecoNewsCommentService.save(econewsId, addEcoNewsCommentDtoRequest, user));
     }
 
+    /**
+     * Method to get all comments to {@link greencity.entity.EcoNews} specified by ecoNewsId.
+     *
+     * @param ecoNewsId id of {@link greencity.entity.EcoNews}
+     * @return Pageable of {@link EcoNewsCommentDto}
+     */
     @ApiOperation(value = "Get all comments.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -79,6 +92,11 @@ public class EcoNewsCommentController {
             .body(ecoNewsCommentService.findAllComments(pageable, user, ecoNewsId));
     }
 
+    /**
+     * Method to count comments to certain {@link greencity.entity.EcoNews}.
+     * @param id to specify {@link greencity.entity.EcoNews}
+     * @return amount of comments
+     */
     @ApiOperation(value = "Count comments.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -90,6 +108,12 @@ public class EcoNewsCommentController {
         return ecoNewsService.findById(id).getEcoNewsComments().size();
     }
 
+    /**
+     * Method to get all replies to {@link greencity.entity.EcoNewsComment} specified by parentCommentId.
+     *
+     * @param parentCommentId specifies parent comment to all replies
+     * @return list of {@link EcoNewsCommentDto} replies
+     */
     @ApiOperation(value = "Get all replies to comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -109,6 +133,12 @@ public class EcoNewsCommentController {
             .body(ecoNewsCommentService.findAllReplies(parentCommentId, user));
     }
 
+    /**
+     * Method to count replies to certain {@link greencity.entity.EcoNewsComment}.
+     *
+     * @param parentCommentId specifies parent comment to all replies
+     * @return amount of replies
+     */
     @ApiOperation(value = "Get count of replies to comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -139,6 +169,12 @@ public class EcoNewsCommentController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Method to update certain {@link greencity.entity.EcoNewsComment} specified by id.
+     *
+     * @param id of {@link greencity.entity.EcoNewsComment} to update
+     * @param text new text of {@link greencity.entity.EcoNewsComment}
+     */
     @ApiOperation(value = "Update comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -151,6 +187,11 @@ public class EcoNewsCommentController {
         ecoNewsCommentService.update(text, id, user);
     }
 
+    /**
+     * Method to like/dislike certain {@link greencity.entity.EcoNewsComment} specified by id.
+     *
+     * @param id of {@link greencity.entity.EcoNewsComment} to like/dislike
+     */
     @ApiOperation(value = "Like comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -164,6 +205,12 @@ public class EcoNewsCommentController {
         ecoNewsCommentService.like(id, user);
     }
 
+    /**
+     * Method to count likes to certain {@link greencity.entity.EcoNewsComment}.
+     *
+     * @param id specifies comment
+     * @return amount of likes
+     */
     @ApiOperation(value = "Count comment likes.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
