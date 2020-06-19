@@ -22,7 +22,10 @@ import greencity.entity.enums.UserStatus;
 import greencity.service.CustomGoalService;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
@@ -219,7 +222,7 @@ public class UserController {
     /**
      * Method for finding all {@link User} habits.
      *
-     * @param userId    {@link User} id.
+     * @param userId {@link User} id.
      * @return list of {@link HabitDto}
      */
     @GetMapping("/{userId}/habits")
@@ -234,7 +237,7 @@ public class UserController {
      * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
      * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
-     * @param userId    {@link User} id.
+     * @param userId {@link User} id.
      * @return {@link CalendarUsefulHabitsDto} instance.
      */
     @ApiOperation(value = "Find statistic about user habits.")
@@ -247,7 +250,7 @@ public class UserController {
     /**
      * Method returns list of user goals for specific language.
      *
-     * @param language  - needed language code
+     * @param language - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -271,7 +274,7 @@ public class UserController {
     /**
      * Method returns list user custom goals.
      *
-     * @param userId    {@link User} id
+     * @param userId {@link User} id
      * @return list of {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -289,8 +292,8 @@ public class UserController {
     /**
      * Method saves custom goals for user.
      *
-     * @param dto       {@link BulkSaveUserGoalDto} with list objects to save
-     * @param userId    {@link User} id
+     * @param dto    {@link BulkSaveUserGoalDto} with list objects to save
+     * @param userId {@link User} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -313,8 +316,8 @@ public class UserController {
     /**
      * Method updated user custom goals.
      *
-     * @param userId    {@link User} id
-     * @param dto       {@link BulkCustomGoalDto} with list objects for update
+     * @param userId {@link User} id
+     * @param dto    {@link BulkCustomGoalDto} with list objects for update
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -335,8 +338,8 @@ public class UserController {
     /**
      * Method for delete user custom goals.
      *
-     * @param ids       string with objects id for deleting.
-     * @param userId    {@link User} id
+     * @param ids    string with objects id for deleting.
+     * @param userId {@link User} id
      * @return new {@link ResponseEntity}
      */
     @ApiOperation(value = "Delete user custom goals")
@@ -357,7 +360,7 @@ public class UserController {
     /**
      * Method returns list of available (not ACTIVE) goals for user.
      *
-     * @param language  - needed language code
+     * @param language - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -478,8 +481,8 @@ public class UserController {
     /**
      * Method saves habit, chosen by user.
      *
-     * @param dto       - dto with habits, chosen by user.
-     * @param userId    id current user.
+     * @param dto    - dto with habits, chosen by user.
+     * @param userId id current user.
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Save one or multiple habits for current user.")
@@ -503,8 +506,8 @@ public class UserController {
     /**
      * Method deletes habit, chosen by user.
      *
-     * @param habitId   id with habits, chosen by user.
-     * @param userId    id current user.
+     * @param habitId id with habits, chosen by user.
+     * @param userId  id current user.
      */
     @ApiOperation(value = "Delete habit")
     @ApiResponses(value = {
@@ -526,8 +529,8 @@ public class UserController {
     /**
      * Method for deleting user goals.
      *
-     * @param ids       string with objects id for deleting.
-     * @param userId    {@link User} id
+     * @param ids    string with objects id for deleting.
+     * @param userId {@link User} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -575,19 +578,87 @@ public class UserController {
      */
     @ApiOperation(value = "Update user profile picture")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping(path = "/profilePicture",
-            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+        consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpStatus> updateUserProfilePicture(@ApiParam(value = "Profile picture")
                                                                @RequestPart(required = false) MultipartFile image,
                                                                @ApiIgnore
                                                                @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
-        userService.updateUserProfilePicture(image,email);
+        userService.updateUserProfilePicture(image, email);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for deleting user friend.
+     *
+     * @param friendId id user friend.
+     * @param userId   id current user.
+     * @author Marian Datsko
+     */
+    @ApiOperation(value = "Delete user friend")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{userId}/userFriend/{friendId}")
+    public ResponseEntity<Object> deleteUserFriend(
+        @ApiParam("Id friend of current user. Cannot be empty.")
+        @PathVariable Long friendId,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable @CurrentUserId Long userId) {
+        userService.deleteUserFriendById(userId, friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for add new user friend.
+     *
+     * @param friendId id user friend.
+     * @param userId   id current user.
+     * @author Marian Datsko
+     */
+    @ApiOperation(value = "Add new user friend")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/userFriend/{friendId}")
+    public ResponseEntity<Object> addNewFriend(
+        @ApiParam("Id friend of current user. Cannot be empty.")
+        @PathVariable Long friendId,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable @CurrentUserId Long userId) {
+        userService.addNewFriend(userId, friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method returns list profile picture with the highest rating.
+     *
+     * @return {@link ResponseEntity}.
+     * @author Datsko Marian
+     */
+    @ApiOperation(value = "Get six friends profile picture with the highest rating")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/sixUserFriends/")
+    public ResponseEntity<List<UserProfilePictureDto>> getSixFriendsWithTheHighestRating(
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable @CurrentUserId Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getSixFriendsWithTheHighestRating(userId));
     }
 }

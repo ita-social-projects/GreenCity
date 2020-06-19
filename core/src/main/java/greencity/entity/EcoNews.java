@@ -34,7 +34,7 @@ public class EcoNews {
     private User author;
 
     @Column(nullable = false)
-    @Size(min = 1, max = 200)
+    @Size(min = 1, max = 170)
     private String title;
 
     @Column(nullable = false)

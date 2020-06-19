@@ -127,6 +127,8 @@ public final class ErrorMessage {
         "Tips & tricks advice hasn't been saved due to constraint violation";
     public static final String INVALID_URL = "String could not be parsed as a URI reference or malformed URL";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
+    public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
+    public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
 
