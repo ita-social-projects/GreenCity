@@ -66,7 +66,7 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
-            "title", "text", Collections.singletonList(getTag()));
+            "title", "text",null, Collections.singletonList(getTag()));
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {

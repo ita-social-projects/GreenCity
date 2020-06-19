@@ -109,7 +109,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/**",
                 "/search",
                 "/tags",
-                "/tipsandtricksTags"
+                "/tipsandtricksTags",
+                "/econews/comments",
+                "/econews/comments/count/comments",
+                "/econews/comments/replies/{parentCommentId}",
+                "/econews/comments/count/replies",
+                "/econews/comments/count/likes"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
@@ -142,7 +147,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/statistic/*",
                 "/user/{userId}/goals/*",
                 "/user/{userId}/customGoals",
-                "/user/profilePicture"
+                "/user/profilePicture",
+                "/econews/comments"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
@@ -158,12 +164,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews",
                 "/user/{userId}/customGoals",
                 "/files/image",
-                "/tipsandtricks"
+                "/tipsandtricks",
+                "/econews/comments/{econewsId}",
+                "/econews/comments/like"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
                 "/user/{userId}/userGoals",
-                "/user/{userId}/habit/{habitId}"
+                "/user/{userId}/habit/{habitId}",
+                "/econews/comments"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",

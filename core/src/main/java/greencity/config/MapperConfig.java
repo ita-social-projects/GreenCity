@@ -1,11 +1,15 @@
 package greencity.config;
 
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.mapping.AddEcoNewsCommentDtoRequestMapper;
+import greencity.mapping.AddEcoNewsCommentDtoResponseMapper;
 import greencity.mapping.AddEcoNewsDtoRequestMapper;
 import greencity.mapping.AddEcoNewsDtoResponseMapper;
 import greencity.mapping.AddHabitStatisticDtoMapper;
 import greencity.mapping.AdviceTranslateMapper;
 import greencity.mapping.DiscountValueMapper;
 import greencity.mapping.EcoNewsAuthorDtoMapper;
+import greencity.mapping.EcoNewsCommentDtoMapper;
 import greencity.mapping.EcoNewsDtoMapper;
 import greencity.mapping.FavoritePlaceDtoMapper;
 import greencity.mapping.FavoritePlaceMapper;
@@ -50,6 +54,9 @@ public class MapperConfig {
     private TipsAndTricksDtoRequestMapper tipsAndTricksDtoRequestMapper;
     private TipsAndTricksDtoResponseMapper tipsAndTricksDtoResponseMapper;
     private MultipartBase64ImageMapper multipartBase64ImageMapper;
+    private AddEcoNewsCommentDtoRequestMapper addEcoNewsCommentDtoRequestMapper;
+    private EcoNewsCommentDtoMapper ecoNewsCommentDtoMapper;
+    private AddEcoNewsCommentDtoResponseMapper addEcoNewsCommentDtoResponseMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -98,5 +105,8 @@ public class MapperConfig {
         modelMapper.addConverter(tipsAndTricksDtoRequestMapper);
         modelMapper.addConverter(tipsAndTricksDtoResponseMapper);
         modelMapper.addConverter(multipartBase64ImageMapper);
+        modelMapper.addConverter(addEcoNewsCommentDtoRequestMapper);
+        modelMapper.addConverter(ecoNewsCommentDtoMapper);
+        modelMapper.addConverter(addEcoNewsCommentDtoResponseMapper);
     }
 }
