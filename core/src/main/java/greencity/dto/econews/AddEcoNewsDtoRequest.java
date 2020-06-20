@@ -3,6 +3,7 @@ package greencity.dto.econews;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
 import lombok.*;
 
 @NoArgsConstructor
