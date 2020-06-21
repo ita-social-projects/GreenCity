@@ -84,6 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity/**",
                 "/place/getListPlaceLocationByMapsBounds/**",
                 "/googleSecurity/**",
+                "/facebookSecurity/**",
                 "/place/filter/**",
                 "/restorePassword/**",
                 "/changePassword/**"
