@@ -184,9 +184,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public int countReplies(Long id) {
-        ecoNewsCommentRepo.findById(id).orElseThrow(
-            () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)
-        );
+        if (!ecoNewsCommentRepo.findById(id).isPresent()) {
+            throw new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION);
+        }
         return ecoNewsCommentRepo.countByParentCommentId(id);
     }
 }
