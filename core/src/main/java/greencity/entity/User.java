@@ -6,6 +6,7 @@ import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -60,6 +61,9 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<EcoNewsComment> ecoNewsComments = new ArrayList<>();
+
     @OneToMany(mappedBy = "user")
     private List<FavoritePlace> favoritePlaces = new ArrayList<>();
 
@@ -100,6 +104,9 @@ public class User {
 
     @Column(name = "profile_picture")
     private String profilePicturePath;
+
+    @ManyToMany(mappedBy = "usersLiked")
+    private Set<EcoNewsComment> ecoNewsCommentsLiked;
 
     @OneToMany
     @JoinTable(name = "users_friends",
