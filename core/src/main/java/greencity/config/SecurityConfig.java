@@ -173,9 +173,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
                 "/user/{userId}/userGoals",
+                "/user/{userId}/userFriend/*",
                 "/user/{userId}/habit/{habitId}",
-                "/econews/comments",
-                "/user/{userId}/habit/{habitId}"
+                "/econews/comments"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",

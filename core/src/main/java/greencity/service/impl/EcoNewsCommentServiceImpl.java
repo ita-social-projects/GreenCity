@@ -33,9 +33,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
      *
-     * @param econewsId id of {@link greencity.entity.EcoNews} to which we save comment.
+     * @param econewsId                   id of {@link greencity.entity.EcoNews} to which we save comment.
      * @param addEcoNewsCommentDtoRequest dto with {@link greencity.entity.EcoNewsComment} text, parentCommentId.
-     * @param user {@link User} that saves the comment.
+     * @param user                        {@link User} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     @Override
@@ -62,21 +62,25 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method returns all comments to certain ecoNews specified by ecoNewsId.
      *
-     * @param user current {@link User}
+     * @param user      current {@link User}
      * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we search for comments
      * @return all comments to certain ecoNews specified by ecoNewsId.
      */
     @Override
     public PageableDto<EcoNewsCommentDto> findAllComments(Pageable pageable, User user, Long ecoNewsId) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(
-                                                                                                pageable, ecoNewsId);
+            pageable, ecoNewsId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
-            .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().contains(user)))
+            .map(comment -> {
+                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                return comment;
+            })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
-            .peek(ecoNewsCommentDto -> ecoNewsCommentDto
-                .setReplies(ecoNewsCommentRepo.countByParentCommentId(ecoNewsCommentDto.getId()))
-            )
+            .map(comment -> {
+                comment.setReplies(ecoNewsCommentRepo.countByParentCommentId(comment.getId()));
+                return comment;
+            })
             .collect(Collectors.toList());
 
         return new PageableDto<>(
@@ -90,13 +94,16 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * Method returns all replies to certain comment specified by parentCommentId.
      *
      * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to which we search for replies
-     * @param user current {@link User}
+     * @param user            current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      */
     @Override
     public List<EcoNewsCommentDto> findAllReplies(Long parentCommentId, User user) {
         return ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateDesc(parentCommentId).stream()
-            .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().contains(user)))
+            .map(comment -> {
+                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                return comment;
+            })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
             .collect(Collectors.toList());
     }
@@ -104,7 +111,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method to delete {@link greencity.entity.EcoNewsComment} specified by id.
      *
-     * @param id id of {@link greencity.entity.EcoNewsComment} to delete.
+     * @param id   of {@link greencity.entity.EcoNewsComment} to delete.
      * @param user current {@link User} that wants to delete.
      */
     @Override
@@ -123,7 +130,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * Method to change the existing {@link greencity.entity.EcoNewsComment}.
      *
      * @param text new text of {@link greencity.entity.EcoNewsComment}.
-     * @param id to specify {@link greencity.entity.EcoNewsComment} that user wants to change.
+     * @param id   to specify {@link greencity.entity.EcoNewsComment} that user wants to change.
      * @param user current {@link User} that wants to change.
      */
     @Override
@@ -141,7 +148,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method to like or dislike {@link greencity.entity.EcoNewsComment} specified by id.
      *
-     * @param id of {@link greencity.entity.EcoNewsComment} to like/dislike.
+     * @param id   of {@link greencity.entity.EcoNewsComment} to like/dislike.
      * @param user current {@link User} that wants to like/dislike.
      */
     public void like(Long id, User user) {
@@ -177,7 +184,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public int countReplies(Long id) {
-        EcoNewsComment comment = ecoNewsCommentRepo.findById(id).orElseThrow(
+        ecoNewsCommentRepo.findById(id).orElseThrow(
             () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)
         );
         return ecoNewsCommentRepo.countByParentCommentId(id);
