@@ -1,5 +1,8 @@
 package greencity.security.service.impl;
 
+import greencity.constant.AppConstant;
+import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -29,9 +32,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static greencity.constant.ErrorMessage.*;
-import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
-
 /**
  * {@inheritDoc}
  */
@@ -46,6 +46,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final RabbitTemplate rabbitTemplate;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
+    private final String defaultProfilePicture;
 
     /**
      * Constructor.
@@ -56,13 +57,15 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   PasswordEncoder passwordEncoder,
                                   JwtTool jwtTool,
                                   @Value("${verifyEmailTimeHour}") Integer expirationTime,
-                                  RabbitTemplate rabbitTemplate) {
+                                  RabbitTemplate rabbitTemplate,
+                                  @Value("${defaultProfilePicture}") String defaultProfilePicture) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTool = jwtTool;
         this.expirationTime = expirationTime;
         this.rabbitTemplate = rabbitTemplate;
+        this.defaultProfilePicture = defaultProfilePicture;
     }
 
     /**
@@ -102,6 +105,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
+            .profilePicturePath(defaultProfilePicture)
+            .rating(AppConstant.DEFAULT_RATING)
             .build();
     }
 

@@ -1,7 +1,6 @@
 package greencity.annotations;
 
-import greencity.constant.ValidationConstants;
-import greencity.validator.TagsValidator;
+import greencity.validator.TipsAndTricksDtoRequestValidator;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,17 +8,16 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-@Constraint(validatedBy = TagsValidator.class)
+@Constraint(validatedBy = TipsAndTricksDtoRequestValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface ValidTags {
+public @interface ValidTipsAndTricksDtoRequest {
     /**
      * Defines the message that will be showed when the input data is not valid.
      *
      * @return message
      */
-    String message() default "Invalid tags. You must have less than "
-        + ValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
+    String message() default "Invalid tags (not unique / more than 3) or invalid source format";
 
     /**
      * Let you select to split the annotations into different groups

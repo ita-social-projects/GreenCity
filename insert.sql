@@ -1,4 +1,4 @@
-INSERT INTO users (date_of_registration, email, email_notification, name, last_visit, role, user_status, refresh_token_key)
+﻿INSERT INTO users (date_of_registration, email, email_notification, name, last_visit, role, user_status, refresh_token_key)
 VALUES ('2019-09-03 11:42:37.823000', 'nazar.stasyuk@gmail.com', 0, 'Назар Стасюк', '2019-09-03 11:42:37.823000', 0, 2, 'a06b0b4e-8696-419c-a776-611c36f79d39'),
        ('2019-09-03 12:17:18.345000', 'dovgal.dmytr@gmail.com', 0, 'Dima Dovhal', '2019-09-03 12:17:18.346000', 0, 2, 'f9aef11e-2bfd-4136-aafd-e0c7b92f396a'),
        ('2019-09-04 13:20:31.755000', 'rapac@clockus.ru', 0, 'Paul Kos', '2019-09-04 13:20:31.757000', 1, 2, '6f9d42f5-2324-492e-8d99-75e5834aa739'),
@@ -290,4 +290,30 @@ VALUES (1, 4),
        (8, 1),
        (9, 1),
        (10, 1),
-       (11, 1)
+       (11, 1);
+
+INSERT INTO tips_and_tricks_tags(name)
+VALUES ('lifehacks'),
+       ('green thinking'),
+       ('zero waste'),
+       ('3 r''s'),
+       ('eco-city');
+
+INSERT INTO tips_and_tricks(title, text, creation_date, author_id, image_path, source)
+VALUES ('Don''t take home any unnecessary trash or junk',
+        'If you want a flyer or business card, take a photo rather than taking it home. This is especially relevant at concerts and outings where freebies are being passed out.',
+        '2020-05-11 18:55:18', 1, 'image path', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Go paperless',
+        'We know this can be a challenge, but opting for kindles, online books, or even renting from the library or borrowing from a friend makes a huge difference.',
+        '2020-05-12 18:55:18', 2, 'image path', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Use reusable storage bags instead of ziplock bags',
+        'Say goodbye to plastic ziplock bags for good. Reusable storage bags are the perfect alternative to single-use plastic bags and are so much more versatile.',
+        '2020-05-13 18:55:18', 3, 'image path', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/');
+
+INSERT INTO tips_and_tricks_tips_and_tricks_tags(tips_and_tricks_id, tips_and_tricks_tags_id)
+VALUES (1, 1),
+       (1, 3),
+       (1, 4),
+       (2, 3),
+       (3, 1),
+       (3, 2)

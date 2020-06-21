@@ -14,6 +14,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -154,7 +155,7 @@ public interface UserService {
     /**
      * Method returns list of user goals for specific language.
      *
-     * @param userId     id of the {@link User} current user.
+     * @param userId   id of the {@link User} current user.
      * @param language needed language code.
      * @return List of {@link UserGoalDto}.
      */
@@ -163,7 +164,7 @@ public interface UserService {
     /**
      * Method returns list of available (not ACTIVE) goals for user for specific language.
      *
-     * @param userId     id of the {@link User} current user.
+     * @param userId   id of the {@link User} current user.
      * @param language needed language code.
      * @return List of {@link GoalDto}.
      */
@@ -172,7 +173,7 @@ public interface UserService {
     /**
      * Method saves list of user goals.
      *
-     * @param userId     id of the {@link User} current user.
+     * @param userId   id of the {@link User} current user.
      * @param language needed language code.
      * @return List of saved {@link UserGoalDto} with specific language.
      */
@@ -190,7 +191,7 @@ public interface UserService {
     /**
      * Method update status of user goal.
      *
-     * @param userId     id of the {@link User} current user.
+     * @param userId   id of the {@link User} current user.
      * @param goalId   - {@link UserGoal}'s id that should be updated.
      * @param language needed language code.
      * @return {@link UserGoalDto} with specific language.
@@ -200,7 +201,7 @@ public interface UserService {
     /**
      * Method returns list of available (not ACTIVE) habitDictionary for user.
      *
-     * @param userId id of the {@link User} current user.
+     * @param userId   id of the {@link User} current user.
      * @param language language code.
      * @return List of {@link HabitDictionaryDto}
      * @author Bogdan Kuzenko
@@ -210,7 +211,7 @@ public interface UserService {
     /**
      * Method returns list of available habit for user.
      *
-     * @param userId       id of the {@link User} current user.
+     * @param userId     id of the {@link User} current user.
      * @param habitIdDto {@link HabitIdDto}
      * @return List of {@link HabitCreateDto}
      */
@@ -247,4 +248,56 @@ public interface UserService {
      * @author Shevtsiv Rostyslav
      */
     long getActivatedUsersAmount();
+
+    /**
+     * Get profile picture path {@link String}.
+     *
+     * @return profile picture path {@link String}
+     */
+    String getProfilePicturePathByUserId(Long id);
+
+    /**
+     * Update user profile picture {@link User}.
+     *
+     * @param image {@link MultipartFile}
+     * @param email {@link String} - email of user that need to update.
+     * @return {@link User}.
+     * @author Marian Datsko
+     */
+    User updateUserProfilePicture(MultipartFile image, String email);
+
+    /**
+     * Get list user friends by user id {@link User}.
+     *
+     * @param userId {@link Long}
+     * @return {@link User}.
+     * @author Marian Datsko
+     */
+    List<User> getAllUserFriends(Long userId);
+
+    /**
+     * Delete user friend by id {@link User}.
+     *
+     * @param userId   {@link Long}
+     * @param friendId {@link Long}
+     * @author Marian Datsko
+     */
+    void deleteUserFriendById(Long userId, Long friendId);
+
+    /**
+     * Add new user friend {@link User}.
+     *
+     * @param userId   {@link Long}
+     * @param friendId {@link Long}
+     * @author Marian Datsko
+     */
+    void addNewFriend(Long userId, Long friendId);
+
+    /**
+     * Get six friends with the highest rating {@link User}.
+     *
+     * @param userId {@link Long}
+     * @author Marian Datsko
+     */
+    List<UserProfilePictureDto> getSixFriendsWithTheHighestRating(Long userId);
 }

@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -33,12 +34,15 @@ public class EcoNews {
     private User author;
 
     @Column(nullable = false)
-    @Size(min = 1, max = 200)
+    @Size(min = 1, max = 170)
     private String title;
 
     @Column(nullable = false)
     @Size(min = 20, max = 63206)
     private String text;
+
+    @OneToMany(mappedBy = "ecoNews", fetch = FetchType.LAZY)
+    private List<EcoNewsComment> ecoNewsComments = new ArrayList<>();
 
     @ManyToMany
     private List<Tag> tags;
