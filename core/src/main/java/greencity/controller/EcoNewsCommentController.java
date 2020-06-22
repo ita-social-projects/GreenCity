@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.entity.User;
@@ -44,8 +45,8 @@ public class EcoNewsCommentController {
     /**
      * Method for creating {@link greencity.entity.EcoNewsComment}.
      *
-     * @param econewsId id of {@link greencity.entity.EcoNews} to add comment to.
-     * @param addEcoNewsCommentDtoRequest - dto for {@link greencity.entity.EcoNewsComment} entity.
+     * @param econewsId                   id of {@link greencity.entity.EcoNews} to add comment to.
+     * @param request - dto for {@link greencity.entity.EcoNewsComment} entity.
      * @return dto {@link greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse}
      */
     @ApiOperation(value = "Add comment.")
@@ -55,14 +56,15 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("{econewsId}")
-    public ResponseEntity<Object> save(@PathVariable Long econewsId,
-                                       @Valid @RequestBody AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
-                                       @ApiIgnore @AuthenticationPrincipal Principal principal) {
+    public ResponseEntity<AddEcoNewsCommentDtoResponse> save(@PathVariable Long econewsId,
+                                                             @Valid @RequestBody
+                                                                 AddEcoNewsCommentDtoRequest request,
+                                                             @ApiIgnore @AuthenticationPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getName());
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(ecoNewsCommentService.save(econewsId, addEcoNewsCommentDtoRequest, user));
+            .body(ecoNewsCommentService.save(econewsId, request, user));
     }
 
     /**
@@ -94,6 +96,7 @@ public class EcoNewsCommentController {
 
     /**
      * Method to count comments to certain {@link greencity.entity.EcoNews}.
+     *
      * @param id to specify {@link greencity.entity.EcoNews}
      * @return amount of comments
      */
@@ -151,11 +154,11 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method that delete comment by id.
+     * Method to mark comment as deleted.
      *
      * @param id comment id
      */
-    @ApiOperation(value = "Delete comment.")
+    @ApiOperation(value = "Mark comment as deleted.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -172,7 +175,7 @@ public class EcoNewsCommentController {
     /**
      * Method to update certain {@link greencity.entity.EcoNewsComment} specified by id.
      *
-     * @param id of {@link greencity.entity.EcoNewsComment} to update
+     * @param id   of {@link greencity.entity.EcoNewsComment} to update
      * @param text new text of {@link greencity.entity.EcoNewsComment}
      */
     @ApiOperation(value = "Update comment.")

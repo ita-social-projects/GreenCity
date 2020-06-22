@@ -68,7 +68,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public PageableDto<EcoNewsCommentDto> findAllComments(Pageable pageable, User user, Long ecoNewsId) {
-        Page<EcoNewsComment> pages = ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(
+        Page<EcoNewsComment> pages = ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateAsc(
             pageable, ecoNewsId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
@@ -99,7 +99,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public List<EcoNewsCommentDto> findAllReplies(Long parentCommentId, User user) {
-        return ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateDesc(parentCommentId).stream()
+        return ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateAsc(parentCommentId).stream()
             .map(comment -> {
                 comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
                 return comment;
@@ -109,7 +109,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to delete {@link greencity.entity.EcoNewsComment} specified by id.
+     * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as deleted.
      *
      * @param id   of {@link greencity.entity.EcoNewsComment} to delete.
      * @param user current {@link User} that wants to delete.
@@ -123,7 +123,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             && !user.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        ecoNewsCommentRepo.delete(comment);
+        comment.setDeleted(true);
+        ecoNewsCommentRepo.save(comment);
     }
 
     /**

@@ -65,6 +65,9 @@ public class EcoNewsComment {
     @ManyToOne
     private EcoNews ecoNews;
 
+    @Column
+    private Boolean deleted;
+
     @Transient
     private boolean currentUserLiked = false;
 
