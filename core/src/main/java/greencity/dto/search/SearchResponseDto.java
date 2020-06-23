@@ -13,5 +13,7 @@ import lombok.Setter;
 public class SearchResponseDto {
     List<SearchNewsDto> ecoNews;
 
+    List<SearchTipsAndTricksDto> tipsAndTricks;
+
     Long countOfResults;
 }

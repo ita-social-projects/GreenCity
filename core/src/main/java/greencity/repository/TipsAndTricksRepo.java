@@ -22,7 +22,6 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
         + "ORDER BY tt.creationDate DESC")
     Page<TipsAndTricks> find(Pageable pageable, List<String> tags);
 
-
     /**
      * Method returns all {@link TipsAndTricks} by page.
      *
@@ -30,4 +29,17 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
      * @return all {@link TipsAndTricks} by page.
      */
     Page<TipsAndTricks> findAllByOrderByCreationDateDesc(Pageable page);
+
+    /**
+     * Method returns {@link TipsAndTricks} by search query and page.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link TipsAndTricks}
+     */
+    @Query("select tt from TipsAndTricks tt "
+        + "where lower(tt.title) like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or lower(tt.text) like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tipsAndTricksTags ttt "
+        + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))")
+    Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery);
 }

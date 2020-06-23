@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
@@ -49,4 +50,12 @@ public interface TipsAndTricksService {
      * @param id - {@link TipsAndTricks} instance id which will be deleted.
      */
     void delete(Long id);
+
+    /**
+     * Method for getting Tips & Tricks by searchQuery.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link SearchTipsAndTricksDto}
+     */
+    PageableDto<SearchTipsAndTricksDto> search(String searchQuery);
 }
