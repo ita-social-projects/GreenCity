@@ -15,18 +15,20 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.*;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
+
 import lombok.RequiredArgsConstructor;
+
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,9 +89,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         toSave.setTags(addEcoNewsDtoRequest.getTags()
-            .stream()
-            .map(tagService::findByName)
-            .collect(Collectors.toList())
+                .stream()
+                .map(tagService::findByName)
+                .collect(Collectors.toList())
         );
 
         try {
@@ -99,7 +101,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-            buildAddEcoNewsMessage(toSave));
+                buildAddEcoNewsMessage(toSave));
 
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
@@ -119,9 +121,46 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         return ecoNewsList
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+                .stream()
+                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Zhurakovskyi Yurii.
+     */
+    @Override
+    public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
+        List<EcoNews> ecoNews = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
+        if (ecoNews.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
+        }
+        return ecoNews
+                .stream()
+                .map(eN -> modelMapper.map(eN, EcoNewsDto.class))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Zhurakovskyi Yurii.
+     */
+    @Override
+    public List<EcoNewsDto> getThreeRecommendedEcoNewsByTags(List<String> tags, Long openedEcoNewsId) {
+        List<EcoNews> ecoNews = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
+        if (ecoNews.size() < 3) {
+            List<Long> excludedEcoNewsIds = new ArrayList<>(ecoNews.stream().map(en -> en.getId()).collect(Collectors.toList()));
+            excludedEcoNewsIds.add(openedEcoNewsId);
+            int limit = 3 - ecoNews.size();
+            ecoNews.addAll(ecoNewsRepo.getRecommendedEcoNews(excludedEcoNewsIds, limit));
+        }
+        return ecoNews
+                .stream()
+                .map(eN -> modelMapper.map(eN, EcoNewsDto.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -133,14 +172,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableDto<EcoNewsDto> findAll(Pageable page) {
         Page<EcoNews> pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
         List<EcoNewsDto> ecoNewsDtos = pages
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+                .stream()
+                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+                .collect(Collectors.toList());
 
         return new PageableDto<>(
-            ecoNewsDtos,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber()
+                ecoNewsDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber()
         );
     }
 
@@ -154,13 +193,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Page<EcoNews> pages = ecoNewsRepo.find(page, tags);
 
         List<EcoNewsDto> ecoNewsDtos = pages.stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+                .collect(Collectors.toList());
 
         return new PageableDto<>(
-            ecoNewsDtos,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber()
+                ecoNewsDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber()
         );
     }
 
@@ -172,8 +211,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNews findById(Long id) {
         return ecoNewsRepo
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -211,13 +250,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery);
 
         List<SearchNewsDto> ecoNews = page.stream()
-            .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
-            .collect(Collectors.toList());
+                .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
+                .collect(Collectors.toList());
 
         return new PageableDto<>(
-            ecoNews,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber()
+                ecoNews,
+                page.getTotalElements(),
+                page.getPageable().getPageNumber()
         );
     }
 

@@ -6,7 +6,9 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
+
 import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +27,23 @@ public interface EcoNewsService {
      * @return list of {@link EcoNewsDto} instances.
      */
     List<EcoNewsDto> getThreeLastEcoNews();
+
+    /**
+     * Method for getting three recommended eco news.
+     *
+     * @param openedEcoNewsId don't include into the list
+     * @return list of three {@link EcoNewsDto} instances.
+     */
+    List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId);
+
+    /**
+     * Method for getting three recommended eco news.
+     *
+     * @param openedEcoNewsId don't include into the list
+     * @param tags tags to search.
+     * @return list of three {@link EcoNewsDto} instances.
+     */
+    List<EcoNewsDto> getThreeRecommendedEcoNewsByTags(List<String> tags, Long openedEcoNewsId);
 
     /**
      * Method for getting all eco news by page.
