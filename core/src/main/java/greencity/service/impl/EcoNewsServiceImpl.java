@@ -133,30 +133,21 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Zhurakovskyi Yurii.
      */
     @Override
-    public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
-        List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
+    public List<EcoNewsDto> getThreeRecommendedEcoNews(List<String> tags, Long openedEcoNewsId) {
+        List<EcoNews> ecoNewsList = null;
+        if (tags == null || tags.isEmpty()) {
+            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
+        } else {
+            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
+            if (ecoNewsList.size() < NUMBER_OF_RECOMMENDED_ECO_NEWS) {
+                List<Long> excludedEcoNewsIds = ecoNewsList.stream().map(EcoNews::getId).collect(Collectors.toList());
+                excludedEcoNewsIds.add(openedEcoNewsId);
+                int limit = 3 - ecoNewsList.size();
+                ecoNewsList.addAll(ecoNewsRepo.getRecommendedEcoNews(excludedEcoNewsIds, limit));
+            }
+        }
         if (ecoNewsList.isEmpty()) {
             throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
-        }
-        return ecoNewsList
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Zhurakovskyi Yurii.
-     */
-    @Override
-    public List<EcoNewsDto> getThreeRecommendedEcoNewsByTags(List<String> tags, Long openedEcoNewsId) {
-        List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
-        if (ecoNewsList.size() < NUMBER_OF_RECOMMENDED_ECO_NEWS) {
-            List<Long> excludedEcoNewsIds = ecoNewsList.stream().map(EcoNews::getId).collect(Collectors.toList());
-            excludedEcoNewsIds.add(openedEcoNewsId);
-            int limit = 3 - ecoNewsList.size();
-            ecoNewsList.addAll(ecoNewsRepo.getRecommendedEcoNews(excludedEcoNewsIds, limit));
         }
         return ecoNewsList
                 .stream()

@@ -32,18 +32,10 @@ public interface EcoNewsService {
      * Method for getting three recommended eco news.
      *
      * @param openedEcoNewsId don't include into the list
+     * @param tags            tags for priority.
      * @return list of three {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId);
-
-    /**
-     * Method for getting three recommended eco news.
-     *
-     * @param openedEcoNewsId don't include into the list
-     * @param tags tags to search.
-     * @return list of three {@link EcoNewsDto} instances.
-     */
-    List<EcoNewsDto> getThreeRecommendedEcoNewsByTags(List<String> tags, Long openedEcoNewsId);
+    List<EcoNewsDto> getThreeRecommendedEcoNews(List<String> tags, Long openedEcoNewsId);
 
     /**
      * Method for getting all eco news by page.

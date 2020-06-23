@@ -184,11 +184,7 @@ public class EcoNewsController {
             @RequestParam(required = false) List<String> tags,
             @RequestParam(required = true) Long openedEcoNewsId
     ) {
-        if (tags == null || tags.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    ecoNewsService.getThreeRecommendedEcoNews(openedEcoNewsId));
-        }
-        List<EcoNewsDto> ecoNewsDtoList = ecoNewsService.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsDtoList);
+        List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(tags, openedEcoNewsId);
+        return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
     }
 }
