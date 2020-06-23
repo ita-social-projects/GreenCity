@@ -188,6 +188,7 @@ public class EcoNewsController {
             return ResponseEntity.status(HttpStatus.OK).body(
                     ecoNewsService.getThreeRecommendedEcoNews(openedEcoNewsId));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId));
+        List<EcoNewsDto> ecoNewsDtoList = ecoNewsService.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsDtoList);
     }
 }

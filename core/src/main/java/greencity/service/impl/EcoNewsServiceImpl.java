@@ -133,13 +133,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
-        List<EcoNews> ecoNews = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
-        if (ecoNews.isEmpty()) {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
+        if (ecoNewsList.isEmpty()) {
             throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
         }
-        return ecoNews
+        return ecoNewsList
                 .stream()
-                .map(eN -> modelMapper.map(eN, EcoNewsDto.class))
+                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
                 .collect(Collectors.toList());
     }
 
@@ -150,16 +150,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNewsByTags(List<String> tags, Long openedEcoNewsId) {
-        List<EcoNews> ecoNews = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
-        if (ecoNews.size() < 3) {
-            List<Long> excludedEcoNewsIds = new ArrayList<>(ecoNews.stream().map(en -> en.getId()).collect(Collectors.toList()));
+        List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
+        if (ecoNewsList.size() < 3) {
+            List<Long> excludedEcoNewsIds = ecoNewsList.stream().map(EcoNews::getId).collect(Collectors.toList());
             excludedEcoNewsIds.add(openedEcoNewsId);
-            int limit = 3 - ecoNews.size();
-            ecoNews.addAll(ecoNewsRepo.getRecommendedEcoNews(excludedEcoNewsIds, limit));
+            int limit = 3 - ecoNewsList.size();
+            ecoNewsList.addAll(ecoNewsRepo.getRecommendedEcoNews(excludedEcoNewsIds, limit));
         }
-        return ecoNews
+        return ecoNewsList
                 .stream()
-                .map(eN -> modelMapper.map(eN, EcoNewsDto.class))
+                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
                 .collect(Collectors.toList());
     }
 
