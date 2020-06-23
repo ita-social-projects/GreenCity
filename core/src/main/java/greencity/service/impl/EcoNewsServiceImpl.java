@@ -142,7 +142,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             if (ecoNewsList.size() < NUMBER_OF_RECOMMENDED_ECO_NEWS) {
                 List<Long> excludedEcoNewsIds = ecoNewsList.stream().map(EcoNews::getId).collect(Collectors.toList());
                 excludedEcoNewsIds.add(openedEcoNewsId);
-                int limit = 3 - ecoNewsList.size();
+                int limit = NUMBER_OF_RECOMMENDED_ECO_NEWS - ecoNewsList.size();
                 ecoNewsList.addAll(ecoNewsRepo.getRecommendedEcoNews(excludedEcoNewsIds, limit));
             }
         }
