@@ -27,6 +27,7 @@ import javax.imageio.ImageIO;
 
 import lombok.RequiredArgsConstructor;
 
+import static greencity.constant.ValidationConstants.NUMBER_OF_RECOMMENDED_ECO_NEWS;
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 import org.modelmapper.ModelMapper;
@@ -151,7 +152,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNewsByTags(List<String> tags, Long openedEcoNewsId) {
         List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
-        if (ecoNewsList.size() < 3) {
+        if (ecoNewsList.size() < NUMBER_OF_RECOMMENDED_ECO_NEWS) {
             List<Long> excludedEcoNewsIds = ecoNewsList.stream().map(EcoNews::getId).collect(Collectors.toList());
             excludedEcoNewsIds.add(openedEcoNewsId);
             int limit = 3 - ecoNewsList.size();
