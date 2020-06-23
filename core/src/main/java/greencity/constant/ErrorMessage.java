@@ -37,6 +37,7 @@ public final class ErrorMessage {
     public static final String REPEATING_VALUE_OF_WEEKDAY_VALUE = "Value of week day repeating";
     public static final String USER_DEACTIVATED = "User is deactivated";
     public static final String BAD_GOOGLE_TOKEN = "Bad google token";
+    public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";
     public static final String NOT_SAVE_DELETION = "This is can't be deleted";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
