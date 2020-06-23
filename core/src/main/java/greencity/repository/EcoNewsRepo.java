@@ -24,6 +24,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
     /**
      * Method for getting three recommended eco news.
      *
+     * @param openedEcoNewsId id of opened eco news.
      * @return list of three recommended {@link EcoNews} instances.
      */
     @Query(nativeQuery = true, value =
