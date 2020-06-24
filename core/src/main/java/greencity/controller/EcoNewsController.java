@@ -165,4 +165,26 @@ public class EcoNewsController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, tags));
     }
+
+    /**
+     * Method for getting three eco news for recommendations widget.
+     *
+     * @return list of three recommended {@link EcoNewsDto} instances.
+     * @author Yurii Zhurakovskyi.
+     */
+    @ApiOperation(value = "Get three recommended eco news.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/recommended")
+    public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(
+            @ApiParam(value = "Tags for priorities(if do not input tags get without priorities)")
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = true) Long openedEcoNewsId
+    ) {
+        List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(tags, openedEcoNewsId);
+        return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
+    }
 }
