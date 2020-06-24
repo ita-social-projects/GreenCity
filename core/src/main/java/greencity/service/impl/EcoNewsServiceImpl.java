@@ -134,7 +134,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNews(List<String> tags, Long openedEcoNewsId) {
-        List<EcoNews> ecoNewsList = null;
+        List<EcoNews> ecoNewsList;
         if (tags == null || tags.isEmpty()) {
             ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
         } else {
