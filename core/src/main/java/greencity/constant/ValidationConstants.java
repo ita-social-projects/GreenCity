@@ -99,6 +99,8 @@ public final class ValidationConstants {
 
     public static final String USER_CREATED = "User was created. Verification letter has been sent to your email address";
 
+    public static final int NUMBER_OF_RECOMMENDED_ECO_NEWS = 3;
+
     private ValidationConstants() {
     }
 }
