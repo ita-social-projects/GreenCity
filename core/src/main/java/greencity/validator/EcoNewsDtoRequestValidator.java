@@ -5,11 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.exception.exceptions.InvalidURLException;
-import greencity.exception.exceptions.TagNotFoundDuringValidation;
 import greencity.exception.exceptions.WrongCountOfTagsException;
-import greencity.service.EcoNewsService;
-import org.apache.maven.project.ModelUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

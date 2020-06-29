@@ -39,7 +39,7 @@ public interface EcoNewsCommentService {
     List<EcoNewsCommentDto> findAllReplies(Long parentCommentId, User user);
 
     /**
-     * Method to delete {@link greencity.entity.EcoNewsComment} specified by id.
+     * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as deleted.
      *
      * @param id id of {@link greencity.entity.EcoNewsComment} to delete.
      * @param user current {@link User} that wants to delete.
