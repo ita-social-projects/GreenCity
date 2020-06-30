@@ -15,14 +15,12 @@ public class EcoNewsCommentDtoMapper extends AbstractConverter<EcoNewsComment, E
         dto.setId(ecoNewsComment.getId());
         dto.setModifiedDate(ecoNewsComment.getModifiedDate());
         if (ecoNewsComment.isDeleted()) {
-            dto.setStatus(CommentStatus.Deleted);
+            dto.setStatus(CommentStatus.DELETED);
             return dto;
-        }
-
-        if (ecoNewsComment.getCreatedDate().isEqual(ecoNewsComment.getModifiedDate())) {
-            dto.setStatus(CommentStatus.Original);
+        } else if (ecoNewsComment.getCreatedDate().isEqual(ecoNewsComment.getModifiedDate())) {
+            dto.setStatus(CommentStatus.ORIGINAL);
         } else {
-            dto.setStatus(CommentStatus.Edited);
+            dto.setStatus(CommentStatus.EDITED);
         }
         dto.setText(ecoNewsComment.getText());
         dto.setAuthor(EcoNewsCommentAuthorDto.builder()
