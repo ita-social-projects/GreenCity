@@ -9,6 +9,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
+import greencity.service.TagService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -32,13 +33,15 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/econews")
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
+    private final TagService tagService;
 
     /**
      * Constructor with parameters.
      */
     @Autowired
-    public EcoNewsController(EcoNewsService ecoNewsService) {
+    public EcoNewsController(EcoNewsService ecoNewsService, TagService tagService) {
         this.ecoNewsService = ecoNewsService;
+        this.tagService = tagService;
     }
 
     /**
@@ -186,5 +189,16 @@ public class EcoNewsController {
     ) {
         List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(tags, openedEcoNewsId);
         return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
+    }
+
+    /**
+     * The method which returns all tags.
+     *
+     * @return list of {@link String} (tag's names).
+     * @author Kovaliv Taras
+     */
+    @GetMapping
+    public ResponseEntity<List<String>> findAllTags() {
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAll());
     }
 }
