@@ -180,11 +180,9 @@ public class EcoNewsController {
     })
     @GetMapping("/recommended")
     public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(
-            @ApiParam(value = "Tags for priorities(if do not input tags get without priorities)")
-            @RequestParam(required = false) List<String> tags,
             @RequestParam(required = true) Long openedEcoNewsId
     ) {
-        List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(tags, openedEcoNewsId);
+        List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(openedEcoNewsId);
         return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
     }
 }

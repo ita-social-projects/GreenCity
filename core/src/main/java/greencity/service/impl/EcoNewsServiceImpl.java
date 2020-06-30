@@ -133,9 +133,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Zhurakovskyi Yurii.
      */
     @Override
-    public List<EcoNewsDto> getThreeRecommendedEcoNews(List<String> tags, Long openedEcoNewsId) {
+    public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
         List<EcoNews> ecoNewsList;
-        if (tags == null || tags.isEmpty()) {
+        EcoNews openedEcoNews = findById(openedEcoNewsId);
+        List<String> tags = openedEcoNews.getTags().stream().map(Tag::getName).collect(Collectors.toList());
+        if (tags.isEmpty()) {
             ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
         } else {
             ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
