@@ -232,7 +232,7 @@ public class HabitStatisticServiceImplTest {
         when(habitRepo.findAllByUserId(anyLong())).thenReturn(Optional.of(Collections.singletonList(habit)));
         when(dateService.getDatasourceZonedDateTime()).thenReturn(zonedDateTime);
         when(habitStatisticRepo.getSumOfAllItemsPerMonth(1L, zonedDateTime))
-            .thenReturn(Optional.of(12));
+            .thenReturn(Optional.of(0));
         assertEquals(calendarUsefulHabitsDto, habitStatisticService.getInfoAboutUserHabits(anyLong()));
     }
 
