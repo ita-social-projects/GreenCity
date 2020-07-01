@@ -8,14 +8,26 @@ import greencity.entity.Tag;
 import greencity.entity.User;
 import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 public class SearchNewsDtoMapperTest {
+    @InjectMocks
+    private SearchNewsDtoMapper searchNewsDtoMapper;
 
     private EcoNews ecoNewsTest = ModelUtils.getEcoNews();
 
     private User user = ModelUtils.getUser();
-    
+
+    @BeforeEach
+    void init() {
+        searchNewsDtoMapper = new SearchNewsDtoMapper();
+    }
+
     @Test
     public void convertTest() {
 
@@ -31,16 +43,6 @@ public class SearchNewsDtoMapperTest {
                 .collect(Collectors.toList()))
             .build();
 
-        SearchNewsDtoMapper filter = new SearchNewsDtoMapper() {
-            public SearchNewsDtoMapper callProtectedMethod(EcoNews ecoNews) {
-                convert(ecoNews);
-                return this;
-            }
-        }.callProtectedMethod(ecoNewsTest);
-
-        assertEquals(filter.convert(ecoNewsTest), searchedNews);
-
+        assertEquals(searchedNews, searchNewsDtoMapper.convert(ecoNewsTest));
     }
 }
-
-
