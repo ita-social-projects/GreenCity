@@ -29,7 +29,7 @@ public class TagServiceImpl implements TagService {
      */
     @Override
     public Tag findByName(String name) {
-        return tagRepo.findByName(name).orElseThrow(() ->
+        return tagRepo.findByNameIgnoreCase(name).orElseThrow(() ->
             new TagNotFoundException(ErrorMessage.TAG_NOT_FOUND + name));
     }
 

@@ -11,5 +11,5 @@ public interface TagRepo extends JpaRepository<Tag, Long> {
      * @param name name of Tag.
      * @return {@link Tag} by it's name.
      */
-    Optional<Tag> findByName(String name);
+    Optional<Tag> findByNameIgnoreCase(String name);
 }

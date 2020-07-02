@@ -1,5 +1,7 @@
 package greencity.validator;
 
+import greencity.constant.ErrorMessage;
+import greencity.exception.exceptions.InvalidURLException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,9 +19,9 @@ public class UrlValidator {
             new URL(url).toURI();
             return true;
         } catch (MalformedURLException e) {
-            return false;
+            throw new InvalidURLException(ErrorMessage.MALFORMED_URL);
         } catch (URISyntaxException e) {
-            return false;
+            throw new InvalidURLException(ErrorMessage.INVALID_URI);
         }
     }
 }
