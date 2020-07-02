@@ -7,14 +7,15 @@ import greencity.repository.TagRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.powermock.api.mockito.PowerMockito.when;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class TagServiceImplTest {
@@ -27,7 +28,7 @@ public class TagServiceImplTest {
     @Test
     public void testFindByName() {
         Tag expected = ModelUtils.getTag();
-        when(tagRepo.findByName(expected.getName()))
+        when(tagRepo.findByNameIgnoreCase(expected.getName()))
             .thenReturn(Optional.of(expected));
 
         assertEquals(expected, tagService.findByName(expected.getName()));
@@ -36,11 +37,9 @@ public class TagServiceImplTest {
     @Test
     public void testFindByNameWithException() {
         String name = ModelUtils.getTag().getName();
-        when(tagRepo.findByName(name)).thenReturn(Optional.empty());
+        when(tagRepo.findByNameIgnoreCase(name)).thenReturn(Optional.empty());
 
-        assertThrows(TagNotFoundException.class, () -> {
-            tagService.findByName(name);
-        });
+        assertThrows(TagNotFoundException.class, () -> tagService.findByName(name));
     }
 
     @Test

@@ -116,19 +116,21 @@ public final class ErrorMessage {
     public static final String ECO_NEWS_NOT_DELETED = "Eco news hasn't been deleted";
     public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
     public static final String CAN_NOT_CREATE_EVENT_INSTANCE =
-            "Can not create instance of events, used constructor that differ from events superclass.";
+        "Can not create instance of events, used constructor that differ from events superclass.";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
     public static final String TAG_NOT_FOUND = "The tag does not exist by this name: ";
     public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
     public static final String INVALID_NUM_OF_TAGS =
-            "Invalid tags. You must have less than " + ValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
+        "Invalid tags. You must have less than " + ValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
     public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
     public static final String TIPS_AND_TRICKS_NOT_FOUND_BY_ID = "Tips & tricks advice doesn't exist by this id: ";
     public static final String TIPS_AND_TRICKS_NOT_SAVED =
-            "Tips & tricks advice hasn't been saved due to constraint violation";
-    public static final String INVALID_URL = "String could not be parsed as a URI reference or malformed URL";
+        "Tips & tricks advice hasn't been saved due to constraint violation";
+    public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
+    public static final String MALFORMED_URL = "Malformed URL. The string could not be parsed.";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
-    public static final String WRONG_COUNT_OF_TAGS_EXCEPTION = "Count of tags should be at least one but not more three";
+    public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =
+        "Count of tags should be at least one but not more three";
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";

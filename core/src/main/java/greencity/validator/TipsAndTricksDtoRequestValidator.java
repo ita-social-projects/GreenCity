@@ -3,7 +3,6 @@ package greencity.validator;
 import greencity.annotations.ValidTipsAndTricksDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.TagNotFoundDuringValidation;
 import greencity.service.TipsAndTricksTagsService;
 import javax.validation.ConstraintValidator;
@@ -23,14 +22,15 @@ public class TipsAndTricksDtoRequestValidator
 
     @Override
     public boolean isValid(TipsAndTricksDtoRequest dto, ConstraintValidatorContext constraintValidatorContext) {
-        if (isUrlValid(dto.getSource())) {
-            if (tipsAndTricksTagsService.isValidNumOfUniqueTags(dto.getTipsAndTricksTags())) {
-                if (tipsAndTricksTagsService.isAllValid(dto.getTipsAndTricksTags())) {
-                    return true;
-                }
-                throw new TagNotFoundDuringValidation(ErrorMessage.TAGS_NOT_FOUND);
-            }
+        if (dto.getSource() != null && !dto.getSource().isEmpty()) {
+            isUrlValid(dto.getSource());
         }
-        throw new InvalidURLException(ErrorMessage.INVALID_URL);
+        if (tipsAndTricksTagsService.isValidNumOfUniqueTags(dto.getTipsAndTricksTags())) {
+            if (tipsAndTricksTagsService.isAllValid(dto.getTipsAndTricksTags())) {
+                return true;
+            }
+            throw new TagNotFoundDuringValidation(ErrorMessage.TAGS_NOT_FOUND);
+        }
+        return true;
     }
 }
