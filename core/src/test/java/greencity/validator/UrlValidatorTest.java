@@ -1,12 +1,14 @@
 package greencity.validator;
 
-import static greencity.ModelUtils.getUrl;
+import greencity.exception.exceptions.InvalidURLException;
 import java.net.MalformedURLException;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static greencity.ModelUtils.getUrl;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 public class UrlValidatorTest {
@@ -18,14 +20,14 @@ public class UrlValidatorTest {
     }
 
     @Test
-    void UrlValidatorMalformedURLExceptionFalseTest() {
+    void UrlValidatorMalformedURLExceptionTest() {
         String url = "ttt://";
-        assertFalse(UrlValidator.isUrlValid(url));
+        Assertions.assertThrows(InvalidURLException.class, () -> UrlValidator.isUrlValid(url));
     }
 
     @Test
-    void UrlValidatorURISyntaxExceptionFalseTest() {
+    void UrlValidatorURISyntaxExceptionTest() {
         String url = "http:// .";
-        assertFalse(UrlValidator.isUrlValid(url));
+        Assertions.assertThrows(InvalidURLException.class, () -> UrlValidator.isUrlValid(url));
     }
 }

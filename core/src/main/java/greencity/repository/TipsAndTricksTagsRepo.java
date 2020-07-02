@@ -21,6 +21,6 @@ public interface TipsAndTricksTagsRepo extends JpaRepository<TipsAndTricksTag, L
      * @param tipsAndTricksTagsNames list of {@link String} values
      * @return list of {@link TipsAndTricksTag}
      */
-    @Query("SELECT ttt FROM TipsAndTricksTag ttt WHERE ttt.name IN :tipsAndTricksTagsNames")
+    @Query("SELECT ttt FROM TipsAndTricksTag ttt WHERE lower(ttt.name) IN :tipsAndTricksTagsNames")
     List<TipsAndTricksTag> findAllByNames(List<String> tipsAndTricksTagsNames);
 }
