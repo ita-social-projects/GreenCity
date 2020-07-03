@@ -33,8 +33,9 @@ class HabitDictionaryServiceImplTest {
 
     @Test
     void findByIdNotFoundExceptionTest() {
+        Long habitDictionaryId = getHabitDictionary().getId();
         assertThrows(NotFoundException.class, () -> {
-            habitDictionaryService.findById(getHabitDictionary().getId());
+            habitDictionaryService.findById(habitDictionaryId);
         });
     }
 }
