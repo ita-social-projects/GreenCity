@@ -194,10 +194,10 @@ public class EcoNewsController {
     /**
      * The method which returns all eco news tags.
      *
-     * @return list of {@link String} (tag's names).
+     * @return list of {@link String} (eco news tag's names).
      * @author Kovaliv Taras
      */
-    @GetMapping
+    @GetMapping("/ecoNewsTags")
     public ResponseEntity<List<String>> findAllEcoNewsTags() {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findAll());
     }
