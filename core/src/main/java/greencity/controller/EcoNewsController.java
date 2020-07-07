@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -79,6 +80,7 @@ public class EcoNewsController {
             @ApiParam(value = "Add Eco News Request", required = true)
             @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
             @ApiParam(value = "Image of eco news")
+            @ImageValidation
             @RequestPart(required = false) MultipartFile image,
             @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
