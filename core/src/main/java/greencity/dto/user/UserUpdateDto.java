@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.Length;
 @EqualsAndHashCode
 public class UserUpdateDto {
     @NotBlank
-    @Length(max = 50)
+    @Length(max = 20)
     private String name;
 
     @NotNull(message = ValidationConstants.EMPTY_EMAIL_NOTIFICATION)
