@@ -12,6 +12,7 @@ import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.exception.exceptions.TagNotFoundException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.*;
@@ -134,23 +135,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
-        List<EcoNews> ecoNewsList;
+        List<EcoNews> ecoNewsList = new ArrayList<>();
         EcoNews openedEcoNews = findById(openedEcoNewsId);
-        List<String> tags = openedEcoNews.getTags().stream().map(Tag::getName).collect(Collectors.toList());
-        if (tags.isEmpty()) {
-            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
-        } else {
-            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
-            if (ecoNewsList.size() < NUMBER_OF_RECOMMENDED_ECO_NEWS) {
-                List<Long> excludedEcoNewsIds = ecoNewsList.stream().map(EcoNews::getId).collect(Collectors.toList());
-                excludedEcoNewsIds.add(openedEcoNewsId);
-                int limit = NUMBER_OF_RECOMMENDED_ECO_NEWS - ecoNewsList.size();
-                ecoNewsList.addAll(ecoNewsRepo.getRecommendedEcoNews(excludedEcoNewsIds, limit));
-            }
-        }
-        if (ecoNewsList.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
-        }
+        List<Long> tags = openedEcoNews.getTags().stream().map(Tag::getId).collect(Collectors.toList());
+        if (tags.size() == 3)
+            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(3, tags.get(0), tags.get(1), tags.get(2), openedEcoNewsId);
+        else if (tags.size() == 2)
+            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(2, tags.get(0), tags.get(1), 0L, openedEcoNewsId);
+        else if (tags.size() == 1)
+            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(1, tags.get(0), 0L, 0L, openedEcoNewsId);
         return ecoNewsList
                 .stream()
                 .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))

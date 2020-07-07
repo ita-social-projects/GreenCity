@@ -24,43 +24,17 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
     /**
      * Method for getting three recommended eco news.
      *
+     * @param countOfTags     count of tags.
+     * @param firstTagId      id of first tag.
+     * @param secondTagId     id of second tag.
+     * @param thirdTagId      id of third tag.
      * @param openedEcoNewsId id of opened eco news.
      * @return list of three recommended {@link EcoNews} instances.
      */
-    @Query(nativeQuery = true, value =
-            "SELECT en.* FROM eco_news AS en "
-                    + "WHERE en.id <> :openedEcoNewsId "
-                    + "ORDER BY en.creation_date DESC LIMIT 3")
-    List<EcoNews> getThreeRecommendedEcoNews(Long openedEcoNewsId);
-
-    /**
-     * Method for getting three recommended eco news for specific tags.
-     *
-     * @param tags            list of tags to search.
-     * @param openedEcoNewsId id of opened eco news.
-     * @return list of three or less recommended {@link EcoNews} instances.
-     */
-    @Query(nativeQuery = true, value =
-            "SELECT DISTINCT en.* FROM eco_news AS en "
-                    + "INNER JOIN eco_news_tags AS entag "
-                    + "ON en.id = entag.eco_news_id "
-                    + "INNER JOIN tags AS t ON entag.tags_id = t.id "
-                    + "WHERE t.name IN (:tags) AND en.id <> :openedEcoNewsId "
-                    + "ORDER BY en.creation_date DESC limit 3")
-    List<EcoNews> getThreeRecommendedEcoNewsByTags(List<String> tags, Long openedEcoNewsId);
-
-    /**
-     * Method for getting three recommended eco news for specific tags.
-     *
-     * @param excludedEcoNewsIds list of excluded eco news ids.
-     * @param limit              max number of instances
-     * @return list of recommended {@link EcoNews} instances.
-     */
-    @Query(nativeQuery = true, value =
-            "SELECT DISTINCT * FROM eco_news "
-                    + "WHERE id NOT IN (:excludedEcoNewsIds) "
-                    + "ORDER BY creation_date DESC limit :limit ")
-    List<EcoNews> getRecommendedEcoNews(List<Long> excludedEcoNewsIds, Integer limit);
+    @Query(nativeQuery = true, value = "SELECT * FROM Tags(:countOfTags, :firstTagId, :secondTagId, :thirdTagId) " +
+            "WHERE id <> :openedEcoNewsId limit 3")
+    List<EcoNews> getThreeRecommendedEcoNews(Integer countOfTags, Long firstTagId,
+                                             Long secondTagId, Long thirdTagId, Long openedEcoNewsId);
 
     /**
      * Method returns {@link EcoNews} for specific tags.
@@ -76,7 +50,6 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
                     + "WHERE t.name IN (:tags) "
                     + "ORDER BY  en.creation_date DESC")
     Page<EcoNews> find(Pageable pageable, List<String> tags);
-
 
     /**
      * Method returns all {@link EcoNews} by page.
