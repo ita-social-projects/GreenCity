@@ -9,6 +9,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
+import greencity.service.TagService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -32,13 +33,15 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/econews")
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
+    private final TagService tagService;
 
     /**
      * Constructor with parameters.
      */
     @Autowired
-    public EcoNewsController(EcoNewsService ecoNewsService) {
+    public EcoNewsController(EcoNewsService ecoNewsService, TagService tagService) {
         this.ecoNewsService = ecoNewsService;
+        this.tagService = tagService;
     }
 
     /**
@@ -77,7 +80,7 @@ public class EcoNewsController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AddEcoNewsDtoResponse> save(
             @ApiParam(value = "Add Eco News Request", required = true)
-            @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+            @RequestBody @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
             @ApiParam(value = "Image of eco news")
             @RequestPart(required = false) MultipartFile image,
             @ApiIgnore Principal principal) {
@@ -184,5 +187,16 @@ public class EcoNewsController {
     ) {
         List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(openedEcoNewsId);
         return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
+    }
+
+    /**
+     * The method which returns all eco news tags.
+     *
+     * @return list of {@link String} (eco news tag's names).
+     * @author Kovaliv Taras
+     */
+    @GetMapping("/ecoNewsTags")
+    public ResponseEntity<List<String>> findAllEcoNewsTags() {
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAll());
     }
 }

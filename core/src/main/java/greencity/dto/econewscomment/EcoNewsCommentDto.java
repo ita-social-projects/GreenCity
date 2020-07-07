@@ -1,5 +1,6 @@
 package greencity.dto.econewscomment;
 
+import greencity.entity.enums.CommentStatus;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -21,17 +22,17 @@ public class EcoNewsCommentDto {
     private Long id;
 
     @NotEmpty
+    private LocalDateTime modifiedDate;
+
     private EcoNewsCommentAuthorDto author;
 
-    @NotEmpty
     private String text;
-
-    @NotEmpty
-    private LocalDateTime modifiedDate;
 
     private int replies;
 
     private int likes;
 
     private boolean currentUserLiked;
+
+    private CommentStatus status;
 }
