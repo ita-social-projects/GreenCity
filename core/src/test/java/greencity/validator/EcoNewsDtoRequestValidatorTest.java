@@ -1,6 +1,5 @@
 package greencity.validator;
 
-import greencity.ModelUtils;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.WrongCountOfTagsException;
