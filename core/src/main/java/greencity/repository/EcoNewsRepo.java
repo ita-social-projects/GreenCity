@@ -23,7 +23,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
 
     /**
      * Method for getting three recommended eco news.
-     * Query is based on database procedure TAGS
+     * Query is based on database function TAGS
      *
      * @param countOfTags     count of tags.
      * @param firstTagId      id of first tag.
