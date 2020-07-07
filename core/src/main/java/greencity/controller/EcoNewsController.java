@@ -80,7 +80,7 @@ public class EcoNewsController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AddEcoNewsDtoResponse> save(
             @ApiParam(value = "Add Eco News Request", required = true)
-            @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+            @RequestBody @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
             @ApiParam(value = "Image of eco news")
             @RequestPart(required = false) MultipartFile image,
             @ApiIgnore Principal principal) {
