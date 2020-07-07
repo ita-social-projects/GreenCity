@@ -31,8 +31,8 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
      * @param openedEcoNewsId id of opened eco news.
      * @return list of three recommended {@link EcoNews} instances.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM Tags(:countOfTags, :firstTagId, :secondTagId, :thirdTagId) " +
-            "WHERE id <> :openedEcoNewsId limit 3")
+    @Query(nativeQuery = true, value = "SELECT * FROM Tags(:countOfTags, :firstTagId, :secondTagId, :thirdTagId) "
+            + "WHERE id <> :openedEcoNewsId limit 3")
     List<EcoNews> getThreeRecommendedEcoNews(Integer countOfTags, Long firstTagId,
                                              Long secondTagId, Long thirdTagId, Long openedEcoNewsId);
 

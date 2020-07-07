@@ -137,12 +137,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         List<EcoNews> ecoNewsList = new ArrayList<>();
         EcoNews openedEcoNews = findById(openedEcoNewsId);
         List<Long> tags = openedEcoNews.getTags().stream().map(Tag::getId).collect(Collectors.toList());
-        if (tags.size() == 3)
-            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(3, tags.get(0), tags.get(1), tags.get(2), openedEcoNewsId);
-        else if (tags.size() == 2)
-            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(2, tags.get(0), tags.get(1), 0L, openedEcoNewsId);
-        else if (tags.size() == 1)
-            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(1, tags.get(0), 0L, 0L, openedEcoNewsId);
+        if (tags.size() == 3) {
+            ecoNewsList = ecoNewsRepo
+                    .getThreeRecommendedEcoNews(3, tags.get(0), tags.get(1), tags.get(2), openedEcoNewsId);
+        } else if (tags.size() == 2) {
+            ecoNewsList = ecoNewsRepo
+                    .getThreeRecommendedEcoNews(2, tags.get(0), tags.get(1), 0L, openedEcoNewsId);
+        } else if (tags.size() == 1) {
+            ecoNewsList = ecoNewsRepo
+                    .getThreeRecommendedEcoNews(1, tags.get(0), 0L, 0L, openedEcoNewsId);
+        }
         return ecoNewsList
                 .stream()
                 .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
