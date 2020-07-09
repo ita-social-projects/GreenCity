@@ -9,7 +9,7 @@ import java.util.List;
  * @author Kovaliv Taras
  * @version 1.0
  */
-public interface TagService {
+public interface EcoNewsTagsService {
     /**
      * Method that allow you to find {@link Tag} by name.
      *
