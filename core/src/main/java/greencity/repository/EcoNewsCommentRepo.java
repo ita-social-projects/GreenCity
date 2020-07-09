@@ -16,8 +16,8 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @param ecoNewsId id of {@link greencity.entity.EcoNews} for which comments we search.
      * @return all {@link EcoNewsComment} by page.
      */
-    Page<EcoNewsComment> findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(Pageable pageable,
-                                                                                        Long ecoNewsId);
+    Page<EcoNewsComment> findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateAsc(Pageable pageable,
+                                                                                       Long ecoNewsId);
 
     /**
      * Method returns all replies to comment, specified by parentCommentId.
@@ -25,7 +25,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @param parentCommentId id of comment, replies to which we get.
      * @return all replies to comment, specified by parentCommentId.
      */
-    List<EcoNewsComment> findAllByParentCommentIdOrderByCreatedDateDesc(Long parentCommentId);
+    List<EcoNewsComment> findAllByParentCommentIdOrderByCreatedDateAsc(Long parentCommentId);
 
     /**
      * Method returns count of replies to comment, specified by parentCommentId.

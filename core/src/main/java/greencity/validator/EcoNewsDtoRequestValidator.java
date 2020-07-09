@@ -4,6 +4,7 @@ import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.WrongCountOfTagsException;
 import java.util.List;
 import javax.validation.ConstraintValidator;

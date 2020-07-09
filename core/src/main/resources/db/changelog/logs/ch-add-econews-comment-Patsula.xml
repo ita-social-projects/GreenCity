@@ -82,4 +82,10 @@
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
     </changeSet>
+
+    <changeSet id="Patsula-10" author="Yurii Patsula">
+        <addColumn tableName="econews_comment">
+            <column name="deleted" type="BOOLEAN" defaultValue="false"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

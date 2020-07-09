@@ -10,6 +10,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
+import greencity.service.TagService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -24,7 +25,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -33,13 +41,15 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/econews")
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
+    private final TagService tagService;
 
     /**
      * Constructor with parameters.
      */
     @Autowired
-    public EcoNewsController(EcoNewsService ecoNewsService) {
+    public EcoNewsController(EcoNewsService ecoNewsService, TagService tagService) {
         this.ecoNewsService = ecoNewsService;
+        this.tagService = tagService;
     }
 
     /**
@@ -182,11 +192,21 @@ public class EcoNewsController {
     })
     @GetMapping("/recommended")
     public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(
-            @ApiParam(value = "Tags for priorities(if do not input tags get without priorities)")
-            @RequestParam(required = false) List<String> tags,
             @RequestParam(required = true) Long openedEcoNewsId
+
     ) {
-        List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(tags, openedEcoNewsId);
+        List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(openedEcoNewsId);
         return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
+    }
+
+    /**
+     * The method which returns all eco news tags.
+     *
+     * @return list of {@link String} (eco news tag's names).
+     * @author Kovaliv Taras
+     */
+    @GetMapping("/ecoNewsTags")
+    public ResponseEntity<List<String>> findAllEcoNewsTags() {
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAll());
     }
 }

@@ -15,21 +15,7 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.*;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
-
 import lombok.RequiredArgsConstructor;
-
-import static greencity.constant.ValidationConstants.NUMBER_OF_RECOMMENDED_ECO_NEWS;
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +29,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 @Service
 @EnableCaching
@@ -133,21 +133,19 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Zhurakovskyi Yurii.
      */
     @Override
-    public List<EcoNewsDto> getThreeRecommendedEcoNews(List<String> tags, Long openedEcoNewsId) {
-        List<EcoNews> ecoNewsList;
-        if (tags == null || tags.isEmpty()) {
-            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
-        } else {
-            ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNewsByTags(tags, openedEcoNewsId);
-            if (ecoNewsList.size() < NUMBER_OF_RECOMMENDED_ECO_NEWS) {
-                List<Long> excludedEcoNewsIds = ecoNewsList.stream().map(EcoNews::getId).collect(Collectors.toList());
-                excludedEcoNewsIds.add(openedEcoNewsId);
-                int limit = NUMBER_OF_RECOMMENDED_ECO_NEWS - ecoNewsList.size();
-                ecoNewsList.addAll(ecoNewsRepo.getRecommendedEcoNews(excludedEcoNewsIds, limit));
-            }
-        }
-        if (ecoNewsList.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
+    public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
+        List<EcoNews> ecoNewsList = new ArrayList<>();
+        EcoNews openedEcoNews = findById(openedEcoNewsId);
+        List<Long> tags = openedEcoNews.getTags().stream().map(Tag::getId).collect(Collectors.toList());
+        if (tags.size() == 3) {
+            ecoNewsList = ecoNewsRepo
+                    .getThreeRecommendedEcoNews(3, tags.get(0), tags.get(1), tags.get(2), openedEcoNewsId);
+        } else if (tags.size() == 2) {
+            ecoNewsList = ecoNewsRepo
+                    .getThreeRecommendedEcoNews(2, tags.get(0), tags.get(1), 0L, openedEcoNewsId);
+        } else if (tags.size() == 1) {
+            ecoNewsList = ecoNewsRepo
+                    .getThreeRecommendedEcoNews(1, tags.get(0), 0L, 0L, openedEcoNewsId);
         }
         return ecoNewsList
                 .stream()
