@@ -20,6 +20,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -213,6 +215,20 @@ public class EcoNewsCommentController {
     })
     @GetMapping("/count/likes")
     public int getCountOfLikes(Long id) {
+        return ecoNewsCommentService.countLikes(id);
+    }
+
+    /**
+     * Method to like/dislike comment and count likes.
+     *
+     * @param id specifies comment
+     * @return amount of likes
+     */
+    @MessageMapping("/likeAndCount")
+    @SendTo("/topic/comment")
+    public int greeting(Long id, @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        User user = userService.findByEmail(principal.getName());
+        ecoNewsCommentService.like(id, user);
         return ecoNewsCommentService.countLikes(id);
     }
 }
