@@ -9,12 +9,12 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface TipsAndTricksCommentService {
-
     /**
      * Method to save {@link greencity.entity.TipsAndTricksComment}.
      *
      * @param tipsAndTricksId                   id of {@link greencity.entity.TipsAndTricks} to which we save comment.
-     * @param addTipsAndTricksCommentDtoRequest dto with {@link greencity.entity.TipsAndTricksComment} text, parentCommentId.
+     * @param addTipsAndTricksCommentDtoRequest dto with {@link greencity.entity.TipsAndTricksComment} text,
+     *                                          parentCommentId.
      * @param user                              {@link User} that saves the comment.
      * @return {@link AddTipsAndTricksCommentDtoResponse} instance.
      */

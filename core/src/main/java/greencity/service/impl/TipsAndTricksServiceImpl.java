@@ -125,6 +125,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         tipsAndTricksRepo.deleteById(findById(id).getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public TipsAndTricks findById(Long id) {
         return tipsAndTricksRepo
             .findById(id)

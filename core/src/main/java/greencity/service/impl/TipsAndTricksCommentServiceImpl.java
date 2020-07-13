@@ -33,7 +33,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
      * Method to save {@link greencity.entity.TipsAndTricksComment}.
      *
      * @param tipsandtricksId                   id of {@link greencity.entity.TipsAndTricks} to which we save comment.
-     * @param addTipsAndTricksCommentDtoRequest dto with {@link greencity.entity.TipsAndTricksComment} text, parentCommentId.
+     * @param addTipsAndTricksCommentDtoRequest dto with {@link greencity.entity.TipsAndTricksComment} text,
+     *                                          parentCommentId.
      * @param user                              {@link User} that saves the comment.
      * @return {@link AddTipsAndTricksCommentDtoRequest} instance.
      */
@@ -50,8 +51,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             TipsAndTricksComment parentComment =
                 tipsAndTricksCommentRepo.findById(addTipsAndTricksCommentDtoRequest.getParentCommentId()).orElseThrow(
                     () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-            if (parentComment.getParentComment() == null &&
-                parentComment.getTipsAndTricks().getId().equals(tipsandtricksId)) {
+            if (parentComment.getParentComment() == null
+                && parentComment.getTipsAndTricks().getId().equals(tipsandtricksId)) {
                 tipsAndTricksComment.setParentComment(parentComment);
             } else {
                 if (parentComment.getParentComment() != null) {
@@ -75,7 +76,6 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
      */
     @Override
     public PageableDto<TipsAndTricksCommentDto> findAllComments(Pageable pageable, User user, Long tipsAndTricksId) {
-
         Page<TipsAndTricksComment> pages =
             tipsAndTricksCommentRepo.findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(
                 pageable, tipsAndTricksId);
