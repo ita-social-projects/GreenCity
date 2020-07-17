@@ -191,4 +191,15 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         }
         return ecoNewsCommentRepo.countByParentCommentId(id);
     }
+
+    /**
+     * Method to count not deleted comments to certain {@link greencity.entity.EcoNews}.
+     *
+     * @param ecoNewsId to specify {@link greencity.entity.EcoNews}
+     * @return amount of comments
+     */
+    @Override
+    public int countOfComments(Long ecoNewsId) {
+        return ecoNewsCommentRepo.countOfComments(ecoNewsId);
+    }
 }

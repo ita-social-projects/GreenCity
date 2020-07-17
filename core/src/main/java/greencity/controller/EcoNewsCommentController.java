@@ -95,19 +95,19 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to count comments to certain {@link greencity.entity.EcoNews}.
+     * Method to count not deleted comments to certain {@link greencity.entity.EcoNews}.
      *
      * @param id to specify {@link greencity.entity.EcoNews}
      * @return amount of comments
      */
     @ApiOperation(value = "Count comments.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/count/comments")
     public int getCountOfComments(Long id) {
-        return ecoNewsService.findById(id).getEcoNewsComments().size();
+        return ecoNewsCommentService.countOfComments(id);
     }
 
     /**
