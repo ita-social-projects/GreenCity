@@ -45,6 +45,14 @@ public interface TipsAndTricksService {
     TipsAndTricksDtoResponse findDtoById(Long id);
 
     /**
+     * Method for getting the {@link TipsAndTricks} instance by its id.
+     *
+     * @param id {@link TipsAndTricks} instance id.
+     * @return {@link TipsAndTricks} instance.
+     */
+    TipsAndTricks findById(Long id);
+
+    /**
      * Method for deleting the {@link TipsAndTricks} instance by its id.
      *
      * @param id - {@link TipsAndTricks} instance id which will be deleted.

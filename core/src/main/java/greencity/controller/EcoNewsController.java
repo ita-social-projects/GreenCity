@@ -9,7 +9,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
-import greencity.service.TagService;
+import greencity.service.EcoNewsTagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -40,13 +40,13 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/econews")
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
-    private final TagService tagService;
+    private final EcoNewsTagsService tagService;
 
     /**
      * Constructor with parameters.
      */
     @Autowired
-    public EcoNewsController(EcoNewsService ecoNewsService, TagService tagService) {
+    public EcoNewsController(EcoNewsService ecoNewsService, EcoNewsTagsService tagService) {
         this.ecoNewsService = ecoNewsService;
         this.tagService = tagService;
     }

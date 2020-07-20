@@ -111,7 +111,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/count/comments",
                 "/econews/comments/replies/{parentCommentId}",
                 "/econews/comments/count/replies",
-                "/econews/comments/count/likes"
+                "/econews/comments/count/likes",
+                "/tipsandtricks/comments/{tipsAndTricksId}",
+                "/tipsandtricks/comments/replies/{parentCommentId}",
+                "/tipsandtricks/comments/count/likes",
+                "/tipsandtricks/comments/",
+                "/tipsandtricks/comments/count/comments"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
@@ -146,7 +151,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/goals/*",
                 "/user/{userId}/customGoals",
                 "/user/profilePicture",
-                "/econews/comments"
+                "/econews/comments",
+                "/tipsandtricks/comments"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
@@ -165,14 +171,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/files/image",
                 "/tipsandtricks",
                 "/econews/comments/{econewsId}",
-                "/econews/comments/like"
+                "/econews/comments/like",
+                "/tipsandtricks/comments/{tipsAndTricksId}",
+                "/tipsandtricks/comments/like"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",
                 "/user/{userId}/userGoals",
                 "/user/{userId}/userFriend/*",
                 "/user/{userId}/habit/{habitId}",
-                "/econews/comments"
+                "/econews/comments",
+                "/tipsandtricks/comments"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/user/filter",

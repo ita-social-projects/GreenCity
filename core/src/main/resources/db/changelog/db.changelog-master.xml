@@ -40,4 +40,5 @@
     <include file="db/changelog/logs/ch-change-users-rating-Datsko.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-Ostriychuk.xml"/>
     <include file="db/changelog/logs/ch-add-column-Zhurakovskyi-1.xml"/>
+    <include file="db/changelog/logs/ch-add-tipsandtricks-comment-Beshlei.xml"/>
 </databaseChangeLog>

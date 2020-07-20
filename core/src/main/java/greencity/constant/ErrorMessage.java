@@ -135,6 +135,8 @@ public final class ErrorMessage {
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
+    public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
+        + "different TipsAndTricks Id";
 
     private ErrorMessage() {
     }

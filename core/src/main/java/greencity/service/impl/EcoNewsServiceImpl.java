@@ -61,7 +61,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private final NewsSubscriberService newsSubscriberService;
 
-    private final TagService tagService;
+    private final EcoNewsTagsService tagService;
 
     private final FileService fileService;
 

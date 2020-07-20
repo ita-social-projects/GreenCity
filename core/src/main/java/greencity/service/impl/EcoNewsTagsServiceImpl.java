@@ -3,16 +3,16 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.TagNotFoundException;
-import greencity.repository.TagRepo;
-import greencity.service.TagService;
+import greencity.repository.EcoNewsTagsRepo;
+import greencity.service.EcoNewsTagsService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TagServiceImpl implements TagService {
-    private final TagRepo tagRepo;
+public class EcoNewsTagsServiceImpl implements EcoNewsTagsService {
+    private final EcoNewsTagsRepo tagRepo;
 
     /**
      * All args constructor.
@@ -20,7 +20,7 @@ public class TagServiceImpl implements TagService {
      * @param tagRepo Repo to get {@link Tag}.
      */
     @Autowired
-    public TagServiceImpl(TagRepo tagRepo) {
+    public EcoNewsTagsServiceImpl(EcoNewsTagsRepo tagRepo) {
         this.tagRepo = tagRepo;
     }
 
