@@ -3,7 +3,7 @@ package greencity.service.impl;
 import greencity.ModelUtils;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.TagNotFoundException;
-import greencity.repository.TagRepo;
+import greencity.repository.EcoNewsTagsRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class TagServiceImplTest {
+public class EcoNewsTagsServiceImplTest {
     @Mock
-    private TagRepo tagRepo;
+    private EcoNewsTagsRepo tagRepo;
 
     @InjectMocks
-    private TagServiceImpl tagService;
+    private EcoNewsTagsServiceImpl tagService;
 
     @Test
     public void testFindByName() {

@@ -1,6 +1,6 @@
 package greencity.controller;
 
-import greencity.service.TagService;
+import greencity.service.EcoNewsTagsService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tags")
 @AllArgsConstructor
 public class TagsController {
-    private final TagService tagService;
+    private final EcoNewsTagsService tagService;
 
     /**
      * The method which returns all tags.
