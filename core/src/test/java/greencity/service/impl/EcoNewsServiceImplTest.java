@@ -56,7 +56,7 @@ public class EcoNewsServiceImplTest {
     UserService userService;
 
     @Mock
-    TagService tagService;
+    EcoNewsTagsService tagService;
 
     @Mock
     LanguageService languageService;
