@@ -690,4 +690,16 @@ public class UserServiceImpl implements UserService {
         }
         return userProfilePictureDtoList;
     }
+
+    /**
+     * Updates last activity time for a given user.
+     *
+     * @param userId               - {@link User}'s id
+     * @param userLastActivityTime - new {@link User}'s last activity time
+     * @author Yurii Zhurakovskyi
+     */
+    @Override
+    public void updateUserLastActivityTime(Long userId, Date userLastActivityTime) {
+        userRepo.updateUserLastActivityTime(userId, userLastActivityTime);
+    }
 }
