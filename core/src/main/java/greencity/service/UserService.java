@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
@@ -300,4 +301,7 @@ public interface UserService {
      * @author Marian Datsko
      */
     List<UserProfilePictureDto> getSixFriendsWithTheHighestRating(Long userId);
+
+    UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
+                                           String name);
 }

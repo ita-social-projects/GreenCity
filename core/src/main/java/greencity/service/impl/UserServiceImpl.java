@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -689,5 +690,30 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException(NOT_FOUND_ANY_FRIENDS + userId.toString());
         }
         return userProfilePictureDtoList;
+    }
+
+    @Override
+    public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
+                                                  String email) {
+        User user = userRepo
+            .findByEmail(email)
+            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        user.setFirstName(userProfileDtoRequest.getFirstName());
+        user.setCity(userProfileDtoRequest.getCity());
+        user.setUserCredo(userProfileDtoRequest.getUserCredo());
+        user.setSocialNetworks(userProfileDtoRequest.getSocialNetworks());
+        user.setShowLocation(userProfileDtoRequest.getShowLocation());
+        user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
+        user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
+        String url = fileService.upload(image).toString();
+        user.setProfilePicturePath(url);
+
+        try {
+            userRepo.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotSavedException(ErrorMessage.USER_NOT_SAVED);
+        }
+
+        return modelMapper.map(user,UserProfileDtoResponse.class);
     }
 }

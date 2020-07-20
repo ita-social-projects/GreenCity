@@ -2,10 +2,13 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUserId;
+import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableDto;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
@@ -16,6 +19,7 @@ import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
+import greencity.entity.EcoNews;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
@@ -660,5 +664,30 @@ public class UserController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getSixFriendsWithTheHighestRating(userId));
+    }
+
+    /**
+     * Method for save user profile information {@link EcoNews}.
+     *
+     * @param userProfileDtoRequest - dto for {@link User} entity.
+     * @return dto {@link UserProfileDtoResponse} instance.
+     * @author Marian Datsko.
+     */
+    @ApiOperation(value = "Save user profile information")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED,
+            response = UserProfileDtoResponse.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<UserProfileDtoResponse> save(
+        @ApiParam(value = "User Profile Request", required = true)
+        @RequestPart UserProfileDtoRequest userProfileDtoRequest,
+        @ApiParam(value = "User Profile Image")
+        @RequestPart(required = false) MultipartFile image,
+        @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            userService.saveUserProfile(userProfileDtoRequest, image, principal.getName()));
     }
 }
