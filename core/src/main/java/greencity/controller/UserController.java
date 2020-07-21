@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidEcoNewsDtoRequest;
+import greencity.annotations.ImageValidation;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.constant.ValidationConstants;
@@ -590,6 +591,7 @@ public class UserController {
     @PatchMapping(path = "/profilePicture",
         consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpStatus> updateUserProfilePicture(@ApiParam(value = "Profile picture")
+                                                               @ImageValidation
                                                                @RequestPart(required = false) MultipartFile image,
                                                                @ApiIgnore
                                                                @AuthenticationPrincipal Principal principal) {

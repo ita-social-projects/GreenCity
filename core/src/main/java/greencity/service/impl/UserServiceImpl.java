@@ -622,6 +622,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        if (image == null) {
+            throw new NotUpdatedException(IMAGE_EXISTS);
+        }
         String url = fileService.upload(image).toString();
         user.setProfilePicturePath(url);
         return userRepo.save(user);
@@ -649,7 +652,21 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUserFriendById(Long userId, Long friendId) {
-        userRepo.deleteUserFriendById(userId, friendId);
+        List<User> allUserFriends = getAllUserFriends(userId);
+        findById(friendId);
+        if (userId.equals(friendId)) {
+            throw new CheckRepeatingValueException(OWN_USER_ID + friendId);
+        }
+        if (!allUserFriends.isEmpty()) {
+            List<Long> listUserId = allUserFriends.stream().map(User::getId).collect(Collectors.toList());
+            if (listUserId.contains(friendId)) {
+                userRepo.deleteUserFriendById(userId, friendId);
+            } else {
+                throw new NotDeletedException(USER_FRIENDS_LIST + friendId);
+            }
+        } else {
+            throw new NotDeletedException(USER_FRIENDS_LIST + friendId);
+        }
     }
 
     /**
@@ -664,8 +681,11 @@ public class UserServiceImpl implements UserService {
     public void addNewFriend(Long userId, Long friendId) {
         List<User> allUserFriends = getAllUserFriends(userId);
         findById(friendId);
+        if (userId.equals(friendId)) {
+            throw new CheckRepeatingValueException(OWN_USER_ID + friendId);
+        }
         if (!allUserFriends.isEmpty()) {
-            getAllUserFriends(userId).forEach(user -> {
+            allUserFriends.forEach(user -> {
                 if (user.getId().equals(friendId)) {
                     throw new CheckRepeatingValueException(FRIEND_EXISTS + friendId);
                 }

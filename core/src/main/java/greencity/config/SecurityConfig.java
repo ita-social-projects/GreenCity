@@ -87,7 +87,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/facebookSecurity/**",
                 "/place/filter/**",
                 "/restorePassword/**",
-                "/changePassword/**"
+                "/changePassword/**",
+                "/socket/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.GET,
@@ -112,6 +113,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/replies/{parentCommentId}",
                 "/econews/comments/count/replies",
                 "/econews/comments/count/likes",
+                "/socket/**",
                 "/tipsandtricks/comments/{tipsAndTricksId}",
                 "/tipsandtricks/comments/replies/{parentCommentId}",
                 "/tipsandtricks/comments/count/likes",
@@ -122,7 +124,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 HttpMethod.POST,
                 "/econews/tags",
                 "/tipsandtricks/tags",
-                "/newsSubscriber"
+                "/newsSubscriber",
+                "/socket/**"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",
