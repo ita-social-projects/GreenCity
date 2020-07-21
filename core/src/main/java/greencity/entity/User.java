@@ -5,6 +5,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -130,4 +131,7 @@ public class User {
 
     @Column(name = "rating")
     private Float rating;
+
+    @Column(name = "last_activity_time")
+    private Date lastActivityTime;
 }

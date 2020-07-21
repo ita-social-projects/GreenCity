@@ -12,6 +12,8 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+
+import java.util.Date;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -300,4 +302,13 @@ public interface UserService {
      * @author Marian Datsko
      */
     List<UserProfilePictureDto> getSixFriendsWithTheHighestRating(Long userId);
+
+    /**
+     * Updates last activity time for a given user.
+     *
+     * @param userId               - {@link User}'s id
+     * @param userLastActivityTime - new {@link User}'s last activity time
+     * @author Yurii Zhurakovskyi
+     */
+    void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
 }
