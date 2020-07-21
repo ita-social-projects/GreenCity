@@ -104,7 +104,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 .findAllByParentCommentIdOrderByCreatedDateAsc(pageable, parentCommentId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
                 .stream()
-                .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().contains(user)))
+                .map(comment -> {
+                    comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                    return comment;
+                })
                 .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
                 .collect(Collectors.toList());
 

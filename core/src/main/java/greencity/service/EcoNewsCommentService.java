@@ -1,11 +1,10 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.entity.User;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface EcoNewsCommentService {
