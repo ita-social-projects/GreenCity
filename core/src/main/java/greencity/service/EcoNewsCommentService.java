@@ -1,11 +1,10 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.entity.User;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface EcoNewsCommentService {
@@ -36,7 +35,7 @@ public interface EcoNewsCommentService {
      * @param user current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      */
-    List<EcoNewsCommentDto> findAllReplies(Long parentCommentId, User user);
+    PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, User user);
 
     /**
      * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as deleted.
