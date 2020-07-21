@@ -99,14 +99,20 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @return all replies to certain comment specified by parentCommentId.
      */
     @Override
-    public List<EcoNewsCommentDto> findAllReplies(Long parentCommentId, User user) {
-        return ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateAsc(parentCommentId).stream()
-            .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
-                return comment;
-            })
-            .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
-            .collect(Collectors.toList());
+    public PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, User user) {
+        Page<EcoNewsComment> pages = ecoNewsCommentRepo
+                .findAllByParentCommentIdOrderByCreatedDateAsc(pageable, parentCommentId);
+        List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
+                .stream()
+                .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().contains(user)))
+                .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
+                .collect(Collectors.toList());
+
+        return new PageableDto<>(
+                ecoNewsCommentDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber()
+        );
     }
 
     /**

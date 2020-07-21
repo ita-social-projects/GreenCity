@@ -20,12 +20,13 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
                                                                                        Long ecoNewsId);
 
     /**
-     * Method returns all replies to comment, specified by parentCommentId.
-     *
+     * Method returns all replies to comment, specified by parentCommentId and by page.
+     * @param pageable page of news.
      * @param parentCommentId id of comment, replies to which we get.
-     * @return all replies to comment, specified by parentCommentId.
+     * @return all replies to comment, specified by parentCommentId and page.
      */
-    List<EcoNewsComment> findAllByParentCommentIdOrderByCreatedDateAsc(Long parentCommentId);
+    Page<EcoNewsComment> findAllByParentCommentIdOrderByCreatedDateAsc(Pageable pageable,
+                                                                       Long parentCommentId);
 
     /**
      * Method returns count of replies to comment, specified by parentCommentId.

@@ -36,7 +36,7 @@ public interface EcoNewsCommentService {
      * @param user current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      */
-    List<EcoNewsCommentDto> findAllReplies(Long parentCommentId, User user);
+    PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, User user);
 
     /**
      * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as deleted.

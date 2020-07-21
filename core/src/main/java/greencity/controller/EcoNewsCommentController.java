@@ -114,23 +114,25 @@ public class EcoNewsCommentController {
      * Method to get all replies to {@link greencity.entity.EcoNewsComment} specified by parentCommentId.
      *
      * @param parentCommentId specifies parent comment to all replies
-     * @return list of {@link EcoNewsCommentDto} replies
+     * @return Pageable of {@link EcoNewsCommentDto} replies
      */
     @ApiOperation(value = "Get all replies to comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK)
+            @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("replies/{parentCommentId}")
-    public ResponseEntity<List<EcoNewsCommentDto>> findAllReplies(@PathVariable Long parentCommentId,
+    @ApiPageable
+    public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllReplies(@ApiIgnore Pageable pageable,
+                                                                  @PathVariable Long parentCommentId,
                                                                   @ApiIgnore @AuthenticationPrincipal
-                                                                      Principal principal) {
+                                                                          Principal principal) {
         User user = null;
         if (principal != null) {
             user = userService.findByEmail(principal.getName());
         }
         return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(ecoNewsCommentService.findAllReplies(parentCommentId, user));
+                .status(HttpStatus.OK)
+                .body(ecoNewsCommentService.findAllReplies(pageable,parentCommentId, user));
     }
 
     /**
