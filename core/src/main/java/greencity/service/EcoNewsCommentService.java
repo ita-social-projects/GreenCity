@@ -78,4 +78,12 @@ public interface EcoNewsCommentService {
      * @return amount of replies
      */
     int countReplies(Long id);
+
+    /**
+     * Method to count not deleted eco news comments to certain {@link greencity.entity.EcoNews}.
+     *
+     * @param ecoNewsId to specify {@link greencity.entity.EcoNews}
+     * @return amount of comments
+     */
+    int countOfComments(Long ecoNewsId);
 }
