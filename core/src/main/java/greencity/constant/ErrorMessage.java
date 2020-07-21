@@ -7,13 +7,13 @@ public final class ErrorMessage {
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
-            "Favorite place already exist for this placeId: %d and user with email: %s";
+        "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String SPECIFICATION_NOT_FOUND_BY_ID = "The specification does not exist by this id: ";
     public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID =
-            "The specification value does not exist by this id: ";
+        "The specification value does not exist by this id: ";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String BREAK_TIME_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
@@ -22,11 +22,11 @@ public final class ErrorMessage {
     public static final String CATEGORY_ALREADY_EXISTS_BY_THIS_NAME = "Category by this name already exists.";
     public static final String SPECIFICATION_ALREADY_EXISTS_BY_THIS_NAME = "Specification by this name already exists.";
     public static final String SPECIFICATION_VALUE_ALREADY_EXISTS_BY_THIS_NAME =
-            "Specification value by this name already exists.";
+        "Specification value by this name already exists.";
     public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email is already registered";
     public static final String NO_ANY_OWN_SECURITY_TO_DELETE = "No any ownSecurity to delete with this id: ";
     public static final String LOCATION_ALREADY_EXISTS_BY_THIS_COORDINATES =
-            "Location by this coordinates already exists.";
+        "Location by this coordinates already exists.";
     public static final String BAD_EMAIL = "Bad email";
     public static final String BAD_PASSWORD = "Bad password";
     public static final String USER_NOT_VERIFIED = "User not verified";
@@ -45,9 +45,9 @@ public final class ErrorMessage {
     public static final String END_TIME_LATE_THAN_START_TIME = "End time have to be late than start time";
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
     public static final String NOT_IMPLEMENTED_METHOD =
-            "Method hasn't implementation, please create it before use this method again";
+        "Method hasn't implementation, please create it before use this method again";
     public static final String WRONG_DATE_TIME_FORMAT =
-            "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
+        "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
     public static final String LINK_FOR_RESTORE_NOT_FOUND = "Link for sendEmailForRestore password by email not found";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
     public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
@@ -58,7 +58,7 @@ public final class ErrorMessage {
     public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
     public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
     public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT =
-            "Password restore link already sent, please check your email: ";
+        "Password restore link already sent, please check your email: ";
     public static final String HABIT_EXIST = "The Habit is already exist by this date:  ";
     public static final String HABIT_NOT_FOUND_BY_ID = "The Habit does not exist by this id : ";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
@@ -66,7 +66,7 @@ public final class ErrorMessage {
     public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
     public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
     public static final String USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY =
-            "This user is tracking all available habit dictionary";
+        "This user is tracking all available habit dictionary";
     public static final String USER_HAS_NO_AVAILABLE_CUSTOM_GOALS = "This user is tracking all available custom goals";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
     public static final String USER_GOAL_NOT_FOUND = "UserGoal(s) with this id not found: ";
@@ -88,24 +88,24 @@ public final class ErrorMessage {
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
     public static final String USER_HAS_NOT_ANY_HABITS = "There is no habits for such user.";
     public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS =
-            "There is no active habits for such user with such status ";
+        "There is no active habits for such user with such status ";
     public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
     public static final String HABIT_IS_SAVED = "This habit is saved to user";
     public static final String HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID =
-            "Habit with such userId and habitDictionaryId does not exist";
+        "Habit with such userId and habitDictionaryId does not exist";
     public static final String DELETE_LIST_ID_CANNOT_BE_EMPTY = "List with id cann`t be empty.";
     public static final String NOT_DELETE_LAST_HABIT = "Can`t delete last habit.";
     public static final String CUSTOM_GOAL_FOR_THIS_USER_ALREADY_EXIST =
-            "Custom goal with same text for this user already exist.";
+        "Custom goal with same text for this user already exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
     public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
     public static final String HABIT_DICTIONARY_TRANSLATION_NOT_FOUND = "Don`t found HabitDictionaryTranslation";
     public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
     public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
-            "Subscriber with this email address not found in the database.";
+        "Subscriber with this email address not found in the database.";
     public static final String NEWS_SUBSCRIBERS_NOT_FOUND = "Not found any subscriber in the database.";
     public static final String NEWS_SUBSCRIBER_NOT_DELETED = "The subscriber was not delete.";
     public static final String NEWS_SUBSCRIBER_NOT_SAVED = "The subscriber was not saved.";
@@ -135,6 +135,9 @@ public final class ErrorMessage {
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
+    public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
+    public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
+    public static final String IMAGE_EXISTS = "Image should be download, PNG or JPEG ";
     public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
         + "different TipsAndTricks Id";
 

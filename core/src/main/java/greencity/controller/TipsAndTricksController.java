@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidTipsAndTricksDtoRequest;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -57,6 +58,7 @@ public class TipsAndTricksController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TipsAndTricksDtoResponse> save(
         @ApiParam(value = "Add tips & tricks request", required = true)
+        @ImageValidation
         @RequestPart @ValidTipsAndTricksDtoRequest TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         @ApiParam(value = "Tips & tricks image")
         @RequestPart(required = false) MultipartFile image,
