@@ -129,4 +129,15 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Transactional
     @Query(value = "UPDATE User SET last_activity_time=:userLastActivityTime WHERE id=:userId")
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
+
+    /**
+     * Find the last activity time by {@link User}'s id.
+     *
+     * @param userId - {@link User}'s id
+     * @return {@link Date}
+     * @author Yurii Zhurakovskyi
+     */
+    @Query(nativeQuery = true,
+            value = "SELECT last_activity_time FROM users WHERE id=:userId")
+    Optional<Date> findLastActivityTimeById(Long userId);
 }

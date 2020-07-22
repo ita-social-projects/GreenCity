@@ -15,6 +15,8 @@ import greencity.entity.enums.UserStatus;
 
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -311,4 +313,13 @@ public interface UserService {
      * @author Yurii Zhurakovskyi
      */
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
+
+    /**
+     * The method checks by id if a {@link User} is online.
+     *
+     * @param userId - {@link User}'s id
+     * @return {@link Boolean}.
+     * @author Yurii Zhurakovskyi
+     */
+    Boolean checkIfTheUserIsOnline(Long userId);
 }
