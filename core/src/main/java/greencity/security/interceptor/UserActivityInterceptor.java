@@ -41,11 +41,13 @@ public class UserActivityInterceptor extends HandlerInterceptorAdapter {
                              @SuppressWarnings("NullableProblems") Object handler)
             throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        if (!email.equals("anonymousUser")) {
-            Long userId = userService.findIdByEmail(email);
-            Date userLastActivityTime = new Date();
-            userService.updateUserLastActivityTime(userId, userLastActivityTime);
+        if (authentication != null) {
+            String email = authentication.getPrincipal().toString();
+            if (!email.equals("anonymousUser")) {
+                Long userId = userService.findIdByEmail(email);
+                Date userLastActivityTime = new Date();
+                userService.updateUserLastActivityTime(userId, userLastActivityTime);
+            }
         }
         return super.preHandle(request, response, handler);
     }
