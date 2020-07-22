@@ -741,9 +741,10 @@ public class UserServiceImpl implements UserService {
                         USER_LAST_ACTIVITY_TIME_NOT_FOUND + userId));
         Date currentTime = new Date();
         long result = currentTime.getTime() - userLastActivityTime.getTime();
+        boolean check = false;
         if (result <= Long.parseLong(timeAfterLastActivity)) {
-            return true;
+            check = true;
         }
-        return false;
+        return check;
     }
 }
