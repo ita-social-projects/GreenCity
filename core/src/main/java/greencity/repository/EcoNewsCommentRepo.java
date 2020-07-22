@@ -34,7 +34,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @param parentCommentId id of comment, count of replies to which we get.
      * @return count of replies to comment, specified by parentCommentId.
      */
-    @Query("SELECT count(ec) from EcoNewsComment ec where ec.parentComment.id = ?1")
+    @Query("SELECT count(ec) from EcoNewsComment ec where ec.parentComment.id = ?1 AND ec.deleted = FALSE")
     int countByParentCommentId(Long parentCommentId);
 
     /**
