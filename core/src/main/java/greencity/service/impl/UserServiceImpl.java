@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private final FileService fileService;
     @Value("${greencity.time.after.last.activity}")
-    private Long timeAfterLastActivity;
+    private long timeAfterLastActivity;
 
     /**
      * Autowired mapper.
