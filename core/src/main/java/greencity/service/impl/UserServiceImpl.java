@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import static greencity.constant.ErrorMessage.*;
+
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -31,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -57,6 +59,8 @@ public class UserServiceImpl implements UserService {
     private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private final FileService fileService;
+    @Value("${greencity.time.after.last.activity}")
+    private long timeAfterLastActivity;
 
     /**
      * Autowired mapper.
@@ -721,5 +725,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserLastActivityTime(Long userId, Date userLastActivityTime) {
         userRepo.updateUserLastActivityTime(userId, userLastActivityTime);
+    }
+
+    /**
+     * The method checks by id if a {@link User} is online.
+     *
+     * @param userId {@link Long}
+     * @return {@link Boolean}.
+     * @author Yurii Zhurakovskyi
+     */
+    @Override
+    public Boolean checkIfTheUserIsOnline(Long userId) {
+        Date userLastActivityTime = userRepo.findLastActivityTimeById(userId)
+                .orElseThrow(() -> new UserLastActivityTimeNotFoundException(
+                        USER_LAST_ACTIVITY_TIME_NOT_FOUND + userId));
+        Date currentTime = new Date();
+        long result = currentTime.getTime() - userLastActivityTime.getTime();
+        return result <= timeAfterLastActivity;
     }
 }

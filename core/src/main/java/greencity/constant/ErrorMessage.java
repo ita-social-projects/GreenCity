@@ -140,6 +140,8 @@ public final class ErrorMessage {
     public static final String IMAGE_EXISTS = "Image should be download, PNG or JPEG ";
     public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
         + "different TipsAndTricks Id";
+    public static final String USER_LAST_ACTIVITY_TIME_NOT_FOUND = "Cannot find last activity"
+            + " time for the user with id: ";
 
     private ErrorMessage() {
     }

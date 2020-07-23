@@ -138,6 +138,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/customGoals",
                 "/user/{userId}/customGoals/*",
+                "/user/isOnline/{userId}/",
                 "/achievements",
                 "/facts/dayFact/*",
                 "/user/{userId}/sixUserFriends/"

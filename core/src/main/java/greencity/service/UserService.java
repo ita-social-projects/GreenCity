@@ -12,11 +12,11 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -311,4 +311,13 @@ public interface UserService {
      * @author Yurii Zhurakovskyi
      */
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
+
+    /**
+     * The method checks by id if a {@link User} is online.
+     *
+     * @param userId - {@link User}'s id
+     * @return {@link Boolean}.
+     * @author Yurii Zhurakovskyi
+     */
+    Boolean checkIfTheUserIsOnline(Long userId);
 }
