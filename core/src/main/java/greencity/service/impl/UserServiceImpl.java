@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private final FileService fileService;
     @Value("${greencity.time.after.last.activity}")
-    private String timeAfterLastActivity;
+    private Long timeAfterLastActivity;
 
     /**
      * Autowired mapper.
@@ -741,10 +741,6 @@ public class UserServiceImpl implements UserService {
                         USER_LAST_ACTIVITY_TIME_NOT_FOUND + userId));
         Date currentTime = new Date();
         long result = currentTime.getTime() - userLastActivityTime.getTime();
-        boolean check = false;
-        if (result <= Long.parseLong(timeAfterLastActivity)) {
-            check = true;
-        }
-        return check;
+        return result <= timeAfterLastActivity;
     }
 }
