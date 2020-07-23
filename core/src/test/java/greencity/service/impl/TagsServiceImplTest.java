@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class TagsServiceImplTest {
+class TagsServiceImplTest {
     @Mock
     private TagsRepo tagRepo;
 
@@ -28,7 +28,7 @@ public class TagsServiceImplTest {
     private TagsServiceImpl tagService;
 
     @Test
-    public void testFindAll() {
+    void testFindAll() {
         Tag tag = ModelUtils.getTag();
         tag.setEcoNews(Collections.singletonList(ModelUtils.getEcoNews()));
         when(tagRepo.findAllEcoNewsTags()).thenReturn(Collections.singletonList(tag.getName()));
@@ -37,7 +37,7 @@ public class TagsServiceImplTest {
     }
 
     @Test
-    public void testFindAllWithoutEcoNews() {
+    void testFindAllWithoutEcoNews() {
         when(tagRepo.findAllEcoNewsTags()).thenReturn(Collections.singletonList(ModelUtils.getTag().getName()));
         List<String> expected = Collections.singletonList(ModelUtils.getTag().getName());
         assertEquals(expected, tagService.findAllEcoNewsTags());
