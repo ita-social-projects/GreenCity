@@ -7,9 +7,10 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
+import greencity.service.TagsService;
 import greencity.service.TipsAndTricksService;
-import greencity.service.TipsAndTricksTagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -39,7 +40,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/tipsandtricks")
 public class TipsAndTricksController {
     private final TipsAndTricksService tipsAndTricksService;
-    private final TipsAndTricksTagsService tipsAndTricksTagsService;
+    private final TagsService tagService;
 
     /**
      * Method for creating {@link TipsAndTricks}.
@@ -58,9 +59,9 @@ public class TipsAndTricksController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TipsAndTricksDtoResponse> save(
         @ApiParam(value = "Add tips & tricks request", required = true)
-        @ImageValidation
         @RequestPart @ValidTipsAndTricksDtoRequest TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         @ApiParam(value = "Tips & tricks image")
+        @ImageValidation
         @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -141,12 +142,13 @@ public class TipsAndTricksController {
     }
 
     /**
-     * The method which returns all tips & tricks tags.
+     * The method which returns all Tips & Tricks {@link Tag}s.
      *
      * @return list of {@link String} (tag's names).
      */
-    @GetMapping("/tipsandtricksTags")
+    @ApiOperation(value = "Find all tips & tricks tags")
+    @GetMapping("/tags/all")
     public ResponseEntity<List<String>> findAllTipsAndTricksTags() {
-        return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksTagsService.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllTipsAndTricksTags());
     }
 }
