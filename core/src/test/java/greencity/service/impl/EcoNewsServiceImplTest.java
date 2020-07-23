@@ -10,25 +10,26 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
+import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.*;
+import greencity.service.FileService;
+import greencity.service.LanguageService;
+import greencity.service.NewsSubscriberService;
+import greencity.service.TagsService;
+import greencity.service.UserService;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -37,6 +38,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class EcoNewsServiceImplTest {
@@ -56,7 +66,7 @@ public class EcoNewsServiceImplTest {
     UserService userService;
 
     @Mock
-    EcoNewsTagsService tagService;
+    TagsService tagService;
 
     @Mock
     LanguageService languageService;
@@ -70,6 +80,7 @@ public class EcoNewsServiceImplTest {
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
     private EcoNews ecoNews = ModelUtils.getEcoNews();
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
+    private Tag tag = ModelUtils.getTag();
 
     @Test
     public void save() throws MalformedURLException {
@@ -79,7 +90,7 @@ public class EcoNewsServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
-        when(tagService.findByName("tag")).thenReturn(ModelUtils.getTag());
+        when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(Collections.singletonList(tag));
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(ModelUtils.getLanguage());
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
@@ -141,15 +152,15 @@ public class EcoNewsServiceImplTest {
 
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
 
-        PageRequest pageRequest = new PageRequest(0, 2);
-        Page<EcoNews> translationPage = new PageImpl<EcoNews>(ecoNews,
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<EcoNews> translationPage = new PageImpl<>(ecoNews,
             pageRequest, ecoNews.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
             new EcoNewsDto(now, "test image path", 1L, "test title", "test text", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList())
         );
-        PageableDto<EcoNewsDto> pageableDto = new PageableDto<EcoNewsDto>(dtoList, dtoList.size(), 0);
+        PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
 
         when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));

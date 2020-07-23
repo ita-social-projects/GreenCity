@@ -1,35 +1,36 @@
 package greencity.validator;
 
-import static greencity.ModelUtils.getTipsAndTricksDtoRequest;
-import static greencity.ModelUtils.getUrl;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.TagNotFoundDuringValidation;
-import greencity.service.TipsAndTricksTagsService;
+import greencity.service.TagsService;
 import java.net.MalformedURLException;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.powermock.api.mockito.PowerMockito.when;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static greencity.ModelUtils.getTipsAndTricksDtoRequest;
+import static greencity.ModelUtils.getUrl;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class TipsAndTricksDtoRequestValidatorTest {
     @InjectMocks
     private TipsAndTricksDtoRequestValidator validator;
     @Mock
-    private TipsAndTricksTagsService tipsAndTricksTagsService;
+    private TagsService tagService;
 
     @Test
     void isValidTrueTest() throws MalformedURLException {
         TipsAndTricksDtoRequest tipsAndTricksDtoRequest = getTipsAndTricksDtoRequest();
         tipsAndTricksDtoRequest.setSource(getUrl().toString());
-        when(tipsAndTricksTagsService.isValidNumOfUniqueTags(tipsAndTricksDtoRequest.getTipsAndTricksTags()))
+        when(tagService.isValidNumOfUniqueTags(tipsAndTricksDtoRequest.getTags()))
             .thenReturn(true);
-        when(tipsAndTricksTagsService.isAllValid(tipsAndTricksDtoRequest.getTipsAndTricksTags())).thenReturn(true);
+        when(tagService.isAllTipsAndTricksValid(tipsAndTricksDtoRequest.getTags())).thenReturn(true);
         assertTrue(validator.isValid(tipsAndTricksDtoRequest, null));
     }
 
@@ -37,9 +38,9 @@ class TipsAndTricksDtoRequestValidatorTest {
     void isValidTagNotFoundDuringValidationTest() throws MalformedURLException {
         TipsAndTricksDtoRequest tipsAndTricksDtoRequest = getTipsAndTricksDtoRequest();
         tipsAndTricksDtoRequest.setSource(getUrl().toString());
-        when(tipsAndTricksTagsService.isValidNumOfUniqueTags(tipsAndTricksDtoRequest.getTipsAndTricksTags()))
+        when(tagService.isValidNumOfUniqueTags(tipsAndTricksDtoRequest.getTags()))
             .thenReturn(true);
-        when(tipsAndTricksTagsService.isAllValid(tipsAndTricksDtoRequest.getTipsAndTricksTags())).thenReturn(false);
+        when(tagService.isAllTipsAndTricksValid(tipsAndTricksDtoRequest.getTags())).thenReturn(false);
         assertThrows(TagNotFoundDuringValidation.class, () -> validator.isValid(tipsAndTricksDtoRequest, null));
     }
 
