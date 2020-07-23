@@ -11,6 +11,7 @@ import greencity.service.TagsService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,10 @@ public class TagsServiceImpl implements TagsService {
      */
     @Override
     public List<Tag> findEcoNewsTagsByNames(List<String> ecoNewsTagNames) {
-        ecoNewsTagNames.replaceAll(String::toLowerCase);
-        List<Tag> tags = tagRepo.findEcoNewsTagsByNames(ecoNewsTagNames);
+        List<String> lowerCaseTagNames = ecoNewsTagNames.stream()
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
+        List<Tag> tags = tagRepo.findEcoNewsTagsByNames(lowerCaseTagNames);
         if (tags.isEmpty()) {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
         }
@@ -37,8 +40,10 @@ public class TagsServiceImpl implements TagsService {
      */
     @Override
     public List<Tag> findTipsAndTricksTagsByNames(List<String> tipsAndTricksTagNames) {
-        tipsAndTricksTagNames.replaceAll(String::toLowerCase);
-        List<Tag> tags = tagRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagNames);
+        List<String> lowerCaseTagNames = tipsAndTricksTagNames.stream()
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
+        List<Tag> tags = tagRepo.findTipsAndTricksTagsByNames(lowerCaseTagNames);
         if (tags.isEmpty()) {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
         }

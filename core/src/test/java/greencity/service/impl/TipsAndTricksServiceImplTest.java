@@ -9,7 +9,6 @@ import greencity.entity.TipsAndTricks;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.TipsAndTricksRepo;
 import greencity.service.TagsService;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -85,7 +84,7 @@ class TipsAndTricksServiceImplTest {
         when(tipsAndTricksRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
             .thenReturn(page);
         assertEquals(pageableDto, tipsAndTricksService
-            .find(pageRequest, Arrays.asList(ModelUtils.getTag().getName())));
+            .find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())));
     }
 
     @Test

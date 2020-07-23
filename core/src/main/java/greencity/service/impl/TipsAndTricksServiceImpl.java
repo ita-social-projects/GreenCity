@@ -89,8 +89,10 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         if (tags == null || tags.isEmpty()) {
             pages = tipsAndTricksRepo.findAllByOrderByCreationDateDesc(page);
         } else {
-            tags.replaceAll(String::toLowerCase);
-            pages = tipsAndTricksRepo.find(page, tags);
+            List<String> lowerCaseTags = tags.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+            pages = tipsAndTricksRepo.find(page, lowerCaseTags);
         }
         return getPagesWithTipsAndTricksResponseDto(pages);
     }

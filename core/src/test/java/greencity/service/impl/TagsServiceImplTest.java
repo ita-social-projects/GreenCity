@@ -66,13 +66,13 @@ class TagsServiceImplTest {
         when(tagRepo.findTipsAndTricksTagsByNames(Collections.singletonList(tipsAndTricksTag.getName())))
             .thenReturn(expected);
         assertEquals(expected,
-            tagService.findTipsAndTricksTagsByNames(Arrays.asList(tipsAndTricksTag.getName())));
+            tagService.findTipsAndTricksTagsByNames(Collections.singletonList(tipsAndTricksTag.getName())));
     }
 
     @Test
     void findAllByNamesFailedTest() {
         String name = ModelUtils.getTag().getName();
-        List<String> tipsAndTricksTagsNames = Arrays.asList(name);
+        List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
         when(tagRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames)).thenReturn(Collections.emptyList());
         assertThrows(TagNotFoundException.class, () -> tagService.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames));
     }
@@ -80,7 +80,7 @@ class TagsServiceImplTest {
     @Test
     void isAllValidTrueTest() {
         String name = ModelUtils.getTag().getName();
-        List<String> tipsAndTricksTagsNames = Arrays.asList(name);
+        List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
         when(tagRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames))
             .thenReturn(Collections.singletonList(ModelUtils.getTag()));
         assertEquals(true, tagService.isAllTipsAndTricksValid(tipsAndTricksTagsNames));
@@ -89,7 +89,7 @@ class TagsServiceImplTest {
     @Test
     void isAllValidFalseTest() {
         String name = ModelUtils.getTag().getName();
-        List<String> tipsAndTricksTagsNames = Arrays.asList(name);
+        List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
         when(tagRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames))
             .thenReturn(Collections.emptyList());
         assertEquals(false, tagService.isAllTipsAndTricksValid(tipsAndTricksTagsNames));
