@@ -119,7 +119,7 @@ public final class ErrorMessage {
         "Can not create instance of events, used constructor that differ from events superclass.";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
     public static final String TAG_NOT_FOUND = "The tag does not exist by this name: ";
-    public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
+    public static final String TAGS_NOT_FOUND = "Please add at least one valid tag";
     public static final String INVALID_NUM_OF_TAGS =
         "Invalid tags. You must have less than " + ValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
     public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";

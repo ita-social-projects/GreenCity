@@ -14,7 +14,22 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.*;
+import greencity.service.EcoNewsService;
+import greencity.service.FileService;
+import greencity.service.NewsSubscriberService;
+import greencity.service.TagsService;
+import greencity.service.UserService;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -29,18 +44,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
@@ -61,7 +64,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private final NewsSubscriberService newsSubscriberService;
 
-    private final EcoNewsTagsService tagService;
+    private final TagsService tagService;
 
     private final FileService fileService;
 
@@ -89,11 +92,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
 
-        toSave.setTags(addEcoNewsDtoRequest.getTags()
-                .stream()
-                .map(tagService::findByName)
-                .collect(Collectors.toList())
-        );
+        toSave.setTags(
+            tagService.findEcoNewsTagsByNames(addEcoNewsDtoRequest.getTags()));
 
         try {
             ecoNewsRepo.save(toSave);
@@ -102,7 +102,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-                buildAddEcoNewsMessage(toSave));
+            buildAddEcoNewsMessage(toSave));
 
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
@@ -180,6 +180,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableDto<EcoNewsDto> find(Pageable page, List<String> tags) {
+        tags.replaceAll(String::toLowerCase);
         Page<EcoNews> pages = ecoNewsRepo.find(page, tags);
 
         List<EcoNewsDto> ecoNewsDtos = pages.stream()
