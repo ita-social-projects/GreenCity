@@ -67,6 +67,7 @@ public final class ErrorMessage {
     public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
     public static final String USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY =
         "This user is tracking all available habit dictionary";
+    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'uk' or 'ru'";
     public static final String USER_HAS_NO_AVAILABLE_CUSTOM_GOALS = "This user is tracking all available custom goals";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
     public static final String USER_GOAL_NOT_FOUND = "UserGoal(s) with this id not found: ";

@@ -436,7 +436,7 @@ public class UserServiceImpl implements UserService {
         List<HabitDictionaryTranslation> availableHabitDictionary = habitDictionaryTranslationRepo
             .findAvailableHabitDictionaryByUser(userId, language);
         if (availableHabitDictionary.isEmpty()) {
-            throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
+            throw new UserHasNoAvailableHabitDictionaryException(SELECT_CORRECT_LANGUAGE);
         }
         return habitDictionaryDtos(availableHabitDictionary);
     }
