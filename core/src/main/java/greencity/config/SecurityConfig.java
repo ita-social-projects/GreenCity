@@ -27,7 +27,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static greencity.constant.AppConstant.*;
+import static greencity.constant.AppConstant.ADMIN;
+import static greencity.constant.AppConstant.MODERATOR;
+import static greencity.constant.AppConstant.USER;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
@@ -104,10 +106,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/specification/**",
                 "/newsSubscriber/unsubscribe",
                 "/econews/**",
+                "/econews/tags/**",
                 "/tipsandtricks/**",
+                "/tipsandtricks/tags/**",
                 "/search",
-                "/tags",
-                "/tipsandtricksTags",
                 "/econews/comments",
                 "/econews/comments/count/comments",
                 "/econews/comments/replies/{parentCommentId}",

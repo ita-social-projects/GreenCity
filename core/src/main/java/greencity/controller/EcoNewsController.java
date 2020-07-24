@@ -9,17 +9,16 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
+import greencity.entity.Tag;
 import greencity.service.EcoNewsService;
-import greencity.service.EcoNewsTagsService;
+import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-
 import java.security.Principal;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,18 +38,10 @@ import springfox.documentation.annotations.ApiIgnore;
 @Validated
 @RestController
 @RequestMapping("/econews")
+@RequiredArgsConstructor
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
-    private final EcoNewsTagsService tagService;
-
-    /**
-     * Constructor with parameters.
-     */
-    @Autowired
-    public EcoNewsController(EcoNewsService ecoNewsService, EcoNewsTagsService tagService) {
-        this.ecoNewsService = ecoNewsService;
-        this.tagService = tagService;
-    }
+    private final TagsService tagService;
 
     /**
      * Method for getting three last eco news.
@@ -200,13 +191,14 @@ public class EcoNewsController {
     }
 
     /**
-     * The method which returns all eco news tags.
+     * The method which returns all EcoNews {@link Tag}s.
      *
-     * @return list of {@link String} (eco news tag's names).
+     * @return list of {@link String} (tag's names).
      * @author Kovaliv Taras
      */
-    @GetMapping("/ecoNewsTags")
+    @ApiOperation(value = "Find all eco news tags")
+    @GetMapping("/tags/all")
     public ResponseEntity<List<String>> findAllEcoNewsTags() {
-        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllEcoNewsTags());
     }
 }

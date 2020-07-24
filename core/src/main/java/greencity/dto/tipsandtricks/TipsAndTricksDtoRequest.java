@@ -24,7 +24,7 @@ public class TipsAndTricksDtoRequest {
     private String text;
 
     @NotEmpty
-    private List<String> tipsAndTricksTags;
+    private List<String> tags;
 
     private String image;
 

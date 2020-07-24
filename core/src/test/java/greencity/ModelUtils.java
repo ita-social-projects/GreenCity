@@ -46,7 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, "tag", Collections.emptyList());
+        return new Tag(1L, "tag", Collections.emptyList(), Collections.emptyList());
     }
 
     public static User getUser() {
@@ -362,10 +362,6 @@ public class ModelUtils {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
 
-    public static TipsAndTricksTag getTipsAndTricksTag() {
-        return new TipsAndTricksTag(1L, "tipsAndTricksTag", Collections.emptyList());
-    }
-
     public static TipsAndTricks getTipsAndTricks() {
         return TipsAndTricks.builder()
             .id(1L)
@@ -373,7 +369,7 @@ public class ModelUtils {
             .text("text")
             .creationDate(ZonedDateTime.now())
             .author(getUser())
-            .tipsAndTricksTags(Collections.singletonList(getTipsAndTricksTag()))
+            .tags(Collections.singletonList(getTag()))
             .imagePath(null)
             .source(null)
             .build();
@@ -390,7 +386,7 @@ public class ModelUtils {
             .text("text")
             .creationDate(ZonedDateTime.now())
             .author(getAuthorDto())
-            .tipsAndTricksTags(Collections.singletonList("tipsAndTricksTag"))
+            .tags(Collections.singletonList("tipsAndTricksTag"))
             .imagePath(TestConst.SITE)
             .source(null)
             .build();

@@ -17,8 +17,8 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
      * @return {@link TipsAndTricks} by specific tags.
      */
     @Query("SELECT DISTINCT tt FROM TipsAndTricks tt "
-        + "JOIN tt.tipsAndTricksTags ttt "
-        + "WHERE ttt.name in :tags "
+        + "JOIN tt.tags ttt "
+        + "WHERE lower(ttt.name) in :tags "
         + "ORDER BY tt.creationDate DESC")
     Page<TipsAndTricks> find(Pageable pageable, List<String> tags);
 
@@ -39,7 +39,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
     @Query("select tt from TipsAndTricks tt "
         + "where lower(tt.title) like lower(CONCAT('%', :searchQuery, '%')) "
         + "or lower(tt.text) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tipsAndTricksTags ttt "
+        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
         + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))")
     Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery);
 }

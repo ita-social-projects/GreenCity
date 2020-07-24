@@ -3,8 +3,8 @@ package greencity.mapping;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.user.AuthorDto;
+import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
-import greencity.entity.TipsAndTricksTag;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -35,9 +35,9 @@ public class TipsAndTricksDtoResponseMapper extends AbstractConverter<TipsAndTri
                 .id(tipsAndTricks.getAuthor().getId())
                 .name(tipsAndTricks.getAuthor().getName())
                 .build())
-            .tipsAndTricksTags(tipsAndTricks.getTipsAndTricksTags()
+            .tags(tipsAndTricks.getTags()
                 .stream()
-                .map(TipsAndTricksTag::getName)
+                .map(Tag::getName)
                 .collect(Collectors.toList()))
             .build();
     }

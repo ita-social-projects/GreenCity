@@ -40,7 +40,7 @@ public class TipsAndTricksDtoResponse implements Serializable {
     private AuthorDto author;
 
     @NotEmpty
-    private List<String> tipsAndTricksTags;
+    private List<String> tags;
 
     private String imagePath;
 
