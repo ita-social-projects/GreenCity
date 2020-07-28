@@ -496,7 +496,7 @@ public class UserController {
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Code of the needed language.")
-        @RequestParam String language) {
+        @RequestParam @ValidLanguage String language) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService.createUserHabit(userId, dto, language));
