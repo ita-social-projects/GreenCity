@@ -32,4 +32,11 @@ public interface LanguageService {
      * @return {@link Language} by language code.
      */
     Language findByCode(String code);
+
+    /**
+     * method, that returns codes of all {@link Language}s.
+     *
+     * @return {@link List} of language code strings.
+     */
+    List<String> findAllLanguageCodes();
 }
