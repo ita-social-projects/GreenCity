@@ -142,7 +142,6 @@ public final class ErrorMessage {
         + "different TipsAndTricks Id";
     public static final String USER_LAST_ACTIVITY_TIME_NOT_FOUND = "Cannot find last activity"
             + " time for the user with id: ";
-    public static final String EMPTY_TEXT_VALUE = "An empty text value setting is not allowed";
 
     private ErrorMessage() {
     }

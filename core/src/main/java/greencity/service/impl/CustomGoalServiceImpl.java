@@ -192,9 +192,6 @@ public class CustomGoalServiceImpl implements CustomGoalService {
      * @author Bogdan Kuzenko.
      */
     private CustomGoalResponseDto update(CustomGoalResponseDto dto) {
-        if (dto.getText().isEmpty()) {
-            throw new CustomGoalNotSavedException(EMPTY_TEXT_VALUE);
-        }
         CustomGoal updatable = findOne(dto.getId());
         List<CustomGoal> duplicate = updatable.getUser().getCustomGoals()
             .stream().filter(o -> o.getText().equals(dto.getText())).collect(Collectors.toList());
