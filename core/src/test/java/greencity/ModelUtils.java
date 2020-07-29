@@ -8,6 +8,9 @@ import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
@@ -397,6 +400,38 @@ public class ModelUtils {
             .id(1L)
             .name("author")
             .build();
+    }
+
+    public static EcoNewsComment getEcoNewsComment() {
+        return EcoNewsComment.builder()
+                .id(1L)
+                .text("text")
+                .createdDate(LocalDateTime.now())
+                .modifiedDate(LocalDateTime.now())
+                .user(getUser())
+                .ecoNews(getEcoNews())
+                .build();
+    }
+
+    public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
+        return new AddEcoNewsCommentDtoRequest("text", 0L);
+    }
+
+    public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
+        return AddEcoNewsCommentDtoResponse.builder()
+                .id(getEcoNewsComment().getId())
+                .author(getEcoNewsCommentAuthorDto())
+                .text(getEcoNewsComment().getText())
+                .modifiedDate(getEcoNewsComment().getModifiedDate())
+                .build();
+    }
+
+    private static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
+        return EcoNewsCommentAuthorDto.builder()
+                .id(getUser().getId())
+                .name(getUser().getName().trim())
+                .userProfilePicturePath(getUser().getProfilePicturePath())
+                .build();
     }
 }
  
