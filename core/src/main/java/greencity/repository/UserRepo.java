@@ -3,8 +3,11 @@ package greencity.repository;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +15,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Provides an interface to manage {@link User} entity.
@@ -93,7 +97,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query(nativeQuery = true,
-        value = "DELETE FROM users_friends WHERE user_id= :userId AND friend_id= :friendId")
+            value = "DELETE FROM users_friends WHERE user_id= :userId AND friend_id= :friendId")
     void deleteUserFriendById(Long userId, Long friendId);
 
     /**
@@ -101,16 +105,39 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query(nativeQuery = true,
-        value = "INSERT INTO users_friends(user_id, friend_id) VALUES (:userId, :friendId)")
+            value = "INSERT INTO users_friends(user_id, friend_id) VALUES (:userId, :friendId)")
     void addNewFriend(Long userId, Long friendId);
 
     /**
      * Get six friends with the highest rating {@link User}.
      */
     @Query(nativeQuery = true,
-        value = " SELECT * FROM users_friends "
-            + " LEFT JOIN users ON users.id = users_friends.friend_id "
-            + " WHERE users_friends.user_id = :userId "
-            + " ORDER BY users.rating DESC LIMIT 6 ")
+            value = " SELECT * FROM users_friends "
+                    + " LEFT JOIN users ON users.id = users_friends.friend_id "
+                    + " WHERE users_friends.user_id = :userId "
+                    + " ORDER BY users.rating DESC LIMIT 6 ")
     List<User> getSixFriendsWithTheHighestRating(Long userId);
+
+    /**
+     * Updates last activity time for a given user.
+     *
+     * @param userId               - {@link User}'s id
+     * @param userLastActivityTime - new {@link User}'s last activity time
+     * @author Yurii Zhurakovskyi
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE User SET last_activity_time=:userLastActivityTime WHERE id=:userId")
+    void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
+
+    /**
+     * Find the last activity time by {@link User}'s id.
+     *
+     * @param userId - {@link User}'s id
+     * @return {@link Date}
+     * @author Yurii Zhurakovskyi
+     */
+    @Query(nativeQuery = true,
+            value = "SELECT last_activity_time FROM users WHERE id=:userId")
+    Optional<Date> findLastActivityTimeById(Long userId);
 }

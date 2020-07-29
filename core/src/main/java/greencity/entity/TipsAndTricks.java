@@ -3,7 +3,16 @@ package greencity.entity;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +24,8 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "tips_and_tricks")
-@ToString(exclude = {"author", "tipsAndTricksTags"})
-@EqualsAndHashCode(exclude = {"author", "tipsAndTricksTags"})
+@ToString(exclude = {"author", "tags"})
+@EqualsAndHashCode(exclude = {"author", "tags"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -42,7 +51,7 @@ public class TipsAndTricks {
     private User author;
 
     @ManyToMany
-    private List<TipsAndTricksTag> tipsAndTricksTags;
+    private List<Tag> tags;
 
     @OneToMany(mappedBy = "tipsAndTricks", fetch = FetchType.LAZY)
     private List<TipsAndTricksComment> tipsAndTricksComments = new ArrayList<>();

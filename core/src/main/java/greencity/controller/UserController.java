@@ -692,4 +692,25 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             userService.saveUserProfile(userProfileDtoRequest, image, principal.getName()));
     }
+
+    /**
+     * The method checks by id if a {@link User} is online.
+     *
+     * @return {@link ResponseEntity}.
+     * @author Zhurakovskyi Yurii
+     */
+    @ApiOperation(value = "Check by id if the user is online")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("isOnline/{userId}/")
+    public ResponseEntity<Boolean> checkIfTheUserIsOnline(
+            @ApiParam("Id of the user. Cannot be empty.")
+            @PathVariable Long userId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.checkIfTheUserIsOnline(userId));
+    }
 }

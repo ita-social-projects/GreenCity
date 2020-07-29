@@ -20,12 +20,13 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
                                                                                        Long ecoNewsId);
 
     /**
-     * Method returns all replies to comment, specified by parentCommentId.
-     *
+     * Method returns all replies to comment, specified by parentCommentId and by page.
+     * @param pageable page of news.
      * @param parentCommentId id of comment, replies to which we get.
-     * @return all replies to comment, specified by parentCommentId.
+     * @return all replies to comment, specified by parentCommentId and page.
      */
-    List<EcoNewsComment> findAllByParentCommentIdOrderByCreatedDateAsc(Long parentCommentId);
+    Page<EcoNewsComment> findAllByParentCommentIdOrderByCreatedDateAsc(Pageable pageable,
+                                                                       Long parentCommentId);
 
     /**
      * Method returns count of replies to comment, specified by parentCommentId.
@@ -33,7 +34,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @param parentCommentId id of comment, count of replies to which we get.
      * @return count of replies to comment, specified by parentCommentId.
      */
-    @Query("SELECT count(ec) from EcoNewsComment ec where ec.parentComment.id = ?1")
+    @Query("SELECT count(ec) from EcoNewsComment ec where ec.parentComment.id = ?1 AND ec.deleted = FALSE")
     int countByParentCommentId(Long parentCommentId);
 
     /**

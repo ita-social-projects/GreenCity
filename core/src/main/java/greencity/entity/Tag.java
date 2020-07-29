@@ -33,4 +33,7 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     private List<EcoNews> ecoNews;
+
+    @ManyToMany(mappedBy = "tags")
+    private List<TipsAndTricks> tipsAndTricks;
 }

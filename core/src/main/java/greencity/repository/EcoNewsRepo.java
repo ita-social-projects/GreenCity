@@ -1,10 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.EcoNews;
-
-import java.util.Collection;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -45,12 +42,12 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
      * @return {@link EcoNews} for specific tags.
      */
     @Query(nativeQuery = true, value =
-            "SELECT DISTINCT en.* FROM eco_news AS en "
-                    + "INNER JOIN eco_news_tags AS entag "
-                    + "ON en.id = entag.eco_news_id "
-                    + "INNER JOIN tags AS t ON entag.tags_id = t.id "
-                    + "WHERE t.name IN (:tags) "
-                    + "ORDER BY  en.creation_date DESC")
+        "SELECT DISTINCT en.* FROM eco_news AS en "
+            + "INNER JOIN eco_news_tags AS entag "
+            + "ON en.id = entag.eco_news_id "
+            + "INNER JOIN tags AS t ON entag.tags_id = t.id "
+            + "WHERE lower(t.name) IN (:tags) "
+            + "ORDER BY  en.creation_date DESC")
     Page<EcoNews> find(Pageable pageable, List<String> tags);
 
     /**

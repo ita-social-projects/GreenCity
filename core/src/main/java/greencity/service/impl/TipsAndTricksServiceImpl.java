@@ -11,8 +11,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
 import greencity.service.FileService;
+import greencity.service.TagsService;
 import greencity.service.TipsAndTricksService;
-import greencity.service.TipsAndTricksTagsService;
 import greencity.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +38,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     private final ModelMapper modelMapper;
 
-    private final TipsAndTricksTagsService tipsAndTricksTagsService;
+    private final TagsService tagService;
 
     private final FileService fileService;
 
@@ -57,8 +57,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
-        toSave.setTipsAndTricksTags(
-            tipsAndTricksTagsService.findAllByNames(tipsAndTricksDtoRequest.getTipsAndTricksTags()));
+        toSave.setTags(
+            tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()));
 
         try {
             tipsAndTricksRepo.save(toSave);
@@ -86,10 +86,13 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     public PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags) {
         Page<TipsAndTricks> pages;
-        if (tags.isEmpty()) {
+        if (tags == null || tags.isEmpty()) {
             pages = tipsAndTricksRepo.findAllByOrderByCreationDateDesc(page);
         } else {
-            pages = tipsAndTricksRepo.find(page, tags);
+            List<String> lowerCaseTags = tags.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+            pages = tipsAndTricksRepo.find(page, lowerCaseTags);
         }
         return getPagesWithTipsAndTricksResponseDto(pages);
     }

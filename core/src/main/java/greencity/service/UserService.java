@@ -17,6 +17,9 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * Provides the interface to manage {@link User} entity.
  *
@@ -304,4 +307,22 @@ public interface UserService {
 
     UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
                                            String name);
+
+    /**
+     * Updates last activity time for a given user.
+     *
+     * @param userId               - {@link User}'s id
+     * @param userLastActivityTime - new {@link User}'s last activity time
+     * @author Yurii Zhurakovskyi
+     */
+    void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
+
+    /**
+     * The method checks by id if a {@link User} is online.
+     *
+     * @param userId - {@link User}'s id
+     * @return {@link Boolean}.
+     * @author Yurii Zhurakovskyi
+     */
+    Boolean checkIfTheUserIsOnline(Long userId);
 }

@@ -250,8 +250,10 @@ VALUES (1, 1, null, 'ACTIVE', null),
 
 INSERT INTO achievements(title, description, message)
 VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!'),
-       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
-       ('Сonscious', 'Made first habit', 'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
+       ('Eco friend', 'Start to track a habit',
+        'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
+       ('Сonscious', 'Made first habit',
+        'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
        ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!'),
        ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!'),
        ('ach6', 'get ach 6', 'info'),
@@ -260,21 +262,42 @@ VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green Ci
        ('ach9', 'get ach 9', 'info');
 
 INSERT INTO tags(name)
-VALUES ('news'),
-       ('events'),
-       ('courses'),
-       ('initiatives'),
-       ('ads');
+VALUES ('News'),
+       ('Events'),
+       ('Education'),
+       ('Initiatives'),
+       ('Ads'),
+       ('Lifehacks'),
+       ('Green thinking'),
+       ('Zero waste'),
+       ('3 r''s'),
+       ('Eco-city');
 
 INSERT INTO eco_news(creation_date, image_path, author_id, text, title)
-VALUES ('2020-04-11 18:33:51', 'шлях до картинки', 1, 'No matter where you live , you can make a difference in the impact of big agriculture. Purchasing foods produced by small, local farms, opting for organic produce whenever possible','A New Way To Buy Food'),
-       ('2020-04-11 18:55:18', 'шлях до картинки', 2, 'The benefits of biodegradable substances are only felt when they are disposed of properly. Compost piles capture and return all of the recycled nutrients to the environment, and help to sustain new life. ','Why Biodegradable Products are Better for the Planet'),
-       ('2020-04-11 19:06:36', 'шлях до картинки', 3, 'Over six gallons of water are required to produce one gallon of wine.','Sustainable Wine Is Less Damaging to the Environment, But How Can You Spot It?'),
-       ('2020-04-11 19:14:15', 'шлях до картинки', 4, 'Instead of trying to get rid of those lawn and garden weeds, harvest them for free homegrown meals.', 'Please eat the dandelions: 9 edible garden weeds'),
-       ('2020-04-11 19:22:57', 'шлях до картинки', 5, 'Weather happens hour by hour, day by day—it''s a thunderstorm, a heat wave, a windy afternoon. Taken as averages over decades and centuries, those patterns of precipitation, temperature, and wind for a given region comprise our climate.', 'Climate Change'),
-       ('2020-04-11 19:31:35', 'шлях до картинки', 6, 'According to the Environmental Protection Agency, food waste in the United States has tripled since 1960. In landfills, its decomposition generates methane, a potent greenhouse gas.', 'A Growing Problem'),
-       ('2020-04-11 19:44:19', 'шлях до картинки', 7, 'Global warming — a component of climate change — is the rapid increase in recorded temperatures of the ocean, land, and air caused by rising levels of carbon dioxide and other greenhouse gases in the atmosphere.','Global Warming'),
-       ('2020-04-11 19:50:56', 'шлях до картинки', 8, 'Researchers have found evidence of rainforests near the South Pole 90 million years ago, suggesting the climate was exceptionally warm at the time','Traces of ancient rainforest in Antarctica point to a warmer prehistoric world'),
+VALUES ('2020-04-11 18:33:51', 'шлях до картинки', 1,
+        'No matter where you live , you can make a difference in the impact of big agriculture. Purchasing foods produced by small, local farms, opting for organic produce whenever possible',
+        'A New Way To Buy Food'),
+       ('2020-04-11 18:55:18', 'шлях до картинки', 2,
+        'The benefits of biodegradable substances are only felt when they are disposed of properly. Compost piles capture and return all of the recycled nutrients to the environment, and help to sustain new life. ',
+        'Why Biodegradable Products are Better for the Planet'),
+       ('2020-04-11 19:06:36', 'шлях до картинки', 3,
+        'Over six gallons of water are required to produce one gallon of wine.',
+        'Sustainable Wine Is Less Damaging to the Environment, But How Can You Spot It?'),
+       ('2020-04-11 19:14:15', 'шлях до картинки', 4,
+        'Instead of trying to get rid of those lawn and garden weeds, harvest them for free homegrown meals.',
+        'Please eat the dandelions: 9 edible garden weeds'),
+       ('2020-04-11 19:22:57', 'шлях до картинки', 5,
+        'Weather happens hour by hour, day by day—it''s a thunderstorm, a heat wave, a windy afternoon. Taken as averages over decades and centuries, those patterns of precipitation, temperature, and wind for a given region comprise our climate.',
+        'Climate Change'),
+       ('2020-04-11 19:31:35', 'шлях до картинки', 6,
+        'According to the Environmental Protection Agency, food waste in the United States has tripled since 1960. In landfills, its decomposition generates methane, a potent greenhouse gas.',
+        'A Growing Problem'),
+       ('2020-04-11 19:44:19', 'шлях до картинки', 7,
+        'Global warming — a component of climate change — is the rapid increase in recorded temperatures of the ocean, land, and air caused by rising levels of carbon dioxide and other greenhouse gases in the atmosphere.',
+        'Global Warming'),
+       ('2020-04-11 19:50:56', 'шлях до картинки', 8,
+        'Researchers have found evidence of rainforests near the South Pole 90 million years ago, suggesting the climate was exceptionally warm at the time',
+        'Traces of ancient rainforest in Antarctica point to a warmer prehistoric world'),
        ('2020-04-11 19:55:05', 'шлях до картинки', 9, 'Rising sea surface temperatures and acidic waters could eliminate nearly all existing coral reef habitats by 2100, suggesting restoration projects in these areas will likely meet serious challenges','Warming, acidic oceans may nearly eliminate coral reef habitats by 2100'),
        ('2020-04-11 20:12:56', 'шлях до картинки', 10, 'Four fossilized monkey teeth discovered deep in the Peruvian Amazon provide new evidence that more than one group of ancient primates journeyed across the Atlantic Ocean from Africa.', 'Ancient Teeth from Peru Hint Now-Extinct Monkeys Crossed Atlantic from Africa'),
        ('2020-04-11 20:15:03', 'шлях до картинки', 11, 'Researchers from Cambridge University and University of California San Diego have 3D printed coral-inspired structures that are capable of growing dense populations of microscopic algae', '3D-printed corals could improve bioenergy and help coral reefs');
@@ -292,13 +315,6 @@ VALUES (1, 4),
        (10, 1),
        (11, 1);
 
-INSERT INTO tips_and_tricks_tags(name)
-VALUES ('lifehacks'),
-       ('green thinking'),
-       ('zero waste'),
-       ('3 r''s'),
-       ('eco-city');
-
 INSERT INTO tips_and_tricks(title, text, creation_date, author_id, image_path, source)
 VALUES ('Don''t take home any unnecessary trash or junk',
         'If you want a flyer or business card, take a photo rather than taking it home. This is especially relevant at concerts and outings where freebies are being passed out.',
@@ -310,10 +326,10 @@ VALUES ('Don''t take home any unnecessary trash or junk',
         'Say goodbye to plastic ziplock bags for good. Reusable storage bags are the perfect alternative to single-use plastic bags and are so much more versatile.',
         '2020-05-13 18:55:18', 3, 'image path', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/');
 
-INSERT INTO tips_and_tricks_tips_and_tricks_tags(tips_and_tricks_id, tips_and_tricks_tags_id)
-VALUES (1, 1),
-       (1, 3),
-       (1, 4),
-       (2, 3),
-       (3, 1),
-       (3, 2)
+INSERT INTO tips_and_tricks_tags(tips_and_tricks_id, tags_id)
+VALUES (1, 6),
+       (1, 8),
+       (1, 10),
+       (2, 8),
+       (3, 6),
+       (3, 7)
