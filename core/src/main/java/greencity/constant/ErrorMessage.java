@@ -142,7 +142,8 @@ public final class ErrorMessage {
         + "different TipsAndTricks Id";
     public static final String USER_NOT_SAVED = "User haven't been saved because of constraint violation";
     public static final String USER_LAST_ACTIVITY_TIME_NOT_FOUND = "Cannot find last activity"
-            + " time for the user with id: ";
+        + " time for the user with id: ";
+    public static final String NOT_VALID_URL = "Your URL is not valid : ";
 
     private ErrorMessage() {
     }

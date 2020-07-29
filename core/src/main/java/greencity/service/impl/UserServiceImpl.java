@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import static greencity.constant.ErrorMessage.*;
-
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -32,8 +31,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -60,6 +59,8 @@ public class UserServiceImpl implements UserService {
     private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private final FileService fileService;
+    @Value("${greencity.time.after.last.activity}")
+    private long timeAfterLastActivity;
 
     /**
      * Autowired mapper.
@@ -714,6 +715,11 @@ public class UserServiceImpl implements UserService {
         return userProfilePictureDtoList;
     }
 
+    /**
+     * Save user profile information {@link User}.
+     *
+     * @author Marian Datsko
+     */
     @Override
     public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
                                                   String email) {
@@ -727,16 +733,30 @@ public class UserServiceImpl implements UserService {
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
-        String url = fileService.upload(image).toString();
-        user.setProfilePicturePath(url);
-
+        if (image != null) {
+            String url = fileService.upload(image).toString();
+            user.setProfilePicturePath(url);
+        }
         try {
             userRepo.save(user);
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.USER_NOT_SAVED);
         }
 
-        return modelMapper.map(user,UserProfileDtoResponse.class);
+        return modelMapper.map(user, UserProfileDtoResponse.class);
+    }
+
+    /**
+     * Method return user profile information {@link User}.
+     *
+     * @author Marian Datsko
+     */
+    @Override
+    public UserProfileDtoResponse getUserProfileInformation(Long userId) {
+        User user = userRepo
+            .findById(userId)
+            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
+        return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 
     /**
@@ -761,8 +781,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean checkIfTheUserIsOnline(Long userId) {
         Date userLastActivityTime = userRepo.findLastActivityTimeById(userId)
-                .orElseThrow(() -> new UserLastActivityTimeNotFoundException(
-                        USER_LAST_ACTIVITY_TIME_NOT_FOUND + userId));
+            .orElseThrow(() -> new UserLastActivityTimeNotFoundException(
+                USER_LAST_ACTIVITY_TIME_NOT_FOUND + userId));
         Date currentTime = new Date();
         long result = currentTime.getTime() - userLastActivityTime.getTime();
         return result <= timeAfterLastActivity;

@@ -2,9 +2,9 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
@@ -101,20 +101,20 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     @Override
     public PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, User user) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
-                .findAllByParentCommentIdOrderByCreatedDateAsc(pageable, parentCommentId);
+            .findAllByParentCommentIdOrderByCreatedDateAsc(pageable, parentCommentId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
-                .stream()
-                .map(comment -> {
-                    comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
-                    return comment;
-                })
-                .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(comment -> {
+                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                return comment;
+            })
+            .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
+            .collect(Collectors.toList());
 
         return new PageableDto<>(
-                ecoNewsCommentDtos,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber()
+            ecoNewsCommentDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber()
         );
     }
 
@@ -180,6 +180,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @return count of likes to certain {@link greencity.entity.EcoNewsComment} specified by id.
      */
     @Override
+    @Transactional
     public int countLikes(Long id) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id).orElseThrow(
             () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)

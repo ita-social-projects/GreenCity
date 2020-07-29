@@ -3,9 +3,9 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.entity.User;
 import greencity.service.EcoNewsCommentService;
 import greencity.service.EcoNewsService;
@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,14 +23,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Validated
@@ -102,8 +94,8 @@ public class EcoNewsCommentController {
      */
     @ApiOperation(value = "Count comments.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/count/comments/{ecoNewsId}")
     public int getCountOfComments(@PathVariable Long ecoNewsId) {
@@ -118,21 +110,21 @@ public class EcoNewsCommentController {
      */
     @ApiOperation(value = "Get all replies to comment.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK)
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("replies/{parentCommentId}")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllReplies(@ApiIgnore Pageable pageable,
-                                                                  @PathVariable Long parentCommentId,
-                                                                  @ApiIgnore @AuthenticationPrincipal
-                                                                          Principal principal) {
+                                                                         @PathVariable Long parentCommentId,
+                                                                         @ApiIgnore @AuthenticationPrincipal
+                                                                             Principal principal) {
         User user = null;
         if (principal != null) {
             user = userService.findByEmail(principal.getName());
         }
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ecoNewsCommentService.findAllReplies(pageable,parentCommentId, user));
+            .status(HttpStatus.OK)
+            .body(ecoNewsCommentService.findAllReplies(pageable, parentCommentId, user));
     }
 
     /**
@@ -228,7 +220,7 @@ public class EcoNewsCommentController {
      */
     @MessageMapping("/likeAndCount")
     @SendTo("/topic/comment")
-    public int greeting(Long id, @ApiIgnore @AuthenticationPrincipal Principal principal) {
+    public int getCountOfLike(Long id, @ApiIgnore @AuthenticationPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getName());
         ecoNewsCommentService.like(id, user);
         return ecoNewsCommentService.countLikes(id);
