@@ -143,7 +143,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/isOnline/{userId}/",
                 "/achievements",
                 "/facts/dayFact/*",
-                "/user/{userId}/sixUserFriends/"
+                "/user/{userId}/sixUserFriends/",
+                "/user/{userId}/profile/"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -158,7 +159,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals",
                 "/user/profilePicture",
                 "/econews/comments",
-                "/tipsandtricks/comments"
+                "/tipsandtricks/comments",
+                "/user/saveProfileInf"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
@@ -179,7 +181,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
                 "/tipsandtricks/comments/{tipsAndTricksId}",
-                "/tipsandtricks/comments/like"
+                "/tipsandtricks/comments/like",
+                "/user/profile"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",

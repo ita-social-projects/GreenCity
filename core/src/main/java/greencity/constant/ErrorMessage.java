@@ -119,7 +119,7 @@ public final class ErrorMessage {
         "Can not create instance of events, used constructor that differ from events superclass.";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
     public static final String TAG_NOT_FOUND = "The tag does not exist by this name: ";
-    public static final String TAGS_NOT_FOUND = "Please add at least one valid tag";
+    public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
     public static final String INVALID_NUM_OF_TAGS =
         "Invalid tags. You must have less than " + ValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
     public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
@@ -140,8 +140,10 @@ public final class ErrorMessage {
     public static final String IMAGE_EXISTS = "Image should be download, PNG or JPEG ";
     public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
         + "different TipsAndTricks Id";
+    public static final String USER_NOT_SAVED = "User haven't been saved because of constraint violation";
     public static final String USER_LAST_ACTIVITY_TIME_NOT_FOUND = "Cannot find last activity"
-            + " time for the user with id: ";
+        + " time for the user with id: ";
+    public static final String NOT_VALID_URL = "Your URL is not valid : ";
 
     private ErrorMessage() {
     }

@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import static greencity.constant.ErrorMessage.*;
-
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -33,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -716,6 +716,45 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Save user profile information {@link User}.
+     *
+     * @author Marian Datsko
+     */
+    @Override
+    public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
+                                                  String email) {
+        User user = userRepo
+            .findByEmail(email)
+            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        user.setFirstName(userProfileDtoRequest.getFirstName());
+        user.setCity(userProfileDtoRequest.getCity());
+        user.setUserCredo(userProfileDtoRequest.getUserCredo());
+        user.setSocialNetworks(userProfileDtoRequest.getSocialNetworks());
+        user.setShowLocation(userProfileDtoRequest.getShowLocation());
+        user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
+        user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
+        if (image != null) {
+            String url = fileService.upload(image).toString();
+            user.setProfilePicturePath(url);
+        }
+        userRepo.save(user);
+        return modelMapper.map(user, UserProfileDtoResponse.class);
+    }
+
+    /**
+     * Method return user profile information {@link User}.
+     *
+     * @author Marian Datsko
+     */
+    @Override
+    public UserProfileDtoResponse getUserProfileInformation(Long userId) {
+        User user = userRepo
+            .findById(userId)
+            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
+        return modelMapper.map(user, UserProfileDtoResponse.class);
+    }
+
+    /**
      * Updates last activity time for a given user.
      *
      * @param userId               - {@link User}'s id
@@ -737,8 +776,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean checkIfTheUserIsOnline(Long userId) {
         Date userLastActivityTime = userRepo.findLastActivityTimeById(userId)
-                .orElseThrow(() -> new UserLastActivityTimeNotFoundException(
-                        USER_LAST_ACTIVITY_TIME_NOT_FOUND + userId));
+            .orElseThrow(() -> new UserLastActivityTimeNotFoundException(
+                USER_LAST_ACTIVITY_TIME_NOT_FOUND + userId));
         Date currentTime = new Date();
         long result = currentTime.getTime() - userLastActivityTime.getTime();
         return result <= timeAfterLastActivity;

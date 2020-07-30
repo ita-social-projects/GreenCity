@@ -41,5 +41,5 @@
     <include file="db/changelog/logs/ch-change-eco-news-Ostriychuk.xml"/>
     <include file="db/changelog/logs/ch-add-column-Zhurakovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-add-tipsandtricks-comment-Beshlei.xml"/>
-    <include file="db/changelog/logs/ch-merge-tags-Ostriychuk.xml"/>
+    <include file="db/changelog/logs/ch-user-profile-Datsko.xml.xml"/>
 </databaseChangeLog>

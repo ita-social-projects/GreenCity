@@ -12,11 +12,10 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Date;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -304,6 +303,14 @@ public interface UserService {
     List<UserProfilePictureDto> getSixFriendsWithTheHighestRating(Long userId);
 
     /**
+     * Save user profile information {@link User}.
+     *
+     * @author Marian Datsko
+     */
+    UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
+                                           String name);
+
+    /**
      * Updates last activity time for a given user.
      *
      * @param userId               - {@link User}'s id
@@ -320,4 +327,11 @@ public interface UserService {
      * @author Yurii Zhurakovskyi
      */
     Boolean checkIfTheUserIsOnline(Long userId);
+
+    /**
+     * Method return user profile information {@link User}.
+     *
+     * @author Marian Datsko
+     */
+    UserProfileDtoResponse getUserProfileInformation(Long userId);
 }

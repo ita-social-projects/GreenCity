@@ -17,6 +17,7 @@ import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.dto.habitstatistic.HabitDto;
 import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
+import greencity.entity.EcoNews;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
@@ -665,6 +666,54 @@ public class UserController {
     }
 
     /**
+     * Method for save user profile information {@link EcoNews}.
+     *
+     * @param userProfileDtoRequest - dto for {@link User} entity.
+     * @return dto {@link UserProfileDtoResponse} instance.
+     * @author Marian Datsko.
+     */
+    @ApiOperation(value = "Save user profile information")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED,
+            response = UserProfileDtoResponse.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping(path = "/profile", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
+        MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<UserProfileDtoResponse> save(
+        @ApiParam(value = "User Profile Request", required = true)
+        @RequestPart UserProfileDtoRequest userProfileDtoRequest,
+        @ApiParam(value = "User Profile Image")
+        @ImageValidation
+        @RequestPart(required = false) MultipartFile image,
+        @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            userService.saveUserProfile(userProfileDtoRequest, image, principal.getName()));
+    }
+
+    /**
+     * Method returns user profile information.
+     *
+     * @return {@link UserProfileDtoResponse}.
+     * @author Datsko Marian
+     */
+    @ApiOperation(value = "Get user profile information by id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/profile/")
+    public ResponseEntity<UserProfileDtoResponse> getUserProfileInformation(
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable @CurrentUserId Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getUserProfileInformation(userId));
+    }
+
+    /**
      * The method checks by id if a {@link User} is online.
      *
      * @return {@link ResponseEntity}.
@@ -672,16 +721,16 @@ public class UserController {
      */
     @ApiOperation(value = "Check by id if the user is online")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("isOnline/{userId}/")
     public ResponseEntity<Boolean> checkIfTheUserIsOnline(
-            @ApiParam("Id of the user. Cannot be empty.")
-            @PathVariable Long userId) {
+        @ApiParam("Id of the user. Cannot be empty.")
+        @PathVariable Long userId) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.checkIfTheUserIsOnline(userId));
+            .status(HttpStatus.OK)
+            .body(userService.checkIfTheUserIsOnline(userId));
     }
 }
