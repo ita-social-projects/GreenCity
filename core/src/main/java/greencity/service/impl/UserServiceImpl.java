@@ -737,12 +737,7 @@ public class UserServiceImpl implements UserService {
             String url = fileService.upload(image).toString();
             user.setProfilePicturePath(url);
         }
-        try {
-            userRepo.save(user);
-        } catch (DataIntegrityViolationException e) {
-            throw new NotSavedException(ErrorMessage.USER_NOT_SAVED);
-        }
-
+        userRepo.save(user);
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 
