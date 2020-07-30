@@ -1,6 +1,5 @@
 package greencity.security.controller;
 
-import greencity.annotations.ValidEmailConstraint;
 import greencity.constant.HttpStatuses;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
@@ -81,8 +80,7 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = USER_ALREADY_REGISTERED_WITH_THIS_EMAIL)
     })
     @PostMapping("/signUp")
-    public ResponseEntity<SuccessSignUpDto> singUp(
-            @Valid @RequestBody @ValidEmailConstraint OwnSignUpDto dto) {
+    public ResponseEntity<SuccessSignUpDto> singUp(@Valid @RequestBody OwnSignUpDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto));
     }
 
