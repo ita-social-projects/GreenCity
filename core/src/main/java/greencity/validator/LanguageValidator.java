@@ -16,7 +16,6 @@ public class LanguageValidator implements ConstraintValidator<ValidLanguage, Str
     @Override
     public void initialize(ValidLanguage constraintAnnotation) {
         codes = languageService.findAllLanguageCodes();
-        System.out.println(codes);
     }
 
     @Override
