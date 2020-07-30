@@ -254,6 +254,22 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
+     * Method for getting all EcoNews by searchQuery.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link SearchNewsDto}
+     * @author Zhurakovskyi Yurii
+     */
+    @Override
+    public List<SearchNewsDto> searchAll(String searchQuery) {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.searchAllEcoNews(searchQuery);
+        return ecoNewsList
+                .stream()
+                .map(ecoNews -> modelMapper.map(ecoNews, SearchNewsDto.class))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Method for building message for sending email about adding new eco news.
      *
      * @param ecoNews {@link EcoNews} which was added.

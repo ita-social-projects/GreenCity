@@ -9,6 +9,7 @@ import greencity.entity.EcoNews;
 
 import java.util.List;
 
+import greencity.repository.EcoNewsRepo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,4 +85,13 @@ public interface EcoNewsService {
      * @author Kovaliv Taras
      */
     PageableDto<SearchNewsDto> search(String searchQuery);
+
+    /**
+     * Method for getting all EcoNews by searchQuery.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link SearchNewsDto}
+     * @author Zhurakovskyi Yurii
+     */
+    List<SearchNewsDto> searchAll(String searchQuery);
 }

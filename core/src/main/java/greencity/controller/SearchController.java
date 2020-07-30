@@ -38,4 +38,22 @@ public class SearchController {
         @ApiParam(value = "Query to search") @RequestParam String searchQuery) {
         return ResponseEntity.status(HttpStatus.OK).body(searchService.search(searchQuery));
     }
+
+    /**
+     * Method for search all.
+     *
+     * @param searchQuery query to search.
+     * @return list of {@link SearchResponseDto}.
+     */
+    @ApiOperation(value = "Search all.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = HttpStatuses.OK),
+            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/all")
+    public ResponseEntity<SearchResponseDto> searchAll(
+            @ApiParam(value = "Query to search") @RequestParam String searchQuery) {
+        return ResponseEntity.status(HttpStatus.OK).body(searchService.searchAll(searchQuery));
+    }
 }

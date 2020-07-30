@@ -42,4 +42,17 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
         + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
         + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))")
     Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery);
+
+    /**
+     * Method returns all {@link TipsAndTricks} by search query.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link TipsAndTricks}
+     */
+    @Query("select tt from TipsAndTricks tt "
+            + "where lower(tt.title) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or lower(tt.text) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
+            + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))")
+    List<TipsAndTricks> searchAllTipsAndTricks(String searchQuery);
 }

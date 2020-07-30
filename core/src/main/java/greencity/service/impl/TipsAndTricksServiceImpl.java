@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
@@ -153,5 +154,17 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             page.getTotalElements(),
             page.getPageable().getPageNumber()
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SearchTipsAndTricksDto> searchAll(String searchQuery) {
+        List<TipsAndTricks> tipsAndTricksList = tipsAndTricksRepo.searchAllTipsAndTricks(searchQuery);
+        return tipsAndTricksList
+                .stream()
+                .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, SearchTipsAndTricksDto.class))
+                .collect(Collectors.toList());
     }
 }

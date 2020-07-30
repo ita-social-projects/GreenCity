@@ -70,4 +70,17 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
             + "or en.id in (select en.id from EcoNews en inner join en.tags entags "
             + "where lower(entags.name) like lower(CONCAT('%', :searchQuery, '%')))")
     Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery);
+
+    /**
+     * Method returns {@link EcoNews} by search query.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link EcoNews}
+     */
+    @Query("select en from EcoNews as en "
+            + "where lower(en.title) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or lower(en.text) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or en.id in (select en.id from EcoNews en inner join en.tags entags "
+            + "where lower(entags.name) like lower(CONCAT('%', :searchQuery, '%')))")
+    List<EcoNews> searchAllEcoNews(String searchQuery);
 }
