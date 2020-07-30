@@ -220,9 +220,7 @@ public class EcoNewsCommentController {
      */
     @MessageMapping("/likeAndCount")
     @SendTo("/topic/comment")
-    public int getCountOfLike(Long id, @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName());
-        ecoNewsCommentService.like(id, user);
+    public int getCountOfLike(Long id) {
         return ecoNewsCommentService.countLikes(id);
     }
 }
