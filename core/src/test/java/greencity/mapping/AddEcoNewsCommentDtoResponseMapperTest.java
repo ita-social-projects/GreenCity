@@ -4,17 +4,13 @@ import greencity.ModelUtils;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.entity.EcoNewsComment;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static greencity.ModelUtils.getEcoNewsComment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
 public class AddEcoNewsCommentDtoResponseMapperTest {
-    @InjectMocks
-    private AddEcoNewsCommentDtoResponseMapper mapper;
+
+    private AddEcoNewsCommentDtoResponseMapper mapper = new AddEcoNewsCommentDtoResponseMapper();
 
     private final EcoNewsComment ecoNewsComment = getEcoNewsComment();
 
