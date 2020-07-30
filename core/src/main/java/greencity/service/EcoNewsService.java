@@ -6,12 +6,10 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
-
-import java.util.List;
-
-import greencity.repository.EcoNewsRepo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface EcoNewsService {
     /**
