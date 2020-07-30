@@ -1,8 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUserId;
-import greencity.annotations.ImageValidation;
+import greencity.annotations.*;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.constant.ValidationConstants;
@@ -474,7 +472,7 @@ public class UserController {
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Code of the needed language.")
-        @RequestParam String language) {
+        @RequestParam @ValidLanguage String language) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getAvailableHabitDictionary(userId, language));
@@ -499,7 +497,7 @@ public class UserController {
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Code of the needed language.")
-        @RequestParam String language) {
+        @RequestParam @ValidLanguage String language) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService.createUserHabit(userId, dto, language));

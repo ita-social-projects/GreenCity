@@ -75,4 +75,14 @@ public class LanguageServiceImpl implements LanguageService {
         return languageRepo.findByCode(code)
             .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE));
     }
+
+    /**
+     * method, that returns codes of all {@link Language}s.
+     *
+     * @return {@link List} of language code strings.
+     */
+    @Override
+    public List<String> findAllLanguageCodes() {
+        return languageRepo.findAllLanguageCodes();
+    }
 }
