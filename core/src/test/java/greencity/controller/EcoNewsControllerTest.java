@@ -147,6 +147,22 @@ public class EcoNewsControllerTest {
     }
 
     @Test
+    public void getEcoNewsEmptyTagsListTest() throws Exception {
+        int pageNumber = 5;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        List<EcoNewsDto> ecoNewsDTOS = Collections.singletonList(new EcoNewsDto());
+        PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(ecoNewsDTOS, ecoNewsDTOS.size(), 0);
+
+        when(ecoNewsService
+                .findAll(pageable))
+                .thenReturn(pageableDto);
+
+        mockMvc.perform(get("/econews/tags?page=5"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void getThreeRecommendedEcoNewsTest() throws Exception {
         when(ecoNewsService.getThreeRecommendedEcoNews(anyLong()))
                 .thenReturn(Collections.singletonList(new EcoNewsDto()));
