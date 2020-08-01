@@ -20,20 +20,14 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
 
     /**
      * Method for getting three recommended eco news.
-     * Query is based on database function RECOMMENDEDECONEWS
+     * Query is based on database function fn_Recommended_EcoNews_By_Opened_Eco_News
      *
-     * @param countOfTags     count of tags.
-     * @param firstTagId      id of first tag.
-     * @param secondTagId     id of second tag.
-     * @param thirdTagId      id of third tag.
      * @param openedEcoNewsId id of opened eco news.
      * @return list of three recommended {@link EcoNews} instances.
      */
     @Query(nativeQuery = true,
-            value = "SELECT * FROM RecommendedEcoNews(:countOfTags, :firstTagId, :secondTagId, :thirdTagId) "
-            + "WHERE id <> :openedEcoNewsId limit 3")
-    List<EcoNews> getThreeRecommendedEcoNews(Integer countOfTags, Long firstTagId,
-                                             Long secondTagId, Long thirdTagId, Long openedEcoNewsId);
+            value = "SELECT * FROM fn_Recommended_EcoNews_By_Opened_Eco_News(:openedEcoNewsId)")
+    List<EcoNews> getThreeRecommendedEcoNews(Long openedEcoNewsId);
 
     /**
      * Method returns {@link EcoNews} for specific tags.
