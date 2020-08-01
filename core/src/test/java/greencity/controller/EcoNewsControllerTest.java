@@ -1,6 +1,8 @@
 package greencity.controller;
 
 import greencity.dto.PageableDto;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -16,9 +19,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,6 +58,33 @@ public class EcoNewsControllerTest {
         when(ecoNewsService.getThreeLastEcoNews()).thenReturn(Collections.singletonList(new EcoNewsDto()));
         mockMvc.perform(get(ecoNewsLink + "/newest"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void saveTest() throws Exception {
+        Principal principal = Mockito.mock(Principal.class);
+        when(principal.getName()).thenReturn("");
+        String json = "{\n" +
+                "\"title\": \"title\",\n" +
+                " \"tags\": [\"news\"],\n" +
+                " \"text\": \"content content content\", \n" +
+                "\"source\": \"\",\n" +
+                " \"image\": null\n" +
+                "}";
+        MockMultipartFile jsonFile = new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());
+
+        when(ecoNewsService.save(any(AddEcoNewsDtoRequest.class), any(MultipartFile.class), anyString()))
+                .thenReturn(new AddEcoNewsDtoResponse());
+
+        this.mockMvc.perform(multipart(ecoNewsLink)
+                .file(jsonFile)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        verify(ecoNewsService, times(1))
+                .save(any(AddEcoNewsDtoRequest.class), any(), anyString());
     }
 
     @Test
