@@ -1,7 +1,7 @@
 package greencity.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.service.TagsService;
 import greencity.service.TipsAndTricksService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,16 +13,20 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,7 +54,7 @@ public class TipsAndTricksControllerTest {
     @Test
     public void saveTest() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("");
+        when(principal.getName()).thenReturn("Jane.Smith@gmail.com");
         String json = "{\n" +
                 "\"title\": \"title\",\n" +
                 " \"tags\": [\"news\"],\n" +
@@ -60,9 +64,6 @@ public class TipsAndTricksControllerTest {
                 "}";
         MockMultipartFile jsonFile = new MockMultipartFile("tipsAndTricksDtoRequest", "", "application/json", json.getBytes());
 
-        when(tipsAndTricksService.save(any(TipsAndTricksDtoRequest.class), any(MultipartFile.class), anyString()))
-                .thenReturn(new TipsAndTricksDtoResponse());
-
         this.mockMvc.perform(multipart(tipsAndTricksLink)
                 .file(jsonFile)
                 .principal(principal)
@@ -70,8 +71,11 @@ public class TipsAndTricksControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
+        ObjectMapper mapper = new ObjectMapper();
+        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = mapper.readValue(json, TipsAndTricksDtoRequest.class);
+
         verify(tipsAndTricksService, times(1))
-                .save(any(TipsAndTricksDtoRequest.class), any(), anyString());
+                .save(eq(tipsAndTricksDtoRequest), isNull(), eq("Jane.Smith@gmail.com"));
     }
 
     @Test
@@ -85,23 +89,24 @@ public class TipsAndTricksControllerTest {
 
     @Test
     public void getTipsAndTricksByIdTest() throws Exception {
-        when(tipsAndTricksService.findDtoById(anyLong()))
-                .thenReturn(new TipsAndTricksDtoResponse());
-
         this.mockMvc.perform(get(tipsAndTricksLink + "/{id}", 1))
                 .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-                .findDtoById(anyLong());
+                .findDtoById(eq(1L));
     }
 
     @Test
     public void findAllTest() throws Exception {
-        this.mockMvc.perform(get(tipsAndTricksLink))
+        int pageNumber = 1;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        this.mockMvc.perform(get(tipsAndTricksLink + "?page=1"))
                 .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-                .findAll(any());
+                .findAll(eq(pageable));
     }
 
     @Test
@@ -110,16 +115,21 @@ public class TipsAndTricksControllerTest {
                 .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-                .delete(anyLong());
+                .delete(eq(1L));
     }
 
     @Test
     public void getTipsAndTricksTest() throws Exception {
-        this.mockMvc.perform(get(tipsAndTricksLink + "/tags"))
+        int pageNumber = 1;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        List<String> tags = Collections.singletonList("education");
+
+        this.mockMvc.perform(get(tipsAndTricksLink + "/tags?page=1&tags=education"))
                 .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-                .find(any(), any());
+                .find(eq(pageable), eq(tags));
     }
 
     @Test
@@ -127,7 +137,6 @@ public class TipsAndTricksControllerTest {
         this.mockMvc.perform(get(tipsAndTricksLink + "/tags/all"))
                 .andExpect(status().isOk());
 
-        verify(tagService, times(1))
-                .findAllTipsAndTricksTags();
+        verify(tagService).findAllTipsAndTricksTags();
     }
 }
