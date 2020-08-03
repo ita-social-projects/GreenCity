@@ -214,7 +214,7 @@ public class EcoNewsServiceImplTest {
     void getThreeRecommendedEcoNews() {
         List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(ecoNews));
-        when(ecoNewsRepo.getThreeRecommendedEcoNews(ecoNews.getTags().size(), 1L, 0L, 0L, 1L))
+        when(ecoNewsRepo.getThreeRecommendedEcoNews(1L))
             .thenReturn(Collections.singletonList(ecoNews));
         when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(dtoList.get(0));
