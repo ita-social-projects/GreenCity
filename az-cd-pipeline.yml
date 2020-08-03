@@ -17,13 +17,13 @@ variables:
   
   artifactName: drop
   coreRepoName: core
-  mailRepoName: email
+  #mailRepoName: email
   onbootJarName: app.jar
   
   azureSub: GreenCity
   resourceGroup: GreenCity
-  coreServiceName: greencity
-  mailServiceName: greencity-mail
+  coreServiceName: testage
+  #mailServiceName: greencity-mail
 
 stages:
 - stage: Build
