@@ -1,9 +1,9 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.service.EcoNewsService;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.service.TagsService;
+import greencity.service.TipsAndTricksService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,42 +25,36 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class EcoNewsControllerTest {
-    private static final String ecoNewsLink = "/econews";
+public class TipsAndTricksControllerTest {
+    private static final String tipsAndTricksLink = "/tipsandtricks";
     private MockMvc mockMvc;
     @InjectMocks
-    private EcoNewsController ecoNewsController;
+    private TipsAndTricksController tipsAndTricksController;
     @Mock
-    private EcoNewsService ecoNewsService;
+    private TipsAndTricksService tipsAndTricksService;
     @Mock
-    private TagsService tagsService;
+    private TagsService tagService;
 
     @BeforeEach
     public void setUp() {
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(ecoNewsController)
+                .standaloneSetup(tipsAndTricksController)
                 .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .build();
     }
 
     @Test
-    public void getThreeLastEcoNewsTest() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/newest"))
-                .andExpect(status().isOk());
-
-        verify(ecoNewsService).getThreeLastEcoNews();
-    }
-
-    @Test
     public void saveTest() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("Olivia.Johnson@gmail.com");
+        when(principal.getName()).thenReturn("Jane.Smith@gmail.com");
         String json = "{\n" +
                 "\"title\": \"title\",\n" +
                 " \"tags\": [\"news\"],\n" +
@@ -68,9 +62,9 @@ public class EcoNewsControllerTest {
                 "\"source\": \"\",\n" +
                 " \"image\": null\n" +
                 "}";
-        MockMultipartFile jsonFile = new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("tipsAndTricksDtoRequest", "", "application/json", json.getBytes());
 
-        this.mockMvc.perform(multipart(ecoNewsLink)
+        this.mockMvc.perform(multipart(tipsAndTricksLink)
                 .file(jsonFile)
                 .principal(principal)
                 .accept(MediaType.APPLICATION_JSON)
@@ -78,15 +72,15 @@ public class EcoNewsControllerTest {
                 .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
-        AddEcoNewsDtoRequest addEcoNewsDtoRequest = mapper.readValue(json, AddEcoNewsDtoRequest.class);
+        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = mapper.readValue(json, TipsAndTricksDtoRequest.class);
 
-        verify(ecoNewsService)
-                .save(eq(addEcoNewsDtoRequest), isNull(), eq("Olivia.Johnson@gmail.com"));
+        verify(tipsAndTricksService, times(1))
+                .save(eq(tipsAndTricksDtoRequest), isNull(), eq("Jane.Smith@gmail.com"));
     }
 
     @Test
     public void saveBadRequestTest() throws Exception {
-        mockMvc.perform(post(ecoNewsLink)
+        this.mockMvc.perform(post(tipsAndTricksLink)
                 .content("{}")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -94,11 +88,12 @@ public class EcoNewsControllerTest {
     }
 
     @Test
-    public void getEcoNewsById() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/{id}", 1))
+    public void getTipsAndTricksByIdTest() throws Exception {
+        this.mockMvc.perform(get(tipsAndTricksLink + "/{id}", 1))
                 .andExpect(status().isOk());
 
-        verify(ecoNewsService).findDtoById(eq(1L));
+        verify(tipsAndTricksService, times(1))
+                .findDtoById(eq(1L));
     }
 
     @Test
@@ -107,60 +102,41 @@ public class EcoNewsControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        mockMvc.perform(get(ecoNewsLink + "?page=1"))
+        this.mockMvc.perform(get(tipsAndTricksLink + "?page=1"))
                 .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(eq(pageable));
+        verify(tipsAndTricksService, times(1))
+                .findAll(eq(pageable));
     }
 
     @Test
     public void deleteTest() throws Exception {
-        mockMvc.perform(delete(ecoNewsLink + "/{econewsId}", 1)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(delete(tipsAndTricksLink + "/{id}", 1))
                 .andExpect(status().isOk());
 
-        verify(ecoNewsService).delete(eq(1L));
+        verify(tipsAndTricksService, times(1))
+                .delete(eq(1L));
     }
 
     @Test
-    public void getEcoNewsTest() throws Exception {
-        int pageNumber = 5;
+    public void getTipsAndTricksTest() throws Exception {
+        int pageNumber = 1;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        List<String> tags = Collections.singletonList("eco");
+        List<String> tags = Collections.singletonList("education");
 
-        mockMvc.perform(get("/econews/tags?page=5&tags=eco"))
+        this.mockMvc.perform(get(tipsAndTricksLink + "/tags?page=1&tags=education"))
                 .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(eq(pageable), eq(tags));
+        verify(tipsAndTricksService, times(1))
+                .find(eq(pageable), eq(tags));
     }
 
     @Test
-    public void getEcoNewsEmptyTagsListTest() throws Exception {
-        int pageNumber = 5;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        mockMvc.perform(get("/econews/tags?page=5"))
+    public void findAllTipsAndTricksTagsTest() throws Exception {
+        this.mockMvc.perform(get(tipsAndTricksLink + "/tags/all"))
                 .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(eq(pageable));
-    }
-
-    @Test
-    public void getThreeRecommendedEcoNewsTest() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/recommended?openedEcoNewsId=" + 1L))
-                .andExpect(status().isOk());
-
-        verify(ecoNewsService).getThreeRecommendedEcoNews(eq(1L));
-    }
-
-    @Test
-    public void findAllEcoNewsTagsTest() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/tags/all"))
-                .andExpect(status().isOk());
-
-        verify(tagsService).findAllEcoNewsTags();
+        verify(tagService).findAllTipsAndTricksTags();
     }
 }
