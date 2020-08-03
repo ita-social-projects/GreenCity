@@ -2,7 +2,7 @@ trigger:
   batch: true
   branches:
     include:
-    - dev
+    - testage
   paths:
     exclude:
     - README.md
