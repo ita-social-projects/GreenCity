@@ -20,6 +20,9 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
+import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
+import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitDictionaryIdDto;
@@ -433,5 +436,31 @@ public class ModelUtils {
                 .userProfilePicturePath(getUser().getProfilePicturePath())
                 .build();
     }
+
+    public static AddTipsAndTricksCommentDtoRequest getAddTipsAndTricksCommentDtoRequest() {
+        return AddTipsAndTricksCommentDtoRequest.builder()
+                .text(getTipsAndTricksComment().getText().intern())
+                .parentCommentId(getTipsAndTricksComment().getId())
+                .build();
+    }
+
+    public static TipsAndTricksComment getTipsAndTricksComment() {
+        return TipsAndTricksComment.builder()
+                .id(1L)
+                .text("text")
+                .user(getUser())
+                .build();
+    }
+
+    public static AddTipsAndTricksCommentDtoResponse getAddTipsAndTricksCommentDtoResponse() {
+        return AddTipsAndTricksCommentDtoResponse.builder()
+                .id(getTipsAndTricksComment().getId())
+                .text(getTipsAndTricksComment().getText())
+                .author(TipsAndTricksCommentAuthorDto.builder()
+                        .id(getUser().getId())
+                        .name(getUser().getName())
+                        .userProfilePicturePath(getUser().getProfilePicturePath())
+                        .build())
+                .build();
+    }
 }
- 

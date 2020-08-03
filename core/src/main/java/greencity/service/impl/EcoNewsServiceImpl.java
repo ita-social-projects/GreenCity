@@ -9,27 +9,11 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.EcoNewsService;
-import greencity.service.FileService;
-import greencity.service.NewsSubscriberService;
-import greencity.service.TagsService;
-import greencity.service.UserService;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
+import greencity.service.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -44,6 +28,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
@@ -134,19 +129,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
-        List<EcoNews> ecoNewsList = new ArrayList<>();
-        EcoNews openedEcoNews = findById(openedEcoNewsId);
-        List<Long> tags = openedEcoNews.getTags().stream().map(Tag::getId).collect(Collectors.toList());
-        if (tags.size() == 3) {
-            ecoNewsList = ecoNewsRepo
-                    .getThreeRecommendedEcoNews(3, tags.get(0), tags.get(1), tags.get(2), openedEcoNewsId);
-        } else if (tags.size() == 2) {
-            ecoNewsList = ecoNewsRepo
-                    .getThreeRecommendedEcoNews(2, tags.get(0), tags.get(1), 0L, openedEcoNewsId);
-        } else if (tags.size() == 1) {
-            ecoNewsList = ecoNewsRepo
-                    .getThreeRecommendedEcoNews(1, tags.get(0), 0L, 0L, openedEcoNewsId);
-        }
+        List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
         return ecoNewsList
                 .stream()
                 .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))

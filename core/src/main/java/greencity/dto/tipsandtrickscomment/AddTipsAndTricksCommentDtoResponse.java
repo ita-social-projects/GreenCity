@@ -10,6 +10,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"author"})
 @Builder
 public class AddTipsAndTricksCommentDtoResponse {
     @NotNull
