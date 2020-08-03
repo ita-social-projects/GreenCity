@@ -82,11 +82,9 @@ class TipsAndTricksServiceImplTest {
             .thenReturn(page);
         assertEquals(pageableDto, tipsAndTricksService
             .find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())));
-    }
-
-    @Test
-    void findAllByOrderByCreationDateDescTest() {
-
+        dtoList.get(0).setTags(null);
+        when((tipsAndTricksRepo.findAllByOrderByCreationDateDesc(pageRequest))).thenReturn(page);
+        assertEquals(pageableDto, tipsAndTricksService.find(pageRequest, null));
     }
 
     @Test
@@ -125,8 +123,6 @@ class TipsAndTricksServiceImplTest {
         PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
         when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitle())).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
-
         assertEquals(pageableDto, tipsAndTricksService.search(tipsAndTricks.get(0).getTitle()));
-
     }
 }

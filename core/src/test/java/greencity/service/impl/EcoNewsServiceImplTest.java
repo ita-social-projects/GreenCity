@@ -15,21 +15,22 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.FileService;
-import greencity.service.LanguageService;
-import greencity.service.NewsSubscriberService;
-import greencity.service.TagsService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,15 +39,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class EcoNewsServiceImplTest {
@@ -168,10 +160,31 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
+    public void find() {
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<EcoNews> page = new PageImpl<>(ecoNews, pageRequest, ecoNews.size());
+        List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
+        PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(ecoNewsRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
+            .thenReturn(page);
+        assertEquals(pageableDto, ecoNewsService.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())));
+    }
+
+    @Test
     public void findById() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         assertEquals(ecoNews, ecoNewsService.findById(1L));
+    }
+
+    @Test
+    public void findDtoById() {
+        EcoNewsDto ecoNewsDto = modelMapper.map(ecoNews, EcoNewsDto.class);
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+        assertEquals(ecoNewsDto, ecoNewsService.findDtoById(1L));
     }
 
     @Test
@@ -184,17 +197,29 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    void search(){
+    void search() {
         SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
-        PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto),4,1);
-        Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews),PageRequest.of(1,3),1);
+        PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1);
+        Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews), PageRequest.of(1, 3), 1);
 
         when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "test"))
-                .thenReturn(page);
+            .thenReturn(page);
         when(modelMapper.map(ecoNews, SearchNewsDto.class))
-                .thenReturn(searchNewsDto);
+            .thenReturn(searchNewsDto);
 
         assertEquals(pageableDto, ecoNewsService.search("test"));
+    }
+
+    @Test
+    void getThreeRecommendedEcoNews() {
+        List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(ecoNews));
+        when(ecoNewsRepo.getThreeRecommendedEcoNews(ecoNews.getTags().size(), 1L, 0L, 0L, 1L))
+            .thenReturn(Collections.singletonList(ecoNews));
+        when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        assertEquals(dtoList, ecoNewsService.getThreeRecommendedEcoNews(1L));
+
     }
 }
 
