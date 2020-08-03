@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.ModelUtils;
 import greencity.dto.PageableDto;
+import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.Tag;
@@ -12,25 +13,21 @@ import greencity.service.TagsService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
+import static org.powermock.api.mockito.PowerMockito.when;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(SpringExtension.class)
 class TipsAndTricksServiceImplTest {
@@ -88,6 +85,11 @@ class TipsAndTricksServiceImplTest {
     }
 
     @Test
+    void findAllByOrderByCreationDateDescTest() {
+
+    }
+
+    @Test
     void findDtoByIdTest() {
         TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
@@ -110,5 +112,21 @@ class TipsAndTricksServiceImplTest {
             .thenReturn(Optional.of(ModelUtils.getTipsAndTricks()));
         tipsAndTricksService.delete(1L);
         verify(tipsAndTricksRepo, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void search() {
+        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
+        List<SearchTipsAndTricksDto> dtoList = page.stream()
+            .map(t -> modelMapper.map(t, SearchTipsAndTricksDto.class))
+            .collect(Collectors.toList());
+        PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+        when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitle())).thenReturn(page);
+        when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
+
+        assertEquals(pageableDto, tipsAndTricksService.search(tipsAndTricks.get(0).getTitle()));
+
     }
 }
