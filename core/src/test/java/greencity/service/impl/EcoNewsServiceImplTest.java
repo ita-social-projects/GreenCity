@@ -160,7 +160,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void find() {
+    void find() {
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<EcoNews> page = new PageImpl<>(ecoNews, pageRequest, ecoNews.size());
@@ -180,7 +180,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void findDtoById() {
+    void findDtoById() {
         EcoNewsDto ecoNewsDto = modelMapper.map(ecoNews, EcoNewsDto.class);
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
