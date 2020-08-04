@@ -16,12 +16,10 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.*;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -75,7 +73,7 @@ public class EcoNewsServiceImplTest {
     private Tag tag = ModelUtils.getTag();
 
     @Test
-    public void save() throws MalformedURLException {
+    public void save() throws IOException {
         MultipartFile image = ModelUtils.getFile();
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
@@ -87,13 +85,36 @@ public class EcoNewsServiceImplTest {
             .thenReturn(ModelUtils.getLanguage());
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
-
         assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest,
             image, TestConst.EMAIL));
         addEcoNewsDtoResponse.setTitle("Title");
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
         addEcoNewsDtoResponse.setTitle("test title");
+    }
+
+    @Test
+    void saveWithExistedImage() throws IOException {
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        addEcoNewsDtoRequest.setImage(imageToEncode);
+        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
+        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
+        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
+        when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(Collections.singletonList(tag));
+        when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
+        when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
+        assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL));
+    }
+
+    @Test
+    void saveFailedTest() {
+        addEcoNewsDtoRequest.setTags(Arrays.asList("tags", "tags"));
+        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
+        assertThrows(NotSavedException.class, () ->
+            ecoNewsService.save(addEcoNewsDtoRequest, null, TestConst.EMAIL)
+        );
     }
 
     @Test()
@@ -201,12 +222,10 @@ public class EcoNewsServiceImplTest {
         SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
         PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1);
         Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews), PageRequest.of(1, 3), 1);
-
         when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "test"))
             .thenReturn(page);
         when(modelMapper.map(ecoNews, SearchNewsDto.class))
             .thenReturn(searchNewsDto);
-
         assertEquals(pageableDto, ecoNewsService.search("test"));
     }
 
@@ -219,7 +238,6 @@ public class EcoNewsServiceImplTest {
         when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(dtoList.get(0));
         assertEquals(dtoList, ecoNewsService.getThreeRecommendedEcoNews(1L));
-
     }
 }
 

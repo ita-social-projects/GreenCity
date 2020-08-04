@@ -8,8 +8,12 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
+import greencity.service.FileService;
 import greencity.service.TagsService;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +28,17 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import static org.powermock.api.mockito.PowerMockito.when;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(SpringExtension.class)
 class TipsAndTricksServiceImplTest {
+    @Mock
+    FileService fileService;
     @Mock
     private TipsAndTricksRepo tipsAndTricksRepo;
     @Mock
@@ -56,6 +64,33 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
         assertEquals(tipsAndTricksDtoResponse, tipsAndTricksService.save(tipsAndTricksDtoRequest,
             null, ModelUtils.getUser().getEmail()));
+    }
+
+    @Test
+    void saveFailedTest() {
+        when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
+        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
+        when(tagService.findTipsAndTricksTagsByNames(anyList()))
+            .thenReturn(Collections.singletonList(tipsAndTricksTag));
+        when(tipsAndTricksRepo.save(tipsAndTricks)).thenThrow(DataIntegrityViolationException.class);
+        assertThrows(NotSavedException.class, () ->
+            tipsAndTricksService.save(tipsAndTricksDtoRequest, null, ModelUtils.getUser().getEmail()));
+    }
+
+    @Test
+    void saveUploadImageTest() throws IOException {
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        tipsAndTricksDtoRequest.setImage(imageToEncode);
+        when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
+        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
+        when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
+        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
+        when(tagService.findTipsAndTricksTagsByNames(anyList()))
+            .thenReturn(Collections.singletonList(tipsAndTricksTag));
+        when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
+        assertEquals(tipsAndTricksDtoResponse, tipsAndTricksService.save(tipsAndTricksDtoRequest,
+            image, ModelUtils.getUser().getEmail()));
     }
 
     @Test
