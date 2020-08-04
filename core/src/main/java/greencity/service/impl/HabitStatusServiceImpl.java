@@ -27,8 +27,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
 
     /**
      * Method save {@link HabitStatusCalendar} for user.
+     *
      * @param habit target habit
-     * @param user target habit
+     * @param user  target habit
      */
     @Override
     public void saveByHabit(Habit habit, User user) {
@@ -46,6 +47,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
 
     /**
      * Method delete {@link HabitStatus} by user.
+     *
      * @param userId target userId
      */
     @Override
@@ -55,8 +57,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
 
     /**
      * Find {@link HabitStatus} by habit and user id's.
+     *
      * @param habitId target habit Id
-     * @param userId target user Id
+     * @param userId  target user Id
      * @return {@link HabitStatusDto}
      */
     @Override
@@ -66,6 +69,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
 
     /**
      * Method enroll {@link greencity.entity.Habit}.
+     *
      * @param habitId - id of habit which we enroll
      * @return {@link HabitStatusDto}
      */
@@ -83,12 +87,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             intervalBetweenDates = Duration.between(lastEnrollmentDate, todayDate).toHours();
         }
 
-        if (lastEnrollmentDate == null) {
-            int habitStreak = habitStatus.getHabitStreak();
-            habitStatus.setHabitStreak(++habitStreak);
-            habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
-            habitStatusCalendarService.save(habitCalendar);
-        } else if (intervalBetweenDates >= 20 && intervalBetweenDates <= 24) {
+        if ((intervalBetweenDates >= 20 && intervalBetweenDates <= 24) | lastEnrollmentDate == null) {
             int habitStreak = habitStatus.getHabitStreak();
             habitStatus.setHabitStreak(++habitStreak);
             habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
@@ -108,7 +107,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
 
     /**
      * Method unenroll Habit in defined date.
-     * @param habitId - id of habit
+     *
+     * @param habitId  - id of habit
      * @param dateTime - date we want unenroll
      */
     @Override
@@ -143,8 +143,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
 
     /**
      * Method enroll habit for defined date.
+     *
      * @param habitId - id of habit
-     * @param date - date we want enroll
+     * @param date    - date we want enroll
      */
     @Override
     public void enrollHabitInDate(Long habitId, Long userId, LocalDateTime date) {
