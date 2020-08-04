@@ -68,13 +68,14 @@ class TipsAndTricksServiceImplTest {
 
     @Test
     void saveFailedTest() {
+        String email = ModelUtils.getUser().getEmail();
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(tipsAndTricksRepo.save(tipsAndTricks)).thenThrow(DataIntegrityViolationException.class);
         assertThrows(NotSavedException.class, () ->
-            tipsAndTricksService.save(tipsAndTricksDtoRequest, null, ModelUtils.getUser().getEmail()));
+            tipsAndTricksService.save(tipsAndTricksDtoRequest, null, email));
     }
 
     @Test

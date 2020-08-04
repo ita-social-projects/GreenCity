@@ -39,7 +39,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(SpringExtension.class)
-public class EcoNewsServiceImplTest {
+class EcoNewsServiceImplTest {
     @Mock
     EcoNewsRepo ecoNewsRepo;
 
@@ -73,7 +73,7 @@ public class EcoNewsServiceImplTest {
     private Tag tag = ModelUtils.getTag();
 
     @Test
-    public void save() throws IOException {
+    void save() throws IOException {
         MultipartFile image = ModelUtils.getFile();
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
@@ -118,7 +118,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test()
-    public void saveThrowsNotSavedException() throws MalformedURLException {
+    void saveThrowsNotSavedException() throws MalformedURLException {
         MultipartFile image = ModelUtils.getFile();
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
@@ -131,7 +131,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void getThreeLastEcoNews() {
+    void getThreeLastEcoNews() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
         EcoNewsDto ecoNewsDto =
@@ -147,7 +147,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void getThreeLastEcoNewsNotFound() {
+    void getThreeLastEcoNewsNotFound() {
         List<EcoNews> ecoNews = new ArrayList<>();
         List<EcoNewsDto> ecoNewsDtoList = new ArrayList<>();
 
@@ -160,7 +160,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void findAll() {
+    void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
 
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
@@ -194,13 +194,6 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void findById() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
-        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        assertEquals(ecoNews, ecoNewsService.findById(1L));
-    }
-
-    @Test
     void findDtoById() {
         EcoNewsDto ecoNewsDto = modelMapper.map(ecoNews, EcoNewsDto.class);
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
@@ -209,7 +202,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void delete() {
+    void delete() {
         doNothing().when(ecoNewsRepo).deleteById(1L);
         when(ecoNewsRepo.findById(anyLong()))
             .thenReturn(Optional.of(ModelUtils.getEcoNews()));
