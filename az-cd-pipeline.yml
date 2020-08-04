@@ -17,13 +17,13 @@ variables:
   
   artifactName: drop
   coreRepoName: core
-  #mailRepoName: email
+  mailRepoName: email
   onbootJarName: app.jar
   
   azureSub: GreenCity
   resourceGroup: GreenCity
   coreServiceName: testage
-  #mailServiceName: greencity-mail
+  mailServiceName: greencity-mail
 
 stages:
 - stage: Build
@@ -85,8 +85,8 @@ stages:
     - script: mv $(coreRepoName)/target/*.jar $(coreRepoName)/target/$(onbootJarName)
       displayName: Rename core jar to app
 
-    #- script: mv $(mailRepoName)/target/*.jar $(mailRepoName)/target/$(onbootJarName) 
-    #  displayName: Rename email jar to app
+    - script: mv $(mailRepoName)/target/*.jar $(mailRepoName)/target/$(onbootJarName) 
+      displayName: Rename email jar to app
 
     - task: CopyFiles@2
       displayName: Copy Files
@@ -130,17 +130,17 @@ stages:
                 ResourceGroupName: '$(resourceGroup)'
                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
 
-    #- deployment: DeployMail
-    #  displayName: Deploy mail app service
-    #  pool:
-    #    vmImage: $(agentOS)
-    #  environment: 'prod'
-    #  strategy:
-    #    runOnce:
-    #      deploy:
-    #        steps:
-    #        - download: none
-    #        
+    - deployment: DeployMail
+      displayName: Deploy mail app service
+      pool:
+        vmImage: $(agentOS)
+      environment: 'prod'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: none
+            
             - task: DownloadBuildArtifacts@0
               inputs:
                 buildType: 'current'
@@ -152,7 +152,7 @@ stages:
               inputs:
                 azureSubscription: '$(azureSub)'
                 appType: 'webAppLinux'
-                #WebAppName: '$(mailServiceName)'
+                WebAppName: '$(mailServiceName)'
                 deployToSlotOrASE: true
                 ResourceGroupName: '$(resourceGroup)'
                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
