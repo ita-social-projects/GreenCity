@@ -145,6 +145,8 @@ public final class ErrorMessage {
     public static final String USER_LAST_ACTIVITY_TIME_NOT_FOUND = "Cannot find last activity"
         + " time for the user with id: ";
     public static final String NOT_VALID_URL = "Your URL is not valid : ";
+    public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
+
 
     private ErrorMessage() {
     }

@@ -17,7 +17,6 @@ public class HabitMapper extends AbstractConverter<User, Habit> {
     @Override
     protected Habit convert(User user) {
         return Habit.builder()
-            .user(user)
             .createDate(ZonedDateTime.now())
             .statusHabit(true)
             .build();

@@ -164,7 +164,6 @@ public class ModelUtils {
             .id(13L)
             .statusHabit(true)
             .createDate(ZonedDateTime.now())
-            .user(getUser())
             .habitDictionary(HabitDictionary.builder().id(2L).image("cup").build())
             .build();
     }

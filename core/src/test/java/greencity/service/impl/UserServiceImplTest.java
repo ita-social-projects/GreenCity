@@ -134,7 +134,6 @@ public class UserServiceImplTest {
         Habit.builder()
             .id(1L)
             .habitDictionary(new HabitDictionary())
-            .user(user)
             .statusHabit(true)
             .createDate(ZonedDateTime.now())
             .build();
@@ -624,11 +623,11 @@ public class UserServiceImplTest {
     @Test
     public void createUserHabitWithExistentHabitIdsNotMatchingTest() {
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections
-            .singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null)));
+            .singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null, null)));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitDictionaryService.findById(1L)).thenReturn(new HabitDictionary(1L, null, null, null));
         when(modelMapper.map(user, Habit.class))
-            .thenReturn(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null));
+            .thenReturn(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null, null));
         assertEquals(Collections.emptyList(),
             userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(2L)), "en"));
     }
