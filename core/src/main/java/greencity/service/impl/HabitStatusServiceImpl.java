@@ -26,7 +26,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     private ModelMapper modelMapper;
 
     /**
-     * Method save {@link HabitStatusCalendar} for user
+     * Method save {@link HabitStatusCalendar} for user.
      * @param habit target habit
      * @param user target habit
      */
@@ -45,7 +45,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method delete {@link HabitStatus} by user
+     * Method delete {@link HabitStatus} by user.
      * @param userId target userId
      */
     @Override
@@ -54,7 +54,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Find {@link HabitStatus} by habit and user id's
+     * Find {@link HabitStatus} by habit and user id's.
      * @param habitId target habit Id
      * @param userId target user Id
      * @return {@link HabitStatusDto}
@@ -65,7 +65,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method enroll {@link greencity.entity.Habit}
+     * Method enroll {@link greencity.entity.Habit}.
      * @param habitId - id of habit which we enroll
      * @return {@link HabitStatusDto}
      */
@@ -107,7 +107,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method unenroll Habit in defined date
+     * Method unenroll Habit in defined date.
      * @param habitId - id of habit
      * @param dateTime - date we want unenroll
      */
@@ -120,8 +120,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         int daysStreak = 0;
 
         for (int i = 0; i < enrollDates.size() - 1; i++) {
-            if (Duration.between(enrollDates.get(i), enrollDates.get(i + 1)).toHours() >= 0 &&
-                Duration.between(enrollDates.get(i), enrollDates.get(i + 1)).toHours() < 24) {
+            if (Duration.between(enrollDates.get(i), enrollDates.get(i + 1)).toHours() >= 0
+                && Duration.between(enrollDates.get(i), enrollDates.get(i + 1)).toHours() < 24) {
                 daysStreak++;
             } else {
                 daysStreak = 0;
@@ -142,7 +142,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method enroll habit for defined date
+     * Method enroll habit for defined date.
      * @param habitId - id of habit
      * @param date - date we want enroll
      */

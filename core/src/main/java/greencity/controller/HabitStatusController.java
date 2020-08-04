@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.entity.User;
 import greencity.service.HabitStatusService;
@@ -13,7 +12,6 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -32,7 +30,8 @@ public class HabitStatusController {
     private UserService userService;
 
     /**
-     * Method return {@link greencity.entity.HabitStatus} for user by habit
+     * Method return {@link greencity.entity.HabitStatus} for user by habit.
+     *
      * @param habitId - id of habit
      * @return {@link HabitStatusDto}
      */
@@ -43,9 +42,9 @@ public class HabitStatusController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/{habitId}")
-    public ResponseEntity<HabitStatusDto> getHabitStatusForUser(@PathVariable Long habitId, @ApiIgnore
-    @AuthenticationPrincipal
-        Principal principal) {
+    public ResponseEntity<HabitStatusDto> getHabitStatusForUser(@PathVariable Long habitId,
+                                                                @ApiIgnore @AuthenticationPrincipal
+                                                                    Principal principal) {
         User user = userService.findByEmail(principal.getName());
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -53,7 +52,8 @@ public class HabitStatusController {
     }
 
     /**
-     * Method enroll {@link greencity.entity.Habit}
+     * Method enroll {@link greencity.entity.Habit}.
+     *
      * @param habitId - id of habit which we enroll
      * @return {@link HabitStatusDto}
      */
@@ -64,17 +64,18 @@ public class HabitStatusController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/enroll/{habitId}")
-    public ResponseEntity<HabitStatusDto> enrollHabit(@PathVariable Long habitId, @ApiIgnore
-    @AuthenticationPrincipal
-        Principal principal) {
+    public ResponseEntity<HabitStatusDto> enrollHabit(@PathVariable Long habitId,
+                                                      @ApiIgnore @AuthenticationPrincipal
+                                                          Principal principal) {
         User user = userService.findByEmail(principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(habitStatusService.enrollHabit(habitId, user.getId()));
     }
 
     /**
-     * Method unenroll Habit in defined date
+     * Method unenroll Habit in defined date.
+     *
      * @param habitId - id of habit
-     * @param date - date we want unenroll
+     * @param date    - date we want unenroll
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Unenroll habit.")
@@ -87,8 +88,7 @@ public class HabitStatusController {
     public ResponseEntity<HabitStatusDto> unenrollHabit(@PathVariable Long habitId,
                                                         @PathVariable(value = "date")
                                                         @DateTimeFormat(pattern = "MM-dd-yyyy") Date date,
-                                                        @ApiIgnore
-                                                        @AuthenticationPrincipal
+                                                        @ApiIgnore @AuthenticationPrincipal
                                                             Principal principal) {
         User user = userService.findByEmail(principal.getName());
         LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
@@ -97,9 +97,10 @@ public class HabitStatusController {
     }
 
     /**
-     * Method enroll habit for defined date
+     * Method enroll habit for defined date.
+     *
      * @param habitId - id of habit
-     * @param date - date we want enroll
+     * @param date    - date we want enroll
      * @return {@link HabitStatusDto}
      */
     @ApiOperation(value = "Enroll for a specific day.")
@@ -110,11 +111,9 @@ public class HabitStatusController {
     })
     @PostMapping("/enroll/{habitId}/{date}")
     public ResponseEntity<HabitStatusDto> enrollHabitInDate(@PathVariable Long habitId,
-                                                        @PathVariable(value = "date")
-                                                        @DateTimeFormat(pattern = "MM-dd-yyyy") Date date,
-                                                        @ApiIgnore
-                                                        @AuthenticationPrincipal
-                                                            Principal principal) {
+                                                            @PathVariable(value = "date")
+                                                            @DateTimeFormat(pattern = "MM-dd-yyyy") Date date,
+                                                            @ApiIgnore @AuthenticationPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getName());
         LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         habitStatusService.enrollHabitInDate(habitId, user.getId(), ldt);

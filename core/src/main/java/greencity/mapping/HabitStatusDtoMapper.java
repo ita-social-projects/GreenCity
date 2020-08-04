@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HabitStatusDtoMapper extends AbstractConverter<HabitStatus, HabitStatusDto> {
-
     @Override
     protected HabitStatusDto convert(HabitStatus habitStatus) {
         return HabitStatusDto.builder()

@@ -23,6 +23,11 @@ public class HabitStatusCalendar {
     @ManyToOne
     private HabitStatus habitStatus;
 
+    /**
+     * Constructor without id.
+     * @param enrollDate - enroll date for {@link HabitStatusCalendar}
+     * @param habitStatus - habit status for {@link HabitStatusCalendar}
+     */
     public HabitStatusCalendar(LocalDateTime enrollDate, HabitStatus habitStatus) {
         this.enrollDate = enrollDate;
         this.habitStatus = habitStatus;

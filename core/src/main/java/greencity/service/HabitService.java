@@ -23,7 +23,7 @@ public interface HabitService {
     Habit getById(Long id);
 
     /**
-     * Method assign {@link Habit} for user
+     * Method assign {@link Habit} for user.
      * @param habitId - id of habit user want to assign
      * @param user - user that assign habit
      * @return {@link HabitCreateDto}

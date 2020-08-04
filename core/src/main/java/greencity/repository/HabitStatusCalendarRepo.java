@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalendar, Long> {
-
     /**
-     * Method return {@link HabitStatusCalendar} by enrollDate between two dates and {@link HabitStatus}
-     * @param startDate the date from which the interval begins
-     * @param endDate interval end date
+     * Method return {@link HabitStatusCalendar} by enrollDate between two dates and {@link HabitStatus}.
+     *
+     * @param startDate   the date from which the interval begins
+     * @param endDate     interval end date
      * @param habitStatus target {@link HabitStatus}
      * @return {@link HabitStatusCalendar}
      */
@@ -20,7 +20,8 @@ public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalend
                                                                 HabitStatus habitStatus);
 
     /**
-     * Method return the latest EnrollDate of {@link HabitStatus}
+     * Method return the latest EnrollDate of {@link HabitStatus}.
+     *
      * @param habitStatus target {@link HabitStatus}
      * @return {@link LocalDateTime}
      */
@@ -28,10 +29,11 @@ public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalend
     LocalDateTime findTopByEnrollDateAndHabitStatus(HabitStatus habitStatus);
 
     /**
-     * Method return all enrolled {@link HabitStatus} before dateTime
-     * @param dateTime after this date the search is performed
+     * Method return all enrolled {@link HabitStatus} before dateTime.
+     *
+     * @param dateTime    after this date the search is performed
      * @param habitStatus target {@link HabitStatus}
-     * @return {@link List<HabitStatusCalendar>}
+     * @return {@link List} of {@link HabitStatusCalendar}
      */
     List<HabitStatusCalendar> findAllByEnrollDateAfterAndHabitStatus(LocalDateTime dateTime, HabitStatus habitStatus);
 }

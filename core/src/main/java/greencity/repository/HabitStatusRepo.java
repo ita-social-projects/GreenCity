@@ -6,15 +6,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
-
     /**
-     * Method delete {@link HabitStatus} by userId
+     * Method delete {@link HabitStatus} by userId.
      * @param userId - id of {@link greencity.entity.User}
      */
     void deleteHabitStatusByUserId(Long userId);
 
     /**
-     * Method return {@link HabitStatus} by habitId and userId
+     * Method return {@link HabitStatus} by habitId and userId.
      * @param habitId - id of {@link greencity.entity.Habit}
      * @param userId - id of {@link greencity.entity.User}
      * @return {@link HabitStatus}

@@ -31,7 +31,7 @@ public class HabitController {
     private UserService userService;
 
     /**
-     * Method which assign habit for {@link User}
+     * Method which assign habit for {@link User}.
      * @param habitId - id of {@link Habit}
      * @return {@link ResponseEntity}
      */

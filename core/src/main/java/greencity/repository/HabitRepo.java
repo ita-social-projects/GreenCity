@@ -34,16 +34,6 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
     @Query("SELECT h FROM Habit h WHERE h.statusHabit = true AND h.users IN(SELECT u FROM User u WHERE u.id = ?1)")
     List<Habit> findByUserIdAndStatusHabit(Long userId);
 
-//    /**
-//     * Find habits by userId and HabitDictionary.id.
-//     *
-//     * @param userId            id current user.
-//     * @param habitDictionaryId id {@link HabitDictionary}
-//     * @return {@link Habit}
-//     */
-//    @Query("FROM Habit WHERE user.id = ?1 AND habitDictionary.id = ?2 AND statusHabit = true")
-//    Optional<Habit> findByUserIdAndHabitDictionaryId(Long userId, Long habitDictionaryId);
-
     /**
      * Method update habit by id and statusHabit.
      *

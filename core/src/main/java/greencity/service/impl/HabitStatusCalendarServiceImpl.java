@@ -16,7 +16,8 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     private HabitStatusCalendarRepo habitStatusCalendarRepo;
 
     /**
-     * Method save {@link HabitStatusCalendar}
+     * Method save {@link HabitStatusCalendar}.
+     *
      * @param habitStatusCalendar - {@link HabitStatusCalendar} which will be saved
      */
     @Override
@@ -25,9 +26,10 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Find {@link HabitStatusCalendar} by date interval and {@link HabitStatus}
+     * Find {@link HabitStatusCalendar} by date interval and {@link HabitStatus}.
+     *
      * @param startDate - beginning of the interval
-     * @param endDate - ending of the interval
+     * @param endDate   - ending of the interval
      * @return {@link HabitStatusCalendar}
      */
     @Override
@@ -37,7 +39,8 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method delete {@link HabitStatusCalendar}
+     * Method delete {@link HabitStatusCalendar}.
+     *
      * @param habitStatusCalendar - {@link HabitStatusCalendar} which will be deleted
      */
     @Override
@@ -46,7 +49,8 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method return the latest EnrollDate of {@link HabitStatus}
+     * Method return the latest EnrollDate of {@link HabitStatus}.
+     *
      * @param habitStatus target {@link HabitStatus}
      * @return {@link LocalDateTime}
      */
@@ -56,10 +60,11 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method return all enrolled {@link HabitStatus} before dateTime
-     * @param dateTime after this date the search is performed
+     * Method return all enrolled {@link HabitStatus} before dateTime.
+     *
+     * @param dateTime    after this date the search is performed
      * @param habitStatus target {@link HabitStatus}
-     * @return {@link List<HabitStatusCalendar>}
+     * @return {@link List} of {@link HabitStatusCalendar}
      */
     @Override
     public List<LocalDateTime> findEnrolledDatesAfter(LocalDateTime dateTime, HabitStatus habitStatus) {
@@ -70,5 +75,4 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
 
         return dates;
     }
-
 }
