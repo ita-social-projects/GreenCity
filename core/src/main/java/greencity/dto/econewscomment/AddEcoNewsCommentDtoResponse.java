@@ -1,5 +1,6 @@
 package greencity.dto.econewscomment;
 
+import greencity.entity.User;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
