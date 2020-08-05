@@ -2,17 +2,14 @@ package greencity.service.impl;
 
 import greencity.ModelUtils;
 import static greencity.ModelUtils.*;
-import static greencity.ModelUtils.getEcoNewsCommentDto;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
-import greencity.entity.enums.CommentStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -25,15 +22,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.runner.RunWith;
-import org.junit.runner.notification.RunListener;
-import org.mockito.*;
+import org.mockito.AdditionalAnswers;
 import static org.mockito.ArgumentMatchers.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
@@ -61,7 +56,6 @@ public class EcoNewsCommentServiceImplTest {
 
     @Test
     public void saveCommentWithNoParentCommentId() {
-        User user = getUser();
         EcoNews ecoNews = ModelUtils.getEcoNews();
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest = ModelUtils.getAddEcoNewsCommentDtoRequest();
         EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
@@ -72,7 +66,7 @@ public class EcoNewsCommentServiceImplTest {
         when(modelMapper.map(any(EcoNewsComment.class), eq(AddEcoNewsCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEcoNewsCommentDtoResponse());
 
-        ecoNewsCommentService.save(1L, addEcoNewsCommentDtoRequest, user);
+        ecoNewsCommentService.save(1L, addEcoNewsCommentDtoRequest, getUser());
         verify(ecoNewsCommentRepo).save(any(EcoNewsComment.class));
     }
 
@@ -83,7 +77,7 @@ public class EcoNewsCommentServiceImplTest {
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest = ModelUtils.getAddEcoNewsCommentDtoRequest();
         addEcoNewsCommentDtoRequest.setParentCommentId(2L);
         EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
-        EcoNewsComment ecoNewsCommentParent = new EcoNewsComment().builder()
+        EcoNewsComment ecoNewsCommentParent = EcoNewsComment.builder()
             .id(2L)
             .text("text")
             .createdDate(LocalDateTime.now())
@@ -110,7 +104,7 @@ public class EcoNewsCommentServiceImplTest {
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest = ModelUtils.getAddEcoNewsCommentDtoRequest();
         addEcoNewsCommentDtoRequest.setParentCommentId(2L);
         EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
-        EcoNewsComment ecoNewsCommentParent = new EcoNewsComment().builder()
+        EcoNewsComment ecoNewsCommentParent = EcoNewsComment.builder()
             .id(2L)
             .text("text")
             .createdDate(LocalDateTime.now())
@@ -131,7 +125,6 @@ public class EcoNewsCommentServiceImplTest {
 
     @Test
     public void saveCommentWithWrongParentIdThrowException() {
-        User user = getUser();
         EcoNews ecoNews = ModelUtils.getEcoNews();
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest = ModelUtils.getAddEcoNewsCommentDtoRequest();
         addEcoNewsCommentDtoRequest.setParentCommentId(2L);
@@ -142,7 +135,7 @@ public class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(null));
 
         BadRequestException badRequestException = assertThrows(BadRequestException.class,
-            () -> ecoNewsCommentService.save(1L, addEcoNewsCommentDtoRequest, user));
+            () -> ecoNewsCommentService.save(1L, addEcoNewsCommentDtoRequest, getUser()));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
     }
 
@@ -151,7 +144,6 @@ public class EcoNewsCommentServiceImplTest {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        User user = ModelUtils.getUser();
         Long ecoNewsId = 1L;
         EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
         ecoNewsComment.setUsersLiked(new HashSet<>());
@@ -164,7 +156,8 @@ public class EcoNewsCommentServiceImplTest {
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
         when(ecoNewsCommentRepo.countByParentCommentId(any())).thenReturn(0);
 
-        PageableDto<EcoNewsCommentDto> allComments = ecoNewsCommentService.findAllComments(pageable, user, ecoNewsId);
+        PageableDto<EcoNewsCommentDto> allComments =
+            ecoNewsCommentService.findAllComments(pageable, getUser(), ecoNewsId);
         assertEquals(ecoNewsCommentDto, allComments.getPage().get(0));
         assertEquals(4, allComments.getTotalElements());
         assertEquals(1, allComments.getCurrentPage());
@@ -176,7 +169,6 @@ public class EcoNewsCommentServiceImplTest {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        User user = getUser();
         Long parentCommentId = 1L;
         EcoNewsComment ecoNewsCommentChild = getEcoNewsComment();
         ecoNewsCommentChild.setParentComment(getEcoNewsComment());
@@ -188,7 +180,7 @@ public class EcoNewsCommentServiceImplTest {
         when(modelMapper.map(ecoNewsCommentChild, EcoNewsCommentDto.class)).thenReturn(getEcoNewsCommentDto());
 
         PageableDto<EcoNewsCommentDto> allReplies =
-            ecoNewsCommentService.findAllReplies(pageable, parentCommentId, user);
+            ecoNewsCommentService.findAllReplies(pageable, parentCommentId, getUser());
         assertEquals(getEcoNewsCommentDto().getId(), allReplies.getPage().get(0).getId());
         assertEquals(4, allReplies.getTotalElements());
         assertEquals(1, allReplies.getCurrentPage());
@@ -282,7 +274,7 @@ public class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(null));
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () ->  ecoNewsCommentService.update(newText, commentId, user));
+            assertThrows(NotFoundException.class, () -> ecoNewsCommentService.update(newText, commentId, user));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -298,7 +290,99 @@ public class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(ecoNewsComment));
 
         BadRequestException badRequestException =
-            assertThrows(BadRequestException.class, () ->  ecoNewsCommentService.update(newText, commentId, getUser()));
+            assertThrows(BadRequestException.class, () -> ecoNewsCommentService.update(newText, commentId, getUser()));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
+    }
+
+    @Test
+    public void like() {
+        Long commentId = 1L;
+        EcoNewsComment ecoNewsComment = getEcoNewsComment();
+        ecoNewsComment.setUsersLiked(new HashSet<>());
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(ecoNewsComment));
+
+        ecoNewsCommentService.like(commentId, getUser());
+        verify(ecoNewsCommentRepo).save(any(EcoNewsComment.class));
+        assertEquals(1, ecoNewsComment.getUsersLiked().size());
+    }
+
+    @Test
+    public void dislike() {
+        User user = getUser();
+        Long commentId = 1L;
+        EcoNewsComment ecoNewsComment = getEcoNewsComment();
+        ecoNewsComment.setUsersLiked(new HashSet<>(Collections.singletonList(user)));
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(ecoNewsComment));
+
+        ecoNewsCommentService.like(commentId, user);
+        verify(ecoNewsCommentRepo).save(any(EcoNewsComment.class));
+        assertEquals(0, ecoNewsComment.getUsersLiked().size());
+    }
+
+    @Test
+    public void likeCommentThatDoesntExistThrowException() {
+        Long commentId = 1L;
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(null));
+
+        NotFoundException notFoundException =
+            assertThrows(NotFoundException.class, () -> ecoNewsCommentService.like(commentId, getUser()));
+        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
+    }
+
+    @Test
+    public void countLikesCommentThatDoesntExistsThrowException() {
+        Long commentId = 1L;
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(null));
+
+        BadRequestException badRequestException =
+            assertThrows(BadRequestException.class, () -> ecoNewsCommentService.countLikes(commentId));
+        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
+    }
+
+    @Test
+    public void countLikes() {
+        Long commentId = 1L;
+        EcoNewsComment ecoNewsComment = getEcoNewsComment();
+        ecoNewsComment.setUsersLiked(new HashSet<>());
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(ecoNewsComment));
+
+        assertEquals(0, ecoNewsCommentService.countLikes(commentId));
+    }
+
+    @Test
+    public void countRepliesCommentThatDoesntExistsThrowException() {
+        Long commentId = 1L;
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(null));
+
+        BadRequestException badRequestException =
+            assertThrows(BadRequestException.class, () -> ecoNewsCommentService.countReplies(commentId));
+        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
+    }
+
+    @Test
+    public void countReplies() {
+        Long commentId = 1L;
+        EcoNewsComment ecoNewsComment = getEcoNewsComment();
+        ecoNewsComment.setUsersLiked(new HashSet<>());
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(java.util.Optional.ofNullable(ecoNewsComment));
+        when(ecoNewsCommentRepo.countByParentCommentId(commentId)).thenReturn(0);
+
+        assertEquals(0, ecoNewsCommentService.countReplies(commentId));
+    }
+
+    @Test
+    public void countComments() {
+        Long ecoNewsId = 1L;
+
+        when(ecoNewsCommentRepo.countOfComments(ecoNewsId)).thenReturn(0);
+
+        assertEquals(0, ecoNewsCommentService.countOfComments(ecoNewsId));
     }
 }
