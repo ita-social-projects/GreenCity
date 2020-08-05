@@ -56,7 +56,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             }
         }
 
-        return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment),AddEcoNewsCommentDtoResponse.class);
+        return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
     /**

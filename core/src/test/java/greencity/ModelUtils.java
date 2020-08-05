@@ -75,7 +75,7 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
-            "title", "text",null, Collections.singletonList(getTag()));
+            "title", "text", null, Collections.singletonList(getTag()));
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
@@ -405,13 +405,13 @@ public class ModelUtils {
 
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
-                .id(1L)
-                .text("text")
-                .createdDate(LocalDateTime.now())
-                .modifiedDate(LocalDateTime.now())
-                .user(getUser())
-                .ecoNews(getEcoNews())
-                .build();
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .user(getUser())
+            .ecoNews(getEcoNews())
+            .build();
     }
 
     public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
@@ -420,46 +420,46 @@ public class ModelUtils {
 
     public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
         return AddEcoNewsCommentDtoResponse.builder()
-                .id(getEcoNewsComment().getId())
-                .author(getEcoNewsCommentAuthorDto())
-                .text(getEcoNewsComment().getText())
-                .modifiedDate(getEcoNewsComment().getModifiedDate())
-                .build();
+            .id(getEcoNewsComment().getId())
+            .author(getEcoNewsCommentAuthorDto())
+            .text(getEcoNewsComment().getText())
+            .modifiedDate(getEcoNewsComment().getModifiedDate())
+            .build();
     }
 
     public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
-                .id(getUser().getId())
-                .name(getUser().getName().trim())
-                .userProfilePicturePath(getUser().getProfilePicturePath())
-                .build();
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .userProfilePicturePath(getUser().getProfilePicturePath())
+            .build();
     }
 
     public static AddTipsAndTricksCommentDtoRequest getAddTipsAndTricksCommentDtoRequest() {
         return AddTipsAndTricksCommentDtoRequest.builder()
-                .text(getTipsAndTricksComment().getText().intern())
-                .parentCommentId(getTipsAndTricksComment().getId())
-                .build();
+            .text(getTipsAndTricksComment().getText().intern())
+            .parentCommentId(getTipsAndTricksComment().getId())
+            .build();
     }
 
     public static TipsAndTricksComment getTipsAndTricksComment() {
         return TipsAndTricksComment.builder()
-                .id(1L)
-                .text("text")
-                .user(getUser())
-                .build();
+            .id(1L)
+            .text("text")
+            .user(getUser())
+            .build();
     }
 
     public static AddTipsAndTricksCommentDtoResponse getAddTipsAndTricksCommentDtoResponse() {
         return AddTipsAndTricksCommentDtoResponse.builder()
-                .id(getTipsAndTricksComment().getId())
-                .text(getTipsAndTricksComment().getText())
-                .author(TipsAndTricksCommentAuthorDto.builder()
-                        .id(getUser().getId())
-                        .name(getUser().getName())
-                        .userProfilePicturePath(getUser().getProfilePicturePath())
-                        .build())
-                .build();
+            .id(getTipsAndTricksComment().getId())
+            .text(getTipsAndTricksComment().getText())
+            .author(TipsAndTricksCommentAuthorDto.builder()
+                .id(getUser().getId())
+                .name(getUser().getName())
+                .userProfilePicturePath(getUser().getProfilePicturePath())
+                .build())
+            .build();
     }
 
     public static EcoNewsCommentDto getEcoNewsCommentDto() {
