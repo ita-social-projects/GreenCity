@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode
 public class AddTipsAndTricksCommentDtoRequest {
     @NotBlank(message = ValidationConstants.EMPTY_COMMENT)

@@ -18,7 +18,9 @@ public class AddEcoNewsCommentDtoResponseMapperTest {
     public void convertTest() {
         AddEcoNewsCommentDtoResponse expected = ModelUtils.getAddEcoNewsCommentDtoResponse();
         AddEcoNewsCommentDtoResponse actual = mapper.convert(ecoNewsComment);
+
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getText(), actual.getText());
+        assertEquals(expected.getAuthor(), actual.getAuthor());
     }
 }

@@ -11,6 +11,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
@@ -20,15 +21,15 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
+import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
+import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.*;
-import greencity.entity.enums.FactOfDayStatus;
-import greencity.entity.enums.GoalStatus;
-import greencity.entity.enums.HabitRate;
-import greencity.entity.enums.ROLE;
+import greencity.entity.enums.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import java.io.IOException;
@@ -74,7 +75,7 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
-            "title", "text",null, Collections.singletonList(getTag()));
+            "title", "text", null, Collections.singletonList(getTag()));
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
@@ -404,13 +405,13 @@ public class ModelUtils {
 
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
-                .id(1L)
-                .text("text")
-                .createdDate(LocalDateTime.now())
-                .modifiedDate(LocalDateTime.now())
-                .user(getUser())
-                .ecoNews(getEcoNews())
-                .build();
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .user(getUser())
+            .ecoNews(getEcoNews())
+            .build();
     }
 
     public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
@@ -419,19 +420,58 @@ public class ModelUtils {
 
     public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
         return AddEcoNewsCommentDtoResponse.builder()
-                .id(getEcoNewsComment().getId())
-                .author(getEcoNewsCommentAuthorDto())
-                .text(getEcoNewsComment().getText())
-                .modifiedDate(getEcoNewsComment().getModifiedDate())
-                .build();
+            .id(getEcoNewsComment().getId())
+            .author(getEcoNewsCommentAuthorDto())
+            .text(getEcoNewsComment().getText())
+            .modifiedDate(getEcoNewsComment().getModifiedDate())
+            .build();
     }
 
-    private static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
+    public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .userProfilePicturePath(getUser().getProfilePicturePath())
+            .build();
+    }
+
+    public static AddTipsAndTricksCommentDtoRequest getAddTipsAndTricksCommentDtoRequest() {
+        return AddTipsAndTricksCommentDtoRequest.builder()
+            .text(getTipsAndTricksComment().getText().intern())
+            .parentCommentId(getTipsAndTricksComment().getId())
+            .build();
+    }
+
+    public static TipsAndTricksComment getTipsAndTricksComment() {
+        return TipsAndTricksComment.builder()
+            .id(1L)
+            .text("text")
+            .user(getUser())
+            .build();
+    }
+
+    public static AddTipsAndTricksCommentDtoResponse getAddTipsAndTricksCommentDtoResponse() {
+        return AddTipsAndTricksCommentDtoResponse.builder()
+            .id(getTipsAndTricksComment().getId())
+            .text(getTipsAndTricksComment().getText())
+            .author(TipsAndTricksCommentAuthorDto.builder()
                 .id(getUser().getId())
-                .name(getUser().getName().trim())
+                .name(getUser().getName())
                 .userProfilePicturePath(getUser().getProfilePicturePath())
-                .build();
+                .build())
+            .build();
+    }
+
+    public static EcoNewsCommentDto getEcoNewsCommentDto() {
+        return EcoNewsCommentDto.builder()
+            .id(1L)
+            .modifiedDate(LocalDateTime.now())
+            .author(getEcoNewsCommentAuthorDto())
+            .text("text")
+            .replies(0)
+            .likes(0)
+            .currentUserLiked(false)
+            .status(CommentStatus.ORIGINAL)
+            .build();
     }
 }
- 
