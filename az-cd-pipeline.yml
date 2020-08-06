@@ -23,7 +23,7 @@ variables:
   azureSub: GreenCity
   resourceGroup: GreenCity
   coreServiceName: testage
-  mailServiceName: greencity-mail
+  mailServiceName: testage-mail
 
 stages:
 - stage: Build
@@ -156,3 +156,4 @@ stages:
                 deployToSlotOrASE: true
                 ResourceGroupName: '$(resourceGroup)'
                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
+
