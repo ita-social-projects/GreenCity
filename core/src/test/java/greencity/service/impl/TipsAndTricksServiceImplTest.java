@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
@@ -18,22 +19,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
-import static org.powermock.api.mockito.PowerMockito.when;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class TipsAndTricksServiceImplTest {
@@ -58,22 +58,27 @@ class TipsAndTricksServiceImplTest {
     @Test
     void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
-        assertEquals(tipsAndTricksDtoResponse, tipsAndTricksService.save(tipsAndTricksDtoRequest,
-            null, ModelUtils.getUser().getEmail()));
+
+        TipsAndTricksDtoResponse actual =
+            tipsAndTricksService.save(tipsAndTricksDtoRequest, null, ModelUtils.getUser().getEmail());
+
+        assertEquals(tipsAndTricksDtoResponse, actual);
     }
 
     @Test
     void saveFailedTest() {
         String email = ModelUtils.getUser().getEmail();
+
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(tipsAndTricksRepo.save(tipsAndTricks)).thenThrow(DataIntegrityViolationException.class);
+
         assertThrows(NotSavedException.class, () ->
             tipsAndTricksService.save(tipsAndTricksDtoRequest, null, email));
     }
@@ -83,15 +88,19 @@ class TipsAndTricksServiceImplTest {
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
         tipsAndTricksDtoRequest.setImage(imageToEncode);
+
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
-        assertEquals(tipsAndTricksDtoResponse, tipsAndTricksService.save(tipsAndTricksDtoRequest,
-            image, ModelUtils.getUser().getEmail()));
+
+        TipsAndTricksDtoResponse actual =
+            tipsAndTricksService.save(tipsAndTricksDtoRequest, image, ModelUtils.getUser().getEmail());
+
+        assertEquals(tipsAndTricksDtoResponse, actual);
     }
 
     @Test
@@ -101,9 +110,13 @@ class TipsAndTricksServiceImplTest {
         Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
         List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
         PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+
         when(tipsAndTricksRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
-        assertEquals(pageableDto, tipsAndTricksService.findAll(pageRequest));
+
+        PageableDto<TipsAndTricksDtoResponse> actual = tipsAndTricksService.findAll(pageRequest);
+
+        assertEquals(pageableDto, actual);
     }
 
     @Test
@@ -113,38 +126,48 @@ class TipsAndTricksServiceImplTest {
         Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
         List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
         PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+
         when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
         when(tipsAndTricksRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
             .thenReturn(page);
-        assertEquals(pageableDto, tipsAndTricksService
-            .find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())));
-        dtoList.get(0).setTags(null);
         when((tipsAndTricksRepo.findAllByOrderByCreationDateDesc(pageRequest))).thenReturn(page);
+
+        PageableDto<TipsAndTricksDtoResponse> actual =
+            tipsAndTricksService.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName()));
+
+        assertEquals(pageableDto, actual);
         assertEquals(pageableDto, tipsAndTricksService.find(pageRequest, null));
     }
 
     @Test
     void findDtoByIdTest() {
         TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
+
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
-        assertEquals(tipsAndTricksDtoResponse, tipsAndTricksService.findDtoById(1L));
+
+        TipsAndTricksDtoResponse actual = tipsAndTricksService.findDtoById(1L);
+
+        assertEquals(tipsAndTricksDtoResponse, actual);
     }
 
     @Test
     void findDtoByIdFailedTest() {
         TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
+
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.empty());
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
+
         assertThrows(NotFoundException.class, () -> tipsAndTricksService.findDtoById(1L));
     }
 
     @Test
     void delete() {
         doNothing().when(tipsAndTricksRepo).deleteById(1L);
-        when(tipsAndTricksRepo.findById(anyLong()))
+        when(tipsAndTricksRepo.findById(1L))
             .thenReturn(Optional.of(ModelUtils.getTipsAndTricks()));
         tipsAndTricksService.delete(1L);
+
         verify(tipsAndTricksRepo, times(1)).deleteById(1L);
     }
 
@@ -157,8 +180,12 @@ class TipsAndTricksServiceImplTest {
             .map(t -> modelMapper.map(t, SearchTipsAndTricksDto.class))
             .collect(Collectors.toList());
         PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+
         when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitle())).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
-        assertEquals(pageableDto, tipsAndTricksService.search(tipsAndTricks.get(0).getTitle()));
+
+        PageableDto<SearchTipsAndTricksDto> actual = tipsAndTricksService.search(tipsAndTricks.get(0).getTitle());
+
+        assertEquals(pageableDto, actual);
     }
 }
