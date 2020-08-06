@@ -722,15 +722,11 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void updateUserProfilePictureTest() {
+    void updateUserProfilePictureTest() throws MalformedURLException {
         MultipartFile image = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
 
-        try {
-            when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
 
         userService.updateUserProfilePicture(image, anyString());
         verify(userRepo).save(user);
@@ -739,9 +735,8 @@ public class UserServiceImplTest {
     @Test
     void updateUserProfilePictureNotUpdatedExceptionTest() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
-        String email = anyString();
         assertThrows(NotUpdatedException.class, () ->
-            userService.updateUserProfilePicture(null, email)
+            userService.updateUserProfilePicture(null, "testmail@gmail.com")
         );
     }
 
@@ -789,24 +784,19 @@ public class UserServiceImplTest {
 
     @Test
     void getSixFriendsWithTheHighestRatingTest() {
-        List<UserProfilePictureDto> list = new ArrayList<>();
         UserProfilePictureDto e = new UserProfilePictureDto();
-        list.add(e);
-        when(userRepo.getSixFriendsWithTheHighestRating(anyLong())).thenReturn(Collections.singletonList(user));
+        List<UserProfilePictureDto> list = Collections.singletonList(e);
+        when(userRepo.getSixFriendsWithTheHighestRating(1L)).thenReturn(Collections.singletonList(user));
         when(modelMapper.map(user, UserProfilePictureDto.class)).thenReturn(e);
-        assertEquals(list, userService.getSixFriendsWithTheHighestRating(anyLong()));
+        assertEquals(list, userService.getSixFriendsWithTheHighestRating(1L));
     }
 
     @Test
-    void saveUserProfileTest() {
+    void saveUserProfileTest() throws MalformedURLException {
         UserProfileDtoRequest request = new UserProfileDtoRequest();
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         MultipartFile image = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
-        try {
-            when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
         userService.saveUserProfile(request, image, anyString());
         verify(userRepo).save(user);
         verify(modelMapper).map(user, UserProfileDtoResponse.class);
