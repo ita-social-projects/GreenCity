@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
@@ -62,13 +61,13 @@ public class LanguageServiceImplTest {
 
     @Test
     public void findByCode() {
-        when(languageRepo.findByCode(anyString())).thenReturn(Optional.of(language));
-        assertEquals(language, languageService.findByCode(anyString()));
+        when(languageRepo.findByCode(language.getCode())).thenReturn(Optional.of(language));
+        assertEquals(language, languageService.findByCode(language.getCode()));
     }
 
     @Test(expected = LanguageNotFoundException.class)
     public void findCodeByIdFailed() {
-        languageService.findByCode(anyString());
+        languageService.findByCode(language.getCode());
     }
 
     @Test
