@@ -17,18 +17,19 @@ import greencity.service.LanguageService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 class GoalServiceImplTest {
     @Mock
     private GoalTranslationRepo goalTranslationRepo;
@@ -38,10 +39,8 @@ class GoalServiceImplTest {
     private LanguageService languageService;
     @Mock
     private GoalRepo goalRepo;
-
     @Mock
     private CustomGoalRepo customGoalRepo;
-
     @InjectMocks
     private GoalServiceImpl goalService;
 
@@ -61,41 +60,56 @@ class GoalServiceImplTest {
 
         when(modelMapper.map(goalTranslations.get(0), GoalDto.class)).thenReturn(goalsDto.get(0));
         when(modelMapper.map(goalTranslations.get(1), GoalDto.class)).thenReturn(goalsDto.get(1));
+        when(goalTranslationRepo.findAllByLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE))
+            .thenReturn(goalTranslations);
 
-        when(goalTranslationRepo.findAllByLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE)).thenReturn(goalTranslations);
         assertEquals(goalService.findAll(AppConstant.DEFAULT_LANGUAGE_CODE), goalsDto);
     }
 
     @Test
     void getUserGoalResponseDtoFromPredefinedGoal() {
-        when(modelMapper.map(predefinedUserGoal, UserGoalResponseDto.class)).thenReturn(predefinedUserGoalDto);
-        when(languageService.extractLanguageCodeFromRequest()).thenReturn(ModelUtils.getLanguage().getCode());
         Goal goal = predefinedUserGoal.getGoal();
-        when(goalRepo.findById(anyLong())).thenReturn(Optional.ofNullable(goal));
-        when(goalTranslationRepo.findByGoalAndLanguageCode(any(Goal.class), anyString())).thenReturn(Optional.of(ModelUtils.getGoalTranslation()));
-        assertEquals(predefinedUserGoalDto, goalService.getUserGoalResponseDtoFromPredefinedGoal(predefinedUserGoal));
+        String code = ModelUtils.getLanguage().getCode();
+
+        when(modelMapper.map(predefinedUserGoal, UserGoalResponseDto.class)).thenReturn(predefinedUserGoalDto);
+        when(languageService.extractLanguageCodeFromRequest()).thenReturn(code);
+        when(goalRepo.findById(1L)).thenReturn(Optional.ofNullable(goal));
+        when(goalTranslationRepo.findByGoalAndLanguageCode(goal, code))
+            .thenReturn(Optional.of(ModelUtils.getGoalTranslation()));
+
+        UserGoalResponseDto actual = goalService.getUserGoalResponseDtoFromPredefinedGoal(predefinedUserGoal);
+
+        assertEquals(predefinedUserGoalDto, actual);
     }
 
     @Test
     void getUserGoalResponseDtoFromPredefinedGoalFailed() {
         when(modelMapper.map(predefinedUserGoal, UserGoalResponseDto.class)).thenReturn(predefinedUserGoalDto);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(ModelUtils.getLanguage().getCode());
-        when(goalRepo.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(GoalNotFoundException.class, () -> goalService.getUserGoalResponseDtoFromPredefinedGoal(predefinedUserGoal));
+        when(goalRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(GoalNotFoundException.class, () ->
+            goalService.getUserGoalResponseDtoFromPredefinedGoal(predefinedUserGoal));
     }
 
     @Test
     void getUserGoalResponseDtoFromCustomGoal() {
-        when(modelMapper.map(customUserGoal, UserGoalResponseDto.class)).thenReturn(customUserGoalDto);
         CustomGoal customGoal = customUserGoal.getCustomGoal();
-        when(customGoalRepo.findById(anyLong())).thenReturn(Optional.ofNullable(customGoal));
-        assertEquals(customUserGoalDto, goalService.getUserGoalResponseDtoFromCustomGoal(customUserGoal));
+
+        when(modelMapper.map(customUserGoal, UserGoalResponseDto.class)).thenReturn(customUserGoalDto);
+        when(customGoalRepo.findById(8L)).thenReturn(Optional.ofNullable(customGoal));
+
+        UserGoalResponseDto actual = goalService.getUserGoalResponseDtoFromCustomGoal(customUserGoal);
+
+        assertEquals(customUserGoalDto, actual);
     }
 
     @Test
     void getUserGoalResponseDtoFromCustomGoalFailed() {
         when(modelMapper.map(customUserGoal, UserGoalResponseDto.class)).thenReturn(customUserGoalDto);
         when(customGoalRepo.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> goalService.getUserGoalResponseDtoFromCustomGoal(customUserGoal));
+
+        assertThrows(NotFoundException.class, () ->
+            goalService.getUserGoalResponseDtoFromCustomGoal(customUserGoal));
     }
 }
