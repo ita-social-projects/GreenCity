@@ -26,7 +26,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"lastVisit","places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
+    exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
         "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks"})
 @ToString(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
