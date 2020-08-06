@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.ModelUtils;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -29,7 +30,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class TipsAndTricksCommentServiceImplTest {
+class TipsAndTricksCommentServiceImplTest {
     @Mock
     private TipsAndTricksCommentRepo tipsAndTricksCommentRepo;
     @Mock
@@ -63,41 +64,60 @@ public class TipsAndTricksCommentServiceImplTest {
     @Test
     void saveTestWithParentComment() {
         when(tipsAndTricksService.findById(anyLong())).thenReturn(ModelUtils.getTipsAndTricks());
-        tipsAndTricksComment.setParentComment(ModelUtils.getTipsAndTricksComment());
+        TipsAndTricksComment tipsAndTricksComment2 = ModelUtils.getTipsAndTricksComment();
+        tipsAndTricksComment2.setParentComment(ModelUtils.getTipsAndTricksComment());
         when(modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class))
-            .thenReturn(tipsAndTricksComment);
-        when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment));
-        when(modelMapper.map(tipsAndTricksComment, AddTipsAndTricksCommentDtoResponse.class))
+            .thenReturn(tipsAndTricksComment2);
+        when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment2));
+        when(modelMapper.map(tipsAndTricksComment2, AddTipsAndTricksCommentDtoResponse.class))
             .thenReturn(addTipsAndTricksCommentDtoResponse);
-        when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment);
-        assertThrows(BadRequestException.class, () -> tipsAndTricksCommentService.save(tipsAndTricksComment.getId(),
-            addTipsAndTricksCommentDtoRequest, ModelUtils.getUser()));
+        when(tipsAndTricksCommentRepo.save(tipsAndTricksComment2)).thenReturn(tipsAndTricksComment2);
+//        assertThrows(BadRequestException.class, () -> tipsAndTricksCommentService.save(tipsAndTricksComment2.getId(),
+//            addTipsAndTricksCommentDtoRequest, ModelUtils.getUser()));
+        try {
+            tipsAndTricksCommentService.save(tipsAndTricksComment2.getId(),
+                addTipsAndTricksCommentDtoRequest, ModelUtils.getUser());
+        } catch (BadRequestException ex) {
+            assertEquals(ErrorMessage.CANNOT_REPLY_THE_REPLY, ex.getMessage());
+        }
     }
 
     @Test
     void saveReplyWrongIdTest() {
         when(tipsAndTricksService.findById(anyLong())).thenReturn(ModelUtils.getTipsAndTricks());
-        tipsAndTricksComment.setTipsAndTricks(ModelUtils.getTipsAndTricks());
-        tipsAndTricksComment.getTipsAndTricks().setId(2L);
+        TipsAndTricksComment tipsAndTricksComment3 = ModelUtils.getTipsAndTricksComment();
+        tipsAndTricksComment3.setTipsAndTricks(ModelUtils.getTipsAndTricks());
+        tipsAndTricksComment3.getTipsAndTricks().setId(2L);
         when(modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class))
-            .thenReturn(tipsAndTricksComment);
-        when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment));
-        when(modelMapper.map(tipsAndTricksComment, AddTipsAndTricksCommentDtoResponse.class))
+            .thenReturn(tipsAndTricksComment3);
+        when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment3));
+        when(modelMapper.map(tipsAndTricksComment3, AddTipsAndTricksCommentDtoResponse.class))
             .thenReturn(addTipsAndTricksCommentDtoResponse);
-        when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment);
-        assertThrows(BadRequestException.class, () -> tipsAndTricksCommentService.save(2L,
-            addTipsAndTricksCommentDtoRequest, ModelUtils.getUser()));
+        when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment3);
+        try {
+            tipsAndTricksCommentService.save(2L,
+                addTipsAndTricksCommentDtoRequest, ModelUtils.getUser());
+        } catch (BadRequestException ex) {
+            assertEquals(ErrorMessage.CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID, ex.getMessage());
+        }
     }
 
     @Test
     void saveTestCommentNotFoundById() {
         when(tipsAndTricksService.findById(anyLong())).thenReturn(ModelUtils.getTipsAndTricks());
-        tipsAndTricksComment.setParentComment(ModelUtils.getTipsAndTricksComment());
+        TipsAndTricksComment tipsAndTricksComment4 = ModelUtils.getTipsAndTricksComment();
+        tipsAndTricksComment4.setParentComment(ModelUtils.getTipsAndTricksComment());
         when(modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class))
-            .thenReturn(tipsAndTricksComment);
+            .thenReturn(tipsAndTricksComment4);
         when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(BadRequestException.class, () -> tipsAndTricksCommentService.save(tipsAndTricksComment.getId(),
-            addTipsAndTricksCommentDtoRequest, ModelUtils.getUser()));
+        try {
+            tipsAndTricksCommentService.save(tipsAndTricksComment4.getId(),
+                addTipsAndTricksCommentDtoRequest, ModelUtils.getUser());
+        } catch (BadRequestException ex) {
+            assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, ex.getMessage());
+        }
+//        assertThrows(BadRequestException.class, () -> tipsAndTricksCommentService.save(tipsAndTricksComment4.getId(),
+//            addTipsAndTricksCommentDtoRequest, ModelUtils.getUser()));
     }
 
     @Test
