@@ -156,7 +156,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
 
-        List<EcoNewsDto> actual = ecoNewsService.getThreeRecommendedEcoNews(1L);
+        List<EcoNewsDto> actual = ecoNewsService.getThreeLastEcoNews();
 
         assertEquals(dtoList, actual);
     }
