@@ -9,49 +9,17 @@ import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.habitstatistic.HabitIdDto;
-import greencity.dto.user.BulkSaveUserGoalDto;
-import greencity.dto.user.RoleDto;
-import greencity.dto.user.UserCustomGoalDto;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserGoalDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserUpdateDto;
-import greencity.entity.CustomGoal;
-import greencity.entity.Goal;
-import greencity.entity.Habit;
-import greencity.entity.HabitDictionary;
-import greencity.entity.Language;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.dto.user.*;
+import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.entity.localization.GoalTranslation;
-import greencity.exception.exceptions.BadUpdateRequestException;
-import greencity.exception.exceptions.LowRoleLevelException;
-import greencity.exception.exceptions.NotDeletedException;
-import greencity.exception.exceptions.UserGoalStatusNotUpdatedException;
-import greencity.exception.exceptions.UserHasNoAvailableGoalsException;
-import greencity.exception.exceptions.UserHasNoAvailableHabitDictionaryException;
-import greencity.exception.exceptions.UserHasNoGoalsException;
-import greencity.exception.exceptions.WrongEmailException;
-import greencity.exception.exceptions.WrongIdException;
-import greencity.repository.CustomGoalRepo;
-import greencity.repository.GoalTranslationRepo;
-import greencity.repository.HabitDictionaryTranslationRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitStatisticRepo;
-import greencity.repository.UserGoalRepo;
-import greencity.repository.UserRepo;
+import greencity.exception.exceptions.*;
+import greencity.repository.*;
+import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,22 +33,20 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceImplTest {
@@ -101,6 +67,9 @@ public class UserServiceImplTest {
 
     @Mock
     HabitStatisticRepo habitStatisticRepo;
+
+    @Mock
+    FileService fileService;
 
     @Mock
     HabitDictionaryService habitDictionaryService;
@@ -737,4 +706,155 @@ public class UserServiceImplTest {
         long activatedUsersAmount = userService.getActivatedUsersAmount();
         assertEquals(1L, activatedUsersAmount);
     }
+
+    @Test
+    void getProfilePicturePathByUserIdNotFoundExceptionTest() {
+        assertThrows(NotFoundException.class, () ->
+            userService.getProfilePicturePathByUserId(1L)
+        );
+    }
+
+    @Test
+    void getProfilePicturePathByUserIdTest() {
+        when(userRepo.getProfilePicturePathByUserId(1L)).thenReturn(Optional.of(anyString()));
+        userService.getProfilePicturePathByUserId(1L);
+        verify(userRepo).getProfilePicturePathByUserId(1L);
+    }
+
+    @Test
+    void updateUserProfilePictureTest() throws MalformedURLException {
+        MultipartFile image = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
+
+
+        userService.updateUserProfilePicture(image, anyString());
+        verify(userRepo).save(user);
+    }
+
+    @Test
+    void updateUserProfilePictureNotUpdatedExceptionTest() {
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        assertThrows(NotUpdatedException.class, () ->
+            userService.updateUserProfilePicture(null, "testmail@gmail.com")
+        );
+    }
+
+    @Test
+    void deleteUserFriendByIdCheckRepeatingValueExceptionTest() {
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
+        assertThrows(CheckRepeatingValueException.class, () ->
+            userService.deleteUserFriendById(1L, 1L));
+
+    }
+
+    @Test
+    void deleteUserFriendByIdTest() {
+        List<User> list = Collections.singletonList(user2);
+        when(userRepo.getAllUserFriends(anyLong())).thenReturn(list);
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
+        userService.deleteUserFriendById(user.getId(), user2.getId());
+        verify(userRepo).deleteUserFriendById(user.getId(), user2.getId());
+
+    }
+
+    @Test
+    void addNewFriendCheckRepeatingValueExceptionWithSameIdTest() {
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        assertThrows(CheckRepeatingValueException.class, () ->
+            userService.addNewFriend(1L, 1L)
+        );
+    }
+
+    @Test
+    void addNewFriendTest() {
+        when(userRepo.getAllUserFriends(anyLong())).thenReturn(Collections.singletonList(user));
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
+        user.setUserFriends(Collections.singletonList(user2));
+        userService.addNewFriend(1L, 2L);
+        verify(userRepo).addNewFriend(1L, 2L);
+    }
+
+    @Test
+    void getSixFriendsWithTheHighestRatingExceptionTest() {
+        assertThrows(NotFoundException.class, () ->
+            userService.getSixFriendsWithTheHighestRating(1L)
+        );
+    }
+
+    @Test
+    void getSixFriendsWithTheHighestRatingTest() {
+        UserProfilePictureDto e = new UserProfilePictureDto();
+        List<UserProfilePictureDto> list = Collections.singletonList(e);
+        when(userRepo.getSixFriendsWithTheHighestRating(1L)).thenReturn(Collections.singletonList(user));
+        when(modelMapper.map(user, UserProfilePictureDto.class)).thenReturn(e);
+        assertEquals(list, userService.getSixFriendsWithTheHighestRating(1L));
+    }
+
+    @Test
+    void saveUserProfileTest() throws MalformedURLException {
+        UserProfileDtoRequest request = new UserProfileDtoRequest();
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        MultipartFile image = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
+        when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
+        userService.saveUserProfile(request, image, anyString());
+        verify(userRepo).save(user);
+        verify(modelMapper).map(user, UserProfileDtoResponse.class);
+    }
+
+    @Test
+    void saveUserProfileNullImageTest() {
+        UserProfileDtoRequest request = new UserProfileDtoRequest();
+        UserProfileDtoResponse response = new UserProfileDtoResponse();
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepo.save(user)).thenReturn(user);
+        when(modelMapper.map(user, UserProfileDtoResponse.class)).thenReturn(response);
+        UserProfileDtoResponse userProfileDtoResponse =
+            userService.saveUserProfile(request, null, anyString());
+        assertEquals(response, userProfileDtoResponse);
+    }
+
+    @Test
+    void getUserProfileInformationTest() {
+        UserProfileDtoResponse response = new UserProfileDtoResponse();
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserProfileDtoResponse.class)).thenReturn(response);
+        assertEquals(response, userService.getUserProfileInformation(1L));
+    }
+
+    @Test
+    void getUserProfileInformationExceptionTest() {
+        assertThrows(WrongIdException.class, () -> userService.getUserProfileInformation(null));
+    }
+
+    @Test
+    void updateUserLastActivityTimeTest() {
+        Date currentTime = new Date();
+        userService.updateUserLastActivityTime(user.getId(), currentTime);
+        verify(userRepo).updateUserLastActivityTime(user.getId(), currentTime);
+    }
+
+    @Test
+    void checkIfTheUserIsOnlineExceptionTest() {
+        assertThrows(UserLastActivityTimeNotFoundException.class, () ->
+            userService.checkIfTheUserIsOnline(null)
+        );
+    }
+
+    @Test
+    void checkIfTheUserIsOnlineEqualsTrueTest() {
+        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
+        Date userLastActivityTime = new Date();
+        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+        assertTrue(userService.checkIfTheUserIsOnline(1L));
+    }
+
+    @Test
+    void checkIfTheUserIsOnlineEqualsFalseTest() {
+        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
+        Date userLastActivityTime = new Date(System.currentTimeMillis() - 300000);
+        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+        assertFalse(userService.checkIfTheUserIsOnline(1L));
+    }
+
 }
