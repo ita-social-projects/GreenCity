@@ -123,7 +123,8 @@ stages:
                 
             - task: AzureRmWebAppDeployment@4
               inputs:
-                azureSubscription: '$(azureSub)'
+                #azureSubscription: '$(azureSub)'
+                azureSubscription: 'Visual Studio Enterprise Subscription'
                 appType: 'webAppLinux'
                 WebAppName: '$(coreServiceName)'
                 deployToSlotOrASE: true
