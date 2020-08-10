@@ -11,6 +11,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
@@ -29,10 +30,7 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.*;
-import greencity.entity.enums.FactOfDayStatus;
-import greencity.entity.enums.GoalStatus;
-import greencity.entity.enums.HabitRate;
-import greencity.entity.enums.ROLE;
+import greencity.entity.enums.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import java.io.IOException;
@@ -431,7 +429,7 @@ public class ModelUtils {
             .build();
     }
 
-    private static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
+    public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
             .id(getUser().getId())
             .name(getUser().getName().trim())
@@ -463,6 +461,19 @@ public class ModelUtils {
                 .name(getUser().getName())
                 .userProfilePicturePath(getUser().getProfilePicturePath())
                 .build())
+            .build();
+    }
+
+    public static EcoNewsCommentDto getEcoNewsCommentDto() {
+        return EcoNewsCommentDto.builder()
+            .id(1L)
+            .modifiedDate(LocalDateTime.now())
+            .author(getEcoNewsCommentAuthorDto())
+            .text("text")
+            .replies(0)
+            .likes(0)
+            .currentUserLiked(false)
+            .status(CommentStatus.ORIGINAL)
             .build();
     }
 

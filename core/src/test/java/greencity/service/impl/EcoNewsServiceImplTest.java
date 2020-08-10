@@ -15,17 +15,11 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.FileService;
-import greencity.service.LanguageService;
-import greencity.service.NewsSubscriberService;
-import greencity.service.TagsService;
-import greencity.service.UserService;
+import greencity.service.*;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,13 +37,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-public class EcoNewsServiceImplTest {
+class EcoNewsServiceImplTest {
     @Mock
     EcoNewsRepo ecoNewsRepo;
 
@@ -83,8 +74,9 @@ public class EcoNewsServiceImplTest {
     private Tag tag = ModelUtils.getTag();
 
     @Test
-    public void save() throws MalformedURLException {
+    void save() throws MalformedURLException {
         MultipartFile image = ModelUtils.getFile();
+
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
@@ -96,17 +88,50 @@ public class EcoNewsServiceImplTest {
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
-        assertEquals(addEcoNewsDtoResponse, ecoNewsService.save(addEcoNewsDtoRequest,
-            image, TestConst.EMAIL));
+        AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
+
+        assertEquals(addEcoNewsDtoResponse, actual);
+
         addEcoNewsDtoResponse.setTitle("Title");
+
         verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
-        addEcoNewsDtoResponse.setTitle("test title");
+    }
+
+    @Test
+    void saveWithExistedImage() throws IOException {
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        addEcoNewsDtoRequest.setImage(imageToEncode);
+
+        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
+        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
+        when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(Collections.singletonList(tag));
+        when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
+        when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
+
+        AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
+
+        assertEquals(addEcoNewsDtoResponse, actual);
+    }
+
+    @Test
+    void saveFailedTest() {
+        addEcoNewsDtoRequest.setTags(Arrays.asList("tags", "tags"));
+
+        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
+
+        assertThrows(NotSavedException.class, () ->
+            ecoNewsService.save(addEcoNewsDtoRequest, null, TestConst.EMAIL)
+        );
     }
 
     @Test()
-    public void saveThrowsNotSavedException() throws MalformedURLException {
+    void saveThrowsNotSavedException() throws MalformedURLException {
         MultipartFile image = ModelUtils.getFile();
+
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
@@ -118,7 +143,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void getThreeLastEcoNews() {
+    void getThreeLastEcoNews() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
         EcoNewsDto ecoNewsDto =
@@ -130,11 +155,14 @@ public class EcoNewsServiceImplTest {
 
         when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-        assertEquals(dtoList, ecoNewsService.getThreeLastEcoNews());
+
+        List<EcoNewsDto> actual = ecoNewsService.getThreeLastEcoNews();
+
+        assertEquals(dtoList, actual);
     }
 
     @Test
-    public void getThreeLastEcoNewsNotFound() {
+    void getThreeLastEcoNewsNotFound() {
         List<EcoNews> ecoNews = new ArrayList<>();
         List<EcoNewsDto> ecoNewsDtoList = new ArrayList<>();
 
@@ -147,7 +175,7 @@ public class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void findAll() {
+    void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
 
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
@@ -164,37 +192,78 @@ public class EcoNewsServiceImplTest {
 
         when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
-        assertEquals(pageableDto, ecoNewsService.findAll(pageRequest));
+
+        PageableDto<EcoNewsDto> actual = ecoNewsService.findAll(pageRequest);
+
+        assertEquals(pageableDto, actual);
     }
 
     @Test
-    public void findById() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
+    void find() {
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<EcoNews> page = new PageImpl<>(ecoNews, pageRequest, ecoNews.size());
+        List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
+        PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+
+        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(ecoNewsRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
+            .thenReturn(page);
+
+        PageableDto<EcoNewsDto> actual =
+            ecoNewsService.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName()));
+
+        assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findDtoById() {
+        EcoNewsDto ecoNewsDto = modelMapper.map(ecoNews, EcoNewsDto.class);
+
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        assertEquals(ecoNews, ecoNewsService.findById(1L));
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+
+        EcoNewsDto actual = ecoNewsService.findDtoById(1L);
+
+        assertEquals(ecoNewsDto, actual);
     }
 
     @Test
-    public void delete() {
+    void delete() {
         doNothing().when(ecoNewsRepo).deleteById(1L);
         when(ecoNewsRepo.findById(anyLong()))
             .thenReturn(Optional.of(ModelUtils.getEcoNews()));
         ecoNewsService.delete(1L);
+
         verify(ecoNewsRepo, times(1)).deleteById(1L);
     }
 
     @Test
-    void search(){
+    void search() {
         SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
-        PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto),4,1);
-        Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews),PageRequest.of(1,3),1);
+        PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1);
+        Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews), PageRequest.of(1, 3), 1);
 
-        when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "test"))
-                .thenReturn(page);
-        when(modelMapper.map(ecoNews, SearchNewsDto.class))
-                .thenReturn(searchNewsDto);
+        when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "test")).thenReturn(page);
+        when(modelMapper.map(ecoNews, SearchNewsDto.class)).thenReturn(searchNewsDto);
 
-        assertEquals(pageableDto, ecoNewsService.search("test"));
+        PageableDto<SearchNewsDto> actual = ecoNewsService.search("test");
+
+        assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void getThreeRecommendedEcoNews() {
+        List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(ecoNews));
+        when(ecoNewsRepo.getThreeRecommendedEcoNews(1L)).thenReturn(Collections.singletonList(ecoNews));
+        when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(dtoList.get(0));
+
+        List<EcoNewsDto> actual = ecoNewsService.getThreeRecommendedEcoNews(1L);
+
+        assertEquals(dtoList, actual);
     }
 }
 

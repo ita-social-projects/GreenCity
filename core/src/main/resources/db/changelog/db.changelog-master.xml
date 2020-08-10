@@ -43,4 +43,5 @@
     <include file="db/changelog/logs/ch-add-tipsandtricks-comment-Beshlei.xml"/>
     <include file="db/changelog/logs/ch-user-profile-Datsko.xml.xml"/>
     <include file="db/changelog/logs/ch-merge-tags-Ostriychuk.xml"/>
+    <include file="db/changelog/logs/ch-functions-Zhovnir.xml" />
 </databaseChangeLog>
