@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/management/factoftheday")
 public class ManagementFactOfTheDayController {
     /**
-     * Returns page with all facts of the day.
+     * Returns management page with all facts of the day.
      *
      * @param model ModelAndView that will be configured and returned to user
      * @return model
