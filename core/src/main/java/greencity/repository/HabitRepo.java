@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 public interface HabitRepo extends JpaRepository<Habit, Long> {
     /**
      * Find {@link Habit} by user.
-     *
      * @param userId .
      * @return List Habit's.
      * @author Volodymyr Turko
