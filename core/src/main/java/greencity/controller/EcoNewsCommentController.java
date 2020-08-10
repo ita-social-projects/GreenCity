@@ -5,6 +5,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.entity.User;
 import greencity.service.EcoNewsCommentService;
@@ -220,7 +221,8 @@ public class EcoNewsCommentController {
      */
     @MessageMapping("/likeAndCount")
     @SendTo("/topic/comment")
-    public int getCountOfLike(Long id) {
-        return ecoNewsCommentService.countLikes(id);
+    public AmountCommentLikesDto getCountOfLike(Long id) {
+        int amountLikes = ecoNewsCommentService.countLikes(id);
+        return AmountCommentLikesDto.builder().amountLikes(amountLikes).id(id).build();
     }
 }
