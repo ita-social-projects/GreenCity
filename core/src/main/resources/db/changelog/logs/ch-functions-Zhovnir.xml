@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="Zhovnir-1" author="Vasyl Zhovnir">
+        <createProcedure
+                dbms="postgresql"
+                path="db/changelog/logs/functions/fn_recommended_econews_by_opened_eco_news.sql"
+                procedureName="fn_recommended_econews_by_opened_eco_news"
+                schemaName="public">
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="Zhovnir-2" author="Vasyl Zhovnir">
+        <createProcedure
+                dbms="postgresql"
+                path="db/changelog/logs/functions/pg_buffercache_pages.sql"
+                procedureName="pg_buffercache_pages"
+                schemaName="public">
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="Zhovnir-3" author="Vasyl Zhovnir">
+        <createProcedure
+                dbms="postgresql"
+                path="db/changelog/logs/functions/pg_stat_statements.sql"
+                procedureName="pg_stat_statements"
+                schemaName="public">
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="Zhovnir-4" author="Vasyl Zhovnir">
+        <createProcedure
+                dbms="postgresql"
+                path="db/changelog/logs/functions/pg_stat_statements_reset.sql"
+                procedureName="fpg_stat_statements_reset"
+                schemaName="public">
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>
