@@ -82,6 +82,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
             .and()
             .authorizeRequests()
+            .antMatchers("/management/**")
+            .permitAll()
             .antMatchers(
                 "/ownSecurity/**",
                 "/place/getListPlaceLocationByMapsBounds/**",
