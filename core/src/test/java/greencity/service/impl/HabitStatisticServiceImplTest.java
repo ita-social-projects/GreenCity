@@ -202,20 +202,11 @@ class HabitStatisticServiceImplTest {
     }
 
     @Test
-    void getInfoAboutUserHabitsEmptyTest() {
-        List<HabitLogItemDto> habitDtos =
-            Collections.singletonList(new HabitLogItemDto(null, 0));
-        CalendarUsefulHabitsDto emptyHabitsDto =
-            CalendarUsefulHabitsDto.builder()
-                .creationDate(null)
-                .allItemsPerMonth(habitDtos)
-                .differenceUnTakenItemsWithPreviousDay(habitDtos).build();
-
-        when(habitRepo.findAllByUserId(1L)).thenReturn(Optional.of(Collections.emptyList()));
-
-        CalendarUsefulHabitsDto actual = habitStatisticService.getInfoAboutUserHabits(1L);
-
-        assertEquals(emptyHabitsDto, actual);
+     void getInfoAboutUserHabitsExceptionTest() {
+        when(habitRepo.findAllByUserId(anyLong())).thenReturn(Optional.of(Collections.emptyList()));
+        assertThrows(NotFoundException.class, () ->
+            habitStatisticService.getInfoAboutUserHabits(1L)
+        );
     }
 
     @Test

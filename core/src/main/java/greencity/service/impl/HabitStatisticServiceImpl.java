@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -174,12 +175,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public CalendarUsefulHabitsDto getInfoAboutUserHabits(Long userId) {
-        List<Habit> allHabitsByUserId;
-        try {
-            allHabitsByUserId = findAllHabitsByStatus(userId, true);
-        } catch (NotFoundException e) {
-            return getEmptyInfoAboutUserHabits();
-        }
+        List<Habit>  allHabitsByUserId = findAllHabitsByStatus(userId, true);
+
         List<HabitLogItemDto> statisticByHabitsPerMonth = getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
 
         List<HabitLogItemDto> statisticUnTakenItemsWithPrevMonth =
@@ -191,15 +188,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         dto.setDifferenceUnTakenItemsWithPreviousDay(statisticUnTakenItemsWithPrevMonth);
 
         return dto;
-    }
-
-    private CalendarUsefulHabitsDto getEmptyInfoAboutUserHabits() {
-        List<HabitLogItemDto> dtos =
-            Collections.singletonList(new HabitLogItemDto(null, 0));
-        return CalendarUsefulHabitsDto.builder()
-            .creationDate(null)
-            .allItemsPerMonth(dtos)
-            .differenceUnTakenItemsWithPreviousDay(dtos).build();
     }
 
     private Integer getItemsForPreviousDay(Long habitId) {
