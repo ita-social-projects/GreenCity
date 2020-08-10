@@ -31,7 +31,9 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      * @param userId id current user.
      * @return List {@link Habit}
      */
-    @Query("SELECT h FROM Habit h WHERE h.statusHabit = true AND h.users IN(SELECT u FROM User u WHERE u.id = ?1)")
+    @Query(nativeQuery = true, value = "SELECT h FROM habits h "
+        + "INNER JOIN habits_users_assign hua on h.id = hua.habit_id "
+        + "WHERE hua.users_id = ?1 AND h.status = true")
     List<Habit> findByUserIdAndStatusHabit(Long userId);
 
     /**
@@ -50,9 +52,9 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      * @param userId id current user
      * @return count habits by user
      */
-    @Query("SELECT us.habits.size "
-        + "FROM User us "
-        + "WHERE us.id = ?1 AND us.habits IN(SELECT h FROM Habit h WHERE h.statusHabit = true)")
+    @Query(nativeQuery = true, value = "SELECT count(h) FROM habits h "
+        + "INNER JOIN habits_users_assign hua on h.id = hua.habit_id "
+        + "WHERE hua.users_id = ?1 AND h.status = true")
     int countHabitByUserId(Long userId);
 
     /**
@@ -63,14 +65,13 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      * @param end    last day of period
      * @return count of user habits that were marked during some period
      */
-    @Query("SELECT u.habits.size "
-        + "FROM User u "
-        + "WHERE u.id = ?1 "
-        + "AND u.habits IN(SELECT h FROM Habit h "
-        + "WHERE h.statusHabit = true "
-        + "AND h.createDate < ?2 "
-        + "AND h.id IN(SELECT hs.habit.id "
-        + "FROM HabitStatistic hs "
-        + "WHERE hs.createdOn > ?2 or hs.createdOn < ?3))")
+    @Query(nativeQuery = true, value = "SELECT count(h) "
+        + "FROM habits h "
+        + "INNER JOIN habits_users_assign hua on h.id = hua.habit_id "
+        + "INNER JOIN habit_status hs on h.id = hs.habit_id "
+        + "WHERE h.status = true "
+        + "AND hua.users_id = ?1 "
+        + "AND h.create_date < ?2 "
+        + "AND hs.create_date > ?2 OR hs.create_date < ?3")
     int countMarkedHabitsByUserIdByPeriod(Long userId, ZonedDateTime start, ZonedDateTime end);
 }
