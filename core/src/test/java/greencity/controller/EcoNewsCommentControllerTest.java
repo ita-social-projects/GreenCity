@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUser;
 import greencity.config.SecurityConfig;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
@@ -15,7 +16,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -49,6 +49,8 @@ class EcoNewsCommentControllerTest {
     @Mock
     private UserService userService;
 
+    private Principal principal = getPrincipal();
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(ecoNewsCommentController)
@@ -58,8 +60,6 @@ class EcoNewsCommentControllerTest {
 
     @Test
     void save() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("datskomar@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -78,7 +78,7 @@ class EcoNewsCommentControllerTest {
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest =
             mapper.readValue(content, AddEcoNewsCommentDtoRequest.class);
 
-        verify(userService).findByEmail(eq("datskomar@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(ecoNewsCommentService).save(eq(1L), eq(addEcoNewsCommentDtoRequest), eq(user));
     }
 
@@ -92,8 +92,6 @@ class EcoNewsCommentControllerTest {
 
     @Test
     void findAll() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("datskomar@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -105,7 +103,7 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("datskomar@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(ecoNewsCommentService).findAllComments(eq(pageable), eq(user), eq(1L));
     }
 
@@ -119,8 +117,6 @@ class EcoNewsCommentControllerTest {
 
     @Test
     void findAllReplies() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("datskomar@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -132,7 +128,7 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("datskomar@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(ecoNewsCommentService).findAllReplies(eq(pageable), eq(1L), eq(user));
     }
 
@@ -146,8 +142,6 @@ class EcoNewsCommentControllerTest {
 
     @Test
     void deleteTest() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("datskomar@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -155,14 +149,12 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("datskomar@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(ecoNewsCommentService).deleteById(eq(1L), eq(user));
     }
 
     @Test
     void update() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("datskomar@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -170,14 +162,12 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("datskomar@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(ecoNewsCommentService).update(eq("text"), eq(1L), eq(user));
     }
 
     @Test
     void like() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("datskomar@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -185,7 +175,7 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("datskomar@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(ecoNewsCommentService).like(eq(1L), eq(user));
     }
 

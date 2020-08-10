@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.ModelUtils;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.service.NewsSubscriberService;
@@ -7,10 +8,10 @@ import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -49,6 +50,8 @@ class NewsSubscriberControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+
+        verify(newsSubscriberService).findAll();
     }
 
     @Test
@@ -63,25 +66,31 @@ class NewsSubscriberControllerTest {
     @Test
     void saveResponseOk() throws Exception {
         when(newsSubscriberService.save(any(NewsSubscriberRequestDto.class)))
-            .thenReturn(new NewsSubscriberRequestDto());
+            .thenReturn(ModelUtils.getNewsSubscriberRequestDto());
 
         mockMvc.perform(post(newsSubscriberControllerLink)
             .content("{\n"
-                + "  \"email\": \"datskomar@gmail.com\"\n"
+                + "  \"email\": \"test@gmail.com\"\n"
                 + "}")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+
+        verify(newsSubscriberService).save(eq(ModelUtils.getNewsSubscriberRequestDto()));
     }
 
     @Test
     void deleteResponseOk() throws Exception {
         when(newsSubscriberService.unsubscribe(anyString(), anyString())).thenReturn(1L);
 
-        mockMvc.perform(get(newsSubscriberControllerLink)
-            .param("datskomar@gmail.com", "55275726-de58-45f4-818d-f6dcb5403946")
+        mockMvc.perform(get(newsSubscriberControllerLink + "/unsubscribe")
+            .param("email", "test@gmail.com")
+            .param("unsubscribeToken", "55275726-de58-45f4-818d-f6dcb5403946")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+
+        verify(newsSubscriberService).unsubscribe(eq("test@gmail.com"),
+            eq("55275726-de58-45f4-818d-f6dcb5403946"));
     }
 }
