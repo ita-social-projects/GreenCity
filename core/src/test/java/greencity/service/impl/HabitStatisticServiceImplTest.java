@@ -35,28 +35,20 @@ import org.modelmapper.ModelMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class HabitStatisticServiceImplTest {
 
     @Mock
-    private HabitStatisticRepo habitStatisticRepo;
-
-    @Mock
     HabitService habitService;
-
     @Mock
     HabitRepo habitRepo;
-
     @Mock
     ModelMapper modelMapper;
-
     @Mock
     DateService dateService;
-
+    @Mock
+    private HabitStatisticRepo habitStatisticRepo;
     private HabitStatisticServiceImpl habitStatisticService;
 
     private ZonedDateTime zonedDateTime = ZonedDateTime.now();
@@ -67,6 +59,8 @@ public class HabitStatisticServiceImplTest {
 
     private Habit habit = new Habit(1L, new HabitDictionary(), new User(), true,
         zonedDateTime, Collections.emptyList());
+    private HabitStatistic habitStatistic = new HabitStatistic(
+        1L, HabitRate.GOOD, ZonedDateTime.now(), 10, null);
 
     @BeforeEach
     public void init() {
@@ -74,9 +68,6 @@ public class HabitStatisticServiceImplTest {
         habitStatisticService = new HabitStatisticServiceImpl(habitStatisticRepo, habitRepo,
             habitService, modelMapper, dateService);
     }
-
-    private HabitStatistic habitStatistic = new HabitStatistic(
-        1L, HabitRate.GOOD, ZonedDateTime.now(), 10, null);
 
     @Test
     public void saveTest() {
@@ -212,11 +203,20 @@ public class HabitStatisticServiceImplTest {
     }
 
     @Test
-    public void getInfoAboutUserHabitsExceptionTest() {
-        when(habitRepo.findAllByUserId(anyLong())).thenReturn(Optional.of(Collections.emptyList()));
-        assertThrows(NotFoundException.class, () ->
-            habitStatisticService.getInfoAboutUserHabits(1L)
-        );
+    public void getInfoAboutUserHabitsEmptyTest() {
+        List<HabitLogItemDto> dtos =
+            Collections.singletonList(new HabitLogItemDto(null, 0));
+        CalendarUsefulHabitsDto emptyHabitsDto =
+            CalendarUsefulHabitsDto.builder()
+                .creationDate(null)
+                .allItemsPerMonth(dtos)
+                .differenceUnTakenItemsWithPreviousDay(dtos).build();
+
+        when(habitRepo.findAllByUserId(1L)).thenReturn(Optional.of(Collections.emptyList()));
+
+        CalendarUsefulHabitsDto actual = habitStatisticService.getInfoAboutUserHabits(1L);
+
+        assertEquals(emptyHabitsDto, actual);
     }
 
     @Test
