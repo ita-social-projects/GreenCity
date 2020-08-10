@@ -26,11 +26,9 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -175,7 +173,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public CalendarUsefulHabitsDto getInfoAboutUserHabits(Long userId) {
-        List<Habit>  allHabitsByUserId = findAllHabitsByStatus(userId, true);
+        List<Habit> allHabitsByUserId = findAllHabitsByStatus(userId, true);
 
         List<HabitLogItemDto> statisticByHabitsPerMonth = getAmountOfUnTakenItemsPerMonth(allHabitsByUserId);
 
