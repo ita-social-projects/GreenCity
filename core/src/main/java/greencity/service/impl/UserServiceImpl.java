@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -751,6 +750,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepo
             .findById(userId)
             .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
+        if (user.getFirstName() == null) {
+            user.setFirstName(user.getName());
+        }
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 
