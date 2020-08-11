@@ -20,10 +20,7 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
-import greencity.service.FileService;
-import greencity.service.HabitDictionaryService;
-import greencity.service.HabitService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -59,6 +55,8 @@ public class UserServiceImpl implements UserService {
     private final HabitDictionaryService habitDictionaryService;
     private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private final FileService fileService;
+    private final TipsAndTricksRepo tipsAndTricksRepo;
+    private final EcoNewsRepo ecoNewsRepo;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
 
@@ -781,5 +779,20 @@ public class UserServiceImpl implements UserService {
         Date currentTime = new Date();
         long result = currentTime.getTime() - userLastActivityTime.getTime();
         return result <= timeAfterLastActivity;
+    }
+
+    @Override
+    public UserProfileStatisticsDto getUserProfileStatistics(Long userId) {
+        Long amountOfPublishedNewsByUserId = ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId);
+        Long amountOfWrittenTipsAndTrickByUserId = tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(userId);
+        Long amountOfAcquiredHabitsByUserId = habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
+        Long amountOfHabitsInProgressByUserId = habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId);
+
+        return UserProfileStatisticsDto.builder()
+            .amountWrittenTipsAndTrick(amountOfWrittenTipsAndTrickByUserId)
+            .amountPublishedNews(amountOfPublishedNewsByUserId)
+            .amountHabitsAcquired(amountOfAcquiredHabitsByUserId)
+            .amountHabitsInProgress(amountOfHabitsInProgressByUserId)
+            .build();
     }
 }

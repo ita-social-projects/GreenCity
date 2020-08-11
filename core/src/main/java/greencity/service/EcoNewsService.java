@@ -6,9 +6,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
-
 import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,4 +82,12 @@ public interface EcoNewsService {
      * @author Kovaliv Taras
      */
     PageableDto<SearchNewsDto> search(String searchQuery);
+
+    /**
+     * Method for getting amount of published news by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of published news by user id.
+     */
+    Long getAmountOfPublishedNewsByUserId(Long id);
 }

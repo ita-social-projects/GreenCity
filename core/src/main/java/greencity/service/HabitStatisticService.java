@@ -42,7 +42,7 @@ public interface HabitStatisticService {
     /**
      * Method for finding all {@link HabitDto} by {@link User} email and {@link Habit}status.
      *
-     * @param userId  {@link User} id.
+     * @param userId {@link User} id.
      * @param status {@link Habit} status.
      * @return list of {@link HabitDto}
      */
@@ -83,4 +83,20 @@ public interface HabitStatisticService {
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those key-value pairs.
      */
     List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language);
+
+    /**
+     * Method for getting amount of habits in progress by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of habits in progress by user id.
+     */
+    Long getAmountOfHabitsInProgressByUserId(Long id);
+
+    /**
+     * Method for getting amount of acquired habits by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of acquired habits by user id.
+     */
+    Long getAmountOfAcquiredHabitsByUserId(Long id);
 }

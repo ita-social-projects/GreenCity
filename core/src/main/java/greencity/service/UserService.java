@@ -331,7 +331,16 @@ public interface UserService {
     /**
      * Method return user profile information {@link User}.
      *
+     * @param userId - {@link User}'s id
      * @author Marian Datsko
      */
     UserProfileDtoResponse getUserProfileInformation(Long userId);
+
+    /**
+     * Method return user profile statistics {@link User}.
+     *
+     * @param userId - {@link User}'s id
+     * @author Marian Datsko
+     */
+    UserProfileStatisticsDto getUserProfileStatistics(Long userId);
 }

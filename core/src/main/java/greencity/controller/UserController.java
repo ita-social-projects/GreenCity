@@ -731,4 +731,25 @@ public class UserController {
             .status(HttpStatus.OK)
             .body(userService.checkIfTheUserIsOnline(userId));
     }
+
+    /**
+     * Method returns user profile statistics.
+     *
+     * @return {@link UserProfileStatisticsDto}.
+     * @author Datsko Marian
+     */
+    @ApiOperation(value = "Get user profile statistics by id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/profileStatistics/")
+    public ResponseEntity<UserProfileStatisticsDto> getUserProfileStatistics(
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable @CurrentUserId Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getUserProfileStatistics(userId));
+    }
 }

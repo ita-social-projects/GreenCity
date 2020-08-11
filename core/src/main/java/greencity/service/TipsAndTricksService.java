@@ -66,4 +66,12 @@ public interface TipsAndTricksService {
      * @return list of {@link SearchTipsAndTricksDto}
      */
     PageableDto<SearchTipsAndTricksDto> search(String searchQuery);
+
+    /**
+     * Method for getting amount of written tips and trick by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of written tips and trick by user id.
+     */
+    Long getAmountOfWrittenTipsAndTrickByUserId(Long id);
 }
