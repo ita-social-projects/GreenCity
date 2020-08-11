@@ -133,7 +133,9 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             && !user.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        comment.getComments().forEach(c -> c.setDeleted(true));
+        if (comment.getComments() != null) {
+            comment.getComments().forEach(c -> c.setDeleted(true));
+        }
         comment.setDeleted(true);
         tipsAndTricksCommentRepo.save(comment);
     }
