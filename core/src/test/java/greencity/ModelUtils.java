@@ -18,6 +18,7 @@ import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
@@ -38,6 +39,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -473,5 +475,13 @@ public class ModelUtils {
             .currentUserLiked(false)
             .status(CommentStatus.ORIGINAL)
             .build();
+    }
+
+    public static Principal getPrincipal() {
+        return () -> "test@gmail.com";
+    }
+
+    public static NewsSubscriberRequestDto getNewsSubscriberRequestDto() {
+        return new NewsSubscriberRequestDto("test@gmail.com");
     }
 }
