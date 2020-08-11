@@ -37,18 +37,18 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
     /**
-     * Method intercept exception {@link RuntimeException}.
+     * Method intercept exception {@link NotFoundException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain  detail about occur exception
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      * @author Marian Milian
      */
-    @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
+    @ExceptionHandler(NotFoundException.class)
+    public final ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
     /**
