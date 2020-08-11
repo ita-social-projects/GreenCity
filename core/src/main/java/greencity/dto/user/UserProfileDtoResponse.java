@@ -18,4 +18,5 @@ public class UserProfileDtoResponse {
     private Boolean showLocation;
     private Boolean showEcoPlace;
     private Boolean showShoppingList;
+    private Float rating;
 }
