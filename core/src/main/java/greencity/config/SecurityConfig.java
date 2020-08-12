@@ -147,7 +147,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/achievements",
                 "/facts/dayFact/*",
                 "/user/{userId}/sixUserFriends/",
-                "/user/{userId}/profile/"
+                "/user/{userId}/profile/",
+                "/user/{userId}/profileStatistics/"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",

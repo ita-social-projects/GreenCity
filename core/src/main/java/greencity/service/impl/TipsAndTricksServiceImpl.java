@@ -154,4 +154,16 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             page.getPageable().getPageNumber()
         );
     }
+
+    /**
+     * Method for getting amount of written tips and trick by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of written tips and trick by user id.
+     * @author Marian Datsko
+     */
+    @Override
+    public Long getAmountOfWrittenTipsAndTrickByUserId(Long id) {
+        return tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(id);
+    }
 }

@@ -97,4 +97,28 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
         @Param("statisticCreationDate") Date statisticCreationDate,
         @Param("languageCode") String languageCode
     );
+
+    /**
+     * Method for getting amount of habits in progress by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of habits in progress by user id.
+     * @author Marian Datsko
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT COUNT(status) "
+            + " FROM habits WHERE user_id = :userId AND status = false")
+    Long getAmountOfHabitsInProgressByUserId(@Param("userId") Long id);
+
+    /**
+     * Method for getting amount of acquired habits by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of acquired habits by user id.
+     * @author Marian Datsko
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT COUNT(status) "
+            + " FROM habits WHERE user_id = :userId AND status = true")
+    Long getAmountOfAcquiredHabitsByUserId(@Param("userId") Long id);
 }

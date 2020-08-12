@@ -261,4 +261,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException("Cannot to convert BASE64 image");
         }
     }
+
+    /**
+     * Method for getting amount of published news by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of published news by user id.
+     * @author Marian Datsko
+     */
+    @Override
+    public Long getAmountOfPublishedNewsByUserId(Long id) {
+        return ecoNewsRepo.getAmountOfPublishedNewsByUserId(id);
+    }
 }

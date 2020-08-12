@@ -297,4 +297,28 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
                     .build()
             ).collect(Collectors.toList());
     }
+
+    /**
+     * Method for getting amount of habits in progress by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of habits in progress by user id.
+     * @author Marian Datsko
+     */
+    @Override
+    public Long getAmountOfHabitsInProgressByUserId(Long id) {
+        return habitStatisticRepo.getAmountOfHabitsInProgressByUserId(id);
+    }
+
+    /**
+     * Method for getting amount of acquired habits by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of acquired habits by user id.
+     * @author Marian Datsko
+     */
+    @Override
+    public Long getAmountOfAcquiredHabitsByUserId(Long id) {
+        return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(id);
+    }
 }
