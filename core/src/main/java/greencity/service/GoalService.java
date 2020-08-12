@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
@@ -33,4 +34,12 @@ public interface GoalService {
      * @return userGoalResponseDto.
      */
     UserGoalResponseDto getUserGoalResponseDtoFromCustomGoal(UserGoal userGoal);
+
+    /**
+     * Method returns shopping list by user id.
+     *
+     * @return shopping list {@link ShoppingListDtoResponse}.
+     * @author Marian Datsko
+     */
+    List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode);
 }

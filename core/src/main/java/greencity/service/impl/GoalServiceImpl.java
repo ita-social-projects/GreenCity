@@ -1,6 +1,8 @@
 package greencity.service.impl;
 
+import static greencity.constant.ErrorMessage.*;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
@@ -17,10 +19,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import static greencity.constant.ErrorMessage.CUSTOM_GOAL_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.GOAL_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.GOAL_NOT_FOUND_BY_LANGUAGE_CODE;
 
 @RequiredArgsConstructor
 @Service
@@ -66,5 +64,20 @@ public class GoalServiceImpl implements GoalService {
             userGoalResponseDto.setText(customGoal.getText());
         }
         return userGoalResponseDto;
+    }
+
+    /**
+     * Method returns shopping list by user id.
+     *
+     * @return shopping list {@link ShoppingListDtoResponse}.
+     * @author Marian Datsko
+     */
+    @Override
+    public List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode) {
+        List<Object> shoppingList = goalRepo.getShoppingList(userId, languageCode);
+        List<ShoppingListDtoResponse> collect =
+            shoppingList.stream().map(i -> modelMapper.map(i, ShoppingListDtoResponse.class))
+                .collect(Collectors.toList());
+        return collect;
     }
 }

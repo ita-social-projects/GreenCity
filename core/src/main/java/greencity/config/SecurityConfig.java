@@ -122,7 +122,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/replies/{parentCommentId}",
                 "/tipsandtricks/comments/count/likes",
                 "/tipsandtricks/comments/",
-                "/tipsandtricks/comments/count/comments"
+                "/tipsandtricks/comments/count/comments",
+                "/goals/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
