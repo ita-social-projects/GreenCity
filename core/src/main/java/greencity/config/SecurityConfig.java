@@ -122,7 +122,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/replies/{parentCommentId}",
                 "/tipsandtricks/comments/count/likes",
                 "/tipsandtricks/comments/",
-                "/tipsandtricks/comments/count/comments"
+                "/tipsandtricks/comments/count/comments",
+                "/habit/status/{habitId}"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
@@ -184,7 +185,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/like",
                 "/tipsandtricks/comments/{tipsAndTricksId}",
                 "/tipsandtricks/comments/like",
-                "/user/profile"
+                "/user/profile",
+                "/habit/assign/{habitId}",
+                "/habit/unassign/{habitId}",
+                "/habit/status/enroll/{habitId}",
+                "/habit/status/unenroll/{habitId}/{date}",
+                "/habit/status/enroll/{habitId}/{date}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",

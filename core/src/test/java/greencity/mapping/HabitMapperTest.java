@@ -20,7 +20,6 @@ public class HabitMapperTest {
         User user = ModelUtils.getUser();
 
         Habit expected = Habit.builder()
-            .user(user)
             .createDate(ZonedDateTime.now())
             .statusHabit(true)
             .build();

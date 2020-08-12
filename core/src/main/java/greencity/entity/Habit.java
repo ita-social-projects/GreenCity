@@ -2,16 +2,7 @@ package greencity.entity;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -29,9 +20,9 @@ import lombok.ToString;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"user", "habitDictionary", "habitStatistics"})
+    exclude = {"users", "habitDictionary", "habitStatistics"})
 @ToString(
-    exclude = {"user", "habitDictionary", "habitStatistics"})
+    exclude = {"users", "habitDictionary", "habitStatistics"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,8 +32,12 @@ public class Habit {
     @ManyToOne
     private HabitDictionary habitDictionary;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    @ManyToMany
+    @JoinTable(
+        name = "habits_users_assign",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id"))
+    private List<User> users;
 
     @Column(name = "status", nullable = false)
     private Boolean statusHabit;
@@ -52,4 +47,7 @@ public class Habit {
 
     @OneToMany(mappedBy = "habit", cascade = {CascadeType.ALL})
     private List<HabitStatistic> habitStatistics;
+
+    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
+    private List<HabitStatus> habitStatuses;
 }

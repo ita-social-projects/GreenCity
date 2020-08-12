@@ -1,7 +1,9 @@
 package greencity.service;
 
+import greencity.dto.habitstatistic.HabitCreateDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionaryTranslation;
+import greencity.entity.User;
 
 public interface HabitService {
     /**
@@ -19,4 +21,12 @@ public interface HabitService {
      * @author Kovaliv Taras
      */
     Habit getById(Long id);
+
+    /**
+     * Method assign {@link Habit} for user.
+     * @param habitId - id of habit user want to assign
+     * @param user - user that assign habit
+     * @return {@link HabitCreateDto}
+     */
+    HabitCreateDto assignHabitForUser(Long habitId, User user);
 }
