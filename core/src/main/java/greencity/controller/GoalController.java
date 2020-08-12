@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUserId;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.goal.GoalDto;
@@ -82,6 +83,7 @@ public class GoalController {
     })
     @PatchMapping(path = "/shoppingList/{userId}")
     public ResponseEntity<HttpStatus> updateUserProfilePicture(@ApiParam("User id")
+                                                               @CurrentUserId
                                                                @PathVariable Long userId,
                                                                @ApiParam("Goal status : ACTIVE = false or DONE = true ")
                                                                @RequestParam Boolean status,

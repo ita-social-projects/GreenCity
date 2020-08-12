@@ -10,6 +10,7 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.GoalStatus;
 import greencity.exception.exceptions.GoalNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
@@ -77,8 +78,7 @@ public class GoalServiceImpl implements GoalService {
      */
     @Override
     public List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode) {
-        List<ShoppingListDtoResponse> collect = goalRepo.getShoppingList(userId, languageCode);
-        return collect;
+        return goalRepo.getShoppingList(userId, languageCode);
     }
 
     /**
@@ -91,9 +91,11 @@ public class GoalServiceImpl implements GoalService {
     public void changeGoalOrCustomGoalStatus(Long userId, Boolean status, Long goalId, Long customGoalId) {
         String goalStatus = status ? GoalStatus.DONE.toString() : GoalStatus.ACTIVE.toString();
         LocalDateTime now = LocalDateTime.now();
-        if (goalId != null || customGoalId == null) {
+        if (goalId != null && customGoalId == null) {
+            goalRepo.findById(goalId).orElseThrow(() -> new NotFoundException(GOAL_WRONG_ID + goalId));
             goalRepo.changeGoalStatus(userId, goalId, goalStatus, now);
         } else {
+            customGoalRepo.findById(customGoalId).orElseThrow(() -> new NotFoundException(GOAL_WRONG_ID + customGoalId));
             goalRepo.changeCustomGoalStatus(userId, customGoalId, goalStatus, now);
         }
     }

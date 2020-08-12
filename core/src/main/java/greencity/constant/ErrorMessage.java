@@ -146,7 +146,7 @@ public final class ErrorMessage {
         + " time for the user with id: ";
     public static final String NOT_VALID_URL = "Your URL is not valid : ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
-
+    public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
 
     private ErrorMessage() {
     }
