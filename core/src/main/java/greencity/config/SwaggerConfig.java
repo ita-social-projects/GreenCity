@@ -5,10 +5,12 @@ import java.awt.print.Pageable;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -56,7 +58,9 @@ public class SwaggerConfig {
                 .securitySchemes(Lists.newArrayList(apiKey()))
                 .useDefaultResponseMessages(false);
 
-        docket = docket.select().apis(RequestHandlerSelectors.withClassAnnotation(RestController.class)).build();
+        docket =
+            docket.select().apis(RequestHandlerSelectors.any())
+                .build();
         return docket;
     }
 
