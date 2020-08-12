@@ -109,9 +109,11 @@ public class UserServiceImplTest {
     private String language = "uk";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
         new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(1L, Collections.emptyList(), Collections.emptyList())),
+            Collections.emptyList(), Collections.emptyList()), "TEST",
+            new Goal(1L, Collections.emptyList(), Collections.emptyList())),
         new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(2L, Collections.emptyList(), Collections.emptyList())));
+            Collections.emptyList(), Collections.emptyList()), "TEST",
+            new Goal(2L, Collections.emptyList(), Collections.emptyList())));
 
     @InjectMocks
     private UserServiceImpl userService;
