@@ -3,8 +3,10 @@ package greencity.repository;
 import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.entity.Goal;
 import greencity.entity.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,18 +29,33 @@ public interface GoalRepo extends JpaRepository<Goal, Long> {
      * @return shopping list {@link ShoppingListDtoResponse}.
      * @author Marian Datsko
      */
-
-    @Query(nativeQuery = true,
-        value = "SELECT ug.status, gt.text FROM user_goals AS ug "
-            + " JOIN goal_translations AS gt ON gt.goal_id = ug.goal_id "
-            + " JOIN languages AS l ON l.id = gt.language_id "
-            + " WHERE ug.goal_id IS NOT NULL AND "
-            + " ug.user_id = :userId AND l.code = :languageCode "
-            + " UNION "
-            + " SELECT ug.status, cg.text "
-            + " FROM user_goals AS ug "
-            + " JOIN custom_goals AS cg ON cg.id = ug.custom_goal_id "
-            + " WHERE ug.custom_goal_id IS NOT NULL AND ug.user_id = :userId ")
-    List<Object> getShoppingList(@Param(value = "userId") Long userId,
+    @Query(nativeQuery = true)
+    List<ShoppingListDtoResponse> getShoppingList(@Param(value = "userId") Long userId,
                                                   @Param(value = "languageCode") String languageCode);
+
+    /**
+     * Method change goal status.
+     *
+     * @author Marian Datsko
+     */
+    @Modifying
+    @Query(nativeQuery = true, value = " UPDATE user_goals "
+        + " SET status = :status, date_completed = :date WHERE goal_id = :id AND user_id = :userId ")
+    void changeGoalStatus(@Param(value = "userId") Long userId,
+                          @Param(value = "id") Long id,
+                          @Param(value = "status") String status,
+                          @Param(value = "date") LocalDateTime date);
+
+    /**
+     * Method change custom goal status.
+     *
+     * @author Marian Datsko
+     */
+    @Modifying
+    @Query(nativeQuery = true, value = " UPDATE user_goals "
+        + " SET status = :status, date_completed = :date WHERE custom_goal_id = :id AND user_id = :userId ")
+    void changeCustomGoalStatus(@Param(value = "userId") Long userId,
+                                @Param(value = "id") Long id,
+                                @Param(value = "status") String status,
+                                @Param(value = "date") LocalDateTime date);
 }

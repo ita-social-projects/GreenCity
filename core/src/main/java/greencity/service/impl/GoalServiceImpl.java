@@ -7,6 +7,7 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
+import greencity.entity.enums.GoalStatus;
 import greencity.exception.exceptions.GoalNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomGoalRepo;
@@ -14,11 +15,13 @@ import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
 import greencity.service.GoalService;
 import greencity.service.LanguageService;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -74,10 +77,24 @@ public class GoalServiceImpl implements GoalService {
      */
     @Override
     public List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode) {
-        List<Object> shoppingList = goalRepo.getShoppingList(userId, languageCode);
-        List<ShoppingListDtoResponse> collect =
-            shoppingList.stream().map(i -> modelMapper.map(i, ShoppingListDtoResponse.class))
-                .collect(Collectors.toList());
+        List<ShoppingListDtoResponse> collect = goalRepo.getShoppingList(userId, languageCode);
         return collect;
+    }
+
+    /**
+     * Method change goal or custom goal status.
+     *
+     * @author Marian Datsko
+     */
+    @Override
+    @Transactional
+    public void changeGoalOrCustomGoalStatus(Long userId, Boolean status, Long goalId, Long customGoalId) {
+        String goalStatus = status ? GoalStatus.DONE.toString() : GoalStatus.ACTIVE.toString();
+        LocalDateTime now = LocalDateTime.now();
+        if (goalId != null || customGoalId == null) {
+            goalRepo.changeGoalStatus(userId, goalId, goalStatus, now);
+        } else {
+            goalRepo.changeCustomGoalStatus(userId, customGoalId, goalStatus, now);
+        }
     }
 }

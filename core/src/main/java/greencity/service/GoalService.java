@@ -42,4 +42,11 @@ public interface GoalService {
      * @author Marian Datsko
      */
     List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode);
+
+    /**
+     * Method change goal or custom goal status.
+     *
+     * @author Marian Datsko
+     */
+    void changeGoalOrCustomGoalStatus(Long userId, Boolean status, Long goalId, Long customGoalId);
 }

@@ -123,7 +123,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/count/likes",
                 "/tipsandtricks/comments/",
                 "/tipsandtricks/comments/count/comments",
-                "/goals/**",
                 "/tipsandtricks/comments/count/comments",
                 "/habit/status/{habitId}"
             ).permitAll()
@@ -150,7 +149,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/facts/dayFact/*",
                 "/user/{userId}/sixUserFriends/",
                 "/user/{userId}/profile/",
-                "/user/{userId}/profileStatistics/"
+                "/user/{userId}/profileStatistics/",
+                "/goals/shoppingList/{userId}/language/{languageCode}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -166,7 +166,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/profilePicture",
                 "/econews/comments",
                 "/tipsandtricks/comments",
-                "/user/saveProfileInf"
+                "/user/saveProfileInf",
+                "/goals/shoppingList/{userId}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",

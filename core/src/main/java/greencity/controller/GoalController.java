@@ -66,4 +66,30 @@ public class GoalController {
         @PathVariable(name = "languageCode") String languageCode) {
         return ResponseEntity.status(HttpStatus.OK).body(goalService.getShoppingList(userId, languageCode));
     }
+
+    /**
+     * Method change goal or custom goal status.
+     *
+     * @return {@link ResponseEntity}.
+     * @author Datsko Marian
+     */
+    @ApiOperation(value = "Change goal status")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping(path = "/shoppingList/{userId}")
+    public ResponseEntity<HttpStatus> updateUserProfilePicture(@ApiParam("User id")
+                                                               @PathVariable Long userId,
+                                                               @ApiParam("Goal status : ACTIVE = false or DONE = true ")
+                                                               @RequestParam Boolean status,
+                                                               @ApiParam("Goal id")
+                                                               @RequestParam(required = false) Long goalId,
+                                                               @ApiParam("Custom goal id")
+                                                               @RequestParam(required = false) Long customGoalId) {
+        goalService.changeGoalOrCustomGoalStatus(userId, status, goalId, customGoalId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
