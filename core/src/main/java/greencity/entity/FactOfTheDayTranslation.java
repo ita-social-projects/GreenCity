@@ -19,9 +19,6 @@ public class FactOfTheDayTranslation {
     @ManyToOne
     private Language language;
 
-    @Enumerated(value = EnumType.ORDINAL)
-    private FactOfDayStatus factOfDayStatus;
-
     @ManyToOne
     private FactOfTheDay factOfTheDay;
 
