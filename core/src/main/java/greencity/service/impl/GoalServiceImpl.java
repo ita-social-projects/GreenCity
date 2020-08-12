@@ -92,10 +92,12 @@ public class GoalServiceImpl implements GoalService {
         String goalStatus = status ? GoalStatus.DONE.toString() : GoalStatus.ACTIVE.toString();
         LocalDateTime now = LocalDateTime.now();
         if (goalId != null && customGoalId == null) {
-            goalRepo.findById(goalId).orElseThrow(() -> new NotFoundException(GOAL_WRONG_ID + goalId));
+            goalRepo.findById(goalId)
+                .orElseThrow(() -> new NotFoundException(GOAL_WRONG_ID + goalId));
             goalRepo.changeGoalStatus(userId, goalId, goalStatus, now);
         } else {
-            customGoalRepo.findById(customGoalId).orElseThrow(() -> new NotFoundException(GOAL_WRONG_ID + customGoalId));
+            customGoalRepo.findById(customGoalId)
+                .orElseThrow(() -> new NotFoundException(GOAL_WRONG_ID + customGoalId));
             goalRepo.changeCustomGoalStatus(userId, customGoalId, goalStatus, now);
         }
     }
