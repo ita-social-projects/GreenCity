@@ -43,11 +43,8 @@
     <include file="db/changelog/logs/ch-add-tipsandtricks-comment-Beshlei.xml"/>
     <include file="db/changelog/logs/ch-user-profile-Datsko.xml.xml"/>
     <include file="db/changelog/logs/ch-merge-tags-Ostriychuk.xml"/>
-<<<<<<< HEAD
     <include file="db/changelog/logs/ch-habit-status-Beshlei-2.xml"/>
     <include file="db/changelog/logs/ch-habits-Beshlei-1.xml"/>
     <include file="db/changelog/logs/ch-habit-status-calendar-Beshlei-1.xml"/>
     <include file="db/changelog/logs/ch-functions-Zhovnir.xml" />
-=======
->>>>>>> b423c32ee07f2f35802e835a62c62608728cb1f2
 </databaseChangeLog>
