@@ -1,4 +1,3 @@
-test
 # GreenCity
 
 ## 1. About the project
