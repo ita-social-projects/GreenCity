@@ -3,7 +3,7 @@ trigger:
   branches:
     include:
     - testage
-    - master
+    - dev
   paths:
     exclude:
     - README.md
@@ -105,7 +105,7 @@ stages:
 
 
 - stage: DeployTEST
-  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/dev'))
   jobs:
     - deployment: DeployCore
       displayName: Deploy core app service
@@ -162,7 +162,7 @@ stages:
                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
 
 - stage: DeployPROD
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   jobs:
     - deployment: DeployCore
       displayName: Deploy core app service
