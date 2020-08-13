@@ -146,6 +146,10 @@ public final class ErrorMessage {
         + " time for the user with id: ";
     public static final String NOT_VALID_URL = "Your URL is not valid : ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
+    public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
+    public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
+    public static final String FACT_OF_THE_DAY_TRANSLATION_NOT_DELETED = "The fact of the day translation does not deleted by id: ";
+    public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found by id: ";
 
 
     private ErrorMessage() {

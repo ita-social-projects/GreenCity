@@ -1,6 +1,5 @@
 package greencity.entity;
 
-import greencity.entity.enums.FactOfDayStatus;
 import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.*;
@@ -21,9 +20,6 @@ public class FactOfTheDay {
 
     @Column(nullable = false, unique = true, length = 300)
     private String title;
-
-    @Enumerated(value = EnumType.ORDINAL)
-    private FactOfDayStatus factOfDayStatus;
 
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "factOfTheDay", fetch = FetchType.LAZY)
     private List<FactOfTheDayTranslation> factOfTheDayTranslations;
