@@ -147,7 +147,7 @@ public final class ErrorMessage {
     public static final String NOT_VALID_URL = "Your URL is not valid : ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
-    public static final String WRONG_PARAMETER = "You must choose only one goal id  custom or simple ";
+    public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
 
     private ErrorMessage() {
     }
