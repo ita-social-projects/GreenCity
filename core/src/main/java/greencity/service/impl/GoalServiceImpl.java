@@ -8,9 +8,9 @@ import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
 import greencity.entity.enums.GoalStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.GoalNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
@@ -88,16 +88,20 @@ public class GoalServiceImpl implements GoalService {
      */
     @Override
     @Transactional
-    public void changeGoalOrCustomGoalStatus(Long userId, Boolean status, Long goalId, Long customGoalId) {
+    public void changeGoalOrCustomGoalStatus(Long userId, boolean status, Long goalId, Long customGoalId) {
         String goalStatus = status ? GoalStatus.DONE.toString() : GoalStatus.ACTIVE.toString();
         LocalDateTime now = LocalDateTime.now();
-        if (goalId != null && customGoalId == null) {
-            goalRepo.findById(goalId)
-                .orElseThrow(() -> new NotFoundException(GOAL_WRONG_ID + goalId));
+        if ((goalId == null && customGoalId == null) || (goalId != null && customGoalId != null)) {
+            throw new BadRequestException(WRONG_PARAMETER + goalId + "or " + customGoalId);
+        } else if (goalId != null & customGoalId == null) {
+            if (goalRepo.findById(goalId).isEmpty()) {
+                throw new NotFoundException(GOAL_WRONG_ID + goalId);
+            }
             goalRepo.changeGoalStatus(userId, goalId, goalStatus, now);
         } else {
-            customGoalRepo.findById(customGoalId)
-                .orElseThrow(() -> new NotFoundException(GOAL_WRONG_ID + customGoalId));
+            if (customGoalRepo.findById(customGoalId).isEmpty()) {
+                throw new NotFoundException(GOAL_WRONG_ID + customGoalId);
+            }
             goalRepo.changeCustomGoalStatus(userId, customGoalId, goalStatus, now);
         }
     }

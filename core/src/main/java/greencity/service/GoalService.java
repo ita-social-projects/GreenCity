@@ -48,5 +48,5 @@ public interface GoalService {
      *
      * @author Marian Datsko
      */
-    void changeGoalOrCustomGoalStatus(Long userId, Boolean status, Long goalId, Long customGoalId);
+    void changeGoalOrCustomGoalStatus(Long userId, boolean status, Long goalId, Long customGoalId);
 }
