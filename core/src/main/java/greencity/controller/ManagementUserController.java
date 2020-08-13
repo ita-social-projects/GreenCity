@@ -1,4 +1,4 @@
-package greencity.webcontroller;
+package greencity.controller;
 
 import greencity.entity.User;
 import greencity.service.UserService;
@@ -27,6 +27,7 @@ public class ManagementUserController {
      * @return View template path {@link String}.
      * @author Vasyl Zhovnir
      */
+
     @GetMapping("")
     public String getAllUsers(Model model,
                               @RequestParam(defaultValue = "0") int page,
