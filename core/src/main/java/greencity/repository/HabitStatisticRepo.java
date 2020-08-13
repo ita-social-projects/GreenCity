@@ -106,8 +106,9 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @author Marian Datsko
      */
     @Query(nativeQuery = true,
-        value = "SELECT COUNT(status) "
-            + " FROM habits WHERE user_id = :userId AND status = false")
+        value = " SELECT COUNT(status) FROM public.habits AS h "
+            + " JOIN public.habits_users_assign AS hus ON hus.habit_id = h.id "
+            + " WHERE hus.users_id = :userId AND h.status = false ")
     Long getAmountOfHabitsInProgressByUserId(@Param("userId") Long id);
 
     /**
@@ -118,7 +119,8 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @author Marian Datsko
      */
     @Query(nativeQuery = true,
-        value = "SELECT COUNT(status) "
-            + " FROM habits WHERE user_id = :userId AND status = true")
+        value = "SELECT COUNT(status) FROM public.habits AS h "
+            + " JOIN public.habits_users_assign AS hus ON hus.habit_id = h.id "
+            + " WHERE hus.users_id = :userId AND h.status = true")
     Long getAmountOfAcquiredHabitsByUserId(@Param("userId") Long id);
 }
