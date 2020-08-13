@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table border="1">
+    <tr>
+        <th>id</th>
+        <th>title</th>
+        <th>author</th>
+        <th>imagePath</th>
+        <th>creationDate</th>
+    </tr>
+    <tr th:each="entity : ${tipsAndTricks}">
+        <td th:text="${entity.id}"></td>
+        <td th:text="${entity.title}"></td>
+        <td th:text="${entity.author.name}"></td>
+        <td th:text="${entity.imagePath}"></td>
+        <td th:text="${entity.creationDate}"></td>
+    </tr>
+</table>
+
+</body>
+</html>
