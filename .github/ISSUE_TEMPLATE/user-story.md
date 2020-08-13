@@ -13,7 +13,7 @@ assignees: ''
 Describe feature functionality
 Add mockup if needed
 
-**Acceptance Criteria**
+### Acceptance Criteria
 A clear and concise description of what you want to happen.
 
 **Epic link**
