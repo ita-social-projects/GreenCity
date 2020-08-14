@@ -1,0 +1,47 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head></head>
+<header th:fragment="header">
+    <div class="main-header">
+        <div class="main-container-header">
+            <div class="header">
+                <div class="logo">
+                    <a href="/management/">
+                        <img th:src="@{/img/logo_M.png}" alt="logo">
+                    </a>
+                </div>
+                <div class="navigation-menu">
+                    <div class="navigation-menu-left">
+                        <ul>
+                            <li>
+                                <a href="#">
+                                    Eco news
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Tips & Tricks
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Fact of the day
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Users
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/management/habits">
+                                    Habits
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
