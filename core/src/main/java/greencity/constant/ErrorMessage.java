@@ -146,7 +146,8 @@ public final class ErrorMessage {
         + " time for the user with id: ";
     public static final String NOT_VALID_URL = "Your URL is not valid : ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
-
+    public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
+    public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
 
     private ErrorMessage() {
     }
