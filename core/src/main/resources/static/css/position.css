@@ -1,0 +1,23 @@
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+header {
+    flex: 0 0 auto;
+}
+
+.main-content {
+    flex: 1 0 auto;
+    padding-top: 70px;
+    padding-left: 20px;
+}
+
+footer {
+    flex: 0 0 auto;
+}
