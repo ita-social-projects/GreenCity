@@ -150,5 +150,5 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true,
             value = "SELECT last_activity_time FROM users WHERE id=:userId")
-    LocalDateTime findLastActivityTimeById(Long userId);
+    Optional<LocalDateTime> findLastActivityTimeById(Long userId);
 }

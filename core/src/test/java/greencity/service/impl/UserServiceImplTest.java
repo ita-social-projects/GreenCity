@@ -79,40 +79,40 @@ public class UserServiceImplTest {
     HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
 
     private User user =
-        User.builder()
-            .id(1L)
-            .name("Test Testing")
-            .email("test@gmail.com")
-            .role(ROLE.ROLE_USER)
-            .userStatus(UserStatus.ACTIVATED)
-            .emailNotification(EmailNotification.DISABLED)
-            .lastVisit(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
-            .build();
+            User.builder()
+                    .id(1L)
+                    .name("Test Testing")
+                    .email("test@gmail.com")
+                    .role(ROLE.ROLE_USER)
+                    .userStatus(UserStatus.ACTIVATED)
+                    .emailNotification(EmailNotification.DISABLED)
+                    .lastVisit(LocalDateTime.now())
+                    .dateOfRegistration(LocalDateTime.now())
+                    .build();
     private User user2 =
-        User.builder()
-            .id(2L)
-            .name("Test Testing")
-            .email("test@gmail.com")
-            .role(ROLE.ROLE_MODERATOR)
-            .userStatus(UserStatus.ACTIVATED)
-            .emailNotification(EmailNotification.DISABLED)
-            .lastVisit(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
-            .build();
+            User.builder()
+                    .id(2L)
+                    .name("Test Testing")
+                    .email("test@gmail.com")
+                    .role(ROLE.ROLE_MODERATOR)
+                    .userStatus(UserStatus.ACTIVATED)
+                    .emailNotification(EmailNotification.DISABLED)
+                    .lastVisit(LocalDateTime.now())
+                    .dateOfRegistration(LocalDateTime.now())
+                    .build();
     private Habit habit =
-        Habit.builder()
-            .id(1L)
-            .habitDictionary(new HabitDictionary())
-            .statusHabit(true)
-            .createDate(ZonedDateTime.now())
-            .build();
+            Habit.builder()
+                    .id(1L)
+                    .habitDictionary(new HabitDictionary())
+                    .statusHabit(true)
+                    .createDate(ZonedDateTime.now())
+                    .build();
     private String language = "uk";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
-        new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(1L, Collections.emptyList(), Collections.emptyList())),
-        new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(2L, Collections.emptyList(), Collections.emptyList())));
+            new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList()), "TEST", new Goal(1L, Collections.emptyList(), Collections.emptyList())),
+            new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList()), "TEST", new Goal(2L, Collections.emptyList(), Collections.emptyList())));
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -123,7 +123,7 @@ public class UserServiceImplTest {
     public void saveTest() {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(user));
         when(userService.findByEmail(user.getEmail()))
-            .thenThrow(new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+                .thenThrow(new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
         when(userRepo.save(user)).thenReturn(user);
         assertEquals(user, userService.save(user));
     }
@@ -135,8 +135,8 @@ public class UserServiceImplTest {
         when(userRepo.save(any())).thenReturn(user);
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         assertEquals(
-            UserStatus.DEACTIVATED,
-            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, any()).getUserStatus());
+                UserStatus.DEACTIVATED,
+                userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, any()).getUserStatus());
     }
 
     @Test
@@ -145,7 +145,7 @@ public class UserServiceImplTest {
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         assertThrows(LowRoleLevelException.class, () ->
-            userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, "email")
+                userService.updateStatus(user.getId(), UserStatus.DEACTIVATED, "email")
         );
     }
 
@@ -156,8 +156,8 @@ public class UserServiceImplTest {
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
         when(userRepo.save(any())).thenReturn(user);
         assertEquals(
-            ROLE.ROLE_MODERATOR,
-            userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR, any()).getRole());
+                ROLE.ROLE_MODERATOR,
+                userService.updateRole(user.getId(), ROLE.ROLE_MODERATOR, any()).getRole());
         verify(userRepo, times(1)).save(any());
     }
 
@@ -165,7 +165,7 @@ public class UserServiceImplTest {
     public void updateRoleOnTheSameUserTest() {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         assertThrows(BadUpdateRequestException.class, () ->
-            userService.updateRole(user.getId(), null, user.getEmail())
+                userService.updateRole(user.getId(), null, user.getEmail())
         );
     }
 
@@ -186,14 +186,14 @@ public class UserServiceImplTest {
     public void findByIdBadIdTest() {
         when(userRepo.findById(any())).thenThrow(WrongIdException.class);
         assertThrows(WrongIdException.class, () ->
-            userService.findById(1L)
+                userService.findById(1L)
         );
     }
 
     @Test
     public void deleteByIdExceptionBadIdTest() {
         assertThrows(WrongIdException.class, () ->
-            userService.deleteById(1L)
+                userService.deleteById(1L)
         );
     }
 
@@ -201,7 +201,7 @@ public class UserServiceImplTest {
     public void deleteByNullIdExceptionTest() {
         when(userRepo.findById(null)).thenThrow(new WrongIdException(""));
         assertThrows(WrongIdException.class, () ->
-            userService.deleteById(null)
+                userService.deleteById(null)
         );
     }
 
@@ -228,7 +228,7 @@ public class UserServiceImplTest {
     @Test
     public void findIdByEmailNotFound() {
         assertThrows(WrongEmailException.class, () ->
-            userService.findIdByEmail(any())
+                userService.findIdByEmail(any())
         );
     }
 
@@ -248,8 +248,8 @@ public class UserServiceImplTest {
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
 
         PageableDto<UserForListDto> userPageableDto =
-            new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0);
+                new PageableDto<>(userForListDtos,
+                        userForListDtos.size(), 0);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -268,7 +268,7 @@ public class UserServiceImplTest {
     @Test
     public void getEmailStatusesTest() {
         List<EmailNotification> placeStatuses =
-            Arrays.asList(EmailNotification.class.getEnumConstants());
+                Arrays.asList(EmailNotification.class.getEnumConstants());
 
         TestCase.assertEquals(placeStatuses, userService.getEmailNotificationsStatuses());
     }
@@ -299,8 +299,8 @@ public class UserServiceImplTest {
         List<UserForListDto> userForListDtos = Collections.singletonList(userForListDto);
 
         PageableDto<UserForListDto> userPageableDto =
-            new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0);
+                new PageableDto<>(userForListDtos,
+                        userForListDtos.size(), 0);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -341,9 +341,9 @@ public class UserServiceImplTest {
         UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
         List<UserGoal> userGoals = Arrays.asList(customUserGoal, predefinedUserGoal);
         UserGoalResponseDto customDtoWithoutText =
-            UserGoalResponseDto.builder().id(1L).status(GoalStatus.ACTIVE).build();
+                UserGoalResponseDto.builder().id(1L).status(GoalStatus.ACTIVE).build();
         UserGoalResponseDto predefinedDtoWithoutText =
-            UserGoalResponseDto.builder().id(2L).status(GoalStatus.ACTIVE).build();
+                UserGoalResponseDto.builder().id(2L).status(GoalStatus.ACTIVE).build();
         UserGoalResponseDto customUserGoalDto = ModelUtils.getCustomUserGoalDto();
         UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
         List<UserGoalResponseDto> userGoalDtos = Arrays.asList(customUserGoalDto, predefinedUserGoalDto);
@@ -355,9 +355,9 @@ public class UserServiceImplTest {
         when(modelMapper.map(userGoals.get(1), UserGoalResponseDto.class)).thenReturn(predefinedDtoWithoutText);
         when(userGoalRepo.findGoalByUserGoalId(userGoals.get(0).getId())).thenReturn(Optional.empty());
         when(userGoalRepo.findGoalByUserGoalId(userGoals.get(1).getId()))
-            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
+                .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
         when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
-            .thenReturn(goalTranslations.get(0));
+                .thenReturn(goalTranslations.get(0));
         when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customGoal);
 
         assertEquals(userService.getUserGoals(user.getId(), "en"), userGoalDtos);
@@ -367,7 +367,7 @@ public class UserServiceImplTest {
     public void getUserGoalsUserHasNoGoalTest() {
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
         assertThrows(UserHasNoGoalsException.class, () ->
-            userService.getUserGoals(user.getId(), "en")
+                userService.getUserGoals(user.getId(), "en")
         );
     }
 
@@ -383,7 +383,7 @@ public class UserServiceImplTest {
         user.setUserGoals(Collections.singletonList(new UserGoal(1L, null, null, null, null, null)));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         assertThrows(UserGoalStatusNotUpdatedException.class, () ->
-            userService.updateUserGoalStatus(user.getId(), 2L, "en")
+                userService.updateUserGoalStatus(user.getId(), 2L, "en")
         );
         verifyNoInteractions(userGoalRepo);
     }
@@ -395,7 +395,7 @@ public class UserServiceImplTest {
         when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
         user.setUserGoals(Collections.singletonList(userGoal));
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class))).thenReturn(
-            new UserGoalResponseDto(1L, null, GoalStatus.ACTIVE));
+                new UserGoalResponseDto(1L, null, GoalStatus.ACTIVE));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.empty());
         when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customgoal);
@@ -410,17 +410,17 @@ public class UserServiceImplTest {
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
-            .thenReturn(new UserGoalResponseDto(2L, null, GoalStatus.DONE));
+                .thenReturn(new UserGoalResponseDto(2L, null, GoalStatus.DONE));
         user.setUserGoals(Collections.singletonList(userGoal));
         when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.of(userGoal.getGoal()));
         when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
-            .thenReturn(goalTranslations.get(0));
+                .thenReturn(goalTranslations.get(0));
         UserGoalResponseDto userGoalResponseDto =
-            userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
+                userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
 
         assertEquals(GoalStatus.DONE, userGoal.getStatus());
         assertEquals(userGoalResponseDto,
-            new UserGoalResponseDto(2L, goalTranslations.get(0).getText(), GoalStatus.DONE));
+                new UserGoalResponseDto(2L, goalTranslations.get(0).getText(), GoalStatus.DONE));
         verify(userGoalRepo).save(userGoal);
     }
 
@@ -430,13 +430,13 @@ public class UserServiceImplTest {
         UserGoal userGoal = new UserGoal(1L, null, null, customgoal, GoalStatus.DONE, null);
         when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
-            .thenReturn(new UserGoalResponseDto(1L, null, GoalStatus.ACTIVE));
+                .thenReturn(new UserGoalResponseDto(1L, null, GoalStatus.ACTIVE));
         user.setUserGoals(Collections.singletonList(userGoal));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.empty());
         when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customgoal);
         UserGoalResponseDto userGoalResponseDto =
-            userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
+                userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en");
         UserGoalResponseDto expectedUserGoalResponseDto = new UserGoalResponseDto(1L, "foo", GoalStatus.ACTIVE);
 
         assertEquals(GoalStatus.ACTIVE, userGoal.getStatus());
@@ -460,7 +460,7 @@ public class UserServiceImplTest {
         user.setUserGoals(new ArrayList<>());
         UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto(new CustomGoalRequestDto(8L));
         BulkSaveUserGoalDto nullUserGoalsDto =
-            new BulkSaveUserGoalDto(null, Collections.singletonList(userCustomGoalDto));
+                new BulkSaveUserGoalDto(null, Collections.singletonList(userCustomGoalDto));
         UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
         List<UserGoal> userGoals = Collections.singletonList(customUserGoal);
         UserGoalResponseDto customUserGoalDto = ModelUtils.getCustomUserGoalDto();
@@ -472,7 +472,7 @@ public class UserServiceImplTest {
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
         when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(0));
         when(customGoalRepo.findByUserGoalIdAndUserId(userGoalDtos.get(0).getId(), user.getId()))
-            .thenReturn(customGoal);
+                .thenReturn(customGoal);
 
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), nullUserGoalsDto, "en");
         assertEquals("Buy electric car", result.get(0).getText());
@@ -485,7 +485,7 @@ public class UserServiceImplTest {
         user.setUserGoals(new ArrayList<>());
         UserGoalDto userGoalDto = new UserGoalDto(new GoalRequestDto(2L));
         BulkSaveUserGoalDto nullCustomGoalsDto = new BulkSaveUserGoalDto(
-            Collections.singletonList(userGoalDto), null);
+                Collections.singletonList(userGoalDto), null);
         UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
         List<UserGoal> userGoals = Collections.singletonList(predefinedUserGoal);
         UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
@@ -497,9 +497,9 @@ public class UserServiceImplTest {
         when(userGoalRepo.findAllByUserId(user.getId())).thenReturn(userGoals);
         when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(0));
         when(userGoalRepo.findGoalByUserGoalId(userGoals.get(0).getId()))
-            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
+                .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
         when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
-            .thenReturn(goalTranslations.get(0));
+                .thenReturn(goalTranslations.get(0));
 
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), nullCustomGoalsDto, "en");
         assertEquals("Buy a bamboo toothbrush", result.get(0).getText());
@@ -513,7 +513,7 @@ public class UserServiceImplTest {
         UserGoalDto userGoalDto = new UserGoalDto(new GoalRequestDto(2L));
         UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto(new CustomGoalRequestDto(8L));
         BulkSaveUserGoalDto userGoalsAndCustomGoalsDto = new BulkSaveUserGoalDto(
-            Collections.singletonList(userGoalDto), Collections.singletonList(userCustomGoalDto));
+                Collections.singletonList(userGoalDto), Collections.singletonList(userCustomGoalDto));
         UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
         UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
         List<UserGoal> userGoals = Arrays.asList(customUserGoal, predefinedUserGoal);
@@ -531,9 +531,9 @@ public class UserServiceImplTest {
         when(modelMapper.map(userGoals.get(1), UserGoalResponseDto.class)).thenReturn(userGoalDtos.get(1));
         when(userGoalRepo.findGoalByUserGoalId(userGoals.get(0).getId())).thenReturn(Optional.empty());
         when(userGoalRepo.findGoalByUserGoalId(userGoals.get(1).getId()))
-            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
+                .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
         when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
-            .thenReturn(goalTranslations.get(0));
+                .thenReturn(goalTranslations.get(0));
         when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customGoal);
 
         List<UserGoalResponseDto> result = userService.saveUserGoals(user.getId(), userGoalsAndCustomGoalsDto, "en");
@@ -561,16 +561,16 @@ public class UserServiceImplTest {
     public void getAvailableGoalsNoAvailableGoalsTest() {
         when(goalTranslationRepo.findAvailableByUserId(user.getId(), language)).thenReturn(Collections.emptyList());
         assertThrows(UserHasNoAvailableGoalsException.class, () ->
-            userService.getAvailableGoals(user.getId(), language)
+                userService.getAvailableGoals(user.getId(), language)
         );
     }
 
     @Test
     public void getAvailableHabitDictionaryNoAvailable() {
         when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en"))
-            .thenReturn(Collections.emptyList());
+                .thenReturn(Collections.emptyList());
         assertThrows(UserHasNoAvailableHabitDictionaryException.class, () ->
-            userService.getAvailableHabitDictionary(user.getId(), "en")
+                userService.getAvailableHabitDictionary(user.getId(), "en")
         );
     }
 
@@ -580,7 +580,7 @@ public class UserServiceImplTest {
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections.emptyList());
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         assertEquals(Collections.emptyList(),
-            userService.createUserHabit(user.getId(), Collections.emptyList(), anyString()));
+                userService.createUserHabit(user.getId(), Collections.emptyList(), anyString()));
     }
 
     @Test
@@ -593,27 +593,27 @@ public class UserServiceImplTest {
     @Test
     public void createUserHabitWithExistentHabitIdsNotMatchingTest() {
         when(habitRepo.findByUserIdAndStatusHabit(user.getId())).thenReturn(Collections
-            .singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null, null)));
+                .singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null, null)));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitDictionaryService.findById(1L)).thenReturn(new HabitDictionary(1L, null, null, null));
         when(modelMapper.map(user, Habit.class))
-            .thenReturn(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null, null));
+                .thenReturn(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null, null));
         assertEquals(Collections.emptyList(),
-            userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(2L)), "en"));
+                userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(2L)), "en"));
     }
 
     @Test
     public void createUserHabitWithExistentHabitTest() {
         when(habitRepo.findByUserIdAndStatusHabit(user.getId()))
-            .thenReturn(
-                Collections.singletonList(
-                    Habit.builder()
-                        .habitDictionary(HabitDictionary.builder().id(1L).build())
-                        .build()
-                )
-            );
+                .thenReturn(
+                        Collections.singletonList(
+                                Habit.builder()
+                                        .habitDictionary(HabitDictionary.builder().id(1L).build())
+                                        .build()
+                        )
+                );
         assertThrows(WrongIdException.class, () ->
-            userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(1L)), "en")
+                userService.createUserHabit(user.getId(), Collections.singletonList(new HabitIdDto(1L)), "en")
         );
         verify(habitRepo, times(0)).saveAll(any());
     }
@@ -637,9 +637,9 @@ public class UserServiceImplTest {
     public void getAvailableCustomGoalsForUserWithExistentGoalTest() {
         List<CustomGoalResponseDto> customGoalsDtos = Collections.singletonList(new CustomGoalResponseDto(1L, "foo"));
         when(modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(user.getId()),
-            new TypeToken<List<CustomGoalResponseDto>>() {
-            }.getType()))
-            .thenReturn(customGoalsDtos);
+                new TypeToken<List<CustomGoalResponseDto>>() {
+                }.getType()))
+                .thenReturn(customGoalsDtos);
         assertNotNull(userService.getAvailableCustomGoals(user.getId()));
         assertEquals(userService.getAvailableCustomGoals(user.getId()), customGoalsDtos);
     }
@@ -648,7 +648,7 @@ public class UserServiceImplTest {
     public void deleteHabitByUserIdAndHabitDictionaryEmptyHabitTest() {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(WrongIdException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L)
+                userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L)
         );
     }
 
@@ -657,14 +657,14 @@ public class UserServiceImplTest {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(new Habit()));
         when(habitRepo.countHabitByUserId(user.getId())).thenReturn(1);
         assertThrows(NotDeletedException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L)
+                userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L)
         );
     }
 
     @Test
     public void deleteHabitByUserIdAndHabitDictionaryExceptionTest() {
         assertThrows(WrongIdException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(null, 1L)
+                userService.deleteHabitByUserIdAndHabitDictionary(null, 1L)
         );
     }
 
@@ -680,14 +680,14 @@ public class UserServiceImplTest {
     @Test
     public void deleteHabitByUserAndNullHabit() {
         assertThrows(NotDeletedException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), null)
+                userService.deleteHabitByUserIdAndHabitDictionary(user.getId(), null)
         );
     }
 
     @Test
     public void deleteHabitByNullUserAndNullHabit() {
         assertThrows(NotDeletedException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(null, null)
+                userService.deleteHabitByUserIdAndHabitDictionary(null, null)
         );
     }
 
@@ -710,7 +710,7 @@ public class UserServiceImplTest {
     @Test
     void getProfilePicturePathByUserIdNotFoundExceptionTest() {
         assertThrows(NotFoundException.class, () ->
-            userService.getProfilePicturePathByUserId(1L)
+                userService.getProfilePicturePathByUserId(1L)
         );
     }
 
@@ -736,7 +736,7 @@ public class UserServiceImplTest {
     void updateUserProfilePictureNotUpdatedExceptionTest() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         assertThrows(NotUpdatedException.class, () ->
-            userService.updateUserProfilePicture(null, "testmail@gmail.com")
+                userService.updateUserProfilePicture(null, "testmail@gmail.com")
         );
     }
 
@@ -744,7 +744,7 @@ public class UserServiceImplTest {
     void deleteUserFriendByIdCheckRepeatingValueExceptionTest() {
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
         assertThrows(CheckRepeatingValueException.class, () ->
-            userService.deleteUserFriendById(1L, 1L));
+                userService.deleteUserFriendById(1L, 1L));
 
     }
 
@@ -762,7 +762,7 @@ public class UserServiceImplTest {
     void addNewFriendCheckRepeatingValueExceptionWithSameIdTest() {
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         assertThrows(CheckRepeatingValueException.class, () ->
-            userService.addNewFriend(1L, 1L)
+                userService.addNewFriend(1L, 1L)
         );
     }
 
@@ -778,7 +778,7 @@ public class UserServiceImplTest {
     @Test
     void getSixFriendsWithTheHighestRatingExceptionTest() {
         assertThrows(NotFoundException.class, () ->
-            userService.getSixFriendsWithTheHighestRating(1L)
+                userService.getSixFriendsWithTheHighestRating(1L)
         );
     }
 
@@ -810,7 +810,7 @@ public class UserServiceImplTest {
         when(userRepo.save(user)).thenReturn(user);
         when(modelMapper.map(user, UserProfileDtoResponse.class)).thenReturn(response);
         UserProfileDtoResponse userProfileDtoResponse =
-            userService.saveUserProfile(request, null, anyString());
+                userService.saveUserProfile(request, null, anyString());
         assertEquals(response, userProfileDtoResponse);
     }
 
@@ -837,7 +837,7 @@ public class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineExceptionTest() {
         assertThrows(WrongIdException.class, () ->
-            userService.checkIfTheUserIsOnline(null)
+                userService.checkIfTheUserIsOnline(null)
         );
     }
 
@@ -847,7 +847,7 @@ public class UserServiceImplTest {
         LocalDateTime userLastActivityTime = LocalDateTime.now();
         User user = ModelUtils.getUser();
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(userLastActivityTime);
+        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
         assertTrue(userService.checkIfTheUserIsOnline(1L));
     }
 
@@ -858,8 +858,7 @@ public class UserServiceImplTest {
                 Month.JULY, 29, 19, 30, 40);
         User user = ModelUtils.getUser();
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(userLastActivityTime);
+        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
         assertFalse(userService.checkIfTheUserIsOnline(1L));
     }
-
 }

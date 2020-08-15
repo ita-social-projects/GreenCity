@@ -780,14 +780,16 @@ public class UserServiceImpl implements UserService {
     public boolean checkIfTheUserIsOnline(Long userId) {
         userRepo.findById(userId)
                 .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
-        LocalDateTime userLastActivityTime = userRepo.findLastActivityTimeById(userId);
-        if (userLastActivityTime == null) {
+        try {
+            LocalDateTime userLastActivityTime = userRepo.findLastActivityTimeById(userId)
+                    .orElseThrow(() -> new UserLastActivityTimeNotFoundException(USER_LAST_ACTIVITY_TIME_NOT_FOUND));
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
+            long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
+            return result <= timeAfterLastActivity;
+        } catch (UserLastActivityTimeNotFoundException e) {
             return false;
         }
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
-        long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
-        return result <= timeAfterLastActivity;
     }
 
     /**
