@@ -151,7 +151,8 @@ public final class ErrorMessage {
     public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_TRANSLATION_NOT_DELETED = "The fact of the day translation does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found by id: ";
-
+    public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
+    public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
 
     private ErrorMessage() {
     }
