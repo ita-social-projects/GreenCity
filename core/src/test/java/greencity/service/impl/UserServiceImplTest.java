@@ -836,7 +836,7 @@ public class UserServiceImplTest {
 
     @Test
     void checkIfTheUserIsOnlineExceptionTest() {
-        assertThrows(UserLastActivityTimeNotFoundException.class, () ->
+        assertThrows(WrongIdException.class, () ->
             userService.checkIfTheUserIsOnline(null)
         );
     }
