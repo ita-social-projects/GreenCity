@@ -51,6 +51,9 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             TipsAndTricksComment parentComment =
                 tipsAndTricksCommentRepo.findById(addTipsAndTricksCommentDtoRequest.getParentCommentId()).orElseThrow(
                     () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+            if (parentComment.isDeleted()) {
+                throw new BadRequestException(ErrorMessage.CANNOT_REPLY_TO_DELETED_COMMENT);
+            }
             if (parentComment.getParentComment() == null
                 && parentComment.getTipsAndTricks().getId().equals(tipsandtricksId)) {
                 tipsAndTricksComment.setParentComment(parentComment);
@@ -129,6 +132,9 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
         if (user.getRole() != ROLE.ROLE_ADMIN && user.getRole() != ROLE.ROLE_MODERATOR
             && !user.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        if (comment.getComments() != null) {
+            comment.getComments().forEach(c -> c.setDeleted(true));
         }
         comment.setDeleted(true);
         tipsAndTricksCommentRepo.save(comment);

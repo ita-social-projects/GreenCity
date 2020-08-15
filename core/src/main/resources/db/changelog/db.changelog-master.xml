@@ -46,6 +46,8 @@
     <include file="db/changelog/logs/ch-habit-status-Beshlei-2.xml"/>
     <include file="db/changelog/logs/ch-habits-Beshlei-1.xml"/>
     <include file="db/changelog/logs/ch-habit-status-calendar-Beshlei-1.xml"/>
+    <include file="db/changelog/logs/ch-primarykey-eco-news-tags-Lehkyi-1.xml"/>
+    <include file="db/changelog/logs/ch-primarykey-tips-and-tricks-tags-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch-fact-of-the-day-Lehkyi.xml"/>
 
 </databaseChangeLog>

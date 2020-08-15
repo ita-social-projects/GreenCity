@@ -11,9 +11,11 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.TipsAndTricksCommentRepo;
 import greencity.service.TipsAndTricksService;
-import java.util.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,8 +26,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -172,12 +174,15 @@ class TipsAndTricksCommentServiceImplTest {
     @Test
     void deleteByIdTest() {
         TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
+        TipsAndTricksComment reply = TipsAndTricksComment.builder().id(2L).text("some text").build();
+        tipsAndTricksComment.setComments(Collections.singletonList(reply));
 
         when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment));
         when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment);
 
         tipsAndTricksCommentService.deleteById(1L, ModelUtils.getUser());
 
+        assertTrue(reply.isDeleted());
         assertTrue(tipsAndTricksComment.isDeleted());
     }
 
