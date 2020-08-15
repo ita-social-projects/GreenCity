@@ -355,7 +355,6 @@ public interface UserService {
      * Get user and all friends with the online status {@link User} by page.
      *
      * @param userId {@link Long}
-     * @param pageable
      * @author Yurii Zhurakovskyi
      */
     UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable);
