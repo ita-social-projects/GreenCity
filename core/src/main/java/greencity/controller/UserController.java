@@ -35,6 +35,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -751,5 +753,31 @@ public class UserController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getUserProfileStatistics(userId));
+    }
+
+    /**
+     * The method get {@link User}s with online status for the current user-id.
+     *
+     * @return {@link UserAndFriendsWithOnlineStatusDto}.
+     * @author Zhurakovskyi Yurii
+     */
+    @MessageMapping("/userAndSixFriendsWithOnlineStatus")
+    @SendTo("/topic/sixUsersOnlineStatus")
+    public UserAndFriendsWithOnlineStatusDto getUserAndSixFriendsWithOnlineStatus(
+            Long userId) {
+        return userService.getUserAndSixFriendsWithOnlineStatus(userId);
+    }
+
+    /**
+     * The method get all {@link User}s with online status for the current user-id.
+     *
+     * @return {@link UserAndAllFriendsWithOnlineStatusDto}.
+     * @author Zhurakovskyi Yurii
+     */
+    @MessageMapping("/userAndAllFriendsWithOnlineStatus")
+    @SendTo("/topic/userAndAllFriendsOnlineStatus")
+    public UserAndAllFriendsWithOnlineStatusDto getUserAndAllFriendsWithOnlineStatus(
+            Long userId, Pageable pageable) {
+        return userService.getAllFriendsWithTheOnlineStatus(userId, pageable);
     }
 }

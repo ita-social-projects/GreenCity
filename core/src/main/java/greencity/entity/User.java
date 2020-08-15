@@ -142,7 +142,7 @@ public class User {
     private Boolean showShoppingList;
 
     @Column(name = "last_activity_time")
-    private Date lastActivityTime;
+    private LocalDateTime lastActivityTime;
 
     @OneToMany(mappedBy = "user")
     private List<HabitStatus> habitStatuses = new ArrayList<>();
