@@ -114,6 +114,9 @@ public class ScheduleConfig {
         factTranslationRepo.updateFactOfDayStatusByHabitfactId(CURRENT, list.get().get(0).getHabitFact().getId());
     }
 
+    /**
+     * Clear fact of the day cache at 0:00 am every day.
+     */
     @CacheEvict(value = FACT_OF_THE_DAY_CACHE_NAME, allEntries = true)
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
