@@ -4,6 +4,7 @@ import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -131,6 +132,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
 
     /**
+     * Get all user friends{@link User}. by page.
+     *
+     * @param pageable pageable configuration.
+     * @return {@link Page}
+     * @author Yurii Yhurakovskyi
+     */
+    @Query(value = " SELECT u.userFriends FROM User u WHERE u.id = :userId ")
+    Page<User> getAllUserFriends(Long userId, Pageable pageable);
+
+    /**
      * Find the last activity time by {@link User}'s id.
      *
      * @param userId - {@link User}'s id
@@ -139,5 +150,5 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true,
             value = "SELECT last_activity_time FROM users WHERE id=:userId")
-    Optional<Date> findLastActivityTimeById(Long userId);
+    Optional<LocalDateTime> findLastActivityTimeById(Long userId);
 }

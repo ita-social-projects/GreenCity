@@ -323,10 +323,9 @@ public interface UserService {
      * The method checks by id if a {@link User} is online.
      *
      * @param userId - {@link User}'s id
-     * @return {@link Boolean}.
      * @author Yurii Zhurakovskyi
      */
-    Boolean checkIfTheUserIsOnline(Long userId);
+    boolean checkIfTheUserIsOnline(Long userId);
 
     /**
      * Method return user profile information {@link User}.
@@ -343,4 +342,20 @@ public interface UserService {
      * @author Marian Datsko
      */
     UserProfileStatisticsDto getUserProfileStatistics(Long userId);
+
+    /**
+     * Get user and six friends with the online status {@link User}.
+     *
+     * @param userId {@link Long}
+     * @author Yurii Zhurakovskyi
+     */
+    UserAndFriendsWithOnlineStatusDto getUserAndSixFriendsWithOnlineStatus(Long userId);
+
+    /**
+     * Get user and all friends with the online status {@link User} by page.
+     *
+     * @param userId {@link Long}
+     * @author Yurii Zhurakovskyi
+     */
+    UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable);
 }
