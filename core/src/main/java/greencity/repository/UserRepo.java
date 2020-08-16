@@ -94,6 +94,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<User> getAllUserFriends(Long userId);
 
     /**
+     * Get all user friends{@link User}. by page.
+     *
+     * @param pageable pageable configuration.
+     * @return {@link Page}
+     * @author Yurii Yhurakovskyi
+     */
+    @Query(value = " SELECT u.userFriends FROM User u WHERE u.id = :userId ")
+    Page<User> getAllUserFriends(Long userId, Pageable pageable);
+
+    /**
      * Delete friend {@link User}.
      */
     @Modifying
@@ -130,16 +140,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Transactional
     @Query(value = "UPDATE User SET last_activity_time=:userLastActivityTime WHERE id=:userId")
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
-
-    /**
-     * Get all user friends{@link User}. by page.
-     *
-     * @param pageable pageable configuration.
-     * @return {@link Page}
-     * @author Yurii Yhurakovskyi
-     */
-    @Query(value = " SELECT u.userFriends FROM User u WHERE u.id = :userId ")
-    Page<User> getAllUserFriends(Long userId, Pageable pageable);
 
     /**
      * Find the last activity time by {@link User}'s id.
