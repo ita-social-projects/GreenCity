@@ -778,8 +778,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean checkIfTheUserIsOnline(Long userId) {
-        userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
+        if (!userRepo.findById(userId).isPresent()) {
+            throw new WrongIdException(USER_NOT_FOUND_BY_ID + userId);
+        }
         try {
             LocalDateTime userLastActivityTime = userRepo.findLastActivityTimeById(userId)
                     .orElseThrow(() -> new UserLastActivityTimeNotFoundException(USER_LAST_ACTIVITY_TIME_NOT_FOUND));
