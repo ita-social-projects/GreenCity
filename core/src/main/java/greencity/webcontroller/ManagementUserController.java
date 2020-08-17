@@ -1,4 +1,4 @@
-package greencity.controller;
+package greencity.webcontroller;
 
 import greencity.entity.User;
 import greencity.service.UserService;
