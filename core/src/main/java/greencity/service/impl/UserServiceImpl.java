@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.Opt;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.swing.text.html.Option;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -781,9 +784,9 @@ public class UserServiceImpl implements UserService {
         if (!userRepo.findById(userId).isPresent()) {
             throw new WrongIdException(USER_NOT_FOUND_BY_ID + userId);
         }
-
-        if (userRepo.findLastActivityTimeById(userId).isPresent()) {
-            LocalDateTime userLastActivityTime = userRepo.findLastActivityTimeById(userId).get();
+        Optional<LocalDateTime> lastActivityTime = userRepo.findLastActivityTimeById(userId);
+        if (lastActivityTime.isPresent()) {
+            LocalDateTime userLastActivityTime = lastActivityTime.get();
             ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
             long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
