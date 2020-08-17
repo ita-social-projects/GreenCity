@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -20,15 +19,12 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
-import greencity.service.*;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import greencity.service.FileService;
+import greencity.service.HabitDictionaryService;
+import greencity.service.HabitService;
+import greencity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.Opt;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +34,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
