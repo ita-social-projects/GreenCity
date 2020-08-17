@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -26,7 +27,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
      * @return list of three recommended {@link EcoNews} instances.
      */
     @Query(nativeQuery = true,
-            value = "SELECT * FROM fn_Recommended_EcoNews_By_Opened_Eco_News(:openedEcoNewsId)")
+        value = "SELECT * FROM fn_Recommended_EcoNews_By_Opened_Eco_News(:openedEcoNewsId)")
     List<EcoNews> getThreeRecommendedEcoNews(Long openedEcoNewsId);
 
     /**
@@ -58,10 +59,18 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
      * @param searchQuery query to search
      * @return list of {@link EcoNews}
      */
-    @Query("select en from EcoNews as en "
-            + "where lower(en.title) like lower(CONCAT('%', :searchQuery, '%')) "
-            + "or lower(en.text) like lower(CONCAT('%', :searchQuery, '%')) "
-            + "or en.id in (select en.id from EcoNews en inner join en.tags entags "
-            + "where lower(entags.name) like lower(CONCAT('%', :searchQuery, '%')))")
+    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_textsearcheconews ( :searchQuery ) ")
     Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery);
+
+    /**
+     * Method for getting amount of published news by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of published news by user id.
+     * @author Marian Datsko
+     */
+    @Query(nativeQuery = true,
+        value = " SELECT COUNT(author_id) "
+            + " FROM eco_news WHERE author_id = :userId")
+    Long getAmountOfPublishedNewsByUserId(@Param("userId") Long id);
 }

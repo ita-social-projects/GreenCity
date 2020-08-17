@@ -82,7 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
             .and()
             .authorizeRequests()
-            .antMatchers("/management/**")
+            .antMatchers("/management/**", "/css/**", "/img/**")
             .permitAll()
             .antMatchers(
                 "/ownSecurity/**",
@@ -122,7 +122,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/replies/{parentCommentId}",
                 "/tipsandtricks/comments/count/likes",
                 "/tipsandtricks/comments/",
-                "/tipsandtricks/comments/count/comments"
+                "/tipsandtricks/comments/count/comments",
+                "/tipsandtricks/comments/count/comments",
+                "/habit/status/{habitId}"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,
@@ -146,7 +148,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/achievements",
                 "/facts/dayFact/*",
                 "/user/{userId}/sixUserFriends/",
-                "/user/{userId}/profile/"
+                "/user/{userId}/profile/",
+                "/user/{userId}/profileStatistics/",
+                "/goals/shoppingList/{userId}/language/{languageCode}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -162,7 +166,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/profilePicture",
                 "/econews/comments",
                 "/tipsandtricks/comments",
-                "/user/saveProfileInf"
+                "/user/saveProfileInf",
+                "/goals/shoppingList/{userId}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category/**",
@@ -184,7 +189,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/like",
                 "/tipsandtricks/comments/{tipsAndTricksId}",
                 "/tipsandtricks/comments/like",
-                "/user/profile"
+                "/user/profile",
+                "/habit/assign/{habitId}",
+                "/habit/unassign/{habitId}",
+                "/habit/status/enroll/{habitId}",
+                "/habit/status/unenroll/{habitId}/{date}",
+                "/habit/status/enroll/{habitId}/{date}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/user/{userId}/customGoals",

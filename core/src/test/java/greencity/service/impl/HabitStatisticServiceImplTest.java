@@ -7,10 +7,7 @@ import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.HabitLogItemDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitDictionary;
-import greencity.entity.HabitStatistic;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.entity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -56,8 +53,12 @@ class HabitStatisticServiceImplTest {
         .builder().amountOfItems(10).habitRate(HabitRate.GOOD)
         .id(1L).habitId(1L).createdOn(ZonedDateTime.now()).build();
 
-    private Habit habit = new Habit(1L, new HabitDictionary(), new User(), true,
-        zonedDateTime, Collections.emptyList());
+    HabitStatus habitStatus = new HabitStatus();
+    List<HabitStatus> habitStatuses = new ArrayList<>();
+
+    private Habit habit = new Habit(1L, new HabitDictionary(), null, true,
+        zonedDateTime, Collections.emptyList(), null);
+    
     private HabitStatistic habitStatistic = new HabitStatistic(
         1L, HabitRate.GOOD, ZonedDateTime.now(), 10, null);
 
