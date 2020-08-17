@@ -781,16 +781,15 @@ public class UserServiceImpl implements UserService {
         if (!userRepo.findById(userId).isPresent()) {
             throw new WrongIdException(USER_NOT_FOUND_BY_ID + userId);
         }
-        try {
-            LocalDateTime userLastActivityTime = userRepo.findLastActivityTimeById(userId)
-                    .orElseThrow(() -> new UserLastActivityTimeNotFoundException(USER_LAST_ACTIVITY_TIME_NOT_FOUND));
+
+        if (userRepo.findLastActivityTimeById(userId).isPresent()) {
+            LocalDateTime userLastActivityTime = userRepo.findLastActivityTimeById(userId).get();
             ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
             long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
             return result <= timeAfterLastActivity;
-        } catch (UserLastActivityTimeNotFoundException e) {
-            return false;
         }
+        return false;
     }
 
     /**
