@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/management/users")
+@RequestMapping("/management")
 public class ManagementUserController {
     private UserService userService;
 
@@ -27,8 +27,7 @@ public class ManagementUserController {
      * @return View template path {@link String}.
      * @author Vasyl Zhovnir
      */
-
-    @GetMapping("")
+    @GetMapping("/users")
     public String getAllUsers(Model model,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "5") int size) {
