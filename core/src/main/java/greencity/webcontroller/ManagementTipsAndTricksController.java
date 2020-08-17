@@ -1,7 +1,6 @@
-package greencity.controller;
+package greencity.webcontroller;
 
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.entity.TipsAndTricks;
 import greencity.service.TipsAndTricksService;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -9,9 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -40,29 +37,5 @@ public class ManagementTipsAndTricksController {
 
         model.addAttribute("tipsAndTricks", tipsAndTricksDtoResponses);
         return "core/management_tips_and_tricks";
-    }
-
-    /**
-     * Method for getting tips & tricks by id.
-     *
-     * @param model Model that will be configured.
-     * @return View template path {@link String}.
-     */
-    @GetMapping("/{id}")
-    public String getTipsAndTricksById(@PathVariable Long id, Model model) {
-        model.addAttribute("tipAndTrick", tipsAndTricksService.findDtoById(id));
-        return "core/management_tip_and_trick";
-    }
-
-    /**
-     * Method for deleting {@link TipsAndTricks} by its id.
-     *
-     * @param id {@link TipsAndTricks} which will be deleted.
-     * @return View template path {@link String}.
-     */
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        tipsAndTricksService.delete(id);
-        return "redirect:/management/tipsandtricks";
     }
 }
