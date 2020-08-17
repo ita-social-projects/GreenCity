@@ -1,9 +1,11 @@
 package greencity.service;
 
 import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionaryTranslation;
 import greencity.entity.User;
+import java.util.List;
 
 public interface HabitService {
     /**
@@ -29,4 +31,12 @@ public interface HabitService {
      * @return {@link HabitCreateDto}
      */
     HabitCreateDto assignHabitForUser(Long habitId, User user);
+
+    /**
+     * Method find all {@link HabitDto}.
+     *
+     * @return list of {@link HabitDto}
+     * @author Dovganyuk Taras
+     */
+    List<HabitDto> getAllHabitsDto();
 }

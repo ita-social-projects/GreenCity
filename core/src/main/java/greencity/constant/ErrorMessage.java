@@ -135,6 +135,7 @@ public final class ErrorMessage {
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
+    public static final String CANNOT_REPLY_TO_DELETED_COMMENT = "Can not reply to deleted comment";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
     public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
@@ -146,6 +147,8 @@ public final class ErrorMessage {
         + " time for the user with id: ";
     public static final String NOT_VALID_URL = "Your URL is not valid : ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
+    public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
+    public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
     public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
 

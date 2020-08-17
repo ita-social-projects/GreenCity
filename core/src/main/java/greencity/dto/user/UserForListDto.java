@@ -43,4 +43,6 @@ public class UserForListDto {
 
     @NotNull
     private ROLE role;
+
+    private String userCredo;
 }
