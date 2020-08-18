@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionaryTranslation;
 import greencity.entity.User;
@@ -11,6 +12,8 @@ import greencity.repository.HabitDictionaryTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.service.HabitService;
 import greencity.service.HabitStatusService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -78,5 +81,13 @@ public class HabitServiceImpl implements HabitService {
         }
 
         return modelMapper.map(habitRepo.save(habit), HabitCreateDto.class);
+    }
+
+    @Override
+    public List<HabitDto> getAllHabitsDto() {
+        return habitRepo.findAll()
+            .stream()
+            .map(habit -> modelMapper.map(habit, HabitDto.class))
+            .collect(Collectors.toList());
     }
 }

@@ -1,4 +1,4 @@
-package greencity.controller;
+package greencity.webcontroller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
