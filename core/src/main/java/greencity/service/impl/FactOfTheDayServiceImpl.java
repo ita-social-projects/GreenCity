@@ -8,8 +8,6 @@ import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
 import greencity.service.FactOfTheDayService;
 import java.util.List;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +20,14 @@ import org.springframework.stereotype.Service;
 @EnableCaching
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private FactOfTheDayRepo factOfTheDayRepo;
-    private ModelMapper modelMapper;
 
     /**
      * Constructor with parameters.
      *
      * @author Mykola Lehkyi
      */
-    @Autowired
-    public FactOfTheDayServiceImpl(FactOfTheDayRepo factOfTheDayRepo, ModelMapper modelMapper) {
+    public FactOfTheDayServiceImpl(FactOfTheDayRepo factOfTheDayRepo) {
         this.factOfTheDayRepo = factOfTheDayRepo;
-        this.modelMapper = modelMapper;
     }
 
     /**
