@@ -1,16 +1,21 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
+import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.entity.FactOfTheDay;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface FactOfTheDayService {
     /**
-     * Method finds all {@link FactOfTheDay}.
+     * Method finds all {@link FactOfTheDay} with pageable configuration.
      *
-     * @return List of all {@link FactOfTheDay}
+     * @param pageable {@link Pageable}
+     * @return {@link PageableDto} with list of all {@link FactOfTheDayDTO}
      * @author Mykola Lehkyi
      */
-    List<FactOfTheDay> getAllFactsOfTheDay();
+    PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable);
 
     /**
      * Method find {@link FactOfTheDay} by id.

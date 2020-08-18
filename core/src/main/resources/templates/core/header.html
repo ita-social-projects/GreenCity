@@ -1,6 +1,5 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head></head>
 <header th:fragment="header">
     <div class="main-header">
         <div class="main-container-header">
@@ -24,7 +23,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a th:href="@{/management/factoftheday}">
                                     Fact of the day
                                 </a>
                             </li>

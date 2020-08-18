@@ -1,6 +1,9 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableDto;
+import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.service.FactOfTheDayService;
@@ -10,6 +13,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,8 +44,28 @@ public class FactOfTheDayController {
     })
     @GetMapping("/")
     public ResponseEntity<FactOfTheDayTranslationDTO> getFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                      Principal principal, @RequestParam String languageCode) {
+                                                                          Principal principal,
+                                                                      @RequestParam String languageCode) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(languageCode));
+    }
+
+    /**
+     * Method which return a random {@link FactOfTheDay}.
+     *
+     * @return {@link ResponseEntity}
+     */
+    @ApiPageable
+    @ApiOperation(value = "Get all facts of the day.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/all")
+    public ResponseEntity<PageableDto<FactOfTheDayDTO>> getAllFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
+                                                                             Principal principal, @ApiIgnore
+                                                                             Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(factOfTheDayService.getAllFactsOfTheDay(pageable));
     }
 }

@@ -1,14 +1,24 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableDto;
+import greencity.dto.factoftheday.FactOfTheDayDTO;
+import greencity.dto.user.UserForListDto;
 import greencity.entity.FactOfTheDay;
+import greencity.entity.User;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
 import greencity.service.FactOfTheDayService;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +30,8 @@ import org.springframework.stereotype.Service;
 @EnableCaching
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private FactOfTheDayRepo factOfTheDayRepo;
+    @Autowired
+    private ModelMapper modelMapper;
 
     /**
      * Constructor with parameters.
@@ -31,14 +43,24 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     }
 
     /**
-     * Method finds all {@link FactOfTheDay}.
+     * Method finds all {@link FactOfTheDay} with pageable configuration.
      *
-     * @return List of all {@link FactOfTheDay}
+     * @param pageable {@link Pageable}
+     * @return {@link PageableDto} with list of all {@link FactOfTheDayDTO}
      * @author Mykola Lehkyi
      */
     @Override
-    public List<FactOfTheDay> getAllFactsOfTheDay() {
-        return factOfTheDayRepo.findAll();
+    public PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable) {
+        save(new FactOfTheDay(null,"test fact", null, null));
+        Page<FactOfTheDay> factsOfTheDay = factOfTheDayRepo.findAll(pageable);
+        List<FactOfTheDayDTO> factOfTheDayDTOs =
+            factsOfTheDay.getContent().stream()
+                .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(
+            factOfTheDayDTOs,
+            factsOfTheDay.getTotalElements(),
+            factsOfTheDay.getPageable().getPageNumber());
     }
 
     /**

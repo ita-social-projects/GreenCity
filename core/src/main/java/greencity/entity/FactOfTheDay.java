@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @NoArgsConstructor
@@ -24,6 +25,7 @@ public class FactOfTheDay {
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "factOfTheDay", fetch = FetchType.LAZY)
     private List<FactOfTheDayTranslation> factOfTheDayTranslations;
 
+    @CreationTimestamp
     @Column(name = "create_date", nullable = false)
     private ZonedDateTime createDate;
 }
