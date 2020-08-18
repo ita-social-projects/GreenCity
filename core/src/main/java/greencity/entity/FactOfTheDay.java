@@ -19,7 +19,7 @@ public class FactOfTheDay {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 300)
-    private String title;
+    private String name;
 
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "factOfTheDay", fetch = FetchType.LAZY)
     private List<FactOfTheDayTranslation> factOfTheDayTranslations;

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FactOfTheDayRepo extends JpaRepository<FactOfTheDay, Long> {
     /**
-     * Method finds all{@link FactOfTheDay} with specified title.
+     * Method finds all{@link FactOfTheDay} with specified name.
      *
-     * @param title of {@link FactOfTheDay}
+     * @param name of {@link FactOfTheDay}
      * @return List of {@link FactOfTheDay}
      */
-    List<FactOfTheDay> findAllByTitle(String title);
+    List<FactOfTheDay> findAllByName(String name);
 }

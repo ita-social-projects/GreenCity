@@ -62,13 +62,13 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     /**
      * Method find {@link FactOfTheDay} by title.
      *
-     * @param title of {@link FactOfTheDay}
+     * @param name of {@link FactOfTheDay}
      * @return {@link FactOfTheDay}
      * @author Mykola Lehkyi
      */
     @Override
-    public List<FactOfTheDay> getAllFactOfTheDayByTitle(String title) {
-        return factOfTheDayRepo.findAllByTitle(title);
+    public List<FactOfTheDay> getAllFactOfTheDayByName(String name) {
+        return factOfTheDayRepo.findAllByName(name);
     }
 
     /**

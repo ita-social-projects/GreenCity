@@ -22,13 +22,13 @@ public interface FactOfTheDayService {
     FactOfTheDay getFactOfTheDayById(Long id);
 
     /**
-     * Method find {@link FactOfTheDay} by fact.
+     * Method find {@link FactOfTheDay} by name.
      *
-     * @param title of {@link FactOfTheDay}
+     * @param name of {@link FactOfTheDay}
      * @return {@link FactOfTheDay}
      * @author Mykola Lehkyi
      */
-    List<FactOfTheDay> getAllFactOfTheDayByTitle(String title);
+    List<FactOfTheDay> getAllFactOfTheDayByName(String name);
 
     /**
      * Method saves new {@link FactOfTheDay}.

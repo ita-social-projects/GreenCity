@@ -8,7 +8,7 @@
                 <constraints primaryKey="true"/>
             </column>
 
-            <column name="title" type="varchar(255)">
+            <column name="name" type="varchar(300)">
                 <constraints nullable="false"/>
             </column>
 
