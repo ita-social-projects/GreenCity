@@ -11,9 +11,9 @@ public interface EcoNewsCommentService {
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
      *
-     * @param econewsId id of {@link greencity.entity.EcoNews} to which we save comment.
+     * @param econewsId                   id of {@link greencity.entity.EcoNews} to which we save comment.
      * @param addEcoNewsCommentDtoRequest dto with {@link greencity.entity.EcoNewsComment} text, parentCommentId.
-     * @param user {@link User} that saves the comment.
+     * @param user                        {@link User} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
@@ -22,7 +22,7 @@ public interface EcoNewsCommentService {
     /**
      * Method returns all comments to certain ecoNews specified by ecoNewsId.
      *
-     * @param user current {@link User}
+     * @param user      current {@link User}
      * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we search for comments
      * @return all comments to certain ecoNews specified by ecoNewsId.
      */
@@ -32,7 +32,7 @@ public interface EcoNewsCommentService {
      * Method returns all replies to certain comment specified by parentCommentId.
      *
      * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to which we search for replies
-     * @param user current {@link User}
+     * @param user            current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      */
     PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, User user);
@@ -40,7 +40,7 @@ public interface EcoNewsCommentService {
     /**
      * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as deleted.
      *
-     * @param id id of {@link greencity.entity.EcoNewsComment} to delete.
+     * @param id   id of {@link greencity.entity.EcoNewsComment} to delete.
      * @param user current {@link User} that wants to delete.
      */
     void deleteById(Long id, User user);
@@ -49,7 +49,7 @@ public interface EcoNewsCommentService {
      * Method to change the existing {@link greencity.entity.EcoNewsComment}.
      *
      * @param text new text of {@link greencity.entity.EcoNewsComment}.
-     * @param id to specify {@link greencity.entity.EcoNewsComment} that user wants to change.
+     * @param id   to specify {@link greencity.entity.EcoNewsComment} that user wants to change.
      * @param user current {@link User} that wants to change.
      */
     void update(String text, Long id, User user);
@@ -57,7 +57,7 @@ public interface EcoNewsCommentService {
     /**
      * Method to like or dislike {@link greencity.entity.EcoNewsComment} specified by id.
      *
-     * @param id of {@link greencity.entity.EcoNewsComment} to like/dislike.
+     * @param id   of {@link greencity.entity.EcoNewsComment} to like/dislike.
      * @param user current {@link User} that wants to like/dislike.
      */
     void like(Long id, User user);
@@ -85,4 +85,15 @@ public interface EcoNewsCommentService {
      * @return amount of comments
      */
     int countOfComments(Long ecoNewsId);
+
+    /**
+     * Method to get all active comments to {@link greencity.entity.EcoNews} specified by ecoNewsId.
+     *
+     * @param user      current {@link User}
+     * @param pageable  page of news.
+     * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we search for comments
+     * @return all active comments to certain ecoNews specified by ecoNewsId.
+     * @author Taras Dovganyuk
+     */
+    PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, User user, Long ecoNewsId);
 }

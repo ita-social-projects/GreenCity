@@ -30,6 +30,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private EcoNewsService ecoNewsService;
     private ModelMapper modelMapper;
 
+
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
      *
@@ -211,5 +212,31 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     @Override
     public int countOfComments(Long ecoNewsId) {
         return ecoNewsCommentRepo.countOfComments(ecoNewsId);
+    }
+
+    /**
+     * Method to get all active comments to {@link greencity.entity.EcoNews} specified by ecoNewsId.
+     *
+     * @param user      current {@link User}
+     * @param pageable  page of news.
+     * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we search for comments
+     * @return all active comments to certain ecoNews specified by ecoNewsId.
+     * @author Taras Dovganyuk
+     */
+    @Override
+    public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, User user, Long ecoNewsId) {
+        Page<EcoNewsComment> pages =
+            ecoNewsCommentRepo
+                .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateAsc(pageable, ecoNewsId);
+        List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
+            .stream()
+            .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            ecoNewsCommentDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber()
+        );
     }
 }

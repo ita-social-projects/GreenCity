@@ -225,4 +225,31 @@ public class EcoNewsCommentController {
         int amountLikes = ecoNewsCommentService.countLikes(id);
         return AmountCommentLikesDto.builder().amountLikes(amountLikes).id(id).build();
     }
+
+    /**
+     * Method to get all active comments to {@link greencity.entity.EcoNews} specified by ecoNewsId.
+     *
+     * @param ecoNewsId id of {@link greencity.entity.EcoNews}
+     * @return Pageable of {@link EcoNewsCommentDto}
+     * @author Taras Dovganyuk
+     */
+    @ApiOperation(value = "Get all active comments.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+    })
+    @GetMapping("/active")
+    @ApiPageable
+    public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
+                                                                               Long ecoNewsId,
+                                                                               @ApiIgnore @AuthenticationPrincipal
+                                                                                   Principal principal) {
+        User user = null;
+        if (principal != null) {
+            user = userService.findByEmail(principal.getName());
+        }
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
+    }
 }
