@@ -241,15 +241,9 @@ public class EcoNewsCommentController {
     @GetMapping("/active")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
-                                                                               Long ecoNewsId,
-                                                                               @ApiIgnore @AuthenticationPrincipal
-                                                                                   Principal principal) {
-        User user = null;
-        if (principal != null) {
-            user = userService.findByEmail(principal.getName());
-        }
+                                                                               Long ecoNewsId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
+            .body(ecoNewsCommentService.getAllActiveComments(pageable, ecoNewsId));
     }
 }

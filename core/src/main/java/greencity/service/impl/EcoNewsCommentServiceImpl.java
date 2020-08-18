@@ -217,14 +217,13 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method to get all active comments to {@link greencity.entity.EcoNews} specified by ecoNewsId.
      *
-     * @param user      current {@link User}
      * @param pageable  page of news.
      * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we search for comments
      * @return all active comments to certain ecoNews specified by ecoNewsId.
      * @author Taras Dovganyuk
      */
     @Override
-    public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, User user, Long ecoNewsId) {
+    public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, Long ecoNewsId) {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
                 .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateAsc(pageable, ecoNewsId);
