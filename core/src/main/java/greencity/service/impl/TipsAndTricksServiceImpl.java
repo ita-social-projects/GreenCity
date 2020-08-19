@@ -4,6 +4,7 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
@@ -67,6 +68,24 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         }
 
         return modelMapper.map(toSave, TipsAndTricksDtoResponse.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
+    @Override
+    public void update(TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+                       MultipartFile image) {
+        TipsAndTricks toUpdate = findById(tipsAndTricksDtoManagement.getId());
+        toUpdate.setTitle(tipsAndTricksDtoManagement.getTitle());
+        toUpdate.setText(tipsAndTricksDtoManagement.getText());
+        toUpdate.setTags(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()));
+        toUpdate.setAuthor(userService.findByEmail(tipsAndTricksDtoManagement.getEmailAuthor()));
+        if (image != null) {
+            toUpdate.setImagePath(fileService.upload(image).toString());
+        }
+        tipsAndTricksRepo.save(toUpdate);
     }
 
     /**
@@ -136,6 +155,15 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         return tipsAndTricksRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TIPS_AND_TRICKS_NOT_FOUND_BY_ID + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TipsAndTricksDtoManagement findManagementDtoById(Long id) {
+        TipsAndTricks tipsAndTricks = findById(id);
+        return modelMapper.map(tipsAndTricks, TipsAndTricksDtoManagement.class);
     }
 
     /**

@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
@@ -18,6 +19,13 @@ public interface TipsAndTricksService {
      */
     TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
                                   String email);
+
+    /**
+     * Method for updating {@link TipsAndTricks} instance.
+     *
+     * @param tricksDtoManagement - instance of {@link TipsAndTricksDtoManagement}.
+     */
+    void update(TipsAndTricksDtoManagement tricksDtoManagement, MultipartFile multipartFile);
 
     /**
      * Method for getting all tips & tricks by page.
@@ -51,6 +59,14 @@ public interface TipsAndTricksService {
      * @return {@link TipsAndTricks} instance.
      */
     TipsAndTricks findById(Long id);
+
+    /**
+     * Method for getting the {@link TipsAndTricksDtoManagement} instance by its id.
+     *
+     * @param id {@link TipsAndTricksDtoManagement} instance id.
+     * @return {@link TipsAndTricksDtoManagement} instance.
+     */
+    TipsAndTricksDtoManagement findManagementDtoById(Long id);
 
     /**
      * Method for deleting the {@link TipsAndTricks} instance by its id.

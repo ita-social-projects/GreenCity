@@ -2,23 +2,26 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>User Habits</title>
-    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}" />
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
-          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
-          rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet" />
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -31,16 +34,54 @@
             <th>author</th>
             <th>imagePath</th>
             <th>creationDate</th>
+            <th>edit</th>
+            <th>delete</th>
         </tr>
-        <tr th:each="entity : ${tipsAndTricks}">
+        <tr th:each="entity : ${pageable.getPage()}">
             <td th:text="${entity.id}"></td>
             <td th:text="${entity.title}"></td>
             <td th:text="${entity.author.name}"></td>
             <td th:text="${entity.imagePath}"></td>
             <td th:text="${entity.creationDate}"></td>
+            <td>
+                <a th:href="@{|/management/tipsandtricks/edit/${entity.id}|}">Edit</a>
+            </td>
+            <td>
+                <a type="button" data-toggle="modal" data-target="#modal-warning"
+                   th:attr="data-target='#modal-warning'+${entity.id }" aria-pressed="true"><i class="material-icons"
+                                                                                               data-toggle="tooltip"
+                                                                                               title="Delete">&#xE872;</i></a>
+
+                <div class="modal modal-warning fade in" th:id="modal-warning+${entity.id }">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <h3>Are you sure want to delete Tip&Trick?</h3>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close
+                                </button>
+                                <a type="button" class="btn btn-outline"
+                                   th:href="@{/management/tipsandtricks/delete/{id}(id=${entity.id})}"><i
+                                        class="fa fa-check"></i>&nbsp;Yes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </td>
         </tr>
     </table>
+
     <br><br>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item" th:each="tmp : ${#numbers.sequence(0, pageable.getTotalPages() - 1)}"
+                th:classappend="${pageable.getCurrentPage()}==tmp?'active':''">
+                <a class="page-link" th:href="@{''(page=${tmp})}" th:text="${tmp}"></a>
+            </li>
+        </ul>
+    </nav>
 </div>
 <div id="footer" th:insert="core/footer"></div>
 </body>
