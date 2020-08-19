@@ -1,9 +1,5 @@
 package greencity.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
 import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
@@ -26,9 +22,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(SpringExtension.class)
 public class PlaceCommentServiceImplTest {
-
     @Mock
     private PlaceCommentRepo placeCommentRepo;
     @Mock
@@ -47,8 +46,8 @@ public class PlaceCommentServiceImplTest {
         CommentReturnDto commentReturnDto = ModelUtils.getCommentReturnDto();
         when(placeCommentRepo.findById(1L))
             .thenReturn(Optional.of(comment));
-        when(modelMapper.map(comment, CommentReturnDto.class)).
-            thenReturn(commentReturnDto);
+        when(modelMapper.map(comment, CommentReturnDto.class))
+            .thenReturn(commentReturnDto);
         CommentReturnDto result = placeCommentService.findById(1L);
         assertEquals(1, (long) result.getId());
     }
@@ -85,12 +84,11 @@ public class PlaceCommentServiceImplTest {
         List<Comment> list = Collections.singletonList(ModelUtils.getComment());
         Page<Comment> comments = new PageImpl<Comment>(list, pageRequest, list.size());
 
-        PageableDto<CommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0);
+        PageableDto<CommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0,1);
         when(modelMapper.map(list.get(0), CommentAdminDto.class)).thenReturn(commentAdminDtos.get(0));
         when(placeCommentRepo.findAll(pageRequest)).thenReturn(comments);
 
         assertEquals(result, placeCommentService.getAllComments(pageRequest));
     }
-
 
 }

@@ -298,89 +298,23 @@
 								<label for="selectAll"></label>
 							</span>
                             </th>
+                            <th>ID</th>
                             <th>Name</th>
-                            <th>Email</th>
-                            <th>Address</th>
-                            <th>Phone</th>
+                            <th>Creation date</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr th:each="factOfTheDay, iterStatus :${pageable.getPage()}">
                             <td>
-							<span class="custom-checkbox">
-								<input type="checkbox" id="checkbox1" name="options[]" value="1">
-								<label for="checkbox1"></label>
-							</span>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1" name="options[]" value="1">
+                                    <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+							    </span>
                             </td>
-                            <td>Thomas Hardy</td>
-                            <td>thomashardy@mail.com</td>
-                            <td>89 Chiaroscuro Rd, Portland, USA</td>
-                            <td>(171) 555-2222</td>
-                            <td>
-                                <a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-							<span class="custom-checkbox">
-								<input type="checkbox" id="checkbox2" name="options[]" value="1">
-								<label for="checkbox2"></label>
-							</span>
-                            </td>
-                            <td>Dominique Perrier</td>
-                            <td>dominiqueperrier@mail.com</td>
-                            <td>Obere Str. 57, Berlin, Germany</td>
-                            <td>(313) 555-5735</td>
-                            <td>
-                                <a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-							<span class="custom-checkbox">
-								<input type="checkbox" id="checkbox3" name="options[]" value="1">
-								<label for="checkbox3"></label>
-							</span>
-                            </td>
-                            <td>Maria Anders</td>
-                            <td>mariaanders@mail.com</td>
-                            <td>25, rue Lauriston, Paris, France</td>
-                            <td>(503) 555-9931</td>
-                            <td>
-                                <a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-							<span class="custom-checkbox">
-								<input type="checkbox" id="checkbox4" name="options[]" value="1">
-								<label for="checkbox4"></label>
-							</span>
-                            </td>
-                            <td>Fran Wilson</td>
-                            <td>franwilson@mail.com</td>
-                            <td>C/ Araquil, 67, Madrid, Spain</td>
-                            <td>(204) 619-5731</td>
-                            <td>
-                                <a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-							<span class="custom-checkbox">
-								<input type="checkbox" id="checkbox5" name="options[]" value="1">
-								<label for="checkbox5"></label>
-							</span>
-                            </td>
-                            <td>Martin Blank</td>
-                            <td>martinblank@mail.com</td>
-                            <td>Via Monte Bianco 34, Turin, Italy</td>
-                            <td>(480) 631-2097</td>
+                            <td th:text="${factOfTheDay.getId()}"></td>
+                            <td th:text="${factOfTheDay.getName()}"></td>
+                            <td th:text="${factOfTheDay.getCreateDate()}"></td>
                             <td>
                                 <a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
                                 <a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
@@ -389,15 +323,11 @@
                         </tbody>
                     </table>
                     <div class="clearfix">
-                        <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
-                        <ul class="pagination">
-                            <li class="page-item disabled"><a href="#">Previous</a></li>
-                            <li class="page-item"><a href="#" class="page-link">1</a></li>
-                            <li class="page-item"><a href="#" class="page-link">2</a></li>
-                            <li class="page-item active"><a href="#" class="page-link">3</a></li>
-                            <li class="page-item"><a href="#" class="page-link">4</a></li>
-                            <li class="page-item"><a href="#" class="page-link">5</a></li>
-                            <li class="page-item"><a href="#" class="page-link">Next</a></li>
+                        <div class="hint-text">Showing <b th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b th:text="${pageable.getTotalElements()}">25</b> entries</div>
+                        <ul class="pagination" >
+                            <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a th:href="@{factoftheday(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a></li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}" th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a th:href="@{factoftheday(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                            <li class="page-item" th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a th:href="@{factoftheday(page=${pageable.getCurrentPage()+1})}" class="page-link">Next</a></li>
                         </ul>
                     </div>
                 </div>

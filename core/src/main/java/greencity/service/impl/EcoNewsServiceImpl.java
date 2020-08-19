@@ -14,6 +14,16 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -28,17 +38,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
@@ -150,9 +149,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 .collect(Collectors.toList());
 
         return new PageableDto<>(
-                ecoNewsDtos,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber()
+            ecoNewsDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
         );
     }
 
@@ -175,7 +175,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return new PageableDto<>(
             ecoNewsDtos,
             pages.getTotalElements(),
-            pages.getPageable().getPageNumber()
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
         );
     }
 
@@ -230,9 +231,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 .collect(Collectors.toList());
 
         return new PageableDto<>(
-                ecoNews,
-                page.getTotalElements(),
-                page.getPageable().getPageNumber()
+            ecoNews,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
         );
     }
 

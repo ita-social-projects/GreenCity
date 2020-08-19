@@ -102,7 +102,8 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         return new PageableDto<CommentAdminDto>(
             commentList,
             comments.getTotalElements(),
-            comments.getPageable().getPageNumber()
+            comments.getPageable().getPageNumber(),
+            comments.getTotalPages()
         );
     }
 }

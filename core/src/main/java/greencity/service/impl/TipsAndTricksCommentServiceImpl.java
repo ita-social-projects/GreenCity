@@ -100,7 +100,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
         return new PageableDto<>(
             tipsAndTricksCommentDtos,
             pages.getTotalElements(),
-            pages.getPageable().getPageNumber()
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
         );
     }
 

@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -20,7 +19,10 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
-import greencity.service.*;
+import greencity.service.FileService;
+import greencity.service.HabitDictionaryService;
+import greencity.service.HabitService;
+import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,6 +36,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -95,7 +99,8 @@ public class UserServiceImpl implements UserService {
         return new PageableDto<>(
             userForListDtos,
             users.getTotalElements(),
-            users.getPageable().getPageNumber());
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
     }
 
     /**
@@ -192,7 +197,8 @@ public class UserServiceImpl implements UserService {
         return new PageableDto<>(
             userForListDtos,
             users.getTotalElements(),
-            users.getPageable().getPageNumber());
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
     }
 
     /**

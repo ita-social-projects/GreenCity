@@ -20,6 +20,11 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.*;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,12 +42,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -250,7 +249,7 @@ public class UserServiceImplTest {
 
         PageableDto<UserForListDto> userPageableDto =
             new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0);
+                userForListDtos.size(), 0,1);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -301,7 +300,7 @@ public class UserServiceImplTest {
 
         PageableDto<UserForListDto> userPageableDto =
             new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0);
+                userForListDtos.size(), 0,1);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 

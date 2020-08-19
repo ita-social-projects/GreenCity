@@ -3,15 +3,12 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
-import greencity.dto.user.UserForListDto;
 import greencity.entity.FactOfTheDay;
-import greencity.entity.User;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
 import greencity.service.FactOfTheDayService;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
@@ -51,7 +48,6 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     @Override
     public PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable) {
-        save(new FactOfTheDay(null,"test fact", null, null));
         Page<FactOfTheDay> factsOfTheDay = factOfTheDayRepo.findAll(pageable);
         List<FactOfTheDayDTO> factOfTheDayDTOs =
             factsOfTheDay.getContent().stream()
@@ -60,7 +56,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
         return new PageableDto<>(
             factOfTheDayDTOs,
             factsOfTheDay.getTotalElements(),
-            factsOfTheDay.getPageable().getPageNumber());
+            factsOfTheDay.getPageable().getPageNumber(),
+            factsOfTheDay.getTotalPages());
     }
 
     /**

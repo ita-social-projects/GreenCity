@@ -109,7 +109,7 @@ class TipsAndTricksServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
         List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
-        PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+        PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0,1);
 
         when(tipsAndTricksRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
@@ -125,7 +125,7 @@ class TipsAndTricksServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
         List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
-        PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+        PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0,1);
 
         when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
         when(tipsAndTricksRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
@@ -179,7 +179,7 @@ class TipsAndTricksServiceImplTest {
         List<SearchTipsAndTricksDto> dtoList = page.stream()
             .map(t -> modelMapper.map(t, SearchTipsAndTricksDto.class))
             .collect(Collectors.toList());
-        PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+        PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0,1);
 
         when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitle())).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));

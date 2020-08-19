@@ -87,7 +87,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         return new PageableDto<>(
             ecoNewsCommentDtos,
             pages.getTotalElements(),
-            pages.getPageable().getPageNumber()
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
         );
     }
 
@@ -114,7 +115,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         return new PageableDto<>(
             ecoNewsCommentDtos,
             pages.getTotalElements(),
-            pages.getPageable().getPageNumber()
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
         );
     }
 

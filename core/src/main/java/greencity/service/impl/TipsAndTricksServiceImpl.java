@@ -106,7 +106,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         return new PageableDto<>(
             tipsAndTricksDtos,
             pages.getTotalElements(),
-            pages.getPageable().getPageNumber()
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
         );
     }
 
@@ -151,7 +152,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         return new PageableDto<>(
             tipsAndTricksDtos,
             page.getTotalElements(),
-            page.getPageable().getPageNumber()
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
         );
     }
 
