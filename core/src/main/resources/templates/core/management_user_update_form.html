@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!--suppress ALL -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
@@ -25,40 +24,44 @@
 <div id="header" th:insert="core/header"></div>
 <div class="main-content">
     <div class="container">
-        <div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">User name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Credo</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="user : ${users.getPage()}">
-                    <td th:text="${user.id}"></td>
-                    <td th:text="${user.name}"></td>
-                    <td th:text="${user.email}"></td>
-                    <td th:text="${user.userCredo}"></td>
-                    <td th:text="${user.userStatus}"></td>
-                    <td><a th:href="@{updateUserForm(id=${user.id})}" class="btn btn-primary eBtn">Edit</a></td>
-                </tr>
-                </tbody>
-            </table>
-            <hr/>
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item" th:each="tmp : ${#numbers.sequence(0, users.getTotalElements() / 4 - 1)}"
-                        th:classappend="${currentPage}==${tmp}?'active':''">
-                        <a class="page-link" th:href="@{''(page=${tmp})}" th:text="${tmp}"></a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        <form th:action="@{update}" method="post" th:object="${user}">
+            <input type="hidden" th:field="*{id}"/>
+            <h2>Update User</h2>
+            <hr>
+            <label>Name:</label>
+            <div class="form-inline">
+                <input class="form-control mb-4 col-4 mr-2" type="text" th:field="*{name}"/>
+                <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Wrong name</span>
+            </div>
 
+            <label>E-mail:</label>
+            <div class="form-inline">
+                <input class="form-control mb-4 col-4 mr-2" type="text" th:field="*{email}"/>
+                <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Wrong email</span>
+            </div>
+
+            <label>Credo:</label>
+            <div class="form-inline">
+                <input class="form-control mb-4 col-4 mr-2" type="text" th:field="*{userCredo}"/>
+                <span class="error" th:if="${#fields.hasErrors('userCredo')}"
+                      th:errors="*{userCredo}">Wrong credo</span>
+            </div>
+
+            <label>Status:</label>
+            <div class="form-inline">
+                <select class="custom-select" th:field="*{userStatus}">
+                    <option value="BLOCKED">BLOCKED</option>
+                    <option value="DEACTIVATED">DEACTIVATED</option>
+                    <option value="ACTIVATED">ACTIVATED</option>
+                    <span class="error" th:if="${#fields.hasErrors('userStatus')}" th:errors="*{userStatus}">Wrong status</span>
+                </select>
+            </div>
+            <br><br>
+            <div class="modal-footer">
+                <a class="btn btn-secondary" th:href="@{/management/users}">Back</a>
+                <input type="submit" class="btn btn-primary" value="Save"/>
+            </div>
+        </form>
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>

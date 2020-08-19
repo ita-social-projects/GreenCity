@@ -94,6 +94,24 @@ public interface UserService {
     PageableDto findByPage(Pageable pageable);
 
     /**
+     * Find {@link User} for management by page .
+     *
+     * @param pageable a value with pageable configuration.
+     * @return a dto of {@link PageableDto}.
+     * @author Vasyl Zhovnir
+     */
+    PageableDto<UserManagementDto> findUserForManagementByPage(Pageable pageable);
+
+    /**
+     * Method that allows you to update {@link User} by dto.
+     *
+     * @param dto - dto {@link UserForListDto} with updated fields for updating {@link User}.
+     * @author Vasyl Zhovnir
+     */
+    void updateUser(UserManagementDto dto);
+
+
+    /**
      * Get all exists roles.
      *
      * @return {@link RoleDto}.
