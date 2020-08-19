@@ -72,7 +72,7 @@ public class ModelUtils {
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList());
+            Collections.emptyList(), Collections.emptyList());
     }
 
     public static EcoNews getEcoNews() {
@@ -199,7 +199,7 @@ public class ModelUtils {
         adviceTranslation.setId(5L);
         adviceTranslation.setLanguage(
             new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList()));
+                Collections.emptyList(), Collections.emptyList()));
         adviceTranslation.setAdvice(
             Advice.builder().id(2L).habitDictionary(HabitDictionary.builder().id(2L).image("cup").build()).build());
         adviceTranslation.setContent("Don't take a cup");
@@ -211,7 +211,7 @@ public class ModelUtils {
             .id(2L)
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList()))
             .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
             .text("Buy a bamboo toothbrush")
             .build();
@@ -255,11 +255,11 @@ public class ModelUtils {
         return Arrays.asList(
             new GoalTranslation(2L,
                 new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList()), "Buy a bamboo toothbrush",
+                    Collections.emptyList(), Collections.emptyList()), "Buy a bamboo toothbrush",
                 new Goal(1L, Collections.emptyList(), Collections.emptyList())),
             new GoalTranslation(11L,
                 new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList()), "Start recycling batteries",
+                    Collections.emptyList(), Collections.emptyList()), "Start recycling batteries",
                 new Goal(4L, Collections.emptyList(), Collections.emptyList())));
     }
 

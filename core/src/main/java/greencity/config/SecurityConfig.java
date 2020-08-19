@@ -27,9 +27,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static greencity.constant.AppConstant.ADMIN;
-import static greencity.constant.AppConstant.MODERATOR;
-import static greencity.constant.AppConstant.USER;
+import static greencity.constant.AppConstant.*;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
@@ -124,7 +122,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/",
                 "/tipsandtricks/comments/count/comments",
                 "/tipsandtricks/comments/count/comments",
-                "/habit/status/{habitId}"
+                "/habit/status/{habitId}",
+                "/factoftheday/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.POST,

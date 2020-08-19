@@ -188,7 +188,7 @@ class EcoNewsServiceImplTest {
             new EcoNewsDto(now, "test image path", 1L, "test title", "test text", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList())
         );
-        PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+        PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0,1);
 
         when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
@@ -204,7 +204,7 @@ class EcoNewsServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<EcoNews> page = new PageImpl<>(ecoNews, pageRequest, ecoNews.size());
         List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
-        PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+        PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0,1);
 
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
         when(ecoNewsRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
@@ -241,7 +241,7 @@ class EcoNewsServiceImplTest {
     @Test
     void search() {
         SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
-        PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1);
+        PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1,2);
         Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews), PageRequest.of(1, 3), 1);
 
         when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "test")).thenReturn(page);

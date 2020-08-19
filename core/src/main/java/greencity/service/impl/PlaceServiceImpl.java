@@ -1,9 +1,7 @@
 package greencity.service.impl;
 
-import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
@@ -15,7 +13,6 @@ import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
-import greencity.mapping.ProposePlaceMapper;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
@@ -35,6 +32,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -98,7 +98,8 @@ public class PlaceServiceImpl implements PlaceService {
         List<AdminPlaceDto> list = places.stream()
             .map(place -> modelMapper.map(place, AdminPlaceDto.class))
             .collect(Collectors.toList());
-        return new PageableDto<>(list, places.getTotalElements(), places.getPageable().getPageNumber());
+        return new PageableDto<>(list, places.getTotalElements(), places.getPageable().getPageNumber(),
+            places.getTotalPages());
     }
 
     /**
@@ -114,7 +115,7 @@ public class PlaceServiceImpl implements PlaceService {
         proposePlaceService.checkLocationValues(dto.getLocation());
         proposePlaceService.checkInputTime(dto.getOpeningHoursList());
 
-        Place place = modelMapper.map(dto,Place.class);
+        Place place = modelMapper.map(dto, Place.class);
         setUserToPlaceByEmail(email, place);
 
         place.setCategory(categoryService.findByName(dto.getCategory().getName()));
@@ -450,7 +451,8 @@ public class PlaceServiceImpl implements PlaceService {
         return new PageableDto<>(
             adminPlaceDtos,
             list.getTotalElements(),
-            list.getPageable().getPageNumber());
+            list.getPageable().getPageNumber(),
+            list.getTotalPages());
     }
 
     /**

@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class SearchServiceImplTest {
-
     @InjectMocks
     private SearchServiceImpl searchService;
 
@@ -31,11 +30,11 @@ class SearchServiceImplTest {
     @Test
     void searchTest() {
         SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
-        PageableDto<SearchNewsDto> ecoNews = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1);
+        PageableDto<SearchNewsDto> ecoNews = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1,1);
         SearchTipsAndTricksDto searchTipsAndTricksDto =
             new SearchTipsAndTricksDto(1L, "title", null, null, Collections.singletonList("tips_tag"));
         PageableDto<SearchTipsAndTricksDto> tipsAndTricks =
-            new PageableDto<>(Collections.singletonList(searchTipsAndTricksDto), 4, 1);
+            new PageableDto<>(Collections.singletonList(searchTipsAndTricksDto), 4, 1,1);
 
         when(ecoNewsService.search(anyString())).thenReturn(ecoNews);
         when(tipsAndTricksService.search(anyString())).thenReturn(tipsAndTricks);

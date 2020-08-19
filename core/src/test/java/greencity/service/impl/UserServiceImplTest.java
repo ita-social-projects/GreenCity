@@ -20,6 +20,11 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.*;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -110,9 +115,11 @@ public class UserServiceImplTest {
     private String language = "uk";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
         new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(1L, Collections.emptyList(), Collections.emptyList())),
+            Collections.emptyList(), Collections.emptyList()), "TEST",
+            new Goal(1L, Collections.emptyList(), Collections.emptyList())),
         new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(2L, Collections.emptyList(), Collections.emptyList())));
+            Collections.emptyList(), Collections.emptyList()), "TEST",
+            new Goal(2L, Collections.emptyList(), Collections.emptyList())));
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -249,7 +256,7 @@ public class UserServiceImplTest {
 
         PageableDto<UserForListDto> userPageableDto =
             new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0);
+                userForListDtos.size(), 0,1);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -300,7 +307,7 @@ public class UserServiceImplTest {
 
         PageableDto<UserForListDto> userPageableDto =
             new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0);
+                userForListDtos.size(), 0,1);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
