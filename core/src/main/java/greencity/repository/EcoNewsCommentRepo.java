@@ -1,7 +1,6 @@
 package greencity.repository;
 
 import greencity.entity.EcoNewsComment;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> {
     /**
      * Method returns all {@link EcoNewsComment} by page.
-     * @param pageable page of news.
+     *
+     * @param pageable  page of news.
      * @param ecoNewsId id of {@link greencity.entity.EcoNews} for which comments we search.
      * @return all {@link EcoNewsComment} by page.
      */
@@ -21,7 +21,8 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
 
     /**
      * Method returns all replies to comment, specified by parentCommentId and by page.
-     * @param pageable page of news.
+     *
+     * @param pageable        page of news.
      * @param parentCommentId id of comment, replies to which we get.
      * @return all replies to comment, specified by parentCommentId and page.
      */
@@ -43,6 +44,17 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @return count of comments, specified by {@link greencity.entity.EcoNews}.
      */
     @Query("SELECT count(ec) FROM EcoNewsComment ec "
-            + "WHERE ec.parentComment IS NULL AND ec.ecoNews.id = ?1 AND ec.deleted = FALSE")
+        + "WHERE ec.parentComment IS NULL AND ec.ecoNews.id = ?1 AND ec.deleted = FALSE")
     int countOfComments(Long ecoNewsId);
+
+    /**
+     * Method returns all {@link EcoNewsComment} by page.
+     *
+     * @param pageable  page of news.
+     * @param ecoNewsId id of {@link greencity.entity.EcoNews} for which comments we search.
+     * @return all active {@link EcoNewsComment} by page.
+     * @author Dovganyuk Taras
+     */
+    Page<EcoNewsComment> findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateAsc(Pageable pageable,
+                                                                                                      Long ecoNewsId);
 }

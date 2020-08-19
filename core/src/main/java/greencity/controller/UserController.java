@@ -679,8 +679,8 @@ public class UserController {
             @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PostMapping(path = "/profile", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
-            MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(path = "/profile", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
+        MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UserProfileDtoResponse> save(
             @ApiParam(value = "User Profile Request", required = true)
             @RequestPart UserProfileDtoRequest userProfileDtoRequest,

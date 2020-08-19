@@ -25,4 +25,10 @@
     <changeSet id="Beshlei-7" author="Taras Beshlei">
         <modifyDataType tableName="habit_status_calendar" columnName="enroll_date" newDataType="timestamp with time zone"/>
     </changeSet>
+
+    <changeSet id="Beshlei-8" author="Taras Beshlei">
+        <modifyDataType tableName="habit_status_calendar" columnName="enroll_date" newDataType="date"/>
+    </changeSet>
+
+
 </databaseChangeLog>
