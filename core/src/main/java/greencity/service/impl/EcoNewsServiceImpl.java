@@ -13,11 +13,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.EcoNewsService;
-import greencity.service.FileService;
-import greencity.service.NewsSubscriberService;
-import greencity.service.TagsService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -153,9 +149,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 .collect(Collectors.toList());
 
         return new PageableDto<>(
-                ecoNewsDtos,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber()
+            ecoNewsDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
         );
     }
 
@@ -178,7 +175,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return new PageableDto<>(
             ecoNewsDtos,
             pages.getTotalElements(),
-            pages.getPageable().getPageNumber()
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
         );
     }
 
@@ -233,9 +231,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 .collect(Collectors.toList());
 
         return new PageableDto<>(
-                ecoNews,
-                page.getTotalElements(),
-                page.getPageable().getPageNumber()
+            ecoNews,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
         );
     }
 

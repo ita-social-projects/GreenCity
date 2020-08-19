@@ -19,8 +19,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
+import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
 import static greencity.entity.enums.FactOfDayStatus.CURRENT;
-import static greencity.constant.CacheConstants.FACT_OF_DAY_CACHE_NAME;
 
 /**
  * Implementation of {@link FactTranslationService}.
@@ -86,7 +86,7 @@ public class FactTranslationServiceImpl implements FactTranslationService {
      * @param languageId id of language of the fact.
      * @return {@link LanguageTranslationDTO} of today's fact of day.
      */
-    @Cacheable(value = FACT_OF_DAY_CACHE_NAME)
+    @Cacheable(value = HABIT_FACT_OF_DAY_CACHE)
     @Override
     public LanguageTranslationDTO getFactOfTheDay(Long languageId) {
         return modelMapper.map(

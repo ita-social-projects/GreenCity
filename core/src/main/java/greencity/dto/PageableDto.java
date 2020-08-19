@@ -12,4 +12,6 @@ public class PageableDto<T> {
     private long totalElements;
 
     private int currentPage;
+
+    private int totalPages;
 }

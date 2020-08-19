@@ -1,33 +1,29 @@
 package greencity.config;
 
 import greencity.entity.FactTranslation;
+import greencity.entity.User;
+import greencity.message.SendHabitNotification;
 import greencity.repository.FactTranslationRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.UserRepo;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.AllArgsConstructor;
-import greencity.entity.User;
-import greencity.message.SendHabitNotification;
-import greencity.repository.HabitRepo;
-import greencity.repository.UserRepo;
-import java.time.ZonedDateTime;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import static greencity.entity.enums.FactOfDayStatus.USED;
-import static greencity.entity.enums.FactOfDayStatus.CURRENT;
-import static greencity.entity.enums.FactOfDayStatus.POTENTIAL;
-import static greencity.constant.CacheConstants.FACT_OF_DAY_CACHE_NAME;
+import static greencity.constant.CacheConstants.FACT_OF_THE_DAY_CACHE_NAME;
+import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
 import static greencity.constant.RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME;
 import static greencity.constant.RabbitConstants.SEND_HABIT_NOTIFICATION_ROUTING_KEY;
-import static greencity.entity.enums.EmailNotification.IMMEDIATELY;
-import static greencity.entity.enums.EmailNotification.DAILY;
-import static greencity.entity.enums.EmailNotification.WEEKLY;
-import static greencity.entity.enums.EmailNotification.MONTHLY;
+import static greencity.entity.enums.EmailNotification.*;
+import static greencity.entity.enums.FactOfDayStatus.*;
 
 
 
@@ -103,10 +99,10 @@ public class ScheduleConfig {
      * Once a day randomly chooses new fact of day that has not been fact of day during this iteration.
      * factOfDay == 0 - wasn't fact of day, 1 - is today's fact of day, 2 - already was fact of day.
      */
-    @CacheEvict(value = FACT_OF_DAY_CACHE_NAME, allEntries = true)
+    @CacheEvict(value = HABIT_FACT_OF_DAY_CACHE, allEntries = true)
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
-    public void chooseNewFactOfTheDay() {
+    public void chooseNewFactOfDay() {
         Optional<List<FactTranslation>> list = factTranslationRepo.findRandomFact();
         if (list.isPresent()) {
             factTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
@@ -116,5 +112,14 @@ public class ScheduleConfig {
             list = factTranslationRepo.findRandomFact();
         }
         factTranslationRepo.updateFactOfDayStatusByHabitfactId(CURRENT, list.get().get(0).getHabitFact().getId());
+    }
+
+    /**
+     * Clear fact of the day cache at 0:00 am every day.
+     */
+    @CacheEvict(value = FACT_OF_THE_DAY_CACHE_NAME, allEntries = true)
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void chooseNewFactOfTheDay() {
     }
 }

@@ -1,7 +1,7 @@
 package greencity.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import javax.persistence.*;
 import lombok.*;
 
@@ -18,17 +18,18 @@ public class HabitStatusCalendar {
     private Long id;
 
     @Column(name = "enroll_date")
-    private LocalDateTime enrollDate;
+    private LocalDate enrollDate;
 
     @ManyToOne
     private HabitStatus habitStatus;
 
     /**
      * Constructor without id.
-     * @param enrollDate - enroll date for {@link HabitStatusCalendar}
+     *
+     * @param enrollDate  - enroll date for {@link HabitStatusCalendar}
      * @param habitStatus - habit status for {@link HabitStatusCalendar}
      */
-    public HabitStatusCalendar(LocalDateTime enrollDate, HabitStatus habitStatus) {
+    public HabitStatusCalendar(LocalDate enrollDate, HabitStatus habitStatus) {
         this.enrollDate = enrollDate;
         this.habitStatus = habitStatus;
     }

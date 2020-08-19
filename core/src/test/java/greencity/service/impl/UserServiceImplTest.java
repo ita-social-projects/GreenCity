@@ -20,6 +20,11 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.*;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -109,9 +115,11 @@ public class UserServiceImplTest {
     private String language = "uk";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
         new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(1L, Collections.emptyList(), Collections.emptyList())),
+            Collections.emptyList(), Collections.emptyList()), "TEST",
+            new Goal(1L, Collections.emptyList(), Collections.emptyList())),
         new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList()), "TEST", new Goal(2L, Collections.emptyList(), Collections.emptyList())));
+            Collections.emptyList(), Collections.emptyList()), "TEST",
+            new Goal(2L, Collections.emptyList(), Collections.emptyList())));
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -248,7 +256,7 @@ public class UserServiceImplTest {
 
         PageableDto<UserForListDto> userPageableDto =
             new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0);
+                userForListDtos.size(), 0,1);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -299,7 +307,7 @@ public class UserServiceImplTest {
 
         PageableDto<UserForListDto> userPageableDto =
             new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0);
+                userForListDtos.size(), 0,1);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -835,7 +843,7 @@ public class UserServiceImplTest {
 
     @Test
     void checkIfTheUserIsOnlineExceptionTest() {
-        assertThrows(UserLastActivityTimeNotFoundException.class, () ->
+        assertThrows(WrongIdException.class, () ->
             userService.checkIfTheUserIsOnline(null)
         );
     }
@@ -843,7 +851,9 @@ public class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsTrueTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Date userLastActivityTime = new Date();
+        LocalDateTime userLastActivityTime = LocalDateTime.now();
+        User user = ModelUtils.getUser();
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
         assertTrue(userService.checkIfTheUserIsOnline(1L));
     }
@@ -851,9 +861,11 @@ public class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Date userLastActivityTime = new Date(System.currentTimeMillis() - 300000);
+        LocalDateTime userLastActivityTime = LocalDateTime.of(2015,
+                Month.JULY, 29, 19, 30, 40);
+        User user = ModelUtils.getUser();
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
         assertFalse(userService.checkIfTheUserIsOnline(1L));
     }
-
 }

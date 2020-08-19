@@ -31,4 +31,7 @@ public class Language {
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<GoalTranslation> goalTranslations;
+
+    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
+    private List<FactOfTheDayTranslation> factOfTheDayTranslations;
 }

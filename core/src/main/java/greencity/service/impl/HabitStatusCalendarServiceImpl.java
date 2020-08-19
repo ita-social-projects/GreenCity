@@ -4,6 +4,7 @@ import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
 import greencity.repository.HabitStatusCalendarRepo;
 import greencity.service.HabitStatusCalendarService;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,16 +27,16 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Find {@link HabitStatusCalendar} by date interval and {@link HabitStatus}.
+     * Method find {@link HabitStatusCalendar} by date and {@link HabitStatus}.
      *
-     * @param startDate - beginning of the interval
-     * @param endDate   - ending of the interval
+     * @param date        - after this date the search is performed
+     * @param habitStatus - target {@link HabitStatus}
      * @return {@link HabitStatusCalendar}
      */
     @Override
-    public HabitStatusCalendar findByEnrollDateIsBetweenAndHabitStatus(LocalDateTime startDate, LocalDateTime endDate,
-                                                                       HabitStatus habitStatus) {
-        return habitStatusCalendarRepo.findByEnrollDateIsBetweenAndHabitStatus(startDate, endDate, habitStatus);
+    public HabitStatusCalendar findHabitStatusCalendarByEnrollDateAndHabitStatus(LocalDate date,
+                                                                                 HabitStatus habitStatus) {
+        return habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitStatus(date, habitStatus);
     }
 
     /**
@@ -55,8 +56,25 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      * @return {@link LocalDateTime}
      */
     @Override
-    public LocalDateTime findTopByEnrollDateAndHabitStatus(HabitStatus habitStatus) {
+    public LocalDate findTopByEnrollDateAndHabitStatus(HabitStatus habitStatus) {
         return habitStatusCalendarRepo.findTopByEnrollDateAndHabitStatus(habitStatus);
+    }
+
+    /**
+     * Method return all enrolled {@link HabitStatus} after dateTime.
+     *
+     * @param dateTime    after this date the search is performed
+     * @param habitStatus target {@link HabitStatus}
+     * @return {@link List} of {@link HabitStatusCalendar}
+     */
+    @Override
+    public List<LocalDate> findEnrolledDatesAfter(LocalDate dateTime, HabitStatus habitStatus) {
+        List<HabitStatusCalendar> habitStatusCalendars =
+            habitStatusCalendarRepo.findAllByEnrollDateAfterAndHabitStatus(dateTime, habitStatus);
+        List<LocalDate> dates = new LinkedList<>();
+        habitStatusCalendars.forEach(habitStatusCalendar -> dates.add(habitStatusCalendar.getEnrollDate()));
+
+        return dates;
     }
 
     /**
@@ -67,10 +85,10 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      * @return {@link List} of {@link HabitStatusCalendar}
      */
     @Override
-    public List<LocalDateTime> findEnrolledDatesAfter(LocalDateTime dateTime, HabitStatus habitStatus) {
+    public List<LocalDate> findEnrolledDatesBefore(LocalDate dateTime, HabitStatus habitStatus) {
         List<HabitStatusCalendar> habitStatusCalendars =
-            habitStatusCalendarRepo.findAllByEnrollDateAfterAndHabitStatus(dateTime, habitStatus);
-        List<LocalDateTime> dates = new LinkedList<>();
+            habitStatusCalendarRepo.findAllByEnrollDateBeforeAndHabitStatus(dateTime, habitStatus);
+        List<LocalDate> dates = new LinkedList<>();
         habitStatusCalendars.forEach(habitStatusCalendar -> dates.add(habitStatusCalendar.getEnrollDate()));
 
         return dates;

@@ -11,11 +11,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.TipsAndTricksCommentRepo;
 import greencity.service.TipsAndTricksService;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -142,7 +138,7 @@ class TipsAndTricksCommentServiceImplTest {
         Page<TipsAndTricksComment> page =
             new PageImpl<>(tipsAndTricksComments, pageRequest, tipsAndTricksComments.size());
         List<TipsAndTricksCommentDto> dtoList = Collections.singletonList(tipsAndTricksCommentDto);
-        PageableDto<TipsAndTricksCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0);
+        PageableDto<TipsAndTricksCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0,1);
 
         when(tipsAndTricksCommentRepo.findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(pageRequest,
             tipsAndTricksComment.getId())).thenReturn(page);

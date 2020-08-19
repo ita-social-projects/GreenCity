@@ -147,8 +147,14 @@ public final class ErrorMessage {
         + " time for the user with id: ";
     public static final String NOT_VALID_URL = "Your URL is not valid : ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
+    public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
+    public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
+    public static final String FACT_OF_THE_DAY_TRANSLATION_NOT_DELETED = "The fact of the day translation does not deleted by id: ";
+    public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
+    public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
+    public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
 
     private ErrorMessage() {
     }
