@@ -4,7 +4,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.entity.FactOfTheDay;
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface FactOfTheDayService {
