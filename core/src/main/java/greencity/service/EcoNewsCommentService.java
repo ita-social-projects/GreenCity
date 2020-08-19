@@ -94,5 +94,5 @@ public interface EcoNewsCommentService {
      * @return all active comments to certain ecoNews specified by ecoNewsId.
      * @author Taras Dovganyuk
      */
-    PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, Long ecoNewsId);
+    PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, User user, Long ecoNewsId);
 }

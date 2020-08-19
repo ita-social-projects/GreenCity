@@ -225,13 +225,21 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @author Taras Dovganyuk
      */
     @Override
-    public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, Long ecoNewsId) {
+    public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, User user, Long ecoNewsId) {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
                 .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateAsc(pageable, ecoNewsId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
+            .map(comment -> {
+                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                return comment;
+            })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
+            .map(comment -> {
+                comment.setReplies(ecoNewsCommentRepo.countByParentCommentId(comment.getId()));
+                return comment;
+            })
             .collect(Collectors.toList());
 
         return new PageableDto<>(
