@@ -19,6 +19,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class ManagementFactOfTheDayController {
     @Autowired
     private FactOfTheDayService factOfTheDayService;
+
     /**
      * Returns management page with all facts of the day.
      *
@@ -29,7 +30,6 @@ public class ManagementFactOfTheDayController {
     @GetMapping("")
     public String getAllFacts(Model model, @ApiIgnore Pageable pageable) {
         PageableDto<FactOfTheDayDTO> allFactsOfTheDay = factOfTheDayService.getAllFactsOfTheDay(pageable);
-//        allFactsOfTheDay.getPage()
         model.addAttribute("pageable", allFactsOfTheDay);
         return "core/management_fact_of_the_day";
     }
