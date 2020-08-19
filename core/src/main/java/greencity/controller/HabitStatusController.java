@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -87,12 +88,11 @@ public class HabitStatusController {
     @PostMapping("/unenroll/{habitId}/{date}")
     public ResponseEntity<HabitStatusDto> unenrollHabit(@PathVariable Long habitId,
                                                         @PathVariable(value = "date")
-                                                        @DateTimeFormat(pattern = "MM-dd-yyyy") Date date,
+                                                        @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date,
                                                         @ApiIgnore @AuthenticationPrincipal
                                                             Principal principal) {
         User user = userService.findByEmail(principal.getName());
-        LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-        habitStatusService.unenrollHabit(ldt, habitId, user.getId());
+        habitStatusService.unenrollHabit(date, habitId, user.getId());
         return ResponseEntity.ok().build();
     }
 
@@ -112,11 +112,10 @@ public class HabitStatusController {
     @PostMapping("/enroll/{habitId}/{date}")
     public ResponseEntity<HabitStatusDto> enrollHabitInDate(@PathVariable Long habitId,
                                                             @PathVariable(value = "date")
-                                                            @DateTimeFormat(pattern = "MM-dd-yyyy") Date date,
+                                                            @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date,
                                                             @ApiIgnore @AuthenticationPrincipal Principal principal) {
         User user = userService.findByEmail(principal.getName());
-        LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-        habitStatusService.enrollHabitInDate(habitId, user.getId(), ldt);
+        habitStatusService.enrollHabitInDate(habitId, user.getId(), date);
         return ResponseEntity.ok().build();
     }
 }

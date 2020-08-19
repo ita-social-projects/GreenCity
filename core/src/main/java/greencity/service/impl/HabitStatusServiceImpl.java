@@ -10,8 +10,9 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.HabitStatusRepo;
 import greencity.service.HabitStatusCalendarService;
 import greencity.service.HabitStatusService;
-import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -41,8 +42,6 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         habitStatus.setCreateDate(LocalDateTime.now());
         habitStatus.setLastEnrollmentDate(LocalDateTime.now());
         habitStatusRepo.save(habitStatus);
-        HabitStatusCalendar habitCalendar = new HabitStatusCalendar(LocalDateTime.now(), habitStatus);
-        habitStatusCalendarService.save(habitCalendar);
     }
 
     /**
@@ -78,25 +77,26 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId);
         int workingDays = habitStatus.getWorkingDays();
         habitStatus.setWorkingDays(++workingDays);
-        LocalDateTime todayDate = LocalDateTime.now();
+        LocalDate todayDate = LocalDate.now();
         HabitStatusCalendar habitCalendar;
-        LocalDateTime lastEnrollmentDate =
+        LocalDate lastEnrollmentDate =
             habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatus);
         long intervalBetweenDates = 0;
+
         if (lastEnrollmentDate != null) {
-            intervalBetweenDates = Duration.between(lastEnrollmentDate, todayDate).toHours();
+            intervalBetweenDates = Period.between(lastEnrollmentDate, todayDate).getDays();
         }
 
-        if ((intervalBetweenDates >= 20 && intervalBetweenDates <= 24) | lastEnrollmentDate == null) {
+        if ((intervalBetweenDates == 1) | lastEnrollmentDate == null) {
             int habitStreak = habitStatus.getHabitStreak();
             habitStatus.setHabitStreak(++habitStreak);
             habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
             habitStatusCalendarService.save(habitCalendar);
-        } else if (intervalBetweenDates > 24) {
+        } else if (intervalBetweenDates > 1) {
             habitStatus.setHabitStreak(1);
             habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
             habitStatusCalendarService.save(habitCalendar);
-        } else if (intervalBetweenDates < 19) {
+        } else if (intervalBetweenDates < 1) {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
 
@@ -108,36 +108,31 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     /**
      * Method unenroll Habit in defined date.
      *
-     * @param habitId  - id of habit
-     * @param dateTime - date we want unenroll
+     * @param habitId - id of habit
+     * @param date    - date we want unenroll
      */
     @Override
-    public void unenrollHabit(LocalDateTime dateTime, Long habitId, Long userId) {
+    public void unenrollHabit(LocalDate date, Long habitId, Long userId) {
         HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId);
+        int daysStreak = checkHabitStreakAfterDate(date, habitStatus);
+        habitStatus.setHabitStreak(daysStreak + 1);
+        int workingDays = habitStatus.getWorkingDays();
 
-        List<LocalDateTime> enrollDates = habitStatusCalendarService.findEnrolledDatesAfter(dateTime, habitStatus);
-        Collections.sort(enrollDates);
-        int daysStreak = 0;
-
-        for (int i = 0; i < enrollDates.size() - 1; i++) {
-            if (Duration.between(enrollDates.get(i), enrollDates.get(i + 1)).toHours() >= 0
-                && Duration.between(enrollDates.get(i), enrollDates.get(i + 1)).toHours() < 24) {
-                daysStreak++;
-            } else {
-                daysStreak = 0;
-            }
+        if (workingDays == 0) {
+            habitStatus.setWorkingDays(0);
+        } else {
+            habitStatus.setWorkingDays(--workingDays);
         }
 
-        habitStatus.setHabitStreak(daysStreak + 1);
-        habitStatus.setWorkingDays(habitStatus.getWorkingDays() - 1);
         habitStatusRepo.save(habitStatus);
-
         HabitStatusCalendar habitStatusCalendar =
             habitStatusCalendarService
-                .findByEnrollDateIsBetweenAndHabitStatus(dateTime, dateTime.plusDays(1), habitStatus);
+                .findHabitStatusCalendarByEnrollDateAndHabitStatus(date, habitStatus);
 
         if (habitStatusCalendar != null) {
             habitStatusCalendarService.delete(habitStatusCalendar);
+        } else {
+            throw new BadRequestException(ErrorMessage.HABIT_IS_NOT_ENROLLED);
         }
     }
 
@@ -148,15 +143,68 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * @param date    - date we want enroll
      */
     @Override
-    public void enrollHabitInDate(Long habitId, Long userId, LocalDateTime date) {
+    public void enrollHabitInDate(Long habitId, Long userId, LocalDate date) {
         HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId);
-
         HabitStatusCalendar habitCalendarOnDate =
-            habitStatusCalendarService.findByEnrollDateIsBetweenAndHabitStatus(date, date.plusDays(1), habitStatus);
+            habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(date, habitStatus);
+
+        int daysStreakAfterDate = checkHabitStreakAfterDate(date, habitStatus);
+        int daysStreakBeforeDate = checkHabitStreakBeforeDate(date, habitStatus);
+
+        if (daysStreakBeforeDate != 0) {
+            daysStreakBeforeDate += 1;
+        }
 
         if (habitCalendarOnDate == null) {
             HabitStatusCalendar habitStatusCalendar = new HabitStatusCalendar(date, habitStatus);
             habitStatusCalendarService.save(habitStatusCalendar);
+
+            if (Period.between(date, LocalDate.now()).getDays() == daysStreakAfterDate + 1) {
+                if ((daysStreakAfterDate + daysStreakBeforeDate) == 1) {
+                    habitStatus.setHabitStreak(daysStreakAfterDate + daysStreakBeforeDate + 1);
+                } else {
+                    habitStatus.setHabitStreak(daysStreakAfterDate + daysStreakBeforeDate + 2);
+                }
+            }
+
+            habitStatus.setWorkingDays(habitStatus.getWorkingDays() + 1);
+            habitStatusRepo.save(habitStatus);
+        } else {
+            throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY);
         }
+    }
+
+    private int checkHabitStreakAfterDate(LocalDate dateTime, HabitStatus habitStatus) {
+        int daysStreak = 0;
+
+        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesAfter(dateTime, habitStatus);
+        Collections.sort(enrollDates);
+
+        for (int i = 0; i < enrollDates.size() - 1; i++) {
+            if (Period.between(enrollDates.get(i), enrollDates.get(i + 1)).getDays() == 1) {
+                daysStreak++;
+            } else {
+                daysStreak = 0;
+            }
+        }
+        return daysStreak;
+    }
+
+    private int checkHabitStreakBeforeDate(LocalDate dateTime, HabitStatus habitStatus) {
+        int daysStreak = 0;
+
+        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesBefore(dateTime, habitStatus);
+        Collections.sort(enrollDates);
+        Collections.reverse(enrollDates);
+
+        for (int i = 0; i < enrollDates.size() - 1; i++) {
+            if (Period.between(enrollDates.get(i + 1), enrollDates.get(i)).getDays() == 1) {
+                daysStreak++;
+            } else {
+                return daysStreak;
+            }
+        }
+
+        return daysStreak;
     }
 }
