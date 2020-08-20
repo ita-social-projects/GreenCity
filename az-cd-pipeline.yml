@@ -110,12 +110,12 @@ stages:
         - task: AzureAppServiceManage@0
           inputs:
             azureSubscription: '$(azureSub)'
-            action: 'start Azure App Service'
+            action: 'start'
             webAppName: '$(coreServiceName)'    
         - task: AzureAppServiceManage@0
           inputs:
             azureSubscription: '$(azureSub)'
-            action: 'start Azure App Service'
+            action: 'start'
             webAppName: '$(mailServiceName)'
 
 - stage: DeployTEST
