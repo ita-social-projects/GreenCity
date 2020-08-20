@@ -13,3 +13,9 @@ table {
 table th, table td {
     padding: 5px;
 }
+
+.error {
+    color: red;
+    text-align: center;
+    margin-top: -26px;
+}

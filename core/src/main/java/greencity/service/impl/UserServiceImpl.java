@@ -105,6 +105,41 @@ public class UserServiceImpl implements UserService {
             users.getTotalPages());
     }
 
+    @Override
+    public PageableDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
+        Page<User> users = userRepo.findAll(pageable);
+        List<UserManagementDto> userManagementDtos =
+            users.getContent().stream()
+                .map(user -> modelMapper.map(user, UserManagementDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(
+            userManagementDtos,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
+    }
+
+    @Override
+    public void updateUser(UserManagementDto dto) {
+        User user = findById(dto.getId());
+        updateUserFromDto(dto, user);
+        userRepo.save(user);
+    }
+
+    /**
+     * Method for setting data from {@link UserForListDto} to {@link User}.
+     *
+     * @param dto  - dto {@link UserForListDto} with updated fields.
+     * @param user {@link User} to be updated.
+     * @author Vasyl Zhovnir
+     */
+    private void updateUserFromDto(UserManagementDto dto, User user) {
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setUserCredo(dto.getUserCredo());
+        user.setUserStatus(dto.getUserStatus());
+    }
+
     /**
      * {@inheritDoc}
      */
