@@ -24,9 +24,9 @@
 <body>
 <div id="header" th:insert="core/header"></div>
 <div class="main-content">
-    <form  th:action="@{/management/tipsandtricks/edit/{id}(id=${tipsAndTricksDtoManagement.id})}"
-            th:object="${tipsAndTricksDtoManagement}"
-            method="post"
+    <form th:action="@{/management/tipsandtricks/edit/{id}(id=${tipsAndTricksDtoManagement.id})}"
+          th:object="${tipsAndTricksDtoManagement}"
+          method="post"
           enctype="multipart/form-data">
         <table class="table">
             <tr>
