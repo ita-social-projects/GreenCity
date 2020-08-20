@@ -3,10 +3,10 @@ trigger:
   branches:
     include:
     - testage
-    - dev
   paths:
     exclude:
     - README.md
+
 
 variables:
   agentOS: ubuntu-latest
@@ -103,9 +103,22 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
         artifactName: '$(artifactName)'
 
+- stage: EnablingTestAppServices
+  jobs:
+    - job: Enabling
+      steps:
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: start Azure App Service
+            webAppName: '$(coreServiceName)'    
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: start Azure App Service
+            webAppName: '$(mailServiceName)'
 
 - stage: DeployTEST
-  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/dev'))
   jobs:
     - deployment: DeployCore
       displayName: Deploy core app service
@@ -162,7 +175,7 @@ stages:
                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
 
 - stage: DeployPROD
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  dependsOn: DeployTEST
   jobs:
     - deployment: DeployCore
       displayName: Deploy core app service
