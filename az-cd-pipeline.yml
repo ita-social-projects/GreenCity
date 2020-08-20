@@ -110,7 +110,7 @@ stages:
         - task: AzureAppServiceManage@0
           inputs:
             azureSubscription: '$(azureSub)'
-            action: start Azure App Service
+            action: 'Start'
             webAppName: '$(coreServiceName)'
             ResourceGroupName: '$(resourceGroup)'
 #        - task: AzureAppServiceManage@0
