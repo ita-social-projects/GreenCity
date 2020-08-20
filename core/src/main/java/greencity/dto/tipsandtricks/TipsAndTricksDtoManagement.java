@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import static greencity.constant.AppConstant.VALIDATION_EMAIL;
 import static greencity.constant.ValidationConstants.EMPTY_EMAIL;
 import static greencity.constant.ValidationConstants.INVALID_EMAIL;
 
@@ -41,10 +42,7 @@ public class TipsAndTricksDtoManagement implements Serializable {
     private ZonedDateTime creationDate;
 
     @NotBlank(message = EMPTY_EMAIL)
-    @Email(
-        regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
-        message = INVALID_EMAIL
-    )
+    @Email(regexp = VALIDATION_EMAIL, message = INVALID_EMAIL)
     private String emailAuthor;
 
     @NotEmpty(message = "at least one tag")
