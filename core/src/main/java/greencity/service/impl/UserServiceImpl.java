@@ -24,6 +24,8 @@ import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +38,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static greencity.constant.ErrorMessage.*;
 
@@ -874,7 +870,7 @@ public class UserServiceImpl implements UserService {
         return UserAndAllFriendsWithOnlineStatusDto.builder()
                 .user(userWithOnlineStatusDto)
                 .friends(new PageableDto<>(friendsWithOnlineStatusDtos, friends.getTotalElements(),
-                        friends.getPageable().getPageNumber()))
+                        friends.getPageable().getPageNumber(),friends.getTotalPages()))
                 .build();
     }
 }
