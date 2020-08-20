@@ -30,6 +30,7 @@ public class MapperConfig {
     private ProposePlaceMapper proposePlaceMapper;
     private TipsAndTricksDtoRequestMapper tipsAndTricksDtoRequestMapper;
     private TipsAndTricksDtoResponseMapper tipsAndTricksDtoResponseMapper;
+    private TipsAndTricksDtoManagementMapper tipsAndTricksDtoManagementMapper;
     private MultipartBase64ImageMapper multipartBase64ImageMapper;
     private AddEcoNewsCommentDtoRequestMapper addEcoNewsCommentDtoRequestMapper;
     private EcoNewsCommentDtoMapper ecoNewsCommentDtoMapper;
@@ -86,6 +87,7 @@ public class MapperConfig {
         modelMapper.addConverter(proposePlaceMapper);
         modelMapper.addConverter(tipsAndTricksDtoRequestMapper);
         modelMapper.addConverter(tipsAndTricksDtoResponseMapper);
+        modelMapper.addConverter(tipsAndTricksDtoManagementMapper);
         modelMapper.addConverter(multipartBase64ImageMapper);
         modelMapper.addConverter(addEcoNewsCommentDtoRequestMapper);
         modelMapper.addConverter(ecoNewsCommentDtoMapper);

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>User Habits</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+</head>
+
+<body>
+<div id="header" th:insert="core/header"></div>
+<div class="main-content">
+    <form th:action="@{/management/tipsandtricks/edit/{id}(id=${tipsAndTricksDtoManagement.id})}"
+          th:object="${tipsAndTricksDtoManagement}"
+          method="post"
+          enctype="multipart/form-data">
+        <table class="table">
+            <tr>
+                <td>
+                    <label for="id">Id:</label>
+                </td>
+                <td>
+                    <input type="text" th:field="*{id}" id="id" th:value="*{id}" disabled/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="title">Title:</label>
+                </td>
+                <td>
+                    <input type="text" th:field="*{title}" id="title" th:value="*{title}"/>
+                </td>
+                <td>
+                    <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="text">Text:</label>
+                </td>
+                <td>
+                    <textarea type="text" th:field="*{text}" id="text" th:value="*{text}"></textarea>
+                </td>
+                <td>
+                    <span th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="author">Author_Email:</label>
+                </td>
+                <td>
+                    <input type="email" th:field="*{emailAuthor}" id="author" th:value="*{emailAuthor}"/>
+                </td>
+                <td>
+                    <span th:if="${#fields.hasErrors('emailAuthor')}" th:errors="*{emailAuthor}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="image">Image:</label>
+                </td>
+                <td>
+                    <input type="text" th:field="*{imagePath}" id="image" th:value="*{imagePath}"/>
+                </td>
+                <td>
+                    <span th:if="${#fields.hasErrors('imagePath')}" th:errors="*{imagePath}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="source">Source:</label>
+                </td>
+                <td>
+                    <input type="text" th:field="*{source}" id="source" th:value="*{source}"/>
+                </td>
+                <td>
+                    <span th:if="${#fields.hasErrors('source')}" th:errors="*{source}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="tags">Tags:</label>
+                </td>
+                <td>
+                    <input type="text" th:field="*{tags}" id="tags" th:value="*{tags}"/>
+                </td>
+                <td>
+                    <span th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>File to upload:</td>
+                <td><input type="file" name="file"/></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="Update"/>
+                    <input type="reset" value="Clear"/>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="id" th:value="*{id}">
+    </form>
+    <br><br>
+</div>
+<div id="footer" th:insert="core/footer"></div>
+</body>
+</html>
