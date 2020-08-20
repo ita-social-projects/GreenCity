@@ -43,6 +43,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZonedDateTime;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -836,7 +843,7 @@ public class UserServiceImplTest {
 
     @Test
     void checkIfTheUserIsOnlineExceptionTest() {
-        assertThrows(UserLastActivityTimeNotFoundException.class, () ->
+        assertThrows(WrongIdException.class, () ->
             userService.checkIfTheUserIsOnline(null)
         );
     }
@@ -844,7 +851,9 @@ public class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsTrueTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Date userLastActivityTime = new Date();
+        LocalDateTime userLastActivityTime = LocalDateTime.now();
+        User user = ModelUtils.getUser();
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
         assertTrue(userService.checkIfTheUserIsOnline(1L));
     }
@@ -852,9 +861,11 @@ public class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Date userLastActivityTime = new Date(System.currentTimeMillis() - 300000);
+        LocalDateTime userLastActivityTime = LocalDateTime.of(2015,
+                Month.JULY, 29, 19, 30, 40);
+        User user = ModelUtils.getUser();
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
         assertFalse(userService.checkIfTheUserIsOnline(1L));
     }
-
 }

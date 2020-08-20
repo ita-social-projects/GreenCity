@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,28 +11,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @NoArgsConstructor
-@RequestMapping("/management/")
+@RequestMapping("/management/habits")
 public class UserHabitsController {
     private HabitService habitService;
+    private HabitDictionaryService habitDictionaryService;
 
     /**
      * Constructor with parameters.
      */
     @Autowired
-    public UserHabitsController(HabitService habitService) {
+    public UserHabitsController(HabitService habitService, HabitDictionaryService habitDictionaryService) {
         this.habitService = habitService;
-    }
-
-    /**
-     * Returns index page.
-     *
-     * @param model ModelAndView that will be configured and returned to user
-     * @return model
-     */
-
-    @GetMapping("/")
-    public String goToIndex(Model model) {
-        return "core/index";
+        this.habitDictionaryService = habitDictionaryService;
     }
 
     /**
@@ -39,9 +30,10 @@ public class UserHabitsController {
      *
      * @param model ModelAndView that will be configured and returned to user
      * @return model
+     * @author Dovganyuk Taras
      */
 
-    @GetMapping("/habits")
+    @GetMapping("")
     public String getAllFacts(Model model) {
         model.addAttribute("habits", habitService.getAllHabitsDto());
         return "core/user_habits";

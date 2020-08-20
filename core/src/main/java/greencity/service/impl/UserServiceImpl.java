@@ -37,6 +37,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static greencity.constant.ErrorMessage.*;
 
 /**
@@ -781,15 +787,27 @@ public class UserServiceImpl implements UserService {
      * @author Yurii Zhurakovskyi
      */
     @Override
-    public Boolean checkIfTheUserIsOnline(Long userId) {
-        Date userLastActivityTime = userRepo.findLastActivityTimeById(userId)
-            .orElseThrow(() -> new UserLastActivityTimeNotFoundException(
-                USER_LAST_ACTIVITY_TIME_NOT_FOUND + userId));
-        Date currentTime = new Date();
-        long result = currentTime.getTime() - userLastActivityTime.getTime();
-        return result <= timeAfterLastActivity;
+    public boolean checkIfTheUserIsOnline(Long userId) {
+        if (!userRepo.findById(userId).isPresent()) {
+            throw new WrongIdException(USER_NOT_FOUND_BY_ID + userId);
+        }
+        Optional<LocalDateTime> lastActivityTime = userRepo.findLastActivityTimeById(userId);
+        if (lastActivityTime.isPresent()) {
+            LocalDateTime userLastActivityTime = lastActivityTime.get();
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
+            long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
+            return result <= timeAfterLastActivity;
+        }
+        return false;
     }
 
+    /**
+     * Method return user profile statistics {@link User}.
+     *
+     * @param userId - {@link User}'s id
+     * @author Marian Datsko
+     */
     @Override
     public UserProfileStatisticsDto getUserProfileStatistics(Long userId) {
         Long amountOfPublishedNewsByUserId = ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId);
@@ -803,5 +821,60 @@ public class UserServiceImpl implements UserService {
             .amountHabitsAcquired(amountOfAcquiredHabitsByUserId)
             .amountHabitsInProgress(amountOfHabitsInProgressByUserId)
             .build();
+    }
+
+    /**
+     * Get user and six friends with the online status {@link User}.
+     *
+     * @param userId {@link Long}
+     * @author Yurii Zhurakovskyi
+     */
+    @Override
+    public UserAndFriendsWithOnlineStatusDto getUserAndSixFriendsWithOnlineStatus(Long userId) {
+        UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
+                .id(userId)
+                .onlineStatus(checkIfTheUserIsOnline(userId))
+                .build();
+        List<User> sixFriendsWithTheHighestRating = userRepo.getSixFriendsWithTheHighestRating(userId);
+        List<UserWithOnlineStatusDto> sixFriendsWithOnlineStatusDtos = new ArrayList<>();
+        if (!sixFriendsWithTheHighestRating.isEmpty()) {
+            sixFriendsWithOnlineStatusDtos = sixFriendsWithTheHighestRating
+                    .stream()
+                    .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
+                    .collect(Collectors.toList());
+        }
+        return UserAndFriendsWithOnlineStatusDto.builder()
+                .user(userWithOnlineStatusDto)
+                .friends(sixFriendsWithOnlineStatusDtos)
+                .build();
+    }
+
+    /**
+     * Get user and all friends with the online status {@link User} by page.
+     *
+     * @param userId   {@link Long}
+     * @param pageable {@link Pageable }
+     * @author Yurii Zhurakovskyi
+     */
+    @Override
+    public UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable) {
+        UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
+                .id(userId)
+                .onlineStatus(checkIfTheUserIsOnline(userId))
+                .build();
+        Page<User> friends = userRepo.getAllUserFriends(userId, pageable);
+        List<UserWithOnlineStatusDto> friendsWithOnlineStatusDtos = new ArrayList<>();
+        if (!friends.isEmpty()) {
+            friendsWithOnlineStatusDtos = friends
+                    .getContent()
+                    .stream()
+                    .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
+                    .collect(Collectors.toList());
+        }
+        return UserAndAllFriendsWithOnlineStatusDto.builder()
+                .user(userWithOnlineStatusDto)
+                .friends(new PageableDto<>(friendsWithOnlineStatusDtos, friends.getTotalElements(),
+                        friends.getPageable().getPageNumber()))
+                .build();
     }
 }

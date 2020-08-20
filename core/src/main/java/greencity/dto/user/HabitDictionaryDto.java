@@ -1,5 +1,7 @@
 package greencity.dto.user;
 
+import greencity.entity.HabitDictionaryTranslation;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,4 +19,5 @@ public class HabitDictionaryDto {
     private String habitItem;
     private String description;
     private String image;
+    private List<HabitDictionaryTranslation> habitDictionaryTranslations;
 }
