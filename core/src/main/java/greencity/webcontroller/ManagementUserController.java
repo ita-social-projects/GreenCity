@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.dto.user.UserBlockDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
@@ -76,13 +77,26 @@ public class ManagementUserController {
      * Method for finding {@link User} by id.
      *
      * @param id of the searched {@link User}.
-     * @return dto {@link UserForListDto} of the {@link User}.
+     * @return dto {@link UserManagementDto} of the {@link User}.
      * @author Vasyl Zhovnir
      */
     @GetMapping("/findById")
     @ResponseBody
-    public UserForListDto findById(Long id) {
+    public UserManagementDto findById(Long id) {
         User byId = userService.findById(id);
-        return modelMapper.map(byId, UserForListDto.class);
+        return modelMapper.map(byId, UserManagementDto.class);
+    }
+
+    /**
+     * Method for setting {@link User}'s status to BLOCKED.
+     *
+     * @param id of the searched {@link User}.
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping
+    public void blockUser(Long id) {
+        User byId = userService.findById(id);
+        UserBlockDto map = modelMapper.map(byId, UserBlockDto.class);
+        userService.blockUser(id);
     }
 }

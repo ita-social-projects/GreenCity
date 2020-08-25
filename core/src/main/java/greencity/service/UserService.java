@@ -376,4 +376,12 @@ public interface UserService {
      * @author Yurii Zhurakovskyi
      */
     UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable);
+
+    /**
+     * change {@link User}'s status to BLOCKED.
+     *
+     * @param userId {@link Long}
+     * @author Vasyl Zhovnir
+     */
+    void blockUser(Long userId);
 }

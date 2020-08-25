@@ -105,6 +105,9 @@ public class UserServiceImpl implements UserService {
             users.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
         Page<User> users = userRepo.findAll(pageable);
@@ -119,6 +122,9 @@ public class UserServiceImpl implements UserService {
             users.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateUser(UserManagementDto dto) {
         User user = findById(dto.getId());
@@ -127,9 +133,9 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method for setting data from {@link UserForListDto} to {@link User}.
+     * Method for setting data from {@link UserManagementDto} to {@link User}.
      *
-     * @param dto  - dto {@link UserForListDto} with updated fields.
+     * @param dto  - dto {@link UserManagementDto} with updated fields.
      * @param user {@link User} to be updated.
      * @author Vasyl Zhovnir
      */
@@ -907,5 +913,18 @@ public class UserServiceImpl implements UserService {
                 .friends(new PageableDto<>(friendsWithOnlineStatusDtos, friends.getTotalElements(),
                         friends.getPageable().getPageNumber(),friends.getTotalPages()))
                 .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void blockUser(Long userId) {
+        User foundUser = findById(userId);
+        foundUser.setUserStatus(UserStatus.BLOCKED);
+        scheduleDeleteUser(userId);
+    }
+
+    private void scheduleDeleteUser(Long userId) {
     }
 }
