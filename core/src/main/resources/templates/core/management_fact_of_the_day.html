@@ -90,7 +90,7 @@
                                 <td th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
                                     <a th:href="@{/factoftheday/find/(id=${factOfTheDay.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                    <a th:href="@{/factoftheday/delete/(id=${factOfTheDay.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                    <a th:href="@{/factoftheday/(id=${factOfTheDay.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                                 </td>
                             </tr>
                         </tbody>

@@ -61,9 +61,14 @@ $(document).ready(function(){
     $('#deleteOneSubmit').on('click',function(event){
         event.preventDefault();
         var href = $(this).attr('href');
-        $.get(href, function (data,status){
-            if (status=='success')
+        $.ajax({
+            url: href,
+            type: 'delete',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
                 location.reload();
+            },
         });
     });
     //Кнопка delete в deleteAllSelectedModal
@@ -79,7 +84,7 @@ $(document).ready(function(){
         var href = '/factoftheday/deleteAll';
         $.ajax({
             url: href,
-            type: 'post',
+            type: 'delete',
             dataType: 'json',
             contentType: 'application/json',
             success: function (data) {

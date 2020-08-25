@@ -180,7 +180,7 @@ public class FactOfTheDayController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @GetMapping("/delete")
+    @DeleteMapping("/")
     public ResponseEntity<Long> delete(@ApiIgnore @AuthenticationPrincipal
                                            Principal principal, @RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -193,12 +193,12 @@ public class FactOfTheDayController {
      * @param listId list of IDs
      * @return {@link ResponseEntity}
      */
-    @ApiOperation(value = "Get all languages that exists in db")
+    @ApiOperation(value = "Get all Fact of the day by given IDs")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PostMapping("/deleteAll")
+    @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@ApiIgnore @AuthenticationPrincipal
                                                     Principal principal, @RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
