@@ -7,13 +7,16 @@ import com.google.cloud.storage.StorageOptions;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.service.FileService;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.UUID;
+import javax.imageio.ImageIO;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,5 +66,19 @@ public class CloudStorageService implements FileService {
 
     private URL getURL(BlobInfo blobInfo) throws MalformedURLException {
         return new URL(staticUrl + blobInfo.getBucket() + "/" + blobInfo.getName());
+    }
+
+    public MultipartFile convertToMultipartImage(String image) {
+        String imageToConvert = image.substring(image.indexOf(',') + 1);
+        File tempFile = new File("tempImage.jpg");
+        byte[] imageByte = decodeBase64(imageToConvert);
+        ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+        try {
+            BufferedImage bufferedImage = ImageIO.read(bis);
+            ImageIO.write(bufferedImage, "png", tempFile);
+            return new MockMultipartFile(tempFile.getPath(), new FileInputStream(tempFile));
+        } catch (IOException e) {
+            throw new NotSavedException("Cannot to convert BASE64 image");
+        }
     }
 }

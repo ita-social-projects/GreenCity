@@ -14,16 +14,10 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -35,11 +29,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 @Service
 @EnableCaching
@@ -74,7 +65,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setAuthor(userService.findByEmail(email));
         if (addEcoNewsDtoRequest.getImage() != null) {
-            image = convertToMultipartImage(addEcoNewsDtoRequest.getImage());
+            image = fileService.convertToMultipartImage(addEcoNewsDtoRequest.getImage());
         }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
@@ -116,9 +107,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         return ecoNewsList
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -130,9 +121,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
         List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
         return ecoNewsList
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -144,9 +135,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableDto<EcoNewsDto> findAll(Pageable page) {
         Page<EcoNews> pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
         List<EcoNewsDto> ecoNewsDtos = pages
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
 
         return new PageableDto<>(
             ecoNewsDtos,
@@ -188,8 +179,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNews findById(Long id) {
         return ecoNewsRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -227,8 +218,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery);
 
         List<SearchNewsDto> ecoNews = page.stream()
-                .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
-                .collect(Collectors.toList());
+            .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
+            .collect(Collectors.toList());
 
         return new PageableDto<>(
             ecoNews,
@@ -248,20 +239,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
 
         return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
-    }
-
-    private MultipartFile convertToMultipartImage(String image) {
-        String imageToConvert = image.substring(image.indexOf(',') + 1);
-        File tempFile = new File("tempImage.jpg");
-        byte[] imageByte = decodeBase64(imageToConvert);
-        ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-        try {
-            BufferedImage bufferedImage = ImageIO.read(bis);
-            ImageIO.write(bufferedImage, "png", tempFile);
-            return new MockMultipartFile(tempFile.getPath(), new FileInputStream(tempFile));
-        } catch (IOException e) {
-            throw new NotSavedException("Cannot to convert BASE64 image");
-        }
     }
 
     /**

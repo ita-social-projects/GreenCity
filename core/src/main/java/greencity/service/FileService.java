@@ -14,4 +14,6 @@ public interface FileService {
      * @return public image url.
      **/
     URL upload(MultipartFile multipartFile);
+
+    MultipartFile convertToMultipartImage(String image);
 }

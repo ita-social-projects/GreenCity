@@ -13,12 +13,16 @@ import greencity.entity.enums.ROLE;
 import greencity.service.CustomGoalService;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
+import java.security.Principal;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -28,15 +32,9 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.security.Principal;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -67,10 +65,10 @@ class UserControllerTest {
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
 
-        String content = "{\n" +
-            "  \"id\": 0,\n" +
-            "  \"userStatus\": \"BLOCKED\"\n" +
-            "}";
+        String content = "{\n"
+            + "  \"id\": 0,\n"
+            + "  \"userStatus\": \"BLOCKED\"\n"
+            + "}";
 
         mockMvc.perform(patch(userLink + "/status")
             .principal(principal)
@@ -99,10 +97,10 @@ class UserControllerTest {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
-        String content = "{\n" +
-            "  \"id\": 1,\n" +
-            "  \"role\": \"ROLE_USER\"\n" +
-            "}";
+        String content = "{\n"
+            + "  \"id\": 1,\n"
+            + "  \"role\": \"ROLE_USER\"\n"
+            + "}";
 
         mockMvc.perform(patch(userLink + "/role")
             .principal(principal)
@@ -159,9 +157,9 @@ class UserControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        String content = "{\n" +
-            "  \"searchReg\": \"string\"\n" +
-            "}";
+        String content = "{\n"
+            + "  \"searchReg\": \"string\"\n"
+            + "}";
 
         mockMvc.perform(post(userLink + "/filter?page=1")
             .contentType(MediaType.APPLICATION_JSON)
@@ -192,10 +190,10 @@ class UserControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
-        String content = "{\n" +
-            "  \"emailNotification\": \"DISABLED\",\n" +
-            "  \"name\": \"string\"\n" +
-            "}";
+        String content = "{\n"
+            + "  \"emailNotification\": \"DISABLED\",\n"
+            + "  \"name\": \"string\"\n"
+            + "}";
 
         ObjectMapper mapper = new ObjectMapper();
         UserUpdateDto userUpdateDto =
@@ -262,13 +260,13 @@ class UserControllerTest {
         User user = ModelUtils.getUser();
         when(userService.findById(1L)).thenReturn(user);
 
-        String content = "{\n" +
-            "  \"customGoalSaveRequestDtoList\": [\n" +
-            "    {\n" +
-            "      \"text\": \"string\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
+        String content = "{\n"
+            + "  \"customGoalSaveRequestDtoList\": [\n"
+            + "    {\n"
+            + "      \"text\": \"string\"\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}";
 
         ObjectMapper mapper = new ObjectMapper();
         BulkSaveCustomGoalDto dto = mapper.readValue(content, BulkSaveCustomGoalDto.class);
@@ -283,15 +281,14 @@ class UserControllerTest {
 
     @Test
     void updateBulkTest() throws Exception {
-
-        String content = "{\n" +
-            "  \"customGoals\": [\n" +
-            "    {\n" +
-            "      \"id\": 1,\n" +
-            "      \"text\": \"string\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
+        String content = "{\n"
+            + "  \"customGoals\": [\n"
+            + "    {\n"
+            + "      \"id\": 1,\n"
+            + "      \"text\": \"string\"\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}";
 
         mockMvc.perform(patch(userLink + "/{userId}/customGoals", 1)
             .contentType(MediaType.APPLICATION_JSON)
@@ -355,23 +352,22 @@ class UserControllerTest {
 
     @Test
     void saveUserGoalsWithoutLanguageParamTest() throws Exception {
-
-        String content = "{\n" +
-            "  \"userCustomGoal\": [\n" +
-            "    {\n" +
-            "      \"customGoal\": {\n" +
-            "        \"id\": 1\n" +
-            "      }\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"userGoals\": [\n" +
-            "    {\n" +
-            "      \"goal\": {\n" +
-            "        \"id\": 1\n" +
-            "      }\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}\n";
+        String content = "{\n"
+            + "  \"userCustomGoal\": [\n"
+            + "    {\n"
+            + "      \"customGoal\": {\n"
+            + "        \"id\": 1\n"
+            + "      }\n"
+            + "    }\n"
+            + "  ],\n"
+            + "  \"userGoals\": [\n"
+            + "    {\n"
+            + "      \"goal\": {\n"
+            + "        \"id\": 1\n"
+            + "      }\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}\n";
 
         mockMvc.perform(post(userLink + "/{userId}/goals", 1)
             .contentType(MediaType.APPLICATION_JSON)
@@ -395,12 +391,11 @@ class UserControllerTest {
 
     @Test
     void saveUserHabitsTest() throws Exception {
-
-        String content = "[\n" +
-            "  {\n" +
-            "    \"habitDictionaryId\": 0\n" +
-            "  }\n" +
-            "]";
+        String content = "[\n"
+            + "  {\n"
+            + "    \"habitDictionaryId\": 0\n"
+            + "  }\n"
+            + "]";
 
         mockMvc.perform(post(userLink + "/{userId}/habit?language=en", 1)
             .contentType(MediaType.APPLICATION_JSON)
@@ -445,7 +440,8 @@ class UserControllerTest {
         Principal principal = mock(Principal.class);
 
         when(principal.getName()).thenReturn(eq("testmail@gmail.com"));
-        when(userService.updateUserProfilePicture(null, eq("testmail@gmail.com"))).thenReturn(user);
+        when(userService.updateUserProfilePicture(null, eq("testmail@gmail.com"),
+            ModelUtils.getUserProfilePictureDto())).thenReturn(user);
 
         mockMvc.perform(patch(userLink + "/profilePicture")
             .principal(principal)
@@ -483,16 +479,17 @@ class UserControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
-        String json = "{\n" +
-            "\t\"firstName\": \"name\",\n" +
-            "\t\"city\": \"city\",\n" +
-            "\t\"userCredo\": \"credo\",\n" +
-            "\t\"socialNetworks\": [],\n" +
-            "\t\"showLocation\": true,\n" +
-            "\t\"showEcoPlace\": true,\n" +
-            "\t\"showShoppingList\": false\n" +
-            "}";
-        MockMultipartFile jsonFile = new MockMultipartFile("userProfileDtoRequest", "", "application/json", json.getBytes());
+        String json = "{\n"
+            + "\t\"firstName\": \"name\",\n"
+            + "\t\"city\": \"city\",\n"
+            + "\t\"userCredo\": \"credo\",\n"
+            + "\t\"socialNetworks\": [],\n"
+            + "\t\"showLocation\": true,\n"
+            + "\t\"showEcoPlace\": true,\n"
+            + "\t\"showShoppingList\": false\n"
+            + "}";
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("userProfileDtoRequest", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(userLink + "/profile")
             .file(jsonFile)

@@ -23,13 +23,17 @@ import greencity.service.HabitDictionaryService;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.*;
 import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.powermock.api.mockito.PowerMockito;
@@ -42,17 +46,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZonedDateTime;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceImplTest {
@@ -256,7 +249,7 @@ public class UserServiceImplTest {
 
         PageableDto<UserForListDto> userPageableDto =
             new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0,1);
+                userForListDtos.size(), 0, 1);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -307,7 +300,7 @@ public class UserServiceImplTest {
 
         PageableDto<UserForListDto> userPageableDto =
             new PageableDto<>(userForListDtos,
-                userForListDtos.size(), 0,1);
+                userForListDtos.size(), 0, 1);
 
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
@@ -734,8 +727,7 @@ public class UserServiceImplTest {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
 
-
-        userService.updateUserProfilePicture(image, anyString());
+        userService.updateUserProfilePicture(image, anyString(), ModelUtils.getUserProfilePictureDto());
         verify(userRepo).save(user);
     }
 
@@ -743,7 +735,7 @@ public class UserServiceImplTest {
     void updateUserProfilePictureNotUpdatedExceptionTest() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         assertThrows(NotUpdatedException.class, () ->
-            userService.updateUserProfilePicture(null, "testmail@gmail.com")
+            userService.updateUserProfilePicture(null, "testmail@gmail.com", ModelUtils.getUserProfilePictureDto())
         );
     }
 
@@ -752,7 +744,6 @@ public class UserServiceImplTest {
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
         assertThrows(CheckRepeatingValueException.class, () ->
             userService.deleteUserFriendById(1L, 1L));
-
     }
 
     @Test
@@ -762,7 +753,6 @@ public class UserServiceImplTest {
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
         userService.deleteUserFriendById(user.getId(), user2.getId());
         verify(userRepo).deleteUserFriendById(user.getId(), user2.getId());
-
     }
 
     @Test
@@ -862,7 +852,7 @@ public class UserServiceImplTest {
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         LocalDateTime userLastActivityTime = LocalDateTime.of(2015,
-                Month.JULY, 29, 19, 30, 40);
+            Month.JULY, 29, 19, 30, 40);
         User user = ModelUtils.getUser();
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));

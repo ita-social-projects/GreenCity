@@ -278,12 +278,14 @@ public interface UserService {
     /**
      * Update user profile picture {@link User}.
      *
-     * @param image {@link MultipartFile}
-     * @param email {@link String} - email of user that need to update.
+     * @param image                 {@link MultipartFile}
+     * @param email                 {@link String} - email of user that need to update.
+     * @param userProfilePictureDto {@link UserProfilePictureDto}
      * @return {@link User}.
      * @author Marian Datsko
      */
-    User updateUserProfilePicture(MultipartFile image, String email);
+    User updateUserProfilePicture(MultipartFile image, String email,
+                                  UserProfilePictureDto userProfilePictureDto);
 
     /**
      * Get list user friends by user id {@link User}.

@@ -53,14 +53,13 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
         toSave.setAuthor(userService.findByEmail(email));
         if (tipsAndTricksDtoRequest.getImage() != null) {
-            image = modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class);
+            image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
         }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
         toSave.setTags(
             tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()));
-
         try {
             tipsAndTricksRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
