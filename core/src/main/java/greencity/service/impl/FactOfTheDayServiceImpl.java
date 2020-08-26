@@ -98,14 +98,14 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             .name(factPost.getName())
             .factOfTheDayTranslations(
                 factPost.getFactOfTheDayTranslations().stream()
-                    .map((el) -> FactOfTheDayTranslation.builder()
+                    .map(el -> FactOfTheDayTranslation.builder()
                         .content(el.getContent())
                         .language(languageService.findByCode(el.getLanguageCode()))
                         .build()
                     ).collect(Collectors.toList())
             )
             .build();
-        factOfTheDay.getFactOfTheDayTranslations().forEach((el) -> el.setFactOfTheDay(factOfTheDay));
+        factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
         factOfTheDayTranslationService.saveAll(factOfTheDay.getFactOfTheDayTranslations());
         return factPost;
@@ -125,14 +125,14 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             .name(factPost.getName())
             .factOfTheDayTranslations(
                 factPost.getFactOfTheDayTranslations().stream()
-                    .map((el) -> FactOfTheDayTranslation.builder()
+                    .map(el -> FactOfTheDayTranslation.builder()
                         .content(el.getContent())
                         .language(languageService.findByCode(el.getLanguageCode()))
                         .build()
                     ).collect(Collectors.toList())
             )
             .build();
-        factOfTheDay.getFactOfTheDayTranslations().forEach((el) -> el.setFactOfTheDay(factOfTheDay));
+        factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
         factOfTheDayTranslationService.saveAll(factOfTheDay.getFactOfTheDayTranslations());
         return factPost;
@@ -165,7 +165,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     @Override
     public List<Long> deleteAllFactOfTheDayAndTranslations(List<Long> listId) {
-        listId.forEach((id) -> {
+        listId.forEach(id -> {
             FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(id).orElseThrow(() -> new NotUpdatedException(
                 ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));
             factOfTheDayRepo.deleteById(id);

@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat|Open+Sans|Roboto&display=swap');
-.main-background-image {
+ footer {
+	flex: 0 0 auto;
+}
+ .main-background-image {
 	 background: url("background-image-footer.svg");
 	 background-repeat: no-repeat;
 	 background-position: center;
