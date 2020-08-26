@@ -45,6 +45,22 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      * @author Yurii Savchenko
      */
+    @ExceptionHandler(UserHasNoAvailableHabitDictionaryException.class)
+    public final ResponseEntity<Object> handleUserHasNoAvailableHabitDictionaryException(
+        UserHasNoAvailableHabitDictionaryException ex, WebRequest request) {
+        log.info(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercept exception {@link ConstraintViolationException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @author Yurii Savchenko
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     public final ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex,
                                                                            WebRequest request) {
