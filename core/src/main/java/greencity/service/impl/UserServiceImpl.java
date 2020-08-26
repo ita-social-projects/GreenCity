@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -35,6 +36,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -919,12 +921,20 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void blockUser(Long userId) {
-        User foundUser = findById(userId);
-        foundUser.setUserStatus(UserStatus.BLOCKED);
-        scheduleDeleteUser(userId);
+    public UserDeactivateDto deactivateUser(UserDeactivateDto dto) {
+        User foundUser = findById(dto.getId());
+        foundUser.setUserStatus(UserStatus.DEACTIVATED);
+        return modelMapper.map(foundUser, UserDeactivateDto.class);
     }
 
-    private void scheduleDeleteUser(Long userId) {
+    /**
+     * Every day at 00:00 deletes from the database users
+     * that have status 'DEACTIVATED' and last visited the site 2 years ago.
+     * @author Vasyl Zhovnir
+     **/
+    @Scheduled(cron = "0 0 12 ? * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    private void scheduleDeleteDeactivatedUsers() {
+        int rows = userRepo.scheduleDeleteDeactivatedUsers();
+        log.info(rows + " user(s) with status 'DEACTIVATED' were deleted.");
     }
 }

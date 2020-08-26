@@ -378,10 +378,11 @@ public interface UserService {
     UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable);
 
     /**
-     * change {@link User}'s status to BLOCKED.
+     * change {@link User}'s status to DEACTIVATED.
      *
-     * @param userId {@link Long}
+     * @param dto {@link UserDeactivateDto}
+     * @return {@link UserDeactivateDto} with updated userStatus field
      * @author Vasyl Zhovnir
      */
-    void blockUser(Long userId);
+    UserDeactivateDto deactivateUser(UserDeactivateDto dto);
 }

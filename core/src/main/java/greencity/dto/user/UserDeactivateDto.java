@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class UserBlockDto {
+public class UserDeactivateDto {
     @NotNull
     private Long id;
 
-    private LocalDateTime timeToBeDeleted;
+    private LocalDateTime lastActivityTime;
 }

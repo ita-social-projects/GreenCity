@@ -1,7 +1,6 @@
 package greencity.webcontroller;
 
-import greencity.dto.user.UserBlockDto;
-import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserDeactivateDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.service.UserService;
@@ -10,6 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -88,15 +89,16 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for setting {@link User}'s status to BLOCKED.
+     * Method for setting {@link User}'s status to DEACTIVATED,
+     * so the user will not be able to log in into the system.
      *
      * @param id of the searched {@link User}.
      * @author Vasyl Zhovnir
      */
     @PostMapping
-    public void blockUser(Long id) {
+    public ResponseEntity<UserDeactivateDto> deactivateUser(Long id) {
         User byId = userService.findById(id);
-        UserBlockDto map = modelMapper.map(byId, UserBlockDto.class);
-        userService.blockUser(id);
+        UserDeactivateDto dto = modelMapper.map(byId, UserDeactivateDto.class);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.deactivateUser(dto));
     }
 }
