@@ -6,9 +6,6 @@ import greencity.message.SendHabitNotification;
 import greencity.repository.FactTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserRepo;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,13 +15,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import static greencity.constant.CacheConstants.FACT_OF_THE_DAY_CACHE_NAME;
 import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
 import static greencity.constant.RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME;
 import static greencity.constant.RabbitConstants.SEND_HABIT_NOTIFICATION_ROUTING_KEY;
 import static greencity.entity.enums.EmailNotification.*;
 import static greencity.entity.enums.FactOfDayStatus.*;
-
 
 
 /**
@@ -47,7 +47,7 @@ public class ScheduleConfig {
      * Invoke {@link sendHabitNotification} from EmailMessageReceiver to send email letters
      * to each user that hasn't marked any habit during last 3 days.
      *
-     * @param users     list of potential {@link User} to send notifications.
+     * @param users list of potential {@link User} to send notifications.
      */
     private void sendHabitNotificationIfNeed(List<User> users) {
         ZonedDateTime end = ZonedDateTime.now();
@@ -121,5 +121,17 @@ public class ScheduleConfig {
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void chooseNewFactOfTheDay() {
+    }
+
+    /**
+     * Every day at 00:00 deletes from the database users
+     * that have status 'DEACTIVATED' and last visited the site 2 years ago.
+     *
+     * @author Vasyl Zhovnir
+     **/
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void scheduleDeleteDeactivatedUsers() {
+        userRepo.scheduleDeleteDeactivatedUsers();
     }
 }

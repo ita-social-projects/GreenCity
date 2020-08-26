@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -24,11 +23,6 @@ import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.UserService;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -36,10 +30,15 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static greencity.constant.ErrorMessage.*;
 
@@ -871,21 +870,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAndFriendsWithOnlineStatusDto getUserAndSixFriendsWithOnlineStatus(Long userId) {
         UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
-                .id(userId)
-                .onlineStatus(checkIfTheUserIsOnline(userId))
-                .build();
+            .id(userId)
+            .onlineStatus(checkIfTheUserIsOnline(userId))
+            .build();
         List<User> sixFriendsWithTheHighestRating = userRepo.getSixFriendsWithTheHighestRating(userId);
         List<UserWithOnlineStatusDto> sixFriendsWithOnlineStatusDtos = new ArrayList<>();
         if (!sixFriendsWithTheHighestRating.isEmpty()) {
             sixFriendsWithOnlineStatusDtos = sixFriendsWithTheHighestRating
-                    .stream()
-                    .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
-                    .collect(Collectors.toList());
+                .stream()
+                .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
+                .collect(Collectors.toList());
         }
         return UserAndFriendsWithOnlineStatusDto.builder()
-                .user(userWithOnlineStatusDto)
-                .friends(sixFriendsWithOnlineStatusDtos)
-                .build();
+            .user(userWithOnlineStatusDto)
+            .friends(sixFriendsWithOnlineStatusDtos)
+            .build();
     }
 
     /**
@@ -898,23 +897,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable) {
         UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
-                .id(userId)
-                .onlineStatus(checkIfTheUserIsOnline(userId))
-                .build();
+            .id(userId)
+            .onlineStatus(checkIfTheUserIsOnline(userId))
+            .build();
         Page<User> friends = userRepo.getAllUserFriends(userId, pageable);
         List<UserWithOnlineStatusDto> friendsWithOnlineStatusDtos = new ArrayList<>();
         if (!friends.isEmpty()) {
             friendsWithOnlineStatusDtos = friends
-                    .getContent()
-                    .stream()
-                    .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
-                    .collect(Collectors.toList());
+                .getContent()
+                .stream()
+                .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
+                .collect(Collectors.toList());
         }
         return UserAndAllFriendsWithOnlineStatusDto.builder()
-                .user(userWithOnlineStatusDto)
-                .friends(new PageableDto<>(friendsWithOnlineStatusDtos, friends.getTotalElements(),
-                        friends.getPageable().getPageNumber(),friends.getTotalPages()))
-                .build();
+            .user(userWithOnlineStatusDto)
+            .friends(new PageableDto<>(friendsWithOnlineStatusDtos, friends.getTotalElements(),
+                friends.getPageable().getPageNumber(), friends.getTotalPages()))
+            .build();
     }
 
     /**
@@ -925,16 +924,5 @@ public class UserServiceImpl implements UserService {
         User foundUser = findById(dto.getId());
         foundUser.setUserStatus(UserStatus.DEACTIVATED);
         return modelMapper.map(foundUser, UserDeactivateDto.class);
-    }
-
-    /**
-     * Every day at 00:00 deletes from the database users
-     * that have status 'DEACTIVATED' and last visited the site 2 years ago.
-     * @author Vasyl Zhovnir
-     **/
-    @Scheduled(cron = "0 0 12 ? * *", zone = AppConstant.UKRAINE_TIMEZONE)
-    private void scheduleDeleteDeactivatedUsers() {
-        int rows = userRepo.scheduleDeleteDeactivatedUsers();
-        log.info(rows + " user(s) with status 'DEACTIVATED' were deleted.");
     }
 }
