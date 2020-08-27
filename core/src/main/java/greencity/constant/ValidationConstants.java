@@ -101,6 +101,8 @@ public final class ValidationConstants {
 
     public static final int NUMBER_OF_RECOMMENDED_ECO_NEWS = 3;
 
+    public static final String CUSTOM_GOAL_TEXT_CANNOT_BE_EMPTY = "Custom goal text cannot be empty";
+
     private ValidationConstants() {
     }
 }
