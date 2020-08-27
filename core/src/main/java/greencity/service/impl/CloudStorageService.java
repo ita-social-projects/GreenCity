@@ -68,6 +68,11 @@ public class CloudStorageService implements FileService {
         return new URL(staticUrl + blobInfo.getBucket() + "/" + blobInfo.getName());
     }
 
+    /**
+     * Convert string to MultipartFile.
+     *
+     * @return MultipartFile.
+     **/
     public MultipartFile convertToMultipartImage(String image) {
         String imageToConvert = image.substring(image.indexOf(',') + 1);
         File tempFile = new File("tempImage.jpg");
