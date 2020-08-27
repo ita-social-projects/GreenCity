@@ -1,4 +1,4 @@
-package greencity.dto.errorsresponse;
+package greencity.dto.genericresponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ErrorsResponseDto {
-    boolean status;
-
+public class GenericResponseDto {
     List<FieldErrorDto> errors = new ArrayList<>();
 }

@@ -101,7 +101,7 @@ $(document).ready(function(){
             obj[item.name] = item.value;
             return obj;
         }, {});
-        var returnData={
+        var payload={
             "id" : formData.id,
             "name" : formData.name,
             "factOfTheDayTranslations" : [
@@ -111,7 +111,7 @@ $(document).ready(function(){
         for (var key in formData) {
             if (key.startsWith("content")) {
                 var lang = key.split("content").pop();
-                returnData.factOfTheDayTranslations.push(
+                payload.factOfTheDayTranslations.push(
                     {
                         "content" : formData["content"+lang],
                         "languageCode": lang
@@ -126,7 +126,7 @@ $(document).ready(function(){
             dataType: 'json',
             contentType: 'application/json',
             success: function (data) {
-                if(!data.status){
+                if(Array.isArray(data.errors) && data.errors.length){
                     data.errors.forEach(function(el){
                         $(document.getElementById('errorModalSave'+el.fieldName)).text(el.fieldError);
                     })
@@ -135,7 +135,7 @@ $(document).ready(function(){
                     location.reload();
                 }
             },
-            data: JSON.stringify(returnData)
+            data: JSON.stringify(payload)
         });
     })
 
@@ -173,7 +173,7 @@ $(document).ready(function(){
             dataType: 'json',
             contentType: 'application/json',
             success: function (data) {
-                if(!data.status){
+                if(Array.isArray(data.errors) && data.errors.length){
                     data.errors.forEach(function(el){
                         $(document.getElementById('errorModalUpdate'+el.fieldName)).text(el.fieldError);
                     })

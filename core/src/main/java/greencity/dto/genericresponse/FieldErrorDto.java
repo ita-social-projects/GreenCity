@@ -1,4 +1,4 @@
-package greencity.dto.errorsresponse;
+package greencity.dto.genericresponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

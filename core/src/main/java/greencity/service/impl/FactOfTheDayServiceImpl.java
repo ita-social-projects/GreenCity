@@ -11,6 +11,7 @@ import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
 import greencity.service.FactOfTheDayService;
 import greencity.service.FactOfTheDayTranslationService;
+import greencity.service.LanguageService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
@@ -32,7 +33,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    LanguageServiceImpl languageService;
+    LanguageService languageService;
     @Autowired
     FactOfTheDayTranslationService factOfTheDayTranslationService;
     @Autowired

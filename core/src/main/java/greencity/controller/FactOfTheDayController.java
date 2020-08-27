@@ -3,11 +3,11 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.errorsresponse.ErrorsResponseDto;
-import greencity.dto.errorsresponse.FieldErrorDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
+import greencity.dto.genericresponse.FieldErrorDto;
+import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.service.FactOfTheDayService;
@@ -51,7 +51,7 @@ public class FactOfTheDayController {
     })
     @GetMapping("/")
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                                          Principal principal,
+                                                                                Principal principal,
                                                                             @RequestParam String languageCode) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(languageCode));
@@ -89,7 +89,7 @@ public class FactOfTheDayController {
     })
     @GetMapping("/find")
     public ResponseEntity<FactOfTheDayDTO> findFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                               Principal principal, @RequestParam("id") Long id) {
+                                                                Principal principal, @RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayService.getFactOfTheDayById(id));
     }
@@ -98,35 +98,34 @@ public class FactOfTheDayController {
      * Method which saves {@link FactOfTheDay}.
      *
      * @param factOfTheDayPostDTO of {@link FactOfTheDayPostDTO}
-     * @return {@link ErrorsResponseDto} with of operation and errors fields
+     * @return {@link GenericResponseDto} with of operation and errors fields
      */
     @ApiOperation(value = "Save fact of the day")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = ErrorsResponseDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
     @PostMapping("/")
-    public ErrorsResponseDto saveFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
-                                              BindingResult bindingResult) {
+    public GenericResponseDto saveFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
+                                               BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            ErrorsResponseDto errorsResponseDto = new ErrorsResponseDto();
-            errorsResponseDto.setStatus(false);
+            GenericResponseDto genericResponseDto = new GenericResponseDto();
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                errorsResponseDto.getErrors().add(
+                genericResponseDto.getErrors().add(
                     new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
             }
-            return errorsResponseDto;
+            return genericResponseDto;
         }
         factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return new ErrorsResponseDto(true, new ArrayList<>());
+        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
     }
 
     /**
      * Method which updates {@link FactOfTheDay}.
      *
      * @param factOfTheDayPostDTO of {@link FactOfTheDayPostDTO}
-     * @return {@link ErrorsResponseDto} with of operation and errors fields
+     * @return {@link GenericResponseDto} with of operation and errors fields
      */
     @ApiOperation(value = "Update fact of the day")
     @ApiResponses(value = {
@@ -135,21 +134,20 @@ public class FactOfTheDayController {
     })
     @ResponseBody
     @PutMapping("/")
-    public ErrorsResponseDto updateFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                    Principal principal,
-                                                @Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
-                                                BindingResult bindingResult) {
+    public GenericResponseDto updateFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
+                                                     Principal principal,
+                                                 @Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
+                                                 BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            ErrorsResponseDto errorsResponseDto = new ErrorsResponseDto();
-            errorsResponseDto.setStatus(false);
+            GenericResponseDto genericResponseDto = new GenericResponseDto();
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                errorsResponseDto.getErrors().add(
+                genericResponseDto.getErrors().add(
                     new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
             }
-            return errorsResponseDto;
+            return genericResponseDto;
         }
         factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return new ErrorsResponseDto(true, new ArrayList<>());
+        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
     }
 
     /**
