@@ -12,10 +12,11 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import java.util.Date;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -378,4 +379,12 @@ public interface UserService {
      * @author Yurii Zhurakovskyi
      */
     UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable);
+
+    /**
+     * change {@link User}'s status to DEACTIVATED.
+     *
+     * @param id {@link User}'s id
+     * @author Vasyl Zhovnir
+     */
+    void deactivateUser(Long id);
 }
