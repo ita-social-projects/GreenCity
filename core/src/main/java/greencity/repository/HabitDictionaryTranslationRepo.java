@@ -39,7 +39,7 @@ public interface HabitDictionaryTranslationRepo extends JpaRepository<HabitDicti
      * @return List of available {@link HabitDictionaryTranslation}`s.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM habit_dictionary_translation "
-        + "INNER JOIN languages l on l.id = habit_dictionary_translation.language_id "
+        + "INNER JOIN languages l ON l.id = habit_dictionary_translation.language_id "
         + "WHERE l.code = ?2 AND habit_dictionary_id NOT IN "
         + "(SELECT habits.habit_dictionary_id FROM habits "
         + "INNER JOIN habits_users_assign hua ON hua.habit_id = id "
