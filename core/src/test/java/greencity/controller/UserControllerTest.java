@@ -3,6 +3,7 @@ package greencity.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
@@ -109,8 +110,6 @@ class UserControllerTest {
             .andExpect(status().isOk());
 
         ObjectMapper mapper = new ObjectMapper();
-        UserRoleDto userRoleDto =
-            mapper.readValue(content, UserRoleDto.class);
 
         verify(userService).updateRole(eq(1L), eq(ROLE.ROLE_USER), eq("testmail@gmail.com"));
     }

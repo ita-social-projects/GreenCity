@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.IMAGE_EXISTS;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -9,6 +10,7 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
@@ -69,6 +71,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
+        } else {
+            throw new BadRequestException(IMAGE_EXISTS);
         }
 
         Set<String> tagsSet = new HashSet<>(addEcoNewsDtoRequest.getTags());
