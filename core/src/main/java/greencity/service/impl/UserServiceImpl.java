@@ -920,9 +920,8 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserDeactivateDto deactivateUser(UserDeactivateDto dto) {
-        User foundUser = findById(dto.getId());
+    public void deactivateUser(Long id) {
+        User foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.DEACTIVATED);
-        return modelMapper.map(foundUser, UserDeactivateDto.class);
     }
 }

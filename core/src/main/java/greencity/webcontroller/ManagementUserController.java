@@ -1,6 +1,5 @@
 package greencity.webcontroller;
 
-import greencity.dto.user.UserDeactivateDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.service.UserService;
@@ -96,9 +95,8 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping
-    public ResponseEntity<UserDeactivateDto> deactivateUser(Long id) {
-        User byId = userService.findById(id);
-        UserDeactivateDto dto = modelMapper.map(byId, UserDeactivateDto.class);
-        return ResponseEntity.status(HttpStatus.OK).body(userService.deactivateUser(dto));
+    public ResponseEntity deactivateUser(@RequestParam Long id) {
+        userService.deactivateUser(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
