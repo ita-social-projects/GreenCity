@@ -71,8 +71,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
-        } else {
-            throw new BadRequestException(IMAGE_EXISTS);
         }
 
         Set<String> tagsSet = new HashSet<>(addEcoNewsDtoRequest.getTags());

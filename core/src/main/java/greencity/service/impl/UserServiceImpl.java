@@ -790,8 +790,6 @@ public class UserServiceImpl implements UserService {
         }
         if (image != null) {
             user.setProfilePicturePath(fileService.upload(image).toString());
-        } else {
-            throw new BadRequestException(IMAGE_EXISTS);
         }
         userRepo.save(user);
         return modelMapper.map(user, UserProfileDtoResponse.class);

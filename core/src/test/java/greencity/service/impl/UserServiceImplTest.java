@@ -27,7 +27,9 @@ import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.*;
 import junit.framework.TestCase;
+import liquibase.pro.packaged.M;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -723,18 +725,22 @@ public class UserServiceImplTest {
 
     @Test
     void updateUserProfilePictureTest() throws MalformedURLException {
-        MultipartFile image = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
+        UserProfilePictureDto userProfilePictureDto = ModelUtils.getUserProfilePictureDto();
+        userProfilePictureDto.setProfilePicturePath(null);
+
+        MultipartFile image = new MockMultipartFile("data", "filename.png",
+            "image/png", "some xml".getBytes());
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
 
-        userService.updateUserProfilePicture(image, anyString(), ModelUtils.getUserProfilePictureDto());
+        userService.updateUserProfilePicture(image, anyString(), userProfilePictureDto);
         verify(userRepo).save(user);
     }
 
     @Test
     void updateUserProfilePictureNotUpdatedExceptionTest() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
-        assertThrows(NotUpdatedException.class, () ->
+        assertThrows(BadRequestException.class, () ->
             userService.updateUserProfilePicture(null, "testmail@gmail.com", ModelUtils.getUserProfilePictureDto())
         );
     }

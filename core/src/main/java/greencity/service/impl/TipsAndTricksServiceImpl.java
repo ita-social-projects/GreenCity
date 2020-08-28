@@ -59,8 +59,6 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
-        } else {
-            throw new BadRequestException(IMAGE_EXISTS);
         }
         toSave.setTags(
             tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()));
