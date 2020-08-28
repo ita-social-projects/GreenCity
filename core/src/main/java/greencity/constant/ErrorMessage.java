@@ -155,7 +155,4 @@ public final class ErrorMessage {
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
     public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
-
-    public ErrorMessage() {
-    }
 }
