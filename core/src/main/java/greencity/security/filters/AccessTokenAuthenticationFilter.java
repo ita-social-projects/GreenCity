@@ -1,18 +1,25 @@
 package greencity.security.filters;
 
+import greencity.entity.User;
+import greencity.entity.enums.UserStatus;
 import greencity.security.jwt.JwtTool;
+import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
-import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Class that provide Authentication object based on JWT.
@@ -24,6 +31,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTool jwtTool;
     private final AuthenticationManager authenticationManager;
+
+    private UserService userService;
 
     /**
      * Constructor.
@@ -37,9 +46,9 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      * Checks if request has token in header, if this token still valid, and set
      * authentication for spring.
      *
-     * @param request this is servlet that take request
+     * @param request  this is servlet that take request
      * @param response this is response servlet
-     * @param chain this is filter of chain
+     * @param chain    this is filter of chain
      */
     @Override
     public void doFilterInternal(@SuppressWarnings("NullableProblems") HttpServletRequest request,
@@ -47,10 +56,22 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                                  @SuppressWarnings("NullableProblems") FilterChain chain)
         throws IOException, ServletException {
         String token = jwtTool.getTokenFromHttpServletRequest(request);
+
+        if (userService == null) {
+            ServletContext servletContext = request.getServletContext();
+            WebApplicationContext webApplicationContext = WebApplicationContextUtils
+                .getWebApplicationContext(servletContext);
+            userService = webApplicationContext.getBean(UserService.class);
+        }
         if (token != null) {
             try {
                 Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(token, null));
+                User user = userService.findByEmail((String) authentication.getPrincipal());
+                if (user.getUserStatus() == UserStatus.DEACTIVATED) {
+                    authentication = authenticationManager
+                        .authenticate(new UsernamePasswordAuthenticationToken(null, null));
+                }
                 log.info("User successfully authenticate - {}", authentication.getPrincipal());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (ExpiredJwtException e) {
