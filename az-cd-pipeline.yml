@@ -103,22 +103,22 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
         artifactName: '$(artifactName)'
 
-#- stage: EnablingTestAppServices
-#  jobs:
-#    - job: Enabling
-#      steps:
-#        - task: AzureAppServiceManage@0
-#          inputs:
-#            azureSubscription: '$(azureSub)'
-#            action: 'Start Azure App Service'
-#            webAppName: '$(coreServiceName)'
-#            ResourceGroupName: '$(resourceGroup)'
-#        - task: AzureAppServiceManage@0
-#          inputs:
-#            azureSubscription: '$(azureSub)'
-#            action: start Azure App Service
-#            webAppName: '$(mailServiceName)'
-#            ResourceGroupName: '$(resourceGroup)'
+- stage: EnablingTestAppServices
+  jobs:
+    - job: Enabling
+      steps:
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: 'Start Azure App Service'
+            webAppName: '$(coreServiceName)'
+            ResourceGroupName: '$(resourceGroup)'
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: start Azure App Service
+            webAppName: '$(mailServiceName)'
+            ResourceGroupName: '$(resourceGroup)'
 
 - stage: DeployTEST
   jobs:
