@@ -116,7 +116,7 @@ stages:
         - task: AzureAppServiceManage@0
           inputs:
             azureSubscription: '$(azureSub)'
-            action: start Azure App Service
+            action: 'Start Azure App Service'
             webAppName: '$(mailServiceName)'
             ResourceGroupName: '$(resourceGroup)'
 
