@@ -176,6 +176,23 @@ stages:
                 ResourceGroupName: '$(resourceGroup)'
                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
 
+- stage: DisablingTestAppServices
+  jobs:
+    - job: Disabling
+      steps:
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: 'Stop Azure App Service'
+            webAppName: '$(coreServiceName)'
+            ResourceGroupName: '$(resourceGroup)'
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: 'Stop Azure App Service'
+            webAppName: '$(mailServiceName)'
+            ResourceGroupName: '$(resourceGroup)'
+
 - stage: DeployPROD
   dependsOn: DeployTEST
   jobs:
