@@ -24,6 +24,8 @@ variables:
   resourceGroup: GreenCity
   coreServiceName: greencity
   mailServiceName: greencity-mail
+  TestcoreServiceName: testage
+  TestmailServiceName: testage-mail
 
 stages:
 - stage: Build
@@ -101,7 +103,98 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
         artifactName: '$(artifactName)'
 
+- stage: StartingTestAppServices
+  jobs:
+    - job: Starting
+      steps:
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: 'Start Azure App Service'
+            webAppName: '$(TestcoreServiceName)'
+            ResourceGroupName: '$(resourceGroup)'
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: start Azure App Service
+            webAppName: '$(TestmailServiceName)'
+            ResourceGroupName: '$(resourceGroup)'
+
+- stage: DeployTest
+  jobs:
+    - deployment: DeployCore
+      displayName: Deploy core app service
+      pool:
+        vmImage: $(agentOS)
+      environment: 'prod'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: none
+            
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: '$(artifactName)'
+                downloadPath: '$(System.ArtifactsDirectory)'
+                
+            - task: AzureRmWebAppDeployment@4
+              inputs:
+                azureSubscription: '$(azureSub)'
+                appType: 'webAppLinux'
+                WebAppName: '$(TestcoreServiceName)'
+                deployToSlotOrASE: true
+                ResourceGroupName: '$(resourceGroup)'
+                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
+
+    - deployment: DeployMail
+      displayName: Deploy mail app service
+      pool:
+        vmImage: $(agentOS)
+      environment: 'prod'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: none
+            
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: '$(artifactName)'
+                downloadPath: '$(System.ArtifactsDirectory)'
+                
+            - task: AzureRmWebAppDeployment@4
+              inputs:
+                azureSubscription: '$(azureSub)'
+                appType: 'webAppLinux'
+                WebAppName: '$(TestmailServiceName)'
+                deployToSlotOrASE: true
+                ResourceGroupName: '$(resourceGroup)'
+                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
+
+- stage: StoppingTestAppServices
+  jobs:
+    - job: Stopping
+      steps:
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: 'Stop Azure App Service'
+            webAppName: '$(TestcoreServiceName)'
+            ResourceGroupName: '$(resourceGroup)'
+        - task: AzureAppServiceManage@0
+          inputs:
+            azureSubscription: '$(azureSub)'
+            action: 'Stop Azure App Service'
+            webAppName: '$(TestmailServiceName)'
+            ResourceGroupName: '$(resourceGroup)'
+
 - stage: Deploy
+  dependsOn: DeployTest
   jobs:
     - deployment: DeployCore
       displayName: Deploy core app service
