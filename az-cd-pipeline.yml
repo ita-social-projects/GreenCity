@@ -193,7 +193,6 @@ stages:
             ResourceGroupName: '$(resourceGroup)'
 
 - stage: DeployPROD
-  dependsOn: DeployTEST
   jobs:
     - deployment: DeployCore
       displayName: Deploy core app service
