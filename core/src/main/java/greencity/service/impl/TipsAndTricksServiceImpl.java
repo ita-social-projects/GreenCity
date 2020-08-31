@@ -52,7 +52,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                                          String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
         toSave.setAuthor(userService.findByEmail(email));
-        if (tipsAndTricksDtoRequest.getImage() != null) {
+        if (tipsAndTricksDtoRequest.getImage() != null && !tipsAndTricksDtoRequest.getImage().isEmpty()) {
             image = modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class);
         }
         if (image != null) {
@@ -146,6 +146,14 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     public void delete(Long id) {
         tipsAndTricksRepo.deleteById(findById(id).getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAll(List<Long> listId) {
+        listId.forEach(id -> tipsAndTricksRepo.deleteById(findById(id).getId()));
     }
 
     /**
