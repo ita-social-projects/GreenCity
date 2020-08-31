@@ -924,4 +924,13 @@ public class UserServiceImpl implements UserService {
         User foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.DEACTIVATED);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Long> deactivateAllUsers(List<Long> listId) {
+        listId.forEach(this::deactivateUser);
+        return listId;
+    }
 }

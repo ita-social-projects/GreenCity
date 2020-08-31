@@ -385,4 +385,13 @@ public interface UserService {
      * @author Vasyl Zhovnir
      */
     void deactivateUser(Long id);
+
+    /**
+     * Method deactivates all the {@link User} by list of IDs.
+     *
+     * @param listId list of id {@link User}
+     * @return listId list of id {@link User}
+     * @author Vasyl Zhovnir
+     */
+    List<Long> deactivateAllUsers(List<Long> listId);
 }
