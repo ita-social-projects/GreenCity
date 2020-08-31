@@ -19,10 +19,10 @@ import javax.validation.Valid;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/management")
+@RequestMapping("/management/users")
 public class ManagementUserController {
-    private UserService userService;
-    private ModelMapper modelMapper;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
     /**
      * Method that returns management page with all {@link User}.
@@ -33,7 +33,7 @@ public class ManagementUserController {
      * @return View template path {@link String}.
      * @author Vasyl Zhovnir
      */
-    @GetMapping("/users")
+    @GetMapping("")
     public String getAllUsers(Model model,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "5") int size) {
