@@ -28,6 +28,8 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
@@ -492,10 +494,18 @@ class UserControllerTest {
             "\t\"showEcoPlace\": true,\n" +
             "\t\"showShoppingList\": false\n" +
             "}";
+
         MockMultipartFile jsonFile = new MockMultipartFile("userProfileDtoRequest", "", "application/json", json.getBytes());
 
-        this.mockMvc.perform(multipart(userLink + "/profile")
-            .file(jsonFile)
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart(userLink + "/profile");
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+
+        this.mockMvc.perform(builder.
+            file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
