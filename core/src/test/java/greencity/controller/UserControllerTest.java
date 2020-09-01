@@ -3,12 +3,14 @@ package greencity.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.habitstatistic.HabitIdDto;
-import greencity.dto.user.*;
+import greencity.dto.user.BulkSaveUserGoalDto;
+import greencity.dto.user.UserProfileDtoRequest;
+import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserUpdateDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
 import greencity.service.CustomGoalService;
@@ -17,7 +19,6 @@ import greencity.service.UserService;
 import java.security.Principal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,6 +35,8 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -433,18 +436,32 @@ class UserControllerTest {
         verify(userService).getActivatedUsersAmount();
     }
 
-    // todo
     @Test
-    @Disabled
     void updateUserProfilePictureTest() throws Exception {
         User user = ModelUtils.getUser();
         Principal principal = mock(Principal.class);
 
-        when(principal.getName()).thenReturn(eq("testmail@gmail.com"));
-        when(userService.updateUserProfilePicture(null, eq("testmail@gmail.com"),
+        String json = "{\n"
+            + "\t\"id\": 1,\n"
+            + "\t\"profilePicturePath\": \"ima\""
+            + "}";
+
+        MockMultipartFile jsonFile = new MockMultipartFile("userProfilePictureDto", "",
+            "application/json", json.getBytes());
+
+        when(principal.getName()).thenReturn("testmail@gmail.com");
+        when(userService.updateUserProfilePicture(null, "testmail@gmail.com",
             ModelUtils.getUserProfilePictureDto())).thenReturn(user);
 
-        mockMvc.perform(patch(userLink + "/profilePicture")
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart(userLink + "/profilePicture");
+        builder.with(request -> {
+            request.setMethod("PATCH");
+            return request;
+        });
+
+        this.mockMvc.perform(builder
+            .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
@@ -476,7 +493,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Disabled
     void saveTest() throws Exception {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
@@ -493,7 +509,14 @@ class UserControllerTest {
         MockMultipartFile jsonFile =
             new MockMultipartFile("userProfileDtoRequest", "", "application/json", json.getBytes());
 
-        this.mockMvc.perform(multipart(userLink + "/profile")
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart(userLink + "/profile");
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+
+        this.mockMvc.perform(builder
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
@@ -504,13 +527,5 @@ class UserControllerTest {
         UserProfileDtoRequest dto = mapper.readValue(json, UserProfileDtoRequest.class);
 
         verify(userService).saveUserProfile(eq(dto), eq(null), eq("testmail@gmail.com"));
-    }
-
-    @Test
-    void getUserProfileInformationTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/profile/", 1))
-            .andExpect(status().isOk());
-
-        verify(userService).getUserProfileInformation(eq(1L));
     }
 }
