@@ -24,18 +24,18 @@ $(document).ready(function () {
             $("#selectAll").prop("checked", false);
         }
     });
-    //Кнопка delete справа в таблиці
+    //delete button on the right in the table
     $('td .delete.eDelBtn').on('click', function (event) {
         event.preventDefault();
         $('#deleteTipsAndTricksModal').modal();
         var href = $(this).attr('href');
         $('#deleteOneSubmit').attr('href', href);
     });
-    //Кнопка addTipsAndTricks зверху таблиці
+    //addTipsAndTricks button at the top of the table
     $('#addTipsAndTricksModalBtn').on('click', function (event) {
         clearAllErrorsSpan();
     });
-    //Кнопка delete в deleteTipsAndTricksModal
+    //delete button in deleteTipsAndTricksModal
     $('#deleteOneSubmit').on('click', function (event) {
         event.preventDefault();
         var href = $(this).attr('href');
@@ -49,7 +49,7 @@ $(document).ready(function () {
             }
         });
     });
-    //Кнопка delete в deleteAllSelectedModal
+    //delete button in deleteAllSelectedModal
     $('#deleteAllSubmit').on('click', function (event) {
         event.preventDefault();
         var checkbox = $('table tbody input[type="checkbox"]');
@@ -71,7 +71,7 @@ $(document).ready(function () {
             data: JSON.stringify(payload)
         });
     });
-    //Кнопка submit в модальній формі Add
+    //submit button in addTipsAndTricksModal
     $('#submitAddBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
@@ -101,7 +101,7 @@ $(document).ready(function () {
         result.append("tipsAndTricksDtoRequest", new Blob([JSON.stringify(payload)], {type: "application/json"}));
         var file = document.getElementById("creationFile").files[0];
         result.append("file", file);
-        //запит save у модальній формі add
+        //save request in addTipsAndTricksModal
         $.ajax({
             url: '/management/tipsandtricks/',
             type: 'post',
@@ -121,7 +121,7 @@ $(document).ready(function () {
             data: result
         });
     });
-    //Кнопка edit справа в таблиці
+    //edit button on the right in the table
     $('td .edit.eBtn').on('click', function (event) {
         event.preventDefault();
         $("#editTipsAndTricksModal").each(function () {
@@ -141,7 +141,7 @@ $(document).ready(function () {
             $('#file').val(tipsandtricks.file);
         });
     });
-    //Кнопка submit в модальній формі Edit
+    //submit button in editTipsAndTricksModal
     $('#submitEditBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
@@ -172,7 +172,7 @@ $(document).ready(function () {
         result.append("tipsAndTricksDtoManagement", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
         var file = document.getElementById("file").files[0];
         result.append("file", file);
-        //запит save у модальній формі update
+        //save request in editTipsAndTricksModal
         $.ajax({
             url: '/management/tipsandtricks/',
             type: 'put',
