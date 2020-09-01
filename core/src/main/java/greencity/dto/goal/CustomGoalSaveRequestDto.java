@@ -1,5 +1,6 @@
 package greencity.dto.goal;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,6 @@ import static greencity.constant.ValidationConstants.CUSTOM_GOAL_TEXT_CANNOT_BE_
 @Setter
 @EqualsAndHashCode
 public class CustomGoalSaveRequestDto {
-    @NotEmpty(message = CUSTOM_GOAL_TEXT_CANNOT_BE_EMPTY)
+    @NotBlank(message = CUSTOM_GOAL_TEXT_CANNOT_BE_EMPTY)
     private String text;
 }
