@@ -31,15 +31,16 @@ import java.io.IOException;
 public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTool jwtTool;
     private final AuthenticationManager authenticationManager;
-
-    private UserService userService;
+    private final UserService userService;
 
     /**
      * Constructor.
      */
-    public AccessTokenAuthenticationFilter(JwtTool jwtTool, AuthenticationManager authenticationManager) {
+    public AccessTokenAuthenticationFilter(JwtTool jwtTool, AuthenticationManager authenticationManager,
+                                           UserService userService) {
         this.jwtTool = jwtTool;
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
     }
 
     /**
@@ -57,12 +58,6 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         throws IOException, ServletException {
         String token = jwtTool.getTokenFromHttpServletRequest(request);
 
-        if (userService == null) {
-            ServletContext servletContext = request.getServletContext();
-            WebApplicationContext webApplicationContext = WebApplicationContextUtils
-                .getWebApplicationContext(servletContext);
-            userService = webApplicationContext.getBean(UserService.class);
-        }
         if (token != null) {
             try {
                 Authentication authentication = authenticationManager
