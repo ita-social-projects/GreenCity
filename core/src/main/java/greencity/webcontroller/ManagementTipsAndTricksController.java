@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
@@ -121,10 +122,11 @@ public class ManagementTipsAndTricksController {
     })
     @ResponseBody
     @PutMapping("/")
-    public GenericResponseDto update(@Valid @RequestBody TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+    public GenericResponseDto update(@Valid
+                                     @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
                                      BindingResult bindingResult,
                                      @ImageValidation
-                                     @RequestParam(required = false, name = "file") MultipartFile file) {
+                                     @RequestPart(required = false, name = "file") MultipartFile file) {
         if (bindingResult.hasErrors()) {
             GenericResponseDto genericResponseDto = new GenericResponseDto();
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
@@ -151,7 +153,8 @@ public class ManagementTipsAndTricksController {
     })
     @ResponseBody
     @PostMapping("/")
-    public GenericResponseDto save(@Valid @RequestBody TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
+    public GenericResponseDto save(@Valid
+                                   @RequestPart TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
                                    BindingResult bindingResult,
                                    @ImageValidation
                                    @RequestParam(required = false, name = "file") MultipartFile file,

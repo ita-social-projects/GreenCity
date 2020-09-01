@@ -5,6 +5,7 @@ function clearAllErrorsSpan() {
 $(document).ready(function () {
     // Activate tooltip
     $('[data-toggle="tooltip"]').tooltip();
+
     // Select/Deselect checkboxes
     var checkbox = $('table tbody input[type="checkbox"]');
     $("#selectAll").click(function () {
@@ -84,23 +85,30 @@ $(document).ready(function () {
             "text": formData.text,
             "image": formData.image,
             "source": formData.source,
-            "tags": [],
-            "file": formData.file
+            "tags": []
         };
         for (var key in formData) {
+
             if (key.startsWith("tags") && formData["tags"].trim().length !== 0) {
                 var tag = formData["tags"].toString().split(/[\s,]+/);
+
                 for (var i = 0; i < tag.length; i++) {
                     payload.tags.push(tag[i]);
                 }
             }
         }
+        var result = new FormData();
+        result.append("tipsAndTricksDtoRequest", new Blob([JSON.stringify(payload)], {type: "application/json"}));
+        var file = document.getElementById("creationFile").files[0];
+        result.append("file", file);
         //запит save у модальній формі add
         $.ajax({
             url: '/management/tipsandtricks/',
             type: 'post',
-            dataType: 'json',
-            contentType: 'application/json',
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            cache: false,
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
@@ -110,7 +118,7 @@ $(document).ready(function () {
                     location.reload();
                 }
             },
-            data: JSON.stringify(payload)
+            data: result
         });
     });
     //Кнопка edit справа в таблиці
@@ -148,23 +156,30 @@ $(document).ready(function () {
             "emailAuthor": formData.emailAuthor,
             "imagePath": formData.imagePath,
             "source": formData.source,
-            "tags": [],
-            "file": formData.file
-        }
+            "tags": []
+        };
         for (var key in formData) {
             if (key.startsWith("tags") && $("#" + key).val().trim().length !== 0) {
+
                 var tag = $("#" + key).val().split(/[\s,]+/);
+
                 for (var i = 0; i < tag.length; i++) {
                     returnData.tags.push(tag[i]);
                 }
             }
         }
+        var result = new FormData();
+        result.append("tipsAndTricksDtoManagement", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
+        var file = document.getElementById("file").files[0];
+        result.append("file", file);
         //запит save у модальній формі update
         $.ajax({
             url: '/management/tipsandtricks/',
             type: 'put',
-            dataType: 'json',
-            contentType: 'application/json',
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            cache: false,
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
@@ -174,7 +189,7 @@ $(document).ready(function () {
                     location.reload();
                 }
             },
-            data: JSON.stringify(returnData)
+            data: result
         });
     })
 });

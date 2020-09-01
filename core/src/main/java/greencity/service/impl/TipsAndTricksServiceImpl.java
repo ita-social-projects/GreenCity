@@ -82,7 +82,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         toUpdate.setText(tipsAndTricksDtoManagement.getText());
         toUpdate.setTags(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()));
         toUpdate.setAuthor(userService.findByEmail(tipsAndTricksDtoManagement.getEmailAuthor()));
+        System.out.println(image == null);
         if (image != null) {
+            System.out.println("DOOOOOOOOOOOOOOOOODIK");
             toUpdate.setImagePath(fileService.upload(image).toString());
         }
         tipsAndTricksRepo.save(toUpdate);
@@ -151,6 +153,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * {@inheritDoc}
      */
+    @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public void deleteAll(List<Long> listId) {
         listId.forEach(id -> tipsAndTricksRepo.deleteById(findById(id).getId()));
