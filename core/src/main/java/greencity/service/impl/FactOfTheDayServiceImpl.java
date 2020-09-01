@@ -3,12 +3,15 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
+import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.entity.FactOfTheDay;
-import greencity.exception.exceptions.NotDeletedException;
+import greencity.entity.FactOfTheDayTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
 import greencity.service.FactOfTheDayService;
+import greencity.service.FactOfTheDayTranslationService;
+import greencity.service.LanguageService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
@@ -29,6 +32,12 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private FactOfTheDayRepo factOfTheDayRepo;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    LanguageService languageService;
+    @Autowired
+    FactOfTheDayTranslationService factOfTheDayTranslationService;
+    @Autowired
+    private PlaceCommentServiceImpl placeCommentServiceImpl;
 
     /**
      * Constructor with parameters.
@@ -68,17 +77,13 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      * @author Mykola Lehkyi
      */
     @Override
-    public FactOfTheDay getFactOfTheDayById(Long id) {
-        return factOfTheDayRepo.findById(id).orElseThrow(() ->
-            new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
+    public FactOfTheDayDTO getFactOfTheDayById(Long id) {
+        return modelMapper.map(factOfTheDayRepo.findById(id).orElseThrow(() ->
+            new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND)), FactOfTheDayDTO.class);
     }
 
     /**
-     * Method find {@link FactOfTheDay} by title.
-     *
-     * @param name of {@link FactOfTheDay}
-     * @return {@link FactOfTheDay}
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
     public List<FactOfTheDay> getAllFactOfTheDayByName(String name) {
@@ -86,44 +91,87 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     }
 
     /**
-     * Method saves new {@link FactOfTheDay}.
-     *
-     * @param fact {@link FactOfTheDay}
-     * @return instance of {@link FactOfTheDay}
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
-    public FactOfTheDay save(FactOfTheDay fact) {
-        return factOfTheDayRepo.save(fact);
+    public FactOfTheDayPostDTO saveFactOfTheDayAndTranslations(FactOfTheDayPostDTO factPost) {
+        FactOfTheDay factOfTheDay = FactOfTheDay.builder()
+            .name(factPost.getName())
+            .factOfTheDayTranslations(
+                factPost.getFactOfTheDayTranslations().stream()
+                    .map(el -> FactOfTheDayTranslation.builder()
+                        .content(el.getContent())
+                        .language(languageService.findByCode(el.getLanguageCode()))
+                        .build()
+                    ).collect(Collectors.toList())
+            )
+            .build();
+        factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
+        factOfTheDayRepo.save(factOfTheDay);
+        factOfTheDayTranslationService.saveAll(factOfTheDay.getFactOfTheDayTranslations());
+        return factPost;
     }
 
     /**
-     * Method updates {@link FactOfTheDay}.
-     *
-     * @param fact {@link FactOfTheDay} Object
-     * @return instance of {@link FactOfTheDay}
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
-    public FactOfTheDay update(FactOfTheDay fact) {
+    public FactOfTheDayPostDTO updateFactOfTheDayAndTranslations(FactOfTheDayPostDTO factPost) {
+        FactOfTheDay factOfTheDayFromDB =
+            factOfTheDayRepo.findById(factPost.getId()).orElseThrow(() -> new NotUpdatedException(
+                ErrorMessage.FACT_OF_THE_DAY_NOT_UPDATED));
+        factOfTheDayTranslationService.deleteAll(factOfTheDayFromDB.getFactOfTheDayTranslations());
+        FactOfTheDay factOfTheDay = FactOfTheDay.builder()
+            .id(factPost.getId())
+            .name(factPost.getName())
+            .factOfTheDayTranslations(
+                factPost.getFactOfTheDayTranslations().stream()
+                    .map(el -> FactOfTheDayTranslation.builder()
+                        .content(el.getContent())
+                        .language(languageService.findByCode(el.getLanguageCode()))
+                        .build()
+                    ).collect(Collectors.toList())
+            )
+            .build();
+        factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
+        factOfTheDayRepo.save(factOfTheDay);
+        factOfTheDayTranslationService.saveAll(factOfTheDay.getFactOfTheDayTranslations());
+        return factPost;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FactOfTheDay update(FactOfTheDayPostDTO fact) {
         FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(fact.getId()).orElseThrow(() -> new NotUpdatedException(
             ErrorMessage.FACT_OF_THE_DAY_NOT_UPDATED));
         return factOfTheDayRepo.save(factOfTheDay);
     }
 
     /**
-     * Method deletes {@link FactOfTheDay} by id.
-     *
-     * @param id Long of {@link FactOfTheDay}
-     * @return id of deleted element
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
-    public Long delete(Long id) {
-        if (!(factOfTheDayRepo.findById(id).isPresent())) {
-            throw new NotDeletedException(ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED);
-        }
+    public Long deleteFactOfTheDayAndTranslations(Long id) {
+        FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(id).orElseThrow(() -> new NotUpdatedException(
+            ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));
         factOfTheDayRepo.deleteById(id);
+        factOfTheDayTranslationService.deleteAll(factOfTheDay.getFactOfTheDayTranslations());
         return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Long> deleteAllFactOfTheDayAndTranslations(List<Long> listId) {
+        listId.forEach(id -> {
+            FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(id).orElseThrow(() -> new NotUpdatedException(
+                ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));
+            factOfTheDayRepo.deleteById(id);
+            factOfTheDayTranslationService.deleteAll(factOfTheDay.getFactOfTheDayTranslations());
+        });
+        return listId;
     }
 }
