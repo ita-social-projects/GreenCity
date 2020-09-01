@@ -69,7 +69,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         String detailedMessage = ex.getConstraintViolations().stream()
             .map(ConstraintViolation::getMessage)
-            .reduce("", (subTotal, element) -> subTotal + element);
+            .collect(Collectors.joining(" "));
         exceptionResponse.setMessage(detailedMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
