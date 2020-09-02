@@ -15,7 +15,8 @@
   },
   "script": [
     "git fetch --unshallow",
-    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -X sonar:sonar -Dtest='greencity.service.impl.*Test' -Dsonar.projectKey=GreenCity -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=softserve-social-projects -Dsonar.sources='src/main/java/greencity/service' -Dsonar.tests='src/test/java/greencity/service/impl' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
+    "ls /home/travis -la",
+    "echo $SONAR_TOKEN"
   ],
   ".result": "configured",
   "language": "java"
