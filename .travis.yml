@@ -1,26 +1,23 @@
-{
-  "os": "linux",
-  "jdk": [
-    "oraclejdk8"
-  ],
-  "dist": "trusty",
-  "group": "stable",
-  "addons": {
-    "sonarcloud": {
-      "token": {
-        "secure": "ivM4pa/0NLumcKMPr1YFotsgRbjylMuiocfzNKxAFG7p8OffpoORKL2CCndp9JjAkHtIlZ5M41OQ+C+gfW9oWIvztbgmxTcyCOz2qCfeXvoyC/ZdjArncyhC/Bdka5V4
-AlcYEQXH71/D5ztaISpMQ3jEI8k4kfLuQM69/OBPZJgaf3c6alJc9bmPgDdL6rGKdv3hb/QTb10JZJSr2/KBwkr9PCOBrbw8FMd5EOLsmN+ASPIJYTsCY7uMdHAz25Y+p0oe25hZoV1
-WNI+hbJesHpxtiXTh50MpamvA7e+O1vQjZ+5ORR5UwTx5Hq81jN0lF3adfvW6ZTuYWHCfaTysNN3tqJppS0w2eavebSwhRtu5EF+k5TxYgCnrO6pLB4FUjjI7d/oJgyLy2nOG9O9MSz
-VYXNIoXy2wlQD7bAdYWwO5u/wylSr+f6MAS1xkhTnD1XLcDYkUrKDAHHH6O1ib1HuEe32FAuc+hQG/CYbl07vCVA28ilSiomo+oYCrwWDeJ2bnnoN4Gn0Si9+DuJvPGma0hDcYjT3Dq
-tIIYxZKdCJ1r9/9bf00qj2SQ8C+ix2xZWT5TkAADJ10TjJ9UOO/8f9GyZInY812zrq4IWFtx8tiYfDhLsejW26REvVRddypDyHWqwpw3egpqEIgrM4GlBPYOZ2M/nGBuh8l/K6wuBY="
-      },
-      "organization": "softserve-social-projects"
-    }
-  },
-  "script": [
-    "git fetch --unshallow",
-    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dtest='greencity.service.impl.*Test' -Dsonar.projectKey=GreenCity -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=softserve-social-projects -Dsonar.sources='src/main/java/greencity/service' -Dsonar.tests='src/test/java/greencity/service/impl' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
-  ],
-  ".result": "configured",
-  "language": "java"
-}
+os: linux
+jdk:
+- oraclejdk8
+dist: trusty
+group: stable
+addons:
+  sonarcloud:
+    token:
+      secure: XRiKn9wdogPpczy4fpHyfb7kIhy6uaU0cbdfv7aFxDKPg2tseU/p1XkFAQ/RIBvQWLDqSntATjU81lLJ9gb1DMMyGXanNlPihSTS1QZoKLPNywvwlH6CRj6ulT5GSo7V5LA0S7WIq5CQuuYNTzOQAtameJWBf5k+cO7GlyV0gJuQs7SrBjM3sV0vb7X4PCkgJukp3wH5Faw/CtGEdNlaiZqfUlEGCJi/3tU983Tb7z1CORD4yCh2+bpKy2s3Ti/QRD7ie4Ob/mXRLpeVcLgzBAtVUzOQsWJOI1ys9oiiZLihuzVDJavXIIr+vgaRhecvavWnOLE6UQ5jifK4yOHSy39hqx5OJZaWC6DzTZ99FXagggJrwK/lQ31YF3YJpSItcv8mAgLU7ARGeoO6HL4vKnpLaJYlJ4glhzklgvCtkn+AxC8zIc0DsJyUCAFNzPvk3FceJUj5aWo6I23M+nft0HD9cbvEeFbsqAYLCBAB3hiCUz7O8NIqLJqgeo6Yayi3MPKdrdKj3REyp152NJNuZ6kVFkyLpj5ztCi3iDMoavNhuZQhzyM+3aqJiYHHwImeJ1rj8zlDNKpwg2YwjD83I6OjvNSieyzAVmX9ZwOH9KxovA+gUNRhN+C9vhSlycoSXgUXHT+FTBoHcl7Cj3KhOY7nOEomtyT6Ra6JqUx7CHc=
+    organization: softserve-social-projects
+script:
+- git fetch --unshallow
+- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dtest='greencity.service.impl.*Test'
+  -Dsonar.projectKey=GreenCity
+  -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=softserve-social-projects
+  -Dsonar.sources='src/main/java/greencity/service' -Dsonar.tests='src/test/java/greencity/service/impl'
+  -Dsonar.binaries=target/classes
+  -Dsonar.dynamicAnalysis=reuseReports
+".result": configured
+language: java
+env:
+  global:
+    secure: JT8xGKqk+caKuh1YZPYAMwRSLH/HlxSyAieidlF6zQ+Qe/ycoqdjclHrKv4cEo/21RthnA2IfHZRYKoj9IsEcjbE31owNxkMquM0D4GNMKAn1vkYxHMRaJtEja0Qzyeupy8SmKscPFb5mEsgGyPCQdYny1QmVA0yM9btCSCKP7HBR5BUAcaru6mKb/boXZGaxd/od83nXAfLyQOIp16L+c/iE9KTRDrboPLa07MqqAsVTW3MfyTY14BNVmafqrmay7HBcuuRuPYV0gzEsX/IJEFc48PqxUhCk72PV6XHwRO8wjW/ZoCUJshaZmOWca7Elq/l+R66xdgfjrmiCkhtFLpPyTkV0Z4EUdbEtfToNQ1y6Fj3g7f1CkjTya4GG58ME2+tOs4gk3JEwdMs0PyceMij4ULrl3/FtPPOEum6qpLHFxbiKUhrPDwEayvM69FZ4gz05vRWuiNg9am9iwGeYjYaRSEHOrRFB4BhGKck+S8+LgG+MJxmW3xNIyChQJUzPDDDelSYV3rUtYFJasBd7PXPQftRggg/xHWlNr+Ug6A6/Cgx2Z7YtEH3IBeoTkfi/BEQrJ836VxHmop09ySbhONqeBriprgd4/tP2p9ZiluELIBKL9jimeS6iRKJdGqb6WVtV40Is85mTuAk/lv13e2UHHuENPonGvlhCTJtiyo=
