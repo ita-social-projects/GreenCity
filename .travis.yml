@@ -8,7 +8,7 @@
   "addons": {
     "sonarcloud": {
       "organization": "ita-social-projects",
-      "projectKey": "ita-social-projects-green-city"
+      "key": "ita-social-projects-green-city"
     }
   },
   "script": [
