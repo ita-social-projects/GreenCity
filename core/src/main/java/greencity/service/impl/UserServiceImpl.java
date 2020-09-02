@@ -19,10 +19,12 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
-import greencity.service.FileService;
-import greencity.service.HabitDictionaryService;
-import greencity.service.HabitService;
-import greencity.service.UserService;
+import greencity.service.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -33,12 +35,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static greencity.constant.ErrorMessage.*;
 
@@ -64,6 +60,7 @@ public class UserServiceImpl implements UserService {
     private final FileService fileService;
     private final TipsAndTricksRepo tipsAndTricksRepo;
     private final EcoNewsRepo ecoNewsRepo;
+    private final SocialNetworkService socialNetworkService;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
 
@@ -777,7 +774,10 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userProfileDtoRequest.getFirstName());
         user.setCity(userProfileDtoRequest.getCity());
         user.setUserCredo(userProfileDtoRequest.getUserCredo());
-        user.setSocialNetworks(userProfileDtoRequest.getSocialNetworks());
+        user.setSocialNetworks(
+            socialNetworkService.saveAll(userProfileDtoRequest.getSocialNetworks(), user)
+        );
+        //user.setSocialNetworks(userProfileDtoRequest.getSocialNetworks());
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
