@@ -1,11 +1,14 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDictionaryTranslationsDto;
 import greencity.dto.habitstatistic.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionaryTranslation;
 import greencity.entity.User;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface HabitService {
     /**
@@ -26,8 +29,9 @@ public interface HabitService {
 
     /**
      * Method assign {@link Habit} for user.
+     *
      * @param habitId - id of habit user want to assign
-     * @param user - user that assign habit
+     * @param user    - user that assign habit
      * @return {@link HabitCreateDto}
      */
     HabitCreateDto assignHabitForUser(Long habitId, User user);
@@ -39,4 +43,12 @@ public interface HabitService {
      * @author Dovganyuk Taras
      */
     List<HabitDto> getAllHabitsDto();
+
+    /**
+     * Method returns all habits by language.
+     *
+     * @return Pageable of {@link HabitDictionaryTranslationsDto}
+     * @author Dovganyuk Taras
+     */
+    PageableDto<HabitDictionaryTranslationsDto> getAllHabitsByLanguageCode(Pageable pageable, String language);
 }
