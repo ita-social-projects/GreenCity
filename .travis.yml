@@ -8,7 +8,7 @@
   "addons": {
     "sonarcloud": {
       "token": {
-        "secure": "BlyGmN+sBtbxRAhFWH1/15t/Ex2ZEeHKFtkQxzlh4hB/WP1gpmgYqQ8BK6q6LcVE43lw0n1tSISgwl5bmslzRQZrYBLwfMY8TKbJDwOmI8xkxAxu43hu3otFYBNAol/U7/kqLwJN13zLlgKhbjnlKkaRNgRBRFHHqcKa//8kwiwG8qAEQzgKFPXTCfaMIEK8oleQvzt1loEQWM64kfGlNzJjjlbj8gNUgQLUbTp7OghT4MkyZyuZRu7J+QCC4FUnbUnZn45vHubQFH6N707UK55M7ziL3yU8guLfaf3OerC5zpiy9f394yMs6XoMmJbRBdAjf2NFz17rn02enDCpE840QdSRhzbbjiWsAwtUCKQMD0cXHEdJB5+PWJ0dII31mLF/QRbgeldiy10vjSczlS+byTfz4FPoIwvBKyVA1Wk/O10YROt8Mr5dbGMvKasK4FgmJCsMGhkGIsqYdQerKbcFEWiA7Uw3I0XahJktDQ6Tsn6zxOzar2P7DV2UjahlSIiY6sSYQHtCK0iUvmHV2Ub151HKgeNdddCorGKqb8LIp1y1DHDIw7U7IO2SHpY3/OiRRk29zssZPdnGQNE4Xuj5D6fZ4OofdeisC2bRWMvyORN+8uVW7ypgIt+QIsRmjW3hvSU5ixP4snZ2vhZ8OeiyDDTSiR/WxeSOVZyDWCM="
+        "secure": "A+ol9ujI8lK1TIlFBduPZtfOpj4emWMheQPeLDQkhDNqKspAiUvwFXNyoBo2AngpYcQX/mlYfQaRKjEluVR88LUhJYR84FM++V/NutmA5U10J9bEhxzcBdbWzzVr2yAVDeM8m9XjawJPh9Sy3SE4/C8aE5XoKD1p/jSlSGSE8J2IoBeA62WSnM0axM5lkpkxG+0ABZuJIQqy1o1G2mnpJuxjPu/RoS5cIxMSX1gYxAlHYNjGp5kd4MYEWu91K+lqjgIvft++Chi8qqu4DNjfS3l235kBVL+lYpRqW2uAvAmjzsCNUEMWTCm/xQB9IQVn2Lm5IbUA8m5HOtXvI95qAHthwVMZ9IzXuVlvzRW4/82TxQvFW35zEL00G/EE4mawwSfooM5In3iWzydcKwFc/p+KO+FAhBedUuW5dYb+X6fjuQ7sRReVCADskGXvwClqVVYKEN/+u6WUTJenoajIKeI6Ngyi6tP+y9eyr3Uq2XqP8IIUdOeEVPkYz5TlIRr26hy7x0zwaZNAgeDVUfoEvLh25hJZ3xRLq+efvktrgX8yRuq+koTcmVvyi8aQ/o46ETI5aCwkkFv3vlPwI65yDDO8FN+Tvy/vfzth4k1W/qvOwURjODlbwxc1LMfVmxSopM8IFy4rwd12p3/yxwu9J2RdggJEgI9GHMcIg5WiJ14="
       },
       "organization": "softserve-social-projects"
     }
