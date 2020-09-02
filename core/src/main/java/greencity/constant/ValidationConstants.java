@@ -103,6 +103,8 @@ public final class ValidationConstants {
 
     public static final String CUSTOM_GOAL_TEXT_CANNOT_BE_EMPTY = "Custom goal text cannot be empty";
 
+    public static final String MIN_AMOUNT_OF_TAGS = "At least one tag";
+
     private ValidationConstants() {
     }
 }
