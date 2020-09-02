@@ -13,10 +13,10 @@
       "organization": "softserve-social-projects"
     }
   },
-#  "script": [
-#    "git fetch --unshallow",
-#    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dtest='greencity.service.impl.*Test' -Dsonar.login=f3b8179f9f5659ebd4be99410d38f8770f7859c2 -Dsonar.projectKey=SoftServe-Social-Projects_GreenCity -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=softserve-social-projects -Dsonar.sources='src/main/java/greencity/service' -Dsonar.tests='src/test/java/greencity/service/impl' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
-#  ],
+  "script": [
+    "git fetch --unshallow",
+    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dtest='greencity.service.impl.*Test' -Dsonar.login=f3b8179f9f5659ebd4be99410d38f8770f7859c2 -Dsonar.projectKey=SoftServe-Social-Projects_GreenCity -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=softserve-social-projects -Dsonar.sources='src/main/java/greencity/service' -Dsonar.tests='src/test/java/greencity/service/impl' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
+  ],
   ".result": "configured",
   "language": "java"
 }
