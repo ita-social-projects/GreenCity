@@ -8,7 +8,7 @@
   "addons": {
     "sonarcloud": {
       "token": {
-        "secure": "$SONAR_TOKEN"
+        "secure": "BlyGmN+sBtbxRAhFWH1/15t/Ex2ZEeHKFtkQxzlh4hB/WP1gpmgYqQ8BK6q6LcVE43lw0n1tSISgwl5bmslzRQZrYBLwfMY8TKbJDwOmI8xkxAxu43hu3otFYBNAol/U7/kqLwJN13zLlgKhbjnlKkaRNgRBRFHHqcKa//8kwiwG8qAEQzgKFPXTCfaMIEK8oleQvzt1loEQWM64kfGlNzJjjlbj8gNUgQLUbTp7OghT4MkyZyuZRu7J+QCC4FUnbUnZn45vHubQFH6N707UK55M7ziL3yU8guLfaf3OerC5zpiy9f394yMs6XoMmJbRBdAjf2NFz17rn02enDCpE840QdSRhzbbjiWsAwtUCKQMD0cXHEdJB5+PWJ0dII31mLF/QRbgeldiy10vjSczlS+byTfz4FPoIwvBKyVA1Wk/O10YROt8Mr5dbGMvKasK4FgmJCsMGhkGIsqYdQerKbcFEWiA7Uw3I0XahJktDQ6Tsn6zxOzar2P7DV2UjahlSIiY6sSYQHtCK0iUvmHV2Ub151HKgeNdddCorGKqb8LIp1y1DHDIw7U7IO2SHpY3/OiRRk29zssZPdnGQNE4Xuj5D6fZ4OofdeisC2bRWMvyORN+8uVW7ypgIt+QIsRmjW3hvSU5ixP4snZ2vhZ8OeiyDDTSiR/WxeSOVZyDWCM="
       },
       "organization": "softserve-social-projects"
     }
