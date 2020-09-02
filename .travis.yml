@@ -15,8 +15,8 @@
   },
   "script": [
     "git fetch --unshallow",
-    "ls /home/travis -la",
-    "echo $SONAR_TOKEN"
+    "ls /home/travis/.sonarscanner -la",
+    "echo ${SONAR_TOKEN}"
   ],
   ".result": "configured",
   "language": "java"
