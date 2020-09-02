@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.annotations.RatingCalculation;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -45,7 +46,10 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     /**
      * {@inheritDoc}
+     * RatingCalculation annotation uses method signature,
+     * don't forget to change RatingCalculationAspect after changing signature.
      */
+    @RatingCalculation
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,

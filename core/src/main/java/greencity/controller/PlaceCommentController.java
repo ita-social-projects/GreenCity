@@ -6,10 +6,13 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
+import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserBlockedException;
+import greencity.repository.PlaceCommentRepo;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
@@ -36,7 +39,7 @@ public class PlaceCommentController {
     private PlaceCommentService placeCommentService;
     private UserService userService;
     private PlaceService placeService;
-
+    private PlaceCommentRepo placeCommentRepo;
 
     /**
      * Method witch save comment by Place Id.
@@ -114,7 +117,10 @@ public class PlaceCommentController {
     })
     @DeleteMapping("comments")
     public ResponseEntity<Object> delete(Long id) {
-        placeCommentService.deleteById(id);
+        Comment comment = placeCommentRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+        User user = comment.getUser();
+        placeCommentService.deleteById(id, user);
         return ResponseEntity.ok().build();
     }
 }

@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.annotations.RatingCalculation;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
@@ -64,9 +65,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     /**
      * {@inheritDoc}
-     *
+     * RatingCalculation annotation uses method signature,
+     * don't forget to change RatingCalculationAspect after changing signature.
      * @author Yuriy Olkhovskyi.
      */
+    @RatingCalculation
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,

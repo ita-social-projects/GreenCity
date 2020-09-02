@@ -1,5 +1,6 @@
 package greencity.service.impl;
 
+import greencity.annotations.RatingCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
@@ -53,9 +54,11 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
 
     /**
      * {@inheritDoc}
-     *
+     * RatingCalculation annotation uses method signature,
+     * don't forget to change RatingCalculationAspect after changing signature.
      * @author Marian Milian
      */
+    @RatingCalculation
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
         Place place = placeService.findById(placeId);
@@ -80,11 +83,13 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
 
     /**
      * {@inheritDoc}
-     *
+     * RatingCalculation annotation uses method signature,
+     * don't forget to change RatingCalculationAspect after changing signature.
      * @author Marian Milian
      */
+    @RatingCalculation
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Long id, User user) {
         placeCommentRepo.delete(placeCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
     }
