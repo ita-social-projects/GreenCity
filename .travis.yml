@@ -5,9 +5,14 @@
   ],
   "dist": "trusty",
   "group": "stable",
+  "addons": {
+    "sonarcloud": {
+      "organization": "ita-social-projects",
+    }
+  },
   "script": [
     "git fetch --unshallow",
-    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dtest='greencity.service.impl.*Test' -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=ita-social-projects -Dsonar.sources='src/main/java/greencity/service' -Dsonar.tests='src/test/java/greencity/service/impl' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
+    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dtest='greencity.service.impl.*Test' -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources='src/main/java/greencity/service' -Dsonar.tests='src/test/java/greencity/service/impl' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
   ],
   ".result": "configured",
   "language": "java"
