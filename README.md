@@ -1,6 +1,5 @@
 # GreenCity    [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ita-social-projects/GreenCity/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/qubyte/rubidium/all.svg)](https://github.com/ita-social-projects/GreenCity/releases/)
 
-[![GitHub release]](https://github.com/ita-social-projects/GreenCity/release-date/)
 
 
 ## 1. About the project
