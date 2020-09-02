@@ -12,8 +12,7 @@ BEGIN
     RETURN QUERY
         SELECT vn.id, vn.creation_date, vn.image_path, vn.author_id, vn.text, vn.title, vn.source
         FROM VW_EcoNewsWithTags AS vn
-        WHERE vector @@ to_tsquery('simple',  REPLACE(REPLACE(search_phrase, ' '  , '|' ),'||', '|'))
-        ORDER BY ts_rank(vector, plainto_tsquery('simple',  REPLACE(REPLACE(search_phrase, ' '  , '|' ),'||', '|'))) DESC;
+        WHERE vector @@ to_tsquery(''simple'',  REPLACE(REPLACE(search_phrase, '' ''  , ''|'' ),''||'', ''|''))
+        ORDER BY ts_rank(vector, plainto_tsquery(''simple'',  REPLACE(REPLACE(search_phrase, '' ''  , ''|'' ),''||'', ''|''))) DESC;
 
-END
-';
+END ';
