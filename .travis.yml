@@ -15,8 +15,7 @@
   },
   "script": [
     "git fetch --unshallow",
-    "ls /home/travis/.sonarscanner/sonar-scanner/conf",
-    "travis encrypt 2a72608efaa6642741e501ae747abcf49835394d"
+    "cat /home/travis/.sonarscanner/sonar-scanner/conf/sonar-scanner.properties"
   ],
   ".result": "configured",
   "language": "java"
