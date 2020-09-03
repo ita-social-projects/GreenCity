@@ -18,8 +18,7 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import static greencity.constant.AppConstant.VALIDATION_EMAIL;
-import static greencity.constant.ValidationConstants.EMPTY_EMAIL;
-import static greencity.constant.ValidationConstants.INVALID_EMAIL;
+import static greencity.constant.ValidationConstants.*;
 
 @Builder
 @NoArgsConstructor
@@ -45,7 +44,7 @@ public class TipsAndTricksDtoManagement implements Serializable {
     @Email(regexp = VALIDATION_EMAIL, message = INVALID_EMAIL)
     private String emailAuthor;
 
-    @NotEmpty(message = "at least one tag")
+    @NotEmpty(message = MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
 
     private String imagePath;

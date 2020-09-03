@@ -4,10 +4,10 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.entity.FactOfTheDayTranslation;
-import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.FactOfTheDayTranslationRepo;
 import greencity.service.FactOfTheDayTranslationService;
+import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +39,7 @@ public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslati
     }
 
     /**
-     * Method find {@link FactOfTheDayTranslation} by id.
-     *
-     * @param id of {@link FactOfTheDayTranslation}
-     * @return Optional of{@link FactOfTheDayTranslation}
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
     public Optional<FactOfTheDayTranslation> getFactOfTheDayById(Long id) {
@@ -51,38 +47,28 @@ public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslati
     }
 
     /**
-     * Method saves new {@link FactOfTheDayTranslation}.
-     *
-     * @param factOfTheDayTranslation {@link FactOfTheDayTranslation}
-     * @return instance of {@link FactOfTheDayTranslation}
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
     public FactOfTheDayTranslation save(FactOfTheDayTranslation factOfTheDayTranslation) {
         return factOfTheDayTranslationRepo.save(factOfTheDayTranslation);
     }
 
-    /**
-     * Method deletes {@link FactOfTheDayTranslation} by id.
-     *
-     * @param id Long of {@link FactOfTheDayTranslation}
-     * @return id of deleted element
-     * @author Mykola Lehkyi
-     */
     @Override
-    public Long delete(Long id) {
-        if (!(factOfTheDayTranslationRepo.findById(id).isPresent())) {
-            throw new NotDeletedException(ErrorMessage.FACT_OF_THE_DAY_TRANSLATION_NOT_DELETED);
-        }
-        factOfTheDayTranslationRepo.deleteById(id);
-        return id;
+    public List<FactOfTheDayTranslation> saveAll(List<FactOfTheDayTranslation> factOfTheDayTranslation) {
+        return factOfTheDayTranslationRepo.saveAll(factOfTheDayTranslation);
     }
 
     /**
-     * Method returns random fact by given language.
-     *
-     * @param languageCode String
-     * @return {@link FactOfTheDayTranslationDTO}
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAll(List<FactOfTheDayTranslation> factOfTheDayTranslations) {
+        factOfTheDayTranslationRepo.deleteAll(factOfTheDayTranslations);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     @Cacheable(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME, key = "#languageCode")

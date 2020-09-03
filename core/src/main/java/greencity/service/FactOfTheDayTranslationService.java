@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
+import java.util.List;
 import java.util.Optional;
 
 public interface FactOfTheDayTranslationService {
@@ -25,13 +26,21 @@ public interface FactOfTheDayTranslationService {
     FactOfTheDayTranslation save(FactOfTheDayTranslation factOfTheDayTranslation);
 
     /**
-     * Method delete {@link FactOfTheDayTranslation} by id.
+     * Method saves all new {@link FactOfTheDayTranslation}.
      *
-     * @param id Long
-     * @return id of deleted {@link FactOfTheDayTranslation}
+     * @param factOfTheDayTranslation {@link FactOfTheDayTranslation}
+     * @return instance of {@link FactOfTheDayTranslation}
      * @author Mykola Lehkyi
      */
-    Long delete(Long id);
+    List<FactOfTheDayTranslation> saveAll(List<FactOfTheDayTranslation> factOfTheDayTranslation);
+
+    /**
+     * Method deletes all {@link FactOfTheDayTranslation}.
+     *
+     * @param factOfTheDayTranslation list of translations
+     * @author Mykola Lehkyi
+     */
+    void deleteAll(List<FactOfTheDayTranslation> factOfTheDayTranslation);
 
     /**
      * Method return random {@link FactOfTheDayTranslation} by languageCode.

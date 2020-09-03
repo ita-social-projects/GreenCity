@@ -90,7 +90,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/filter/**",
                 "/restorePassword/**",
                 "/changePassword/**",
-                "/socket/**"
+                "/socket/**",
+                "/factoftheday/**"
             ).permitAll()
             .antMatchers(
                 HttpMethod.GET,
@@ -130,7 +131,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/tags",
                 "/tipsandtricks/tags",
                 "/newsSubscriber",
-                "/socket/**"
+                "/socket/**",
+                "/factoftheday/**"
             ).permitAll()
             .antMatchers(HttpMethod.GET,
                 "/advices/random/*",

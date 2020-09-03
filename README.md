@@ -1,4 +1,5 @@
-# GreenCity
+# GreenCity    [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ita-social-projects/GreenCity/blob/master/LICENSE)
+
 
 ## 1. About the project
 
