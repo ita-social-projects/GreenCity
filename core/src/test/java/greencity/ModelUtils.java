@@ -25,10 +25,7 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.AuthorDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitDictionaryIdDto;
-import greencity.dto.user.UserGoalResponseDto;
+import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.enums.*;
 import greencity.entity.localization.AdviceTranslation;
@@ -482,5 +479,9 @@ public class ModelUtils {
 
     public static NewsSubscriberRequestDto getNewsSubscriberRequestDto() {
         return new NewsSubscriberRequestDto("test@gmail.com");
+    }
+
+    public static UserProfilePictureDto getUserProfilePictureDto() {
+        return new UserProfilePictureDto(1L, "image");
     }
 }

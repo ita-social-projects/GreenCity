@@ -2,7 +2,7 @@ package greencity.constant;
 
 public final class ErrorMessage {
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
-    public static final String USER_NOT_FOUND_BY_EMAIL = "Bad email or password: ";
+    public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
     public static final String USER_WITH_EMAIL_EXIST = "The user already exists by this email: ";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
