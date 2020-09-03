@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.annotations.RatingCalculation;
+import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
@@ -10,6 +11,8 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
@@ -26,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,8 +43,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 @Service
 @EnableCaching
@@ -65,11 +67,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     /**
      * {@inheritDoc}
-     * RatingCalculation annotation uses method signature,
-     * don't forget to change RatingCalculationAspect after changing signature.
+     *
      * @author Yuriy Olkhovskyi.
      */
-    @RatingCalculation
+    @RatingCalculation(rating = RatingCalculationEnum.ADD_ECO_NEWS)
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
@@ -119,9 +120,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         return ecoNewsList
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -133,9 +134,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
         List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
         return ecoNewsList
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -147,9 +148,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableDto<EcoNewsDto> findAll(Pageable page) {
         Page<EcoNews> pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
         List<EcoNewsDto> ecoNewsDtos = pages
-                .stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
 
         return new PageableDto<>(
             ecoNewsDtos,
@@ -191,8 +192,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNews findById(Long id) {
         return ecoNewsRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -212,6 +213,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @RatingCalculation(rating = RatingCalculationEnum.DELETE_ECO_NEWS)
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public void delete(Long id) {
@@ -230,8 +232,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery);
 
         List<SearchNewsDto> ecoNews = page.stream()
-                .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
-                .collect(Collectors.toList());
+            .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
+            .collect(Collectors.toList());
 
         return new PageableDto<>(
             ecoNews,
@@ -277,5 +279,29 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public Long getAmountOfPublishedNewsByUserId(Long id) {
         return ecoNewsRepo.getAmountOfPublishedNewsByUserId(id);
+    }
+
+    /**
+     * Method to mark comment as liked by User.
+     *
+     * @param user    {@link User}.
+     * @param comment {@link EcoNewsComment}
+     * @author Dovganyuk Taras
+     */
+    @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
+    public void likeComment(User user, EcoNewsComment comment) {
+        comment.getUsersLiked().add(user);
+    }
+
+    /**
+     * Method to mark comment as unliked by User.
+     *
+     * @param user    {@link User}.
+     * @param comment {@link EcoNewsComment}
+     * @author Dovganyuk Taras
+     */
+    @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
+    public void unlikeComment(User user, EcoNewsComment comment) {
+        comment.getUsersLiked().remove(user);
     }
 }

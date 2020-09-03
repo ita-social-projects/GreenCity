@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.annotations.RatingCalculation;
+import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
@@ -33,15 +34,13 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
-     * RatingCalculation annotation uses method signature,
-     * don't forget to change RatingCalculationAspect after changing signature.
      *
      * @param econewsId                   id of {@link greencity.entity.EcoNews} to which we save comment.
      * @param addEcoNewsCommentDtoRequest dto with {@link greencity.entity.EcoNewsComment} text, parentCommentId.
      * @param user                        {@link User} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
-    @RatingCalculation
+    @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
                                              User user) {
@@ -126,13 +125,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
 
     /**
      * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as deleted.
-     * RatingCalculation annotation uses method signature,
-     * don't forget to change RatingCalculationAspect after changing signature.
      *
      * @param id   of {@link greencity.entity.EcoNewsComment} to delete.
      * @param user current {@link User} that wants to delete.
      */
-    @RatingCalculation
+    @RatingCalculation(rating = RatingCalculationEnum.DELETE_COMMENT)
     @Override
     public void deleteById(Long id, User user) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
@@ -167,21 +164,18 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
 
     /**
      * Method to like or dislike {@link greencity.entity.EcoNewsComment} specified by id.
-     * RatingCalculation annotation uses method signature,
-     * don't forget to change RatingCalculationAspect after changing signature.
      *
      * @param id   of {@link greencity.entity.EcoNewsComment} to like/dislike.
      * @param user current {@link User} that wants to like/dislike.
      */
-    @RatingCalculation
     @Override
     public void like(Long id, User user) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         if (comment.getUsersLiked().contains(user)) {
-            comment.getUsersLiked().remove(user);
+            ecoNewsService.unlikeComment(user, comment);
         } else {
-            comment.getUsersLiked().add(user);
+            ecoNewsService.likeComment(user, comment);
         }
         ecoNewsCommentRepo.save(comment);
     }
