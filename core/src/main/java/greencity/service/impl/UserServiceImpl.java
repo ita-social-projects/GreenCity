@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -39,8 +40,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -663,21 +662,26 @@ public class UserServiceImpl implements UserService {
     /**
      * Update user profile picture {@link User}.
      *
-     * @param image {@link MultipartFile}
-     * @param email {@link String} - email of user that need to update.
+     * @param image                 {@link MultipartFile}
+     * @param email                 {@link String} - email of user that need to update.
+     * @param userProfilePictureDto {@link UserProfilePictureDto}
      * @return {@link User}.
      * @author Marian Datsko
      */
     @Override
-    public User updateUserProfilePicture(MultipartFile image, String email) {
+    public User updateUserProfilePicture(MultipartFile image, String email,
+                                         UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
-        if (image == null) {
-            throw new NotUpdatedException(IMAGE_EXISTS);
+        if (userProfilePictureDto.getProfilePicturePath() != null) {
+            image = fileService.convertToMultipartImage(userProfilePictureDto.getProfilePicturePath());
         }
-        String url = fileService.upload(image).toString();
-        user.setProfilePicturePath(url);
+        if (image != null) {
+            user.setProfilePicturePath(fileService.upload(image).toString());
+        } else {
+            throw new BadRequestException(IMAGE_EXISTS);
+        }
         return userRepo.save(user);
     }
 
@@ -781,9 +785,11 @@ public class UserServiceImpl implements UserService {
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
+        if (userProfileDtoRequest.getImage() != null) {
+            image = fileService.convertToMultipartImage(userProfileDtoRequest.getImage());
+        }
         if (image != null) {
-            String url = fileService.upload(image).toString();
-            user.setProfilePicturePath(url);
+            user.setProfilePicturePath(fileService.upload(image).toString());
         }
         userRepo.save(user);
         return modelMapper.map(user, UserProfileDtoResponse.class);

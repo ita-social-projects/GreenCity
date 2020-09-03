@@ -2,12 +2,14 @@ package greencity.service.impl;
 
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.IMAGE_EXISTS;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
@@ -52,15 +54,14 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                                          String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
         toSave.setAuthor(userService.findByEmail(email));
-        if (tipsAndTricksDtoRequest.getImage() != null && !tipsAndTricksDtoRequest.getImage().isEmpty()) {
-            image = modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class);
+        if (tipsAndTricksDtoRequest.getImage() != null) {
+            image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
         }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
         toSave.setTags(
             tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()));
-
         try {
             tipsAndTricksRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
