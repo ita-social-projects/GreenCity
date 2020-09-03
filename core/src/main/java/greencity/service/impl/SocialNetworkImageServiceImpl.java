@@ -5,14 +5,14 @@ import greencity.repository.SocialNetworkImageRepo;
 import greencity.service.FileService;
 import greencity.service.SocialNetworkImageService;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
-import java.util.Base64;
 import java.util.Optional;
 import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItem;
@@ -50,8 +50,16 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             ImageIO.write(bufferedImage, "png", tempFile);
             FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
                 false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
-            fileItem.getOutputStream();
-            URL uploadCloud = fileService.upload(new CommonsMultipartFile(fileItem));
+            InputStream input = new FileInputStream(tempFile);
+            OutputStream outputStream = fileItem.getOutputStream();
+            int ret = input.read();
+            while (ret != -1) {
+                outputStream.write(ret);
+                ret = input.read();
+            }
+            outputStream.flush();
+            CommonsMultipartFile multipartFile = new CommonsMultipartFile(fileItem);
+            URL uploadCloud = fileService.upload(multipartFile);
             String imagePath = uploadCloud.toString();
             SocialNetworkImage socialNetworkImage = SocialNetworkImage.builder()
                 .basePath(preparedUrlHost)
@@ -59,35 +67,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
                 .build();
             socialNetworkImageRepo.save(socialNetworkImage);
             return socialNetworkImage;
-
-//            encodeToString(bufferedImage, ".png");
-          /*  URLImageSource content = (URLImageSource) faviconUrl.getContent();
-            ToolkitImage image = (ToolkitImage) Toolkit.getDefaultToolkit().createImage(content);
-            System.out.println(image.toString());
-           */
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    public static String encodeToString(BufferedImage image, String type) {
-        String imageString = null;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        try {
-            ImageIO.write(image, type, byteArrayOutputStream);
-            byte[] imageBytes = byteArrayOutputStream.toByteArray();
-            Base64.getEncoder().encodeToString(imageBytes);
-            /*
-            BASE64Encoder encoder = new BASE64Encoder();
-            imageString = encoder.encode(imageBytes);*/
-
-            byteArrayOutputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return imageString;
     }
 }
