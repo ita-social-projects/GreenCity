@@ -20,6 +20,6 @@ public interface FactOfTheDayTranslationRepo extends JpaRepository<FactOfTheDayT
     @Query(nativeQuery = true, value = "select *"
         + " from fact_of_the_day_translations as fdt"
         + " join languages as l on l.id = fdt.language_id"
-        + " where l.code = 'en' ORDER BY RANDOM() LIMIT 1")
+        + " where l.code = ?1 ORDER BY RANDOM() LIMIT 1")
     Optional<FactOfTheDayTranslation> getRandomFactOfTheDayTranslation(@Param("languageCode") String languageCode);
 }

@@ -2,7 +2,9 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
+import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.entity.FactOfTheDay;
+import greencity.entity.FactOfTheDayTranslation;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
@@ -23,7 +25,7 @@ public interface FactOfTheDayService {
      * @return {@link FactOfTheDay}
      * @author Mykola Lehkyi
      */
-    FactOfTheDay getFactOfTheDayById(Long id);
+    FactOfTheDayDTO getFactOfTheDayById(Long id);
 
     /**
      * Method find {@link FactOfTheDay} by name.
@@ -35,29 +37,47 @@ public interface FactOfTheDayService {
     List<FactOfTheDay> getAllFactOfTheDayByName(String name);
 
     /**
-     * Method saves new {@link FactOfTheDay}.
+     * Method saves new {@link FactOfTheDay} and {@link FactOfTheDayTranslation}.
+     *
+     * @param fact {@link FactOfTheDayPostDTO}
+     * @return instance of {@link FactOfTheDayPostDTO}
+     * @author Mykola Lehkyi
+     */
+    FactOfTheDayPostDTO saveFactOfTheDayAndTranslations(FactOfTheDayPostDTO fact);
+
+    /**
+     * Method saves new {@link FactOfTheDay} and {@link FactOfTheDayTranslation}.
+     *
+     * @param fact {@link FactOfTheDayPostDTO}
+     * @return instance of {@link FactOfTheDayPostDTO}
+     * @author Mykola Lehkyi
+     */
+    FactOfTheDayPostDTO updateFactOfTheDayAndTranslations(FactOfTheDayPostDTO fact);
+
+    /**
+     * Method updates {@link FactOfTheDay}{@link FactOfTheDay} and {@link FactOfTheDayTranslation}.
      *
      * @param fact {@link FactOfTheDay}
      * @return instance of {@link FactOfTheDay}
      * @author Mykola Lehkyi
      */
-    FactOfTheDay save(FactOfTheDay fact);
+    FactOfTheDay update(FactOfTheDayPostDTO fact);
 
     /**
-     * Method updates {@link FactOfTheDay}.
-     *
-     * @param fact {@link FactOfTheDay}
-     * @return instance of {@link FactOfTheDay}
-     * @author Mykola Lehkyi
-     */
-    FactOfTheDay update(FactOfTheDay fact);
-
-    /**
-     * Method delete {@link FactOfTheDay} by id.
+     * Method deletes {@link FactOfTheDay} and {@link FactOfTheDayTranslation} by id.
      *
      * @param id Long
      * @return id of deleted {@link FactOfTheDay}
      * @author Mykola Lehkyi
      */
-    Long delete(Long id);
+    Long deleteFactOfTheDayAndTranslations(Long id);
+
+    /**
+     * Method deletes all {@link FactOfTheDay} {@link FactOfTheDay} and {@link FactOfTheDayTranslation} by list of IDs.
+     *
+     * @param listId list of id {@link FactOfTheDay}
+     * @return listId list of id {@link FactOfTheDay}
+     * @author Mykola Lehkyi
+     */
+    List<Long> deleteAllFactOfTheDayAndTranslations(List<Long> listId);
 }

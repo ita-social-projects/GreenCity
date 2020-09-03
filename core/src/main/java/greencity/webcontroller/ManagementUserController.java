@@ -1,6 +1,5 @@
 package greencity.webcontroller;
 
-import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.service.UserService;
@@ -9,6 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -76,13 +77,26 @@ public class ManagementUserController {
      * Method for finding {@link User} by id.
      *
      * @param id of the searched {@link User}.
-     * @return dto {@link UserForListDto} of the {@link User}.
+     * @return dto {@link UserManagementDto} of the {@link User}.
      * @author Vasyl Zhovnir
      */
     @GetMapping("/findById")
     @ResponseBody
-    public UserForListDto findById(Long id) {
+    public UserManagementDto findById(Long id) {
         User byId = userService.findById(id);
-        return modelMapper.map(byId, UserForListDto.class);
+        return modelMapper.map(byId, UserManagementDto.class);
+    }
+
+    /**
+     * Method for setting {@link User}'s status to DEACTIVATED,
+     * so the user will not be able to log in into the system.
+     *
+     * @param id of the searched {@link User}.
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping
+    public ResponseEntity deactivateUser(@RequestParam Long id) {
+        userService.deactivateUser(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

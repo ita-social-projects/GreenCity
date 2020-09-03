@@ -4,6 +4,7 @@ import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.IMAGE_EXISTS;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
@@ -12,6 +13,7 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
@@ -58,14 +60,13 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
         toSave.setAuthor(userService.findByEmail(email));
         if (tipsAndTricksDtoRequest.getImage() != null) {
-            image = modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class);
+            image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
         }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
         toSave.setTags(
             tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()));
-
         try {
             tipsAndTricksRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
@@ -87,7 +88,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         toUpdate.setText(tipsAndTricksDtoManagement.getText());
         toUpdate.setTags(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()));
         toUpdate.setAuthor(userService.findByEmail(tipsAndTricksDtoManagement.getEmailAuthor()));
+        System.out.println(image == null);
         if (image != null) {
+            System.out.println("DOOOOOOOOOOOOOOOOODIK");
             toUpdate.setImagePath(fileService.upload(image).toString());
         }
         tipsAndTricksRepo.save(toUpdate);
@@ -152,6 +155,15 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     public void delete(Long id) {
         tipsAndTricksRepo.deleteById(findById(id).getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
+    @Override
+    public void deleteAll(List<Long> listId) {
+        listId.forEach(id -> tipsAndTricksRepo.deleteById(findById(id).getId()));
     }
 
     /**

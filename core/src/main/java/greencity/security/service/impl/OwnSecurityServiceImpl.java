@@ -137,7 +137,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
         User user = userService.findByEmail(dto.getEmail());
         if (user == null) {
-            throw new WrongEmailException(USER_NOT_FOUND_BY_EMAIL);
+            throw new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
         if (!isPasswordCorrect(dto, user)) {
             throw new WrongPasswordException(BAD_PASSWORD);

@@ -78,6 +78,13 @@ public interface TipsAndTricksService {
     void delete(Long id);
 
     /**
+     * Method for deleting all {@link TipsAndTricks} instance by list of IDs.
+     *
+     * @param listId list of id {@link TipsAndTricks}
+     */
+    void deleteAll(List<Long> listId);
+
+    /**
      * Method for getting Tips & Tricks by searchQuery.
      *
      * @param searchQuery query to search
