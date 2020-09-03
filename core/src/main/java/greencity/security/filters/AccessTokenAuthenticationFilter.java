@@ -61,11 +61,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                     .authenticate(new UsernamePasswordAuthenticationToken(token, null));
                 User user = userService.findByEmail((String) authentication.getPrincipal());
                 if (user.getUserStatus() != UserStatus.DEACTIVATED) {
-                    log.info("User successfully authenticate - {}", authentication.getPrincipal());
+                    log.debug("User successfully authenticate - {}", authentication.getPrincipal());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    authenticationManager.authenticate(null);
-                    return;
                 }
             } catch (ExpiredJwtException e) {
                 log.info("Token has expired: " + token);
