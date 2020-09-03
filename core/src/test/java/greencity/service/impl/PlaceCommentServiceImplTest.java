@@ -58,7 +58,7 @@ public class PlaceCommentServiceImplTest {
         Comment comment = ModelUtils.getComment();
         when(placeCommentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
         doNothing().when(placeCommentRepo).delete(comment);
-        placeCommentService.deleteById(1L, ModelUtils.getUser());
+        placeCommentService.deleteById(1L);
         verify(placeCommentRepo, times(1)).delete(comment);
     }
 
@@ -82,7 +82,7 @@ public class PlaceCommentServiceImplTest {
         PageRequest pageRequest = new PageRequest(0, 2);
         List<CommentAdminDto> commentAdminDtos = Collections.singletonList(new CommentAdminDto());
         List<Comment> list = Collections.singletonList(ModelUtils.getComment());
-        Page<Comment> comments = new PageImpl<Comment>(list, pageRequest, list.size());
+        Page<Comment> comments = new PageImpl<>(list, pageRequest, list.size());
 
         PageableDto<CommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0, 1);
         when(modelMapper.map(list.get(0), CommentAdminDto.class)).thenReturn(commentAdminDtos.get(0));

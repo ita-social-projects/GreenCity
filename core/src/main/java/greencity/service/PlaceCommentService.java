@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
 import greencity.entity.Place;
@@ -40,7 +41,7 @@ public interface PlaceCommentService {
      * @param id of delete comment.
      * @author Rostyslav Khasanov.
      */
-    void deleteById(Long id, User user);
+    void deleteById(Long id);
 
     /**
      * Method witch return all comments by page.
@@ -49,5 +50,5 @@ public interface PlaceCommentService {
      * @return {@link PageableDto}
      * @author Rostyslav Khasanov.
      */
-    PageableDto getAllComments(Pageable pageable);
+    PageableDto<CommentAdminDto> getAllComments(Pageable pageable);
 }

@@ -88,7 +88,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      */
     @RatingCalculation(rating = RatingCalculationEnum.DELETE_COMMENT)
     @Override
-    public void deleteById(Long id, User user) {
+    public void deleteById(Long id) {
         placeCommentRepo.delete(placeCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
     }
