@@ -6,6 +6,8 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
+import greencity.entity.TipsAndTricksComment;
+import greencity.entity.User;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,4 +99,22 @@ public interface TipsAndTricksService {
      * @return amount of written tips and trick by user id.
      */
     Long getAmountOfWrittenTipsAndTrickByUserId(Long id);
+
+    /**
+     * Method to mark comment as liked by User.
+     *
+     * @param user    {@link User}.
+     * @param comment {@link TipsAndTricksComment}
+     * @author Dovganyuk Taras
+     */
+    void likeComment(User user, TipsAndTricksComment comment);
+
+    /**
+     * Method to mark comment as unliked by User.
+     *
+     * @param user    {@link User}.
+     * @param comment {@link TipsAndTricksComment}
+     * @author Dovganyuk Taras
+     */
+    void unlikeComment(User user, TipsAndTricksComment comment);
 }

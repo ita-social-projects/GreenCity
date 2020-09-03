@@ -1,5 +1,7 @@
 package greencity.service.impl;
 
+import greencity.annotations.RatingCalculation;
+import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import static greencity.constant.ErrorMessage.IMAGE_EXISTS;
@@ -10,6 +12,8 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -21,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +65,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @RatingCalculation(rating = RatingCalculationEnum.ADD_ECO_NEWS)
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
@@ -202,6 +208,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
+    @RatingCalculation(rating = RatingCalculationEnum.DELETE_ECO_NEWS)
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public void delete(Long id) {
@@ -253,5 +260,29 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public Long getAmountOfPublishedNewsByUserId(Long id) {
         return ecoNewsRepo.getAmountOfPublishedNewsByUserId(id);
+    }
+
+    /**
+     * Method to mark comment as liked by User.
+     *
+     * @param user    {@link User}.
+     * @param comment {@link EcoNewsComment}
+     * @author Dovganyuk Taras
+     */
+    @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
+    public void likeComment(User user, EcoNewsComment comment) {
+        comment.getUsersLiked().add(user);
+    }
+
+    /**
+     * Method to mark comment as unliked by User.
+     *
+     * @param user    {@link User}.
+     * @param comment {@link EcoNewsComment}
+     * @author Dovganyuk Taras
+     */
+    @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
+    public void unlikeComment(User user, EcoNewsComment comment) {
+        comment.getUsersLiked().remove(user);
     }
 }

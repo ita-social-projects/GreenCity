@@ -220,36 +220,6 @@ class TipsAndTricksCommentServiceImplTest {
     }
 
     @Test
-    void likeTest() {
-        TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
-        User user = ModelUtils.getUser();
-
-        when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment));
-        when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment);
-        tipsAndTricksComment.setUsersLiked(new HashSet<>());
-
-        tipsAndTricksCommentService.like(1L, user);
-
-        assertTrue(tipsAndTricksComment.getUsersLiked().contains(user));
-    }
-
-    @Test
-    void unlikeTest() {
-        TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
-        User user = ModelUtils.getUser();
-        Set<User> users = new HashSet<>();
-        users.add(user);
-
-        when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment));
-        when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment);
-
-        tipsAndTricksComment.setUsersLiked(users);
-        tipsAndTricksCommentService.like(1L, user);
-
-        assertFalse(tipsAndTricksComment.getUsersLiked().contains(user));
-    }
-
-    @Test
     void countRepliesTest() {
         when(tipsAndTricksCommentRepo.countTipsAndTricksCommentByParentCommentIdAndDeletedFalse(anyLong()))
             .thenReturn(1);

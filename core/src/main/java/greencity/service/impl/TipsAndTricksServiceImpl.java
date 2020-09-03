@@ -1,5 +1,7 @@
 package greencity.service.impl;
 
+import greencity.annotations.RatingCalculation;
+import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import static greencity.constant.ErrorMessage.IMAGE_EXISTS;
@@ -9,6 +11,8 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
+import greencity.entity.TipsAndTricksComment;
+import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -48,6 +52,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * {@inheritDoc}
      */
+    @RatingCalculation(rating = RatingCalculationEnum.ADD_TIPS_AND_TRICKS)
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
@@ -145,6 +150,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * {@inheritDoc}
      */
+    @RatingCalculation(rating = RatingCalculationEnum.DELETE_TIPS_AND_TRICKS)
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public void delete(Long id) {
@@ -207,5 +213,31 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     public Long getAmountOfWrittenTipsAndTrickByUserId(Long id) {
         return tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(id);
+    }
+
+    /**
+     * Method to mark comment as liked by User.
+     *
+     * @param user {@link User}.
+     * @param comment {@link TipsAndTricksComment}
+     *
+     * @author Dovganyuk Taras
+     */
+    @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
+    public void likeComment(User user, TipsAndTricksComment comment) {
+        comment.getUsersLiked().add(user);
+    }
+
+    /**
+     * Method to mark comment as unliked by User.
+     *
+     * @param user {@link User}.
+     * @param comment {@link TipsAndTricksComment}
+     *
+     * @author Dovganyuk Taras
+     */
+    @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
+    public void unlikeComment(User user, TipsAndTricksComment comment) {
+        comment.getUsersLiked().remove(user);
     }
 }
