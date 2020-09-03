@@ -1,8 +1,5 @@
 package greencity.config;
 
-import java.io.LineNumberReader;
-import java.sql.SQLException;
-import java.time.ZoneId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -10,15 +7,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.support.EncodedResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import javax.sql.DataSource;
+import java.time.ZoneId;
 
 /**
  * Configuration class that obtains metadata of the database.
+ *
  * @author Yurii Koval
  */
 @Slf4j
@@ -26,6 +23,7 @@ import javax.sql.DataSource;
 public class DatasourceMetadata {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
+
     /**
      * Constructor.
      *
@@ -59,6 +57,7 @@ public class DatasourceMetadata {
 
     /**
      * Creates functions for database on application startup.
+     *
      * @author Vasyl Zhovnir
      */
     @EventListener(ApplicationReadyEvent.class)
