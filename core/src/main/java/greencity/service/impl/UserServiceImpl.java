@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -23,11 +24,6 @@ import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.UserService;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,7 +35,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import static greencity.constant.ErrorMessage.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -105,6 +105,9 @@ public class UserServiceImpl implements UserService {
             users.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
         Page<User> users = userRepo.findAll(pageable);
@@ -119,6 +122,9 @@ public class UserServiceImpl implements UserService {
             users.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateUser(UserManagementDto dto) {
         User user = findById(dto.getId());
@@ -127,9 +133,9 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method for setting data from {@link UserForListDto} to {@link User}.
+     * Method for setting data from {@link UserManagementDto} to {@link User}.
      *
-     * @param dto  - dto {@link UserForListDto} with updated fields.
+     * @param dto  - dto {@link UserManagementDto} with updated fields.
      * @param user {@link User} to be updated.
      * @author Vasyl Zhovnir
      */
@@ -656,21 +662,26 @@ public class UserServiceImpl implements UserService {
     /**
      * Update user profile picture {@link User}.
      *
-     * @param image {@link MultipartFile}
-     * @param email {@link String} - email of user that need to update.
+     * @param image                 {@link MultipartFile}
+     * @param email                 {@link String} - email of user that need to update.
+     * @param userProfilePictureDto {@link UserProfilePictureDto}
      * @return {@link User}.
      * @author Marian Datsko
      */
     @Override
-    public User updateUserProfilePicture(MultipartFile image, String email) {
+    public User updateUserProfilePicture(MultipartFile image, String email,
+                                         UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
-        if (image == null) {
-            throw new NotUpdatedException(IMAGE_EXISTS);
+        if (userProfilePictureDto.getProfilePicturePath() != null) {
+            image = fileService.convertToMultipartImage(userProfilePictureDto.getProfilePicturePath());
         }
-        String url = fileService.upload(image).toString();
-        user.setProfilePicturePath(url);
+        if (image != null) {
+            user.setProfilePicturePath(fileService.upload(image).toString());
+        } else {
+            throw new BadRequestException(IMAGE_EXISTS);
+        }
         return userRepo.save(user);
     }
 
@@ -774,9 +785,11 @@ public class UserServiceImpl implements UserService {
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
+        if (userProfileDtoRequest.getImage() != null) {
+            image = fileService.convertToMultipartImage(userProfileDtoRequest.getImage());
+        }
         if (image != null) {
-            String url = fileService.upload(image).toString();
-            user.setProfilePicturePath(url);
+            user.setProfilePicturePath(fileService.upload(image).toString());
         }
         userRepo.save(user);
         return modelMapper.map(user, UserProfileDtoResponse.class);
@@ -863,21 +876,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAndFriendsWithOnlineStatusDto getUserAndSixFriendsWithOnlineStatus(Long userId) {
         UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
-                .id(userId)
-                .onlineStatus(checkIfTheUserIsOnline(userId))
-                .build();
+            .id(userId)
+            .onlineStatus(checkIfTheUserIsOnline(userId))
+            .build();
         List<User> sixFriendsWithTheHighestRating = userRepo.getSixFriendsWithTheHighestRating(userId);
         List<UserWithOnlineStatusDto> sixFriendsWithOnlineStatusDtos = new ArrayList<>();
         if (!sixFriendsWithTheHighestRating.isEmpty()) {
             sixFriendsWithOnlineStatusDtos = sixFriendsWithTheHighestRating
-                    .stream()
-                    .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
-                    .collect(Collectors.toList());
+                .stream()
+                .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
+                .collect(Collectors.toList());
         }
         return UserAndFriendsWithOnlineStatusDto.builder()
-                .user(userWithOnlineStatusDto)
-                .friends(sixFriendsWithOnlineStatusDtos)
-                .build();
+            .user(userWithOnlineStatusDto)
+            .friends(sixFriendsWithOnlineStatusDtos)
+            .build();
     }
 
     /**
@@ -890,22 +903,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable) {
         UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
-                .id(userId)
-                .onlineStatus(checkIfTheUserIsOnline(userId))
-                .build();
+            .id(userId)
+            .onlineStatus(checkIfTheUserIsOnline(userId))
+            .build();
         Page<User> friends = userRepo.getAllUserFriends(userId, pageable);
         List<UserWithOnlineStatusDto> friendsWithOnlineStatusDtos = new ArrayList<>();
         if (!friends.isEmpty()) {
             friendsWithOnlineStatusDtos = friends
-                    .getContent()
-                    .stream()
-                    .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
-                    .collect(Collectors.toList());
+                .getContent()
+                .stream()
+                .map(u -> new UserWithOnlineStatusDto(u.getId(), checkIfTheUserIsOnline(u.getId())))
+                .collect(Collectors.toList());
         }
         return UserAndAllFriendsWithOnlineStatusDto.builder()
-                .user(userWithOnlineStatusDto)
-                .friends(new PageableDto<>(friendsWithOnlineStatusDtos, friends.getTotalElements(),
-                        friends.getPageable().getPageNumber(),friends.getTotalPages()))
-                .build();
+            .user(userWithOnlineStatusDto)
+            .friends(new PageableDto<>(friendsWithOnlineStatusDtos, friends.getTotalElements(),
+                friends.getPageable().getPageNumber(), friends.getTotalPages()))
+            .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deactivateUser(Long id) {
+        User foundUser = findById(id);
+        foundUser.setUserStatus(UserStatus.DEACTIVATED);
     }
 }
