@@ -1,5 +1,7 @@
 package greencity.service.impl;
 
+import greencity.annotations.RatingCalculation;
+import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
@@ -56,6 +58,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      *
      * @author Marian Milian
      */
+    @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
         Place place = placeService.findById(placeId);
@@ -83,6 +86,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      *
      * @author Marian Milian
      */
+    @RatingCalculation(rating = RatingCalculationEnum.DELETE_COMMENT)
     @Override
     public void deleteById(Long id) {
         placeCommentRepo.delete(placeCommentRepo.findById(id)
@@ -93,13 +97,13 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto getAllComments(Pageable pageable) {
+    public PageableDto<CommentAdminDto> getAllComments(Pageable pageable) {
         Page<Comment> comments = placeCommentRepo.findAll(pageable);
         List<CommentAdminDto> commentList =
             comments.getContent()
                 .stream().map(comment -> modelMapper.map(comment, CommentAdminDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<CommentAdminDto>(
+        return new PageableDto<>(
             commentList,
             comments.getTotalElements(),
             comments.getPageable().getPageNumber(),
