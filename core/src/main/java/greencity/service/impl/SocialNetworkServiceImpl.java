@@ -18,6 +18,12 @@ public class SocialNetworkServiceImpl implements SocialNetworkService {
     @Autowired
     SocialNetworkImageService socialNetworkImageService;
 
+    /**
+     * Method saves all {@link SocialNetwork}.
+     * @param socialNetworkUrls socialnetwork URLs of user
+     * @param user current user
+     * @return list of {@link SocialNetwork}
+     */
     @Override
     @Transactional
     public List<SocialNetwork> saveAll(List<String> socialNetworkUrls, User user) {

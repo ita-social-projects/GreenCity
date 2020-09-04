@@ -3,13 +3,11 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.entity.SocialNetworkImage;
-import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.SocialNetworkImageRepo;
 import greencity.service.FileService;
 import greencity.service.SocialNetworkImageService;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -19,8 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import static greencity.constant.CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME;
 
 @Service
 @Slf4j
@@ -30,6 +31,12 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     @Autowired
     FileService fileService;
 
+    /**
+     * Method creates or returns existed {@link SocialNetworkImage} by given url.
+     *
+     * @param url a well-formed url
+     * @return {@link SocialNetworkImage}
+     */
     @Override
     public SocialNetworkImage getSocialNetworkImageByUrl(String url) {
         try {
@@ -39,48 +46,49 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             if (optionalSocialNetworkImage.isPresent()) {
                 return optionalSocialNetworkImage.get();
             } else {
-                String imagePath = saveImageToCloud(checkUrl);
-                SocialNetworkImage socialNetworkImage = SocialNetworkImage.builder()
-                    .hostPath(checkUrl.getHost())
-                    .imagePath(imagePath)
-                    .build();
-                socialNetworkImageRepo.save(socialNetworkImage);
-                return socialNetworkImage;
+                return saveSocialNetworkImage(checkUrl);
             }
-        } catch (MalformedURLException e) {
+        } catch (IOException e) {
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
-        } catch (IOException e) {
-            throw new NotSavedException(ErrorMessage.SOCIAL_NETWORK_IMAGE_NOT_SAVED);
         }
     }
 
+    /**
+     * Method creates, saves {@link SocialNetworkImage} by given URL.
+     *
+     * @param url link path
+     * @return {@link SocialNetworkImage} result of creation
+     */
+    @CacheEvict(value = SOCIAL_NETWORK_IMAGE_CACHE_NAME, allEntries = true)
+    public SocialNetworkImage saveSocialNetworkImage(URL url) throws IOException {
+        String imagePath = uploadImageToCloud(url);
+        SocialNetworkImage socialNetworkImage = SocialNetworkImage.builder()
+            .hostPath(url.getHost())
+            .imagePath(imagePath)
+            .build();
+        socialNetworkImageRepo.save(socialNetworkImage);
+        return socialNetworkImage;
+    }
+
+    /**
+     * Method return default social network image from DB by host key DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH.
+     *
+     * @return {@link SocialNetworkImage}
+     */
     public SocialNetworkImage getDefaultSocialNetworkImage() {
-        Optional<SocialNetworkImage> optionalSocialNetworkImage =
-            socialNetworkImageRepo.findByHostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH);
-        if (optionalSocialNetworkImage.isPresent()) {
-            return optionalSocialNetworkImage.get();
-        } else {
-            SocialNetworkImage defaultImage = SocialNetworkImage.builder()
-                .imagePath(saveDefaultImageToCloud())
-                .hostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH)
-                .build();
-            socialNetworkImageRepo.save(defaultImage);
-            return defaultImage;
-        }
+        return socialNetworkImageRepo.findByHostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH)
+            .orElseThrow(() -> new RuntimeException(ErrorMessage.BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH));
     }
 
-    private String saveDefaultImageToCloud() {
-        try {
-            File tempFile = new File(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOME_PATH);
-            return uploadFileToCloud(tempFile);
-        } catch (IOException e) {
-            throw new NotSavedException(ErrorMessage.SOCIAL_NETWORK_IMAGE_NOT_SAVED);
-        }
-    }
-
-    private String saveImageToCloud(URL preparedUrl) throws IOException {
-        String preparedUrlHost = preparedUrl.getHost();
+    /**
+     * Method downloads icon from URL and transforms it into {@link File}. Calls uploadFileToCloud().
+     *
+     * @param url URL of give page
+     * @return URL.toString() image file location
+     */
+    private String uploadImageToCloud(URL url) throws IOException {
+        String preparedUrlHost = url.getHost();
         String preparedFaviconUrl = String.format("http://www.google.com/s2/favicons?sz=64&domain_url=%s", URLEncoder
             .encode(preparedUrlHost, "UTF-8"));
         URL faviconUrl = new URL(preparedFaviconUrl);
@@ -90,20 +98,26 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         return uploadFileToCloud(tempFile);
     }
 
+    /**
+     * Method uploads file to cloud.
+     *
+     * @param tempFile file to upload
+     * @return URL.toString() file location
+     */
     private String uploadFileToCloud(File tempFile) throws IOException {
         FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
             false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
-        InputStream input = new FileInputStream(tempFile);
-        OutputStream outputStream = fileItem.getOutputStream();
-        int ret = input.read();
-        while (ret != -1) {
-            outputStream.write(ret);
-            ret = input.read();
+        try (InputStream input = new FileInputStream(tempFile)) {
+            OutputStream outputStream = fileItem.getOutputStream();
+            int ret = input.read();
+            while (ret != -1) {
+                outputStream.write(ret);
+                ret = input.read();
+            }
+            outputStream.flush();
         }
-        outputStream.flush();
         CommonsMultipartFile multipartFile = new CommonsMultipartFile(fileItem);
         URL uploadCloud = fileService.upload(multipartFile);
-        String imagePath = uploadCloud.toString();
-        return imagePath;
+        return uploadCloud.toString();
     }
 }

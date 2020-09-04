@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@Table(name = "social_networks_images")
+@Table(name = "social_network_images")
 public class SocialNetworkImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

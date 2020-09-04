@@ -16,7 +16,7 @@ public class SocialNetwork {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Length(max = 500)
+    @Length(min = 1, max = 500)
     @Column(name = "social_network_url", length = 500)
     String url;
 
