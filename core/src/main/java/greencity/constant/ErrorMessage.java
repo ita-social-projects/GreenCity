@@ -158,7 +158,7 @@ public final class ErrorMessage {
     public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
     public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
-        "Bad default social network image host path (Row in Database doesn't exists)";
+        "Bad default social network image host path (Row in database doesn't exists)";
 
     private ErrorMessage() {
     }
