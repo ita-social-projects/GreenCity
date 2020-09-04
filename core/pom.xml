@@ -15,7 +15,6 @@
     <name>core</name>
 
     <properties>
-        <java.version>1.8</java.version>
         <junit-jupiter.version>5.4.2</junit-jupiter.version>
         <mockito-junit-jupiter.version>3.3.3</mockito-junit-jupiter.version>
         <mockito-core.version>3.3.3</mockito-core.version>
@@ -182,6 +181,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -212,6 +212,11 @@
             <artifactId>thymeleaf-extras-java8time</artifactId>
             <version>3.0.4.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -228,8 +233,8 @@
                     <region>centralus</region>
                     <runtime>
                         <os>linux</os>
-                        <javaVersion>jre8</javaVersion>
-                        <webContainer>jre8</webContainer>
+                        <javaVersion>jre11</javaVersion>
+                        <webContainer>jre11</webContainer>
                     </runtime>
                     <deployment>
                         <resources>
@@ -241,14 +246,6 @@
                             </resource>
                         </resources>
                     </deployment>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>3.8.4</version>
-                <configuration>
-                    <propertyFile>src/main/resources/liquibase.properties</propertyFile>
                 </configuration>
             </plugin>
         </plugins>

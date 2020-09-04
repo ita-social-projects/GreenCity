@@ -1,7 +1,9 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableDto;
 import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDictionaryTranslationsDto;
 import greencity.dto.habitstatistic.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionaryTranslation;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,5 +93,18 @@ public class HabitServiceImpl implements HabitService {
             .stream()
             .map(habit -> modelMapper.map(habit, HabitDto.class))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageableDto<HabitDictionaryTranslationsDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
+        Page<HabitDictionaryTranslation> pages =
+            habitDictionaryTranslationRepo.findAllByLanguageCode(pageable, language);
+        List<HabitDictionaryTranslationsDto> habitDictionaryTranslationsDtos =
+            pages.stream()
+                .map(habit -> modelMapper.map(habit, HabitDictionaryTranslationsDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(habitDictionaryTranslationsDtos, pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages());
     }
 }
