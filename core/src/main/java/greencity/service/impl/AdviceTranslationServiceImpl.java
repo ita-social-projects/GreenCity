@@ -63,7 +63,10 @@ public class AdviceTranslationServiceImpl implements AdviceTranslationService {
             }.getType());
         adviceTranslations = adviceTranslations
             .stream()
-            .peek(a -> a.setAdvice(advice))
+            .map(a -> {
+                a.setAdvice(advice);
+                return a;
+            })
             .collect(Collectors.toList());
         return saveAdviceTranslation(adviceTranslations);
     }

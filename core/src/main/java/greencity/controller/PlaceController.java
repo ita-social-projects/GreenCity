@@ -193,7 +193,7 @@ public class PlaceController {
     })
     @GetMapping("/{status}")
     @ApiPageable
-    public ResponseEntity<PageableDto> getPlacesByStatus(
+    public ResponseEntity<PageableDto<AdminPlaceDto>> getPlacesByStatus(
         @PathVariable PlaceStatus status,
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)

@@ -8,15 +8,14 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.service.LocationService;
 import greencity.service.PhotoService;
 import greencity.service.SpecificationService;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,8 +50,9 @@ class ProposePlaceServiceImplTest {
     void checkInputTime() {
         OpeningHoursDto openingHours = ModelUtils.getOpeningHoursDto();
         openingHours.setOpenTime(ModelUtils.getLocalTime().plusHours(1L));
+        Set<OpeningHoursDto> dto = Collections.singleton(openingHours);
 
-        assertThrows(BadRequestException.class, () -> proposePlaceService.checkInputTime(Collections.singleton(openingHours)));
+        assertThrows(BadRequestException.class, () -> proposePlaceService.checkInputTime(dto));
     }
 
     @Test

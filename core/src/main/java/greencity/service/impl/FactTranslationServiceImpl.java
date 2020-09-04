@@ -63,7 +63,10 @@ public class FactTranslationServiceImpl implements FactTranslationService {
             }.getType());
         factTranslations = factTranslations
             .stream()
-            .peek(a -> a.setHabitFact(habitFact))
+            .map(a -> {
+                a.setHabitFact(habitFact);
+                return a;
+            })
             .collect(Collectors.toList());
         return saveFactTranslation(factTranslations);
     }
