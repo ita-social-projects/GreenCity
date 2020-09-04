@@ -14,10 +14,6 @@
     <version>1.0-SNAPSHOT</version>
     <name>email</name>
 
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -68,8 +64,8 @@
                     <region>centralus</region>
                     <runtime>
                         <os>linux</os>
-                        <javaVersion>jre8</javaVersion>
-                        <webContainer>jre8</webContainer>
+                        <javaVersion>jre11</javaVersion>
+                        <webContainer>jre11</webContainer>
                     </runtime>
                     <deployment>
                         <resources>

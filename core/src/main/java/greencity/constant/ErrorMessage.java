@@ -2,7 +2,7 @@ package greencity.constant;
 
 public final class ErrorMessage {
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
-    public static final String USER_NOT_FOUND_BY_EMAIL = "Bad email or password: ";
+    public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
     public static final String USER_WITH_EMAIL_EXIST = "The user already exists by this email: ";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
@@ -149,7 +149,8 @@ public final class ErrorMessage {
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
     public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
-    public static final String FACT_OF_THE_DAY_TRANSLATION_NOT_DELETED = "The fact of the day translation does not deleted by id: ";
+    public static final String FACT_OF_THE_DAY_TRANSLATION_NOT_DELETED =
+        "The fact of the day translation does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
