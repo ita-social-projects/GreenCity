@@ -1,8 +1,3 @@
-var languages;
-$.get('/factoftheday/languages',function (data){
-    languages=data;
-});
-
 function clearAllErrorsSpan(){
     $('.errorSpan').text('');
 }
@@ -29,7 +24,8 @@ $(document).ready(function(){
             $("#selectAll").prop("checked", false);
         }
     });
-    //Кнопка edit справа в таблиці
+
+    // Edit user button (popup)
     $('td .edit.eBtn').on('click',function(event){
         event.preventDefault();
         $("#editUserModal").each(function(){
@@ -43,94 +39,10 @@ $(document).ready(function(){
             $('#name').val(user.name);
             $('#email').val(user.email);
             $('#userCredo').val(user.userCredo);
-            $('#userstatus').val(user.userStatus);
-
+            $('#userStatus').val(user.userStatus);
         });
     });
-    //Кнопка addUser зверху таблиці
-    $('#addUserModal').on('click',function(event){
-        clearAllErrorsSpan();
-    });
-    //Кнопка delete справа в таблиці
-    $('td .delete.eDelBtn').on('click',function(event){
-        event.preventDefault();
-        $('#deactivateUserModal').modal();
-        var href = $(this).attr('href');
-        $('#deactivateOneSubmit').attr('href',href);
-    });
-    //Кнопка delete в deleteFactOfTheDayModal
-    $('#deactivateOneSubmit').on('click',function(event){
-        event.preventDefault();
-        var href = $(this).attr('href');
-        $.ajax({
-            url: href,
-            type: 'post',
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                location.reload();
-            },
-        });
-    });
-    //Кнопка delete в deleteAllSelectedModal
-    $('#deactivateAllSubmit').on('click',function(event){
-        event.preventDefault();
-        var checkbox = $('table tbody input[type="checkbox"]');
-        var payload=[];
-        checkbox.each(function (){
-            if(this.checked){
-                payload.push(this.value);
-            }
-        })
-        var href = '/management/users/deactivateAll';
-        $.ajax({
-            url: href,
-            type: 'post',
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                location.reload();
-            },
-            data: JSON.stringify(payload)
-        });
-    });
-    //Кнопка submit в модальній формі Add
-    $('#submitAddBtn').on('click',function(event){
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#addUserForm').serializeArray().reduce(function(obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        var payload = {
-            "id" : formData.id,
-            "name" : formData.name,
-            "email" : formData.email,
-            "userCredo" : formData.userCredo,
-            "userStatus" : formData.userStatus
-        }
-
-        //запит save у модальній формі add
-        $.ajax({
-            url: '/management/users/update',
-            type: 'post',
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                if(Array.isArray(data.errors) && data.errors.length){
-                    data.errors.forEach(function(el){
-                        $(document.getElementById('errorModalSave'+el.fieldName)).text(el.fieldError);
-                    })
-                }
-                else{
-                    location.reload();
-                }
-            },
-            data: JSON.stringify(payload)
-        });
-    })
-
-    //Кнопка submit в модальній формі Edit
+    // Save editing button in editUserModal
     $('#submitEditBtn').on('click',function(event){
         event.preventDefault();
         clearAllErrorsSpan();
@@ -145,7 +57,7 @@ $(document).ready(function(){
             "userCredo" : formData.userCredo,
             "userStatus" : formData.userStatus
         }
-        //запит save у модальній формі update
+        // put request when 'Save' button in editUserModal clicked
         $.ajax({
             url: '/management/users/',
             type: 'put',
@@ -164,4 +76,68 @@ $(document).ready(function(){
             data: JSON.stringify(returnData)
         });
     })
+
+    // Deactivate user button (popup)
+    $('td .deactivate-user.eDeactBtn').on('click',function(event){
+        event.preventDefault();
+        $('#deactivateUserModal').modal();
+        var href = $(this).attr('href');
+        $('#deactivateOneSubmit').attr('href',href);
+    });
+    // Confirm deactivation button in deactivateUserModal
+    $('#deactivateOneSubmit').on('click',function(event){
+        event.preventDefault();
+        var href = $(this).attr('href');
+        $.ajax({
+            url: href,
+            type: 'post',
+            success: function (data) {
+                location.reload();
+            },
+        });
+    });
+
+    // Deactivate user button (popup)
+    $('td .activate-user.eActBtn').on('click',function(event){
+        event.preventDefault();
+        $('#activateUserModal').modal();
+        var href = $(this).attr('href');
+        $('#activateOneSubmit').attr('href',href);
+    });
+    // Confirm deactivation button in activateUserModal
+    $('#activateOneSubmit').on('click',function(event){
+        event.preventDefault();
+        var href = $(this).attr('href');
+        $.ajax({
+            url: href,
+            type: 'post',
+            success: function (data) {
+                location.reload();
+            },
+        });
+    });
+
+    // Deactivate marked users button (popup)
+    $('#deactivateAllSubmit').on('click',function(event){
+        event.preventDefault();
+        var checkbox = $('table tbody input[type="checkbox"]');
+        var payload=[];
+        checkbox.each(function (){
+            if(this.checked){
+                payload.push(this.value);
+            }
+        })
+        var href = '/management/users/deactivateAll';
+        // post request when 'Deactivate marked' button in deactivateAllSelectedModal clicked
+        $.ajax({
+            url: href,
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                location.reload();
+            },
+            data: JSON.stringify(payload)
+        });
+    });
 });

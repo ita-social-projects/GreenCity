@@ -12,16 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +46,6 @@ public class ManagementUserController {
         model.addAttribute("users", userService.findUserForManagementByPage(paging));
         return "core/management_user";
     }
-
 
 
     /**
@@ -96,8 +92,20 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivate")
-    public ResponseEntity deactivateUser(@RequestParam("id") Long id) {
+    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(@RequestParam("id") Long id) {
         userService.deactivateUser(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for setting {@link User}'s status to ACTIVATED.
+     *
+     * @param id of the searched {@link User}.
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping("/activate")
+    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(@RequestParam("id") Long id) {
+        userService.setActivatedStatus(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -110,6 +118,7 @@ public class ManagementUserController {
      */
     @PostMapping("/deactivateAll")
     public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
+        userService.deactivateAllUsers(listId);
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.deactivateAllUsers(listId));
     }

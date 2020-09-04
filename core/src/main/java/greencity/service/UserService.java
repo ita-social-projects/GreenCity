@@ -396,4 +396,12 @@ public interface UserService {
      * @author Vasyl Zhovnir
      */
     List<Long> deactivateAllUsers(List<Long> listId);
+
+    /**
+     * change {@link User}'s status to ACTIVATED.
+     *
+     * @param id {@link User}'s id
+     * @author Vasyl Zhovnir
+     */
+    void setActivatedStatus(Long id);
 }
