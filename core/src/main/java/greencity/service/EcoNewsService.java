@@ -6,6 +6,8 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.User;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,4 +92,24 @@ public interface EcoNewsService {
      * @return amount of published news by user id.
      */
     Long getAmountOfPublishedNewsByUserId(Long id);
+
+    /**
+     * Method to mark comment as liked by User.
+     *
+     * @param user {@link User}.
+     * @param comment {@link EcoNewsComment}
+     *
+     * @author Dovganyuk Taras
+     */
+    void likeComment(User user, EcoNewsComment comment);
+
+    /**
+     * Method to mark comment as unliked by User.
+     *
+     * @param user {@link User}.
+     * @param comment {@link EcoNewsComment}
+     *
+     * @author Dovganyuk Taras
+     */
+    void unlikeComment(User user, EcoNewsComment comment);
 }

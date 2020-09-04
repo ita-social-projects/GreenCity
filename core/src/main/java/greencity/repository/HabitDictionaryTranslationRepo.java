@@ -1,9 +1,12 @@
 package greencity.repository;
 
+import greencity.dto.habitstatistic.HabitDictionaryTranslationsDto;
 import greencity.entity.HabitDictionary;
 import greencity.entity.HabitDictionaryTranslation;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -25,7 +28,7 @@ public interface HabitDictionaryTranslationRepo extends JpaRepository<HabitDicti
      * Method return {@link Optional} of {@link HabitDictionaryTranslation}.
      *
      * @param habitDictionary {@link HabitDictionary}.
-     * @param language code language.
+     * @param language        code language.
      * @return {@link HabitDictionaryTranslation}.
      */
     Optional<HabitDictionaryTranslation> findByHabitDictionaryAndLanguageCode(HabitDictionary habitDictionary,
@@ -45,4 +48,13 @@ public interface HabitDictionaryTranslationRepo extends JpaRepository<HabitDicti
         + "INNER JOIN habits_users_assign hua ON hua.habit_id = id "
         + "WHERE hua.users_id = ?1 AND status = 'true');")
     List<HabitDictionaryTranslation> findAvailableHabitDictionaryByUser(Long userId, String language);
+
+    /**
+     * Method returns all habits by language.
+     *
+     * @param language code language.
+     * @return Pageable of available {@link HabitDictionaryTranslationsDto}`s.
+     * @author Dovganyuk Taras
+     */
+    Page<HabitDictionaryTranslation> findAllByLanguageCode(Pageable pageable, String language);
 }

@@ -82,13 +82,12 @@ public class PlaceCommentServiceImplTest {
         PageRequest pageRequest = new PageRequest(0, 2);
         List<CommentAdminDto> commentAdminDtos = Collections.singletonList(new CommentAdminDto());
         List<Comment> list = Collections.singletonList(ModelUtils.getComment());
-        Page<Comment> comments = new PageImpl<Comment>(list, pageRequest, list.size());
+        Page<Comment> comments = new PageImpl<>(list, pageRequest, list.size());
 
-        PageableDto<CommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0,1);
+        PageableDto<CommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0, 1);
         when(modelMapper.map(list.get(0), CommentAdminDto.class)).thenReturn(commentAdminDtos.get(0));
         when(placeCommentRepo.findAll(pageRequest)).thenReturn(comments);
 
         assertEquals(result, placeCommentService.getAllComments(pageRequest));
     }
-
 }
