@@ -49,12 +49,33 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             }
         } catch (MalformedURLException e) {
             log.info(e.getMessage());
-            SocialNetworkImage socialNetworkImage =
-                socialNetworkImageRepo.findByHostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_URL)
-                    .orElseThrow(() -> new RuntimeException(ErrorMessage.BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH));
-            return socialNetworkImage;
+            return getDefaultSocialNetworkImage();
         } catch (IOException e) {
-            throw new NotSavedException(ErrorMessage.IMAGE_NOT_SAVED);
+            throw new NotSavedException(ErrorMessage.SOCIAL_NETWORK_IMAGE_NOT_SAVED);
+        }
+    }
+
+    public SocialNetworkImage getDefaultSocialNetworkImage() {
+        Optional<SocialNetworkImage> optionalSocialNetworkImage =
+            socialNetworkImageRepo.findByHostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH);
+        if (optionalSocialNetworkImage.isPresent()) {
+            return optionalSocialNetworkImage.get();
+        } else {
+            SocialNetworkImage defaultImage = SocialNetworkImage.builder()
+                .imagePath(saveDefaultImageToCloud())
+                .hostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH)
+                .build();
+            socialNetworkImageRepo.save(defaultImage);
+            return defaultImage;
+        }
+    }
+
+    private String saveDefaultImageToCloud() {
+        try {
+            File tempFile = new File(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOME_PATH);
+            return uploadFileToCloud(tempFile);
+        } catch (IOException e) {
+            throw new NotSavedException(ErrorMessage.SOCIAL_NETWORK_IMAGE_NOT_SAVED);
         }
     }
 
@@ -66,6 +87,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         BufferedImage bufferedImage = ImageIO.read(faviconUrl);
         File tempFile = new File("tempImage.png");
         ImageIO.write(bufferedImage, "png", tempFile);
+        return uploadFileToCloud(tempFile);
+    }
+
+    private String uploadFileToCloud(File tempFile) throws IOException {
         FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
             false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
         InputStream input = new FileInputStream(tempFile);
