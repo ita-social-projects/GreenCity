@@ -13,10 +13,10 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.Optional;
 import javax.imageio.ImageIO;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -25,10 +25,9 @@ import static greencity.constant.CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class SocialNetworkImageServiceImpl implements SocialNetworkImageService {
-    @Autowired
     SocialNetworkImageRepo socialNetworkImageRepo;
-    @Autowired
     FileService fileService;
 
     /**

@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -38,12 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import static greencity.constant.ErrorMessage.*;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -789,7 +782,6 @@ public class UserServiceImpl implements UserService {
         user.setSocialNetworks(
             socialNetworkService.saveAll(userProfileDtoRequest.getSocialNetworks(), user)
         );
-        //user.setSocialNetworks(userProfileDtoRequest.getSocialNetworks());
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());

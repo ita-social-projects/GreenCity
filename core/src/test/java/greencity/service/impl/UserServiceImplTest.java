@@ -20,6 +20,7 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
+import greencity.service.SocialNetworkService;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -27,15 +28,10 @@ import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.*;
 import junit.framework.TestCase;
-import liquibase.pro.packaged.M;
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.powermock.api.mockito.PowerMockito;
@@ -48,6 +44,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceImplTest {
@@ -77,6 +77,9 @@ public class UserServiceImplTest {
 
     @Mock
     HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
+
+    @Mock
+    SocialNetworkService socialNetworkService;
 
     private User user =
         User.builder()
@@ -811,6 +814,7 @@ public class UserServiceImplTest {
         UserProfileDtoResponse response = new UserProfileDtoResponse();
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userRepo.save(user)).thenReturn(user);
+        when(socialNetworkService.saveAll(request.getSocialNetworks(), user)).thenReturn(new ArrayList<>());
         when(modelMapper.map(user, UserProfileDtoResponse.class)).thenReturn(response);
         UserProfileDtoResponse userProfileDtoResponse =
             userService.saveUserProfile(request, null, anyString());

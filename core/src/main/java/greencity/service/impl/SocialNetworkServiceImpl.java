@@ -8,20 +8,20 @@ import greencity.service.SocialNetworkService;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class SocialNetworkServiceImpl implements SocialNetworkService {
-    @Autowired
     SocialNetworkRepo socialNetworkRepo;
-    @Autowired
     SocialNetworkImageService socialNetworkImageService;
 
     /**
      * Method saves all {@link SocialNetwork}.
+     *
      * @param socialNetworkUrls socialnetwork URLs of user
-     * @param user current user
+     * @param user              current user
      * @return list of {@link SocialNetwork}
      */
     @Override

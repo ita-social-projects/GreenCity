@@ -1,6 +1,7 @@
 package greencity.dto.user;
 
 import greencity.dto.socialnetwork.SocialNetworkResponseDTO;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
 
@@ -15,7 +16,7 @@ public class UserProfileDtoResponse {
     private String firstName;
     private String city;
     private String userCredo;
-    private List<SocialNetworkResponseDTO> socialNetworks;
+    private List<SocialNetworkResponseDTO> socialNetworks = new ArrayList<>();
     private Boolean showLocation;
     private Boolean showEcoPlace;
     private Boolean showShoppingList;
