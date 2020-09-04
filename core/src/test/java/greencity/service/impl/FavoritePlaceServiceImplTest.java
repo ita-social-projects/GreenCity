@@ -87,12 +87,12 @@ class FavoritePlaceServiceImplTest {
     @Test
     void saveBadPlaceIdTest() {
         dto.setPlaceId(1L);
+        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        when(placeService.existsById(any())).thenReturn(false);
 
         Exception exception = assertThrows(
             WrongIdException.class,
             () -> {
-                when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
-                when(placeService.existsById(any())).thenReturn(false);
                 favoritePlaceService.save(dto, userEmail);
             });
         String expectedMessage = ErrorMessage.PLACE_NOT_FOUND_BY_ID;
