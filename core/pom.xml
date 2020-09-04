@@ -15,7 +15,6 @@
     <name>core</name>
 
     <properties>
-        <java.version>1.8</java.version>
         <junit-jupiter.version>5.4.2</junit-jupiter.version>
         <mockito-junit-jupiter.version>3.3.3</mockito-junit-jupiter.version>
         <mockito-core.version>3.3.3</mockito-core.version>
@@ -234,8 +233,8 @@
                     <region>centralus</region>
                     <runtime>
                         <os>linux</os>
-                        <javaVersion>jre8</javaVersion>
-                        <webContainer>jre8</webContainer>
+                        <javaVersion>jre11</javaVersion>
+                        <webContainer>jre11</webContainer>
                     </runtime>
                     <deployment>
                         <resources>
