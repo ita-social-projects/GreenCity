@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SocialNetworkImageRepo extends JpaRepository<SocialNetworkImage, Long> {
-    Optional<SocialNetworkImage> findByBasePath(String basePath);
+    Optional<SocialNetworkImage> findByHostPath(String hostPath);
 }

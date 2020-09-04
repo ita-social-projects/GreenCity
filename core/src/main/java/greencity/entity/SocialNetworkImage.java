@@ -18,6 +18,6 @@ public class SocialNetworkImage {
     @Column(name = "image_path")
     String imagePath;
 
-    @Column(name = "base_path")
-    String basePath;
+    @Column(name = "host_path")
+    String hostPath;
 }

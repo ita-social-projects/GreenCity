@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import lombok.*;
 
 @Entity
@@ -15,6 +16,7 @@ public class SocialNetwork {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(max = 500)
     @Column(name = "social_network_url")
     String url;
 

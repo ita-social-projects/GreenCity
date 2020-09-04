@@ -14,6 +14,7 @@ public final class AppConstant {
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final String VALIDATION_FOLDER = "(^eco_news$)";
     public static final Float DEFAULT_RATING = 0.0f;
+    public static final String DEFAULT_SOCIAL_NETWORK_IMAGE_URL = "";
 
     private AppConstant() {
     }
