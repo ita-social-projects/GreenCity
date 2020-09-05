@@ -10,8 +10,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
-import javax.sql.DataSource;
 import java.time.ZoneId;
+import java.util.Objects;
 
 /**
  * Configuration class that obtains metadata of the database.
@@ -22,7 +22,6 @@ import java.time.ZoneId;
 @Configuration
 public class DatasourceMetadata {
     private final JdbcTemplate jdbcTemplate;
-    private final DataSource dataSource;
 
     /**
      * Constructor.
@@ -31,9 +30,8 @@ public class DatasourceMetadata {
      */
 
     @Autowired
-    public DatasourceMetadata(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public DatasourceMetadata(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.dataSource = dataSource;
     }
 
     /**
@@ -70,7 +68,7 @@ public class DatasourceMetadata {
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_buffercache_pages.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements_reset.sql"));
-        databasePopulator.execute(dataSource);
+        databasePopulator.execute(Objects.requireNonNull(jdbcTemplate.getDataSource()));
     }
 
     public static class FailedToObtainDatasourceTimezone extends RuntimeException {
