@@ -6,7 +6,6 @@ import greencity.entity.localization.AdviceTranslation;
 import greencity.repository.AdviceTranslationRepo;
 import greencity.service.AdviceTranslationService;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,13 +60,8 @@ public class AdviceTranslationServiceImpl implements AdviceTranslationService {
         List<AdviceTranslation> adviceTranslations = modelMapper.map(advicePostDTO.getTranslations(),
             new TypeToken<List<AdviceTranslation>>() {
             }.getType());
-        adviceTranslations = adviceTranslations
-            .stream()
-            .map(a -> {
-                a.setAdvice(advice);
-                return a;
-            })
-            .collect(Collectors.toList());
+        adviceTranslations.forEach(a -> a.setAdvice(advice));
+
         return saveAdviceTranslation(adviceTranslations);
     }
 }

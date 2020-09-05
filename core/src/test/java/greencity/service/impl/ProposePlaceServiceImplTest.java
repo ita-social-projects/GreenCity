@@ -50,9 +50,9 @@ class ProposePlaceServiceImplTest {
     void checkInputTime() {
         OpeningHoursDto openingHours = ModelUtils.getOpeningHoursDto();
         openingHours.setOpenTime(ModelUtils.getLocalTime().plusHours(1L));
-        Set<OpeningHoursDto> dto = Collections.singleton(openingHours);
+        Set<OpeningHoursDto> dtos = Collections.singleton(openingHours);
 
-        assertThrows(BadRequestException.class, () -> proposePlaceService.checkInputTime(dto));
+        assertThrows(BadRequestException.class, () -> proposePlaceService.checkInputTime(dtos));
     }
 
     @Test
