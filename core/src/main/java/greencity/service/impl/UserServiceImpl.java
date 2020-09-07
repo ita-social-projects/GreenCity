@@ -166,6 +166,15 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
+     */
+    @Override
+    public User findNotDeactivatedByEmail(String email) {
+        Optional<User> optionalUser = userRepo.findNotDeactivatedByEmail(email);
+        return optionalUser.orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
      *
      * @author Zakhar Skaletskyi
      */

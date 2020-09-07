@@ -50,6 +50,17 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query("SELECT id FROM User WHERE email=:email")
     Optional<Long> findIdByEmail(String email);
 
+
+    /**
+     * Find not 'DEACTIVATED' {@link User} by email.
+     *
+     * @param email - User email
+     * @return User id
+     * @author Vasyl Zhovnir
+     */
+    @Query("FROM User WHERE email=:email AND userStatus <> 1")
+    Optional<User> findNotDeactivatedByEmail(String email);
+
     /**
      * Find all {@link User}'s with {@link EmailNotification} type.
      *

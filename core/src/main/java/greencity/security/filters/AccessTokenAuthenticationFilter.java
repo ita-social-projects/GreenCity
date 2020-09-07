@@ -54,13 +54,12 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                                  @SuppressWarnings("NullableProblems") FilterChain chain)
         throws IOException, ServletException {
         String token = jwtTool.getTokenFromHttpServletRequest(request);
-
         if (token != null) {
             try {
                 Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(token, null));
-                User user = userService.findByEmail((String) authentication.getPrincipal());
-                if (user.getUserStatus() != UserStatus.DEACTIVATED) {
+                User user = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
+                if (user != null) {
                     log.debug("User successfully authenticate - {}", authentication.getPrincipal());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }

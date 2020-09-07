@@ -57,6 +57,15 @@ public interface UserService {
     User findByEmail(String email);
 
     /**
+     * Method that allow you to find not 'DEACTIVATED' {@link User} by email.
+     *
+     * @param email a value of {@link String}
+     * @return {@link User} with this email.
+     * @author Vasyl Zhovnir
+     */
+    User findNotDeactivatedByEmail(String email);
+
+    /**
      * Find User's id by User email.
      *
      * @param email - {@link User} email
