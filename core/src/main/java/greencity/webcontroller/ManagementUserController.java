@@ -16,10 +16,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management")
+@ApiIgnore
 public class ManagementUserController {
     private UserService userService;
     private ModelMapper modelMapper;

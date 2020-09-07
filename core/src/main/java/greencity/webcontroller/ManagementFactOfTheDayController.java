@@ -18,6 +18,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/factoftheday")
+@ApiIgnore
 public class ManagementFactOfTheDayController {
     @Autowired
     private FactOfTheDayService factOfTheDayService;
