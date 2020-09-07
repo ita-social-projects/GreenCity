@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -37,15 +38,13 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
             ImageIO.write(bufferedImage, "png", tempFile);
             FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
                 false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
-            InputStream input = new FileInputStream(tempFile);
-            OutputStream outputStream = fileItem.getOutputStream();
-            int ret = input.read();
-            while (ret != -1) {
-                outputStream.write(ret);
-                ret = input.read();
+            try (InputStream input = new FileInputStream(tempFile);
+                 OutputStream outputStream = fileItem.getOutputStream();) {
+
+                IOUtils.copy(input, outputStream);
+                outputStream.flush();
+                return new CommonsMultipartFile(fileItem);
             }
-            outputStream.flush();
-            return new CommonsMultipartFile(fileItem);
         } catch (IOException e) {
             throw new NotSavedException("Cannot convert to BASE64 image");
         }

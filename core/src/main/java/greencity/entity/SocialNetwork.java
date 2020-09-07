@@ -20,9 +20,9 @@ public class SocialNetwork {
     @Column(name = "social_network_url", length = 500)
     String url;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     SocialNetworkImage socialNetworkImage;
 }

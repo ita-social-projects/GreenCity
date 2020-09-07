@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
@@ -106,13 +107,9 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     private String uploadFileToCloud(File tempFile) throws IOException {
         FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
             false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
-        try (InputStream input = new FileInputStream(tempFile)) {
-            OutputStream outputStream = fileItem.getOutputStream();
-            int ret = input.read();
-            while (ret != -1) {
-                outputStream.write(ret);
-                ret = input.read();
-            }
+        try (InputStream inputStream = new FileInputStream(tempFile);
+             OutputStream outputStream = fileItem.getOutputStream();) {
+            IOUtils.copy(inputStream,outputStream);
             outputStream.flush();
         }
         CommonsMultipartFile multipartFile = new CommonsMultipartFile(fileItem);
