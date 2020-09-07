@@ -33,14 +33,14 @@ public class HabitStatisticControllerTest {
     private MockMvc mockMvc;
 
     @InjectMocks
-    private HabitStatisticController habitStatisticController;
+    private HabitController habitController;
 
     @Mock
     private HabitStatisticService habitStatisticService;
 
     @BeforeEach
     void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(habitStatisticController)
+        this.mockMvc = MockMvcBuilders.standaloneSetup(habitController)
             .build();
     }
 
