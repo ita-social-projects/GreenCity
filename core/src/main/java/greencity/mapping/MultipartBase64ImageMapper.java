@@ -40,7 +40,6 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
                 false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
             try (InputStream input = new FileInputStream(tempFile);
                  OutputStream outputStream = fileItem.getOutputStream();) {
-
                 IOUtils.copy(input, outputStream);
                 outputStream.flush();
                 return new CommonsMultipartFile(fileItem);
