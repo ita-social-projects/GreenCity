@@ -35,7 +35,7 @@
                                 <h2>Manage <b>User</b></h2>
                             </div>
                             <div class="col-sm-6">
-                                <a href="#addUserModal" id="addFactOfTheDayModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New User</span></a>
+                                <a href="#addUserModal" id="addUserModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New User</span></a>
                                 <a href="#deactivateAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Deactivate</span></a>
                             </div>
                         </div>
@@ -52,6 +52,7 @@
                             <th>ID</th>
                             <th>User name</th>
                             <th>Email</th>
+                            <th>Role</th>
                             <th>Credo</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -69,6 +70,7 @@
                                 <td th:text="${user.id}"></td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
+                                <td th:text="${user.role}"></td>
                                 <td th:text="${user.userCredo}"></td>
                                 <td th:text="${user.userStatus}"></td>
                                 <td>
@@ -95,7 +97,7 @@
         <div id="addUserModal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form th:action="@{users/save}" method="post" id="addUserForm">
+                    <form th:action="@{#}" method="post" id="addUserForm">
                         <div class="modal-header">
                             <h4 class="modal-title">Add User</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -113,13 +115,21 @@
                                 <span th:id="errorModalSaveemail" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
-                                <label>Credo</label>
-                                <input type="text" class="form-control" name="userCredo">
-                                <span th:id="errorModalSaveuserCredo" class="errorSpan"></span>
+                                <label>Role</label>
+                                <select class="form-control" name="role" required>
+                                    <option>ROLE_USER</option>
+                                    <option selected >ROLE_ADMIN</option>
+                                    <option>ROLE_MANAGER</option>
+                                </select>
+                                <span th:id="errorModalUpdaterole" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
                                 <label>Status</label>
-                                <input type="text" class="form-control" name="userStatus" required>
+                                <select class="form-control" name="userStatus" required>
+                                    <option selected>ACTIVATED</option>
+                                    <option>DEACTIVATED</option>
+                                    <option>DISABLED</option>
+                                </select>
                                 <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
                             </div>
                         </div>
@@ -155,6 +165,15 @@
                                 <label>Email</label>
                                 <input type="text" class="form-control" id="email" name="email" required>
                                 <span th:id="errorModalUpdateemail" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select class="form-control" name="role" id="role">
+                                    <option>ROLE_USER</option>
+                                    <option>ROLE_ADMIN</option>
+                                    <option>ROLE_MANAGER</option>
+                                </select>
+                                <span th:id="errorModalUpdaterole" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
                                 <label>Credo</label>

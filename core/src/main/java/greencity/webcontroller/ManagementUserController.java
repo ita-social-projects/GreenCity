@@ -51,7 +51,7 @@ public class ManagementUserController {
      * Method that updates user data.
      *
      * @param userDto dto with updated fields.
-     * @return View template path {@link String}.
+     * @return {@link GenericResponseDto}
      * @author Vasyl Zhovnir
      */
     @PutMapping("")

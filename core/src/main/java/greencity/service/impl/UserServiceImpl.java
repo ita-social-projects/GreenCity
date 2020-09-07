@@ -143,6 +143,7 @@ public class UserServiceImpl implements UserService {
     private void updateUserFromDto(UserManagementDto dto, User user) {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
+        user.setRole(dto.getRole());
         user.setUserCredo(dto.getUserCredo());
         user.setUserStatus(dto.getUserStatus());
     }
