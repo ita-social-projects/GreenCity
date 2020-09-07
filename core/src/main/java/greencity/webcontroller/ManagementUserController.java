@@ -19,7 +19,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -67,7 +66,7 @@ public class ManagementUserController {
             return genericResponseDto;
         }
         userService.updateUser(userDto);
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return GenericResponseDto.builder().build();
     }
 
     /**
@@ -118,7 +117,6 @@ public class ManagementUserController {
      */
     @PostMapping("/deactivateAll")
     public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
-        userService.deactivateAllUsers(listId);
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.deactivateAllUsers(listId));
     }

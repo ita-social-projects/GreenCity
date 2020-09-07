@@ -153,7 +153,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Optional<LocalDateTime> findLastActivityTimeById(Long userId);
 
     /**
-     * Deletes from the database users that have status 'DEACTIVATED'
+     * Delete from the database users that have status 'DEACTIVATED'
      * and last visited the site 2 years ago.
      * @return number of deleted rows
      * @author Vasyl Zhovnir
@@ -162,4 +162,13 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true, value = "DELETE FROM users where user_status = 1 "
         + "AND last_activity_time + interval '2 year' <= CURRENT_TIMESTAMP")
     int scheduleDeleteDeactivatedUsers();
+
+    /**
+     * Set {@link User}s' statuses to 'DEACTIVATED'
+     * @param ids - {@link List} of ids of {@link User} to be 'DEACTIVATED'
+     * @author Vasyl Zhovnir
+     **/
+    @Modifying
+    @Query(value = "UPDATE User SET userStatus = 1 where id IN(:ids)")
+    void deactivateSelectedUsers(List<Long> ids);
 }

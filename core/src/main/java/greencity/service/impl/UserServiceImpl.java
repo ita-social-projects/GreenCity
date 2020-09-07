@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -40,6 +39,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -938,7 +939,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<Long> deactivateAllUsers(List<Long> listId) {
-        listId.forEach(this::deactivateUser);
+        userRepo.deactivateSelectedUsers(listId);
         return listId;
     }
 
