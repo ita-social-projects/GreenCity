@@ -11,7 +11,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/habits")
-@ApiIgnore
 public class ManagementHabitsController {
     private HabitService habitService;
 

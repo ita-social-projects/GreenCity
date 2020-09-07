@@ -40,7 +40,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/tipsandtricks")
-@ApiIgnore
 public class ManagementTipsAndTricksController {
     private TipsAndTricksService tipsAndTricksService;
 

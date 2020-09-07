@@ -21,7 +21,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management")
-@ApiIgnore
 public class ManagementUserController {
     private UserService userService;
     private ModelMapper modelMapper;

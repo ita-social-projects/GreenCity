@@ -11,7 +11,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/management")
-@ApiIgnore
 public class ManagementController {
     /**
      * Returns index page.
