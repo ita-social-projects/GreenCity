@@ -164,7 +164,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     int scheduleDeleteDeactivatedUsers();
 
     /**
-     * Set {@link User}s' statuses to 'DEACTIVATED'
+     * Set {@link User}s' statuses to 'DEACTIVATED'.
      * @param ids - {@link List} of ids of {@link User} to be 'DEACTIVATED'
      * @author Vasyl Zhovnir
      **/
