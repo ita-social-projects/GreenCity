@@ -1,22 +1,16 @@
 package greencity.service.impl;
 
-import greencity.GreenCityApplication;
 import greencity.entity.Photo;
 import greencity.repository.PhotoRepo;
-import greencity.service.PhotoService;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-
-
-import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PhotoServiceImplTest {
