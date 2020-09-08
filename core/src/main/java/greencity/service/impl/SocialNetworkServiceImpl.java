@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import greencity.entity.SocialNetwork;
 import greencity.entity.User;
-import greencity.repository.SocialNetworkRepo;
 import greencity.service.SocialNetworkImageService;
 import greencity.service.SocialNetworkService;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class SocialNetworkServiceImpl implements SocialNetworkService {
-    SocialNetworkRepo socialNetworkRepo;
     SocialNetworkImageService socialNetworkImageService;
 
     /**
