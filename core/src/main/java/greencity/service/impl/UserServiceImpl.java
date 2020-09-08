@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -40,6 +39,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -168,9 +169,8 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User findNotDeactivatedByEmail(String email) {
-        Optional<User> optionalUser = userRepo.findNotDeactivatedByEmail(email);
-        return optionalUser.orElse(null);
+    public Optional<User> findNotDeactivatedByEmail(String email) {
+        return userRepo.findNotDeactivatedByEmail(email);
     }
 
     /**

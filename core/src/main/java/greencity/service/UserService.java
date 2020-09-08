@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -60,10 +61,10 @@ public interface UserService {
      * Method that allow you to find not 'DEACTIVATED' {@link User} by email.
      *
      * @param email a value of {@link String}
-     * @return {@link User} with this email.
+     * @return {@link Optional<User>} with this email.
      * @author Vasyl Zhovnir
      */
-    User findNotDeactivatedByEmail(String email);
+    Optional<User> findNotDeactivatedByEmail(String email);
 
     /**
      * Find User's id by User email.

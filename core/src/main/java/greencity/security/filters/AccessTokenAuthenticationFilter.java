@@ -1,7 +1,6 @@
 package greencity.security.filters;
 
 import greencity.entity.User;
-import greencity.entity.enums.UserStatus;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -17,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Class that provide Authentication object based on JWT.
@@ -58,8 +58,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
             try {
                 Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(token, null));
-                User user = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
-                if (user != null) {
+                Optional<User> user = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
+                if (user.isPresent()) {
                     log.debug("User successfully authenticate - {}", authentication.getPrincipal());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
