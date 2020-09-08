@@ -20,7 +20,6 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
-import greencity.service.SocialNetworkService;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -77,9 +76,6 @@ public class UserServiceImplTest {
 
     @Mock
     HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
-
-    @Mock
-    SocialNetworkService socialNetworkService;
 
     private User user =
         User.builder()
@@ -814,7 +810,6 @@ public class UserServiceImplTest {
         UserProfileDtoResponse response = new UserProfileDtoResponse();
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userRepo.save(user)).thenReturn(user);
-        when(socialNetworkService.saveAll(request.getSocialNetworks(), user)).thenReturn(new ArrayList<>());
         when(modelMapper.map(user, UserProfileDtoResponse.class)).thenReturn(response);
         UserProfileDtoResponse userProfileDtoResponse =
             userService.saveUserProfile(request, null, anyString());

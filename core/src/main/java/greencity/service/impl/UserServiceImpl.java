@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     private final FileService fileService;
     private final TipsAndTricksRepo tipsAndTricksRepo;
     private final EcoNewsRepo ecoNewsRepo;
-    private final SocialNetworkService socialNetworkService;
+    private final SocialNetworkImageService socialNetworkImageService;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
 
@@ -779,7 +779,16 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userProfileDtoRequest.getFirstName());
         user.setCity(userProfileDtoRequest.getCity());
         user.setUserCredo(userProfileDtoRequest.getUserCredo());
-        socialNetworkService.saveAll(userProfileDtoRequest.getSocialNetworks(), user);
+        user.getSocialNetworks().clear();
+        user.getSocialNetworks().addAll(userProfileDtoRequest.getSocialNetworks()
+            .stream()
+            .map(url ->
+            SocialNetwork.builder()
+                .url(url)
+                .user(user)
+                .socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
+                .build())
+            .collect(Collectors.toList()));
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
