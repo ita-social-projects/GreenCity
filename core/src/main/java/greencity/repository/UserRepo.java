@@ -3,12 +3,10 @@ package greencity.repository;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
-
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -54,8 +52,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Find not 'DEACTIVATED' {@link User} by email.
      *
-     * @param email - User email
-     * @return User id
+     * @param email - {@link User}'s email
+     * @return found {@link User}
      * @author Vasyl Zhovnir
      */
     @Query("FROM User WHERE email=:email AND userStatus <> 1")
