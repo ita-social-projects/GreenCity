@@ -226,3 +226,25 @@ table.table .avatar {
     color: red;
     font-style: italic;
 }
+.search-box {
+    position: relative;
+    float: left;
+    margin-top: 10px;
+}
+.search-box input {
+    height: 34px;
+    border-radius: 20px;
+    padding-left: 35px;
+    border-color: #ddd;
+    box-shadow: none;
+}
+.search-box input:focus {
+    border-color: #3FBAE4;
+}
+.search-box i {
+    color: #a0a5b1;
+    position: absolute;
+    font-size: 19px;
+    top: 8px;
+    left: 10px;
+}

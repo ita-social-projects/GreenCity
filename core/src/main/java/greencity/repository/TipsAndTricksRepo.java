@@ -56,7 +56,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
         + "or lower(tt.text) like lower(CONCAT('%', :searchQuery, '%')) "
         + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.author a "
         + "where lower(a.name) like lower(CONCAT('%', :searchQuery, '%')))")
-    Page<TipsAndTricks> searchTipsAndTricksManagement(Pageable pageable, String searchQuery);
+    Page<TipsAndTricks> searchBy(Pageable pageable, String searchQuery);
 
     /**
      * Method for getting amount of written tips and trick by user id.

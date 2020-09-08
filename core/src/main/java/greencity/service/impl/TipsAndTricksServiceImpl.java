@@ -199,8 +199,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<TipsAndTricksDtoResponse> searchForManagement(String searchQuery) {
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricksManagement(PageRequest.of(0, 3), searchQuery);
+    public PageableDto<TipsAndTricksDtoResponse> searchBy(String searchQuery) {
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(PageRequest.of(0, 3), searchQuery);
         List<TipsAndTricksDtoResponse> tipsAndTricksDtoResponses = page.stream()
             .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class))
             .collect(Collectors.toList());

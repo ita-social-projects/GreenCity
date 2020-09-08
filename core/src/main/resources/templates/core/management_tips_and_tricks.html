@@ -43,14 +43,15 @@
                             <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
                                     class="material-icons">&#xE15C;</i> <span>Delete</span></a>
                         </div>
+                        <div class="col-sm-6">
+                            <div class="search-box">
+                                <form class="searching" th:action="@{/management/tipsandtricks}" method="get">
+                                    <i class="material-icons">&#xE8B6;</i>
+                                    <input type="text" name="query" class="form-control" placeholder="Search&hellip;">
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="search-container">
-                    <form class="searching" th:action="@{/management/tipsandtricks}" method="get">
-                        <label for="textSearch"></label>
-                        <input id="textSearch" type="text" name="query" placeholder="Search...">
-                        <button><i class="fa fa-search"></i></button>
-                    </form>
                 </div>
                 <table class="table table-striped table-hover">
                     <thead>

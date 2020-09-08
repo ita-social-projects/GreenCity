@@ -96,7 +96,7 @@ public interface TipsAndTricksService {
      * @param searchQuery query to search
      * @return list of {@link TipsAndTricksDtoResponse}
      */
-    PageableDto<TipsAndTricksDtoResponse> searchForManagement(String searchQuery);
+    PageableDto<TipsAndTricksDtoResponse> searchBy(String searchQuery);
 
     /**
      * Method for getting amount of written tips and trick by user id.
