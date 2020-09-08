@@ -688,7 +688,23 @@ public class UserController {
     @PutMapping(path = "/profile", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
         MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UserProfileDtoResponse> save(
-        @ApiParam(value = "User Profile Request", required = true)
+        @ApiParam(required = true,
+            value = "UserProfileDtoRequest\n"+"<small>{\n" +
+            "  \"city\": \"string\",\n" +
+            "  \"firstName\": \"string\",\n" +
+            "  \"showEcoPlace\": true,\n" +
+            "  \"showLocation\": true,\n" +
+            "  \"showShoppingList\": true,\n" +
+            "  \"socialNetworks\": [\n" +
+            "&nbsp;\"www.google.com/search?q=spring\",\n" +
+            "&nbsp;\"https://www.youtube.com/watch?v=Gqsx8SkmDrY&list=PLcaYXHLmxz8nJByvtOoIBr8FnSS9CY1JD&index=11&t=0s\",\n" +
+            "&nbsp;\"https://stackoverflow.com/questions/54628483/caching-annotation-on-interface-methods\",\n" +
+            "&nbsp;\"https://stackoverflow.com/questions/6269078/proper-way-to-close-an-outputstream-in-java\"\n" +
+            "\n" +
+            "  ],\n" +
+            "  \"userCredo\": \"string\"\n" +
+            "}\n</small>"
+            )
         @RequestPart UserProfileDtoRequest userProfileDtoRequest,
         @ApiParam(value = "User Profile Image")
         @ImageValidation

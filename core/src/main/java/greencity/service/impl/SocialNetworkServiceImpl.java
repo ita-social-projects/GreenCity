@@ -36,8 +36,8 @@ public class SocialNetworkServiceImpl implements SocialNetworkService {
                     .build()
             )
             .collect(Collectors.toList());
-        socialNetworkRepo.deleteAllByUserIs(user);
-        socialNetworkRepo.saveAll(listSocialNetwork);
+        user.getSocialNetworks().clear();
+        user.getSocialNetworks().addAll(listSocialNetwork);
         return listSocialNetwork;
     }
 }

@@ -779,9 +779,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userProfileDtoRequest.getFirstName());
         user.setCity(userProfileDtoRequest.getCity());
         user.setUserCredo(userProfileDtoRequest.getUserCredo());
-        user.setSocialNetworks(
-            socialNetworkService.saveAll(userProfileDtoRequest.getSocialNetworks(), user)
-        );
+        socialNetworkService.saveAll(userProfileDtoRequest.getSocialNetworks(), user);
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
