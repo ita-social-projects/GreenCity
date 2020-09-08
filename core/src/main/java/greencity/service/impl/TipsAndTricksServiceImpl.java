@@ -200,6 +200,23 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<TipsAndTricksDtoResponse> searchBy(String searchQuery) {
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(PageRequest.of(0, 3), searchQuery);
+        List<TipsAndTricksDtoResponse> tipsAndTricksDtoResponses = page.stream()
+            .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            tipsAndTricksDtoResponses,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
+        );
+    }
+
+    /**
      * Method for getting amount of written tips and trick by user id.
      *
      * @param id {@link Long} user id.
