@@ -1,8 +1,12 @@
 package greencity.webcontroller;
 
+import greencity.dto.genericresponse.FieldErrorDto;
+import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.service.UserService;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -13,16 +17,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/management")
+@RequestMapping("/management/users")
 public class ManagementUserController {
-    private UserService userService;
-    private ModelMapper modelMapper;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
     /**
      * Method that returns management page with all {@link User}.
@@ -33,29 +42,15 @@ public class ManagementUserController {
      * @return View template path {@link String}.
      * @author Vasyl Zhovnir
      */
-    @GetMapping("/users")
+    @GetMapping("")
     public String getAllUsers(Model model,
                               @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "5") int size) {
+                              @RequestParam(defaultValue = "10") int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         model.addAttribute("users", userService.findUserForManagementByPage(paging));
-        model.addAttribute("currentPage", page);
-        return "core/management_users_list";
+        return "core/management_user";
     }
 
-    /**
-     * Method that shows form for updating {@link User}.
-     *
-     * @param id    {@link User}'s id.
-     * @param model Model that will be configured and returned to user.
-     * @return View template path {@link String}.
-     * @author Vasyl Zhovnir
-     */
-    @GetMapping("/updateUserForm")
-    public String showForm(@RequestParam Long id, Model model) {
-        model.addAttribute("user", modelMapper.map(userService.findById(id), UserManagementDto.class));
-        return "core/management_user_update_form";
-    }
 
     /**
      * Method that updates user data.
@@ -64,13 +59,19 @@ public class ManagementUserController {
      * @return View template path {@link String}.
      * @author Vasyl Zhovnir
      */
-    @PostMapping("/update")
-    public String updateUser(@Valid @ModelAttribute("user") UserManagementDto userDto, BindingResult bindingResult) {
+    @PutMapping("")
+    @ResponseBody
+    public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "core/management_user_update_form";
+            GenericResponseDto genericResponseDto = new GenericResponseDto();
+            for (FieldError fieldError : bindingResult.getFieldErrors()) {
+                genericResponseDto.getErrors().add(
+                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
+            }
+            return genericResponseDto;
         }
         userService.updateUser(userDto);
-        return "redirect:/management/users";
+        return GenericResponseDto.builder().build();
     }
 
     /**
@@ -82,7 +83,7 @@ public class ManagementUserController {
      */
     @GetMapping("/findById")
     @ResponseBody
-    public UserManagementDto findById(Long id) {
+    public UserManagementDto findById(@RequestParam("id") Long id) {
         User byId = userService.findById(id);
         return modelMapper.map(byId, UserManagementDto.class);
     }
@@ -94,9 +95,34 @@ public class ManagementUserController {
      * @param id of the searched {@link User}.
      * @author Vasyl Zhovnir
      */
-    @PostMapping
-    public ResponseEntity deactivateUser(@RequestParam Long id) {
+    @PostMapping("/deactivate")
+    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(@RequestParam("id") Long id) {
         userService.deactivateUser(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for setting {@link User}'s status to ACTIVATED.
+     *
+     * @param id of the searched {@link User}.
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping("/activate")
+    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(@RequestParam("id") Long id) {
+        userService.setActivatedStatus(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for setting to a list of {@link User} status DEACTIVATED,
+     * so the users will not be able to log in into the system.
+     *
+     * @param listId {@link List} populated with ids of {@link User} to be deleted.
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping("/deactivateAll")
+    public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.deactivateAllUsers(listId));
     }
 }

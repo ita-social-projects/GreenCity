@@ -121,7 +121,7 @@ public class UserController {
     })
     @ApiPageable
     @GetMapping("all")
-    public ResponseEntity<PageableDto> getAllUsers(@ApiIgnore Pageable pageable) {
+    public ResponseEntity<PageableDto<UserForListDto>> getAllUsers(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
 

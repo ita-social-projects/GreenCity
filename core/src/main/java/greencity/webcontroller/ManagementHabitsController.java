@@ -1,29 +1,17 @@
 package greencity.webcontroller;
 
-import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@NoArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/management/habits")
-public class UserHabitsController {
+public class ManagementHabitsController {
     private HabitService habitService;
-    private HabitDictionaryService habitDictionaryService;
-
-    /**
-     * Constructor with parameters.
-     */
-    @Autowired
-    public UserHabitsController(HabitService habitService, HabitDictionaryService habitDictionaryService) {
-        this.habitService = habitService;
-        this.habitDictionaryService = habitDictionaryService;
-    }
 
     /**
      * Returns management page with all facts of the day.
@@ -34,8 +22,8 @@ public class UserHabitsController {
      */
 
     @GetMapping("")
-    public String getAllFacts(Model model) {
+    public String getAllHabits(Model model) {
         model.addAttribute("habits", habitService.getAllHabitsDto());
-        return "core/user_habits";
+        return "core/management_user_habits";
     }
 }

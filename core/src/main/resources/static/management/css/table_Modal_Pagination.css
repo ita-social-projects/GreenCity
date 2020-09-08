@@ -93,6 +93,12 @@ table.table td a.edit {
 table.table td a.delete {
     color: #F44336;
 }
+table.table td a.deactivate-user {
+    color: #F44336;
+}
+table.table td a.activate-user {
+    color: #008000;
+}
 table.table td i {
     font-size: 19px;
 }

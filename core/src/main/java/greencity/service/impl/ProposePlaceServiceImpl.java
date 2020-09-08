@@ -11,11 +11,10 @@ import greencity.service.LocationService;
 import greencity.service.PhotoService;
 import greencity.service.ProposePlaceService;
 import greencity.service.SpecificationService;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 /**
  * Implementation of {@link ProposePlaceService}.
@@ -48,13 +47,15 @@ public class ProposePlaceServiceImpl implements ProposePlaceService {
             if (hours.getOpenTime().getHour() > hours.getCloseTime().getHour()) {
                 throw new BadRequestException(ErrorMessage.CLOSE_TIME_LATE_THAN_OPEN_TIME);
             }
-            if (hours.getBreakTime() != null) {
-                if (hours.getBreakTime().getStartTime().getHour() < hours.getOpenTime().getHour()
-                        || hours.getBreakTime().getEndTime().getHour() > hours.getCloseTime().getHour()) {
-                    throw new BadRequestException(ErrorMessage.WRONG_BREAK_TIME);
-                }
+            if (hours.getBreakTime() != null && isWrongTime(hours)) {
+                throw new BadRequestException(ErrorMessage.WRONG_BREAK_TIME);
             }
         });
+    }
+
+    private boolean isWrongTime(OpeningHoursDto hours) {
+        return hours.getBreakTime().getStartTime().getHour() < hours.getOpenTime().getHour()
+            || hours.getBreakTime().getEndTime().getHour() > hours.getCloseTime().getHour();
     }
 
     /**

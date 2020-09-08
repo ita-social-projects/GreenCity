@@ -55,6 +55,15 @@ spring.mail.password=${EMAIL_PASSWORD}
 cloud.name=${CLOUD_NAME}
 api.key=${API_KEY}
 api.secret=${API_SECRET}
+google.clientId=${GOOGLE_CLIENT_ID}
+spring.rabbitmq.host=${RABBITMQ_HOST}
+spring.rabbitmq.password=${RABBITMQ_PASSWORD}
+spring.rabbitmq.username=${RABBITMQ_USERNAME}
+bucketName=${BUCKET_NAME}
+staticUrl=${STATIC_URL}
+defaultProfilePicture=${DEFAULT_PROFILE_PICTURE}
+spring.social.facebook.app-id=${FACEBOOK_APP_ID}
+spring.social.facebook.app-secret=${FACEBOOK_APP_SECRET}
 ```
 
 ![env-vars](./docs-photos/env-example.png)

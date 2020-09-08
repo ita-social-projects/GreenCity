@@ -1,14 +1,21 @@
 package greencity.config;
 
-import java.time.ZoneId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+
+import java.time.ZoneId;
+import java.util.Objects;
 
 /**
  * Configuration class that obtains metadata of the database.
+ *
  * @author Yurii Koval
  */
 @Slf4j
@@ -21,6 +28,7 @@ public class DatasourceMetadata {
      *
      * @param jdbcTemplate {@link JdbcTemplate}
      */
+
     @Autowired
     public DatasourceMetadata(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -43,6 +51,24 @@ public class DatasourceMetadata {
         }
         log.info("Obtained timezone of the database is {}", zoneId);
         return ZoneId.of(zoneId);
+    }
+
+    /**
+     * Creates functions for database on application startup.
+     *
+     * @author Vasyl Zhovnir
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void createFunctions() {
+        ResourceDatabasePopulator databasePopulator =
+            new ResourceDatabasePopulator(true, true, "UTF-8");
+        databasePopulator.addScript(
+            new ClassPathResource("db/functions/fn_recommended_econews_by_opened_eco_news.sql"));
+        databasePopulator.addScript(new ClassPathResource("db/functions/fn_textsearcheconews.sql"));
+        databasePopulator.addScript(new ClassPathResource("db/functions/pg_buffercache_pages.sql"));
+        databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements.sql"));
+        databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements_reset.sql"));
+        databasePopulator.execute(Objects.requireNonNull(jdbcTemplate.getDataSource()));
     }
 
     public static class FailedToObtainDatasourceTimezone extends RuntimeException {

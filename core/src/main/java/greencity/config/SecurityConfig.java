@@ -152,8 +152,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/profile/",
                 "/user/{userId}/profileStatistics/",
                 "/goals/shoppingList/{userId}/language/{languageCode}",
-                    "/user/userAndSixFriendsWithOnlineStatus",
-                    "/user/userAndAllFriendsWithOnlineStatus"
+                "/user/userAndSixFriendsWithOnlineStatus",
+                "/user/userAndAllFriendsWithOnlineStatus",
+                "/habit"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
