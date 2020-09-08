@@ -8,23 +8,21 @@ import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.service.FileService;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 @Service
 public class CloudStorageService implements FileService {
@@ -89,7 +87,14 @@ public class CloudStorageService implements FileService {
             ImageIO.write(bufferedImage, "png", tempFile);
             FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
                 false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
-            fileItem.getOutputStream();
+            InputStream input = new FileInputStream(tempFile);
+            OutputStream outputStream = fileItem.getOutputStream();
+            int ret = input.read();
+            while (ret != -1) {
+                outputStream.write(ret);
+                ret = input.read();
+            }
+            outputStream.flush();
             return new CommonsMultipartFile(fileItem);
         } catch (IOException e) {
             throw new NotSavedException("Cannot to convert BASE64 image");

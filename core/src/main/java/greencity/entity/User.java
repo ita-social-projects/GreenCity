@@ -5,17 +5,10 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -127,10 +120,9 @@ public class User {
     @Column(name = "user_credo")
     private String userCredo;
 
-    @ElementCollection
-    @CollectionTable(name = "user_social_networks", joinColumns = @JoinColumn(name = "user_id"))
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "social_networks")
-    private List<String> socialNetworks;
+    private List<SocialNetwork> socialNetworks;
 
     @Column(name = "show_location")
     private Boolean showLocation;
