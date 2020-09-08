@@ -23,7 +23,7 @@ variables:
   
   azureSub: GreenCity
   resourceGroup: GreenCity
-  coreServiceName: testage
+  coreServiceName: greencity
   mailServiceName: greencity-mail
 
 stages:
