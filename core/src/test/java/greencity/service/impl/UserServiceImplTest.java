@@ -87,6 +87,7 @@ public class UserServiceImplTest {
             .emailNotification(EmailNotification.DISABLED)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
+            .socialNetworks(new ArrayList<>())
             .build();
     private User user2 =
         User.builder()
@@ -796,6 +797,7 @@ public class UserServiceImplTest {
     @Test
     void saveUserProfileTest() throws MalformedURLException {
         UserProfileDtoRequest request = new UserProfileDtoRequest();
+        request.setSocialNetworks(new ArrayList<>());
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         MultipartFile image = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
         when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
@@ -807,6 +809,7 @@ public class UserServiceImplTest {
     @Test
     void saveUserProfileNullImageTest() {
         UserProfileDtoRequest request = new UserProfileDtoRequest();
+        request.setSocialNetworks(new ArrayList<>());
         UserProfileDtoResponse response = new UserProfileDtoResponse();
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userRepo.save(user)).thenReturn(user);
