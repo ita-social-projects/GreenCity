@@ -93,13 +93,13 @@ public class GoalServiceImpl implements GoalService {
         LocalDateTime now = LocalDateTime.now();
         if ((goalId == null && customGoalId == null) || (goalId != null && customGoalId != null)) {
             throw new BadRequestException(WRONG_PARAMETER);
-        } else if (goalId != null & customGoalId == null) {
-            if (!goalRepo.findById(goalId).isPresent()) {
+        } else if (goalId != null) {
+            if (goalRepo.findById(goalId).isEmpty()) {
                 throw new NotFoundException(GOAL_WRONG_ID + goalId);
             }
             goalRepo.changeGoalStatus(userId, goalId, goalStatus, now);
         } else {
-            if (!customGoalRepo.findById(customGoalId).isPresent()) {
+            if (customGoalRepo.findById(customGoalId).isEmpty()) {
                 throw new NotFoundException(GOAL_WRONG_ID + customGoalId);
             }
             goalRepo.changeCustomGoalStatus(userId, customGoalId, goalStatus, now);

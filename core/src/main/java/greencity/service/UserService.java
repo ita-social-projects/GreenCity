@@ -102,7 +102,7 @@ public interface UserService {
      * @return a dto of {@link PageableDto}.
      * @author Rostyslav Khasanov
      */
-    PageableDto findByPage(Pageable pageable);
+    PageableDto<UserForListDto> findByPage(Pageable pageable);
 
     /**
      * Find {@link User} for management by page .
@@ -397,4 +397,21 @@ public interface UserService {
      * @author Vasyl Zhovnir
      */
     void deactivateUser(Long id);
+
+    /**
+     * Method deactivates all the {@link User} by list of IDs.
+     *
+     * @param listId list of id {@link User}
+     * @return listId list of id {@link User}
+     * @author Vasyl Zhovnir
+     */
+    List<Long> deactivateAllUsers(List<Long> listId);
+
+    /**
+     * change {@link User}'s status to ACTIVATED.
+     *
+     * @param id {@link User}'s id
+     * @author Vasyl Zhovnir
+     */
+    void setActivatedStatus(Long id);
 }

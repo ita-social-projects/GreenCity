@@ -87,7 +87,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             intervalBetweenDates = Period.between(lastEnrollmentDate, todayDate).getDays();
         }
 
-        if ((intervalBetweenDates == 1) | lastEnrollmentDate == null) {
+        if ((intervalBetweenDates == 1) || lastEnrollmentDate == null) {
             int habitStreak = habitStatus.getHabitStreak();
             habitStatus.setHabitStreak(++habitStreak);
             habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
@@ -96,7 +96,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             habitStatus.setHabitStreak(1);
             habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
             habitStatusCalendarService.save(habitCalendar);
-        } else if (intervalBetweenDates < 1) {
+        } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
 

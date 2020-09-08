@@ -7,6 +7,7 @@ trigger:
     exclude:
     - README.md
 
+
 variables:
   agentOS: ubuntu-latest
   
@@ -78,7 +79,7 @@ stages:
       inputs:
         mavenPomFile: 'pom.xml'
         javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.8'
+        jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
         options: '-Dmaven.test.skip=true'
         

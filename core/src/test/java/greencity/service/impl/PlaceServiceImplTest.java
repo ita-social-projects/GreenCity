@@ -6,18 +6,40 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoAddDto;
-import greencity.dto.place.*;
-import greencity.entity.*;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.entity.enums.PlaceStatus;
 import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.repository.PlaceRepo;
-import greencity.service.*;
+import greencity.service.CategoryService;
+import greencity.service.DiscountService;
+import greencity.service.NotificationService;
+import greencity.service.OpenHoursService;
+import greencity.service.PlaceService;
+import greencity.service.SpecificationService;
+import greencity.service.UserService;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,21 +53,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @Slf4j
 class PlaceServiceImplTest {
-    Category category = Category.builder()
+    private Category category = Category.builder()
         .id(1L)
         .name("test").build();
 
-    CategoryDto categoryDto = CategoryDto.builder()
+    private CategoryDto categoryDto = CategoryDto.builder()
         .name("test")
         .build();
 
-    User user =
+    private User user =
         User.builder()
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
@@ -54,92 +74,6 @@ class PlaceServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-
-    LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
-
-    Location location = Location.builder()
-        .id(1L)
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
-
-    Set<OpeningHoursDto> openingHoursList = new HashSet<>();
-
-    Set<OpeningHours> openingHoursListEntity = new HashSet<>();
-
-    Set<DiscountValue> discountValues = new HashSet<>();
-
-    Set<DiscountValueDto> discountValuesDto = new HashSet<>();
-
-    List<PhotoAddDto> photoDtos = new ArrayList<>();
-
-    List<Photo> photos = new ArrayList<>();
-
-    Place place = Place.builder()
-        .id(1L)
-        .name("Test")
-        .category(category)
-        .author(user)
-        .location(location)
-        .openingHoursList(openingHoursListEntity)
-        .discountValues(discountValues)
-        .photos(photos)
-        .status(PlaceStatus.PROPOSED)
-        .build();
-
-
-    PlaceAddDto placeAddDto = PlaceAddDto.
-        builder()
-        .name("Test")
-        .category(categoryDto)
-        .location(locationDto)
-        .openingHoursList(openingHoursList)
-        .discountValues(discountValuesDto)
-        .photos(photoDtos)
-        .build();
-
-    @Mock
-    private PlaceRepo placeRepo;
-
-    @Mock
-    private CategoryService categoryService;
-
-    @Mock
-    private LocationServiceImpl locationService;
-
-    @Mock
-    private OpenHoursService openingHoursService;
-
-    @Mock
-    private ModelMapper modelMapper;
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private ProposePlaceServiceImpl proposePlaceMapper;
-
-    @Mock
-    private SpecificationService specificationService;
-
-    @Mock
-    private DiscountService discountService;
-
-    @Mock
-    private NotificationService notificationService;
-
-    @Mock
-    private RabbitTemplate rabbitTemplate;
-
-    private ZoneId zoneId = ZoneId.of("Europe/Kiev");
-
-    private PlaceService placeService;
-
     private final Place genericEntity1 = Place.builder()
         .id(1L)
         .name("test1")
@@ -154,18 +88,79 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
+    private LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
+        .address("test")
+        .lat(45.456)
+        .lng(46.456)
+        .build();
+    private Location location = Location.builder()
+        .id(1L)
+        .address("test")
+        .lat(45.456)
+        .lng(46.456)
+        .build();
+    private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
+    private Set<OpeningHours> openingHoursListEntity = new HashSet<>();
+    private Set<DiscountValue> discountValues = new HashSet<>();
+    private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
+    private List<PhotoAddDto> photoDtos = new ArrayList<>();
+    private List<Photo> photos = new ArrayList<>();
+    private Place place = Place.builder()
+        .id(1L)
+        .name("Test")
+        .category(category)
+        .author(user)
+        .location(location)
+        .openingHoursList(openingHoursListEntity)
+        .discountValues(discountValues)
+        .photos(photos)
+        .status(PlaceStatus.PROPOSED)
+        .build();
+    private PlaceAddDto placeAddDto = PlaceAddDto.
+        builder()
+        .name("Test")
+        .category(categoryDto)
+        .location(locationDto)
+        .openingHoursList(openingHoursList)
+        .discountValues(discountValuesDto)
+        .photos(photoDtos)
+        .build();
+    @Mock
+    private PlaceRepo placeRepo;
+    @Mock
+    private CategoryService categoryService;
+    @Mock
+    private LocationServiceImpl locationService;
+    @Mock
+    private OpenHoursService openingHoursService;
+    @Mock
+    private ModelMapper modelMapper;
+    @Mock
+    private UserService userService;
+    @Mock
+    private ProposePlaceServiceImpl proposePlaceMapper;
+    @Mock
+    private SpecificationService specificationService;
+    @Mock
+    private DiscountService discountService;
+    @Mock
+    private NotificationService notificationService;
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+    private ZoneId zoneId = ZoneId.of("Europe/Kiev");
+    private PlaceService placeService;
 
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
-        placeService = new PlaceServiceImpl(placeRepo, modelMapper , categoryService,
+        placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
             locationService, specificationService, userService, openingHoursService, discountService,
-            notificationService, zoneId, rabbitTemplate,proposePlaceMapper);
+            notificationService, zoneId, rabbitTemplate, proposePlaceMapper);
     }
 
     @Test
     void saveTest() {
-        when(modelMapper.map(placeAddDto,Place.class)).thenReturn(place);
+        when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
         when(userService.findByEmail(anyString())).thenReturn(user);
         when(categoryService.findByName(anyString())).thenReturn(category);
         when(placeRepo.save(place)).thenReturn(place);
@@ -174,7 +169,7 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    public void updateStatusTest() {
+    void updateStatusTest() {
         User user = User.builder().name("test fname").email("test.ua").build();
         Place genericEntity = Place.builder()
             .id(1L)
@@ -205,7 +200,7 @@ class PlaceServiceImplTest {
         Page<Place> placesPage = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         List<AdminPlaceDto> listDto = Collections.singletonList(dto);
 
-        PageableDto<AdminPlaceDto> pageableDto = new PageableDto<>(listDto, listDto.size(), 0,1);
+        PageableDto<AdminPlaceDto> pageableDto = new PageableDto<>(listDto, listDto.size(), 0, 1);
         pageableDto.setPage(listDto);
 
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any(), any())).thenReturn(placesPage);
@@ -217,18 +212,16 @@ class PlaceServiceImplTest {
 
     @Test
     void updateStatusGivenTheSameStatusThenThrowException() {
-        assertThrows(PlaceStatusException.class, () -> {
-            Place genericEntity = Place.builder().status(PlaceStatus.PROPOSED).build();
-            when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
-            placeService.updateStatus(1L, PlaceStatus.PROPOSED);
-        });
+        Place genericEntity = Place.builder().id(1L).status(PlaceStatus.PROPOSED).build();
+
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity));
+
+        assertThrows(PlaceStatusException.class, () -> placeService.updateStatus(1L, PlaceStatus.PROPOSED));
     }
 
     @Test
     void updateStatusGivenPlaceIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            placeService.updateStatus(null, PlaceStatus.PROPOSED);
-        });
+        assertThrows(NotFoundException.class, () -> placeService.updateStatus(null, PlaceStatus.PROPOSED));
     }
 
     @Test
@@ -241,9 +234,7 @@ class PlaceServiceImplTest {
 
     @Test
     void findByIdGivenIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            placeService.findById(null);
-        });
+        assertThrows(NotFoundException.class, () -> placeService.findById(null));
     }
 
     @Test
@@ -258,9 +249,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getInfoByIdNotFoundTest() {
-        assertThrows(NotFoundException.class, () -> {
-            placeService.getInfoById(null);
-        });
+        assertThrows(NotFoundException.class, () -> placeService.getInfoById(null));
     }
 
     /**
@@ -325,7 +314,7 @@ class PlaceServiceImplTest {
             .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DELETED))
             .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DELETED));
 
-        assertEquals(new Long(2), placeService.bulkDelete(request));
+        assertEquals(2L, placeService.bulkDelete(request));
     }
 
     @Test

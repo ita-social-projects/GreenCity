@@ -934,9 +934,30 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public void deactivateUser(Long id) {
         User foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.DEACTIVATED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public List<Long> deactivateAllUsers(List<Long> listId) {
+        userRepo.deactivateSelectedUsers(listId);
+        return listId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void setActivatedStatus(Long id) {
+        User foundUser = findById(id);
+        foundUser.setUserStatus(UserStatus.ACTIVATED);
     }
 }

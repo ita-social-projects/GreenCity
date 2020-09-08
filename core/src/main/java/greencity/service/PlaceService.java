@@ -21,7 +21,7 @@ public interface PlaceService {
      * @return an object of {@link PageableDto} which contains a list of {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
-    PageableDto getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
+    PageableDto<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
 
     /**
      * Update status for the {@link Place} and set the time of modification.
