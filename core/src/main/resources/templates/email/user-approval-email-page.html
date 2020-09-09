@@ -120,7 +120,7 @@
                     <td align="center" valign="top" bgcolor="#13aa57" style="margin-top: 20px">
                         <a th:href="${clientLink}"
                            style="display: inline-block; padding: 20px 50px; font-weight:700; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 32px; color: #ffffff; text-decoration: none; border-radius: 6px;">
-                            Green City2
+                            Green City
                         </a>
                     </td>
                 </tr>
@@ -147,7 +147,7 @@
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
                         <h2 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">
-                            Verify2 your email address to complete registration</h2>
+                            Approve your email address to submit registration</h2>
                     </td>
                 </tr>
             </table>
@@ -174,7 +174,7 @@
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                        <div style="margin: 0;" th:text="${'Hi ' + name + ', Thanks for your interest in joining Green City! To complete your registration, we need you to verify your email address.'}"></div>
+                        <div style="margin: 0;" th:text="${'Hi ' + name + ', Your account was registered by Green City admin! To submit your registration, press button below.'}"></div>
                     </td>
                 </tr>
                 <!-- end copy -->
@@ -188,9 +188,9 @@
                                     <table border="0" cellpadding="0" cellspacing="0">
                                         <tr>
                                             <td align="center" bgcolor="#13aa57" style="border-radius: 6px;">
-                                                <a th:href="${verifyAddress}" target="_blank"
+                                                <a th:href="${approveRegistration}" target="_blank"
                                                    style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">
-                                                    Verify Email</a>
+                                                    Approve Registration</a>
                                             </td>
                                         </tr>
                                     </table>
@@ -207,7 +207,7 @@
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
                         <p style="margin: 0;">If that doesn't work, copy and paste the following link in your
                             browser:</p>
-                        <p style="margin: 0;" th:text="${verifyAddress}"><a th:href="${verifyAddress}"
+                        <p style="margin: 0;" th:text="${approveRegistration}"><a th:href="${approveRegistration}"
                                                                             target="_blank"></a>
                         </p>
                     </td>
@@ -237,9 +237,7 @@
                 <tr>
                     <td align="center" bgcolor="#e9ecef"
                         style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-                        <p style="margin: 0;">You received this email because we received a request for registering your
-                            account. If you didn't request this action you can safely delete this
-                            email.</p>
+                        <p style="margin: 0;">Have fun.</p>
                     </td>
                 </tr>
                 <!-- end permission -->

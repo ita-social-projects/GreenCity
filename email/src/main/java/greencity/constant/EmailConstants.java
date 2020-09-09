@@ -8,11 +8,12 @@ public final class EmailConstants {
     public static final String NEWS = "Eco news from GreenCity";
     public static final String VERIFY_EMAIL = "Verify your email address";
     public static final String CONFIRM_RESTORING_PASS = "Confirm restoring password";
+    public static final String APPROVE_REGISTRATION_SUBJECT = "Approve your registration";
     // params
     public static final String CLIENT_LINK = "clientLink";
     public static final String ECO_NEWS_LINK = "ecoNewsLink";
     public static final String UNSUBSCRIBE_LINK = "unsubscribeLink";
-    public static final String USER_NAME = "userName";
+    public static final String USER_NAME = "name";
     public static final String PLACE_NAME = "placeName";
     public static final String STATUS = "status";
     public static final String VERIFY_ADDRESS = "verifyAddress";

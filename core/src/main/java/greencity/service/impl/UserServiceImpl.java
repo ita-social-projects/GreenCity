@@ -953,4 +953,17 @@ public class UserServiceImpl implements UserService {
         User foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.ACTIVATED);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<User> findByIdAndToken(Long userId, String token) {
+        User foundUser = findById(userId);
+        VerifyEmail verifyEmail = foundUser.getVerifyEmail();
+        if (verifyEmail != null && verifyEmail.getToken().equals(token)) {
+            return Optional.of(foundUser);
+        }
+        return Optional.empty();
+    }
 }

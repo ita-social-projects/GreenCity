@@ -6,11 +6,16 @@ import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -56,6 +61,7 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/register")
+    @ResponseBody
     public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             GenericResponseDto genericResponseDto = new GenericResponseDto();
@@ -66,6 +72,35 @@ public class ManagementUserController {
             return genericResponseDto;
         }
         ownSecurityService.managementRegisterUser(userDto);
+        return GenericResponseDto.builder().build();
+    }
+
+    /**
+     * Method for approving User.
+     *
+     * @param userId - {@link User}'s id
+     * @param token - {@link String} this is token (hash) to verify user.
+     * @return {@link String}
+     */
+    @GetMapping("/approveRegistration")
+    public String verify(@RequestParam("id") Long userId,
+                                         @RequestParam @NotBlank String token) {
+        Optional<User> foundUser = userService.findByIdAndToken(userId, token);
+        if (foundUser.isPresent()) {
+            return "core/management_password_template";
+        }
+        return "core/management_general_error_page";
+    }
+
+    /**
+     * Method that saves user approving.
+     *
+     * @return {@link GenericResponseDto}
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping("/saveApproving")
+    @ResponseBody
+    public GenericResponseDto saveApproving() {
         return GenericResponseDto.builder().build();
     }
 

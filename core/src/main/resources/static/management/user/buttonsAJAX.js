@@ -48,7 +48,7 @@ $(document).ready(function(){
 
         //запит save у модальній формі add
         $.ajax({
-            url: '/management/users/save',
+            url: '/management/users/register',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',

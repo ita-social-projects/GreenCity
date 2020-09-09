@@ -51,6 +51,17 @@ public interface EmailService {
     void sendVerificationEmail(Long userId, String userName, String userEmail, String token);
 
     /**
+     * Method for sending user approval email to User,
+     * when Admin adds the User from admin panel.
+     *
+     * @param userId user id.
+     * @param userName name current user.
+     * @param userEmail email current user.
+     * @param token verify token current user.
+     */
+    void sendApprovalEmail(Long userId, String userName, String userEmail, String token);
+
+    /**
      * Sends password recovery email using separated user parameters.
      *
      * @param userId       the user id is used for recovery link building.

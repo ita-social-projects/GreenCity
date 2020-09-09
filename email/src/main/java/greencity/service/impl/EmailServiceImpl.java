@@ -143,6 +143,23 @@ public class EmailServiceImpl implements EmailService {
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @author Vasyl Zhovnir
+     */
+    @Override
+    public void sendApprovalEmail(Long userId, String name, String email, String token) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.USER_NAME, name);
+        model.put(EmailConstants.APPROVE_REGISTRATION, serverLink
+            + "/management/users/approveRegistration?id=" + userId
+            + "&token=" + token);
+        String template = createEmailTemplate(model, EmailConstants.USER_APPROVAL_EMAIL_PAGE);
+        sendEmail(email, EmailConstants.APPROVE_REGISTRATION_SUBJECT, template);
+    }
+
+    /**
      * Sends password recovery email using separated user parameters.
      *
      * @param userId       the user id is used for recovery link building.

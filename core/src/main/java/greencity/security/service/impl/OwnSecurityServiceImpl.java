@@ -13,7 +13,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.VerifyEmailMessage;
-import greencity.message.VerifyUserApproval;
+import greencity.message.UserApprovalMessage;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
@@ -234,13 +234,16 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public void managementRegisterUser(UserManagementDto dto) {
         User user = managementCreateNewRegisteredUser(dto, jwtTool.generateTokenKey());
         OwnSecurity ownSecurity = managementCreateOwnSecurity(user);
+        VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
         user.setOwnSecurity(ownSecurity);
+        user.setVerifyEmail(verifyEmail);
         try {
             User savedUser = userService.save(user);
             rabbitTemplate.convertAndSend(
                 sendEmailTopic,
                 SEND_USER_APPROVAL_ROUTING_KEY,
-                new VerifyUserApproval(savedUser.getName(), savedUser.getEmail())
+                new UserApprovalMessage(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
+                    savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);

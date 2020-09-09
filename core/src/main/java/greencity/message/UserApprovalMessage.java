@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Message, that is used for sending emails about not marked habits.
+ * Message, that is used for sending emails for approving user registration.
  */
 @Getter
 @ToString
 @AllArgsConstructor
-public class VerifyUserApproval implements Serializable {
+public class UserApprovalMessage implements Serializable {
+    private Long id;
     private String name;
     private String email;
+    private String token;
 }
