@@ -20,12 +20,14 @@ public final class EmailConstants {
     public static final String RESULT = "result";
     public static final String REPORT_TYPE = "reportType";
     public static final String NEWS_RESULT = "news";
+    public static final String APPROVE_REGISTRATION = "approveRegistration";
     // templates
     public static final String CHANGE_PLACE_STATUS_EMAIL_PAGE = "change-place-status-email-page";
     public static final String VERIFY_EMAIL_PAGE = "verify-email-page";
     public static final String RESTORE_EMAIL_PAGE = "restore-email-page";
     public static final String NEW_PLACES_REPORT_EMAIL_PAGE = "new-places-report-email-page";
     public static final String NEWS_RECEIVE_EMAIL_PAGE = "news-receive-email-page";
+    public static final String USER_APPROVAL_EMAIL_PAGE = "user-approval-email-page";
 
     private EmailConstants() {
     }

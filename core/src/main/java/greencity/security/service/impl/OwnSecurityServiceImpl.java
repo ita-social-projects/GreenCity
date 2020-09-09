@@ -2,7 +2,9 @@ package greencity.security.service.impl;
 
 import greencity.constant.AppConstant;
 import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
 import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
+import greencity.dto.user.UserManagementDto;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -11,6 +13,7 @@ import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.VerifyEmailMessage;
+import greencity.message.VerifyUserApproval;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
@@ -221,5 +224,49 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             throw new PasswordsDoNotMatchesException(PASSWORD_DOES_NOT_MATCH);
         }
         updatePassword(updatePasswordDto.getPassword(), user.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void managementRegisterUser(UserManagementDto dto) {
+        User user = managementCreateNewRegisteredUser(dto, jwtTool.generateTokenKey());
+        OwnSecurity ownSecurity = managementCreateOwnSecurity(user);
+        user.setOwnSecurity(ownSecurity);
+        try {
+            User savedUser = userService.save(user);
+            rabbitTemplate.convertAndSend(
+                sendEmailTopic,
+                SEND_USER_APPROVAL_ROUTING_KEY,
+                new VerifyUserApproval(savedUser.getName(), savedUser.getEmail())
+            );
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
+        }
+    }
+
+    private User managementCreateNewRegisteredUser(UserManagementDto dto, String refreshTokenKey) {
+        return User.builder()
+            .name(dto.getName())
+            .email(dto.getEmail())
+            .dateOfRegistration(LocalDateTime.now())
+            .role(ROLE.ROLE_USER)
+            .refreshTokenKey(refreshTokenKey)
+            .lastVisit(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
+            .emailNotification(EmailNotification.DISABLED)
+            .profilePicturePath(defaultProfilePicture)
+            .rating(AppConstant.DEFAULT_RATING)
+            .build();
+    }
+
+    private OwnSecurity managementCreateOwnSecurity(User user) {
+        String password = "asdfSDFasfd120=test";
+        return OwnSecurity.builder()
+            .password(passwordEncoder.encode(password))
+            .user(user)
+            .build();
     }
 }
