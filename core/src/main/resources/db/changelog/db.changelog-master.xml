@@ -49,5 +49,6 @@
     <include file="db/changelog/logs/ch-primarykey-eco-news-tags-Lehkyi-1.xml"/>
     <include file="db/changelog/logs/ch-primarykey-tips-and-tricks-tags-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch-fact-of-the-day-Lehkyi.xml"/>
+    <include file="db/changelog/logs/ch-social-network-Lehkyi.xml"/>
 
 </databaseChangeLog>
