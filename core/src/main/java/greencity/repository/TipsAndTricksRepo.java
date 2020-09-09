@@ -47,8 +47,9 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
     /**
      * Method returns {@link TipsAndTricks} by search query and page.
      *
-     * @param searchQuery query to search
-     * @return list of {@link TipsAndTricks}
+     * @param pageable    {@link Pageable}.
+     * @param searchQuery query to search.
+     * @return list of {@link TipsAndTricks}.
      */
     @Query("select tt from TipsAndTricks tt "
         + "where CONCAT(tt.id,'') like lower(CONCAT('%', :searchQuery, '%')) "

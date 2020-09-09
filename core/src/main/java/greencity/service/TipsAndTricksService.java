@@ -93,12 +93,22 @@ public interface TipsAndTricksService {
     PageableDto<SearchTipsAndTricksDto> search(String searchQuery);
 
     /**
+     * Method for getting all Tips & Tricks by searchQuery.
+     *
+     * @param pageable    {@link Pageable}.
+     * @param searchQuery query to search.
+     * @return PageableDto of {@link SearchTipsAndTricksDto} instances.
+     */
+    PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery);
+
+    /**
      * Method for getting Tips & Tricks by searchQuery.
      *
-     * @param searchQuery query to search
-     * @return list of {@link TipsAndTricksDtoResponse}
+     * @param pageable    {@link Pageable}.
+     * @param searchQuery query to search,
+     * @return PageableDto of {@link TipsAndTricksDtoResponse} instances.
      */
-    PageableDto<TipsAndTricksDtoResponse> searchBy(String searchQuery);
+    PageableDto<TipsAndTricksDtoResponse> searchBy(Pageable pageable, String searchQuery);
 
     /**
      * Method for getting amount of written tips and trick by user id.
