@@ -6,6 +6,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import greencity.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,13 +31,15 @@ public class AccessTokenAuthenticationFilterTest {
     JwtTool jwtTool;
     @Mock
     AuthenticationManager authenticationManager;
+    @Mock
+    UserService userService;
 
     private AccessTokenAuthenticationFilter authenticationFilter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        authenticationFilter = new AccessTokenAuthenticationFilter(jwtTool, authenticationManager);
+        authenticationFilter = new AccessTokenAuthenticationFilter(jwtTool, authenticationManager, userService);
     }
 
     @Test

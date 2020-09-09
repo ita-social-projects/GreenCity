@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -35,8 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import static greencity.constant.ErrorMessage.*;
 
 import static greencity.constant.ErrorMessage.*;
 
@@ -162,6 +161,14 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         Optional<User> optionalUser = userRepo.findByEmail(email);
         return optionalUser.orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<User> findNotDeactivatedByEmail(String email) {
+        return userRepo.findNotDeactivatedByEmail(email);
     }
 
     /**
