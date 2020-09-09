@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.AppConstant;
+import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
@@ -19,6 +20,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -27,6 +30,7 @@ import static greencity.constant.CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME;
 @Service
 @Slf4j
 @AllArgsConstructor
+@EnableCaching
 public class SocialNetworkImageServiceImpl implements SocialNetworkImageService {
     SocialNetworkImageRepo socialNetworkImageRepo;
     FileService fileService;
@@ -42,7 +46,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         try {
             URL checkUrl = new URL(url);
             Optional<SocialNetworkImage> optionalSocialNetworkImage =
-                socialNetworkImageRepo.findByHostPath(checkUrl.getHost());
+                findByHostPath(checkUrl.getHost());
             if (optionalSocialNetworkImage.isPresent()) {
                 return optionalSocialNetworkImage.get();
             } else {
@@ -52,6 +56,17 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
         }
+    }
+
+    /**
+     * Method search SocialNetworkImage.
+     *
+     * @param hostPath host adress
+     * @return optional of {@link SocialNetworkImage}
+     */
+    @Cacheable(value = CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME)
+    public Optional<SocialNetworkImage> findByHostPath(String hostPath) {
+        return socialNetworkImageRepo.findByHostPath(hostPath);
     }
 
     /**
@@ -77,7 +92,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      * @return {@link SocialNetworkImage}
      */
     public SocialNetworkImage getDefaultSocialNetworkImage() {
-        return socialNetworkImageRepo.findByHostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH)
+        return findByHostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH)
             .orElseThrow(() -> new RuntimeException(ErrorMessage.BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH));
     }
 
@@ -109,7 +124,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
         try (InputStream inputStream = new FileInputStream(tempFile);
              OutputStream outputStream = fileItem.getOutputStream();) {
-            IOUtils.copy(inputStream,outputStream);
+            IOUtils.copy(inputStream, outputStream);
             outputStream.flush();
         }
         CommonsMultipartFile multipartFile = new CommonsMultipartFile(fileItem);
