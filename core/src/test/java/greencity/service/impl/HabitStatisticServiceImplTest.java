@@ -1,13 +1,12 @@
 package greencity.service.impl;
 
 import greencity.converters.DateService;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habitstatistic.*;
 import greencity.dto.user.HabitLogItemDto;
-import greencity.entity.*;
+import greencity.entity.Habit;
+import greencity.entity.HabitDictionary;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatus;
 import greencity.entity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -15,20 +14,16 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitService;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,9 +47,6 @@ class HabitStatisticServiceImplTest {
     private AddHabitStatisticDto addhs = AddHabitStatisticDto
         .builder().amountOfItems(10).habitRate(HabitRate.GOOD)
         .id(1L).habitId(1L).createdOn(ZonedDateTime.now()).build();
-
-    HabitStatus habitStatus = new HabitStatus();
-    List<HabitStatus> habitStatuses = new ArrayList<>();
 
     private Habit habit = new Habit(1L, new HabitDictionary(), null, true,
         zonedDateTime, Collections.emptyList(), null);
@@ -248,5 +240,21 @@ class HabitStatisticServiceImplTest {
         assertThrows(NotFoundException.class, () ->
             habitStatisticService.findAllHabitsAndTheirStatistics(1L, true, "en")
         );
+    }
+
+    @Test
+    void getAmountOfHabitsInProgressByUserId() {
+        final Long expected = 1L;
+        when(habitStatisticRepo.getAmountOfHabitsInProgressByUserId(anyLong())).thenReturn(expected);
+        final Long actual = habitStatisticService.getAmountOfHabitsInProgressByUserId(1L);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getAmountOfAcquiredHabitsByUserId() {
+        final Long expected = 1L;
+        when(habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(anyLong())).thenReturn(expected);
+        final Long actual = habitStatisticService.getAmountOfAcquiredHabitsByUserId(1L);
+        assertEquals(expected, actual);
     }
 }
