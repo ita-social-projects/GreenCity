@@ -187,6 +187,20 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public PageableDto<SearchTipsAndTricksDto> search(String searchQuery) {
         Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(PageRequest.of(0, 3), searchQuery);
 
+        return getSearchTipsAndTricksDtoPageableDto(page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery) {
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, searchQuery);
+
+        return getSearchTipsAndTricksDtoPageableDto(page);
+    }
+
+    private PageableDto<SearchTipsAndTricksDto> getSearchTipsAndTricksDtoPageableDto(Page<TipsAndTricks> page) {
         List<SearchTipsAndTricksDto> tipsAndTricksDtos = page.stream()
             .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, SearchTipsAndTricksDto.class))
             .collect(Collectors.toList());
@@ -203,8 +217,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<TipsAndTricksDtoResponse> searchBy(String searchQuery) {
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(PageRequest.of(0, 3), searchQuery);
+    public PageableDto<TipsAndTricksDtoResponse> searchBy(Pageable pageable, String searchQuery) {
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(pageable, searchQuery);
         List<TipsAndTricksDtoResponse> tipsAndTricksDtoResponses = page.stream()
             .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class))
             .collect(Collectors.toList());

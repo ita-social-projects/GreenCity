@@ -32,5 +32,5 @@ public class SearchTipsAndTricksDto {
     private ZonedDateTime creationDate;
 
     @NotEmpty
-    private List<String> tipsAndTricksTags;
+    private List<String> tags;
 }

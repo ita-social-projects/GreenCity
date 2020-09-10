@@ -1,5 +1,7 @@
 package greencity.config;
 
+import java.time.ZoneId;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -9,9 +11,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-
-import java.time.ZoneId;
-import java.util.Objects;
 
 /**
  * Configuration class that obtains metadata of the database.
@@ -68,6 +67,7 @@ public class DatasourceMetadata {
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_buffercache_pages.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements_reset.sql"));
+        databasePopulator.addScript(new ClassPathResource("db/functions/vw_econewswithtags.sql"));
         databasePopulator.execute(Objects.requireNonNull(jdbcTemplate.getDataSource()));
     }
 
