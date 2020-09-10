@@ -315,20 +315,22 @@ class PlaceServiceImplTest {
         placeUpdateDto.setDiscountValues(discountValuesDto);
         placeUpdateDto.setName("new Name");
         placeUpdateDto.setCategory(categoryDto);
-        when(categoryService.findByName(any())).thenReturn(category);
-        when(placeRepo.findById(any())).thenReturn(Optional.of(place));
+        when(categoryService.findByName(category.getName())).thenReturn(category);
+        when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
+        when(modelMapper.map(placeUpdateDto.getLocation(),Location.class)).thenReturn(location);
 
         Place updatedPlace = placeService.update(placeUpdateDto);
 
         assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
         assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
-        verify(locationService).update(any(), any());
+        verify(modelMapper).map(placeUpdateDto.getLocation(), Location.class);
+        verify(locationService).update(place.getLocation().getId(), location);
     }
 
     @Test
     void deleteByIdTest() {
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
-        when(placeRepo.save(any())).thenReturn(place);
+        when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
+        when(placeRepo.save(place)).thenReturn(place);
 
         placeService.deleteById(place.getId());
 
@@ -338,7 +340,7 @@ class PlaceServiceImplTest {
 
     @Test
     void findByIdOptionalTest() {
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
+        when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
 
         Optional<Place> resultOptional = placeService.findByIdOptional(place.getId());
 
@@ -350,8 +352,8 @@ class PlaceServiceImplTest {
     void getInfoForUpdatingByIdTest() {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         placeUpdateDto.setId(place.getId());
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
-        when(modelMapper.map(any(), any())).thenReturn(placeUpdateDto);
+        when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
+        when(modelMapper.map(place, PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
 
         placeUpdateDto = placeService.getInfoForUpdatingById(place.getId());
 
@@ -362,10 +364,10 @@ class PlaceServiceImplTest {
 
     @Test
     void getInfoForUpdatingThrowingExceptionTest() {
-        when(placeRepo.findById(anyLong())).thenReturn(Optional.empty());
+        when(placeRepo.findById(place.getId())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> placeService.getInfoForUpdatingById(1L));
-        verify(placeRepo).findById(anyLong());
+        verify(placeRepo).findById(place.getId());
         verify(modelMapper, never()).map(any(), any());
     }
 
@@ -376,7 +378,7 @@ class PlaceServiceImplTest {
         FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
         List<PlaceByBoundsDto> dtoList = Collections.singletonList(placeByBoundsDto);
         when(placeRepo.findAll(any(PlaceFilter.class))).thenReturn(places);
-        when(modelMapper.map(any(), any())).thenReturn(placeByBoundsDto);
+        when(modelMapper.map(place, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
 
         List<PlaceByBoundsDto> result = placeService.findPlacesByMapsBounds(filterPlaceDto);
 
@@ -393,13 +395,13 @@ class PlaceServiceImplTest {
         placeByBoundsDto.setId(place.getId());
         List<PlaceByBoundsDto> placeByBoundsDtos = Collections.singletonList(placeByBoundsDto);
         when(placeRepo.findAll((any(PlaceFilter.class)))).thenReturn(places);
-        when(modelMapper.map(any(), any())).thenReturn(placeByBoundsDto);
+        when(modelMapper.map(place, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
 
         List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto);
 
         assertEquals(placeByBoundsDtos, result);
-        verify(placeRepo).findAll(new PlaceFilter(any()));
-        verify(modelMapper).map(any(), any());
+        verify(placeRepo).findAll(any(PlaceFilter.class));
+        verify(modelMapper).map(place, PlaceByBoundsDto.class);
     }
 
     @Test
@@ -420,7 +422,7 @@ class PlaceServiceImplTest {
 
         assertEquals(placeByBoundsDtos, result);
         verify(placeRepo).findAll(any(PlaceFilter.class));
-        verify(modelMapper).map(any(), any());
+        verify(modelMapper).map(genericEntity1, PlaceByBoundsDto.class);
     }
 
     @Test
@@ -431,12 +433,12 @@ class PlaceServiceImplTest {
         AdminPlaceDto adminPlaceDto = new AdminPlaceDto();
         PageableDto<AdminPlaceDto> adminPlacePage =
             new PageableDto<>(Collections.singletonList(adminPlaceDto), 1, 0, 1);
-        when(modelMapper.map(any(), any())).thenReturn(adminPlaceDto);
+        when(modelMapper.map(place, AdminPlaceDto.class)).thenReturn(adminPlaceDto);
 
         PageableDto<AdminPlaceDto> result = placeService.filterPlaceBySearchPredicate(new FilterPlaceDto(), pageable);
 
         assertEquals(adminPlacePage, result);
         verify(placeRepo).findAll(any(PlaceFilter.class), any(Pageable.class));
-        verify(modelMapper).map(any(), any());
+        verify(modelMapper).map(place, AdminPlaceDto.class);
     }
 }
