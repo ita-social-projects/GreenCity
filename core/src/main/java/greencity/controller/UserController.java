@@ -6,6 +6,7 @@ import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
+import greencity.constant.SwaggerExampleModel;
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -591,7 +592,7 @@ public class UserController {
     @PatchMapping(path = "/profilePicture",
         consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpStatus> updateUserProfilePicture(
-        @ApiParam(value = "User profile picture", required = true)
+        @ApiParam(value = SwaggerExampleModel.userProfilePictureDto, required = true)
         @RequestPart UserProfilePictureDto userProfilePictureDto,
         @ApiParam(value = "Profile picture")
         @ImageValidation
@@ -688,7 +689,7 @@ public class UserController {
     @PutMapping(path = "/profile", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
         MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UserProfileDtoResponse> save(
-        @ApiParam(value = "User Profile Request", required = true)
+        @ApiParam(required = true, value = SwaggerExampleModel.userProfileRequest)
         @RequestPart UserProfileDtoRequest userProfileDtoRequest,
         @ApiParam(value = "User Profile Image")
         @ImageValidation
