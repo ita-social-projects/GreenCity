@@ -8,6 +8,7 @@ import greencity.service.EcoNewsService;
 import greencity.service.SearchService;
 import greencity.service.TipsAndTricksService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,5 +33,21 @@ public class SearchServiceImpl implements SearchService {
             .tipsAndTricks(tipsAndTricks.getPage())
             .countOfResults(ecoNews.getTotalElements() + tipsAndTricks.getTotalElements())
             .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery) {
+        return ecoNewsService.search(pageable, searchQuery);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<SearchTipsAndTricksDto> searchAllTipsAndTricks(Pageable pageable, String searchQuery) {
+        return tipsAndTricksService.search(pageable, searchQuery);
     }
 }
