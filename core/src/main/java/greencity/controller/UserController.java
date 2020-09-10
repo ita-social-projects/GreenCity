@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
@@ -31,6 +32,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -255,7 +257,7 @@ public class UserController {
     /**
      * Method returns list of user goals for specific language.
      *
-     * @param language - needed language code
+     * @param locale - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -266,14 +268,14 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/goals")
+    @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @ApiIgnore Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getUserGoals(userId, language));
+            .body(userService.getUserGoals(userId, locale.getLanguage()));
     }
 
     /**
