@@ -3,6 +3,8 @@ package greencity.service.impl;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
+import greencity.dto.filter.FilterDistanceDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoAddDto;
@@ -13,15 +15,20 @@ import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.repository.PlaceRepo;
+import greencity.repository.options.PlaceFilter;
 import greencity.service.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -29,11 +36,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
 
 @Slf4j
 class PlaceServiceImplTest {
@@ -158,14 +160,14 @@ class PlaceServiceImplTest {
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
-        placeService = new PlaceServiceImpl(placeRepo, modelMapper , categoryService,
+        placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
             locationService, specificationService, userService, openingHoursService, discountService,
-            notificationService, zoneId, rabbitTemplate,proposePlaceMapper);
+            notificationService, zoneId, rabbitTemplate, proposePlaceMapper);
     }
 
     @Test
     void saveTest() {
-        when(modelMapper.map(placeAddDto,Place.class)).thenReturn(place);
+        when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
         when(userService.findByEmail(anyString())).thenReturn(user);
         when(categoryService.findByName(anyString())).thenReturn(category);
         when(placeRepo.save(place)).thenReturn(place);
@@ -205,7 +207,7 @@ class PlaceServiceImplTest {
         Page<Place> placesPage = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         List<AdminPlaceDto> listDto = Collections.singletonList(dto);
 
-        PageableDto<AdminPlaceDto> pageableDto = new PageableDto<>(listDto, listDto.size(), 0,1);
+        PageableDto<AdminPlaceDto> pageableDto = new PageableDto<>(listDto, listDto.size(), 0, 1);
         pageableDto.setPage(listDto);
 
         when(placeRepo.findAllByStatusOrderByModifiedDateDesc(any(), any())).thenReturn(placesPage);
@@ -335,5 +337,137 @@ class PlaceServiceImplTest {
         when(placeRepo.findAll()).thenReturn(expectedList);
 
         assertEquals(expectedList, placeService.findAll());
+    }
+
+    @Test
+    void updateTest() {
+        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
+        placeUpdateDto.setOpeningHoursList(openingHoursList);
+        placeUpdateDto.setDiscountValues(discountValuesDto);
+        placeUpdateDto.setName("new Name");
+        placeUpdateDto.setCategory(categoryDto);
+        when(categoryService.findByName(any())).thenReturn(category);
+        when(placeRepo.findById(any())).thenReturn(Optional.of(place));
+
+        Place updatedPlace = placeService.update(placeUpdateDto);
+
+        assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
+        assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
+        verify(locationService).update(any(), any());
+    }
+
+    @Test
+    void deleteByIdTest() {
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
+        when(placeRepo.save(any())).thenReturn(place);
+
+        placeService.deleteById(place.getId());
+
+        assertEquals(PlaceStatus.DELETED, place.getStatus());
+        verify(notificationService, times(0)).sendImmediatelyReport(any());
+    }
+
+    @Test
+    void findByIdOptionalTest() {
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
+
+        Optional<Place> resultOptional = placeService.findByIdOptional(place.getId());
+
+        assertTrue(resultOptional.isPresent());
+        assertSame(place, resultOptional.get());
+    }
+
+    @Test
+    void getInfoForUpdatingByIdTest() {
+        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
+        placeUpdateDto.setId(place.getId());
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
+        when(modelMapper.map(any(), any())).thenReturn(placeUpdateDto);
+
+        placeUpdateDto = placeService.getInfoForUpdatingById(place.getId());
+
+        assertEquals(place.getId(), placeUpdateDto.getId());
+        verify(placeRepo).findById(place.getId());
+        verify(modelMapper).map(place, PlaceUpdateDto.class);
+    }
+
+    @Test
+    void getInfoForUpdatingThrowingExceptionTest() {
+        when(placeRepo.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> placeService.getInfoForUpdatingById(1L));
+        verify(placeRepo).findById(anyLong());
+        verify(modelMapper, never()).map(any(), any());
+    }
+
+    @Test
+    void findPlacesByMapsBoundsTest() {
+        List<Place> places = Collections.singletonList(place);
+        PlaceByBoundsDto placeByBoundsDto = new PlaceByBoundsDto();
+        FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
+        List<PlaceByBoundsDto> dtoList = Collections.singletonList(placeByBoundsDto);
+        when(placeRepo.findAll(any(PlaceFilter.class))).thenReturn(places);
+        when(modelMapper.map(any(), any())).thenReturn(placeByBoundsDto);
+
+        List<PlaceByBoundsDto> result = placeService.findPlacesByMapsBounds(filterPlaceDto);
+
+        assertEquals(dtoList, result);
+        verify(placeRepo).findAll(any(PlaceFilter.class));
+        verify(modelMapper).map(place, PlaceByBoundsDto.class);
+    }
+
+    @Test
+    void getPlacesByFilterWithNullDistanceFromUserTest() {
+        List<Place> places = Collections.singletonList(place);
+        FilterPlaceDto filterDto = new FilterPlaceDto();
+        PlaceByBoundsDto placeByBoundsDto = new PlaceByBoundsDto();
+        placeByBoundsDto.setId(place.getId());
+        List<PlaceByBoundsDto> placeByBoundsDtos = Collections.singletonList(placeByBoundsDto);
+        when(placeRepo.findAll((any(PlaceFilter.class)))).thenReturn(places);
+        when(modelMapper.map(any(), any())).thenReturn(placeByBoundsDto);
+
+        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto);
+
+        assertEquals(placeByBoundsDtos, result);
+        verify(placeRepo).findAll(new PlaceFilter(any()));
+        verify(modelMapper).map(any(), any());
+    }
+
+    @Test
+    void getPlacesByFilterWithDistanceFromUserTest() {
+        Location newLocation = new Location();
+        newLocation.setLat(-80.0);
+        newLocation.setLng(-170.0);
+        genericEntity1.setLocation(newLocation);
+        List<Place> places = Arrays.asList(place, genericEntity1);
+        FilterPlaceDto filterDto = new FilterPlaceDto();
+        filterDto.setDistanceFromUserDto(new FilterDistanceDto(-80.0, -170.0, 500.0));
+        PlaceByBoundsDto placeByBoundsDto = new PlaceByBoundsDto();
+        List<PlaceByBoundsDto> placeByBoundsDtos = Collections.singletonList(placeByBoundsDto);
+        when(placeRepo.findAll((any(PlaceFilter.class)))).thenReturn(places);
+        when(modelMapper.map(genericEntity1, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
+
+        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto);
+
+        assertEquals(placeByBoundsDtos, result);
+        verify(placeRepo).findAll(any(PlaceFilter.class));
+        verify(modelMapper).map(any(), any());
+    }
+
+    @Test
+    void filterPlaceBySearchPredicateTest() {
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Place> pageOfPlaces = new PageImpl<>(Collections.singletonList(place), pageable, 1);
+        when(placeRepo.findAll(any(PlaceFilter.class), any(Pageable.class))).thenReturn(pageOfPlaces);
+        AdminPlaceDto adminPlaceDto = new AdminPlaceDto();
+        PageableDto<AdminPlaceDto> adminPlacePage =
+            new PageableDto<>(Collections.singletonList(adminPlaceDto), 1, 0, 1);
+        when(modelMapper.map(any(), any())).thenReturn(adminPlaceDto);
+
+        PageableDto<AdminPlaceDto> result = placeService.filterPlaceBySearchPredicate(new FilterPlaceDto(), pageable);
+
+        assertEquals(adminPlacePage, result);
+        verify(placeRepo).findAll(any(PlaceFilter.class), any(Pageable.class));
+        verify(modelMapper).map(any(), any());
     }
 }
