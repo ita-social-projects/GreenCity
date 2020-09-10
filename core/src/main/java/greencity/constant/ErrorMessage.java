@@ -112,6 +112,7 @@ public final class ErrorMessage {
     public static final String NEWS_SUBSCRIBER_NOT_SAVED = "The subscriber was not saved.";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved because of constraint violation";
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
+    public static final String SOCIAL_NETWORK_IMAGE_NOT_SAVED = "Social network image hasn't been saved";
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_DELETED = "Eco news hasn't been deleted";
@@ -156,6 +157,8 @@ public final class ErrorMessage {
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
     public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
+    public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
+        "Bad default social network image host path (Row in database doesn't exists)";
 
     private ErrorMessage() {
     }

@@ -4,7 +4,6 @@ import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.IMAGE_EXISTS;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
@@ -13,7 +12,6 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
-import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
@@ -88,9 +86,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         toUpdate.setText(tipsAndTricksDtoManagement.getText());
         toUpdate.setTags(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()));
         toUpdate.setAuthor(userService.findByEmail(tipsAndTricksDtoManagement.getEmailAuthor()));
-        System.out.println(image == null);
         if (image != null) {
-            System.out.println("DOOOOOOOOOOOOOOOOODIK");
             toUpdate.setImagePath(fileService.upload(image).toString());
         }
         tipsAndTricksRepo.save(toUpdate);
@@ -204,6 +200,23 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<TipsAndTricksDtoResponse> searchBy(String searchQuery) {
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(PageRequest.of(0, 3), searchQuery);
+        List<TipsAndTricksDtoResponse> tipsAndTricksDtoResponses = page.stream()
+            .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            tipsAndTricksDtoResponses,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
+        );
+    }
+
+    /**
      * Method for getting amount of written tips and trick by user id.
      *
      * @param id {@link Long} user id.
@@ -218,9 +231,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * Method to mark comment as liked by User.
      *
-     * @param user {@link User}.
+     * @param user    {@link User}.
      * @param comment {@link TipsAndTricksComment}
-     *
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
@@ -231,9 +243,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * Method to mark comment as unliked by User.
      *
-     * @param user {@link User}.
+     * @param user    {@link User}.
      * @param comment {@link TipsAndTricksComment}
-     *
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)

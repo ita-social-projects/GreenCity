@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -68,10 +69,11 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
+    @ApiPageable
     public ResponseEntity<PageableDto<HabitDictionaryTranslationsDto>> getAll(
         @ApiIgnore Pageable pageable,
         @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @RequestParam(defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
         return ResponseEntity.status(HttpStatus.OK).body(habitService.getAllHabitsByLanguageCode(pageable, language));
     }
 

@@ -12,11 +12,11 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -57,6 +57,15 @@ public interface UserService {
     User findByEmail(String email);
 
     /**
+     * Method that allow you to find not 'DEACTIVATED' {@link User} by email.
+     *
+     * @param email - {@link User}'s email
+     * @return {@link Optional} of found {@link User}.
+     * @author Vasyl Zhovnir
+     */
+    Optional<User> findNotDeactivatedByEmail(String email);
+
+    /**
      * Find User's id by User email.
      *
      * @param email - {@link User} email
@@ -92,10 +101,10 @@ public interface UserService {
      * @return a dto of {@link PageableDto}.
      * @author Rostyslav Khasanov
      */
-    PageableDto findByPage(Pageable pageable);
+    PageableDto<UserForListDto> findByPage(Pageable pageable);
 
     /**
-     * Find {@link User} for management by page .
+     * Find {@link User} for management by page.
      *
      * @param pageable a value with pageable configuration.
      * @return a dto of {@link PageableDto}.
@@ -106,7 +115,7 @@ public interface UserService {
     /**
      * Method that allows you to update {@link User} by dto.
      *
-     * @param dto - dto {@link UserForListDto} with updated fields for updating {@link User}.
+     * @param dto - dto {@link UserManagementDto} with updated fields for updating {@link User}.
      * @author Vasyl Zhovnir
      */
     void updateUser(UserManagementDto dto);
@@ -391,8 +400,8 @@ public interface UserService {
     /**
      * Method deactivates all the {@link User} by list of IDs.
      *
-     * @param listId list of id {@link User}
-     * @return listId list of id {@link User}
+     * @param listId {@link List} of {@link User}s` ids to be deactivated
+     * @return {@link List} of {@link User}s` ids
      * @author Vasyl Zhovnir
      */
     List<Long> deactivateAllUsers(List<Long> listId);

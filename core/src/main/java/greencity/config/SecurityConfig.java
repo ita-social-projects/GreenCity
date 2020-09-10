@@ -8,6 +8,8 @@ import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import java.util.Arrays;
 import java.util.Collections;
+
+import greencity.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,13 +43,15 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTool jwtTool;
+    private final UserService userService;
 
     /**
      * Constructor.
      */
     @Autowired
-    public SecurityConfig(JwtTool jwtTool) {
+    public SecurityConfig(JwtTool jwtTool, UserService userService) {
         this.jwtTool = jwtTool;
+        this.userService = userService;
     }
 
     /**
@@ -72,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(
-                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager()),
+                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
                 UsernamePasswordAuthenticationFilter.class
             )
             .exceptionHandling()

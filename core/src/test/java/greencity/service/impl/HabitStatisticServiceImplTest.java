@@ -144,9 +144,10 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void findByIdExceptionTest() {
-        when(habitStatisticRepo.findById(anyLong())).thenReturn(Optional.empty());
+        when(habitStatisticRepo.findById(1L)).thenReturn(Optional.empty());
+
         assertThrows(NotFoundException.class, () ->
-            habitStatisticService.findById(anyLong())
+            habitStatisticService.findById(1L)
         );
     }
 
@@ -159,9 +160,10 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void findAllHabitsByUserIdExceptionTest() {
-        when(habitRepo.findAllByUserId(anyLong())).thenReturn(Optional.empty());
+        when(habitRepo.findAllByUserId(1L)).thenReturn(Optional.empty());
+
         assertThrows(NotFoundException.class, () ->
-            habitStatisticService.findAllHabitsByUserId(anyLong())
+            habitStatisticService.findAllHabitsByUserId(1L)
         );
     }
 

@@ -36,7 +36,7 @@ public class ManagementFactOfTheDayController {
     public String getAllFacts(Model model, @ApiIgnore Pageable pageable) {
         PageableDto<FactOfTheDayDTO> allFactsOfTheDay = factOfTheDayService.getAllFactsOfTheDay(pageable);
         model.addAttribute("pageable", allFactsOfTheDay);
-        model.addAttribute("languages",languageService.getAllLanguages());
+        model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_fact_of_the_day";
     }
 }

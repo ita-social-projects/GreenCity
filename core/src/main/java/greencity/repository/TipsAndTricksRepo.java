@@ -45,6 +45,20 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long> {
     Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery);
 
     /**
+     * Method returns {@link TipsAndTricks} by search query and page.
+     *
+     * @param searchQuery query to search
+     * @return list of {@link TipsAndTricks}
+     */
+    @Query("select tt from TipsAndTricks tt "
+        + "where CONCAT(tt.id,'') like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or lower(tt.title) like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or lower(tt.text) like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.author a "
+        + "where lower(a.name) like lower(CONCAT('%', :searchQuery, '%')))")
+    Page<TipsAndTricks> searchBy(Pageable pageable, String searchQuery);
+
+    /**
      * Method for getting amount of written tips and trick by user id.
      *
      * @param id {@link Long} user id.
