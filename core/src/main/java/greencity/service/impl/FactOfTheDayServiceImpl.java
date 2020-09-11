@@ -86,14 +86,6 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      * {@inheritDoc}
      */
     @Override
-    public List<FactOfTheDay> getAllFactOfTheDayByName(String name) {
-        return factOfTheDayRepo.findAllByName(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public FactOfTheDayPostDTO saveFactOfTheDayAndTranslations(FactOfTheDayPostDTO factPost) {
         FactOfTheDay factOfTheDay = FactOfTheDay.builder()
             .name(factPost.getName())
@@ -173,5 +165,22 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             factOfTheDayTranslationService.deleteAll(factOfTheDay.getFactOfTheDayTranslations());
         });
         return listId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<FactOfTheDayDTO> searchBy(Pageable pageable, String searchQuery) {
+        Page<FactOfTheDay> factsOfTheDay = factOfTheDayRepo.searchBy(pageable, searchQuery);
+        List<FactOfTheDayDTO> factOfTheDayDTOs =
+            factsOfTheDay.getContent().stream()
+                .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(
+            factOfTheDayDTOs,
+            factsOfTheDay.getTotalElements(),
+            factsOfTheDay.getPageable().getPageNumber(),
+            factsOfTheDay.getTotalPages());
     }
 }
