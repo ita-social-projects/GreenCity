@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.UUID;
 import javax.imageio.ImageIO;
+import liquibase.pro.packaged.I;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,12 +83,11 @@ public class CloudStorageService implements FileService {
         File tempFile = new File("tempImage.jpg");
         byte[] imageByte = decodeBase64(imageToConvert);
         ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-        try {
+        try (InputStream input = new FileInputStream(tempFile)) {
             BufferedImage bufferedImage = ImageIO.read(bis);
             ImageIO.write(bufferedImage, "png", tempFile);
             FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
                 false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
-            InputStream input = new FileInputStream(tempFile);
             OutputStream outputStream = fileItem.getOutputStream();
             int ret = input.read();
             while (ret != -1) {
@@ -97,7 +97,7 @@ public class CloudStorageService implements FileService {
             outputStream.flush();
             return new CommonsMultipartFile(fileItem);
         } catch (IOException e) {
-            throw new NotSavedException("Cannot to convert BASE64 image");
+            throw new NotSavedException("Cannot convert BASE64 image");
         }
     }
 }
