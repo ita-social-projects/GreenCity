@@ -18,21 +18,24 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private UserService userService;
 
     /**
-     * Method.
+     * Method for determining
+     * which locale is going to be used.
      *
-     * @return localeResolver
+     * @return {@link SessionLocaleResolver}
      */
     @Bean
     public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.ENGLISH);
-        return slr;
+        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+        localeResolver.setDefaultLocale(Locale.ENGLISH);
+        return new SessionLocaleResolver();
     }
 
     /**
-     * Method for smth.
+     * Method for switching to a new locale
+     * based on the value of the lang parameter
+     * appended to a request.
      *
-     * @return localeChangeInterceptor
+     * @return {@link LocaleChangeInterceptor}
      */
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {

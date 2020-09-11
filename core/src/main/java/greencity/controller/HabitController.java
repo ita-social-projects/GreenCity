@@ -1,10 +1,15 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
-import greencity.constant.AppConstant;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.habitstatistic.*;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitDictionaryTranslationsDto;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import greencity.entity.User;
@@ -12,11 +17,11 @@ import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +29,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Validated
@@ -32,9 +43,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/habit")
 public class HabitController {
+    private final HabitStatisticService habitStatisticService;
     private HabitService habitService;
     private UserService userService;
-    private final HabitStatisticService habitStatisticService;
 
     /**
      * Method which assign habit for {@link User}.
@@ -59,7 +70,7 @@ public class HabitController {
     /**
      * Method returns all habits, available for tracking for specific language.
      *
-     * @param language needed language code
+     * @param locale needed language code
      * @return Pageable of {@link greencity.dto.habitstatistic.HabitDictionaryTranslationsDto}
      */
     @ApiOperation(value = "Get all habits.")
@@ -70,11 +81,12 @@ public class HabitController {
     })
     @GetMapping("")
     @ApiPageable
+    @ApiLocale
     public ResponseEntity<PageableDto<HabitDictionaryTranslationsDto>> getAll(
         @ApiIgnore Pageable pageable,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitService.getAllHabitsByLanguageCode(pageable, language));
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
     }
 
     /**
@@ -136,7 +148,7 @@ public class HabitController {
      * where key is the name of habit item and value is not taken amount of these items.
      * Language of habit items is defined by the `language` parameter.
      *
-     * @param language - Name of habit item localization language(e.x. "en" or "uk").
+     * @param locale - Name of habit item localization language(e.x. "en" or "uk").
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those key-value pairs.
      */
     @ApiOperation(value = "Get today's statistic for all habit items")
@@ -147,11 +159,10 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/statistic/todayStatisticsForAllHabitItems")
+    @ApiLocale
     public ResponseEntity<List<HabitItemsAmountStatisticDto>> getTodayStatisticsForAllHabitItems(
-        @ApiParam(value = "Requested language code")
-        @RequestParam(defaultValue = "en") String language
-    ) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticService.getTodayStatisticsForAllHabitItems(language));
+            .body(habitStatisticService.getTodayStatisticsForAllHabitItems(locale.getLanguage()));
     }
 }

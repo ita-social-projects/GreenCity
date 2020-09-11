@@ -7,9 +7,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @ApiImplicitParams({
-    @ApiImplicitParam(name = "lang", dataType = "string", paramType = "query", defaultValue = "en")})
+    @ApiImplicitParam(name = "lang", value = "Code of the needed language.", dataType = "string", paramType = "query")})
 public @interface ApiLocale {
 }
