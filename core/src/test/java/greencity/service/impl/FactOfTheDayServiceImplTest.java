@@ -23,17 +23,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class FactOfTheDayServiceImplTest {
-    @InjectMocks
-    private FactOfTheDayServiceImpl factOfTheDayService;
 
     @Mock
     private ModelMapper modelMapper;
@@ -46,6 +44,9 @@ public class FactOfTheDayServiceImplTest {
 
     @Mock
     private LanguageService languageService;
+
+    @InjectMocks
+    private FactOfTheDayServiceImpl factOfTheDayService;
 
     @BeforeEach
     public void setup(){
@@ -67,7 +68,7 @@ public class FactOfTheDayServiceImplTest {
     @Test
     public void findByIdTestFailed(){
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> factOfTheDayService.getFactOfTheDayById(null));
+        assertThrows(NotFoundException.class, () -> factOfTheDayService.getFactOfTheDayById(1L));
     }
 
     @Test
