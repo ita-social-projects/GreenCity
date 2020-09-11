@@ -4,18 +4,19 @@ import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.service.OwnSecurityService;
+import greencity.security.service.PasswordRecoveryService;
 import greencity.service.UserService;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,9 +25,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
-
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/users")
@@ -34,6 +32,7 @@ public class ManagementUserController {
     private final UserService userService;
     private final ModelMapper modelMapper;
     private final OwnSecurityService ownSecurityService;
+    private final PasswordRecoveryService passwordRecoveryService;
 
     /**
      * Method that returns management page with all {@link User}.
@@ -79,12 +78,12 @@ public class ManagementUserController {
      * Method for approving User.
      *
      * @param userId - {@link User}'s id
-     * @param token - {@link String} this is token (hash) to verify user.
+     * @param token  - {@link String} this is token (hash) to verify user.
      * @return {@link String}
      */
     @GetMapping("/approveRegistration")
     public String verify(@RequestParam("id") Long userId,
-                                         @RequestParam @NotBlank String token) {
+                         @RequestParam @NotBlank String token) {
         Optional<User> foundUser = userService.findByIdAndToken(userId, token);
         if (foundUser.isPresent()) {
             return "core/management_password_template";
@@ -98,10 +97,10 @@ public class ManagementUserController {
      * @return {@link GenericResponseDto}
      * @author Vasyl Zhovnir
      */
-    @PostMapping("/saveApproving")
-    @ResponseBody
-    public GenericResponseDto saveApproving() {
-        return GenericResponseDto.builder().build();
+    @PostMapping("/changePassword")
+    public ResponseEntity<Object> changePassword(@Valid @RequestBody OwnRestoreDto form) {
+        passwordRecoveryService.updatePasswordUsingToken(form.getToken(), form.getPassword());
+        return ResponseEntity.ok().build();
     }
 
     /**

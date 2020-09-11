@@ -19,6 +19,7 @@ import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
+import greencity.security.dto.ownsecurity.SetPasswordDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
@@ -26,6 +27,7 @@ import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -233,9 +235,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void managementRegisterUser(UserManagementDto dto) {
         User user = managementCreateNewRegisteredUser(dto, jwtTool.generateTokenKey());
-        OwnSecurity ownSecurity = managementCreateOwnSecurity(user);
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
-        user.setOwnSecurity(ownSecurity);
         user.setVerifyEmail(verifyEmail);
         try {
             User savedUser = userService.save(user);
@@ -265,11 +265,21 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .build();
     }
 
-    private OwnSecurity managementCreateOwnSecurity(User user) {
-        String password = "asdfSDFasfd120=test";
+    private OwnSecurity managementCreateOwnSecurity(String password, User user) {
         return OwnSecurity.builder()
             .password(passwordEncoder.encode(password))
             .user(user)
             .build();
+    }
+
+    @Transactional
+    @Override
+    public void saveApproving(Long userId, String token, SetPasswordDto dto) {
+        Optional<User> byIdAndToken = userService.findByIdAndToken(userId, token);
+        if (byIdAndToken.isPresent()) {
+            User user = byIdAndToken.get();
+            OwnSecurity ownSecurity = managementCreateOwnSecurity(dto.getPassword(), user);
+            user.setOwnSecurity(ownSecurity);
+        }
     }
 }

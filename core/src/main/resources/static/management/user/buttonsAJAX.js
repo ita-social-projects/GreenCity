@@ -46,7 +46,7 @@ $(document).ready(function(){
             "userStatus" : formData.userStatus
         }
 
-        //запит save у модальній формі add
+        // Ajax request
         $.ajax({
             url: '/management/users/register',
             type: 'post',
