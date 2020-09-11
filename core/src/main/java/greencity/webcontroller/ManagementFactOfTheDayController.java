@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -97,7 +96,7 @@ public class ManagementFactOfTheDayController {
             return genericResponseDto;
         }
         factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return GenericResponseDto.builder().build();
     }
 
     /**
@@ -126,7 +125,7 @@ public class ManagementFactOfTheDayController {
             return genericResponseDto;
         }
         factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return GenericResponseDto.builder().build();
     }
 
     /**
