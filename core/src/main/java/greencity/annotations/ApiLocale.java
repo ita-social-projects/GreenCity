@@ -7,6 +7,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * This annotation is used for choosing language code
+ * as a query parameter for example: "en", "uk", "ru".
+ *
+ * @author Yurii Savchenko
+ */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @ApiImplicitParams({
