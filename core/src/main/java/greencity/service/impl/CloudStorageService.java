@@ -15,7 +15,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import liquibase.pro.packaged.I;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Value;
