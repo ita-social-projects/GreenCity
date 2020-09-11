@@ -5,6 +5,7 @@ import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -55,9 +58,13 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtTool.getTokenFromHttpServletRequest(request);
         if (token != null) {
             try {
+                Optional<User> user = userService.findNotDeactivatedByEmail(jwtTool.getEmailOutOfAccessToken(token));
+                Collection<? extends GrantedAuthority> authorities = null;
+                if (user.isPresent()) {
+                    authorities = convertRoles(user.get().getRole().name());
+                }
                 Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(token, null));
-                Optional<User> user = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
+                    .authenticate(new UsernamePasswordAuthenticationToken(token, null, authorities));
                 if (user.isPresent()) {
                     log.debug("User successfully authenticate - {}", authentication.getPrincipal());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -69,5 +76,9 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private Collection<? extends GrantedAuthority> convertRoles(String roles) {
+        return AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
     }
 }
