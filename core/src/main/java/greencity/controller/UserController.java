@@ -690,7 +690,7 @@ public class UserController {
         MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UserProfileDtoResponse> save(
         @ApiParam(required = true, value = SwaggerExampleModel.userProfileRequest)
-        @RequestPart UserProfileDtoRequest userProfileDtoRequest,
+        @RequestPart @Valid UserProfileDtoRequest userProfileDtoRequest,
         @ApiParam(value = "User Profile Image")
         @ImageValidation
         @RequestPart(required = false) MultipartFile image,

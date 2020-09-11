@@ -94,6 +94,8 @@ public final class ValidationConstants {
 
     public static final int MAX_AMOUNT_OF_TAGS = 3;
 
+    public static final int MAX_AMOUNT_OF_SOCIAL_NETWORK_LINKS = 5;
+
     public static final String BAD_COMMA_SEPARATED_NUMBERS =
         "Non-empty string can contain numbers separated by a comma only";
 
