@@ -122,14 +122,14 @@ stages:
                 artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
                 
-#            - task: AzureRmWebAppDeployment@4
-#              inputs:
-#                azureSubscription: '$(azureSub)'
-#                appType: 'webAppLinux'
-#                WebAppName: '$(coreServiceName)'
-#                deployToSlotOrASE: true
-#                ResourceGroupName: '$(resourceGroup)'
-#                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
+            - task: AzureRmWebAppDeployment@4
+              inputs:
+                azureSubscription: '$(azureSub)'
+                appType: 'webAppLinux'
+                WebAppName: '$(coreServiceName)'
+                deployToSlotOrASE: true
+                ResourceGroupName: '$(resourceGroup)'
+                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
 
     - deployment: DeployMail
       displayName: Deploy mail app service
@@ -149,11 +149,11 @@ stages:
                 artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
                 
- #           - task: AzureRmWebAppDeployment@4
- #             inputs:
- #               azureSubscription: '$(azureSub)'
- #               appType: 'webAppLinux'
- #               WebAppName: '$(mailServiceName)'
- #               deployToSlotOrASE: true
- #               ResourceGroupName: '$(resourceGroup)'
- #               packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
+            - task: AzureRmWebAppDeployment@4
+              inputs:
+                azureSubscription: '$(azureSub)'
+                appType: 'webAppLinux'
+                WebAppName: '$(mailServiceName)'
+                deployToSlotOrASE: true
+                ResourceGroupName: '$(resourceGroup)'
+                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'
