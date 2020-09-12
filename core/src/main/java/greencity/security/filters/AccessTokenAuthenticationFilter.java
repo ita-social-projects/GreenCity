@@ -63,10 +63,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                 if (user.isPresent()) {
                     authorities = convertRoles(user.get().getRole().name());
                 }
-                UsernamePasswordAuthenticationToken authentication1 =
-                    new UsernamePasswordAuthenticationToken(token, null, authorities);
                 Authentication authentication = authenticationManager
-                    .authenticate(authentication1);
+                    .authenticate(new UsernamePasswordAuthenticationToken(token, null, authorities));
                 if (user.isPresent()) {
                     log.debug("User successfully authenticate - {}", authentication.getPrincipal());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
