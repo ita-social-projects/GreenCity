@@ -63,8 +63,10 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                 if (user.isPresent()) {
                     authorities = convertRoles(user.get().getRole().name());
                 }
+                UsernamePasswordAuthenticationToken authentication1 =
+                    new UsernamePasswordAuthenticationToken(token, null, authorities);
                 Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(token, null, authorities));
+                    .authenticate(authentication1);
                 if (user.isPresent()) {
                     log.debug("User successfully authenticate - {}", authentication.getPrincipal());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -78,6 +80,12 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
+    /**
+     * Convert comma separated string of {@link User} roles to collection of roles.
+     *
+     * @param roles - {@link String} of roles separated by a comma
+     * @return {@link Collection} of roles
+     */
     private Collection<? extends GrantedAuthority> convertRoles(String roles) {
         return AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
     }
