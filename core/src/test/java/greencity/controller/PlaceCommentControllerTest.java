@@ -2,60 +2,52 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
-import greencity.config.SecurityConfig;
+import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.entity.enums.UserStatus;
-import greencity.repository.PlaceCommentRepo;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
 import java.security.Principal;
-import org.dom4j.rule.Mode;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.util.NestedServletException;
 
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
-@ContextConfiguration
-@Import(SecurityConfig.class)
 class PlaceCommentControllerTest {
-
-    private static final String placeCommentLinkFirstPart = "/place";
-    private static final String placeCommentLinkSecondPart = "/comments";
 
     private MockMvc mockMvc;
 
-    @InjectMocks
-    private PlaceCommentController placeCommentController;
     @Mock
     private PlaceCommentService placeCommentService;
     @Mock
     private UserService userService;
     @Mock
     private PlaceService placeService;
-    @Mock
-    private PlaceCommentRepo placeCommentRepo;
+    @InjectMocks
+    private PlaceCommentController placeCommentController;
+
+    private static final String placeCommentLinkFirstPart = "/place";
+    private static final String placeCommentLinkSecondPart = "/comments";
 
     private static final String content = "{\n" +
         "  \"estimate\": {\n" +
@@ -70,7 +62,7 @@ class PlaceCommentControllerTest {
         "}";
 
     @BeforeEach
-    void setup(){
+    void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(placeCommentController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
@@ -88,10 +80,10 @@ class PlaceCommentControllerTest {
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
-                .andExpect(status().isCreated());
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         AddCommentDto addCommentDto = mapper.readValue(content, AddCommentDto.class);
@@ -107,16 +99,76 @@ class PlaceCommentControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{}"))
             .andExpect(status().isBadRequest());
+
+        verify(placeCommentService, times(0)).save(eq(1L), any(), anyString());
     }
 
     @Test
-    @Disabled
-    public void saveRequestByBlockedUserTest() throws Exception {
+    public void saveRequestByBlockedUserTest() {
+        Principal principal = ModelUtils.getPrincipal();
+        User user = ModelUtils.getUser();
 
+        user.setUserStatus(UserStatus.BLOCKED);
+        when(userService.findByEmail(anyString())).thenReturn(user);
+
+        Exception exception = assertThrows(
+            NestedServletException.class,
+            () -> mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
+                placeCommentLinkSecondPart, 1)
+                .principal(principal)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isCreated()));
+
+        String expectedMessage = ErrorMessage.USER_HAS_BLOCKED_STATUS;
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+        verify(placeCommentService, times(0)).save(eq(1L), any(), anyString());
     }
 
+    @Test
+    public void findAllTest() throws Exception {
+        int pageNumber = 5;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
+        mockMvc.perform(get(placeCommentLinkSecondPart + "?page=5"))
+            .andExpect(status().isOk());
 
+        verify(placeCommentService, times(1)).getAllComments(eq(pageable));
+    }
 
+    @Test
+    public void findByIdTest() throws Exception {
+        mockMvc.perform(get(placeCommentLinkSecondPart + "/{id}", 1))
+            .andExpect(status().isOk());
 
+        verify(placeCommentService, times(1))
+            .findById(1L);
+    }
+
+    @Test
+    public void findByIdFailedTest() throws Exception {
+        mockMvc.perform(get(placeCommentLinkSecondPart + "/{id}", "invalidID"))
+            .andExpect(status().isBadRequest());
+
+        verify(placeCommentService, times(0)).findById(1L);
+    }
+
+    @Test
+    public void deleteByIdTest() throws Exception {
+        this.mockMvc.perform(delete(placeCommentLinkSecondPart + "?id=1"))
+            .andExpect(status().isOk());
+
+        verify(placeCommentService, times(1))
+            .deleteById(eq(1L));
+    }
+
+    @Test
+    public void deleteByIdFailedTest() throws Exception {
+        mockMvc.perform(delete(placeCommentLinkSecondPart + "?id=invalidID"))
+            .andExpect(status().isBadRequest());
+
+        verify(placeCommentService, times(0)).findById(1L);
+    }
 }
