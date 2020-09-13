@@ -252,4 +252,31 @@ public class EcoNewsCommentController {
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
     }
+
+    /**
+     * Method to get all active replies to {@link greencity.entity.EcoNewsComment} specified by parentCommentId.
+     *
+     * @param parentCommentId specifies parent comment to all replies
+     * @return Pageable of {@link EcoNewsCommentDto} replies
+     *
+     * @author Dovganyuk Taras
+     */
+    @ApiOperation(value = "Get all active replies to comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
+    })
+    @GetMapping("replies/active/{parentCommentId}")
+    @ApiPageable
+    public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllActiveReplies(@ApiIgnore Pageable pageable,
+                                                                         @PathVariable Long parentCommentId,
+                                                                         @ApiIgnore @AuthenticationPrincipal
+                                                                             Principal principal) {
+        User user = null;
+        if (principal != null) {
+            user = userService.findByEmail(principal.getName());
+        }
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ecoNewsCommentService.findAllActiveReplies(pageable, parentCommentId, user));
+    }
 }
