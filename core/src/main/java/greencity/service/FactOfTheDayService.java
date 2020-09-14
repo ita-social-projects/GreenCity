@@ -28,15 +28,6 @@ public interface FactOfTheDayService {
     FactOfTheDayDTO getFactOfTheDayById(Long id);
 
     /**
-     * Method find {@link FactOfTheDay} by name.
-     *
-     * @param name of {@link FactOfTheDay}
-     * @return {@link FactOfTheDay}
-     * @author Mykola Lehkyi
-     */
-    List<FactOfTheDay> getAllFactOfTheDayByName(String name);
-
-    /**
      * Method saves new {@link FactOfTheDay} and {@link FactOfTheDayTranslation}.
      *
      * @param fact {@link FactOfTheDayPostDTO}
@@ -80,4 +71,11 @@ public interface FactOfTheDayService {
      * @author Mykola Lehkyi
      */
     List<Long> deleteAllFactOfTheDayAndTranslations(List<Long> listId);
+
+    /**
+     * Method returns pageable of {@link FactOfTheDayDTO} that satisfy search query.
+     * @param searchQuery query to search
+     * @return pageable of {@link FactOfTheDayDTO}
+     */
+    PageableDto<FactOfTheDayDTO> searchBy(Pageable pageable, String searchQuery);
 }

@@ -95,4 +95,14 @@ public interface EcoNewsCommentService {
      * @author Taras Dovganyuk
      */
     PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, User user, Long ecoNewsId);
+
+    /**
+     * Method returns all active replies to certain comment specified by parentCommentId.
+     *
+     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to which we search for replies
+     * @param user            current {@link User}
+     * @return all replies to certain comment specified by parentCommentId.
+     * @author Taras Dovganyuk
+     */
+    PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, User user);
 }

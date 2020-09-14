@@ -289,7 +289,7 @@ public class UserServiceImpl implements UserService {
         if (userGoalResponseDtos.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
         }
-        userGoalResponseDtos.stream().forEach(el -> setTextForAnyUserGoal(el, userId, language));
+        userGoalResponseDtos.forEach(el -> setTextForAnyUserGoal(el, userId, language));
         return userGoalResponseDtos;
     }
 
@@ -780,8 +780,7 @@ public class UserServiceImpl implements UserService {
      * @author Marian Datsko
      */
     @Override
-    public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
-                                                  String email) {
+    public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, String email) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
@@ -801,12 +800,6 @@ public class UserServiceImpl implements UserService {
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
-        if (userProfileDtoRequest.getImage() != null) {
-            image = fileService.convertToMultipartImage(userProfileDtoRequest.getImage());
-        }
-        if (image != null) {
-            user.setProfilePicturePath(fileService.upload(image).toString());
-        }
         userRepo.save(user);
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }

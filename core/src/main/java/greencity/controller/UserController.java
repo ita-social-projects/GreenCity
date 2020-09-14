@@ -1,10 +1,10 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
-import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.constant.ValidationConstants;
@@ -32,6 +32,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -232,11 +233,11 @@ public class UserController {
      * @return list of {@link HabitDto}
      */
     @GetMapping("/{userId}/habits")
+    @ApiLocale
     public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable @CurrentUserId Long userId,
-                                                        @ApiParam(value = "Code of the needed language.")
-                                                        @RequestParam String language) {
+                                                        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticService.findAllHabitsAndTheirStatistics(userId, true, language));
+            .body(habitStatisticService.findAllHabitsAndTheirStatistics(userId, true, locale.getLanguage()));
     }
 
     /**
@@ -256,7 +257,7 @@ public class UserController {
     /**
      * Method returns list of user goals for specific language.
      *
-     * @param language - needed language code
+     * @param locale - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -267,14 +268,14 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/goals")
+    @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getUserGoals(userId, language));
+            .body(userService.getUserGoals(userId, locale.getLanguage()));
     }
 
     /**
@@ -366,7 +367,7 @@ public class UserController {
     /**
      * Method returns list of available (not ACTIVE) goals for user.
      *
-     * @param language - needed language code
+     * @param locale - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -377,14 +378,14 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/goals/available")
+    @ApiLocale
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableGoals(userId, language));
+            .body(userService.getAvailableGoals(userId, locale.getLanguage()));
     }
 
     /**
@@ -412,7 +413,7 @@ public class UserController {
     /**
      * Method updates goal status.
      *
-     * @param language - needed language code
+     * @param locale - needed language code
      * @return new {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -423,23 +424,23 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PatchMapping("/{userId}/goals/{goalId}")
+    @ApiLocale
     public ResponseEntity<UserGoalResponseDto> updateUserGoalStatus(
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
         @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
         @PathVariable Long goalId,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.updateUserGoalStatus(userId, goalId, language));
+            .body(userService.updateUserGoalStatus(userId, goalId, locale.getLanguage()));
     }
 
     /**
      * Method saves goals, chosen by user.
      *
-     * @param dto      - dto with goals, chosen by user.
-     * @param language - needed language code
+     * @param dto    - dto with goals, chosen by user.
+     * @param locale - needed language code
      * @return new {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
@@ -450,15 +451,15 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/{userId}/goals")
+    @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
         @Valid @RequestBody BulkSaveUserGoalDto dto,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.saveUserGoals(userId, dto, language));
+            .body(userService.saveUserGoals(userId, dto, locale.getLanguage()));
     }
 
     /**
@@ -474,14 +475,14 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/habit-dictionary/available")
+    @ApiLocale
     public ResponseEntity<List<HabitDictionaryDto>> getAvailableHabitDictionary(
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
-        @ApiParam(value = "Code of the needed language.")
-        @RequestParam @ValidLanguage String language) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableHabitDictionary(userId, language));
+            .body(userService.getAvailableHabitDictionary(userId, locale.getLanguage()));
     }
 
     /**
@@ -498,15 +499,15 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/{userId}/habit")
+    @ApiLocale
     public ResponseEntity<List<HabitCreateDto>> saveUserHabits(
         @Valid @RequestBody List<HabitIdDto> dto,
         @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
-        @ApiParam(value = "Code of the needed language.")
-        @RequestParam @ValidLanguage String language) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userService.createUserHabit(userId, dto, language));
+            .body(userService.createUserHabit(userId, dto, locale.getLanguage()));
     }
 
     /**
@@ -686,17 +687,13 @@ public class UserController {
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PutMapping(path = "/profile", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
-        MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(path = "/profile")
     public ResponseEntity<UserProfileDtoResponse> save(
-        @ApiParam(required = true, value = SwaggerExampleModel.userProfileRequest)
-        @RequestPart UserProfileDtoRequest userProfileDtoRequest,
-        @ApiParam(value = "User Profile Image")
-        @ImageValidation
-        @RequestPart(required = false) MultipartFile image,
+        @ApiParam(required = true)
+        @RequestBody UserProfileDtoRequest userProfileDtoRequest,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            userService.saveUserProfile(userProfileDtoRequest, image, principal.getName()));
+            userService.saveUserProfile(userProfileDtoRequest, principal.getName()));
     }
 
     /**
