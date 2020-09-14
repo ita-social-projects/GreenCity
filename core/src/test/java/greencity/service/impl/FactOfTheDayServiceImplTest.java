@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,7 +21,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -47,11 +45,6 @@ public class FactOfTheDayServiceImplTest {
 
     @InjectMocks
     private FactOfTheDayServiceImpl factOfTheDayService;
-
-    @BeforeEach
-    public void setup(){
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void findByIdTest(){

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 @Service
 @EnableCaching
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
+    @Autowired
     private FactOfTheDayRepo factOfTheDayRepo;
     @Autowired
     private ModelMapper modelMapper;
@@ -38,15 +39,6 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     FactOfTheDayTranslationService factOfTheDayTranslationService;
     @Autowired
     private PlaceCommentServiceImpl placeCommentServiceImpl;
-
-    /**
-     * Constructor with parameters.
-     *
-     * @author Mykola Lehkyi
-     */
-    public FactOfTheDayServiceImpl(FactOfTheDayRepo factOfTheDayRepo) {
-        this.factOfTheDayRepo = factOfTheDayRepo;
-    }
 
     /**
      * Method finds all {@link FactOfTheDay} with pageable configuration.
