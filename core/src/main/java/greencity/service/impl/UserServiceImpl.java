@@ -289,7 +289,7 @@ public class UserServiceImpl implements UserService {
         if (userGoalResponseDtos.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
         }
-        userGoalResponseDtos.stream().forEach(el -> setTextForAnyUserGoal(el, userId, language));
+        userGoalResponseDtos.forEach(el -> setTextForAnyUserGoal(el, userId, language));
         return userGoalResponseDtos;
     }
 
