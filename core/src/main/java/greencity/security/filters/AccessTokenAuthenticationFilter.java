@@ -11,6 +11,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.html.Option;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,10 +60,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         if (token != null) {
             try {
                 Optional<User> user = userService.findNotDeactivatedByEmail(jwtTool.getEmailOutOfAccessToken(token));
-                Collection<? extends GrantedAuthority> authorities = null;
-                if (user.isPresent()) {
-                    authorities = convertRoles(user.get().getRole().name());
-                }
+                Collection<? extends GrantedAuthority> authorities = convertRoles(user);
                 Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(token, null, authorities));
                 if (user.isPresent()) {
@@ -81,10 +79,11 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Convert comma separated string of {@link User} roles to collection of roles.
      *
-     * @param roles - {@link String} of roles separated by a comma
+     * @param user - {@link String} of roles separated by a comma
      * @return {@link Collection} of roles
      */
-    private Collection<? extends GrantedAuthority> convertRoles(String roles) {
-        return AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
+    private Collection<? extends GrantedAuthority> convertRoles(Optional<User> user) {
+        return user.map(value -> AuthorityUtils.commaSeparatedStringToAuthorityList(value.getRole().name()))
+            .orElse(null);
     }
 }
