@@ -690,7 +690,7 @@ public class UserController {
     @PutMapping(path = "/profile")
     public ResponseEntity<UserProfileDtoResponse> save(
         @ApiParam(required = true)
-        @RequestBody UserProfileDtoRequest userProfileDtoRequest,
+        @RequestBody @Valid UserProfileDtoRequest userProfileDtoRequest,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             userService.saveUserProfile(userProfileDtoRequest, principal.getName()));
