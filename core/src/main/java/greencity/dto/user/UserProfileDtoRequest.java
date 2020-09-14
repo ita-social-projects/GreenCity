@@ -19,5 +19,4 @@ public class UserProfileDtoRequest {
     private Boolean showLocation;
     private Boolean showEcoPlace;
     private Boolean showShoppingList;
-    private String image;
 }

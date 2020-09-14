@@ -1,7 +1,8 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUserId;
-import greencity.constant.AppConstant;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.ShoppingListDtoResponse;
@@ -11,10 +12,17 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/goals")
@@ -32,7 +40,7 @@ public class GoalController {
     /**
      * Method returns all goals, available for tracking for specific language.
      *
-     * @param language needed language code
+     * @param locale needed language code
      * @return list of {@link GoalDto}
      */
     @ApiOperation(value = "Get all goals.")
@@ -42,10 +50,10 @@ public class GoalController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
+    @ApiLocale
     public ResponseEntity<List<GoalDto>> getAll(
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return ResponseEntity.status(HttpStatus.OK).body(goalService.findAll(language));
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(goalService.findAll(locale.getLanguage()));
     }
 
     /**
@@ -54,18 +62,19 @@ public class GoalController {
      * @return shopping list {@link ShoppingListDtoResponse}.
      * @author Marian Datsko
      */
-    @ApiOperation(value = "Get sopping list")
+    @ApiOperation(value = "Get shopping list")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @GetMapping("/shoppingList/{userId}/language/{languageCode}")
+    @GetMapping("/shoppingList/{userId}")
+    @ApiLocale
     public ResponseEntity<List<ShoppingListDtoResponse>> getShoppingList(
         @ApiParam("User id")
         @PathVariable Long userId,
-        @PathVariable(name = "languageCode") String languageCode) {
-        return ResponseEntity.status(HttpStatus.OK).body(goalService.getShoppingList(userId, languageCode));
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(goalService.getShoppingList(userId, locale.getLanguage()));
     }
 
     /**

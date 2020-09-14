@@ -21,10 +21,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
 import static org.mockito.ArgumentMatchers.eq;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -506,26 +504,16 @@ class UserControllerTest {
             + "\t\"showEcoPlace\": true,\n"
             + "\t\"showShoppingList\": false\n"
             + "}";
-        MockMultipartFile jsonFile =
-            new MockMultipartFile("userProfileDtoRequest", "", "application/json", json.getBytes());
 
-        MockMultipartHttpServletRequestBuilder builder =
-            MockMvcRequestBuilders.multipart(userLink + "/profile");
-        builder.with(request -> {
-            request.setMethod("PUT");
-            return request;
-        });
-
-        this.mockMvc.perform(builder
-            .file(jsonFile)
-            .principal(principal)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(put(userLink + "/profile")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json)
+            .principal(principal))
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         UserProfileDtoRequest dto = mapper.readValue(json, UserProfileDtoRequest.class);
 
-        verify(userService).saveUserProfile(eq(dto), eq(null), eq("testmail@gmail.com"));
+        verify(userService).saveUserProfile(eq(dto), eq("testmail@gmail.com"));
     }
 }

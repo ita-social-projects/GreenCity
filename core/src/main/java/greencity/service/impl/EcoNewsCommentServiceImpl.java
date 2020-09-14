@@ -253,4 +253,33 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             pages.getTotalPages()
         );
     }
+
+    /**
+     * Method returns all replies to certain comment specified by parentCommentId.
+     *
+     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to which we search for replies
+     * @param user            current {@link User}
+     * @return all replies to certain comment specified by parentCommentId.
+     * @author Taras Dovganyuk
+     */
+    @Override
+    public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, User user) {
+        Page<EcoNewsComment> pages = ecoNewsCommentRepo
+            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(pageable, parentCommentId);
+        List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
+            .stream()
+            .map(comment -> {
+                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                return comment;
+            })
+            .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            ecoNewsCommentDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages()
+        );
+    }
 }

@@ -803,28 +803,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void saveUserProfileTest() throws MalformedURLException {
+    void saveUserProfileTest() {
         UserProfileDtoRequest request = new UserProfileDtoRequest();
         request.setSocialNetworks(new ArrayList<>());
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
-        MultipartFile image = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
-        when(fileService.upload(image)).thenReturn(new URL("http://test.com"));
-        userService.saveUserProfile(request, image, anyString());
+        userService.saveUserProfile(request, "teststring");
         verify(userRepo).save(user);
         verify(modelMapper).map(user, UserProfileDtoResponse.class);
-    }
-
-    @Test
-    void saveUserProfileNullImageTest() {
-        UserProfileDtoRequest request = new UserProfileDtoRequest();
-        request.setSocialNetworks(new ArrayList<>());
-        UserProfileDtoResponse response = new UserProfileDtoResponse();
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
-        when(userRepo.save(user)).thenReturn(user);
-        when(modelMapper.map(user, UserProfileDtoResponse.class)).thenReturn(response);
-        UserProfileDtoResponse userProfileDtoResponse =
-            userService.saveUserProfile(request, null, anyString());
-        assertEquals(response, userProfileDtoResponse);
     }
 
     @Test

@@ -3,8 +3,6 @@ package greencity.security.service.impl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.constant.AppConstant;
-import static greencity.constant.AppConstant.GOOGLE_USERNAME;
-import static greencity.constant.ErrorMessage.*;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
@@ -19,10 +17,12 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.AppConstant.GOOGLE_PICTURE;
+import static greencity.constant.AppConstant.GOOGLE_USERNAME;
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * {@inheritDoc}
@@ -33,9 +33,6 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private final UserService userService;
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
     private final JwtTool jwtTool;
-    private final ApplicationEventPublisher appEventPublisher;
-    private final String defaultProfilePicture;
-
 
     /**
      * Constructor.
@@ -43,20 +40,15 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
      * @param userService           {@link UserService} - service of {@link User} logic.
      * @param jwtTool               {@link JwtTool} - tool for jwt logic.
      * @param googleIdTokenVerifier {@link GoogleIdTokenVerifier} - tool for verify googleIdToken.
-     * @param appEventPublisher     {@link ApplicationEventPublisher} - tool for eventPublisher logic.
      */
     @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
                                      JwtTool jwtTool,
-                                     GoogleIdTokenVerifier googleIdTokenVerifier,
-                                     ApplicationEventPublisher appEventPublisher,
-                                     @Value("${defaultProfilePicture}") String defaultProfilePicture
+                                     GoogleIdTokenVerifier googleIdTokenVerifier
     ) {
         this.userService = userService;
         this.jwtTool = jwtTool;
         this.googleIdTokenVerifier = googleIdTokenVerifier;
-        this.appEventPublisher = appEventPublisher;
-        this.defaultProfilePicture = defaultProfilePicture;
     }
 
     /**
@@ -71,13 +63,12 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
                 String userName = (String) payload.get(GOOGLE_USERNAME);
-                User byEmail;
-                byEmail = userService.findByEmail(email);
-                User user = byEmail;
+                User user = userService.findByEmail(email);
                 if (user == null) {
                     log.info(USER_NOT_FOUND_BY_EMAIL + email);
-                    user = createNewUser(email, userName);
-                    User savedUser = userService.save(user);
+                    String profilePicture = (String) payload.get(GOOGLE_PICTURE);
+                    user = createNewUser(email, userName, profilePicture);
+                    userService.save(user);
                     log.info("Google sign-up and sign-in user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 } else {
@@ -95,7 +86,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
         }
     }
 
-    private User createNewUser(String email, String userName) {
+    private User createNewUser(String email, String userName, String profilePicture) {
         return User.builder()
             .email(email)
             .name(userName)
@@ -105,7 +96,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
             .refreshTokenKey(jwtTool.generateTokenKey())
-            .profilePicturePath(defaultProfilePicture)
+            .profilePicturePath(profilePicture)
             .rating(AppConstant.DEFAULT_RATING)
             .build();
     }
