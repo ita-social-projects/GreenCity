@@ -51,7 +51,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@ExtendWith(MockitoExtension.class)
 class PlaceControllerTest {
     private static final String placeLink = "/place";
 
