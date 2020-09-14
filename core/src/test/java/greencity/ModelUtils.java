@@ -13,6 +13,9 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayDTO;
+import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
@@ -483,5 +486,18 @@ public class ModelUtils {
 
     public static UserProfilePictureDto getUserProfilePictureDto() {
         return new UserProfilePictureDto(1L, "image");
+    }
+
+    public static FactOfTheDayDTO getFactOfTheDayDto() {
+        return new FactOfTheDayDTO(1L, "name", null, ZonedDateTime.now());
+    }
+
+    public static FactOfTheDay getFactOfTheDay() {
+        return new FactOfTheDay(1L, "Fact of the day", null, ZonedDateTime.now());
+    }
+
+    public static FactOfTheDayPostDTO getFactOfTheDayPostDto(){
+        return new FactOfTheDayPostDTO(1L,"name",
+            Collections.singletonList(new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)));
     }
 }
