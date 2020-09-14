@@ -28,7 +28,7 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
      * @return image converted to MultipartFile.
      */
     @Override
-    protected MultipartFile convert(String image) {
+    public MultipartFile convert(String image) {
         String imageToConvert = image.substring(image.indexOf(',') + 1);
         File tempFile = new File("tempImage.jpg");
         byte[] imageByte = decodeBase64(imageToConvert);
@@ -39,7 +39,7 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
             FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
                 false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
             try (InputStream input = new FileInputStream(tempFile);
-                 OutputStream outputStream = fileItem.getOutputStream();) {
+                 OutputStream outputStream = fileItem.getOutputStream()) {
                 IOUtils.copy(input, outputStream);
                 outputStream.flush();
                 return new CommonsMultipartFile(fileItem);

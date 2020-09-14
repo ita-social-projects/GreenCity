@@ -687,17 +687,13 @@ public class UserController {
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PutMapping(path = "/profile", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
-        MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(path = "/profile")
     public ResponseEntity<UserProfileDtoResponse> save(
-        @ApiParam(required = true, value = SwaggerExampleModel.userProfileRequest)
-        @RequestPart UserProfileDtoRequest userProfileDtoRequest,
-        @ApiParam(value = "User Profile Image")
-        @ImageValidation
-        @RequestPart(required = false) MultipartFile image,
+        @ApiParam(required = true)
+        @RequestBody @Valid UserProfileDtoRequest userProfileDtoRequest,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            userService.saveUserProfile(userProfileDtoRequest, image, principal.getName()));
+            userService.saveUserProfile(userProfileDtoRequest, principal.getName()));
     }
 
     /**

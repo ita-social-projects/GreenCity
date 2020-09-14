@@ -159,6 +159,10 @@ public final class ErrorMessage {
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
     public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
         "Bad default social network image host path (Row in database doesn't exists)";
+    public static final String USER_CANNOT_ADD_SAME_SOCIAL_NETWORK_LINKS =
+        "User cannot add the same social network links";
+    public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
+        "User cannot add more than 5 social network links";
 
     private ErrorMessage() {
     }

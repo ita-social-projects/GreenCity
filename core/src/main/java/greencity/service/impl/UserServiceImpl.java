@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -780,8 +779,7 @@ public class UserServiceImpl implements UserService {
      * @author Marian Datsko
      */
     @Override
-    public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
-                                                  String email) {
+    public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, String email) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
@@ -792,21 +790,15 @@ public class UserServiceImpl implements UserService {
         user.getSocialNetworks().addAll(userProfileDtoRequest.getSocialNetworks()
             .stream()
             .map(url ->
-            SocialNetwork.builder()
-                .url(url)
-                .user(user)
-                .socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
-                .build())
+                SocialNetwork.builder()
+                    .url(url)
+                    .user(user)
+                    .socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
+                    .build())
             .collect(Collectors.toList()));
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
-        if (userProfileDtoRequest.getImage() != null) {
-            image = fileService.convertToMultipartImage(userProfileDtoRequest.getImage());
-        }
-        if (image != null) {
-            user.setProfilePicturePath(fileService.upload(image).toString());
-        }
         userRepo.save(user);
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
