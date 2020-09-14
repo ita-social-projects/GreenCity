@@ -14,8 +14,8 @@ import greencity.service.FactOfTheDayTranslationService;
 import greencity.service.LanguageService;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,27 +26,15 @@ import org.springframework.stereotype.Service;
  *
  * @author Mykola Lehkyi
  */
+@AllArgsConstructor
 @Service
 @EnableCaching
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
-    private FactOfTheDayRepo factOfTheDayRepo;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    LanguageService languageService;
-    @Autowired
-    FactOfTheDayTranslationService factOfTheDayTranslationService;
-    @Autowired
-    private PlaceCommentServiceImpl placeCommentServiceImpl;
-
-    /**
-     * Constructor with parameters.
-     *
-     * @author Mykola Lehkyi
-     */
-    public FactOfTheDayServiceImpl(FactOfTheDayRepo factOfTheDayRepo) {
-        this.factOfTheDayRepo = factOfTheDayRepo;
-    }
+    private final FactOfTheDayRepo factOfTheDayRepo;
+    private final ModelMapper modelMapper;
+    private final LanguageService languageService;
+    private final FactOfTheDayTranslationService factOfTheDayTranslationService;
+    private final PlaceCommentServiceImpl placeCommentServiceImpl;
 
     /**
      * Method finds all {@link FactOfTheDay} with pageable configuration.
