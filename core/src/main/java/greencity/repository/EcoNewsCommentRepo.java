@@ -57,4 +57,15 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      */
     Page<EcoNewsComment> findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateAsc(Pageable pageable,
                                                                                                       Long ecoNewsId);
+
+    /**
+     * Method returns all {@link EcoNewsComment} by page.
+     *
+     * @param pageable        page of news.
+     * @param parentCommentId id of comment, replies to which we get.
+     * @return all replies to comment, specified by parentCommentId and page.
+     * @author Dovganyuk Taras
+     */
+    Page<EcoNewsComment> findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(Pageable pageable,
+                                                                                      Long parentCommentId);
 }

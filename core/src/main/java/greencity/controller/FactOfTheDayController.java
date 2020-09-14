@@ -1,6 +1,8 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
@@ -15,6 +17,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +27,17 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -37,7 +52,7 @@ public class FactOfTheDayController {
     /**
      * Method which return a random {@link FactOfTheDay}.
      *
-     * @param languageCode string code od language example: en
+     * @param locale string code od language example: en
      * @return {@link FactOfTheDayTranslationDTO}
      */
     @ApiOperation(value = "Get random fact of the day.")
@@ -46,11 +61,12 @@ public class FactOfTheDayController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/")
+    @ApiLocale
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
                                                                                 Principal principal,
-                                                                            @RequestParam String languageCode) {
+                                                                            @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(languageCode));
+            .body(factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(locale.getLanguage()));
     }
 
     /**

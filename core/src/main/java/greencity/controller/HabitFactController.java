@@ -1,8 +1,7 @@
 package greencity.controller;
 
-import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
-
-import greencity.constant.AppConstant;
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.fact.HabitFactDTO;
 import greencity.dto.fact.HabitFactPostDTO;
@@ -12,16 +11,26 @@ import greencity.entity.HabitFact;
 import greencity.service.FactTranslationService;
 import greencity.service.HabitFactService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
+
+import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
 @RestController
 @RequestMapping("/facts")
@@ -46,11 +55,11 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/random/{habitId}")
+    @ApiLocale
     public LanguageTranslationDTO getRandomFactByHabitId(
         @PathVariable Long habitId,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return habitFactService.getRandomHabitFactByHabitIdAndLanguage(habitId, language);
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return habitFactService.getRandomHabitFactByHabitIdAndLanguage(habitId, locale.getLanguage());
     }
 
     /**
