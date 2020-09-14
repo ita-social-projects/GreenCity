@@ -155,7 +155,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/sixUserFriends/",
                 "/user/{userId}/profile/",
                 "/user/{userId}/profileStatistics/",
-                "/goals/shoppingList/{userId}/*",
+                "/goals",
+                "/goals/shoppingList/{userId}",
                 "/user/userAndSixFriendsWithOnlineStatus",
                 "/user/userAndAllFriendsWithOnlineStatus",
                 "/habit"
