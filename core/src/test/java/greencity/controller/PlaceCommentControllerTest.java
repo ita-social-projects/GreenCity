@@ -157,7 +157,7 @@ class PlaceCommentControllerTest {
 
     @Test
     public void deleteByIdTest() throws Exception {
-        this.mockMvc.perform(delete(placeCommentLinkSecondPart + "?id=1"))
+        this.mockMvc.perform(delete(placeCommentLinkSecondPart + "?id={id}", 1))
             .andExpect(status().isOk());
 
         verify(placeCommentService, times(1))
@@ -166,7 +166,7 @@ class PlaceCommentControllerTest {
 
     @Test
     public void deleteByIdFailedTest() throws Exception {
-        mockMvc.perform(delete(placeCommentLinkSecondPart + "?id=invalidID"))
+        mockMvc.perform(delete(placeCommentLinkSecondPart + "?id={id}", "invalidID"))
             .andExpect(status().isBadRequest());
 
         verify(placeCommentService, times(0)).findById(1L);
