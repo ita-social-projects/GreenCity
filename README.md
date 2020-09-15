@@ -98,4 +98,4 @@ There is no special configurations required. Just clone [GreenCityClient](https:
 
 Here you can read more about [how to set up checkstyle](https://github.com/ita-social-projects/GreenCity/wiki/Setup-CheckStyle-to-your-IDE);
 
-Here you can read more about [SonarQube Plugin for Intellij Idea](https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin/);
+Here you can read more about [SonarLint](https://plugins.jetbrains.com/plugin/7973-sonarlint);
