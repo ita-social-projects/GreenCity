@@ -32,9 +32,15 @@
                     <div class="table-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h2>Manage <b>User</b></h2>
+                                <h2>Manage <strong>User</strong></h2>
                             </div>
                             <div class="col-sm-6">
+                                <span class="search-box-right">
+                                    <form class="form-inline searching" action="/management/users" method="get">
+                                        <i class="material-icons"></i>
+                                        <input type="text" name="query" class="form-control" placeholder="Search…">
+                                    </form>
+                                </span>
                                 <a href="#addUserModal" id="addFactOfTheDayModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New User</span></a>
                                 <a href="#deactivateAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Deactivate</span></a>
                             </div>
@@ -81,7 +87,7 @@
                         </th:block>
                     </table>
                     <div class="clearfix">
-                        <div class="hint-text">Showing <b th:text="${users.getTotalElements()>10?10:users.getTotalElements()}">5</b> out of <b th:text="${users.getTotalElements()}">25</b> entries</div>
+                        <div class="hint-text">Showing <b th:text="${users.getTotalElements()>20?20:users.getTotalElements()}">5</b> out of <b th:text="${users.getTotalElements()}">25</b> entries</div>
                         <ul class="pagination" >
                             <li class="page-item" th:classappend="${users.getCurrentPage()==0?'disabled':''}"><a th:href="@{users(page=${users.getCurrentPage()-1})}" class="page-link">Previous</a></li>
                             <li class="page-item" th:each="i : ${#numbers.sequence(0,users.getTotalPages()-1)}" th:classappend="${users.getCurrentPage()==i?'active':''}"><a th:href="@{/management/users(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
