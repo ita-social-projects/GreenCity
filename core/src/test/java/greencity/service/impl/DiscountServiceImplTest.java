@@ -1,23 +1,24 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-
 import greencity.entity.DiscountValue;
+import greencity.exception.exceptions.NewsSubscriberPresentException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.DiscountValuesRepo;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DiscountServiceImplTest {
     @Mock
     private DiscountValuesRepo discountValuesRepo;
@@ -40,9 +41,11 @@ public class DiscountServiceImplTest {
         assertEquals(genericEntity, foundEntity);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void findByIdGivenIdNullThenThrowException() {
-        discountService.findById(null);
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> discountService.findById(null));
     }
 
     @Test

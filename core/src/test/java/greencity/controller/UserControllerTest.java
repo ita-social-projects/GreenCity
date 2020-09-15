@@ -18,6 +18,9 @@ import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +41,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -219,9 +225,9 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserHabitsWithoutLanguageParamBadRequestTest() throws Exception {
+    void getUserHabitsWithoutLanguageParamTest() throws Exception {
         mockMvc.perform(get(userLink + "/{userId}/habits", 1))
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isCreated());
     }
 
     @Test
@@ -321,7 +327,8 @@ class UserControllerTest {
 
     @Test
     void getAvailableGoalsWithLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/goals/available?language=ru", 1))
+        mockMvc.perform(get(userLink + "/{userId}/goals/available", 1)
+            .locale(new Locale("ru")))
             .andExpect(status().isOk());
 
         verify(userService).getAvailableGoals(eq(1L), eq("ru"));
@@ -337,7 +344,8 @@ class UserControllerTest {
 
     @Test
     void updateUserGoalStatusWithLanguageParamTest() throws Exception {
-        mockMvc.perform(patch(userLink + "/{userId}/goals/{goalId}?language=ru", 1, 1))
+        mockMvc.perform(patch(userLink + "/{userId}/goals/{goalId}", 1, 1)
+        .locale(new Locale("ru")))
             .andExpect(status().isCreated());
 
         verify(userService).updateUserGoalStatus(eq(1L), eq(1L), eq("ru"));

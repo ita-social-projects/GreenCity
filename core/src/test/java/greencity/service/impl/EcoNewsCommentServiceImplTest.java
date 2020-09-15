@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.ModelUtils;
+import static greencity.ModelUtils.*;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
@@ -20,25 +21,24 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
+import static org.mockito.ArgumentMatchers.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EcoNewsCommentServiceImplTest {
     @Mock
     private EcoNewsCommentRepo ecoNewsCommentRepo;
@@ -49,7 +49,7 @@ public class EcoNewsCommentServiceImplTest {
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         modelMapper.addConverter(new AddEcoNewsCommentDtoResponseMapper());
         modelMapper.addConverter(new EcoNewsCommentDtoMapper());
@@ -294,7 +294,8 @@ public class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.of(ecoNewsComment));
 
         BadRequestException badRequestException =
-            assertThrows(BadRequestException.class, () -> ecoNewsCommentService.update(newText, commentId, userToUpdate));
+            assertThrows(BadRequestException.class,
+                () -> ecoNewsCommentService.update(newText, commentId, userToUpdate));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 
