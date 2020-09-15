@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserManagementDto;
@@ -18,13 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @AllArgsConstructor
@@ -42,15 +37,17 @@ public class ManagementUserController {
      * @return View template path {@link String}.
      * @author Vasyl Zhovnir
      */
-    @GetMapping("")
-    public String getAllUsers(Model model,
+    @GetMapping
+    public String getAllUsers(@RequestParam(required = false, name = "query") String query,
                               @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "10") int size) {
+                              @RequestParam(defaultValue = "10") int size,
+                              Model model) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        model.addAttribute("users", userService.findUserForManagementByPage(paging));
+        PageableDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
+            ? userService.findUserForManagementByPage(paging) : userService.searchBy(paging, query);
+        model.addAttribute("users", pageableDto);
         return "core/management_user";
     }
-
 
     /**
      * Method that updates user data.

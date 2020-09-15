@@ -180,4 +180,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Modifying
     @Query(value = "UPDATE User SET userStatus = 1 where id IN(:ids)")
     void deactivateSelectedUsers(List<Long> ids);
+
+    /**
+     * Method returns {@link User} by search query and page.
+     *
+     * @param paging    {@link Pageable}.
+     * @param query query to search.
+     * @return list of {@link User}.
+     */
+    @Query
+    Page<User> searchBy(Pageable paging, String query);
 }

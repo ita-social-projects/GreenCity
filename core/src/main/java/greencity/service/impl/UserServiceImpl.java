@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -35,8 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -958,5 +957,22 @@ public class UserServiceImpl implements UserService {
     public void setActivatedStatus(Long id) {
         User foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.ACTIVATED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<UserManagementDto> searchBy(Pageable paging, String query) {
+        Page<User> page = userRepo.searchBy(paging, query);
+        List<UserManagementDto> users = page.stream()
+            .map(user -> modelMapper.map(user, UserManagementDto.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            users,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
+        );
     }
 }
