@@ -23,7 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @EqualsAndHashCode
 public class TipsAndTricksDtoResponse implements Serializable {
     @NotNull
-    @Min(value = 1, message = "Tips and Tricks id must be a positive number")
+    @Min(1)
     private Long id;
 
     @NotEmpty

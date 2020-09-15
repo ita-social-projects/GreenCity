@@ -16,10 +16,10 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class HabitCreateDto {
     @NotNull
-    @Min(value = 1, message = "Habit id must be a positive number")
+    @Min(1)
     private Long id;
-    @NotEmpty(message = "HabitDictionary object must not be null")
+    @NotEmpty
     private HabitDictionaryDto habitDictionary;
-    @NotEmpty(message = "Status integer must not be null")
+    @NotEmpty
     private Boolean status;
 }

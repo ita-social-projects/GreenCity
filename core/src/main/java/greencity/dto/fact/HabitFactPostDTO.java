@@ -16,6 +16,6 @@ public class HabitFactPostDTO {
     @LanguageTranslationConstraint
     private List<LanguageTranslationDTO> translations;
 
-    @NotNull(message = "habitDictionary can not be null")
+    @NotNull
     private HabitDictionaryIdDto habitDictionary;
 }

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecificationNameDto {
-    @NotBlank(message = ValidationConstants.EMPTY_SPECIFICATION_NAME)
+    @NotBlank
     private String name;
 }
