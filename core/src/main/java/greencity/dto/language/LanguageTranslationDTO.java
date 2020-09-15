@@ -15,8 +15,7 @@ public class LanguageTranslationDTO {
     @NotNull
     private LanguageDTO language;
 
-    @NotBlank(message = ValidationConstants.EMPTY_ADVICE)
-    @Length(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH,
-        message = ValidationConstants.INVALID_ADVICE_LENGTH)
+    @NotBlank
+    @Length(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH)
     private String content;
 }

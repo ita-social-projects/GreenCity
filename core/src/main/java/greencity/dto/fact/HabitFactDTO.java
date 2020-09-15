@@ -17,11 +17,10 @@ public class HabitFactDTO {
     @Min(1)
     private Long id;
 
-    @NotBlank(message = ValidationConstants.EMPTY_HABIT_FACT)
-    @Length(min = ValidationConstants.HABIT_FACT_MIN_LENGTH, max = ValidationConstants.HABIT_FACT_MAX_LENGTH,
-        message = ValidationConstants.INVALID_HABIT_FACT_LENGTH)
+    @NotBlank
+    @Length(min = ValidationConstants.HABIT_FACT_MIN_LENGTH, max = ValidationConstants.HABIT_FACT_MAX_LENGTH)
     private String content;
 
-    @NotNull(message = "habitDictionary can not be null")
+    @NotNull
     private HabitDictionaryDto habitDictionary;
 }

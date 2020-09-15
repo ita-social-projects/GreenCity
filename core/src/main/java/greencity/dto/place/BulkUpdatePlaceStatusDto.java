@@ -21,9 +21,9 @@ public class BulkUpdatePlaceStatusDto {
     @Valid
     private List<
         @Positive(message = ValidationConstants.NEGATIVE_ID)
-        @NotNull(message = ValidationConstants.EMPTY_ID)
+        @NotNull
             Long> ids;
 
-    @NotNull(message = ValidationConstants.EMPTY_STATUS)
+    @NotNull
     private PlaceStatus status;
 }

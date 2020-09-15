@@ -27,7 +27,7 @@ import org.hibernate.validator.constraints.Length;
 public class PlaceWithUserDto {
     private Long id;
 
-    @NotBlank(message = ValidationConstants.EMPTY_PLACE_NAME)
+    @NotBlank
     @Length(max = ValidationConstants.PLACE_NAME_MAX_LENGTH)
     private String name;
 

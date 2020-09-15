@@ -19,6 +19,6 @@ public class CategoryDto  implements Serializable {
     @Length(
         min = ValidationConstants.CATEGORY_NAME_MIN_LENGTH,
         max = ValidationConstants.CATEGORY_NAME_MAX_LENGTH)
-    @NotBlank(message = ValidationConstants.EMPTY_NAME_OF_CATEGORY)
+    @NotBlank
     private String name;
 }

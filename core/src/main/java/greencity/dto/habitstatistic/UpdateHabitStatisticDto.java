@@ -22,8 +22,8 @@ public class UpdateHabitStatisticDto {
     @Min(0)
     private Long id;
     @Range(min = ValidationConstants.MIN_AMOUNT_OF_ITEMS, max = ValidationConstants.MAX_AMOUNT_OF_ITEMS)
-    @NotNull(message = "Amount of items can not be null.")
+    @NotNull
     private Integer amountOfItems;
-    @NotNull(message = "Rate of the day can not be null")
+    @NotNull
     private HabitRate habitRate;
 }

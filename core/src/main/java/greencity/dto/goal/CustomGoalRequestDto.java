@@ -15,6 +15,6 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class CustomGoalRequestDto {
     @NotNull
-    @Min(value = 1, message = "Custom goal id must be a positive number")
+    @Min(1)
     private Long id;
 }
