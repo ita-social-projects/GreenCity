@@ -959,4 +959,21 @@ public class UserServiceImpl implements UserService {
         User foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.ACTIVATED);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<UserManagementDto> searchBy(Pageable paging, String query) {
+        Page<User> page = userRepo.searchBy(paging, query);
+        List<UserManagementDto> users = page.stream()
+            .map(user -> modelMapper.map(user, UserManagementDto.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            users,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
+        );
+    }
 }
