@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.constant.HttpStatuses;
+import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -24,14 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -78,7 +72,7 @@ public class EcoNewsController {
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AddEcoNewsDtoResponse> save(
-            @ApiParam(value = "Add Eco News Request", required = true)
+            @ApiParam(value = SwaggerExampleModel.addEcoNewsRequest, required = true)
             @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
             @ApiParam(value = "Image of eco news")
             @ImageValidation

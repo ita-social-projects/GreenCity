@@ -23,11 +23,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-public class PlaceCommentServiceImplTest {
+class PlaceCommentServiceImplTest {
     @Mock
     private PlaceCommentRepo placeCommentRepo;
     @Mock
@@ -39,9 +38,8 @@ public class PlaceCommentServiceImplTest {
     @InjectMocks
     private PlaceCommentServiceImpl placeCommentService;
 
-
     @Test
-    public void findByIdTest() {
+    void findByIdTest() {
         Comment comment = ModelUtils.getComment();
         CommentReturnDto commentReturnDto = ModelUtils.getCommentReturnDto();
         when(placeCommentRepo.findById(1L))
@@ -54,7 +52,7 @@ public class PlaceCommentServiceImplTest {
 
 
     @Test
-    public void deleteByIdTest() {
+    void deleteByIdTest() {
         Comment comment = ModelUtils.getComment();
         when(placeCommentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
         doNothing().when(placeCommentRepo).delete(comment);
@@ -63,7 +61,7 @@ public class PlaceCommentServiceImplTest {
     }
 
     @Test
-    public void saveTest() {
+    void saveTest() {
         AddCommentDto addCommentDto = ModelUtils.getAddCommentDto();
         Comment comment = ModelUtils.getComment();
         when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlace());
@@ -78,8 +76,8 @@ public class PlaceCommentServiceImplTest {
 
 
     @Test
-    public void getAllCommentsTest() {
-        PageRequest pageRequest = new PageRequest(0, 2);
+    void getAllCommentsTest() {
+        PageRequest pageRequest = PageRequest.of(0, 2);
         List<CommentAdminDto> commentAdminDtos = Collections.singletonList(new CommentAdminDto());
         List<Comment> list = Collections.singletonList(ModelUtils.getComment());
         Page<Comment> comments = new PageImpl<>(list, pageRequest, list.size());

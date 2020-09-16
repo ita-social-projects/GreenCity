@@ -17,9 +17,9 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class UpdatePlaceStatusDto {
     @Positive(message = ValidationConstants.NEGATIVE_ID)
-    @NotNull(message = ValidationConstants.EMPTY_ID)
+    @NotNull
     private Long id;
 
-    @NotNull(message = ValidationConstants.EMPTY_STATUS)
+    @NotNull
     private PlaceStatus status;
 }

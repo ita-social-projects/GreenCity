@@ -34,12 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static greencity.constant.ErrorMessage.*;
 
 /**
@@ -64,6 +58,7 @@ public class UserServiceImpl implements UserService {
     private final FileService fileService;
     private final TipsAndTricksRepo tipsAndTricksRepo;
     private final EcoNewsRepo ecoNewsRepo;
+    private final SocialNetworkImageService socialNetworkImageService;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
 
@@ -164,6 +159,14 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         Optional<User> optionalUser = userRepo.findByEmail(email);
         return optionalUser.orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<User> findNotDeactivatedByEmail(String email) {
+        return userRepo.findNotDeactivatedByEmail(email);
     }
 
     /**
@@ -284,7 +287,7 @@ public class UserServiceImpl implements UserService {
         if (userGoalResponseDtos.isEmpty()) {
             throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
         }
-        userGoalResponseDtos.stream().forEach(el -> setTextForAnyUserGoal(el, userId, language));
+        userGoalResponseDtos.forEach(el -> setTextForAnyUserGoal(el, userId, language));
         return userGoalResponseDtos;
     }
 
@@ -775,24 +778,26 @@ public class UserServiceImpl implements UserService {
      * @author Marian Datsko
      */
     @Override
-    public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, MultipartFile image,
-                                                  String email) {
+    public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, String email) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setFirstName(userProfileDtoRequest.getFirstName());
         user.setCity(userProfileDtoRequest.getCity());
         user.setUserCredo(userProfileDtoRequest.getUserCredo());
-        user.setSocialNetworks(userProfileDtoRequest.getSocialNetworks());
+        user.getSocialNetworks().clear();
+        user.getSocialNetworks().addAll(userProfileDtoRequest.getSocialNetworks()
+            .stream()
+            .map(url ->
+                SocialNetwork.builder()
+                    .url(url)
+                    .user(user)
+                    .socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
+                    .build())
+            .collect(Collectors.toList()));
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
-        if (userProfileDtoRequest.getImage() != null) {
-            image = fileService.convertToMultipartImage(userProfileDtoRequest.getImage());
-        }
-        if (image != null) {
-            user.setProfilePicturePath(fileService.upload(image).toString());
-        }
         userRepo.save(user);
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
@@ -965,5 +970,22 @@ public class UserServiceImpl implements UserService {
             return Optional.of(foundUser);
         }
         return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<UserManagementDto> searchBy(Pageable paging, String query) {
+        Page<User> page = userRepo.searchBy(paging, query);
+        List<UserManagementDto> users = page.stream()
+            .map(user -> modelMapper.map(user, UserManagementDto.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            users,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
+        );
     }
 }

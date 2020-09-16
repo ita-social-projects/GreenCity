@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserManagementDto;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -37,18 +40,19 @@ public class ManagementUserController {
     /**
      * Method that returns management page with all {@link User}.
      *
-     * @param model Model that will be configured and returned to user.
-     * @param page  Page index you want to retrieve.
-     * @param size  Number of records per page.
+     * @param query    Query for searching related data
+     * @param model    Model that will be configured and returned to user.
+     * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      * @author Vasyl Zhovnir
      */
-    @GetMapping("")
-    public String getAllUsers(Model model,
-                              @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "10") int size) {
-        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        model.addAttribute("users", userService.findUserForManagementByPage(paging));
+    @GetMapping
+    public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
+                              Model model) {
+        Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+        PageableDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
+            ? userService.findUserForManagementByPage(paging) : userService.searchBy(paging, query);
+        model.addAttribute("users", pageableDto);
         return "core/management_user";
     }
 
@@ -110,7 +114,7 @@ public class ManagementUserController {
      * @return {@link GenericResponseDto}
      * @author Vasyl Zhovnir
      */
-    @PutMapping("")
+    @PutMapping
     @ResponseBody
     public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

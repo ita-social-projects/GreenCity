@@ -1,13 +1,12 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
-import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
-import greencity.dto.genericresponse.FieldErrorDto;
-import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.service.FactOfTheDayService;
@@ -17,17 +16,17 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
-import javax.validation.Valid;
+import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @AllArgsConstructor
@@ -41,7 +40,7 @@ public class FactOfTheDayController {
     /**
      * Method which return a random {@link FactOfTheDay}.
      *
-     * @param languageCode string code od language example: en
+     * @param locale string code od language example: en
      * @return {@link FactOfTheDayTranslationDTO}
      */
     @ApiOperation(value = "Get random fact of the day.")
@@ -50,11 +49,12 @@ public class FactOfTheDayController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/")
+    @ApiLocale
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
                                                                                 Principal principal,
-                                                                            @RequestParam String languageCode) {
+                                                                            @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(languageCode));
+            .body(factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(locale.getLanguage()));
     }
 
     /**
@@ -95,62 +95,6 @@ public class FactOfTheDayController {
     }
 
     /**
-     * Method which saves {@link FactOfTheDay}.
-     *
-     * @param factOfTheDayPostDTO of {@link FactOfTheDayPostDTO}
-     * @return {@link GenericResponseDto} with of operation and errors fields
-     */
-    @ApiOperation(value = "Save fact of the day")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @ResponseBody
-    @PostMapping("/")
-    public GenericResponseDto saveFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
-                                               BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
-        }
-        factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
-    }
-
-    /**
-     * Method which updates {@link FactOfTheDay}.
-     *
-     * @param factOfTheDayPostDTO of {@link FactOfTheDayPostDTO}
-     * @return {@link GenericResponseDto} with of operation and errors fields
-     */
-    @ApiOperation(value = "Update fact of the day")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @ResponseBody
-    @PutMapping("/")
-    public GenericResponseDto updateFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                     Principal principal,
-                                                 @Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
-                                                 BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
-        }
-        factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
-    }
-
-    /**
      * Method which return {@link FactOfTheDayDTO} by given id.
      *
      * @return {@link ResponseEntity}
@@ -165,41 +109,5 @@ public class FactOfTheDayController {
                                                               Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(languageService.getAllLanguages());
-    }
-
-    /**
-     * Method which deteles {@link FactOfTheDay} and {@link greencity.entity.FactOfTheDayTranslation} by given id.
-     *
-     * @param id of Fact of the day
-     * @return {@link ResponseEntity}
-     */
-    @ApiOperation(value = "Delete Fact of the day")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @DeleteMapping("/")
-    public ResponseEntity<Long> delete(@ApiIgnore @AuthenticationPrincipal
-                                           Principal principal, @RequestParam("id") Long id) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(factOfTheDayService.deleteFactOfTheDayAndTranslations(id));
-    }
-
-    /**
-     * Method which deteles {@link FactOfTheDay} and {@link greencity.entity.FactOfTheDayTranslation} by given id.
-     *
-     * @param listId list of IDs
-     * @return {@link ResponseEntity}
-     */
-    @ApiOperation(value = "Get all Fact of the day by given IDs")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @DeleteMapping("/deleteAll")
-    public ResponseEntity<List<Long>> deleteAll(@ApiIgnore @AuthenticationPrincipal
-                                                    Principal principal, @RequestBody List<Long> listId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(factOfTheDayService.deleteAllFactOfTheDayAndTranslations(listId));
     }
 }

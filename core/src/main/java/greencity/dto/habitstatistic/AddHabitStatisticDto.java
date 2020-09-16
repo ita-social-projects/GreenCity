@@ -24,14 +24,14 @@ public class AddHabitStatisticDto {
     @Min(0)
     private Long id;
     @Range(min = ValidationConstants.MIN_AMOUNT_OF_ITEMS, max = ValidationConstants.MAX_AMOUNT_OF_ITEMS)
-    @NotNull(message = "Amount of items can not be null.")
+    @NotNull
     private Integer amountOfItems;
-    @NotNull(message = "Rate of the day can not be null")
+    @NotNull
     private HabitRate habitRate;
     @Min(0)
-    @NotNull(message = "Habit id can not be null")
+    @NotNull
     private Long habitId;
-    @NotNull(message = "Date of creation can not be null")
+    @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime createdOn;
 }

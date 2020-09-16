@@ -14,8 +14,8 @@ import greencity.service.FactOfTheDayTranslationService;
 import greencity.service.LanguageService;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,27 +26,15 @@ import org.springframework.stereotype.Service;
  *
  * @author Mykola Lehkyi
  */
+@AllArgsConstructor
 @Service
 @EnableCaching
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
-    private FactOfTheDayRepo factOfTheDayRepo;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    LanguageService languageService;
-    @Autowired
-    FactOfTheDayTranslationService factOfTheDayTranslationService;
-    @Autowired
-    private PlaceCommentServiceImpl placeCommentServiceImpl;
-
-    /**
-     * Constructor with parameters.
-     *
-     * @author Mykola Lehkyi
-     */
-    public FactOfTheDayServiceImpl(FactOfTheDayRepo factOfTheDayRepo) {
-        this.factOfTheDayRepo = factOfTheDayRepo;
-    }
+    private final FactOfTheDayRepo factOfTheDayRepo;
+    private final ModelMapper modelMapper;
+    private final LanguageService languageService;
+    private final FactOfTheDayTranslationService factOfTheDayTranslationService;
+    private final PlaceCommentServiceImpl placeCommentServiceImpl;
 
     /**
      * Method finds all {@link FactOfTheDay} with pageable configuration.
@@ -80,14 +68,6 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     public FactOfTheDayDTO getFactOfTheDayById(Long id) {
         return modelMapper.map(factOfTheDayRepo.findById(id).orElseThrow(() ->
             new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND)), FactOfTheDayDTO.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<FactOfTheDay> getAllFactOfTheDayByName(String name) {
-        return factOfTheDayRepo.findAllByName(name);
     }
 
     /**
@@ -173,5 +153,22 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             factOfTheDayTranslationService.deleteAll(factOfTheDay.getFactOfTheDayTranslations());
         });
         return listId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<FactOfTheDayDTO> searchBy(Pageable pageable, String searchQuery) {
+        Page<FactOfTheDay> factsOfTheDay = factOfTheDayRepo.searchBy(pageable, searchQuery);
+        List<FactOfTheDayDTO> factOfTheDayDTOs =
+            factsOfTheDay.getContent().stream()
+                .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(
+            factOfTheDayDTOs,
+            factsOfTheDay.getTotalElements(),
+            factsOfTheDay.getPageable().getPageNumber(),
+            factsOfTheDay.getTotalPages());
     }
 }

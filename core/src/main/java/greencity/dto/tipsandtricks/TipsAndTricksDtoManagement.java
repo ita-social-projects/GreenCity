@@ -28,19 +28,19 @@ import static greencity.constant.ValidationConstants.*;
 @EqualsAndHashCode
 public class TipsAndTricksDtoManagement implements Serializable {
     @NotNull
-    @Min(value = 1, message = "Tips and Tricks id must be a positive number")
+    @Min(1)
     private Long id;
 
-    @Size(min = 1, max = 170, message = "size must be between 1 and 170")
+    @Size(min = 1, max = 170)
     private String title;
 
-    @Size(min = 20, max = 63206, message = "size must be between 20 and 63206")
+    @Size(min = 20, max = 63206)
     private String text;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime creationDate;
 
-    @NotBlank(message = EMPTY_EMAIL)
+    @NotBlank
     @Email(regexp = VALIDATION_EMAIL, message = INVALID_EMAIL)
     private String emailAuthor;
 

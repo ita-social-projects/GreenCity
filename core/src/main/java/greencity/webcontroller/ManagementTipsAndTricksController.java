@@ -51,9 +51,10 @@ public class ManagementTipsAndTricksController {
      * @author Yurii Savchenko
      */
     @GetMapping
-    public String findAll(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<TipsAndTricksDtoResponse> pageableDto =
-            tipsAndTricksService.findAll(pageable);
+    public String findAll(@RequestParam(required = false, name = "query") String query,
+                          Model model, @ApiIgnore Pageable pageable) {
+        PageableDto<TipsAndTricksDtoResponse> pageableDto = query == null || query.isEmpty()
+            ? tipsAndTricksService.findAll(pageable) : tipsAndTricksService.searchBy(pageable, query);
         model.addAttribute("pageable", pageableDto);
         return "core/management_tips_and_tricks";
     }

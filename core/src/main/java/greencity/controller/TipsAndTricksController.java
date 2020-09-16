@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidTipsAndTricksDtoRequest;
 import greencity.constant.HttpStatuses;
+import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
@@ -23,14 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -58,7 +52,7 @@ public class TipsAndTricksController {
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TipsAndTricksDtoResponse> save(
-        @ApiParam(value = "Add tips & tricks request", required = true)
+        @ApiParam(value = SwaggerExampleModel.addTipsAndTricksRequest, required = true)
         @RequestPart @ValidTipsAndTricksDtoRequest TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         @ApiParam(value = "Tips & tricks image")
         @ImageValidation

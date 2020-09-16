@@ -6,6 +6,7 @@ public final class AppConstant {
     public static final String REGISTRATION_EMAIL_FIELD_NAME = "email";
     public static final Integer CONSTANT_OF_FORMULA_HAVERSINE_KM = 6371;
     public static final String GOOGLE_USERNAME = "name";
+    public static final String GOOGLE_PICTURE = "picture";
     public static final String ADMIN = "ADMIN";
     public static final String MODERATOR = "MODERATOR";
     public static final String USER = "USER";
@@ -14,6 +15,8 @@ public final class AppConstant {
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final String VALIDATION_FOLDER = "(^eco_news$)";
     public static final Float DEFAULT_RATING = 0.0f;
+    public static final String DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH = "img/default_social_network_icon.png";
+    public static final String DEFAULT_SOCIAL_NETWORK_IMAGE_HOME_PATH = "img/default_social_network_icon.png";
 
     private AppConstant() {
     }

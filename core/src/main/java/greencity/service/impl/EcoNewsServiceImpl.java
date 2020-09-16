@@ -4,7 +4,6 @@ import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.IMAGE_EXISTS;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -14,18 +13,20 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
-import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.*;
+import greencity.service.EcoNewsService;
+import greencity.service.FileService;
+import greencity.service.NewsSubscriberService;
+import greencity.service.TagsService;
+import greencity.service.UserService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,22 +44,15 @@ import org.springframework.web.multipart.MultipartFile;
 @EnableCaching
 @RequiredArgsConstructor
 public class EcoNewsServiceImpl implements EcoNewsService {
+    private final EcoNewsRepo ecoNewsRepo;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
+    private final RabbitTemplate rabbitTemplate;
+    private final NewsSubscriberService newsSubscriberService;
+    private final TagsService tagService;
+    private final FileService fileService;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
-
-    private final EcoNewsRepo ecoNewsRepo;
-
-    private final UserService userService;
-
-    private final ModelMapper modelMapper;
-
-    private final RabbitTemplate rabbitTemplate;
-
-    private final NewsSubscriberService newsSubscriberService;
-
-    private final TagsService tagService;
-
-    private final FileService fileService;
 
     /**
      * {@inheritDoc}
@@ -226,12 +220,23 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableDto<SearchNewsDto> search(String searchQuery) {
         Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery);
 
-        List<SearchNewsDto> ecoNews = page.stream()
-            .map(ecoNews1 -> modelMapper.map(ecoNews1, SearchNewsDto.class))
+        return getSearchNewsDtoPageableDto(page);
+    }
+
+    @Override
+    public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery) {
+        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(pageable, searchQuery);
+
+        return getSearchNewsDtoPageableDto(page);
+    }
+
+    private PageableDto<SearchNewsDto> getSearchNewsDtoPageableDto(Page<EcoNews> page) {
+        List<SearchNewsDto> searchNewsDtos = page.stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, SearchNewsDto.class))
             .collect(Collectors.toList());
 
         return new PageableDto<>(
-            ecoNews,
+            searchNewsDtos,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
             page.getTotalPages()

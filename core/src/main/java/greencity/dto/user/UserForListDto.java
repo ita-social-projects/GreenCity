@@ -24,18 +24,17 @@ public class UserForListDto {
     @NotNull
     private Long id;
 
-    @NotBlank(message = ValidationConstants.EMPTY_USERNAME)
+    @NotBlank
     @Size(
         min = ValidationConstants.USERNAME_MIN_LENGTH,
-        max = ValidationConstants.USERNAME_MAX_LENGTH,
-        message = ValidationConstants.INVALID_USERNAME_LENGTH)
+        max = ValidationConstants.USERNAME_MAX_LENGTH)
     private String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime dateOfRegistration;
 
     @Email(message = ValidationConstants.INVALID_EMAIL)
-    @NotBlank(message = ValidationConstants.EMPTY_EMAIL)
+    @NotBlank
     private String email;
 
     @NotNull

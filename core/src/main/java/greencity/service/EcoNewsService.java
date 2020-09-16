@@ -86,6 +86,16 @@ public interface EcoNewsService {
     PageableDto<SearchNewsDto> search(String searchQuery);
 
     /**
+     * Method for getting all EcoNews by searchQuery.
+     *
+     * @param pageable    {@link Pageable}.
+     * @param searchQuery query to search.
+     * @return PageableDto of {@link SearchNewsDto} instances.
+     * @author Yurii Savchenko
+     */
+    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery);
+
+    /**
      * Method for getting amount of published news by user id.
      *
      * @param id {@link Long} user id.
@@ -96,9 +106,8 @@ public interface EcoNewsService {
     /**
      * Method to mark comment as liked by User.
      *
-     * @param user {@link User}.
+     * @param user    {@link User}.
      * @param comment {@link EcoNewsComment}
-     *
      * @author Dovganyuk Taras
      */
     void likeComment(User user, EcoNewsComment comment);
@@ -106,9 +115,8 @@ public interface EcoNewsService {
     /**
      * Method to mark comment as unliked by User.
      *
-     * @param user {@link User}.
+     * @param user    {@link User}.
      * @param comment {@link EcoNewsComment}
-     *
      * @author Dovganyuk Taras
      */
     void unlikeComment(User user, EcoNewsComment comment);

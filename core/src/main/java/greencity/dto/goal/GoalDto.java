@@ -14,9 +14,9 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class GoalDto {
     @NotNull
-    @Min(value = 1, message = "Goal id must be a positive number")
+    @Min(value = 1)
     private Long id;
 
-    @NotEmpty(message = "Goal text must not be null")
+    @NotEmpty
     private String text;
 }
