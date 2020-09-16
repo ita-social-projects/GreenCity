@@ -22,8 +22,8 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     UserService userService;
 
     /**
-     * Method checks if parameter is User.class and annotated CurrentUser.class.
-     * @param parameter method parameeter
+     * Method checks if parameter is {@link User} and is annotated with {@link CurrentUser}.
+     * @param parameter method parameter
      * @return boolean
      */
     @Override
@@ -33,8 +33,8 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     /**
-     * Method returns user by principal.
-     * @return user
+     * Method returns {@link User} by principal.
+     * @return {@link User}
      */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
