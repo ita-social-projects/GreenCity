@@ -43,10 +43,10 @@ public interface EmailService {
     /**
      * Method for sending verification email to {@link User}.
      *
-     * @param userId user id.
-     * @param userName name current user.
+     * @param userId    user id.
+     * @param userName  name current user.
      * @param userEmail email current user.
-     * @param token verify token current user.
+     * @param token     verify token current user.
      */
     void sendVerificationEmail(Long userId, String userName, String userEmail, String token);
 
@@ -54,10 +54,10 @@ public interface EmailService {
      * Method for sending user approval email to User,
      * when Admin adds the User from admin panel.
      *
-     * @param userId user id.
-     * @param userName name current user.
+     * @param userId    user id.
+     * @param userName  name current user.
      * @param userEmail email current user.
-     * @param token verify token current user.
+     * @param token     verify token.
      */
     void sendApprovalEmail(Long userId, String userName, String userEmail, String token);
 
@@ -74,8 +74,8 @@ public interface EmailService {
     /**
      * Sends email notification about not marked habits during 3 last days.
      *
-     * @param name          user name is used in email letter.
-     * @param email         letter is sent to this email.
+     * @param name  user name is used in email letter.
+     * @param email letter is sent to this email.
      */
     void sendHabitNotification(String name, String email);
 }

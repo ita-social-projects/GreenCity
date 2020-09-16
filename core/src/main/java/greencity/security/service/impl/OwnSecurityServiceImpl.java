@@ -30,7 +30,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -270,6 +269,11 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .build();
     }
 
+    /**
+     * Method that generates random password.
+     *
+     * @return {@link String} generated password.
+     */
     private String generatePassword() {
         String upperCaseLetters = RandomStringUtils.random(2, 65, 90, true, true);
         String lowerCaseLetters = RandomStringUtils.random(2, 97, 122, true, true);
@@ -291,7 +295,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
 
     /**
      * Creates and saves password restoration token for a given user
-     * and publishes event of sending password recovery email to the user.
+     * and publishes event of sending user approval email.
      *
      * @param user  {@link User} - User whose password is to be recovered
      * @param token {@link String} - token for password restoration

@@ -161,10 +161,10 @@ public class EmailServiceImpl implements EmailService {
     /**
      * Sends password recovery email using separated user parameters.
      *
-     * @param userId       the user id is used for recovery link building.
-     * @param userName     username is used in email model constants.
-     * @param userEmail    user email which will be used for sending recovery letter.
-     * @param token        password recovery token.
+     * @param userId    the user id is used for recovery link building.
+     * @param userName  username is used in email model constants.
+     * @param userEmail user email which will be used for sending recovery letter.
+     * @param token     password recovery token.
      */
     @Override
     public void sendRestoreEmail(Long userId, String userName, String userEmail, String token) {

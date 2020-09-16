@@ -5,14 +5,8 @@ import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
-import greencity.security.dto.ownsecurity.OwnRestoreDto;
 import greencity.security.service.OwnSecurityService;
-import greencity.security.service.PasswordRecoveryService;
 import greencity.service.UserService;
-import java.util.List;
-import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -35,7 +29,6 @@ public class ManagementUserController {
     private final UserService userService;
     private final ModelMapper modelMapper;
     private final OwnSecurityService ownSecurityService;
-    private final PasswordRecoveryService passwordRecoveryService;
 
     /**
      * Method that returns management page with all {@link User}.
