@@ -6,23 +6,24 @@ import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
 import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.OwnSecurity;
+import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
-import greencity.message.VerifyEmailMessage;
 import greencity.message.UserApprovalMessage;
+import greencity.message.VerifyEmailMessage;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.dto.ownsecurity.SetPasswordDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
+import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -49,9 +50,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final JwtTool jwtTool;
     private final Integer expirationTime;
     private final RabbitTemplate rabbitTemplate;
+    private final String defaultProfilePicture;
+    private final RestorePasswordEmailRepo restorePasswordEmailRepo;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
-    private final String defaultProfilePicture;
 
     /**
      * Constructor.
@@ -63,7 +65,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   JwtTool jwtTool,
                                   @Value("${verifyEmailTimeHour}") Integer expirationTime,
                                   RabbitTemplate rabbitTemplate,
-                                  @Value("${defaultProfilePicture}") String defaultProfilePicture) {
+                                  @Value("${defaultProfilePicture}") String defaultProfilePicture,
+                                  RestorePasswordEmailRepo restorePasswordEmailRepo) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -71,6 +74,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         this.expirationTime = expirationTime;
         this.rabbitTemplate = rabbitTemplate;
         this.defaultProfilePicture = defaultProfilePicture;
+        this.restorePasswordEmailRepo = restorePasswordEmailRepo;
     }
 
     /**
@@ -235,19 +239,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public void managementRegisterUser(UserManagementDto dto) {
         User user = managementCreateNewRegisteredUser(dto, jwtTool.generateTokenKey());
-        VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
-        user.setVerifyEmail(verifyEmail);
-        try {
-            User savedUser = userService.save(user);
-            rabbitTemplate.convertAndSend(
-                sendEmailTopic,
-                SEND_USER_APPROVAL_ROUTING_KEY,
-                new UserApprovalMessage(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
-                    savedUser.getVerifyEmail().getToken())
-            );
-        } catch (DataIntegrityViolationException e) {
-            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
-        }
+        savePasswordRestorationTokenForUser(user, jwtTool.generateTokenKey());
     }
 
     private User managementCreateNewRegisteredUser(UserManagementDto dto, String refreshTokenKey) {
@@ -255,10 +247,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .name(dto.getName())
             .email(dto.getEmail())
             .dateOfRegistration(LocalDateTime.now())
-            .role(ROLE.ROLE_USER)
+            .role(dto.getRole())
             .refreshTokenKey(refreshTokenKey)
             .lastVisit(LocalDateTime.now())
-            .userStatus(UserStatus.ACTIVATED)
+            .userStatus(dto.getUserStatus())
             .emailNotification(EmailNotification.DISABLED)
             .profilePicturePath(defaultProfilePicture)
             .rating(AppConstant.DEFAULT_RATING)
@@ -272,14 +264,39 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .build();
     }
 
-    @Transactional
-    @Override
-    public void saveApproving(Long userId, String token, SetPasswordDto dto) {
-        Optional<User> byIdAndToken = userService.findByIdAndToken(userId, token);
-        if (byIdAndToken.isPresent()) {
-            User user = byIdAndToken.get();
-            OwnSecurity ownSecurity = managementCreateOwnSecurity(dto.getPassword(), user);
-            user.setOwnSecurity(ownSecurity);
-        }
+    /**
+     * Creates and saves password restoration token for a given user
+     * and publishes event of sending password recovery email to the user.
+     *
+     * @param user  {@link User} - User whose password is to be recovered
+     * @param token {@link String} - token for password restoration
+     */
+    private void savePasswordRestorationTokenForUser(User user, String token) {
+        RestorePasswordEmail restorePasswordEmail =
+            RestorePasswordEmail.builder()
+                .user(user)
+                .token(token)
+                .expiryDate(calculateExpirationDate(expirationTime))
+                .build();
+        restorePasswordEmailRepo.save(restorePasswordEmail);
+        userService.save(user);
+        rabbitTemplate.convertAndSend(
+            sendEmailTopic,
+            SEND_USER_APPROVAL_ROUTING_KEY,
+            new UserApprovalMessage(user.getId(), user.getName(), user.getEmail(),
+                token)
+        );
+    }
+
+    /**
+     * Calculates token expiration date. The amount of hours, after which
+     * token will be expired, is set by method parameter.
+     *
+     * @param expirationTimeInHours - Token expiration delay in hours
+     * @return {@link LocalDateTime} - Time at which token will be expired
+     */
+    private LocalDateTime calculateExpirationDate(Integer expirationTimeInHours) {
+        LocalDateTime now = LocalDateTime.now();
+        return now.plusHours(expirationTimeInHours);
     }
 }

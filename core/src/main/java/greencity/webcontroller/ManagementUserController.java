@@ -79,35 +79,6 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for approving User.
-     *
-     * @param userId - {@link User}'s id
-     * @param token  - {@link String} this is token (hash) to verify user.
-     * @return {@link String}
-     */
-    @GetMapping("/approveRegistration")
-    public String verify(@RequestParam("id") Long userId,
-                         @RequestParam @NotBlank String token) {
-        Optional<User> foundUser = userService.findByIdAndToken(userId, token);
-        if (foundUser.isPresent()) {
-            return "core/management_password_template";
-        }
-        return "core/management_general_error_page";
-    }
-
-    /**
-     * Method that saves user approving.
-     *
-     * @return {@link GenericResponseDto}
-     * @author Vasyl Zhovnir
-     */
-    @PostMapping("/changePassword")
-    public ResponseEntity<Object> changePassword(@Valid @RequestBody OwnRestoreDto form) {
-        passwordRecoveryService.updatePasswordUsingToken(form.getToken(), form.getPassword());
-        return ResponseEntity.ok().build();
-    }
-
-    /**
      * Method that updates user data.
      *
      * @param userDto dto with updated fields.

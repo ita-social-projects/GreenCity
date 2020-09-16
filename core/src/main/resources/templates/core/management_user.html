@@ -41,7 +41,7 @@
                                         <input type="text" name="query" class="form-control" placeholder="Search…">
                                     </form>
                                 </span>
-                                <a href="#addUserModal" id="addFactOfTheDayModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New User</span></a>
+                                <a href="#addUserModal" id="addUserModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New User</span></a>
                                 <a href="#deactivateAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Deactivate</span></a>
                             </div>
                         </div>
@@ -59,6 +59,7 @@
                             <th>User name</th>
                             <th>Email</th>
                             <th>Credo</th>
+                            <th>Role</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -76,6 +77,7 @@
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
                                 <td th:text="${user.userCredo}"></td>
+                                <td th:text="${user.role}"></td>
                                 <td th:text="${user.userStatus}"></td>
                                 <td>
                                     <a th:href="@{/management/users/findById/(id=${user.id})}" class="edit eBtn" ><i class="far fa-edit" data-toggle="tooltip" title="Edit"></i></a>
@@ -97,11 +99,11 @@
                 </div>
             </div>
         </div>
-        <!--todo Add user Modal HTML -->
+        <!-- Add Modal HTML -->
         <div id="addUserModal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form th:action="@{users/save}" method="post" id="addUserForm">
+                    <form th:action="@{#}" method="post" id="addUserForm">
                         <div class="modal-header">
                             <h4 class="modal-title">Add User</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -119,9 +121,9 @@
                                 <span th:id="errorModalSaveemail" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
-                                <label>Credo</label>
-                                <input type="text" class="form-control" name="userCredo">
-                                <span th:id="errorModalSaveuserCredo" class="errorSpan"></span>
+                                <label>Role</label>
+                                <input type="text" class="form-control" name="role">
+                                <span th:id="errorModalSaverole" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
                                 <label>Status</label>
@@ -166,6 +168,11 @@
                                 <label>Credo</label>
                                 <input type="text" class="form-control" id="userCredo" name="userCredo" required>
                                 <span th:id="errorModalUpdateuserCredo" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Role</label>
+                                <input type="text" class="form-control" id="role" name="role" required>
+                                <span th:id="errorModalUpdaterole" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
                                 <label for="userStatus">Status</label>

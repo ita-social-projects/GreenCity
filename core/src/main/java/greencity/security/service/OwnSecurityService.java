@@ -6,7 +6,6 @@ import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
-import greencity.security.dto.ownsecurity.SetPasswordDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 
 /**
@@ -66,12 +65,4 @@ public interface OwnSecurityService {
      * @author Vasyl Zhovnir
      */
     void managementRegisterUser(UserManagementDto dto);
-
-    /**
-     * Method for registering a user from admin panel.
-     *
-     * @param dto a value of {@link UserManagementDto}
-     * @author Vasyl Zhovnir
-     */
-    void saveApproving(Long userId, String token, SetPasswordDto dto);
 }

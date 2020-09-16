@@ -152,9 +152,8 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
-        model.put(EmailConstants.APPROVE_REGISTRATION, serverLink
-            + "/management/users/approveRegistration?id=" + userId
-            + "&token=" + token);
+        model.put(EmailConstants.APPROVE_REGISTRATION, clientLink + "/#/auth/restore?" + "token=" + token
+            + "&user_id=" + userId);
         String template = createEmailTemplate(model, EmailConstants.USER_APPROVAL_EMAIL_PAGE);
         sendEmail(email, EmailConstants.APPROVE_REGISTRATION_SUBJECT, template);
     }
