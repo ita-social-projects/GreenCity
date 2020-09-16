@@ -138,4 +138,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<HabitStatus> habitStatuses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<RatingStatistics> ratingStatistics = new ArrayList<>();
 }

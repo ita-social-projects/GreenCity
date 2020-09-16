@@ -235,8 +235,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/{id}/**",
                 "/place/**",
                 "/comments",
-                "/econews",
-                "/tipsandtricks"
+                "/econews/**",
+                "/tipsandtricks/**"
             ).hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/user/**",

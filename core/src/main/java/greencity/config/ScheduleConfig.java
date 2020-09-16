@@ -5,6 +5,7 @@ import greencity.entity.User;
 import greencity.message.SendHabitNotification;
 import greencity.repository.FactTranslationRepo;
 import greencity.repository.HabitRepo;
+import greencity.repository.RatingStatisticsRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -42,6 +43,7 @@ public class ScheduleConfig {
     private final HabitRepo habitRepo;
     private final RabbitTemplate rabbitTemplate;
     private final UserRepo userRepo;
+    private final RatingStatisticsRepo ratingStatisticsRepo;
 
     /**
      * Invoke {@link sendHabitNotification} from EmailMessageReceiver to send email letters
@@ -68,7 +70,7 @@ public class ScheduleConfig {
      * Every day at 19:00 sends notifications about not marked habits to users with field
      * {@link greencity.entity.enums.EmailNotification} equal to IMMEDIATELY or DAILY.
      */
-    @Scheduled(cron = "0 0 19 * * *")
+    @Scheduled(cron = "0 0 19 * * ?")
     void sendHabitNotificationEveryDay() {
         List<User> users = userRepo.findAllByEmailNotification(IMMEDIATELY);
         users.addAll(userRepo.findAllByEmailNotification(DAILY));
@@ -89,7 +91,7 @@ public class ScheduleConfig {
      * On th 25th of every month at 19:00 sends notifications about not marked habits to users with field
      * {@link greencity.entity.enums.EmailNotification} equal to MONTHLY.
      */
-    @Scheduled(cron = "0 0 19 25 * *")
+    @Scheduled(cron = "0 0 19 25 * ?")
     void sendHabitNotificationEveryMonth() {
         List<User> users = userRepo.findAllByEmailNotification(MONTHLY);
         sendHabitNotificationIfNeed(users);
@@ -101,7 +103,7 @@ public class ScheduleConfig {
      */
     @CacheEvict(value = HABIT_FACT_OF_DAY_CACHE, allEntries = true)
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void chooseNewFactOfDay() {
         Optional<List<FactTranslation>> list = factTranslationRepo.findRandomFact();
         if (list.isPresent()) {
@@ -119,7 +121,7 @@ public class ScheduleConfig {
      */
     @CacheEvict(value = FACT_OF_THE_DAY_CACHE_NAME, allEntries = true)
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void chooseNewFactOfTheDay() {
     }
 
@@ -129,9 +131,21 @@ public class ScheduleConfig {
      *
      * @author Vasyl Zhovnir
      **/
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void scheduleDeleteDeactivatedUsers() {
         userRepo.scheduleDeleteDeactivatedUsers();
+    }
+
+    /**
+     * Every day at 00:00 deletes from the table rating_statistics records
+     * witch are older than 2 years.
+     *
+     * @author Dovganyuk Taras
+     **/
+    @Scheduled(cron = "0 0 0 * * ?")
+    @Transactional
+    public void scheduledDeleteRatingStatisticsOlderThan() {
+        ratingStatisticsRepo.scheduledDeleteOlderThan();
     }
 }
