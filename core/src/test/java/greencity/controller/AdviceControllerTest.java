@@ -1,30 +1,30 @@
 package greencity.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.dto.advice.AdvicePostDTO;
 import greencity.service.AdviceService;
-import greencity.service.LanguageService;
-import greencity.validator.LanguageTranslationValidator;
+import greencity.service.AdviceTranslationService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.Validator;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AdviceControllerTest {
     private static final String adviceLink = "/advices";
@@ -38,10 +38,10 @@ class AdviceControllerTest {
     ModelMapper modelMapper;
 
     @Mock
-    LanguageService languageService;
+    AdviceTranslationService adviceTranslationService;
 
     @Mock
-    LanguageTranslationValidator languageTranslationValidator;
+    Validator mockValidator;
 
     @InjectMocks
     AdviceController adviceController;
@@ -79,6 +79,7 @@ class AdviceControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(adviceController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setValidator(mockValidator)
             .build();
     }
 
@@ -89,7 +90,7 @@ class AdviceControllerTest {
     }
 
     @Test
-    public void getRandomAdviceHabitIdAndLanguageTest() throws Exception{
+    public void getRandomAdviceHabitIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/1?lang=en"))
             .andExpect(status().isOk());
 
@@ -97,7 +98,7 @@ class AdviceControllerTest {
     }
 
     @Test
-    public void getRandomAdviceHabitWithInvalidIdAndLanguageTest() throws Exception{
+    public void getRandomAdviceHabitWithInvalidIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/{id}?lang=en", "invalidId"))
             .andExpect(status().isBadRequest());
 
@@ -105,30 +106,34 @@ class AdviceControllerTest {
     }
 
     @Test
-    @Disabled
     public void saveTest() throws Exception {
-        //AdvicePostDTO advicePostDTO = ModelUtils.getAdvicePostDTO();
-
-        //when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(ModelUtils.getLanguageDTO()));
-
         mockMvc.perform(post(adviceLink)
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(content))
-        .andExpect(status().isCreated());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isCreated());
+
+        ObjectMapper mapper = new ObjectMapper();
+        AdvicePostDTO advicePostDTO = mapper.readValue(content, AdvicePostDTO.class);
+
+        verify(adviceTranslationService, times(1)).saveAdviceAndAdviceTranslation(advicePostDTO);
     }
 
     @Test
-    @Disabled
     public void updateTest() throws Exception {
-        mockMvc.perform(put(adviceLink + "/{adviceId}",1)
+        mockMvc.perform(put(adviceLink + "/{adviceId}", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isOk());
+
+        ObjectMapper mapper = new ObjectMapper();
+        AdvicePostDTO advicePostDTO = mapper.readValue(content, AdvicePostDTO.class);
+
+        verify(adviceService, times(1)).update(advicePostDTO, 1L);
     }
 
     @Test
     public void deleteTest() throws Exception {
-        mockMvc.perform(delete(adviceLink + "/{adviceId}",1)
+        mockMvc.perform(delete(adviceLink + "/{adviceId}", 1)
         ).andExpect(status().isOk());
 
         verify(adviceService, times(1))
@@ -137,13 +142,10 @@ class AdviceControllerTest {
 
     @Test
     public void deleteFailedTest() throws Exception {
-        mockMvc.perform(delete(adviceLink + "/{adviceId}","invalidId")
+        mockMvc.perform(delete(adviceLink + "/{adviceId}", "invalidId")
         ).andExpect(status().isBadRequest());
 
         verify(adviceService, times(0))
             .delete(anyLong());
     }
-
-
-
 }
