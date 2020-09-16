@@ -13,7 +13,6 @@ import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -112,9 +110,7 @@ public class ManagementFactOfTheDayController {
     })
     @ResponseBody
     @PutMapping("/")
-    public GenericResponseDto updateFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                     Principal principal,
-                                                 @Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
+    public GenericResponseDto updateFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
                                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             GenericResponseDto genericResponseDto = new GenericResponseDto();
@@ -140,8 +136,7 @@ public class ManagementFactOfTheDayController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/")
-    public ResponseEntity<Long> delete(@ApiIgnore @AuthenticationPrincipal
-                                           Principal principal, @RequestParam("id") Long id) {
+    public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayService.deleteFactOfTheDayAndTranslations(id));
     }
@@ -158,8 +153,7 @@ public class ManagementFactOfTheDayController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/deleteAll")
-    public ResponseEntity<List<Long>> deleteAll(@ApiIgnore @AuthenticationPrincipal
-                                                    Principal principal, @RequestBody List<Long> listId) {
+    public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayService.deleteAllFactOfTheDayAndTranslations(listId));
     }
