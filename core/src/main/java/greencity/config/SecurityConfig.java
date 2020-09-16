@@ -89,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/ownSecurity/verifyEmail",
                         "/ownSecurity/updateAccessToken",
                         "/ownSecurity/restorePassword",
+                        "/ownSecurity/changePassword",
                         "/googleSecurity",
                         "/facebookSecurity/generateFacebookAuthorizeURL",
                         "/facebookSecurity/facebook",
@@ -189,8 +190,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/{userId}/goals",
                         "/user/{userId}/habit",
                         "/user/{userId}/userFriend/{friendId}",
-                        "/user/profile",
-                        "/ownSecurity/changePassword"
+                        "/user/profile"
                 ).hasAnyRole(USER, ADMIN, MODERATOR)
                 .antMatchers(HttpMethod.PUT,
                         "/favorite_place/",
