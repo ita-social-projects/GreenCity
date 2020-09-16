@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -159,7 +160,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true,
         value = "SELECT last_activity_time FROM users WHERE id=:userId")
-    Optional<LocalDateTime> findLastActivityTimeById(Long userId);
+    Optional<Timestamp> findLastActivityTimeById(Long userId);
 
     /**
      * Delete from the database users that have status 'DEACTIVATED'
