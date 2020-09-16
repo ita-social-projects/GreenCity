@@ -12,15 +12,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AchievementDTO {
     @NotNull
-    @Min(value = 1, message = "Achievement id must be a positive number")
+    @Min(1)
     private Long id;
 
-    @NotEmpty(message = "Achievement text must not be null")
+    @NotEmpty
     private String title;
 
-    @NotEmpty(message = "Description of achievement must not be null")
+    @NotEmpty
     private String description;
 
-    @NotEmpty(message = "Message of achievement must not be null")
+    @NotEmpty
     private String message;
 }

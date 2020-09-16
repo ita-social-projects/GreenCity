@@ -15,14 +15,13 @@ import static greencity.constant.ValidationConstants.*;
 @NoArgsConstructor
 @Builder
 public class OwnSignUpDto {
-    @NotBlank(message = EMPTY_USERNAME)
+    @NotBlank
     @Length(
         min = USERNAME_MIN_LENGTH,
-        max = USERNAME_MAX_LENGTH,
-        message = INVALID_USERNAME_LENGTH)
+        max = USERNAME_MAX_LENGTH)
     private String name;
 
-    @NotBlank(message = EMPTY_EMAIL)
+    @NotBlank
     @Email(
             regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
             message = INVALID_EMAIL

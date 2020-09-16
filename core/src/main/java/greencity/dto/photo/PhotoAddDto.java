@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PhotoAddDto {
-    @NotBlank(message = ValidationConstants.EMPTY_PHOTO_NAME)
+    @NotBlank
     private String name;
 }

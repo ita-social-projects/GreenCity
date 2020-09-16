@@ -412,4 +412,13 @@ public interface UserService {
      * @author Vasyl Zhovnir
      */
     void setActivatedStatus(Long id);
+
+    /**
+     * Method for getting User by search query.
+     *
+     * @param paging {@link Pageable}.
+     * @param query  query to search,
+     * @return PageableDto of {@link UserManagementDto} instances.
+     */
+    PageableDto<UserManagementDto> searchBy(Pageable paging, String query);
 }

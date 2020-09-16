@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddCommentDto {
-    @NotBlank(message = ValidationConstants.EMPTY_COMMENT)
+    @NotBlank
     @Length(min = ValidationConstants.COMMENT_MIN_LENGTH, max = ValidationConstants.COMMENT_MAX_LENGTH)
     private String text;
     @Valid
