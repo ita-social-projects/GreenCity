@@ -129,7 +129,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/search/tipsandtricks",
                         "/habit/status/{habitId}",
                         "/user/emailNotifications",
-                        "/user/activatedUsersAmount"
+                        "/user/activatedUsersAmount",
+                        "/socket/**"
                 ).permitAll()
                 .antMatchers(HttpMethod.POST,
                         "/ownSecurity/signUp",
@@ -164,8 +165,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/isOnline/{userId}/",
                         "/user/{userId}/profileStatistics/",
                         "/user/userAndSixFriendsWithOnlineStatus",
-                        "/user/userAndAllFriendsWithOnlineStatus",
-                        "/socket/**"
+                        "/user/userAndAllFriendsWithOnlineStatus"
                 ).hasAnyRole(USER, ADMIN, MODERATOR)
                 .antMatchers(HttpMethod.POST,
                         "/category",
