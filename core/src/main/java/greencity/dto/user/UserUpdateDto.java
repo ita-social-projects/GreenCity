@@ -13,13 +13,12 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 public class UserUpdateDto {
-    @NotBlank(message = ValidationConstants.EMPTY_USERNAME)
+    @NotBlank
     @Size(
         min = ValidationConstants.USERNAME_MIN_LENGTH,
-        max = ValidationConstants.USERNAME_MAX_LENGTH,
-        message = ValidationConstants.INVALID_USERNAME_LENGTH)
+        max = ValidationConstants.USERNAME_MAX_LENGTH)
     private String name;
 
-    @NotNull(message = ValidationConstants.EMPTY_EMAIL_NOTIFICATION)
+    @NotNull
     private EmailNotification emailNotification;
 }

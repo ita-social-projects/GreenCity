@@ -16,6 +16,6 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class UserGoalDto {
     @Valid
-    @NotNull(message = "Goal must not be null")
+    @NotNull
     private GoalRequestDto goal;
 }

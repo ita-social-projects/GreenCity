@@ -117,7 +117,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query(nativeQuery = true,
-            value = "DELETE FROM users_friends WHERE user_id= :userId AND friend_id= :friendId")
+        value = "DELETE FROM users_friends WHERE user_id= :userId AND friend_id= :friendId")
     void deleteUserFriendById(Long userId, Long friendId);
 
     /**
@@ -125,17 +125,17 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query(nativeQuery = true,
-            value = "INSERT INTO users_friends(user_id, friend_id) VALUES (:userId, :friendId)")
+        value = "INSERT INTO users_friends(user_id, friend_id) VALUES (:userId, :friendId)")
     void addNewFriend(Long userId, Long friendId);
 
     /**
      * Get six friends with the highest rating {@link User}.
      */
     @Query(nativeQuery = true,
-            value = " SELECT * FROM users_friends "
-                    + " LEFT JOIN users ON users.id = users_friends.friend_id "
-                    + " WHERE users_friends.user_id = :userId "
-                    + " ORDER BY users.rating DESC LIMIT 6 ")
+        value = " SELECT * FROM users_friends "
+            + " LEFT JOIN users ON users.id = users_friends.friend_id "
+            + " WHERE users_friends.user_id = :userId "
+            + " ORDER BY users.rating DESC LIMIT 6 ")
     List<User> getSixFriendsWithTheHighestRating(Long userId);
 
     /**
@@ -158,12 +158,13 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @author Yurii Zhurakovskyi
      */
     @Query(nativeQuery = true,
-            value = "SELECT last_activity_time FROM users WHERE id=:userId")
+        value = "SELECT last_activity_time FROM users WHERE id=:userId")
     Optional<LocalDateTime> findLastActivityTimeById(Long userId);
 
     /**
      * Delete from the database users that have status 'DEACTIVATED'
      * and last visited the site 2 years ago.
+     *
      * @return number of deleted rows
      * @author Vasyl Zhovnir
      **/
@@ -174,10 +175,24 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
 
     /**
      * Set {@link User}s' statuses to 'DEACTIVATED'.
+     *
      * @param ids - {@link List} of ids of {@link User} to be 'DEACTIVATED'
      * @author Vasyl Zhovnir
      **/
     @Modifying
     @Query(value = "UPDATE User SET userStatus = 1 where id IN(:ids)")
     void deactivateSelectedUsers(List<Long> ids);
+
+    /**
+     * Method returns {@link User} by search query and page.
+     *
+     * @param paging {@link Pageable}.
+     * @param query  query to search.
+     * @return list of {@link User}.
+     */
+    @Query("SELECT u FROM User u WHERE CONCAT(u.id,'') LIKE LOWER(CONCAT('%', :query, '%')) "
+        + "OR LOWER(u.name) LIKE LOWER(CONCAT('%', :query, '%'))"
+        + "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')) "
+        + "OR LOWER(u.userCredo) LIKE LOWER(CONCAT('%', :query, '%'))")
+    Page<User> searchBy(Pageable paging, String query);
 }

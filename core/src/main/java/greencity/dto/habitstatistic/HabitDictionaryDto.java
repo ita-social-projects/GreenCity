@@ -16,13 +16,13 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class HabitDictionaryDto {
     @NotNull
-    @Min(value = 1, message = "HabitDictionary id must be a positive number")
+    @Min(1)
     private Long id;
 
-    @NotEmpty(message = "name habitDictionary must not be null")
+    @NotEmpty
     private String name;
 
-    @NotEmpty(message = "description habitDictionary must not be null")
+    @NotEmpty
     private String description;
 
     @NotEmpty

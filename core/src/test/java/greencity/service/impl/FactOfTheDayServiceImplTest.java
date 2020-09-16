@@ -29,7 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
-public class FactOfTheDayServiceImplTest {
+class FactOfTheDayServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
@@ -47,7 +47,7 @@ public class FactOfTheDayServiceImplTest {
     private FactOfTheDayServiceImpl factOfTheDayService;
 
     @Test
-    public void findByIdTest(){
+    void findByIdTest() {
         FactOfTheDayDTO factDto = ModelUtils.getFactOfTheDayDto();
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
 
@@ -59,13 +59,13 @@ public class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    public void findByIdTestFailed(){
+    void findByIdTestFailed() {
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotFoundException.class);
         assertThrows(NotFoundException.class, () -> factOfTheDayService.getFactOfTheDayById(1L));
     }
 
     @Test
-    public void findAllTest(){
+    void findAllTest() {
         int pageNumber = 0;
         int pageSize = 1;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -88,7 +88,7 @@ public class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    public void updateTest(){
+    void updateTest() {
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
 
@@ -100,7 +100,7 @@ public class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    public void updateTestFailed(){
+    void updateTestFailed() {
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotUpdatedException.class);
 
@@ -108,7 +108,7 @@ public class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    public void saveFactOfTheDayWithTranslationsTest(){
+    void saveFactOfTheDayWithTranslationsTest() {
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
 
         FactOfTheDayPostDTO res = factOfTheDayService.saveFactOfTheDayAndTranslations(factDtoPost);
@@ -119,7 +119,7 @@ public class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    public void updateFactOfTheDayWithTranslationsTest(){
+    void updateFactOfTheDayWithTranslationsTest() {
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
 
@@ -134,7 +134,7 @@ public class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    public void updateFactOfTheDayWithTranslationsTestFailed(){
+    void updateFactOfTheDayWithTranslationsTestFailed() {
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotUpdatedException.class);
 
@@ -142,7 +142,7 @@ public class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    public void deleteFactOfTheDayAndTranslationsTest(){
+    void deleteFactOfTheDayAndTranslationsTest() {
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
         assertEquals(fact.getId(), factOfTheDayService.deleteFactOfTheDayAndTranslations(1L));
@@ -152,13 +152,13 @@ public class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    public void deleteFactOfTheDayWithTranslationsTestFailed(){
+    void deleteFactOfTheDayWithTranslationsTestFailed() {
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotUpdatedException.class);
-        assertThrows(NotUpdatedException.class, () -> factOfTheDayService.deleteFactOfTheDayAndTranslations(anyLong()));
+        assertThrows(NotUpdatedException.class, () -> factOfTheDayService.deleteFactOfTheDayAndTranslations(1L));
     }
 
     @Test
-    public void searchByTest(){
+    void searchByTest() {
         int pageNumber = 0;
         int pageSize = 1;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
