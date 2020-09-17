@@ -20,6 +20,7 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -840,12 +841,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean checkIfTheUserIsOnline(Long userId) {
-        if (!userRepo.findById(userId).isPresent()) {
+        if (userRepo.findById(userId).isEmpty()) {
             throw new WrongIdException(USER_NOT_FOUND_BY_ID + userId);
         }
-        Optional<LocalDateTime> lastActivityTime = userRepo.findLastActivityTimeById(userId);
+        Optional<Timestamp> lastActivityTime = userRepo.findLastActivityTimeById(userId);
         if (lastActivityTime.isPresent()) {
-            LocalDateTime userLastActivityTime = lastActivityTime.get();
+            LocalDateTime userLastActivityTime = lastActivityTime.get().toLocalDateTime();
             ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
             long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();

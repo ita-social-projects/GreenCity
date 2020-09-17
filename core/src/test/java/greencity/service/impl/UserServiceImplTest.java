@@ -22,6 +22,7 @@ import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
@@ -840,21 +841,26 @@ class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsTrueTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        LocalDateTime userLastActivityTime = LocalDateTime.now();
+        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
         User user = ModelUtils.getUser();
+
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+
         assertTrue(userService.checkIfTheUserIsOnline(1L));
     }
 
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        LocalDateTime userLastActivityTime = LocalDateTime.of(2015,
-            Month.JULY, 29, 19, 30, 40);
+        LocalDateTime localDateTime = LocalDateTime.of(
+            2015, Month.JULY, 29, 19, 30, 40);
+        Timestamp userLastActivityTime = Timestamp.valueOf(localDateTime);
         User user = ModelUtils.getUser();
+
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+
         assertFalse(userService.checkIfTheUserIsOnline(1L));
     }
 }
