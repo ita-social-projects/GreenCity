@@ -6,21 +6,14 @@ import greencity.entity.NewsSubscriber;
 import greencity.exception.exceptions.InvalidUnsubscribeToken;
 import greencity.exception.exceptions.NewsSubscriberPresentException;
 import greencity.repository.NewsSubscriberRepo;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import mockit.MockUp;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
@@ -42,12 +35,6 @@ public class NewsSubscriberServiceImplTest {
 
     @Test
     public void saveTest() {
-        new MockUp<UUID>() {
-            @mockit.Mock
-            UUID randomUUID() {
-                return UUID.fromString("e1fd146e-fdb1-4b00-92a5-cc5d1585f899");
-            }
-        };
         when(modelMapper.map(dto, NewsSubscriber.class)).thenReturn(entity);
         when(modelMapper.map(entity, NewsSubscriberRequestDto.class)).thenReturn(dto);
         when(newsSubscriberRepo.save(entity)).thenReturn(entity);
