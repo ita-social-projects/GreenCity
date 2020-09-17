@@ -17,22 +17,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CustomGoalServiceImplTest {
 
     @Mock
@@ -81,16 +79,18 @@ public class CustomGoalServiceImplTest {
         assertEquals("bar", saveResult.get(0).getText());
     }
 
-    @Test(expected = CustomGoalNotSavedException.class)
+    @Test
     public void saveDuplicatedBulkSaveCustomGoalDtoTest() {
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
         CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null);
         user.setCustomGoals(Collections.singletonList(customGoal));
         when(modelMapper.map(customGoalDtoToSave, CustomGoal.class)).thenReturn(customGoal);
-        customGoalService.save(
-            new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave)),
-            user
-        );
+        Assertions
+            .assertThrows(CustomGoalNotSavedException.class,
+                () -> customGoalService.save(
+                    new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave)),
+                    user
+                ));
     }
 
     @Test
@@ -104,9 +104,11 @@ public class CustomGoalServiceImplTest {
         assertEquals(1L, (long) findAllResult.get(0).getId());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void findByNullIdTest() {
-        customGoalService.findById(null);
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> customGoalService.findById(null));
     }
 
     @Test
@@ -140,32 +142,42 @@ public class CustomGoalServiceImplTest {
         assertEquals(updateBulkResult.get(0).getText(), customGoalResponseDto.getText());
     }
 
-    @Test(expected = CustomGoalNotSavedException.class)
+    @Test
     public void updateDuplicateBulkIdTest() {
         CustomGoalResponseDto customGoalResponseDto = new CustomGoalResponseDto(1L, "foo");
         CustomGoal customGoal =
             new CustomGoal(customGoalResponseDto.getId(), customGoalResponseDto.getText(), user, null);
         user.setCustomGoals(Collections.singletonList(customGoal));
         when(customGoalRepo.findById(customGoalResponseDto.getId())).thenReturn(Optional.of(customGoal));
-        customGoalService.updateBulk(new BulkCustomGoalDto(Collections.singletonList(customGoalResponseDto)));
+        Assertions
+            .assertThrows(CustomGoalNotSavedException.class,
+                () -> customGoalService
+                    .updateBulk(new BulkCustomGoalDto(Collections.singletonList(customGoalResponseDto))));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNonExistentCustomGoalTest() {
         CustomGoalResponseDto customGoalResponseDto = new CustomGoalResponseDto(1L, "foo");
         when(customGoalRepo.findById(customGoalResponseDto.getId())).thenReturn(Optional.empty());
-        customGoalService.updateBulk(new BulkCustomGoalDto(Collections.singletonList(customGoalResponseDto)));
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> customGoalService
+                    .updateBulk(new BulkCustomGoalDto(Collections.singletonList(customGoalResponseDto))));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void findAllByUserWithNullIdTest() {
-        customGoalService.findAllByUser(null);
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> customGoalService.findAllByUser(null));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void findAllByUserWithNonExistentIdTest() {
         when(customGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
-        customGoalService.findAllByUser(user.getId());
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> customGoalService.findAllByUser(user.getId()));
     }
 
     @Test
@@ -181,10 +193,12 @@ public class CustomGoalServiceImplTest {
         assertEquals(findAllByUserResult.get(0).getText(), customGoalResponseDto.getText());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void bulkDeleteWithNonExistentIdTest() {
         doThrow(new EmptyResultDataAccessException(1)).when(customGoalRepo).deleteById(1L);
-        customGoalService.bulkDelete("1");
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> customGoalService.bulkDelete("1"));
     }
 
     @Test

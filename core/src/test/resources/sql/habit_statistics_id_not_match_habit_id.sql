@@ -22,8 +22,8 @@ VALUES (1, 'foobar', 'bar', 'baz', 1, 1);
 INSERT INTO habit_dictionary_translation (id, name, description, habit_item, language_id, habit_dictionary_id)
 VALUES (2, 'quux', 'bar', 'eggs', 1, 2);
 
-INSERT INTO habits (id, user_id, habit_dictionary_id, status, create_date)
-VALUES (1, 1, 1, true, current_date);
+INSERT INTO habits (id, habit_dictionary_id, status, create_date)
+VALUES (1, 1, true, current_date);
 
 -- Note: habit statistic id here does not match habit id
 -- This happens when habit is tracked more than one day

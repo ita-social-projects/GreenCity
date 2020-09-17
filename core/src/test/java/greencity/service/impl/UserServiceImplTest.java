@@ -22,15 +22,18 @@ import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.*;
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.powermock.api.mockito.PowerMockito;
@@ -43,10 +46,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
@@ -276,7 +275,7 @@ class UserServiceImplTest {
         List<EmailNotification> placeStatuses =
             Arrays.asList(EmailNotification.class.getEnumConstants());
 
-        TestCase.assertEquals(placeStatuses, userService.getEmailNotificationsStatuses());
+        assertEquals(placeStatuses, userService.getEmailNotificationsStatuses());
     }
 
     @Test
@@ -842,21 +841,26 @@ class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsTrueTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        LocalDateTime userLastActivityTime = LocalDateTime.now();
+        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
         User user = ModelUtils.getUser();
+
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+
         assertTrue(userService.checkIfTheUserIsOnline(1L));
     }
 
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        LocalDateTime userLastActivityTime = LocalDateTime.of(2015,
-            Month.JULY, 29, 19, 30, 40);
+        LocalDateTime localDateTime = LocalDateTime.of(
+            2015, Month.JULY, 29, 19, 30, 40);
+        Timestamp userLastActivityTime = Timestamp.valueOf(localDateTime);
         User user = ModelUtils.getUser();
+
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+
         assertFalse(userService.checkIfTheUserIsOnline(1L));
     }
 }

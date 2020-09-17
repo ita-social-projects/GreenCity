@@ -11,21 +11,22 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.TipsAndTricksCommentRepo;
 import greencity.service.TipsAndTricksService;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
+import static org.powermock.api.mockito.PowerMockito.when;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(SpringExtension.class)
 class TipsAndTricksCommentServiceImplTest {
@@ -138,7 +139,7 @@ class TipsAndTricksCommentServiceImplTest {
         Page<TipsAndTricksComment> page =
             new PageImpl<>(tipsAndTricksComments, pageRequest, tipsAndTricksComments.size());
         List<TipsAndTricksCommentDto> dtoList = Collections.singletonList(tipsAndTricksCommentDto);
-        PageableDto<TipsAndTricksCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0,1);
+        PageableDto<TipsAndTricksCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
         when(tipsAndTricksCommentRepo.findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(pageRequest,
             tipsAndTricksComment.getId())).thenReturn(page);

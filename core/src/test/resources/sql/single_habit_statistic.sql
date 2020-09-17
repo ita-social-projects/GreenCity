@@ -18,8 +18,8 @@ VALUES (1, 'foo');
 INSERT INTO habit_dictionary_translation (id, name, description, habit_item, language_id, habit_dictionary_id)
 VALUES (1, 'bar', 'baz', 'foo', 1, 1);
 
-INSERT INTO habits (id, user_id, habit_dictionary_id, status, create_date)
-VALUES (1, 1, 1, true, current_date);
+INSERT INTO habits (id, habit_dictionary_id, status, create_date)
+VALUES (1, 1, true, current_date);
 
 INSERT INTO habit_statistics (id, rate, date, amount_of_items, habit_id)
 VALUES (1, 'quux', current_date, 42, 1);

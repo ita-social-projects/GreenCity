@@ -12,21 +12,25 @@ import greencity.security.events.UpdatePasswordEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.RestorePasswordEmailRepo;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.refEq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PasswordRecoveryServiceImplTest {
     @Mock
     private JwtTool jwtTool;
@@ -44,20 +48,22 @@ public class PasswordRecoveryServiceImplTest {
     private String sendEmailTopic;
     private static final String PASSWORD_RECOVERY_ROUTING_KEY = "password.recovery";
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void sendPasswordRecoveryEmailToNonExistentUserTest() {
         String email = "foo";
         when(userRepo.findByEmail(email)).thenReturn(Optional.empty());
-        passwordRecoveryService.sendPasswordRecoveryEmailTo(email);
+        Assertions
+            .assertThrows(NotFoundException.class, () -> passwordRecoveryService.sendPasswordRecoveryEmailTo(email));
     }
 
-    @Test(expected = WrongEmailException.class)
+    @Test
     public void sendPasswordRecoveryEmailToUserWithExistentRestorePasswordEmailTest() {
         String email = "foo";
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(
             User.builder().restorePasswordEmail(new RestorePasswordEmail()).build()
         ));
-        passwordRecoveryService.sendPasswordRecoveryEmailTo(email);
+        Assertions
+            .assertThrows(WrongEmailException.class, () -> passwordRecoveryService.sendPasswordRecoveryEmailTo(email));
     }
 
     @Test
@@ -87,15 +93,17 @@ public class PasswordRecoveryServiceImplTest {
         );
     }
 
-    @Test(expected = BadVerifyEmailTokenException.class)
+    @Test
     public void updatePasswordUsingTokenWithNonExistentTokenTest() {
         String token = "foo";
         String newPassword = "bar";
         when(restorePasswordEmailRepo.findByToken(token)).thenReturn(Optional.empty());
-        passwordRecoveryService.updatePasswordUsingToken(token, newPassword);
+        Assertions
+            .assertThrows(BadVerifyEmailTokenException.class,
+                () -> passwordRecoveryService.updatePasswordUsingToken(token, newPassword));
     }
 
-    @Test(expected = UserActivationEmailTokenExpiredException.class)
+    @Test
     public void updatePasswordUsingTokenWithExpiredTokenTest() {
         String token = "foo";
         String newPassword = "bar";
@@ -105,7 +113,9 @@ public class PasswordRecoveryServiceImplTest {
                 .user(User.builder().email("foo@bar.com").build())
                 .build()
         ));
-        passwordRecoveryService.updatePasswordUsingToken(token, newPassword);
+        Assertions
+            .assertThrows(UserActivationEmailTokenExpiredException.class,
+                () -> passwordRecoveryService.updatePasswordUsingToken(token, newPassword));
     }
 
     @Test

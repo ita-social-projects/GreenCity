@@ -7,22 +7,21 @@ import io.jsonwebtoken.Jwts;
 import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * @author Yurii Koval
  */
-@RunWith(value = MockitoJUnitRunner.class)
-public class JwtToolTest {
+@ExtendWith(SpringExtension.class)public class JwtToolTest {
     private final String expectedEmail = "test@gmail.com";
     private final ROLE expectedRole = ROLE.ROLE_USER;
 
@@ -32,7 +31,7 @@ public class JwtToolTest {
     @InjectMocks
     private JwtTool jwtTool;
 
-    @Before
+    @BeforeEach
     public void init() {
         ReflectionTestUtils.setField(jwtTool, "accessTokenValidTimeInMinutes", 15);
         ReflectionTestUtils.setField(jwtTool, "refreshTokenValidTimeInMinutes", 15);

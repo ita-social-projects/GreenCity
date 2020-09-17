@@ -3,9 +3,9 @@ package greencity.security.eventlisteners;
 import greencity.entity.User;
 import greencity.security.events.SignInEvent;
 import greencity.service.UserService;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.ArgumentMatchers.any;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
@@ -18,7 +18,7 @@ public class SignInEventListenerTest {
 
     private SignInEventListener signInEventListener;
 
-    @Before
+    @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
         signInEventListener = new SignInEventListener(userService);
@@ -32,8 +32,10 @@ public class SignInEventListenerTest {
         verify(userService, times(1)).addDefaultHabit(anyLong(), anyString());
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test
     public void onApplicationEventWithInvalidEvent() {
-        signInEventListener.onApplicationEvent(new SignInEvent("I'm a User"));
+        Assertions
+            .assertThrows(ClassCastException.class,
+                () -> signInEventListener.onApplicationEvent(new SignInEvent("I'm a User")));
     }
 }
