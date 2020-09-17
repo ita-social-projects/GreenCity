@@ -1,9 +1,8 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUser;
 import greencity.config.SecurityConfig;
+import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.entity.User;
 import greencity.service.EcoNewsCommentService;
@@ -12,12 +11,8 @@ import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -28,9 +23,16 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUser;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -54,7 +56,8 @@ class EcoNewsCommentControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(ecoNewsCommentController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService))
             .build();
     }
 
@@ -83,7 +86,7 @@ class EcoNewsCommentControllerTest {
     }
 
     @Test
-    public void saveBadRequestTest() throws Exception {
+    void saveBadRequestTest() throws Exception {
         mockMvc.perform(post(ecoNewsCommentControllerLink + "/{econewsId}", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{}"))
