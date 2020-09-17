@@ -12,11 +12,15 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import java.util.Optional;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -104,7 +108,7 @@ public interface UserService {
     PageableDto<UserForListDto> findByPage(Pageable pageable);
 
     /**
-     * Find {@link User} for management by page.
+     * Find {@link User} for management by page .
      *
      * @param pageable a value with pageable configuration.
      * @return a dto of {@link PageableDto}.
@@ -412,6 +416,15 @@ public interface UserService {
      * @author Vasyl Zhovnir
      */
     void setActivatedStatus(Long id);
+
+    /**
+     * Method that allow you to find {@link User} by ID and token.
+     *
+     * @param userId - {@link User}'s id
+     * @param token - {@link User}'s token
+     * @return {@link Optional} of {@link User}
+     */
+    Optional<User> findByIdAndToken(Long userId, String token);
 
     /**
      * Method for getting User by search query.

@@ -1,5 +1,6 @@
 package greencity.security.service;
 
+import greencity.dto.user.UserManagementDto;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
@@ -55,4 +56,13 @@ public interface OwnSecurityService {
      * @author Dmytro Dovhal
      */
     void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email);
+
+
+    /**
+     * Method for registering a user from admin panel.
+     *
+     * @param dto a value of {@link UserManagementDto}
+     * @author Vasyl Zhovnir
+     */
+    void managementRegisterUser(UserManagementDto dto);
 }

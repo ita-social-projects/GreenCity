@@ -1,6 +1,7 @@
 package greencity.dto.user;
 
 import greencity.constant.ValidationConstants;
+import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import lombok.*;
 
@@ -29,6 +30,9 @@ public class UserManagementDto {
     private String email;
 
     private String userCredo;
+
+    @NotNull
+    private ROLE role;
 
     @NotNull
     private UserStatus userStatus;

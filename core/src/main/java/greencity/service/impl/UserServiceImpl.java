@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -36,8 +37,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -141,6 +140,7 @@ public class UserServiceImpl implements UserService {
     private void updateUserFromDto(UserManagementDto dto, User user) {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
+        user.setRole(dto.getRole());
         user.setUserCredo(dto.getUserCredo());
         user.setUserStatus(dto.getUserStatus());
     }
@@ -959,6 +959,19 @@ public class UserServiceImpl implements UserService {
     public void setActivatedStatus(Long id) {
         User foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.ACTIVATED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<User> findByIdAndToken(Long userId, String token) {
+        User foundUser = findById(userId);
+        VerifyEmail verifyEmail = foundUser.getVerifyEmail();
+        if (verifyEmail != null && verifyEmail.getToken().equals(token)) {
+            return Optional.of(foundUser);
+        }
+        return Optional.empty();
     }
 
     /**

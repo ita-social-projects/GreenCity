@@ -2,14 +2,18 @@ package greencity.security.service.impl;
 
 import greencity.constant.AppConstant;
 import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
 import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
+import greencity.dto.user.UserManagementDto;
 import greencity.entity.OwnSecurity;
+import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
+import greencity.message.UserApprovalMessage;
 import greencity.message.VerifyEmailMessage;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
@@ -19,11 +23,16 @@ import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
+import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,9 +53,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final JwtTool jwtTool;
     private final Integer expirationTime;
     private final RabbitTemplate rabbitTemplate;
+    private final String defaultProfilePicture;
+    private final RestorePasswordEmailRepo restorePasswordEmailRepo;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
-    private final String defaultProfilePicture;
 
     /**
      * Constructor.
@@ -58,7 +68,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   JwtTool jwtTool,
                                   @Value("${verifyEmailTimeHour}") Integer expirationTime,
                                   RabbitTemplate rabbitTemplate,
-                                  @Value("${defaultProfilePicture}") String defaultProfilePicture) {
+                                  @Value("${defaultProfilePicture}") String defaultProfilePicture,
+                                  RestorePasswordEmailRepo restorePasswordEmailRepo) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -66,6 +77,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         this.expirationTime = expirationTime;
         this.rabbitTemplate = rabbitTemplate;
         this.defaultProfilePicture = defaultProfilePicture;
+        this.restorePasswordEmailRepo = restorePasswordEmailRepo;
     }
 
     /**
@@ -221,5 +233,99 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             throw new PasswordsDoNotMatchesException(PASSWORD_DOES_NOT_MATCH);
         }
         updatePassword(updatePasswordDto.getPassword(), user.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void managementRegisterUser(UserManagementDto dto) {
+        User user = managementCreateNewRegisteredUser(dto, jwtTool.generateTokenKey());
+        OwnSecurity ownSecurity = managementCreateOwnSecurity(user);
+        user.setOwnSecurity(ownSecurity);
+        savePasswordRestorationTokenForUser(user, jwtTool.generateTokenKey());
+    }
+
+    private User managementCreateNewRegisteredUser(UserManagementDto dto, String refreshTokenKey) {
+        return User.builder()
+            .name(dto.getName())
+            .email(dto.getEmail())
+            .dateOfRegistration(LocalDateTime.now())
+            .role(dto.getRole())
+            .refreshTokenKey(refreshTokenKey)
+            .lastVisit(LocalDateTime.now())
+            .userStatus(dto.getUserStatus())
+            .emailNotification(EmailNotification.DISABLED)
+            .profilePicturePath(defaultProfilePicture)
+            .rating(AppConstant.DEFAULT_RATING)
+            .build();
+    }
+
+    private OwnSecurity managementCreateOwnSecurity(User user) {
+        return OwnSecurity.builder()
+            .password(passwordEncoder.encode(generatePassword()))
+            .user(user)
+            .build();
+    }
+
+    /**
+     * Method that generates random password.
+     *
+     * @return {@link String} generated password.
+     */
+    private String generatePassword() {
+        String upperCaseLetters = RandomStringUtils.random(2, 65, 90, true, true);
+        String lowerCaseLetters = RandomStringUtils.random(2, 97, 122, true, true);
+        String numbers = RandomStringUtils.randomNumeric(2);
+        String specialChar = RandomStringUtils.random(2, 33, 47, false, false);
+        String totalChars = RandomStringUtils.randomAlphanumeric(2);
+        String combinedChars = upperCaseLetters.concat(lowerCaseLetters)
+            .concat(numbers)
+            .concat(specialChar)
+            .concat(totalChars);
+        List<Character> pwdChars = combinedChars.chars()
+            .mapToObj(c -> (char) c)
+            .collect(Collectors.toList());
+        Collections.shuffle(pwdChars);
+        return pwdChars.stream()
+            .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+            .toString();
+    }
+
+    /**
+     * Creates and saves password restoration token for a given user
+     * and publishes event of sending user approval email.
+     *
+     * @param user  {@link User} - User whose password is to be recovered
+     * @param token {@link String} - token for password restoration
+     */
+    private void savePasswordRestorationTokenForUser(User user, String token) {
+        RestorePasswordEmail restorePasswordEmail =
+            RestorePasswordEmail.builder()
+                .user(user)
+                .token(token)
+                .expiryDate(calculateExpirationDate(expirationTime))
+                .build();
+        restorePasswordEmailRepo.save(restorePasswordEmail);
+        userService.save(user);
+        rabbitTemplate.convertAndSend(
+            sendEmailTopic,
+            SEND_USER_APPROVAL_ROUTING_KEY,
+            new UserApprovalMessage(user.getId(), user.getName(), user.getEmail(),
+                token)
+        );
+    }
+
+    /**
+     * Calculates token expiration date. The amount of hours, after which
+     * token will be expired, is set by method parameter.
+     *
+     * @param expirationTimeInHours - Token expiration delay in hours
+     * @return {@link LocalDateTime} - Time at which token will be expired
+     */
+    private LocalDateTime calculateExpirationDate(Integer expirationTimeInHours) {
+        LocalDateTime now = LocalDateTime.now();
+        return now.plusHours(expirationTimeInHours);
     }
 }

@@ -12,6 +12,7 @@ import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
+import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.OwnSecurityService;
 import greencity.security.service.impl.OwnSecurityServiceImpl;
 import greencity.service.UserService;
@@ -43,6 +44,9 @@ public class OwnSecurityServiceImplTest {
     @Mock
     RabbitTemplate rabbitTemplate;
 
+    @Mock
+    RestorePasswordEmailRepo restorePasswordEmailRepo;
+
     private OwnSecurityService ownSecurityService;
 
     private User verifiedUser;
@@ -58,7 +62,7 @@ public class OwnSecurityServiceImplTest {
     public void init() {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
-            jwtTool, 1, rabbitTemplate, defaultProfilePicture);
+            jwtTool, 1, rabbitTemplate, defaultProfilePicture, restorePasswordEmailRepo);
 
         verifiedUser = User.builder()
             .email("test@gmail.com")
