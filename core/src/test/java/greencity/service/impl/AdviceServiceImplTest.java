@@ -1,10 +1,5 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
-
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -21,16 +16,20 @@ import greencity.repository.HabitDictionaryRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AdviceServiceImplTest {
     @InjectMocks
     private AdviceServiceImpl adviceService;
@@ -71,9 +70,11 @@ public class AdviceServiceImplTest {
         assertEquals(languageTranslationDTO, adviceService.getRandomAdviceByHabitIdAndLanguage(1L, "en"));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getRandomAdviceByHabitIdFailed() {
-        adviceService.getRandomAdviceByHabitIdAndLanguage(1L, "en");
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> adviceService.getRandomAdviceByHabitIdAndLanguage(1L, "en"));
     }
 
     @Test
@@ -83,9 +84,11 @@ public class AdviceServiceImplTest {
         assertEquals(adviceDTO, adviceService.getAdviceById(anyLong()));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getAdviceByIdFailed() {
-        adviceService.getAdviceById(anyLong());
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> adviceService.getAdviceById(anyLong()));
     }
 
     @Test
@@ -96,9 +99,11 @@ public class AdviceServiceImplTest {
         assertEquals(adviceDTO, adviceService.getAdviceByName("en", "test"));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getAdviceByNameFailed() {
-        adviceService.getAdviceByName("en", "test");
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> adviceService.getAdviceByName("en", "test"));
     }
 
     @Test
@@ -116,9 +121,11 @@ public class AdviceServiceImplTest {
         assertEquals(advice, adviceService.update(advicePostDTO, 1L));
     }
 
-    @Test(expected = NotUpdatedException.class)
+    @Test
     public void updateFailed() {
-        adviceService.update(advicePostDTO, 1L);
+        Assertions
+            .assertThrows(NotUpdatedException.class,
+                () -> adviceService.update(advicePostDTO, 1L));
     }
 
     @Test
@@ -127,9 +134,11 @@ public class AdviceServiceImplTest {
         verify(adviceRepo, times(1)).deleteById(anyLong());
     }
 
-    @Test(expected = NotDeletedException.class)
+    @Test
     public void deleteFailed() {
         doThrow(new EmptyResultDataAccessException(1)).when(adviceRepo).deleteById(advice.getId());
-        adviceService.delete(advice.getId());
+        Assertions
+            .assertThrows(NotDeletedException.class,
+                () -> adviceService.delete(advice.getId()));
     }
 }

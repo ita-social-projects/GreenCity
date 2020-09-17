@@ -7,9 +7,10 @@ import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -28,7 +29,7 @@ public class JwtAuthenticationProviderTest {
 
     private JwtAuthenticationProvider jwtAuthenticationProvider;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtTool);
@@ -65,7 +66,7 @@ public class JwtAuthenticationProviderTest {
         assertEquals("", actual.getCredentials());
     }
 
-    @Test(expected = ExpiredJwtException.class)
+    @Test
     public void authenticateWithExpiredAccessToken() {
         when(jwtTool.getAccessTokenKey()).thenReturn("123123123");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -75,10 +76,12 @@ public class JwtAuthenticationProviderTest {
                 + ".DYna1ycZd7eaUBrXKGzYvEMwcybe7l5YiliOR-LfyRw",
             null
         );
-        jwtAuthenticationProvider.authenticate(authentication);
+        Assertions
+            .assertThrows(ExpiredJwtException.class,
+                () -> jwtAuthenticationProvider.authenticate(authentication));
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void authenticateWithMalformedAccessToken() {
         when(jwtTool.getAccessTokenKey()).thenReturn("123123123");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -88,6 +91,8 @@ public class JwtAuthenticationProviderTest {
                 + ".DYna1ycZd7eaUBrXKGzYvEMwcybe7l5YiliOR-LfyRw",
             null
         );
-        jwtAuthenticationProvider.authenticate(authentication);
+        Assertions
+            .assertThrows(Exception.class,
+                () -> jwtAuthenticationProvider.authenticate(authentication));
     }
 }

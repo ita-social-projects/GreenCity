@@ -10,18 +10,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LanguageServiceImplTest {
 
     @Mock
@@ -66,9 +66,11 @@ public class LanguageServiceImplTest {
         assertEquals(language, languageService.findByCode(language.getCode()));
     }
 
-    @Test(expected = LanguageNotFoundException.class)
+    @Test
     public void findCodeByIdFailed() {
-        languageService.findByCode(language.getCode());
+        Assertions
+            .assertThrows(LanguageNotFoundException.class,
+                () -> languageService.findByCode(language.getCode()));
     }
 
     @Test

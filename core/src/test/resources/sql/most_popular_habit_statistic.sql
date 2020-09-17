@@ -32,12 +32,12 @@ VALUES (1, 'foobar', 'bar', 'baz', 1, 1);
 INSERT INTO habit_dictionary_translation (id, name, description, habit_item, language_id, habit_dictionary_id)
 VALUES (2, 'quux', 'bar', 'eggs', 1, 2);
 
-INSERT INTO habits (id, user_id, habit_dictionary_id, status, create_date)
-VALUES (1, 1, 1, true, current_date);
-INSERT INTO habits (id, user_id, habit_dictionary_id, status, create_date)
-VALUES (2, 1, 2, true, current_date);
-INSERT INTO habits (id, user_id, habit_dictionary_id, status, create_date)
-VALUES (3, 2, 1, true, current_date);
+INSERT INTO habits (id, habit_dictionary_id, status, create_date)
+VALUES (1, 1, true, current_date);
+INSERT INTO habits (id, habit_dictionary_id, status, create_date)
+VALUES (2, 2, true, current_date);
+INSERT INTO habits (id, habit_dictionary_id, status, create_date)
+VALUES (3, 1, true, current_date);
 
 INSERT INTO habit_statistics (id, rate, date, amount_of_items, habit_id)
 VALUES (1, 'quux', current_date, 42, 1);

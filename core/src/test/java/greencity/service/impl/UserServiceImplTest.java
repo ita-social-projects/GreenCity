@@ -26,11 +26,13 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.*;
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.powermock.api.mockito.PowerMockito;
@@ -43,10 +45,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
@@ -276,7 +274,7 @@ class UserServiceImplTest {
         List<EmailNotification> placeStatuses =
             Arrays.asList(EmailNotification.class.getEnumConstants());
 
-        TestCase.assertEquals(placeStatuses, userService.getEmailNotificationsStatuses());
+        assertEquals(placeStatuses, userService.getEmailNotificationsStatuses());
     }
 
     @Test

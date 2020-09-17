@@ -1,25 +1,24 @@
 package greencity.security.filters;
 
 import greencity.security.jwt.JwtTool;
+import greencity.service.UserService;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import greencity.service.UserService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(PowerMockRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AccessTokenAuthenticationFilterTest {
     @Mock
     HttpServletRequest request;
@@ -36,7 +35,7 @@ public class AccessTokenAuthenticationFilterTest {
 
     private AccessTokenAuthenticationFilter authenticationFilter;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         authenticationFilter = new AccessTokenAuthenticationFilter(jwtTool, authenticationManager, userService);
