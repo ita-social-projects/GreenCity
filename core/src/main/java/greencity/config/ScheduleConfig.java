@@ -146,6 +146,6 @@ public class ScheduleConfig {
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void scheduledDeleteRatingStatisticsOlderThan() {
-        ratingStatisticsService.scheduledDeleteOldRecords();
+        ratingStatisticsRepo.scheduledDeleteOlderThan();
     }
 }

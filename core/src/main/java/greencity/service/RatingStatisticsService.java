@@ -14,11 +14,4 @@ public interface RatingStatisticsService {
      * @author Dovganyuk Taras
      */
     RatingStatistics save(RatingStatistics ratingStatistics);
-
-    /**
-     * Scheduled method to clean records from table rating_statistics which are older than 2 years.
-     *
-     * @author Dovganyuk Taras
-     */
-    void scheduledDeleteOldRecords();
 }
