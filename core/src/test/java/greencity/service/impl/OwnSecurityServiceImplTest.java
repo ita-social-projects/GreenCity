@@ -27,7 +27,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class OwnSecurityServiceImplTest {
+class OwnSecurityServiceImplTest {
 
     @Mock
     OwnSecurityRepo ownSecurityRepo;
@@ -86,7 +86,7 @@ public class OwnSecurityServiceImplTest {
     }
 
     @Test
-    public void signUp() {
+    void signUp() {
         User user = User.builder().verifyEmail(new VerifyEmail()).build();
         when(userService.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
@@ -109,7 +109,7 @@ public class OwnSecurityServiceImplTest {
     }
 
     @Test
-    public void signIn() {
+    void signIn() {
         when(userService.findByEmail(anyString())).thenReturn(verifiedUser);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtTool.createAccessToken(anyString(), any(ROLE.class))).thenReturn("new-access-token");
@@ -124,7 +124,7 @@ public class OwnSecurityServiceImplTest {
     }
 
     @Test
-    public void signInNotVerifiedUser() {
+    void signInNotVerifiedUser() {
         when(userService.findByEmail(anyString())).thenReturn(notVerifiedUser);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtTool.createAccessToken(anyString(), any(ROLE.class))).thenReturn("new-access-token");

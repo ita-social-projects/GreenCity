@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class BreakTimeServiceImplTest {
+class BreakTimeServiceImplTest {
     @Mock
     private BreakTimeRepo breakTimeRepo;
 
@@ -40,28 +40,28 @@ public class BreakTimeServiceImplTest {
         .build();
 
     @Test
-    public void saveValidBreakTime() {
+    void saveValidBreakTime() {
         when(breakTimeRepo.save(validBreakTime)).thenReturn(validBreakTime);
 
         assertEquals(validBreakTime, breakTimeService.save(validBreakTime));
     }
 
     @Test
-    public void saveNotValidBreakTime() {
+    void saveNotValidBreakTime() {
         Assertions
             .assertThrows(BadRequestException.class,
                 () -> breakTimeService.save(notValidBreakTime));
     }
 
     @Test
-    public void findByExistingId() {
+    void findByExistingId() {
         when(breakTimeRepo.findById(validBreakTime.getId())).thenReturn(Optional.of(validBreakTime));
 
         assertEquals(validBreakTime, breakTimeService.findById(validBreakTime.getId()));
     }
 
     @Test
-    public void findByNotExistingId() {
+    void findByNotExistingId() {
         when(breakTimeRepo.findById(anyLong())).thenReturn(Optional.empty());
         Assertions
             .assertThrows(NotFoundException.class,
@@ -69,7 +69,7 @@ public class BreakTimeServiceImplTest {
     }
 
     @Test
-    public void deleteByExistingId() {
+    void deleteByExistingId() {
         when(breakTimeRepo.findById(validBreakTime.getId())).thenReturn(Optional.of(validBreakTime));
 
         assertEquals(validBreakTime.getId(), breakTimeService.deleteById(validBreakTime.getId()));
@@ -77,7 +77,7 @@ public class BreakTimeServiceImplTest {
     }
 
     @Test
-    public void deleteByNotExistingId() {
+    void deleteByNotExistingId() {
         when(breakTimeRepo.findById(anyLong())).thenReturn(Optional.empty());
         Assertions
             .assertThrows(NotFoundException.class,
@@ -85,7 +85,7 @@ public class BreakTimeServiceImplTest {
     }
 
     @Test
-    public void findAll() {
+    void findAll() {
         List<BreakTime> expected = Arrays.asList(validBreakTime, notValidBreakTime);
 
         when(breakTimeRepo.findAll()).thenReturn(expected);
@@ -93,7 +93,7 @@ public class BreakTimeServiceImplTest {
     }
 
     @Test
-    public void findAllEmpty() {
+    void findAllEmpty() {
         List<BreakTime> expected = Collections.emptyList();
 
         when(breakTimeRepo.findAll()).thenReturn(expected);
