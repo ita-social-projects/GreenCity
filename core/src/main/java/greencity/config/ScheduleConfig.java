@@ -1,12 +1,22 @@
 package greencity.config;
 
+import static greencity.constant.CacheConstants.FACT_OF_THE_DAY_CACHE_NAME;
+import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
+import static greencity.constant.RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME;
+import static greencity.constant.RabbitConstants.SEND_HABIT_NOTIFICATION_ROUTING_KEY;
 import greencity.entity.FactTranslation;
 import greencity.entity.User;
+import static greencity.entity.enums.EmailNotification.*;
+import static greencity.entity.enums.FactOfDayStatus.*;
 import greencity.message.SendHabitNotification;
 import greencity.repository.FactTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.RatingStatisticsRepo;
 import greencity.repository.UserRepo;
+import greencity.service.RatingStatisticsService;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,17 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static greencity.constant.CacheConstants.FACT_OF_THE_DAY_CACHE_NAME;
-import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
-import static greencity.constant.RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME;
-import static greencity.constant.RabbitConstants.SEND_HABIT_NOTIFICATION_ROUTING_KEY;
-import static greencity.entity.enums.EmailNotification.*;
-import static greencity.entity.enums.FactOfDayStatus.*;
 
 
 /**
@@ -44,6 +43,7 @@ public class ScheduleConfig {
     private final RabbitTemplate rabbitTemplate;
     private final UserRepo userRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
+    private final RatingStatisticsService ratingStatisticsService;
 
     /**
      * Invoke {@link sendHabitNotification} from EmailMessageReceiver to send email letters
@@ -139,13 +139,13 @@ public class ScheduleConfig {
 
     /**
      * Every day at 00:00 deletes from the table rating_statistics records
-     * witch are older than 2 years.
+     * witch are older than period in application properties.
      *
      * @author Dovganyuk Taras
      **/
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void scheduledDeleteRatingStatisticsOlderThan() {
-        ratingStatisticsRepo.scheduledDeleteOlderThan();
+        ratingStatisticsService.scheduledDeleteOldRecords();
     }
 }

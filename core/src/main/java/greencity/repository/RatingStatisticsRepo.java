@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.RatingStatistics;
+import java.time.ZonedDateTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,7 +17,6 @@ public interface RatingStatisticsRepo extends JpaRepository<RatingStatistics, Lo
      * @author Dovganyuk Taras
      */
     @Modifying
-    @Query(nativeQuery = true,
-        value = "DELETE FROM rating_statistics WHERE create_date + interval '2 year' < current_date")
-    void scheduledDeleteOlderThan();
+    @Query("DELETE FROM RatingStatistics WHERE createDate < :expireDate")
+    void scheduledDeleteOlderThan(ZonedDateTime expireDate);
 }
