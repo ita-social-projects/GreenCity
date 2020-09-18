@@ -31,7 +31,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 @ExtendWith(MockitoExtension.class)
-public class CustomGoalServiceImplTest {
+class CustomGoalServiceImplTest {
 
     @Mock
     private CustomGoalRepo customGoalRepo;
@@ -56,7 +56,7 @@ public class CustomGoalServiceImplTest {
             .build();
 
     @Test
-    public void saveEmptyBulkSaveCustomGoalDtoTest() {
+    void saveEmptyBulkSaveCustomGoalDtoTest() {
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.emptyList()),
             user
@@ -66,7 +66,7 @@ public class CustomGoalServiceImplTest {
     }
 
     @Test
-    public void saveNonExistentBulkSaveCustomGoalDtoTest() {
+    void saveNonExistentBulkSaveCustomGoalDtoTest() {
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
         CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null);
         when(modelMapper.map(customGoalDtoToSave, CustomGoal.class)).thenReturn(customGoal);
@@ -80,21 +80,19 @@ public class CustomGoalServiceImplTest {
     }
 
     @Test
-    public void saveDuplicatedBulkSaveCustomGoalDtoTest() {
+    void saveDuplicatedBulkSaveCustomGoalDtoTest() {
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
         CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null);
+        BulkSaveCustomGoalDto dto = new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave));
         user.setCustomGoals(Collections.singletonList(customGoal));
         when(modelMapper.map(customGoalDtoToSave, CustomGoal.class)).thenReturn(customGoal);
         Assertions
             .assertThrows(CustomGoalNotSavedException.class,
-                () -> customGoalService.save(
-                    new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave)),
-                    user
-                ));
+                () -> customGoalService.save(dto, user));
     }
 
     @Test
-    public void findAllTest() {
+    void findAllTest() {
         CustomGoal customGoal = new CustomGoal(1L, "foo", null, null);
         when(customGoalRepo.findAll()).thenReturn(Collections.singletonList(customGoal));
         when(modelMapper.map(customGoal, CustomGoalResponseDto.class))
@@ -105,14 +103,14 @@ public class CustomGoalServiceImplTest {
     }
 
     @Test
-    public void findByNullIdTest() {
+    void findByNullIdTest() {
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> customGoalService.findById(null));
     }
 
     @Test
-    public void findByIdTest() {
+    void findByIdTest() {
         CustomGoal customGoal = new CustomGoal(1L, "foo", null, null);
         when(customGoalRepo.findById(anyLong())).thenReturn(java.util.Optional.of(customGoal));
         when(modelMapper.map(customGoal, CustomGoalResponseDto.class))
@@ -123,14 +121,14 @@ public class CustomGoalServiceImplTest {
     }
 
     @Test
-    public void updateEmptyInputBulkTest() {
+    void updateEmptyInputBulkTest() {
         List<CustomGoalResponseDto> updateBulkResult =
             customGoalService.updateBulk(new BulkCustomGoalDto(Collections.emptyList()));
         assertTrue(updateBulkResult.isEmpty());
     }
 
     @Test
-    public void updateNonDuplicatedBulkIdTest() {
+    void updateNonDuplicatedBulkIdTest() {
         CustomGoalResponseDto customGoalResponseDto = new CustomGoalResponseDto(1L, "foo");
         CustomGoal customGoal =
             new CustomGoal(customGoalResponseDto.getId(), customGoalResponseDto.getText(), user, null);
@@ -143,45 +141,48 @@ public class CustomGoalServiceImplTest {
     }
 
     @Test
-    public void updateDuplicateBulkIdTest() {
+    void updateDuplicateBulkIdTest() {
         CustomGoalResponseDto customGoalResponseDto = new CustomGoalResponseDto(1L, "foo");
         CustomGoal customGoal =
             new CustomGoal(customGoalResponseDto.getId(), customGoalResponseDto.getText(), user, null);
         user.setCustomGoals(Collections.singletonList(customGoal));
+        BulkCustomGoalDto dto = new BulkCustomGoalDto(Collections.singletonList(customGoalResponseDto));
         when(customGoalRepo.findById(customGoalResponseDto.getId())).thenReturn(Optional.of(customGoal));
         Assertions
             .assertThrows(CustomGoalNotSavedException.class,
                 () -> customGoalService
-                    .updateBulk(new BulkCustomGoalDto(Collections.singletonList(customGoalResponseDto))));
+                    .updateBulk(dto));
     }
 
     @Test
-    public void updateNonExistentCustomGoalTest() {
+    void updateNonExistentCustomGoalTest() {
         CustomGoalResponseDto customGoalResponseDto = new CustomGoalResponseDto(1L, "foo");
+
+        BulkCustomGoalDto dto = new BulkCustomGoalDto(Collections.singletonList(customGoalResponseDto));
         when(customGoalRepo.findById(customGoalResponseDto.getId())).thenReturn(Optional.empty());
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> customGoalService
-                    .updateBulk(new BulkCustomGoalDto(Collections.singletonList(customGoalResponseDto))));
+                    .updateBulk(dto));
     }
 
     @Test
-    public void findAllByUserWithNullIdTest() {
+    void findAllByUserWithNullIdTest() {
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> customGoalService.findAllByUser(null));
     }
 
     @Test
-    public void findAllByUserWithNonExistentIdTest() {
+    void findAllByUserWithNonExistentIdTest() {
         when(customGoalRepo.findAllByUserId(user.getId())).thenReturn(Collections.emptyList());
         Assertions
             .assertThrows(NotFoundException.class,
-                () -> customGoalService.findAllByUser(user.getId()));
+                () -> customGoalService.findAllByUser(1L));
     }
 
     @Test
-    public void findAllByUserWithExistentIdTest() {
+    void findAllByUserWithExistentIdTest() {
         CustomGoal customGoal = new CustomGoal(1L, "foo", user, null);
         CustomGoalResponseDto customGoalResponseDto =
             new CustomGoalResponseDto(customGoal.getId(), customGoal.getText());
@@ -194,7 +195,7 @@ public class CustomGoalServiceImplTest {
     }
 
     @Test
-    public void bulkDeleteWithNonExistentIdTest() {
+    void bulkDeleteWithNonExistentIdTest() {
         doThrow(new EmptyResultDataAccessException(1)).when(customGoalRepo).deleteById(1L);
         Assertions
             .assertThrows(NotFoundException.class,
@@ -202,7 +203,7 @@ public class CustomGoalServiceImplTest {
     }
 
     @Test
-    public void bulkDeleteWithExistentIdTest() {
+    void bulkDeleteWithExistentIdTest() {
         doNothing().when(customGoalRepo).deleteById(anyLong());
         List<Long> bulkDeleteResult = customGoalService.bulkDelete("1,2,3");
         ArrayList<Long> expectedResult = new ArrayList<>();

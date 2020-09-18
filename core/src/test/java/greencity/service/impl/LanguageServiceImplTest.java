@@ -22,7 +22,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
 @ExtendWith(MockitoExtension.class)
-public class LanguageServiceImplTest {
+class LanguageServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
@@ -39,7 +39,7 @@ public class LanguageServiceImplTest {
     private Language language = ModelUtils.getLanguage();
 
     @Test
-    public void getAllAdvices() {
+    void getAllAdvices() {
         List<LanguageDTO> expected = Collections.emptyList();
         when(modelMapper.map(languageRepo.findAll(), new TypeToken<List<LanguageDTO>>() {
         }.getType())).thenReturn(expected);
@@ -47,7 +47,7 @@ public class LanguageServiceImplTest {
     }
 
     @Test
-    public void extractExistingLanguageCodeFromRequest() {
+    void extractExistingLanguageCodeFromRequest() {
         String expectedLanguageCode = "uk";
 
         when(request.getParameter("language")).thenReturn(expectedLanguageCode);
@@ -55,26 +55,27 @@ public class LanguageServiceImplTest {
     }
 
     @Test
-    public void extractNotExistingLanguageCodeFromRequest() {
+    void extractNotExistingLanguageCodeFromRequest() {
         when(request.getParameter("language")).thenReturn(null);
         assertEquals(AppConstant.DEFAULT_LANGUAGE_CODE, languageService.extractLanguageCodeFromRequest());
     }
 
     @Test
-    public void findByCode() {
+    void findByCode() {
         when(languageRepo.findByCode(language.getCode())).thenReturn(Optional.of(language));
         assertEquals(language, languageService.findByCode(language.getCode()));
     }
 
     @Test
-    public void findCodeByIdFailed() {
+    void findCodeByIdFailed() {
+        String code = language.getCode();
         Assertions
             .assertThrows(LanguageNotFoundException.class,
-                () -> languageService.findByCode(language.getCode()));
+                () -> languageService.findByCode(code));
     }
 
     @Test
-    public void findAllLanguageCodes() {
+    void findAllLanguageCodes() {
         List<String> code = Collections.singletonList(language.getCode());
         when(languageRepo.findAllLanguageCodes()).thenReturn(code);
         assertEquals(code, languageService.findAllLanguageCodes());
