@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 @ExtendWith(MockitoExtension.class)
-public class AchievementServiceImplTest {
+class AchievementServiceImplTest {
 
     @Mock
     private AchievementRepo achievementRepo;
@@ -26,14 +26,14 @@ public class AchievementServiceImplTest {
     private AchievementServiceImpl achievementService;
 
     @Test
-    public void findAllWithEmptyListTest() {
+    void findAllWithEmptyListTest() {
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
         List<AchievementDTO> findAllResult = achievementService.findAll();
         assertTrue(findAllResult.isEmpty());
     }
 
     @Test
-    public void findAllWithOneValueInRepoTest() {
+    void findAllWithOneValueInRepoTest() {
         Achievement achievement = new Achievement(1L, "foo", null, null, null);
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
