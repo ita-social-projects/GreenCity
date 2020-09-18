@@ -136,10 +136,7 @@ class AdviceServiceImplTest {
 
     @Test
     void deleteFailed() {
-        doThrow(new EmptyResultDataAccessException(1)).when(adviceRepo).deleteById(advice.getId());
-        Long id = advice.getId();
-        Assertions
-            .assertThrows(NotDeletedException.class,
-                () -> adviceService.delete(id));
+        doThrow(new EmptyResultDataAccessException(1)).when(adviceRepo).deleteById(1L);
+        Assertions.assertThrows(NotDeletedException.class,() -> adviceService.delete(1L));
     }
 }

@@ -128,15 +128,12 @@ class OpenHoursServiceImplTest {
     void deleteByIdTest() {
         when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(openingHours));
 
-        assertEquals(new Long(1), openHoursService.deleteById(1L));
+        assertEquals(1L, openHoursService.deleteById(1L));
     }
 
     @Test
     void deleteByIdGivenIdNullThenThrowException() {
-        Assertions
-            .assertThrows(NotFoundException.class,
-                () -> openHoursService.deleteById(null));
-
+        Assertions.assertThrows(NotFoundException.class, () -> openHoursService.deleteById(null));
     }
 
     @Test
