@@ -5,6 +5,7 @@ import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import java.util.List;
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class ManagementUserController {
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final OwnSecurityService ownSecurityService;
 
     /**
      * Method that returns management page with all {@link User}.
@@ -48,10 +50,32 @@ public class ManagementUserController {
     }
 
     /**
+     * Register new user from admin panel.
+     *
+     * @param userDto dto with info for registering user.
+     * @return {@link GenericResponseDto}
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping("/register")
+    @ResponseBody
+    public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            GenericResponseDto genericResponseDto = new GenericResponseDto();
+            for (FieldError fieldError : bindingResult.getFieldErrors()) {
+                genericResponseDto.getErrors().add(
+                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
+            }
+            return genericResponseDto;
+        }
+        ownSecurityService.managementRegisterUser(userDto);
+        return GenericResponseDto.builder().build();
+    }
+
+    /**
      * Method that updates user data.
      *
      * @param userDto dto with updated fields.
-     * @return View template path {@link String}.
+     * @return {@link GenericResponseDto}
      * @author Vasyl Zhovnir
      */
     @PutMapping

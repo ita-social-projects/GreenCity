@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Listener for {@link SignInEvent}s.
+ *
  * @author Yurii Koval
  */
 @Component

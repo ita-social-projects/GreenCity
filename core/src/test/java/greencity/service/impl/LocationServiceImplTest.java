@@ -1,11 +1,5 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-
-import greencity.GreenCityApplication;
 import greencity.entity.Location;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.LocationRepo;
@@ -13,15 +7,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = GreenCityApplication.class)
+@ExtendWith(MockitoExtension.class)
 public class LocationServiceImplTest {
     @Mock
     private LocationRepo locationRepo;
@@ -48,9 +45,11 @@ public class LocationServiceImplTest {
         assertEquals(genericEntity, foundEntity);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void findByIdGivenIdNullThenThrowException() {
-        locationService.findById(null);
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> locationService.findById(null));
     }
 
     @Test
@@ -66,9 +65,11 @@ public class LocationServiceImplTest {
         assertEquals(updated, foundEntity);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateGivenIdNullThenThrowException() {
-        locationService.update(null, new Location());
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> locationService.update(null, new Location()));
     }
 
     @Test
@@ -78,9 +79,11 @@ public class LocationServiceImplTest {
         assertEquals(new Long(1), locationService.deleteById(1L));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteByIdGivenIdNullThenThrowException() {
-        locationService.deleteById(null);
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> locationService.deleteById(null));
     }
 
     @Test

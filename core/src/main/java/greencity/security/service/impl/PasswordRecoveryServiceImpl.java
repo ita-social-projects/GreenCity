@@ -5,6 +5,7 @@ import static greencity.constant.ErrorMessage.*;
 import static greencity.constant.RabbitConstants.PASSWORD_RECOVERY_ROUTING_KEY;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
+import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
@@ -91,6 +92,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         RestorePasswordEmail restorePasswordEmail = restorePasswordEmailRepo
             .findByToken(token)
             .orElseThrow(() -> new BadVerifyEmailTokenException(NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
+        UserStatus userStatus = restorePasswordEmail.getUser().getUserStatus();
         if (isNotExpired(restorePasswordEmail.getExpiryDate())) {
             applicationEventPublisher.publishEvent(
                 new UpdatePasswordEvent(this, newPassword, restorePasswordEmail.getUser().getId())
@@ -102,6 +104,9 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             log.info("Password restoration token of user with email " + restorePasswordEmail.getUser().getEmail()
                 + " has been expired. Token: " + token);
             throw new UserActivationEmailTokenExpiredException(EMAIL_TOKEN_EXPIRED);
+        }
+        if (userStatus == UserStatus.CREATED) {
+            restorePasswordEmail.getUser().setUserStatus(UserStatus.ACTIVATED);
         }
     }
 

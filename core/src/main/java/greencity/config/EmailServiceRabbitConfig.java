@@ -58,6 +58,30 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
+     * Queue that is used for sending emails for finishing user approval.
+     * It is durable since user approval is security related functionality.
+     *
+     * @return durable queue that is meant for sending user approval email letters.
+     */
+    @Bean
+    public Queue userApprovalQueue() {
+        return new Queue("finish-user-approval", true);
+    }
+
+    /**
+     * The binding that is used for linking email topic exchange to user approval queue.
+     *
+     * @return Binding with topic exchange and user approval queue linked.
+     */
+    @Bean
+    public Binding userApprovalQueueToEmailTopicBinding(TopicExchange emailTopicExchange) {
+        return BindingBuilder
+            .bind(userApprovalQueue())
+            .to(emailTopicExchange)
+            .with(SEND_USER_APPROVAL_ROUTING_KEY);
+    }
+
+    /**
      * Queue that is used for change place status emails.
      *
      * @return durable queue that is meant for sending change place status email letters.

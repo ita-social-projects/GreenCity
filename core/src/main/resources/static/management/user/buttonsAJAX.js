@@ -25,6 +25,47 @@ $(document).ready(function(){
         }
     });
 
+    // Add user button (popup)
+    $('#addUserModalBtn').on('click',function(event){
+        clearAllErrorsSpan();
+    });
+
+    // Submit button in addUserModal
+    $('#submitAddBtn').on('click',function(event){
+        event.preventDefault();
+        clearAllErrorsSpan();
+        var formData = $('#addUserForm').serializeArray().reduce(function(obj, item) {
+            obj[item.name] = item.value;
+            return obj;
+        }, {});
+        var payload={
+            "id" : formData.id,
+            "name" : formData.name,
+            "email" : formData.email,
+            "role" : formData.role,
+            "userStatus" : formData.userStatus
+        }
+
+        // Ajax request
+        $.ajax({
+            url: '/management/users/register',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                if(Array.isArray(data.errors) && data.errors.length){
+                    data.errors.forEach(function(el){
+                        $(document.getElementById('errorModalSave'+el.fieldName)).text(el.fieldError);
+                    })
+                }
+                else{
+                    location.reload();
+                }
+            },
+            data: JSON.stringify(payload)
+        });
+    })
+
     // Edit user button (popup)
     $('td .edit.eBtn').on('click',function(event){
         event.preventDefault();
@@ -38,6 +79,7 @@ $(document).ready(function(){
             $('#id').val(user.id);
             $('#name').val(user.name);
             $('#email').val(user.email);
+            $('#role').val(user.role);
             $('#userCredo').val(user.userCredo);
             $('#userStatus').val(user.userStatus);
         });
@@ -54,6 +96,7 @@ $(document).ready(function(){
             "id" : formData.id,
             "name" : formData.name,
             "email" : formData.email,
+            "role" : formData.role,
             "userCredo" : formData.userCredo,
             "userStatus" : formData.userStatus
         }

@@ -14,6 +14,7 @@ public class EmailMessageReceiver {
     private static final String PASSWORD_RECOVERY_QUEUE = "password-recovery-queue";
     public static final String CHANGE_PLACE_STATUS_QUEUE = "change-place-status";
     public static final String VERIFY_EMAIL_ROUTING_QUEUE = "verify-email-queue";
+    public static final String FINISH_USER_APPROVAL_QUEUE = "finish-user-approval";
     private static final String ADD_ECO_NEWS_QUEUE_NAME = "eco_news_queue";
     public static final String SEND_REPORT_QUEUE = "send-report";
     public static final String SEND_HABIT_NOTIFICATION = "send-habit-notification-queue";
@@ -70,6 +71,15 @@ public class EmailMessageReceiver {
     @RabbitListener(queues = VERIFY_EMAIL_ROUTING_QUEUE)
     public void sendVerifyEmail(VerifyEmailMessage message) {
         emailService.sendVerificationEmail(message.getId(), message.getName(), message.getEmail(), message.getToken());
+    }
+
+    /**
+     * Method that is invoked on receiving.
+     * It is responsible for sending user approval emails.
+     */
+    @RabbitListener(queues = FINISH_USER_APPROVAL_QUEUE)
+    public void sendRegistrationApprovalEmail(UserApprovalMessage message) {
+        emailService.sendApprovalEmail(message.getId(), message.getName(), message.getEmail(), message.getToken());
     }
 
     /**

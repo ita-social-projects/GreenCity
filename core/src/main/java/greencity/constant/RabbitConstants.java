@@ -8,6 +8,7 @@ public final class RabbitConstants {
     public static final String VERIFY_EMAIL_ROUTING_KEY = "verify.email";
     public static final String SEND_REPORT_ROUTING_KEY = "send.report";
     public static final String SEND_HABIT_NOTIFICATION_ROUTING_KEY = "send.habit.notification";
+    public static final String SEND_USER_APPROVAL_ROUTING_KEY = "finish.user.approval";
 
     private RabbitConstants() {
     }

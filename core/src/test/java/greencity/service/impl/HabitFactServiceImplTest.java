@@ -1,10 +1,5 @@
 package greencity.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static greencity.entity.enums.FactOfDayStatus.CURRENT;
-
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.fact.HabitFactDTO;
 import greencity.dto.fact.HabitFactPostDTO;
@@ -13,6 +8,7 @@ import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.entity.FactTranslation;
 import greencity.entity.HabitDictionary;
 import greencity.entity.HabitFact;
+import static greencity.entity.enums.FactOfDayStatus.CURRENT;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -22,15 +18,19 @@ import greencity.repository.HabitFactRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class HabitFactServiceImplTest {
 
     @InjectMocks
@@ -50,7 +50,7 @@ public class HabitFactServiceImplTest {
 
     private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", null, null);
     private HabitFact habitFact = new HabitFact(1L, null, habitDictionary);
-    private FactTranslation factTranslation = new FactTranslation(1L, null,CURRENT, null, "test");
+    private FactTranslation factTranslation = new FactTranslation(1L, null, CURRENT, null, "test");
     private HabitFactDTO habitFactDTO = new HabitFactDTO(1L, "fact", null);
     private LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO(null, "test");
     private HabitFactPostDTO habitFactPostDTO = new HabitFactPostDTO(null, new HabitDictionaryIdDto(1L));
@@ -65,14 +65,17 @@ public class HabitFactServiceImplTest {
 
     @Test
     public void getRandomHabitFactByHabitId() {
-        when(factTranslationRepo.getRandomFactTranslationByHabitIdAndLanguage("en", 1L)).thenReturn(Optional.of(factTranslation));
+        when(factTranslationRepo.getRandomFactTranslationByHabitIdAndLanguage("en", 1L))
+            .thenReturn(Optional.of(factTranslation));
         when(modelMapper.map(factTranslation, LanguageTranslationDTO.class)).thenReturn(languageTranslationDTO);
         assertEquals(languageTranslationDTO, habitFactService.getRandomHabitFactByHabitIdAndLanguage(1L, "en"));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getRandomHabitFactByHabitIdFailed() {
-        habitFactService.getRandomHabitFactByHabitIdAndLanguage(1L, "en");
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> habitFactService.getRandomHabitFactByHabitIdAndLanguage(1L, "en"));
     }
 
     @Test
@@ -82,21 +85,26 @@ public class HabitFactServiceImplTest {
         assertEquals(habitFactDTO, habitFactService.getHabitFactById(anyLong()));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getHabitFactByIdFailed() {
-        habitFactService.getHabitFactById(anyLong());
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> habitFactService.getHabitFactById(anyLong()));
     }
 
     @Test
     public void getHabitFactByName() {
-        when(factTranslationRepo.findFactTranslationByLanguage_CodeAndHabitFact("en", "test")).thenReturn(Optional.of(factTranslation));
+        when(factTranslationRepo.findFactTranslationByLanguage_CodeAndHabitFact("en", "test"))
+            .thenReturn(Optional.of(factTranslation));
         when(modelMapper.map(factTranslation, HabitFactDTO.class)).thenReturn(habitFactDTO);
         assertEquals(habitFactDTO, habitFactService.getHabitFactByName("en", "test"));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getHabitFactByNameFailed() {
-        habitFactService.getHabitFactByName("en", "test");
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> habitFactService.getHabitFactByName("en", "test"));
     }
 
     @Test
@@ -114,9 +122,11 @@ public class HabitFactServiceImplTest {
         assertEquals(habitFact, habitFactService.update(habitFactPostDTO, 1L));
     }
 
-    @Test(expected = NotUpdatedException.class)
+    @Test
     public void updateFailed() {
-        habitFactService.update(habitFactPostDTO, 1L);
+        Assertions
+            .assertThrows(NotUpdatedException.class,
+                () -> habitFactService.update(habitFactPostDTO, 1L));
     }
 
     @Test
@@ -126,9 +136,11 @@ public class HabitFactServiceImplTest {
         verify(habitFactRepo, times(1)).deleteById(anyLong());
     }
 
-    @Test(expected = NotDeletedException.class)
+    @Test
     public void deleteFailed() {
-        habitFactService.delete(habitFact.getId());
+        Assertions
+            .assertThrows(NotDeletedException.class,
+                () -> habitFactService.delete(habitFact.getId()));
     }
 
 }

@@ -7,14 +7,14 @@ import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import java.util.stream.Collectors;
-import static org.junit.Assert.assertEquals;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class SearchNewsDtoMapperTest {
     @InjectMocks
     private SearchNewsDtoMapper searchNewsDtoMapper;
