@@ -1,18 +1,12 @@
 package greencity.service.impl;
 
-import greencity.constant.CacheConstants;
-import greencity.constant.ErrorMessage;
-import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.entity.FactOfTheDayTranslation;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.FactOfTheDayTranslationRepo;
 import greencity.service.FactOfTheDayTranslationService;
 import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,7 +15,6 @@ import org.springframework.stereotype.Service;
  * @author Mykola Lehkyi
  */
 @Service
-@EnableCaching
 public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslationService {
     @Autowired
     private FactOfTheDayTranslationRepo factOfTheDayTranslationRepo;
@@ -65,17 +58,5 @@ public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslati
     @Override
     public void deleteAll(List<FactOfTheDayTranslation> factOfTheDayTranslations) {
         factOfTheDayTranslationRepo.deleteAll(factOfTheDayTranslations);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Cacheable(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME, key = "#languageCode")
-    public FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode) {
-        FactOfTheDayTranslation factOfTheDayTranslation =
-            factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation(languageCode).orElseThrow(() ->
-                new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
-        return modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class);
     }
 }
