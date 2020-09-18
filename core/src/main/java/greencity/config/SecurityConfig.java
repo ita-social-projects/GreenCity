@@ -89,7 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/ownSecurity/verifyEmail",
                         "/ownSecurity/updateAccessToken",
                         "/ownSecurity/restorePassword",
-                        "/googleSecurity",
+                        "/googleSecurity/**",
                         "/facebookSecurity/generateFacebookAuthorizeURL",
                         "/facebookSecurity/facebook",
                         "/factoftheday/",
