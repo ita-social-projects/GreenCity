@@ -9,8 +9,6 @@ import greencity.repository.NewsSubscriberRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import mockit.MockUp;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -37,12 +35,6 @@ class NewsSubscriberServiceImplTest {
 
     @Test
     void saveTest() {
-        new MockUp<UUID>() {
-            @mockit.Mock
-            UUID randomUUID() {
-                return UUID.fromString("e1fd146e-fdb1-4b00-92a5-cc5d1585f899");
-            }
-        };
         when(modelMapper.map(dto, NewsSubscriber.class)).thenReturn(entity);
         when(modelMapper.map(entity, NewsSubscriberRequestDto.class)).thenReturn(dto);
         when(newsSubscriberRepo.save(entity)).thenReturn(entity);

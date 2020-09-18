@@ -3,11 +3,10 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.entity.Habit;
 import greencity.entity.User;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import mockit.Mock;
-import mockit.MockUp;
+import java.time.temporal.ChronoUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,17 +21,14 @@ public class HabitMapperTest {
     @Test
     public void convertTest() {
         User user = ModelUtils.getUser();
-        new MockUp<ZonedDateTime>() {
-            @Mock
-            ZonedDateTime now() {
-                return ZonedDateTime.of(1998, 12, 10, 13, 22, 22, 2232, ZoneId.of("UTC"));
-            }
-        };
         Habit expected = Habit.builder()
             .createDate(ZonedDateTime.now())
             .statusHabit(true)
             .build();
-
-        assertEquals(expected, habitMapper.convert(user));
+        Habit result = habitMapper.convert(user);
+        assertEquals(expected.getStatusHabit(), result.getStatusHabit());
+        assertTrue(result.getUsers().contains(user));
+        assertEquals(expected.getCreateDate().truncatedTo(ChronoUnit.SECONDS),
+            result.getCreateDate().truncatedTo(ChronoUnit.SECONDS));
     }
 }
