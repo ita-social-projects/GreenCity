@@ -89,7 +89,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/ownSecurity/verifyEmail",
                         "/ownSecurity/updateAccessToken",
                         "/ownSecurity/restorePassword",
-                        "/ownSecurity/changePassword",
                         "/googleSecurity",
                         "/facebookSecurity/generateFacebookAuthorizeURL",
                         "/facebookSecurity/facebook",
@@ -136,6 +135,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,
                         "/ownSecurity/signUp",
                         "/ownSecurity/signIn",
+                        "/ownSecurity/changePassword",
                         "/place/getListPlaceLocationByMapsBounds",
                         "/place/filter"
                 ).permitAll()
