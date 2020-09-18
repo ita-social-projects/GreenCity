@@ -205,6 +205,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @author Vasyl Zhovnir
      **/
     @Modifying
-    @Query("DELETE FROM User u WHERE u.userStatus = 3 AND u.id NOT IN (SELECT user_id FROM restore_password_email)")
+    @Query("DELETE FROM User u WHERE u.userStatus = 3 AND u.id NOT IN (SELECT r.user.id FROM RestorePasswordEmail r)")
     int scheduleDeleteCreatedUsers();
 }

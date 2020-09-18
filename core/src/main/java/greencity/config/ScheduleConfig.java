@@ -146,5 +146,4 @@ public class ScheduleConfig {
     public void scheduleDeleteCreatedUsers() {
         userRepo.scheduleDeleteCreatedUsers();
     }
-
 }
