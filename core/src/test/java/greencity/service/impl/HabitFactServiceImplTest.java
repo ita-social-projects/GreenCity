@@ -31,7 +31,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
 @ExtendWith(MockitoExtension.class)
-public class HabitFactServiceImplTest {
+ class HabitFactServiceImplTest {
 
     @InjectMocks
     private HabitFactServiceImpl habitFactService;
@@ -56,7 +56,7 @@ public class HabitFactServiceImplTest {
     private HabitFactPostDTO habitFactPostDTO = new HabitFactPostDTO(null, new HabitDictionaryIdDto(1L));
 
     @Test
-    public void getAllHabitFactsFailed() {
+     void getAllHabitFactsFailed() {
         List<AdviceDTO> expected = Collections.emptyList();
         when(modelMapper.map(factTranslationRepo.findAll(), new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType())).thenReturn(expected);
@@ -64,7 +64,7 @@ public class HabitFactServiceImplTest {
     }
 
     @Test
-    public void getRandomHabitFactByHabitId() {
+     void getRandomHabitFactByHabitId() {
         when(factTranslationRepo.getRandomFactTranslationByHabitIdAndLanguage("en", 1L))
             .thenReturn(Optional.of(factTranslation));
         when(modelMapper.map(factTranslation, LanguageTranslationDTO.class)).thenReturn(languageTranslationDTO);
@@ -72,28 +72,28 @@ public class HabitFactServiceImplTest {
     }
 
     @Test
-    public void getRandomHabitFactByHabitIdFailed() {
+     void getRandomHabitFactByHabitIdFailed() {
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> habitFactService.getRandomHabitFactByHabitIdAndLanguage(1L, "en"));
     }
 
     @Test
-    public void getHabitFactById() {
+     void getHabitFactById() {
         when(habitFactRepo.findById(anyLong())).thenReturn(Optional.of(habitFact));
         when(modelMapper.map(habitFact, HabitFactDTO.class)).thenReturn(habitFactDTO);
         assertEquals(habitFactDTO, habitFactService.getHabitFactById(anyLong()));
     }
 
     @Test
-    public void getHabitFactByIdFailed() {
+     void getHabitFactByIdFailed() {
         Assertions
             .assertThrows(NotFoundException.class,
-                () -> habitFactService.getHabitFactById(anyLong()));
+                () -> habitFactService.getHabitFactById(1L));
     }
 
     @Test
-    public void getHabitFactByName() {
+     void getHabitFactByName() {
         when(factTranslationRepo.findFactTranslationByLanguage_CodeAndHabitFact("en", "test"))
             .thenReturn(Optional.of(factTranslation));
         when(modelMapper.map(factTranslation, HabitFactDTO.class)).thenReturn(habitFactDTO);
@@ -101,20 +101,20 @@ public class HabitFactServiceImplTest {
     }
 
     @Test
-    public void getHabitFactByNameFailed() {
+     void getHabitFactByNameFailed() {
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> habitFactService.getHabitFactByName("en", "test"));
     }
 
     @Test
-    public void save() {
+     void save() {
         when(habitFactService.save(habitFactPostDTO)).thenReturn(habitFact);
         assertEquals(habitFact, habitFactService.save(habitFactPostDTO));
     }
 
     @Test
-    public void update() {
+     void update() {
         when(habitDictionaryRepo.findById(anyLong())).thenReturn(Optional.of(habitDictionary));
         when(habitFactRepo.findById(anyLong())).thenReturn(Optional.of(habitFact));
         when(habitFactRepo.save(habitFact)).thenReturn(habitFact);
@@ -123,24 +123,24 @@ public class HabitFactServiceImplTest {
     }
 
     @Test
-    public void updateFailed() {
+     void updateFailed() {
         Assertions
             .assertThrows(NotUpdatedException.class,
                 () -> habitFactService.update(habitFactPostDTO, 1L));
     }
 
     @Test
-    public void delete() {
+     void delete() {
         when(habitFactRepo.findById(habitFact.getId())).thenReturn(Optional.of(habitFact));
         assertEquals(habitFact.getId(), habitFactService.delete(habitFact.getId()));
         verify(habitFactRepo, times(1)).deleteById(anyLong());
     }
 
     @Test
-    public void deleteFailed() {
+     void deleteFailed() {
         Assertions
             .assertThrows(NotDeletedException.class,
-                () -> habitFactService.delete(habitFact.getId()));
+                () -> habitFactService.delete(1L));
     }
 
 }

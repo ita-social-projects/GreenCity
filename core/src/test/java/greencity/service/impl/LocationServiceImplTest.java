@@ -19,25 +19,23 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class LocationServiceImplTest {
+class LocationServiceImplTest {
     @Mock
     private LocationRepo locationRepo;
     @InjectMocks
     private LocationServiceImpl locationService;
 
-    @Test
-    public void saveTest() {
-        Location genericEntity = new Location();
+    private Location genericEntity = new Location();
 
+    @Test
+    void saveTest() {
         when(locationRepo.save(genericEntity)).thenReturn(genericEntity);
 
         assertEquals(genericEntity, locationService.save(genericEntity));
     }
 
     @Test
-    public void findByIdTest() {
-        Location genericEntity = new Location();
-
+    void findByIdTest() {
         when(locationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
         Location foundEntity = locationService.findById(anyLong());
@@ -46,48 +44,46 @@ public class LocationServiceImplTest {
     }
 
     @Test
-    public void findByIdGivenIdNullThenThrowException() {
+    void findByIdGivenIdNullThenThrowException() {
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> locationService.findById(null));
     }
 
     @Test
-    public void updateTest() {
-        Location updated = new Location();
+    void updateTest() {
+        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+        when(locationRepo.save(any())).thenReturn(genericEntity);
 
-        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(updated));
-        when(locationRepo.save(any())).thenReturn(updated);
-
-        locationService.update(anyLong(), updated);
+        locationService.update(anyLong(), genericEntity);
         Location foundEntity = locationService.findById(anyLong());
 
-        assertEquals(updated, foundEntity);
+        assertEquals(genericEntity, foundEntity);
     }
 
     @Test
-    public void updateGivenIdNullThenThrowException() {
+    void updateGivenIdNullThenThrowException() {
         Assertions
             .assertThrows(NotFoundException.class,
-                () -> locationService.update(null, new Location()));
+                () -> locationService.update(null, genericEntity));
     }
 
     @Test
-    public void deleteByIdTest() {
-        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(new Location()));
+    void deleteByIdTest() {
+        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
         assertEquals(new Long(1), locationService.deleteById(1L));
     }
 
     @Test
-    public void deleteByIdGivenIdNullThenThrowException() {
+    void deleteByIdGivenIdNullThenThrowException() {
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> locationService.deleteById(null));
     }
 
     @Test
-    public void findAllTest() {
+    void findAllTest() {
         List<Location> genericEntities =
             new ArrayList<>(Arrays.asList(new Location(), new Location()));
 

@@ -1,7 +1,6 @@
 package greencity.dto.breaktime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import greencity.constant.ValidationConstants;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalTime;
 import javax.validation.constraints.NotNull;

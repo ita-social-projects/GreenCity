@@ -39,7 +39,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    public void saveCategory() throws Exception {
+    void saveCategory() throws Exception {
         CategoryDto categoryDto = CategoryDto.builder().name("content").build();
         mockMvc.perform(post(categoryLink)
             .contentType(MediaType.APPLICATION_JSON)
@@ -51,7 +51,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    public void findAllTest() throws Exception {
+    void findAllTest() throws Exception {
         mockMvc.perform(get(categoryLink)).andExpect(status().isOk());
         verify(categoryService, times(1)).findAllCategoryDto();
     }

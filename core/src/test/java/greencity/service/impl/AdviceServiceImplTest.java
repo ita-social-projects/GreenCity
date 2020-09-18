@@ -30,7 +30,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 @ExtendWith(MockitoExtension.class)
-public class AdviceServiceImplTest {
+class AdviceServiceImplTest {
     @InjectMocks
     private AdviceServiceImpl adviceService;
 
@@ -55,7 +55,7 @@ public class AdviceServiceImplTest {
 
 
     @Test
-    public void getAllAdvices() {
+    void getAllAdvices() {
         List<LanguageTranslationDTO> expected = Collections.emptyList();
         when(modelMapper.map(adviceTranslationRepo.findAll(), new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType())).thenReturn(expected);
@@ -63,7 +63,7 @@ public class AdviceServiceImplTest {
     }
 
     @Test
-    public void getRandomAdviceByHabitIdAndLanguage() {
+    void getRandomAdviceByHabitIdAndLanguage() {
         when(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage("en", 1L))
             .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, LanguageTranslationDTO.class)).thenReturn(languageTranslationDTO);
@@ -71,28 +71,28 @@ public class AdviceServiceImplTest {
     }
 
     @Test
-    public void getRandomAdviceByHabitIdFailed() {
+    void getRandomAdviceByHabitIdFailed() {
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> adviceService.getRandomAdviceByHabitIdAndLanguage(1L, "en"));
     }
 
     @Test
-    public void getAdviceById() {
+    void getAdviceById() {
         when(adviceRepo.findById(anyLong())).thenReturn(Optional.of(advice));
         when(modelMapper.map(advice, AdviceDTO.class)).thenReturn(adviceDTO);
         assertEquals(adviceDTO, adviceService.getAdviceById(anyLong()));
     }
 
     @Test
-    public void getAdviceByIdFailed() {
+    void getAdviceByIdFailed() {
         Assertions
             .assertThrows(NotFoundException.class,
-                () -> adviceService.getAdviceById(anyLong()));
+                () -> adviceService.getAdviceById(1L));
     }
 
     @Test
-    public void getAdviceByName() {
+    void getAdviceByName() {
         when(adviceTranslationRepo.findAdviceTranslationByLanguage_CodeAndAdvice("en", "test"))
             .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, AdviceDTO.class)).thenReturn(adviceDTO);
@@ -100,20 +100,20 @@ public class AdviceServiceImplTest {
     }
 
     @Test
-    public void getAdviceByNameFailed() {
+    void getAdviceByNameFailed() {
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> adviceService.getAdviceByName("en", "test"));
     }
 
     @Test
-    public void save() {
+    void save() {
         when(adviceService.save(advicePostDTO)).thenReturn(advice);
         assertEquals(advice, adviceService.save(advicePostDTO));
     }
 
     @Test
-    public void update() {
+    void update() {
         when(habitDictionaryRepo.findById(anyLong())).thenReturn(Optional.of(habitDictionary));
         when(adviceRepo.findById(anyLong())).thenReturn(Optional.of(advice));
         when(adviceRepo.save(advice)).thenReturn(advice);
@@ -122,23 +122,24 @@ public class AdviceServiceImplTest {
     }
 
     @Test
-    public void updateFailed() {
+    void updateFailed() {
         Assertions
             .assertThrows(NotUpdatedException.class,
                 () -> adviceService.update(advicePostDTO, 1L));
     }
 
     @Test
-    public void delete() {
+    void delete() {
         assertEquals(advice.getId(), adviceService.delete(advice.getId()));
         verify(adviceRepo, times(1)).deleteById(anyLong());
     }
 
     @Test
-    public void deleteFailed() {
+    void deleteFailed() {
         doThrow(new EmptyResultDataAccessException(1)).when(adviceRepo).deleteById(advice.getId());
+        Long id = advice.getId();
         Assertions
             .assertThrows(NotDeletedException.class,
-                () -> adviceService.delete(advice.getId()));
+                () -> adviceService.delete(id));
     }
 }

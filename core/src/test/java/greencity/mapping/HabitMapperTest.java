@@ -15,12 +15,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
 @ExtendWith(SpringExtension.class)
-public class HabitMapperTest {
+class HabitMapperTest {
     @InjectMocks
     private HabitMapper habitMapper;
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         User user = ModelUtils.getUser();
         new MockUp<ZonedDateTime>() {
             @Mock

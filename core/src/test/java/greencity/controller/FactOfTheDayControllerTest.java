@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
 @ExtendWith(MockitoExtension.class)
-public class FactOfTheDayControllerTest {
+class FactOfTheDayControllerTest {
     private static final String factOfTheDayLink = "/factoftheday";
 
     private MockMvc mockMvc;
@@ -41,14 +41,14 @@ public class FactOfTheDayControllerTest {
     }
 
     @Test
-    public void getRandomFactOfTheDayTest() throws Exception {
+    void getRandomFactOfTheDayTest() throws Exception {
         mockMvc.perform(get(factOfTheDayLink + "/"))
             .andExpect(status().isOk());
         verify(factOfTheDayTranslationService).getRandomFactOfTheDayByLanguage("en");
     }
 
     @Test
-    public void getAllFactOfTheDayTest() throws Exception {
+    void getAllFactOfTheDayTest() throws Exception {
         mockMvc.perform(get(factOfTheDayLink + "/all?page=0&size=10"))
             .andExpect(status().isOk());
         Pageable pageable = PageRequest.of(0, 10);
@@ -56,7 +56,7 @@ public class FactOfTheDayControllerTest {
     }
 
     @Test
-    public void findFactOfTheDayTest() throws Exception {
+    void findFactOfTheDayTest() throws Exception {
         mockMvc.perform(get(factOfTheDayLink + "/find?id=1"))
             .andExpect(status().isOk());
         verify(factOfTheDayService).getFactOfTheDayById(1L);
@@ -64,7 +64,7 @@ public class FactOfTheDayControllerTest {
 
 
     @Test
-    public void getLanguagesTest() throws Exception {
+    void getLanguagesTest() throws Exception {
         mockMvc.perform(get(factOfTheDayLink + "/languages"))
             .andExpect(status().isOk());
         verify(languageService).getAllLanguages();
