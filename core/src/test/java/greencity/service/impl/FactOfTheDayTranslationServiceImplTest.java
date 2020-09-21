@@ -127,8 +127,7 @@ class FactOfTheDayTranslationServiceImplTest {
         factOfTheDayTranslationDTO.setId(1L);
         factOfTheDayTranslationDTO.setContent("Content");
         when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation(languageCode)).thenReturn(Optional.empty());
-//        when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class)).thenReturn(factOfTheDayTranslationDTO);
-//        assertEquals(factOfTheDayTranslationDTO, factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(languageCode));
+
 
         assertThrows(NotFoundException.class, () ->
                 factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(languageCode)
