@@ -34,5 +34,5 @@ public class HabitFact {
     private List<FactTranslation> translations;
 
     @ManyToOne
-    private HabitDictionary habitDictionary;
+    private Habit habit;
 }

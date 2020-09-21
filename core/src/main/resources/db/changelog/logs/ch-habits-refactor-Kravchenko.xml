@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet author="Kravchenko" id="1">
+        <renameTable newTableName="habit_translation"
+                     oldTableName="habit_dictionary_translation"/>
+    </changeSet>
+
+    <changeSet author="Kravchenko" id="2">
+        <dropColumn tableName="habits">
+            <column name="habit_dictionary_id"/>
+        </dropColumn>
+
+        <addColumn tableName="habits">
+            <column name="image" type="varchar(255)" defaultValue="bag">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <renameColumn tableName="habit_translation"
+                      oldColumnName="habit_dictionary_id"
+                      newColumnName="habit_id"/>
+
+        <dropForeignKeyConstraint baseTableName="habit_translation" constraintName="FK_habit_dictionary_translation1"/>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_translation"
+                                 constraintName="fk_habit_translation_habits_habit_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+
+    <changeSet id="3" author="Kravchenko">
+        <renameColumn tableName="advices"
+                      oldColumnName="habit_dictionary_id"
+                      newColumnName="habit_id"/>
+
+        <dropForeignKeyConstraint baseTableName="advices" constraintName="FK_habit_advices"/>
+
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="advices"
+                                 constraintName="fk_habit_advices_habits_habit_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+
+    <changeSet id="4" author="Kravchenko">
+        <renameColumn tableName="habit_facts"
+                      oldColumnName="habit_dictionary_id"
+                      newColumnName="habit_id"/>
+
+        <dropForeignKeyConstraint baseTableName="habit_facts" constraintName="FK_habit_advices"/>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_facts"
+                                 constraintName="fk_habit_facts_habits_habit_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+
+
+    <changeSet id="5" author="Kravchenko">
+        <dropTable tableName="habit_dictionary"/>
+    </changeSet>
+
+</databaseChangeLog>
