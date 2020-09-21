@@ -54,7 +54,7 @@ public class FactOfTheDayController {
                                                                                 Principal principal,
                                                                             @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(locale.getLanguage()));
+            .body(factOfTheDayService.getRandomFactOfTheDayByLanguage(locale.getLanguage()));
     }
 
     /**
