@@ -7,7 +7,7 @@
   "group": "stable",
   "script": [
     "git fetch --unshallow",
-    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources='src/main/java/greencity/service,src/main/java/greencity/controller,src/main/java/greencity/mapping,src/main/java/greencity/repository,src/main/java/greencity/security,src/main/java/greencity/validator,src/main/java/greencity/webcontroller' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
+    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources='src/main/java/greencity' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
   ],
   ".result": "configured",
   "language": "java"
