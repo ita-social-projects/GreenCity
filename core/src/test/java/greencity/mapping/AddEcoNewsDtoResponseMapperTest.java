@@ -10,13 +10,13 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class AddEcoNewsDtoResponseMapperTest {
+class AddEcoNewsDtoResponseMapperTest {
 
     @InjectMocks
     private AddEcoNewsDtoResponseMapper mapper;
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
 
         AddEcoNewsDtoResponse expected = ModelUtils.getAddEcoNewsDtoResponse();

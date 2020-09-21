@@ -19,7 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class AccessTokenAuthenticationFilterTest {
+class AccessTokenAuthenticationFilterTest {
     @Mock
     HttpServletRequest request;
     @Mock
@@ -42,7 +42,7 @@ public class AccessTokenAuthenticationFilterTest {
     }
 
     @Test
-    public void doFilterInternal() throws IOException, ServletException {
+    void doFilterInternal() throws IOException, ServletException {
         when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn("SupeSecretAccessToken");
         when(authenticationManager.authenticate(any()))
             .thenReturn(new UsernamePasswordAuthenticationToken("Principal", null));

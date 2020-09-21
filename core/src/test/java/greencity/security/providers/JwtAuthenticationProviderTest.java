@@ -21,7 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 /**
  * @author Yurii Koval
  */
-public class JwtAuthenticationProviderTest {
+class JwtAuthenticationProviderTest {
     private final ROLE expectedRole = ROLE.ROLE_USER;
 
     @Mock
@@ -36,7 +36,7 @@ public class JwtAuthenticationProviderTest {
     }
 
     @Test
-    public void authenticateWithValidAccessToken() {
+    void authenticateWithValidAccessToken() {
         final String accessToken = "eyJhbGciOiJIUzI1NiJ9"
             + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVN"
             + "FUiJdLCJpYXQiOjE1NzU4NDUzNTAsImV4cCI6NjE1NzU4NDUyOTB9"
@@ -67,7 +67,7 @@ public class JwtAuthenticationProviderTest {
     }
 
     @Test
-    public void authenticateWithExpiredAccessToken() {
+    void authenticateWithExpiredAccessToken() {
         when(jwtTool.getAccessTokenKey()).thenReturn("123123123");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             "eyJhbGciOiJIUzI1NiJ9"
@@ -82,7 +82,7 @@ public class JwtAuthenticationProviderTest {
     }
 
     @Test
-    public void authenticateWithMalformedAccessToken() {
+    void authenticateWithMalformedAccessToken() {
         when(jwtTool.getAccessTokenKey()).thenReturn("123123123");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             "Malformed"

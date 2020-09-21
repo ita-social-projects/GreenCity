@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AddTipsAndTricksCommentDtoRequestMapperTest {
+class AddTipsAndTricksCommentDtoRequestMapperTest {
     private AddTipsAndTricksCommentDtoRequestMapper mapper = new AddTipsAndTricksCommentDtoRequestMapper();
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         TipsAndTricksComment expected = ModelUtils.getTipsAndTricksComment();
         TipsAndTricksComment actual = mapper.convert(ModelUtils.getAddTipsAndTricksCommentDtoRequest());
         actual.setId(1L);

@@ -12,12 +12,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-public class FavoritePlaceMapperTest {
+class FavoritePlaceMapperTest {
     @InjectMocks
     private FavoritePlaceMapper favoritePlaceMapper;
 
     @Test
-    public void convertToEntityTest() {
+    void convertToEntityTest() {
         FavoritePlaceDto favoritePlaceDto = ModelUtils.getFavoritePlaceDto();
         Place place = Place.builder().id(favoritePlaceDto.getPlaceId()).build();
 

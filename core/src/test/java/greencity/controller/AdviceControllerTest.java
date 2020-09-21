@@ -84,13 +84,13 @@ class AdviceControllerTest {
     }
 
     @Test
-    public void findAllTest() throws Exception {
+    void findAllTest() throws Exception {
         mockMvc.perform(get(adviceLink)).andExpect(status().isOk());
         verify(adviceService, times(1)).getAllAdvices();
     }
 
     @Test
-    public void getRandomAdviceHabitIdAndLanguageTest() throws Exception {
+    void getRandomAdviceHabitIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/1?lang=en"))
             .andExpect(status().isOk());
 
@@ -98,7 +98,7 @@ class AdviceControllerTest {
     }
 
     @Test
-    public void getRandomAdviceHabitWithInvalidIdAndLanguageTest() throws Exception {
+    void getRandomAdviceHabitWithInvalidIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/{id}?lang=en", "invalidId"))
             .andExpect(status().isBadRequest());
 
@@ -106,7 +106,7 @@ class AdviceControllerTest {
     }
 
     @Test
-    public void saveTest() throws Exception {
+    void saveTest() throws Exception {
         mockMvc.perform(post(adviceLink)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
@@ -119,7 +119,7 @@ class AdviceControllerTest {
     }
 
     @Test
-    public void updateTest() throws Exception {
+    void updateTest() throws Exception {
         mockMvc.perform(put(adviceLink + "/{adviceId}", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
@@ -132,7 +132,7 @@ class AdviceControllerTest {
     }
 
     @Test
-    public void deleteTest() throws Exception {
+    void deleteTest() throws Exception {
         mockMvc.perform(delete(adviceLink + "/{adviceId}", 1)
         ).andExpect(status().isOk());
 
@@ -141,7 +141,7 @@ class AdviceControllerTest {
     }
 
     @Test
-    public void deleteFailedTest() throws Exception {
+    void deleteFailedTest() throws Exception {
         mockMvc.perform(delete(adviceLink + "/{adviceId}", "invalidId")
         ).andExpect(status().isBadRequest());
 
