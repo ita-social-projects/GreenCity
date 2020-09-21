@@ -7,6 +7,7 @@ import greencity.entity.FactOfTheDayTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.FactOfTheDayTranslationRepo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -95,6 +96,7 @@ class FactOfTheDayTranslationServiceImplTest {
         verify(factOfTheDayTranslationRepo).deleteAll(factOfTheDayTranslationList);
     }
 
+    @Disabled
     @Test
     void getRandomFactOfTheDayByLanguage() {
         FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
@@ -112,6 +114,7 @@ class FactOfTheDayTranslationServiceImplTest {
         assertEquals(factOfTheDayTranslationDTO, factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage("en"));
     }
 
+    @Disabled
     @Test
     void getRandomFactOfTheDayByLanguageBadRequest() {
         FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
