@@ -1,9 +1,11 @@
 package greencity.service.impl;
 
+import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.exception.exceptions.NotFoundException;
@@ -12,11 +14,16 @@ import greencity.repository.FactOfTheDayRepo;
 import greencity.service.FactOfTheDayService;
 import greencity.service.FactOfTheDayTranslationService;
 import greencity.service.LanguageService;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,14 +34,17 @@ import org.springframework.stereotype.Service;
  * @author Mykola Lehkyi
  */
 @AllArgsConstructor
-@Service
 @EnableCaching
+@Service
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private final FactOfTheDayRepo factOfTheDayRepo;
     private final ModelMapper modelMapper;
     private final LanguageService languageService;
     private final FactOfTheDayTranslationService factOfTheDayTranslationService;
     private final PlaceCommentServiceImpl placeCommentServiceImpl;
+    @Resource
+    private FactOfTheDayService self;
 
     /**
      * Method finds all {@link FactOfTheDay} with pageable configuration.
@@ -112,6 +122,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                         .build()
                     ).collect(Collectors.toList())
             )
+            .createDate(ZonedDateTime.now())
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
@@ -170,5 +181,29 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             factsOfTheDay.getTotalElements(),
             factsOfTheDay.getPageable().getPageNumber(),
             factsOfTheDay.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Cacheable(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME)
+    public FactOfTheDay getRandomFactOfTheDay() {
+        return factOfTheDayRepo.getRandomFactOfTheDay().orElseThrow(() ->
+            new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode) {
+        FactOfTheDay factOfTheDay = self.getRandomFactOfTheDay();
+        FactOfTheDayTranslation factOfTheDayTranslation = factOfTheDay.getFactOfTheDayTranslations()
+            .stream()
+            .filter(fact -> fact.getLanguage().getCode().equals(languageCode))
+            .findAny()
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
+        return modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class);
     }
 }

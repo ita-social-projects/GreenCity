@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.entity.DiscountValue;
-import greencity.exception.exceptions.NewsSubscriberPresentException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.DiscountValuesRepo;
 import java.util.HashSet;

@@ -10,12 +10,12 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class FavoritePlaceDtoMapperTest {
+class FavoritePlaceDtoMapperTest {
     @InjectMocks
     private FavoritePlaceDtoMapper favoritePlaceDtoMapper;
 
     @Test
-    public void convertToDtoTest() {
+    void convertToDtoTest() {
         FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
 
         FavoritePlaceDto expected = new FavoritePlaceDto(favoritePlace.getName(), favoritePlace.getId());

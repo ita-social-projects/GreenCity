@@ -1,8 +1,6 @@
 package greencity.dto.tipsandtrickscomment;
 
-import greencity.constant.ValidationConstants;
 import javax.validation.constraints.NotBlank;
-
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 

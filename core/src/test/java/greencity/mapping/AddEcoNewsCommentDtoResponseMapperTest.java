@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 import static greencity.ModelUtils.getEcoNewsComment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AddEcoNewsCommentDtoResponseMapperTest {
+class AddEcoNewsCommentDtoResponseMapperTest {
 
     private AddEcoNewsCommentDtoResponseMapper mapper = new AddEcoNewsCommentDtoResponseMapper();
 
     private final EcoNewsComment ecoNewsComment = getEcoNewsComment();
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         AddEcoNewsCommentDtoResponse expected = ModelUtils.getAddEcoNewsCommentDtoResponse();
         AddEcoNewsCommentDtoResponse actual = mapper.convert(ecoNewsComment);
 

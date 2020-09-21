@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;

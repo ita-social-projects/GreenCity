@@ -93,7 +93,7 @@ class PlaceCommentControllerTest {
     }
 
     @Test
-    public void saveBadRequestTest() throws Exception {
+    void saveBadRequestTest() throws Exception {
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
             .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +104,7 @@ class PlaceCommentControllerTest {
     }
 
     @Test
-    public void saveRequestByBlockedUserTest() {
+    void saveRequestByBlockedUserTest() {
         Principal principal = ModelUtils.getPrincipal();
         User user = ModelUtils.getUser();
 
@@ -127,7 +127,7 @@ class PlaceCommentControllerTest {
     }
 
     @Test
-    public void findAllTest() throws Exception {
+    void findAllTest() throws Exception {
         int pageNumber = 5;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -139,7 +139,7 @@ class PlaceCommentControllerTest {
     }
 
     @Test
-    public void findByIdTest() throws Exception {
+    void findByIdTest() throws Exception {
         mockMvc.perform(get(placeCommentLinkSecondPart + "/{id}", 1))
             .andExpect(status().isOk());
 
@@ -148,7 +148,7 @@ class PlaceCommentControllerTest {
     }
 
     @Test
-    public void findByIdFailedTest() throws Exception {
+    void findByIdFailedTest() throws Exception {
         mockMvc.perform(get(placeCommentLinkSecondPart + "/{id}", "invalidID"))
             .andExpect(status().isBadRequest());
 
@@ -156,7 +156,7 @@ class PlaceCommentControllerTest {
     }
 
     @Test
-    public void deleteByIdTest() throws Exception {
+    void deleteByIdTest() throws Exception {
         this.mockMvc.perform(delete(placeCommentLinkSecondPart + "?id={id}", 1))
             .andExpect(status().isOk());
 
@@ -165,7 +165,7 @@ class PlaceCommentControllerTest {
     }
 
     @Test
-    public void deleteByIdFailedTest() throws Exception {
+    void deleteByIdFailedTest() throws Exception {
         mockMvc.perform(delete(placeCommentLinkSecondPart + "?id={id}", "invalidID"))
             .andExpect(status().isBadRequest());
 

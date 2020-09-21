@@ -51,7 +51,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void getAllFactsOfTheDayTest() throws Exception {
+    void getAllFactsOfTheDayTest() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
         List<FactOfTheDayDTO> factOfTheDayDTOS = Collections.singletonList(new FactOfTheDayDTO());
         PageableDto<FactOfTheDayDTO> allFactsOfTheDay = new PageableDto<>(factOfTheDayDTOS, 1, 0, 1);
@@ -71,7 +71,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void findAllWithoutQueryTest() throws Exception {
+    void findAllWithoutQueryTest() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
         List<FactOfTheDayDTO> factOfTheDayDTOS = Collections.singletonList(new FactOfTheDayDTO());
         PageableDto<FactOfTheDayDTO> allFactsOfTheDay = new PageableDto<>(factOfTheDayDTOS, 1, 0, 1);
@@ -91,7 +91,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void findAllWithQueryTest() throws Exception {
+    void findAllWithQueryTest() throws Exception {
         String query = "new query";
         Pageable pageable = PageRequest.of(0, 10);
         List<FactOfTheDayDTO> factOfTheDayDTOS = Collections.singletonList(new FactOfTheDayDTO());
@@ -113,7 +113,7 @@ class ManagementFactOfTheDayControllerTest {
 
 
     @Test
-    public void saveFactOfTheDayTest() throws Exception {
+    void saveFactOfTheDayTest() throws Exception {
         FactOfTheDayPostDTO factOfTheDayPostDTO = getFactOfTheDayPostDTO();
         mockMvc.perform(post(managementFactOfTheDayLink + "/")
             .content("{\n" +
@@ -135,7 +135,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void saveFactOfTheDayWithoutIdTest() throws Exception {
+    void saveFactOfTheDayWithoutIdTest() throws Exception {
         mockMvc.perform(post(managementFactOfTheDayLink + "/")
             .content("{\"name\": \"testName\"}")
             .accept(MediaType.APPLICATION_JSON)
@@ -146,7 +146,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void updateFactOfTheDayTest() throws Exception {
+    void updateFactOfTheDayTest() throws Exception {
         FactOfTheDayPostDTO factOfTheDayPostDTO = getFactOfTheDayPostDTO();
         mockMvc.perform(put(managementFactOfTheDayLink + "/")
             .content("{\n" +
@@ -161,7 +161,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void updateFactOfTheDayWithoutIdTest() throws Exception {
+    void updateFactOfTheDayWithoutIdTest() throws Exception {
         mockMvc.perform(put(managementFactOfTheDayLink + "/")
             .content("{\"name\": \"testName\"}")
             .accept(MediaType.APPLICATION_JSON)
@@ -172,7 +172,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void deleteTest() throws Exception {
+    void deleteTest() throws Exception {
         mockMvc.perform(delete(managementFactOfTheDayLink + "/?id=1"))
             .andExpect(status().isOk());
 
@@ -180,7 +180,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void deleteBadRequestTest() {
+    void deleteBadRequestTest() {
         when(factOfTheDayService.deleteFactOfTheDayAndTranslations(1L))
             .thenThrow(new NotUpdatedException(ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));
         Assertions.assertThatThrownBy(() -> mockMvc
@@ -191,7 +191,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void deleteAllTest() throws Exception {
+    void deleteAllTest() throws Exception {
         List<Long> longList = Arrays.asList(1L, 2L);
         mockMvc.perform(delete(managementFactOfTheDayLink + "/deleteAll")
             .content("[1,2]")
@@ -203,7 +203,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void deleteAllBadRequestTest() {
+    void deleteAllBadRequestTest() {
         List<Long> longList = Arrays.asList(1L, 2L);
         when(factOfTheDayService.deleteAllFactOfTheDayAndTranslations(longList))
             .thenThrow(new NotUpdatedException(ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));

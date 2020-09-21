@@ -11,12 +11,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-public class UserGoalResponseDtoMapperTest {
+class UserGoalResponseDtoMapperTest {
     @InjectMocks
     private UserGoalResponseDtoMapper userGoalResponseDtoMapper;
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         UserGoal userGoal = ModelUtils.getCustomUserGoal();
 
         UserGoalResponseDto expected = UserGoalResponseDto.builder()

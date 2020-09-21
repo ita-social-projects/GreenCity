@@ -1,5 +1,6 @@
 package greencity.security.service.impl;
 
+import static greencity.constant.ErrorMessage.BAD_FACEBOOK_TOKEN;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
@@ -18,8 +19,6 @@ import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static greencity.constant.ErrorMessage.BAD_FACEBOOK_TOKEN;
 
 /**
  * {@inheritDoc}
@@ -95,7 +94,6 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
             User user = byEmail;
             if (user == null) {
                 user = createNewUser(email, name);
-                User savedUser = userService.save(user);
                 log.info("Facebook sign-up and sign-in user - {}", user.getEmail());
                 return getSuccessSignInDto(user);
             } else {

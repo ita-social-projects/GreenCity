@@ -12,12 +12,12 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class EcoNewsDtoMapperTest {
+class EcoNewsDtoMapperTest {
     @InjectMocks
     EcoNewsDtoMapper ecoNewsDtoMapper;
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
 
         EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),

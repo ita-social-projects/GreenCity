@@ -1,6 +1,5 @@
 package greencity.dto.user;
 
-import java.util.List;
 import lombok.*;
 
 @Getter

@@ -48,7 +48,7 @@ class FavoritePlaceControllerTest {
     }
 
     @Test
-    public void findAllByUserEmail() throws Exception {
+    void findAllByUserEmail() throws Exception {
         mockMvc.perform(get(favoritePlaceLink + "/")
             .principal(ModelUtils.getPrincipal())
         ).andExpect(status().isOk());
@@ -57,7 +57,7 @@ class FavoritePlaceControllerTest {
     }
 
     @Test
-    public void updateTest() throws Exception {
+    void updateTest() throws Exception {
         FavoritePlaceDto favoritePlaceDto = ModelUtils.getFavoritePlaceDto();
 
         when(
@@ -77,7 +77,7 @@ class FavoritePlaceControllerTest {
     }
 
     @Test
-    public void deleteByUserEmailAndPlaceId() throws Exception {
+    void deleteByUserEmailAndPlaceId() throws Exception {
         mockMvc.perform(delete(favoritePlaceLink + "/{placeId}", 1)
             .principal(principal))
             .andExpect(status().isOk());
@@ -87,7 +87,7 @@ class FavoritePlaceControllerTest {
     }
 
     @Test
-    public void getFavoritePlaceWithCoordinate() throws Exception {
+    void getFavoritePlaceWithCoordinate() throws Exception {
         mockMvc.perform(get(favoritePlaceLink + "/favorite/{placeId}", 1)
             .principal(principal))
             .andExpect(status().isOk());

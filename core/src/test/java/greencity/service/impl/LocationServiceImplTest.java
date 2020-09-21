@@ -25,10 +25,10 @@ class LocationServiceImplTest {
     @InjectMocks
     private LocationServiceImpl locationService;
 
+    private Location genericEntity = new Location();
+
     @Test
     void saveTest() {
-        Location genericEntity = new Location();
-
         when(locationRepo.save(genericEntity)).thenReturn(genericEntity);
 
         assertEquals(genericEntity, locationService.save(genericEntity));
@@ -36,8 +36,6 @@ class LocationServiceImplTest {
 
     @Test
     void findByIdTest() {
-        Location genericEntity = new Location();
-
         when(locationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
         Location foundEntity = locationService.findById(anyLong());
@@ -54,30 +52,27 @@ class LocationServiceImplTest {
 
     @Test
     void updateTest() {
-        Location updated = new Location();
+        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+        when(locationRepo.save(any())).thenReturn(genericEntity);
 
-        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(updated));
-        when(locationRepo.save(any())).thenReturn(updated);
-
-        locationService.update(anyLong(), updated);
+        locationService.update(anyLong(), genericEntity);
         Location foundEntity = locationService.findById(anyLong());
 
-        assertEquals(updated, foundEntity);
+        assertEquals(genericEntity, foundEntity);
     }
 
     @Test
     void updateGivenIdNullThenThrowException() {
-        Location location = new Location();
         Assertions
             .assertThrows(NotFoundException.class,
-                () -> locationService.update(null, location));
+                () -> locationService.update(null, genericEntity));
     }
 
     @Test
     void deleteByIdTest() {
-        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(new Location()));
+        when(locationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        assertEquals(1L, locationService.deleteById(1L));
+        assertEquals(new Long(1), locationService.deleteById(1L));
     }
 
     @Test
