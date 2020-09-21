@@ -4,21 +4,19 @@ import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
+import greencity.entity.TipsAndTricksComment;
+import greencity.entity.User;
+import greencity.entity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
 import greencity.service.FileService;
 import greencity.service.TagsService;
-import java.io.IOException;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,8 +29,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -54,6 +56,8 @@ class TipsAndTricksServiceImplTest {
     private TipsAndTricks tipsAndTricks = ModelUtils.getTipsAndTricks();
     private TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
     private Tag tipsAndTricksTag = ModelUtils.getTag();
+    private TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
+    private User user = ModelUtils.getUser();
 
     @Test
     void saveTest() {
@@ -188,4 +192,120 @@ class TipsAndTricksServiceImplTest {
 
         assertEquals(pageableDto, actual);
     }
+
+    @Test
+    void update() {
+        List<String> tags = Collections.singletonList("test");
+        TipsAndTricksDtoManagement tipsAndTricksDtoManagement  = TipsAndTricksDtoManagement.builder()
+                .id(1L)
+                .title("test")
+                .text("test")
+                .tags(tags)
+                .emailAuthor("orest@gmail.com")
+                .build();
+
+        TipsAndTricks inital = tipsAndTricks;
+        tipsAndTricks.setTitle("test");
+        tipsAndTricks.setText("test");
+        tipsAndTricks.setTags(Collections.singletonList(tipsAndTricksTag));
+        tipsAndTricks.setAuthor(user);
+
+        when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
+        when(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags())).thenReturn(Collections.singletonList(tipsAndTricksTag));
+        when(userService.findByEmail(tipsAndTricksDtoManagement.getEmailAuthor())).thenReturn(user);
+        tipsAndTricksService.update(tipsAndTricksDtoManagement, null);
+        verify(tipsAndTricksRepo).save(tipsAndTricks);
+
+
+    }
+
+    @Test
+    void deleteAll() {
+        List<Long> listId = Collections.singletonList(1L);
+        when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
+        tipsAndTricksService.deleteAll(listId);
+        verify(tipsAndTricksRepo, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void findManagementDtoById() {
+        Long id = 1L;
+        List<String> tags = Collections.singletonList("test");
+        TipsAndTricksDtoManagement tipsAndTricksDtoManagement  = TipsAndTricksDtoManagement.builder()
+                .id(id)
+                .title("test")
+                .text("test")
+                .tags(tags)
+                .emailAuthor("orest@gmail.com")
+                .build();
+        when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
+        when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoManagement.class)).thenReturn(tipsAndTricksDtoManagement);
+        assertEquals(tipsAndTricksDtoManagement, tipsAndTricksService.findManagementDtoById(id));
+    }
+
+    @Test
+    void testSearch() {
+        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
+        List<SearchTipsAndTricksDto> dtoList = page.stream()
+                .map(t -> modelMapper.map(t, SearchTipsAndTricksDto.class))
+                .collect(Collectors.toList());
+        PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0,1);
+
+        when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitle())).thenReturn(page);
+        when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
+
+        PageableDto<SearchTipsAndTricksDto> actual = tipsAndTricksService.search(pageRequest, tipsAndTricks.get(0).getTitle());
+
+        assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void searchBy() {
+        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
+        List<TipsAndTricksDtoResponse> tipsAndTricksDtoResponses = page.stream()
+                .map(t -> modelMapper.map(t, TipsAndTricksDtoResponse.class))
+                .collect(Collectors.toList());
+        PageableDto<TipsAndTricksDtoResponse> tipsAndTricksDtoResponsePageableDto = new PageableDto<>(tipsAndTricksDtoResponses,
+                page.getTotalElements(),
+                page.getPageable().getPageNumber(),
+                page.getTotalPages());
+
+
+        when(tipsAndTricksRepo.searchBy(pageRequest, tipsAndTricks.get(0).getTitle())).thenReturn(page);
+
+        assertEquals(tipsAndTricksDtoResponsePageableDto, tipsAndTricksService.searchBy(pageRequest, tipsAndTricks.get(0).getTitle()));
+    }
+
+    @Test
+    void getAmountOfWrittenTipsAndTrickByUserId() {
+        Long id = 1L;
+        when(tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(id)).thenReturn(1L);
+        assertEquals(id, tipsAndTricksService.getAmountOfWrittenTipsAndTrickByUserId(id));
+    }
+
+    @Test
+    void likeComment() {
+        TipsAndTricksComment initial = tipsAndTricksComment;
+        Set<User> userSet = new HashSet<>();
+        userSet.add(user);
+        initial.setUsersLiked(userSet);
+        tipsAndTricksService.likeComment(user, tipsAndTricksComment);
+        assertEquals(initial, tipsAndTricksComment);
+    }
+
+    @Test
+    void unlikeComment() {
+        TipsAndTricksComment initial = tipsAndTricksComment;
+        Set<User> userSet = new HashSet<>();
+        userSet.add(user);
+        tipsAndTricksComment.setUsersLiked(userSet);
+        tipsAndTricksService.unlikeComment(user, tipsAndTricksComment);
+        assertEquals(initial, tipsAndTricksComment);
+
+    }
+
 }

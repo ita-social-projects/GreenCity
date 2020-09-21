@@ -34,8 +34,9 @@ public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslati
      * @author Mykola Lehkyi
      */
     @Autowired
-    public FactOfTheDayTranslationServiceImpl(FactOfTheDayTranslationRepo factOfTheDayTranslationRepo) {
+    public FactOfTheDayTranslationServiceImpl(FactOfTheDayTranslationRepo factOfTheDayTranslationRepo, ModelMapper modelMapper) {
         this.factOfTheDayTranslationRepo = factOfTheDayTranslationRepo;
+        this.modelMapper = modelMapper;
     }
 
     /**

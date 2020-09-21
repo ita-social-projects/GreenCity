@@ -82,8 +82,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             .hostPath(url.getHost())
             .imagePath(imagePath)
             .build();
-        socialNetworkImageRepo.save(socialNetworkImage);
-        return socialNetworkImage;
+        return socialNetworkImageRepo.save(socialNetworkImage);
     }
 
     /**
