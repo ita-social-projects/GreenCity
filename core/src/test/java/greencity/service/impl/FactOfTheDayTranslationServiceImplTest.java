@@ -104,13 +104,12 @@ class FactOfTheDayTranslationServiceImplTest {
                 .language(ModelUtils.getLanguage())
                 .factOfTheDay(ModelUtils.getFactOfTheDay())
                 .build();
-        String languageCode = "uk";
         FactOfTheDayTranslationDTO factOfTheDayTranslationDTO = new FactOfTheDayTranslationDTO();
         factOfTheDayTranslationDTO.setId(1L);
         factOfTheDayTranslationDTO.setContent("Content");
-        when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation(languageCode)).thenReturn(Optional.of(factOfTheDayTranslation));
+        when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation("en")).thenReturn(Optional.of(factOfTheDayTranslation));
         when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class)).thenReturn(factOfTheDayTranslationDTO);
-        assertEquals(factOfTheDayTranslationDTO, factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(languageCode));
+        assertEquals(factOfTheDayTranslationDTO, factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage("en"));
     }
 
     @Test
@@ -122,15 +121,14 @@ class FactOfTheDayTranslationServiceImplTest {
                 .language(ModelUtils.getLanguage())
                 .factOfTheDay(ModelUtils.getFactOfTheDay())
                 .build();
-        String languageCode = "uk";
         FactOfTheDayTranslationDTO factOfTheDayTranslationDTO = new FactOfTheDayTranslationDTO();
         factOfTheDayTranslationDTO.setId(1L);
         factOfTheDayTranslationDTO.setContent("Content");
-        when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation(languageCode)).thenReturn(Optional.empty());
+        when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation("en")).thenReturn(Optional.empty());
 
 
         assertThrows(NotFoundException.class, () ->
-                factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage(languageCode)
+                factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage("en")
         );
     }
 }
