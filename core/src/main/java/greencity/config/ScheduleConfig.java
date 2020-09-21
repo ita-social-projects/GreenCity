@@ -113,7 +113,8 @@ public class ScheduleConfig {
             factTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
             list = factTranslationRepo.findRandomFact();
         }
-        factTranslationRepo.updateFactOfDayStatusByHabitfactId(CURRENT, list.get().get(0).getHabitFact().getId());
+        list.ifPresent(factTranslations -> factTranslationRepo
+            .updateFactOfDayStatusByHabitfactId(CURRENT, factTranslations.get(0).getHabitFact().getId()));
     }
 
     /**
