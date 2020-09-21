@@ -96,42 +96,42 @@ class FactOfTheDayTranslationServiceImplTest {
         verify(factOfTheDayTranslationRepo).deleteAll(factOfTheDayTranslationList);
     }
 
-    @Disabled
-    @Test
-    void getRandomFactOfTheDayByLanguage() {
-        FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
-        factOfTheDayTranslation.builder()
-                .id(1L)
-                .content("Content")
-                .language(ModelUtils.getLanguage())
-                .factOfTheDay(ModelUtils.getFactOfTheDay())
-                .build();
-        FactOfTheDayTranslationDTO factOfTheDayTranslationDTO = new FactOfTheDayTranslationDTO();
-        factOfTheDayTranslationDTO.setId(1L);
-        factOfTheDayTranslationDTO.setContent("Content");
-        when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation("en")).thenReturn(Optional.of(factOfTheDayTranslation));
-        when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class)).thenReturn(factOfTheDayTranslationDTO);
-        assertEquals(factOfTheDayTranslationDTO, factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage("en"));
-    }
-
-    @Disabled
-    @Test
-    void getRandomFactOfTheDayByLanguageBadRequest() {
-        FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
-        factOfTheDayTranslation.builder()
-                .id(1L)
-                .content("Content")
-                .language(ModelUtils.getLanguage())
-                .factOfTheDay(ModelUtils.getFactOfTheDay())
-                .build();
-        FactOfTheDayTranslationDTO factOfTheDayTranslationDTO = new FactOfTheDayTranslationDTO();
-        factOfTheDayTranslationDTO.setId(1L);
-        factOfTheDayTranslationDTO.setContent("Content");
-        when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation("en")).thenReturn(Optional.empty());
-
-
-        assertThrows(NotFoundException.class, () ->
-                factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage("en")
-        );
-    }
+//    @Disabled
+//    @Test
+//    void getRandomFactOfTheDayByLanguage() {
+//        FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
+//        factOfTheDayTranslation.builder()
+//                .id(1L)
+//                .content("Content")
+//                .language(ModelUtils.getLanguage())
+//                .factOfTheDay(ModelUtils.getFactOfTheDay())
+//                .build();
+//        FactOfTheDayTranslationDTO factOfTheDayTranslationDTO = new FactOfTheDayTranslationDTO();
+//        factOfTheDayTranslationDTO.setId(1L);
+//        factOfTheDayTranslationDTO.setContent("Content");
+//        when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation("en")).thenReturn(Optional.of(factOfTheDayTranslation));
+//        when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class)).thenReturn(factOfTheDayTranslationDTO);
+//        assertEquals(factOfTheDayTranslationDTO, factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage("en"));
+//    }
+//
+//    @Disabled
+//    @Test
+//    void getRandomFactOfTheDayByLanguageBadRequest() {
+//        FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
+//        factOfTheDayTranslation.builder()
+//                .id(1L)
+//                .content("Content")
+//                .language(ModelUtils.getLanguage())
+//                .factOfTheDay(ModelUtils.getFactOfTheDay())
+//                .build();
+//        FactOfTheDayTranslationDTO factOfTheDayTranslationDTO = new FactOfTheDayTranslationDTO();
+//        factOfTheDayTranslationDTO.setId(1L);
+//        factOfTheDayTranslationDTO.setContent("Content");
+//        when(factOfTheDayTranslationRepo.getRandomFactOfTheDayTranslation("en")).thenReturn(Optional.empty());
+//
+//
+//        assertThrows(NotFoundException.class, () ->
+//                factOfTheDayTranslationService.getRandomFactOfTheDayByLanguage("en")
+//        );
+//    }
 }
