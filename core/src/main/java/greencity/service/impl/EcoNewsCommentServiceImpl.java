@@ -72,7 +72,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     @Override
     public PageableDto<EcoNewsCommentDto> findAllComments(Pageable pageable, User user, Long ecoNewsId) {
         ecoNewsService.findById(ecoNewsId);
-        Page<EcoNewsComment> pages = ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateAsc(
+        Page<EcoNewsComment> pages = ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(
             pageable, ecoNewsId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
@@ -105,7 +105,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     @Override
     public PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, User user) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
-            .findAllByParentCommentIdOrderByCreatedDateAsc(pageable, parentCommentId);
+            .findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
@@ -232,7 +232,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, User user, Long ecoNewsId) {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
-                .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateAsc(pageable, ecoNewsId);
+                .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
@@ -265,7 +265,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     @Override
     public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, User user) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
-            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(pageable, parentCommentId);
+            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {

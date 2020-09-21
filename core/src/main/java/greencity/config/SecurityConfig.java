@@ -158,7 +158,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/goals/shoppingList/{userId}",
                 "/user/userAndSixFriendsWithOnlineStatus",
                 "/user/userAndAllFriendsWithOnlineStatus",
-                "/habit"
+                        "/habit"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -189,10 +189,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/goals",
                 "/user/{userId}/userFriend/*",
-                "/econews",
+                        "/econews",
                 "/user/{userId}/customGoals",
-                "/files/image",
-                "/tipsandtricks",
+                        "/files/image",
+                        "/tipsandtricks",
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
                 "/tipsandtricks/comments/{tipsAndTricksId}",

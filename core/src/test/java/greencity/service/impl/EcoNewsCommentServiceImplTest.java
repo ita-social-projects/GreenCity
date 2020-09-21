@@ -153,7 +153,7 @@ class EcoNewsCommentServiceImplTest {
         EcoNewsCommentDto ecoNewsCommentDto = ModelUtils.getEcoNewsCommentDto();
 
         when(ecoNewsService.findById(1L)).thenReturn(ModelUtils.getEcoNews());
-        when(ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateAsc(pageable, ecoNewsId))
+        when(ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId))
             .thenReturn(pages);
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
         when(ecoNewsCommentRepo.countByParentCommentId(any())).thenReturn(0);
@@ -177,7 +177,7 @@ class EcoNewsCommentServiceImplTest {
         ecoNewsCommentChild.setUsersLiked(new HashSet<>());
         Page<EcoNewsComment> pages = new PageImpl<>(Collections.singletonList(ecoNewsCommentChild), pageable, 1);
 
-        when(ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateAsc(pageable, parentCommentId))
+        when(ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId))
             .thenReturn(pages);
         when(modelMapper.map(ecoNewsCommentChild, EcoNewsCommentDto.class)).thenReturn(getEcoNewsCommentDto());
 

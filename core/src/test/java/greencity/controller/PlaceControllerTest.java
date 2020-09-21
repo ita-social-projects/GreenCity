@@ -98,14 +98,14 @@ class PlaceControllerTest {
         discountValuesDtos.add(discountValueDto);
 
         BreakTimeDto breakTimeDto = BreakTimeDto.builder()
-                .endTime(LocalTime.of(14,0))
-                .startTime(LocalTime.of(13,0))
+                .endTime(LocalTime.of(14, 0))
+                .startTime(LocalTime.of(13, 0))
                 .build();
         Set<OpeningHoursDto> openingHoursDtos = new HashSet<>();
         OpeningHoursDto openingHoursDto = OpeningHoursDto.builder()
                 .breakTime(breakTimeDto)
-                .closeTime(LocalTime.of(20,0))
-                .openTime(LocalTime.of(8,0))
+                .closeTime(LocalTime.of(20, 0))
+                .openTime(LocalTime.of(8, 0))
                 .weekDay(DayOfWeek.MONDAY)
                 .build();
         openingHoursDtos.add(openingHoursDto);
@@ -139,7 +139,7 @@ class PlaceControllerTest {
 
         when(modelMapper.map(placeService.save(placeAddDto, principal.getName()), PlaceWithUserDto.class)).thenReturn(new PlaceWithUserDto());
 
-        mockMvc.perform(post(placeLink+"/propose")
+        mockMvc.perform(post(placeLink + "/propose")
                 .content("{\n" +
                         "  \"category\": {\n" +
                         "    \"name\": \"test\"\n" +
@@ -189,7 +189,7 @@ class PlaceControllerTest {
     }
 
     @Test
-    void updatePlace() throws Exception{
+    void updatePlace() throws Exception {
         LocationAddressAndGeoForUpdateDto locationAddressAndGeoDto = LocationAddressAndGeoForUpdateDto.builder()
                 .address("Lviv")
                 .lat(1.0)
@@ -206,14 +206,14 @@ class PlaceControllerTest {
         discountValuesDtos.add(discountValueDto);
 
         BreakTimeDto breakTimeDto = BreakTimeDto.builder()
-                .endTime(LocalTime.of(14,0))
-                .startTime(LocalTime.of(13,0))
+                .endTime(LocalTime.of(14, 0))
+                .startTime(LocalTime.of(13, 0))
                 .build();
         Set<OpeningHoursDto> openingHoursDtos = new HashSet<>();
         OpeningHoursDto openingHoursDto = OpeningHoursDto.builder()
                 .breakTime(breakTimeDto)
-                .closeTime(LocalTime.of(20,0))
-                .openTime(LocalTime.of(8,0))
+                .closeTime(LocalTime.of(20, 0))
+                .openTime(LocalTime.of(8, 0))
                 .weekDay(DayOfWeek.MONDAY)
                 .build();
         openingHoursDtos.add(openingHoursDto);
@@ -229,7 +229,7 @@ class PlaceControllerTest {
 
         when(modelMapper.map(placeService.update(anyObject()), PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
 
-        this.mockMvc.perform(put(placeLink+"/update")
+        this.mockMvc.perform(put(placeLink + "/update")
                 .content("{\n" +
                         "  \"category\": {\n" +
                         "    \"name\": \"test\"\n" +
@@ -278,8 +278,8 @@ class PlaceControllerTest {
     }
 
     @Test
-    void getFavoritePlaceInfo() throws Exception{
-        this.mockMvc.perform(get(placeLink + "/info/favorite/{placeId}",1))
+    void getFavoritePlaceInfo() throws Exception {
+        this.mockMvc.perform(get(placeLink + "/info/favorite/{placeId}", 1))
                 .andExpect(status().isOk());
 
         verify(favoritePlaceService, times(1))
@@ -307,7 +307,7 @@ class PlaceControllerTest {
 
         FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
         filterPlaceDto.setDistanceFromUserDto(new FilterDistanceDto(1.0, 1.0, 1.0));
-        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0,1.0,1.0, 1.0));
+        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0, 1.0, 1.0, 1.0));
         filterPlaceDto.setTime("10/10/2010 20:00:00");
         filterPlaceDto.setStatus(PROPOSED);
         filterPlaceDto.setSearchReg("test");
@@ -372,7 +372,7 @@ class PlaceControllerTest {
 
         FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
         filterPlaceDto.setDistanceFromUserDto(new FilterDistanceDto(1.0, 1.0, 1.0));
-        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0,1.0,1.0, 1.0));
+        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0, 1.0, 1.0, 1.0));
         filterPlaceDto.setTime("10/10/2010 20:00:00");
         filterPlaceDto.setStatus(PROPOSED);
         filterPlaceDto.setSearchReg("test");
@@ -444,7 +444,7 @@ class PlaceControllerTest {
 
         FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
         filterPlaceDto.setDistanceFromUserDto(new FilterDistanceDto(1.0, 1.0, 1.0));
-        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0,1.0,1.0, 1.0));
+        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0, 1.0, 1.0, 1.0));
         filterPlaceDto.setTime("10/10/2010 20:00:00");
         filterPlaceDto.setStatus(PROPOSED);
         filterPlaceDto.setSearchReg("test");
@@ -486,13 +486,13 @@ class PlaceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        verify(placeService).filterPlaceBySearchPredicate(filterPlaceDto,pageable);
+        verify(placeService).filterPlaceBySearchPredicate(filterPlaceDto, pageable);
 
     }
 
     @Test
     void getPlaceById() throws Exception {
-        this.mockMvc.perform(get(placeLink + "/about/{id}",1))
+        this.mockMvc.perform(get(placeLink + "/about/{id}", 1))
                 .andExpect(status().isOk());
 
         verify(placeService, times(1))
@@ -531,7 +531,7 @@ class PlaceControllerTest {
     }
 
     @Test
-    void delete() throws Exception{
+    void delete() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.delete(placeLink + "/{id}", 1))
                 .andExpect(status().isOk());
 
