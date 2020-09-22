@@ -7,12 +7,10 @@ import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.User;
 import greencity.repository.HabitStatusCalendarRepo;
-import greencity.service.HabitStatusCalendarService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -28,15 +26,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class HabitStatusCalendarServiceImplTest {
 
-    HabitStatusCalendarService habitStatusCalendarService;
+
     @Mock
     private HabitStatusCalendarRepo habitStatusCalendarRepo;
-
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.initMocks(this);
-        habitStatusCalendarService = new HabitStatusCalendarServiceImpl(habitStatusCalendarRepo);
-    }
+    @InjectMocks
+    HabitStatusCalendarServiceImpl habitStatusCalendarService;
 
     @Test
     void save() {

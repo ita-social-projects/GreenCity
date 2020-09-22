@@ -9,12 +9,10 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.HabitStatusRepo;
 import greencity.service.HabitStatusCalendarService;
-import greencity.service.HabitStatusService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
@@ -34,21 +32,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class HabitStatusServiceImplTest {
 
-    HabitStatusService habitStatusService;
     @Mock
     private HabitStatusRepo habitStatusRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
     @Mock
     private ModelMapper modelMapper;
-
-
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.initMocks(this);
-        habitStatusService = new HabitStatusServiceImpl(habitStatusRepo, habitStatusCalendarService, modelMapper);
-    }
-
+    @InjectMocks
+    HabitStatusServiceImpl habitStatusService;
 
     @Test
     void saveByHabit() {

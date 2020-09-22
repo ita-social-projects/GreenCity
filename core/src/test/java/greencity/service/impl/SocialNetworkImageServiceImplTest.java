@@ -3,10 +3,11 @@ package greencity.service.impl;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
 import greencity.service.FileService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URL;
 import java.util.Optional;
@@ -16,19 +17,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class SocialNetworkImageServiceImplTest {
 
-    SocialNetworkImageServiceImpl socialNetworkImageService;
     @Mock
     SocialNetworkImageRepo socialNetworkImageRepo;
     @Mock
     FileService fileService;
+    @InjectMocks
+    SocialNetworkImageServiceImpl socialNetworkImageService;
 
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.initMocks(this);
-        socialNetworkImageService= new SocialNetworkImageServiceImpl(socialNetworkImageRepo, fileService);
-    }
 
     @Test
     void getSocialNetworkImageByUrl() throws Exception {
@@ -77,8 +75,6 @@ class SocialNetworkImageServiceImplTest {
         socialNetworkImage.setHostPath(checkUrl.getHost());
         socialNetworkImage.setImagePath("http://example.com/");
 
-
-        when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost())).thenReturn(Optional.of(socialNetworkImage));
         when(fileService.upload(any())).thenReturn(checkUrl);
         when(socialNetworkImageRepo.save(any())).thenReturn(socialNetworkImage);
         assertEquals(socialNetworkImage, socialNetworkImageService.saveSocialNetworkImage(checkUrl));

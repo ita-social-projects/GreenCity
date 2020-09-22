@@ -15,32 +15,17 @@ import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static greencity.entity.enums.UserStatus.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import greencity.service.HabitService;
 import greencity.service.SocialNetworkImageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.powermock.api.mockito.PowerMockito;
@@ -53,6 +38,21 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static greencity.entity.enums.UserStatus.ACTIVATED;
+import static greencity.entity.enums.UserStatus.DEACTIVATED;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
@@ -1154,7 +1154,6 @@ class UserServiceImplTest {
         habitDictionaries.setHabit(Collections.singletonList(habit));
         habitDictionaries.setHabitDictionaryTranslations(Collections.singletonList(ModelUtils.getHabitDictionaryTranslation()));
         habitDictionaries.setImage("test");
-//        habit.setHabitDictionary(habitDictionaries);
 
         HabitDictionaryTranslation habitDictionaryTranslation = ModelUtils.getHabitDictionaryTranslation();
 

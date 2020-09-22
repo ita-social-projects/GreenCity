@@ -7,13 +7,6 @@ import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
 import greencity.service.FileService;
 import greencity.service.SocialNetworkImageService;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.file.Files;
-import java.util.Optional;
-import javax.imageio.ImageIO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
@@ -25,6 +18,14 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.util.Optional;
+
 import static greencity.constant.CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME;
 
 @Service
@@ -32,8 +33,8 @@ import static greencity.constant.CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME;
 @AllArgsConstructor
 @EnableCaching
 public class SocialNetworkImageServiceImpl implements SocialNetworkImageService {
-    SocialNetworkImageRepo socialNetworkImageRepo;
-    FileService fileService;
+    private  final SocialNetworkImageRepo socialNetworkImageRepo;
+    private  final FileService fileService;
 
     /**
      * Method creates or returns existed {@link SocialNetworkImage} by given url.

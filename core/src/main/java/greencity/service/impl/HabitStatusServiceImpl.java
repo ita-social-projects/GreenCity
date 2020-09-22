@@ -22,9 +22,10 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class HabitStatusServiceImpl implements HabitStatusService {
-    private HabitStatusRepo habitStatusRepo;
-    private HabitStatusCalendarService habitStatusCalendarService;
-    private ModelMapper modelMapper;
+
+    private final HabitStatusRepo habitStatusRepo;
+    private final HabitStatusCalendarService habitStatusCalendarService;
+    private final ModelMapper modelMapper;
 
     /**
      * Method save {@link HabitStatusCalendar} for user.
