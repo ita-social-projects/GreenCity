@@ -17,7 +17,6 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslationService {
-
     private final FactOfTheDayTranslationRepo factOfTheDayTranslationRepo;
 
     /**

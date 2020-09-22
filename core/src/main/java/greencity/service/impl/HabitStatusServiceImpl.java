@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class HabitStatusServiceImpl implements HabitStatusService {
-
     private final HabitStatusRepo habitStatusRepo;
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final ModelMapper modelMapper;
