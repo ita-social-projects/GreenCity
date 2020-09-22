@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import java.util.List;
@@ -41,13 +40,4 @@ public interface FactOfTheDayTranslationService {
      * @author Mykola Lehkyi
      */
     void deleteAll(List<FactOfTheDayTranslation> factOfTheDayTranslation);
-
-    /**
-     * Method return random {@link FactOfTheDayTranslation} by languageCode.
-     *
-     * @param languageCode String
-     * @return FactOfTheDayTranslation
-     * @author Mykola Lehkyi
-     */
-    FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode);
 }
