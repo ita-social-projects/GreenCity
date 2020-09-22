@@ -58,14 +58,14 @@ public class GraphServiceImpl implements GraphService {
      * @param map {@link Map} that will be sorted.
      * @return {@link Map} sorted map.
      */
-    Map<String, Integer> sortMapByValue(Map<String, Integer> map) {
+    private Map<String, Integer> sortMapByValue(Map<String, Integer> map) {
         return map.entrySet()
             .stream()
             .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
-    Map<String, Integer> findTopFiveByPopularityCities(Map<String, Integer> sortedMap) {
+    private Map<String, Integer> findTopFiveByPopularityCities(Map<String, Integer> sortedMap) {
         return sortedMap.entrySet()
             .stream()
             .filter(v -> !v.getKey().equals(OTHER_CITY))
@@ -99,18 +99,9 @@ public class GraphServiceImpl implements GraphService {
      * @return populated {@link Map}
      */
     Map<Integer, Integer> initializeMapWithMonths(Map<Integer, Integer> map) {
-        map.put(0, 0);
-        map.put(1, 0);
-        map.put(2, 0);
-        map.put(3, 0);
-        map.put(4, 0);
-        map.put(5, 0);
-        map.put(6, 0);
-        map.put(7, 0);
-        map.put(8, 0);
-        map.put(9, 0);
-        map.put(10, 0);
-        map.put(11, 0);
+        for (int i = 0; i < 12; i++) {
+            map.put(i, 0);
+        }
         return map;
     }
 }
