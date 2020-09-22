@@ -1,13 +1,9 @@
 package greencity.converters;
 
 import greencity.annotations.CurrentUser;
-import greencity.constant.ErrorMessage;
 import greencity.entity.User;
-import greencity.exception.exceptions.WrongEmailException;
 import greencity.service.UserService;
 import java.security.Principal;
-import java.util.Objects;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
