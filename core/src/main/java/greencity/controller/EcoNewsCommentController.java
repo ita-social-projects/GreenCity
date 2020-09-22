@@ -15,6 +15,7 @@ import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +23,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Validated
@@ -73,7 +82,12 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAll(@ApiIgnore Pageable pageable,
                                                                   Long ecoNewsId,
-                                                                  @ApiIgnore @CurrentUser User user) {
+                                                                  @ApiIgnore @AuthenticationPrincipal
+                                                                      Principal principal) {
+        User user = null;
+        if (principal != null) {
+            user = userService.findByEmail(principal.getName());
+        }
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllComments(pageable, user, ecoNewsId));
@@ -109,7 +123,12 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllReplies(@ApiIgnore Pageable pageable,
                                                                          @PathVariable Long parentCommentId,
-                                                                         @ApiIgnore @CurrentUser User user) {
+                                                                         @ApiIgnore @AuthenticationPrincipal
+                                                                             Principal principal) {
+        User user = null;
+        if (principal != null) {
+            user = userService.findByEmail(principal.getName());
+        }
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllReplies(pageable, parentCommentId, user));
@@ -226,7 +245,12 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
                                                                                Long ecoNewsId,
-                                                                               @ApiIgnore @CurrentUser User user) {
+                                                                               @ApiIgnore @AuthenticationPrincipal
+                                                                                   Principal principal) {
+        User user = null;
+        if (principal != null) {
+            user = userService.findByEmail(principal.getName());
+        }
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
@@ -247,7 +271,12 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllActiveReplies(@ApiIgnore Pageable pageable,
                                                                                @PathVariable Long parentCommentId,
-                                                                               @ApiIgnore @CurrentUser User user) {
+                                                                               @ApiIgnore @AuthenticationPrincipal
+                                                                                   Principal principal) {
+        User user = null;
+        if (principal != null) {
+            user = userService.findByEmail(principal.getName());
+        }
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllActiveReplies(pageable, parentCommentId, user));
