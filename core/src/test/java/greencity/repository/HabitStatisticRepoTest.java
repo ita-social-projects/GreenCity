@@ -1,38 +1,41 @@
 package greencity.repository;
 
-import java.util.Date;
+import greencity.entity.HabitStatistic;
+import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.Tuple;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class HabitStatisticRepoTest {
-
     @Autowired
     private HabitStatisticRepo habitStatisticRepo;
 
     @Test
     void emptyDataSourceTest() {
         List<Tuple> amountOfAllHabitItems =
-            habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
+            habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), "en");
         assertTrue(amountOfAllHabitItems.isEmpty());
     }
 
     @Test
     @Sql("file:src/test/resources/sql/single_habit_statistic.sql")
     void singleHabitStatisticTest() {
+        List<HabitStatistic> allByHabitId = habitStatisticRepo.findAllByHabitId(1L);
         List<Tuple> amountOfAllHabitItems =
-            habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
+            habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), "en");
         assertEquals(1, amountOfAllHabitItems.size());
         Tuple tuple = amountOfAllHabitItems.get(0);
         assertEquals("foo", tuple.get(0));
@@ -43,7 +46,7 @@ class HabitStatisticRepoTest {
     @Sql("file:src/test/resources/sql/most_popular_habit_statistic.sql")
     void mostPopularHabitStatisticTest() {
         List<Tuple> amountOfAllHabitItems =
-            habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
+            habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), "en");
         assertEquals(2, amountOfAllHabitItems.size());
         Tuple mostPopularHabitTuple = amountOfAllHabitItems.get(0);
         assertEquals("baz", mostPopularHabitTuple.get(0));
@@ -57,7 +60,7 @@ class HabitStatisticRepoTest {
     @Sql("file:src/test/resources/sql/disabled_habit_statistics.sql")
     void habitsWithDisabledMostPopularHabitTest() {
         List<Tuple> amountOfAllHabitItems =
-            habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
+            habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), "en");
         assertEquals(1, amountOfAllHabitItems.size());
         Tuple tuple = amountOfAllHabitItems.get(0);
         assertEquals("eggs", tuple.get(0));
@@ -68,7 +71,7 @@ class HabitStatisticRepoTest {
     @Sql("file:src/test/resources/sql/outdated_habits_statistic.sql")
     void habitsWithOutdatedMostPopularHabitTest() {
         List<Tuple> amountOfAllHabitItems
-            = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
+            = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), "en");
         assertEquals(2, amountOfAllHabitItems.size());
         Tuple mostPopularHabitTuple = amountOfAllHabitItems.get(0);
         assertEquals("baz", mostPopularHabitTuple.get(0));
@@ -82,7 +85,7 @@ class HabitStatisticRepoTest {
     @Sql("file:src/test/resources/sql/habit_statistics_id_not_match_habit_id.sql")
     void habitStatisticIdDoesNotMatchHabitId() {
         List<Tuple> amountOfAllHabitItems
-            = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
+            = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), "en");
         assertEquals(1, amountOfAllHabitItems.size());
         Tuple mostPopularHabitTuple = amountOfAllHabitItems.get(0);
         assertEquals("baz", mostPopularHabitTuple.get(0));

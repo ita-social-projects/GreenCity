@@ -33,6 +33,11 @@
     </changeSet>
 
     <changeSet id="Beshlei-2" author="Taras Beshlei">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_comment_parent" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
                                  baseColumnNames="parent_comment_id"
                                  constraintName="fk_comment_parent"
@@ -68,13 +73,20 @@
     </changeSet>
 
     <changeSet id="Beshlei-4" author="Taras Beshlei">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_tipsandtricks_comment" />
+            </not>
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_users_liked" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment_users_liked"
                                  baseColumnNames="tipsandtricks_comment_id"
                                  constraintName="fk_tipsandtricks_comment"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
                                  referencedTableName="tipsandtricks_comment"/>
-
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment_users_liked"
                                  baseColumnNames="users_liked_id"
                                  constraintName="fk_users_liked"

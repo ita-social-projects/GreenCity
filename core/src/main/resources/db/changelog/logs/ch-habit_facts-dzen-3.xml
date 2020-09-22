@@ -21,6 +21,11 @@
     </changeSet>
 
     <changeSet author="Vitaliy Dzen" id="4651326844-7">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_habit_advices" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="habit_dictionary_id"
                                  baseTableName="habit_facts"
                                  constraintName="FK_habit_advices"

@@ -51,6 +51,11 @@
     </changeSet>
 
     <changeSet id="Beshlei-17" author="Taras Beshlei">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_habit_id" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseTableName="habits_habit_statuses"
                                  baseColumnNames="habit_statuses_id"
                                  constraintName="fk_habit_statuses_id"
