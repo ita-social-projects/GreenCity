@@ -11,12 +11,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
 @ExtendWith(SpringExtension.class)
-public class GoalDtoMapperTest {
+class GoalDtoMapperTest {
     @InjectMocks
     private GoalDtoMapper goalDtoMapper;
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         GoalTranslation goalTranslation = ModelUtils.getGoalTranslation();
 
         GoalDto expected = new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getText());

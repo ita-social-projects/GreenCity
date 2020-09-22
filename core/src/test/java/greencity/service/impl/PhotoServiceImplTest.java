@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class PhotoServiceImplTest {
+class PhotoServiceImplTest {
 
     @Mock
     PhotoRepo photoRepo;
@@ -20,13 +20,13 @@ public class PhotoServiceImplTest {
     PhotoServiceImpl photoService;
 
     @Test
-    public void findByNameTest() {
+    void findByNameTest() {
         when(photoRepo.findByName("test")).thenReturn(Optional.of(new Photo()));
         assertEquals(Optional.of(new Photo()), photoService.findByName("test"));
     }
 
     @Test
-    public void findByNameEmptyTest() {
+    void findByNameEmptyTest() {
         when(photoRepo.findByName("")).thenReturn(Optional.empty());
         assertEquals(Optional.empty(), photoService.findByName(""));
     }

@@ -16,13 +16,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class HabitStatisticRepoTest {
+class HabitStatisticRepoTest {
 
     @Autowired
     private HabitStatisticRepo habitStatisticRepo;
 
     @Test
-    public void emptyDataSourceTest() {
+    void emptyDataSourceTest() {
         List<Tuple> amountOfAllHabitItems =
             habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
         assertTrue(amountOfAllHabitItems.isEmpty());
@@ -30,7 +30,7 @@ public class HabitStatisticRepoTest {
 
     @Test
     @Sql("file:src/test/resources/sql/single_habit_statistic.sql")
-    public void singleHabitStatisticTest() {
+    void singleHabitStatisticTest() {
         List<Tuple> amountOfAllHabitItems =
             habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
         assertEquals(1, amountOfAllHabitItems.size());
@@ -41,7 +41,7 @@ public class HabitStatisticRepoTest {
 
     @Test
     @Sql("file:src/test/resources/sql/most_popular_habit_statistic.sql")
-    public void mostPopularHabitStatisticTest() {
+    void mostPopularHabitStatisticTest() {
         List<Tuple> amountOfAllHabitItems =
             habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
         assertEquals(2, amountOfAllHabitItems.size());
@@ -55,7 +55,7 @@ public class HabitStatisticRepoTest {
 
     @Test
     @Sql("file:src/test/resources/sql/disabled_habit_statistics.sql")
-    public void habitsWithDisabledMostPopularHabitTest() {
+    void habitsWithDisabledMostPopularHabitTest() {
         List<Tuple> amountOfAllHabitItems =
             habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
         assertEquals(1, amountOfAllHabitItems.size());
@@ -66,7 +66,7 @@ public class HabitStatisticRepoTest {
 
     @Test
     @Sql("file:src/test/resources/sql/outdated_habits_statistic.sql")
-    public void habitsWithOutdatedMostPopularHabitTest() {
+    void habitsWithOutdatedMostPopularHabitTest() {
         List<Tuple> amountOfAllHabitItems
             = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
         assertEquals(2, amountOfAllHabitItems.size());
@@ -80,7 +80,7 @@ public class HabitStatisticRepoTest {
 
     @Test
     @Sql("file:src/test/resources/sql/habit_statistics_id_not_match_habit_id.sql")
-    public void habitStatisticIdDoesNotMatchHabitId() {
+    void habitStatisticIdDoesNotMatchHabitId() {
         List<Tuple> amountOfAllHabitItems
             = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en");
         assertEquals(1, amountOfAllHabitItems.size());

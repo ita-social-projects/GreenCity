@@ -17,8 +17,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.ITemplateEngine;
 
-
-public class EmailServiceImplTest {
+ class EmailServiceImplTest {
     private EmailService service;
     private PlaceAuthorDto placeAuthorDto;
     @Mock
@@ -42,7 +41,7 @@ public class EmailServiceImplTest {
     }
 
     @Test
-    public void sendChangePlaceStatusEmailTest() {
+     void sendChangePlaceStatusEmailTest() {
         String authorFirstName = "test author first name";
         String placeName = "test place name";
         String placeStatus = "test place status";
@@ -54,7 +53,7 @@ public class EmailServiceImplTest {
 
 
     @Test
-    public void sendAddedNewPlacesReportEmailTest() {
+     void sendAddedNewPlacesReportEmailTest() {
         CategoryDto testCategory = CategoryDto.builder().name("CategoryName").build();
         PlaceNotificationDto testPlace1 =
             PlaceNotificationDto.builder().name("PlaceName1").category(testCategory).build();

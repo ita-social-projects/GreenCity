@@ -4,13 +4,11 @@ import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.WrongCountOfTagsException;
+import static greencity.validator.UrlValidator.isUrlValid;
 import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-
-import static greencity.validator.UrlValidator.isUrlValid;
 
 public class EcoNewsDtoRequestValidator implements ConstraintValidator<ValidEcoNewsDtoRequest, AddEcoNewsDtoRequest> {
     @Override

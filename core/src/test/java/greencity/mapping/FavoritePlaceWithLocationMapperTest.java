@@ -11,12 +11,12 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class FavoritePlaceWithLocationMapperTest {
+class FavoritePlaceWithLocationMapperTest {
     @InjectMocks
     private FavoritePlaceWithLocationMapper favoritePlaceWithLocationMapper;
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
         LocationDto location = new LocationDto();
         location.setId(favoritePlace.getPlace().getLocation().getId());

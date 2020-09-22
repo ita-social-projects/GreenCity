@@ -15,7 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class SearchNewsDtoMapperTest {
+class SearchNewsDtoMapperTest {
     @InjectMocks
     private SearchNewsDtoMapper searchNewsDtoMapper;
 
@@ -29,7 +29,7 @@ public class SearchNewsDtoMapperTest {
     }
 
     @Test
-    public void convertTest() {
+    void convertTest() {
 
         SearchNewsDto searchedNews = SearchNewsDto.builder()
             .id(1L)

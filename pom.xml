@@ -52,9 +52,9 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>
-                        -javaagent:"${settings.localRepository}"/org/jmockit/jmockit/1.49/jmockit-1.49.jar
-                    </argLine>
+                    <excludes>
+                        <exclude>greencity.repository.HabitStatisticRepoTest.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

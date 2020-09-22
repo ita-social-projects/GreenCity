@@ -39,7 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
-public class EcoNewsCommentServiceImplTest {
+class EcoNewsCommentServiceImplTest {
     @Mock
     private EcoNewsCommentRepo ecoNewsCommentRepo;
     @Mock
@@ -56,7 +56,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void saveCommentWithNoParentCommentId() {
+    void saveCommentWithNoParentCommentId() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest = ModelUtils.getAddEcoNewsCommentDtoRequest();
         EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
@@ -72,7 +72,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void saveCommentWithParentCommentId() {
+    void saveCommentWithParentCommentId() {
         User user = getUser();
         EcoNews ecoNews = ModelUtils.getEcoNews();
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest = ModelUtils.getAddEcoNewsCommentDtoRequest();
@@ -99,7 +99,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void saveCommentThatHaveReplyWithAnotherReplyThrowException() {
+    void saveCommentThatHaveReplyWithAnotherReplyThrowException() {
         User user = getUser();
         EcoNews ecoNews = ModelUtils.getEcoNews();
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest = ModelUtils.getAddEcoNewsCommentDtoRequest();
@@ -125,7 +125,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void saveCommentWithWrongParentIdThrowException() {
+    void saveCommentWithWrongParentIdThrowException() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         User user = ModelUtils.getUser();
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest = ModelUtils.getAddEcoNewsCommentDtoRequest();
@@ -142,7 +142,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void findAllComments() {
+    void findAllComments() {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -153,7 +153,7 @@ public class EcoNewsCommentServiceImplTest {
         EcoNewsCommentDto ecoNewsCommentDto = ModelUtils.getEcoNewsCommentDto();
 
         when(ecoNewsService.findById(1L)).thenReturn(ModelUtils.getEcoNews());
-        when(ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateAsc(pageable, ecoNewsId))
+        when(ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId))
             .thenReturn(pages);
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
         when(ecoNewsCommentRepo.countByParentCommentId(any())).thenReturn(0);
@@ -167,7 +167,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void findAllReplies() {
+    void findAllReplies() {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -177,7 +177,7 @@ public class EcoNewsCommentServiceImplTest {
         ecoNewsCommentChild.setUsersLiked(new HashSet<>());
         Page<EcoNewsComment> pages = new PageImpl<>(Collections.singletonList(ecoNewsCommentChild), pageable, 1);
 
-        when(ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateAsc(pageable, parentCommentId))
+        when(ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId))
             .thenReturn(pages);
         when(modelMapper.map(ecoNewsCommentChild, EcoNewsCommentDto.class)).thenReturn(getEcoNewsCommentDto());
 
@@ -190,7 +190,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void userDeletesOwnComment() {
+    void userDeletesOwnComment() {
         User user = ModelUtils.getUser();
         Long commentId = 1L;
 
@@ -202,7 +202,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void moderatorDeletesComment() {
+    void moderatorDeletesComment() {
         User user = ModelUtils.getUser();
         user.setRole(ROLE.ROLE_MODERATOR);
         Long commentId = 1L;
@@ -215,7 +215,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void adminDeletesComment() {
+    void adminDeletesComment() {
         User user = ModelUtils.getUser();
         user.setRole(ROLE.ROLE_ADMIN);
         Long commentId = 1L;
@@ -228,7 +228,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void deleteCommentThatDoesntExistsThrowException() {
+    void deleteCommentThatDoesntExistsThrowException() {
         User user = ModelUtils.getUser();
         Long commentId = 1L;
 
@@ -240,7 +240,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void deleteCommentUserHasNoPermissionThrowException() {
+    void deleteCommentUserHasNoPermissionThrowException() {
         User user = ModelUtils.getUser();
         User userToDelete = ModelUtils.getUser();
         user.setId(2L);
@@ -257,7 +257,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void update() {
+    void update() {
         User user = ModelUtils.getUser();
         Long commentId = 1L;
         String newText = "new text";
@@ -269,7 +269,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void updateCommentThatDoesntExistsThrowException() {
+    void updateCommentThatDoesntExistsThrowException() {
         User user = ModelUtils.getUser();
         Long commentId = 1L;
         String newText = "new text";
@@ -282,7 +282,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void updateCommentThatDoesntBelongsToUserThrowException() {
+    void updateCommentThatDoesntBelongsToUserThrowException() {
         User user = ModelUtils.getUser();
         User userToUpdate = ModelUtils.getUser();
         user.setId(2L);
@@ -300,7 +300,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void likeCommentThatDoesntExistThrowException() {
+    void likeCommentThatDoesntExistThrowException() {
         User user = ModelUtils.getUser();
         Long commentId = 1L;
 
@@ -312,7 +312,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void countLikesCommentThatDoesntExistsThrowException() {
+    void countLikesCommentThatDoesntExistsThrowException() {
         Long commentId = 1L;
 
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.empty());
@@ -323,7 +323,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void countLikes() {
+    void countLikes() {
         Long commentId = 1L;
         EcoNewsComment ecoNewsComment = getEcoNewsComment();
         ecoNewsComment.setUsersLiked(new HashSet<>());
@@ -334,7 +334,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void countRepliesCommentThatDoesntExistsThrowException() {
+    void countRepliesCommentThatDoesntExistsThrowException() {
         Long commentId = 1L;
 
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.empty());
@@ -345,7 +345,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void countReplies() {
+    void countReplies() {
         Long commentId = 1L;
         EcoNewsComment ecoNewsComment = getEcoNewsComment();
         ecoNewsComment.setUsersLiked(new HashSet<>());
@@ -357,7 +357,7 @@ public class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    public void countComments() {
+    void countComments() {
         Long ecoNewsId = 1L;
 
         when(ecoNewsCommentRepo.countOfComments(ecoNewsId)).thenReturn(0);
