@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
@@ -8,18 +9,15 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.entity.User;
 import greencity.service.TipsAndTricksCommentService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -29,7 +27,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/tipsandtricks/comments")
 public class TipsAndTricksCommentController {
-    private UserService userService;
     private TipsAndTricksCommentService tipsAndTricksCommentService;
 
     /**
@@ -50,10 +47,7 @@ public class TipsAndTricksCommentController {
     public ResponseEntity<AddTipsAndTricksCommentDtoResponse> save(@PathVariable Long tipsAndTricksId,
                                                                    @Valid @RequestBody
                                                                        AddTipsAndTricksCommentDtoRequest request,
-                                                                   @ApiIgnore @AuthenticationPrincipal
-                                                                       Principal principal) {
-        User user = userService.findByEmail(principal.getName());
-
+                                                                   @ApiIgnore @CurrentUser User user) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(tipsAndTricksCommentService.save(tipsAndTricksId, request, user));
@@ -74,12 +68,7 @@ public class TipsAndTricksCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<TipsAndTricksCommentDto>> findAll(@ApiIgnore Pageable pageable,
                                                                         Long tipsAndTricksId,
-                                                                        @ApiIgnore @AuthenticationPrincipal
-                                                                            Principal principal) {
-        User user = null;
-        if (principal != null) {
-            user = userService.findByEmail(principal.getName());
-        }
+                                                                        @ApiIgnore @CurrentUser User user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(tipsAndTricksCommentService.findAllComments(pageable, user, tipsAndTricksId));
@@ -130,8 +119,7 @@ public class TipsAndTricksCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @DeleteMapping("")
-    public ResponseEntity<Object> delete(Long id, @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName());
+    public ResponseEntity<Object> delete(Long id, @ApiIgnore @CurrentUser User user) {
         tipsAndTricksCommentService.deleteById(id, user);
         return ResponseEntity.ok().build();
     }
@@ -149,8 +137,7 @@ public class TipsAndTricksCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PatchMapping("")
-    public void update(Long id, String text, @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName());
+    public void update(Long id, String text, @ApiIgnore @CurrentUser User user) {
         tipsAndTricksCommentService.update(text, id, user);
     }
 
@@ -166,8 +153,7 @@ public class TipsAndTricksCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("like")
-    public void like(Long id, @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName());
+    public void like(Long id, @ApiIgnore @CurrentUser User user) {
         tipsAndTricksCommentService.like(id, user);
     }
 
