@@ -1,7 +1,9 @@
 package greencity.service.impl;
 
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
@@ -32,9 +34,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
-import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -254,6 +253,22 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * {@inheritDoc}
      *
+     * @author Olena Petryshak.
+     */
+    @Override
+    public PageableDto<AdminPlaceDto> findAll(Pageable pageable) {
+        log.info(LogMessage.IN_FIND_ALL);
+
+        Page<Place> pages = placeRepo.findAll(pageable);
+        List<AdminPlaceDto> placeDtos =
+            pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
+
+        return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Nazar Vladyka
      */
     @Override
@@ -345,6 +360,25 @@ public class PlaceServiceImpl implements PlaceService {
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
         return modelMapper.map(place, PlaceUpdateDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Olena Petryshak
+     */
+    @Override
+    public PageableDto<AdminPlaceDto> searchBy(Pageable pageable, String searchQuery) {
+        Page<Place> pages = placeRepo.searchBy(pageable, searchQuery);
+        List<AdminPlaceDto> adminPlaceDtos = pages.stream()
+            .map(place -> modelMapper.map(place, AdminPlaceDto.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            adminPlaceDtos,
+            pages.getTotalElements(),
+            pageable.getPageNumber(),
+            pages.getTotalPages()
+        );
     }
 
     /**

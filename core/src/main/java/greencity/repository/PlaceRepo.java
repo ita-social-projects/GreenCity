@@ -80,4 +80,15 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      */
     List<Place> findAllByModifiedDateBetweenAndStatus(
         LocalDateTime startDate, LocalDateTime endDate, PlaceStatus status);
+
+    /**
+     * Method returns {@link Place} by search query and page.
+     *
+     * @param pageable    {@link Pageable}.
+     * @param searchQuery query to search.
+     * @return list of {@link Place}.
+     */
+    @Query("SELECT p FROM Place p WHERE CONCAT(p.id,'') LIKE LOWER(CONCAT('%', :searchQuery, '%')) "
+        + "OR LOWER(p.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+    Page<Place> searchBy(Pageable pageable, String searchQuery);
 }
