@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalRequestDto;
@@ -15,6 +16,8 @@ import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.GoalStatus;
 import greencity.entity.enums.ROLE;
+import static greencity.entity.enums.UserStatus.ACTIVATED;
+import static greencity.entity.enums.UserStatus.DEACTIVATED;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
@@ -22,10 +25,21 @@ import greencity.service.FileService;
 import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.SocialNetworkImageService;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.powermock.api.mockito.PowerMockito;
@@ -38,21 +52,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static greencity.entity.enums.UserStatus.ACTIVATED;
-import static greencity.entity.enums.UserStatus.DEACTIVATED;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
@@ -792,7 +791,7 @@ class UserServiceImplTest {
         when(userRepo.getAllUserFriends(1L)).thenReturn(Collections.emptyList());
         when(userRepo.findById(2L)).thenReturn(Optional.of(user));
         assertThrows(NotDeletedException.class, () ->
-                userService.deleteUserFriendById(1L, 2L));
+            userService.deleteUserFriendById(1L, 2L));
     }
 
     @Test
@@ -800,7 +799,7 @@ class UserServiceImplTest {
         when(userRepo.getAllUserFriends(any())).thenReturn(Collections.singletonList(user));
         when(userRepo.findById(2L)).thenReturn(Optional.of(user2));
         assertThrows(NotDeletedException.class, () ->
-                userService.deleteUserFriendById(3L, 2L));
+            userService.deleteUserFriendById(3L, 2L));
     }
 
 
@@ -817,7 +816,7 @@ class UserServiceImplTest {
         when(userRepo.getAllUserFriends(any())).thenReturn(Collections.singletonList(user2));
         when(userRepo.findById(2L)).thenReturn(Optional.of(user));
         assertThrows(CheckRepeatingValueException.class, () ->
-                userService.addNewFriend(1L, 2L)
+            userService.addNewFriend(1L, 2L)
         );
     }
 
@@ -852,17 +851,17 @@ class UserServiceImplTest {
         request.setSocialNetworks(new ArrayList<>());
         SocialNetworkImage socialNetworkImage = new SocialNetworkImage();
         socialNetworkImage.builder()
-                .id(1L)
-                .imagePath("test")
-                .hostPath("test")
-                .build();
+            .id(1L)
+            .imagePath("test")
+            .hostPath("test")
+            .build();
         SocialNetwork socialNetwork = new SocialNetwork();
         socialNetwork.builder()
-                .id(1L)
-                .url("http://test.com")
-                .user(user)
-                .socialNetworkImage(socialNetworkImage)
-                .build();
+            .id(1L)
+            .url("http://test.com")
+            .user(user)
+            .socialNetworkImage(socialNetworkImage)
+            .build();
         request.setSocialNetworks(Collections.singletonList("test"));
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(socialNetworkImageService.getSocialNetworkImageByUrl(anyString())).thenReturn(socialNetworkImage);
@@ -932,14 +931,19 @@ class UserServiceImplTest {
         List<User> userList = Collections.singletonList(ModelUtils.getUser());
         Page<User> users = new PageImpl<>(userList, pageable, userList.size());
         List<UserManagementDto> userManagementDtos =
-                users.getContent().stream()
-                        .map(user -> modelMapper.map(user, UserManagementDto.class))
-                        .collect(Collectors.toList());
-        PageableDto<UserManagementDto> userManagementDtoPageableDto = new PageableDto<>(
-                userManagementDtos,
-                users.getTotalElements(),
-                users.getPageable().getPageNumber(),
-                users.getTotalPages());
+            users.getContent().stream()
+                .map(user -> modelMapper.map(user, UserManagementDto.class))
+                .collect(Collectors.toList());
+        PageableAdvancedDto<UserManagementDto> userManagementDtoPageableDto = new PageableAdvancedDto<>(
+            userManagementDtos,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages(),
+            users.getNumber(),
+            users.hasPrevious(),
+            users.hasNext(),
+            users.isFirst(),
+            users.isLast());
         when(userRepo.findAll(pageable)).thenReturn(users);
         assertEquals(userManagementDtoPageableDto, userService.findUserForManagementByPage(pageable));
     }
@@ -987,19 +991,19 @@ class UserServiceImplTest {
         habitDictionaryDtos.add(hd);
 
         when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(userId, "en"))
-                .thenReturn(Collections.singletonList(habitDictionaryTranslation));
-        assertEquals(habitDictionaryDtos , userService.getAvailableHabitDictionary(userId, "en"));
+            .thenReturn(Collections.singletonList(habitDictionaryTranslation));
+        assertEquals(habitDictionaryDtos, userService.getAvailableHabitDictionary(userId, "en"));
     }
 
 
     @Test
     void getUserProfileStatistics() {
         UserProfileStatisticsDto userProfileStatisticsDto = UserProfileStatisticsDto.builder()
-                .amountWrittenTipsAndTrick(1L)
-                .amountPublishedNews(1L)
-                .amountHabitsAcquired(1L)
-                .amountHabitsInProgress(1L)
-                .build();
+            .amountWrittenTipsAndTrick(1L)
+            .amountPublishedNews(1L)
+            .amountHabitsAcquired(1L)
+            .amountHabitsInProgress(1L)
+            .build();
 
         when(ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId)).thenReturn(1L);
         when(tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(userId)).thenReturn(1L);
@@ -1011,20 +1015,20 @@ class UserServiceImplTest {
     @Test
     void getUserAndSixFriendsWithOnlineStatus() {
         UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
-                .id(userId)
-                .onlineStatus(true)
-                .build();
+            .id(userId)
+            .onlineStatus(true)
+            .build();
         List<UserWithOnlineStatusDto> sixFriendsWithOnlineStatusDtos = new ArrayList<>();
         sixFriendsWithOnlineStatusDtos = Collections.singletonList(user)
-                .stream()
-                .map(u -> new UserWithOnlineStatusDto(u.getId(), true))
-                .collect(Collectors.toList());
+            .stream()
+            .map(u -> new UserWithOnlineStatusDto(u.getId(), true))
+            .collect(Collectors.toList());
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
         UserAndFriendsWithOnlineStatusDto userAndFriendsWithOnlineStatusDto = UserAndFriendsWithOnlineStatusDto.builder()
-                .user(userWithOnlineStatusDto)
-                .friends(sixFriendsWithOnlineStatusDtos)
-                .build();
+            .user(userWithOnlineStatusDto)
+            .friends(sixFriendsWithOnlineStatusDtos)
+            .build();
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
@@ -1037,21 +1041,21 @@ class UserServiceImplTest {
         Pageable pageable = PageRequest.of(0, 1);
         Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
         UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
-                .id(userId)
-                .onlineStatus(true)
-                .build();
+            .id(userId)
+            .onlineStatus(true)
+            .build();
         List<UserWithOnlineStatusDto> friendsWithOnlineStatusDtos = new ArrayList<>();
         friendsWithOnlineStatusDtos = usersPage
-                .getContent()
-                .stream()
-                .map(u -> new UserWithOnlineStatusDto(u.getId(), true))
-                .collect(Collectors.toList());
+            .getContent()
+            .stream()
+            .map(u -> new UserWithOnlineStatusDto(u.getId(), true))
+            .collect(Collectors.toList());
 
         UserAndAllFriendsWithOnlineStatusDto userAndAllFriendsWithOnlineStatusDto = new UserAndAllFriendsWithOnlineStatusDto().builder()
-                .user(userWithOnlineStatusDto)
-                .friends(new PageableDto<>(friendsWithOnlineStatusDtos, usersPage.getTotalElements(),
-                        usersPage.getPageable().getPageNumber(), usersPage.getTotalPages()))
-                .build();
+            .user(userWithOnlineStatusDto)
+            .friends(new PageableDto<>(friendsWithOnlineStatusDtos, usersPage.getTotalElements(),
+                usersPage.getPageable().getPageNumber(), usersPage.getTotalPages()))
+            .build();
 
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
@@ -1117,20 +1121,24 @@ class UserServiceImplTest {
         Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
 
         List<UserManagementDto> users = usersPage.stream()
-                .map(user -> modelMapper.map(user, UserManagementDto.class))
-                .collect(Collectors.toList());
+            .map(user -> modelMapper.map(user, UserManagementDto.class))
+            .collect(Collectors.toList());
 
-        PageableDto<UserManagementDto> pageableDto = new PageableDto<>(
-                users,
-                usersPage.getTotalElements(),
-                usersPage.getPageable().getPageNumber(),
-                usersPage.getTotalPages());
-
+        PageableAdvancedDto<UserManagementDto> pageableDto = new PageableAdvancedDto<>(
+            users,
+            usersPage.getTotalElements(),
+            usersPage.getPageable().getPageNumber(),
+            usersPage.getTotalPages(),
+            usersPage.getNumber(),
+            usersPage.hasPrevious(),
+            usersPage.hasNext(),
+            usersPage.isFirst(),
+            usersPage.isLast());
 
         when(userRepo.searchBy(pageable, userList.get(0).getName())).thenReturn(usersPage);
 
 
-        assertEquals(pageableDto, userService.searchBy(pageable,userList.get(0).getName()));
+        assertEquals(pageableDto, userService.searchBy(pageable, userList.get(0).getName()));
     }
 
 
