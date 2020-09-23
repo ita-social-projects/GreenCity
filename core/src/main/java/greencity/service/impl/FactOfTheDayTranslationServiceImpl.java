@@ -3,33 +3,21 @@ package greencity.service.impl;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.repository.FactOfTheDayTranslationRepo;
 import greencity.service.FactOfTheDayTranslationService;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Implementation of {@link FactOfTheDayTranslationService}.
  *
  * @author Mykola Lehkyi
  */
+@AllArgsConstructor
 @Service
 public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslationService {
-    @Autowired
-    private FactOfTheDayTranslationRepo factOfTheDayTranslationRepo;
-    @Autowired
-    private ModelMapper modelMapper;
-
-    /**
-     * Constructor with parameters.
-     *
-     * @author Mykola Lehkyi
-     */
-    @Autowired
-    public FactOfTheDayTranslationServiceImpl(FactOfTheDayTranslationRepo factOfTheDayTranslationRepo) {
-        this.factOfTheDayTranslationRepo = factOfTheDayTranslationRepo;
-    }
+    private final FactOfTheDayTranslationRepo factOfTheDayTranslationRepo;
 
     /**
      * {@inheritDoc}

@@ -99,6 +99,9 @@ table.table td a.deactivate-user {
 table.table td a.activate-user {
     color: #008000;
 }
+.statistic-style {
+    color: #008000;
+}
 table.table td i {
     font-size: 19px;
 }
