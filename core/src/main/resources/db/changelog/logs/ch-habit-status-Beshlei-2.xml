@@ -77,26 +77,6 @@
                                  referencedTableName="habits"/>
     </changeSet>
 
-    <changeSet id="23.09.20.Lehkyi-5_Beshlei-17" author="Mykola Lehkyi">
-        <dropForeignKeyConstraint baseTableName="habits_habit_statuses"
-                                  constraintName="fk_habit_statuses_id" />
-        <addForeignKeyConstraint baseTableName="habits_habit_statuses"
-                                 baseColumnNames="habit_statuses_id"
-                                 constraintName="fk_habits_habit_statuses_habit_status"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="habit_status"/>
-
-        <dropForeignKeyConstraint baseTableName="habits_habit_statuses"
-                                  constraintName="fk_habit_id" />
-        <addForeignKeyConstraint baseTableName="habits_habit_statuses"
-                                 baseColumnNames="habit_id"
-                                 constraintName="fk_habits_habit_statuses_habits"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="habits"/>
-    </changeSet>
-
     <changeSet id="Beshlei-18" author="Taras Beshlei">
         <addColumn tableName="habit_status">
             <column name="last_enrollment" type="timestamp with time zone"/>
