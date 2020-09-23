@@ -35,6 +35,18 @@
                                  referencedTableName="habits"
                                  referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-7_Beshlei-7" author="Mykola Lehkyi">
+        <dropForeignKeyConstraint baseTableName="habit_status"
+                                  constraintName="fk_habit_id" />
+        <addForeignKeyConstraint baseTableName="habit_status"
+                                 baseColumnNames="habit_id"
+                                 constraintName="fk_habit_status_habits"
+                                 onDelete="CASCADE"
+                                 referencedTableName="habits"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
     <changeSet id="Beshlei-14" author="Taras Beshlei">
         <createTable tableName="habits_habit_statuses">
             <column name="habit_id" type="BIGINT">
@@ -51,11 +63,6 @@
     </changeSet>
 
     <changeSet id="Beshlei-17" author="Taras Beshlei">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <foreignKeyConstraintExists foreignKeyName="fk_habit_id" />
-            </not>
-        </preConditions>
         <addForeignKeyConstraint baseTableName="habits_habit_statuses"
                                  baseColumnNames="habit_statuses_id"
                                  constraintName="fk_habit_statuses_id"
@@ -69,6 +76,27 @@
                                  referencedColumnNames="id"
                                  referencedTableName="habits"/>
     </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-5_Beshlei-17" author="Mykola Lehkyi">
+        <dropForeignKeyConstraint baseTableName="habits_habit_statuses"
+                                  constraintName="fk_habit_statuses_id" />
+        <addForeignKeyConstraint baseTableName="habits_habit_statuses"
+                                 baseColumnNames="habit_statuses_id"
+                                 constraintName="fk_habits_habit_statuses_habit_status"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habit_status"/>
+
+        <dropForeignKeyConstraint baseTableName="habits_habit_statuses"
+                                  constraintName="fk_habit_id" />
+        <addForeignKeyConstraint baseTableName="habits_habit_statuses"
+                                 baseColumnNames="habit_id"
+                                 constraintName="fk_habits_habit_statuses_habits"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+
     <changeSet id="Beshlei-18" author="Taras Beshlei">
         <addColumn tableName="habit_status">
             <column name="last_enrollment" type="timestamp with time zone"/>

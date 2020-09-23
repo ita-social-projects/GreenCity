@@ -21,14 +21,23 @@
     </changeSet>
 
     <changeSet author="Vitaliy Dzen" id="4651326844-7">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <foreignKeyConstraintExists foreignKeyName="FK_habit_advices" />
-            </not>
-        </preConditions>
         <addForeignKeyConstraint baseColumnNames="habit_dictionary_id"
                                  baseTableName="habit_facts"
                                  constraintName="FK_habit_advices"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habit_dictionary"/>
+    </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-9_4651326844-7" author="Mykola Lehkyi">
+        <dropForeignKeyConstraint baseTableName="habit_facts"
+                                  constraintName="FK_habit_advices" />
+        <addForeignKeyConstraint baseColumnNames="habit_dictionary_id"
+                                 baseTableName="habit_facts"
+                                 constraintName="FK_habit_facts_habit_dictionary"
                                  deferrable="false"
                                  initiallyDeferred="false"
                                  onDelete="RESTRICT"

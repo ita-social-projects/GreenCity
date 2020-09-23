@@ -52,8 +52,34 @@
                                  onDelete="CASCADE"
                                  referencedTableName="eco_news"
                                  referencedColumnNames="id"/>
+    </changeSet>
 
+    <changeSet id="23.09.20.Lehkyi-1" author="Mykola Lehkyi">
+        <dropForeignKeyConstraint baseTableName="econews_comment"
+                                  constraintName="fk_comment_parent" />
+        <addForeignKeyConstraint baseTableName="econews_comment"
+                                 baseColumnNames="parent_comment_id"
+                                 constraintName="fk_econews_comment_parent"
+                                 onDelete="CASCADE"
+                                 referencedTableName="econews_comment"
+                                 referencedColumnNames="id"/>
 
+        <dropForeignKeyConstraint baseTableName="econews_comment"
+                                  constraintName="fk_comment_user" />
+        <addForeignKeyConstraint baseTableName="econews_comment"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_econews_comment_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <dropForeignKeyConstraint baseTableName="econews_comment"
+                                  constraintName="fk_comment_econews" />
+        <addForeignKeyConstraint baseTableName="econews_comment"
+                                 baseColumnNames="eco_news_id"
+                                 constraintName="fk_econews_comment_econews"
+                                 onDelete="CASCADE"
+                                 referencedTableName="eco_news"
+                                 referencedColumnNames="id"/>
     </changeSet>
     
     <changeSet id="Patsula-9" author="Yurii Patsula">
@@ -78,6 +104,26 @@
         <addForeignKeyConstraint baseTableName="econews_comment_users_liked"
                                  baseColumnNames="users_liked_id"
                                  constraintName="fk_users_liked"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-3_Patsula-8" author="Mykola Lehkyi">
+        <dropForeignKeyConstraint baseTableName="econews_comment_users_liked"
+                                  constraintName="fk_econews_comment" />
+        <addForeignKeyConstraint baseTableName="econews_comment_users_liked"
+                                 baseColumnNames="econews_comment_id"
+                                 constraintName="fk_econews_comment_users_liked_econews_comment"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="econews_comment"/>
+
+        <dropForeignKeyConstraint baseTableName="econews_comment_users_liked"
+                                  constraintName="fk_users_liked" />
+        <addForeignKeyConstraint baseTableName="econews_comment_users_liked"
+                                 baseColumnNames="users_liked_id"
+                                 constraintName="fk_econews_comment_users_liked_users"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
