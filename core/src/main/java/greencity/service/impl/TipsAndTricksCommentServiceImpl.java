@@ -134,8 +134,7 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
         TipsAndTricksComment comment = tipsAndTricksCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
-        if (user.getRole() != ROLE.ROLE_ADMIN && user.getRole() != ROLE.ROLE_MODERATOR
-            && !user.getId().equals(comment.getUser().getId())) {
+        if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         if (comment.getComments() != null) {
