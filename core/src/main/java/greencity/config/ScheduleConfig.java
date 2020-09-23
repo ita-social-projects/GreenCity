@@ -139,6 +139,18 @@ public class ScheduleConfig {
     }
 
     /**
+     * Every day at 00:00 deletes from the database users
+     * that have status 'CREATED' and have not activated the account within 24 hours.
+     *
+     * @author Vasyl Zhovnir
+     **/
+    @Scheduled(cron = "0 0 0 * * ?")
+    @Transactional
+    public void scheduleDeleteCreatedUsers() {
+        userRepo.scheduleDeleteCreatedUsers();
+    }
+
+    /**  
      * Every day at 00:00 deletes from the table rating_statistics records
      * witch are older than period in application properties.
      *

@@ -195,4 +195,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')) "
         + "OR LOWER(u.userCredo) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<User> searchBy(Pageable paging, String query);
+
+    /**
+     * Delete from the database users that have status 'CREATED'
+     * and have not activated the account within 24 hours.
+     *
+     * @return number of deleted rows
+     * @author Vasyl Zhovnir
+     **/
+    @Modifying
+    @Query(nativeQuery = true, value = "DELETE FROM users u WHERE u.user_status = 3 "
+        + "AND u.date_of_registration + interval '1 day' <= CURRENT_TIMESTAMP")
+    int scheduleDeleteCreatedUsers();
 }
