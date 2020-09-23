@@ -6,10 +6,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
+import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
-
-import greencity.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -84,7 +83,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
             .and()
             .authorizeRequests()
-            .antMatchers("/management/**", "/css/**", "/img/**").hasRole(ADMIN)
+            .antMatchers(
+                "/management/**",
+                "/css/**",
+                "/img/**",
+                "/econews/comments",
+                "/econews/comments/replies/{parentCommentId}")
+            .hasRole(ADMIN)
             .antMatchers(
                 "/ownSecurity/**",
                 "/place/getListPlaceLocationByMapsBounds/**",
@@ -114,9 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/**",
                 "/tipsandtricks/tags/**",
                 "/search/**",
-                "/econews/comments",
                 "/econews/comments/count/comments",
-                "/econews/comments/replies/{parentCommentId}",
                 "/econews/comments/count/replies",
                 "/econews/comments/count/likes",
                 "/socket/**",
@@ -158,7 +161,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/goals/shoppingList/{userId}",
                 "/user/userAndSixFriendsWithOnlineStatus",
                 "/user/userAndAllFriendsWithOnlineStatus",
-                        "/habit"
+                "/habit"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(
                 "/place/propose/**",
@@ -189,10 +192,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit-dictionary/available",
                 "/user/{userId}/goals",
                 "/user/{userId}/userFriend/*",
-                        "/econews",
+                "/econews",
                 "/user/{userId}/customGoals",
-                        "/files/image",
-                        "/tipsandtricks",
+                "/files/image",
+                "/tipsandtricks",
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
                 "/tipsandtricks/comments/{tipsAndTricksId}",
