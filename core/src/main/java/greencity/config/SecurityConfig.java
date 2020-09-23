@@ -85,12 +85,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers(
                 "/management/**",
-                "/css/**",
-                "/img/**",
                 "/econews/comments",
                 "/econews/comments/replies/{parentCommentId}")
             .hasRole(ADMIN)
             .antMatchers(
+                "/css/**",
+                "/img/**",
                 "/ownSecurity/**",
                 "/place/getListPlaceLocationByMapsBounds/**",
                 "/googleSecurity/**",
