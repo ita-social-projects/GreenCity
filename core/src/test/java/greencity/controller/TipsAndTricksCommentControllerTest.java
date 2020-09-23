@@ -1,8 +1,8 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static greencity.ModelUtils.getUser;
 import greencity.config.SecurityConfig;
+import greencity.converters.UserArgumentResolver;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.entity.User;
 import greencity.service.TipsAndTricksCommentService;
@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -25,9 +23,13 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUser;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -43,17 +45,18 @@ class TipsAndTricksCommentControllerTest {
     @Mock
     private UserService userService;
 
+    private Principal principal = getPrincipal();
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(tipsAndTricksCommentController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService))
             .build();
     }
 
     @Test
     void saveTest() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("Liam.Johnson@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -72,7 +75,7 @@ class TipsAndTricksCommentControllerTest {
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest =
             mapper.readValue(content, AddTipsAndTricksCommentDtoRequest.class);
 
-        verify(userService).findByEmail(eq("Liam.Johnson@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).save(eq(1L), eq(addTipsAndTricksCommentDtoRequest), eq(user));
     }
 
@@ -86,8 +89,6 @@ class TipsAndTricksCommentControllerTest {
 
     @Test
     void findAllTest() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("Liam.Johnson@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -99,7 +100,7 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("Liam.Johnson@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).findAllComments(eq(pageable), eq(user), eq(1L));
     }
 
@@ -121,8 +122,6 @@ class TipsAndTricksCommentControllerTest {
 
     @Test
     void deleteTest() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("Liam.Johnson@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -130,14 +129,12 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("Liam.Johnson@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).deleteById(eq(1L), eq(user));
     }
 
     @Test
     void updateTest() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("Liam.Johnson@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -145,14 +142,12 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("Liam.Johnson@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).update(eq("text"), eq(1L), eq(user));
     }
 
     @Test
     void likeTest() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("Liam.Johnson@gmail.com");
         User user = getUser();
         when(userService.findByEmail(anyString())).thenReturn(user);
 
@@ -160,7 +155,7 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("Liam.Johnson@gmail.com"));
+        verify(userService).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).like(eq(1L), eq(user));
     }
 

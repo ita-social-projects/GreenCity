@@ -264,7 +264,7 @@ public class PlaceController {
     })
     @PostMapping("/filter/predicate")
     @ApiPageable
-    public ResponseEntity<PageableDto> filterPlaceBySearchPredicate(
+    public ResponseEntity<PageableDto<AdminPlaceDto>> filterPlaceBySearchPredicate(
         @Valid @RequestBody FilterPlaceDto filterDto,
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
