@@ -14,7 +14,7 @@ public final class AppConstant {
     public static final String VALIDATION_EMAIL = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final String VALIDATION_FOLDER = "(^eco_news$)";
-    public static final Float DEFAULT_RATING = 0.0f;
+    public static final Double DEFAULT_RATING = 0.0;
     public static final String DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH = "img/default_social_network_icon.png";
     public static final String DEFAULT_SOCIAL_NETWORK_IMAGE_HOME_PATH = "img/default_social_network_icon.png";
 
