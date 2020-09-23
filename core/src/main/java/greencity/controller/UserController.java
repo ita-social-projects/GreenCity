@@ -180,7 +180,7 @@ public class UserController {
     })
     @ApiPageable
     @PostMapping("filter")
-    public ResponseEntity<PageableDto> getUsersByFilter(
+    public ResponseEntity<PageableDto<UserForListDto>> getUsersByFilter(
         @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
