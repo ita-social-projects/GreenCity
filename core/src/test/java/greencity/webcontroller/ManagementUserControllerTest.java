@@ -2,7 +2,7 @@ package greencity.webcontroller;
 
 import com.google.gson.Gson;
 import greencity.ModelUtils;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.service.UserService;
@@ -53,7 +53,7 @@ class ManagementUserControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementUserController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .build();
     }
 
     @Test
@@ -62,13 +62,15 @@ class ManagementUserControllerTest {
         int size = 10;
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         List<UserManagementDto> userManagementDtos = Collections.singletonList(new UserManagementDto());
-        PageableDto<UserManagementDto> userManagementDtoPageableDto = new PageableDto<>(userManagementDtos, 1, 0, 1);
+        PageableAdvancedDto<UserManagementDto> userManagementDtoPageableDto =
+            new PageableAdvancedDto<>(userManagementDtos, 1, 0, 1, 1,
+                true, true, true, true);
         when(userService.findUserForManagementByPage(paging)).thenReturn(userManagementDtoPageableDto);
         this.mockMvc.perform(get(managementUserControllerLink)
-                .param("page", "0")
-                .param("size", "10"))
-                .andExpect(view().name("core/management_user"))
-                .andExpect(status().isOk());
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(view().name("core/management_user"))
+            .andExpect(status().isOk());
 
         verify(userService).findUserForManagementByPage(paging);
 
@@ -80,9 +82,9 @@ class ManagementUserControllerTest {
         Gson gson = new Gson();
         String json = gson.toJson(userManagementDto);
         this.mockMvc.perform(put(managementUserControllerLink)
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(userService, never()).updateUser(userManagementDto);
     }
@@ -94,7 +96,7 @@ class ManagementUserControllerTest {
         when(modelMapper.map(user, UserManagementDto.class)).thenReturn(new UserManagementDto());
 
         this.mockMvc.perform(get(managementUserControllerLink + "/findById?id=1"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(userService).findById(1L);
     }
@@ -102,7 +104,7 @@ class ManagementUserControllerTest {
     @Test
     void deactivateUser() throws Exception {
         this.mockMvc.perform(post(managementUserControllerLink + "/deactivate?id=1"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(userService, times(1)).deactivateUser(1L);
     }
@@ -110,7 +112,7 @@ class ManagementUserControllerTest {
     @Test
     void setActivatedStatus() throws Exception {
         this.mockMvc.perform(post(managementUserControllerLink + "/activate?id=1"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(userService, times(1)).setActivatedStatus(1L);
     }
@@ -122,10 +124,10 @@ class ManagementUserControllerTest {
         String json = gson.toJson(longList);
 
         this.mockMvc.perform(post(managementUserControllerLink + "/deactivateAll")
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(userService, times(1)).deactivateAllUsers(longList);
 
