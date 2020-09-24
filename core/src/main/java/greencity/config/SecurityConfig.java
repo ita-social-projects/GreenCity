@@ -87,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/management/**",
                 "/econews/comments",
                 "/econews/comments/replies/{parentCommentId}")
-            .hasRole(ADMIN)
+            .permitAll()
             .antMatchers(
                 "/css/**",
                 "/img/**",
