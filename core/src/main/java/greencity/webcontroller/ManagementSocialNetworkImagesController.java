@@ -18,7 +18,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/management/socialnetworkimages")
 public class ManagmentSocialNetworkImagesController {
     private final SocialNetworkImageService socialNetworkImageService;
-
     /**
      * Method that returns management page with all {@link greencity.entity.SocialNetworkImage}.
      *
@@ -32,7 +31,8 @@ public class ManagmentSocialNetworkImagesController {
     public String getAllSocialNetworkImages(@RequestParam(required = false, name = "query") String query, Model model,
                                @ApiIgnore Pageable pageable) {
         PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages =
-                query == null || query.isEmpty() ? socialNetworkImageService.findAll(pageable) : socialNetworkImageService.searchBy(pageable, query);
+                query == null || query.isEmpty() ? socialNetworkImageService.findAll(pageable)
+                        : socialNetworkImageService.searchBy(pageable, query);
         model.addAttribute("pageable", socialNetworkImages);
         return "core/management_social_network_images";
     }
