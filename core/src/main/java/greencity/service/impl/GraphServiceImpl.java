@@ -1,9 +1,7 @@
 package greencity.service.impl;
 
-import greencity.entity.User;
 import greencity.repository.UserRepo;
 import greencity.service.GraphService;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,12 +21,11 @@ public class GraphServiceImpl implements GraphService {
      */
     @Override
     public Map<String, Integer> getGeneralStatisticsForAllUsersByCities() {
-        List<User> users = userRepo.findAll();
+        List<String> userCities = userRepo.findAllUsersCities();
         Map<String, Integer> map = new HashMap<>();
         map.put(OTHER_CITY, 0);
 
-        for (User tempUser : users) {
-            String city = tempUser.getCity();
+        for (String city : userCities) {
             if (city == null) {
                 city = OTHER_CITY;
             }
@@ -78,17 +75,9 @@ public class GraphServiceImpl implements GraphService {
      */
     @Override
     public Map<Integer, Integer> getRegistrationStatistics() {
-        List<User> users = userRepo.findAll();
+        List<Integer> months = userRepo.findAllRegistrationDates();
         Map<Integer, Integer> map = initializeMapWithMonths(new LinkedHashMap<>());
-        int currentYear = LocalDate.now().getYear();
-
-        for (User tempUser : users) {
-            if (tempUser.getDateOfRegistration().getYear() == currentYear) {
-                int month = tempUser.getDateOfRegistration().getMonth().ordinal();
-                map.put(month, map.get(month) + 1);
-            }
-        }
-
+        months.forEach(month -> map.put(month - 1, map.get(month - 1) + 1));
         return map;
     }
 

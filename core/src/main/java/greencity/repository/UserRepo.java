@@ -207,4 +207,21 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true, value = "DELETE FROM users u WHERE u.user_status = 3 "
         + "AND u.date_of_registration + interval '1 day' <= CURRENT_TIMESTAMP")
     int scheduleDeleteCreatedUsers();
+
+    /**
+     * Find and return all cities for all users.
+     *
+     * @return {@link List} of {@link String} of cities
+     **/
+    @Query("SELECT city FROM User")
+    List<String> findAllUsersCities();
+
+    /**
+     * Find and return all registration dates.
+     *
+     * @return {@link List} of months
+     **/
+    @Query("SELECT month(u.dateOfRegistration) FROM User u WHERE "
+        + "year(u.dateOfRegistration) = year(CURRENT_TIMESTAMP)")
+    List<Integer> findAllRegistrationDates();
 }
