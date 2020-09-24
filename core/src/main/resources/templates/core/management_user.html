@@ -109,7 +109,7 @@
                         entries
                     </div>
                     <ul class="pagination">
-                        <ul class="pagination">
+
                             <li class="page-item"
                                 th:classappend="${!users.isFirst()} ? '' : 'disabled'">
                                 <a class="page-link" rel="tooltip" th:if="${!users.isFirst()}" th:href="@{/management/users?page={id}(id=${0})}">&#060;&#060;</a>
@@ -131,7 +131,6 @@
                                 <a class="page-link" th:if="${users.isHasNext()}" th:href="@{/management/users?page={id}(id=${users.getNumber()+1})}">Next</a>
                                 <a th:if="${!users.isHasNext()}">Next</a>
                             </li>
-                        </ul>
                         <li class="page-item"
                             th:classappend="${!users.isLast()} ? '' : 'disabled'">
                             <a class="page-link" rel="tooltip" th:if="${!users.isLast()}" th:href="@{/management/users?page={id}(id=${users.getTotalPages()-1})}">&#062;&#062;</a>
