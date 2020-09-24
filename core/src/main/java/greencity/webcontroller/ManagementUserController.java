@@ -1,6 +1,6 @@
 package greencity.webcontroller;
 
-import greencity.dto.PageableDto;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserManagementDto;
@@ -43,7 +43,7 @@ public class ManagementUserController {
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
                               Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
-        PageableDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
+        PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
             ? userService.findUserForManagementByPage(paging) : userService.searchBy(paging, query);
         model.addAttribute("users", pageableDto);
         return "core/management_user";

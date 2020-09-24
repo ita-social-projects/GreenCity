@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -107,17 +108,22 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
+    public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
         Page<User> users = userRepo.findAll(pageable);
         List<UserManagementDto> userManagementDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserManagementDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<>(
+        return new PageableAdvancedDto<>(
             userManagementDtos,
             users.getTotalElements(),
             users.getPageable().getPageNumber(),
-            users.getTotalPages());
+            users.getTotalPages(),
+            users.getNumber(),
+            users.hasPrevious(),
+            users.hasNext(),
+            users.isFirst(),
+            users.isLast());
     }
 
     /**
@@ -978,16 +984,20 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserManagementDto> searchBy(Pageable paging, String query) {
+    public PageableAdvancedDto<UserManagementDto> searchBy(Pageable paging, String query) {
         Page<User> page = userRepo.searchBy(paging, query);
         List<UserManagementDto> users = page.stream()
             .map(user -> modelMapper.map(user, UserManagementDto.class))
             .collect(Collectors.toList());
-        return new PageableDto<>(
+        return new PageableAdvancedDto<>(
             users,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages()
-        );
+            page.getTotalPages(),
+            page.getNumber(),
+            page.hasPrevious(),
+            page.hasNext(),
+            page.isFirst(),
+            page.isLast());
     }
 }
