@@ -5,6 +5,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
+    <property name="deferrable" value="true" dbms="postgresql"/>
+    <property name="deferrable" value="false" dbms="h2"/>
+
     <!-- Update constraints for 'verify_emails' table -->
     <changeSet author="Yurii Koval"
                id="Yurii-2">
@@ -23,7 +26,7 @@
         <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="verify_emails"
                                  constraintName="user_should_verify_email"
-                                 deferrable="true"
+                                 deferrable="${deferrable}"
                                  onDelete="CASCADE"
                                  onUpdate="RESTRICT"
                                  referencedColumnNames="id"
@@ -66,7 +69,7 @@
         <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="own_security"
                                  constraintName="password_exists_with_user"
-                                 deferrable="true"
+                                 deferrable="${deferrable}"
                                  onDelete="CASCADE"
                                  onUpdate="RESTRICT"
                                  referencedColumnNames="id"

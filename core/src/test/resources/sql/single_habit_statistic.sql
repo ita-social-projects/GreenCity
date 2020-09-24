@@ -22,4 +22,4 @@ INSERT INTO habits (id, habit_dictionary_id, status, create_date)
 VALUES (1, 1, true, current_date);
 
 INSERT INTO habit_statistics (id, rate, date, amount_of_items, habit_id)
-VALUES (1, 'quux', current_date, 42, 1);
+VALUES (1, 'DEFAULT', current_date, 42, 1);

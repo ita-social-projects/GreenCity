@@ -40,6 +40,27 @@
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
     </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-5_Beshlei-13" author="Mykola Lehkyi">
+        <dropForeignKeyConstraint baseTableName="habits_users_assign"
+                                  constraintName="fk_habit_id" />
+        <addForeignKeyConstraint baseTableName="habits_users_assign"
+                                 baseColumnNames="habit_id"
+                                 constraintName="fk_habits_users_assign_habits"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+
+        <dropForeignKeyConstraint baseTableName="habits_users_assign"
+                                  constraintName="fk_users_id" />
+        <addForeignKeyConstraint baseTableName="habits_users_assign"
+                                 baseColumnNames="users_id"
+                                 constraintName="fk_habits_users_assign_users"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
     <changeSet id="Beshlei-14" author="Taras Beshlei">
         <dropColumn tableName="habits" columnName="habit_status_id"/>
     </changeSet>

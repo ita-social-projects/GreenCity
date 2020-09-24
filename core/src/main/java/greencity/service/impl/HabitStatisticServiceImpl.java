@@ -3,12 +3,7 @@ package greencity.service.impl;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
-import greencity.dto.habitstatistic.HabitDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habitstatistic.*;
 import greencity.dto.user.HabitDictionaryDto;
 import greencity.dto.user.HabitLogItemDto;
 import greencity.entity.Habit;
@@ -27,7 +22,6 @@ import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -289,7 +283,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Cacheable(value = CacheConstants.HABIT_ITEM_STATISTIC_CACHE, key = "#language")
     @Override
     public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language) {
-        return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), language).stream()
+        return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), language).stream()
             .map(it ->
                 HabitItemsAmountStatisticDto.builder()
                     .habitItem((String) it.get(0))

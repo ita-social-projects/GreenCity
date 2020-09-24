@@ -6,10 +6,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
+import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
-
-import greencity.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -85,10 +84,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/management/**",
-                        "/css/**",
-                        "/img/**",
                         "/econews/comments",
                         "/econews/comments/replies/{parentCommentId}").hasRole(ADMIN)
+                .antMatchers("/css/**",
+                        "/img/**"
+                ).permitAll()
                 .antMatchers(HttpMethod.GET,
                         "/ownSecurity/verifyEmail",
                         "/ownSecurity/updateAccessToken",

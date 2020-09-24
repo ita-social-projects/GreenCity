@@ -35,6 +35,18 @@
                                  referencedTableName="habits"
                                  referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-7_Beshlei-7" author="Mykola Lehkyi">
+        <dropForeignKeyConstraint baseTableName="habit_status"
+                                  constraintName="fk_habit_id" />
+        <addForeignKeyConstraint baseTableName="habit_status"
+                                 baseColumnNames="habit_id"
+                                 constraintName="fk_habit_status_habits"
+                                 onDelete="CASCADE"
+                                 referencedTableName="habits"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
     <changeSet id="Beshlei-14" author="Taras Beshlei">
         <createTable tableName="habits_habit_statuses">
             <column name="habit_id" type="BIGINT">
@@ -64,6 +76,7 @@
                                  referencedColumnNames="id"
                                  referencedTableName="habits"/>
     </changeSet>
+
     <changeSet id="Beshlei-18" author="Taras Beshlei">
         <addColumn tableName="habit_status">
             <column name="last_enrollment" type="timestamp with time zone"/>
