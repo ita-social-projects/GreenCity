@@ -99,8 +99,15 @@
                     </th:block>
                 </table>
                 <!-- Start of Paging -->
-                <div class="clearfix">
-                    <div class="hint-text">Showing <b th:text="${users.getCurrentPage() eq 0 ? users.getPage().size() : (users.isHasNext() ? users.getPage().size() * (users.getCurrentPage() + 1) : users.getTotalElements())}">*</b> out of <b th:text="${users.getTotalElements()}"></b> entries</div>
+                <div class="clearfix" th:if="${users.getPage().size() ne 0}">
+                    <div class="hint-text">
+                        Showing
+                        <b th:text="${users.getCurrentPage() eq 0 ? '1 -' : (users.isHasNext() ? users.getPage().size() * users.getCurrentPage() : users.getTotalElements() - users.getPage().size()) + 1 + ' - '}"></b>
+                        <b th:text="${users.getCurrentPage() eq 0 ? users.getPage().size() : (users.isHasNext() ? users.getPage().size() * (users.getCurrentPage() + 1) : users.getTotalElements())}">*</b>
+                        out of
+                        <b th:text="${users.getTotalElements()}"></b>
+                        entries
+                    </div>
                     <ul class="pagination">
                         <ul class="pagination">
                             <li class="page-item"
