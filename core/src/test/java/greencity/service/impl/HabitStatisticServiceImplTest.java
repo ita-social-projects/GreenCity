@@ -6,7 +6,6 @@ import greencity.dto.user.HabitLogItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionary;
 import greencity.entity.HabitStatistic;
-import greencity.entity.HabitStatus;
 import greencity.entity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -14,16 +13,15 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitService;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
-
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -50,7 +48,7 @@ class HabitStatisticServiceImplTest {
 
     private Habit habit = new Habit(1L, new HabitDictionary(), null, true,
         zonedDateTime, Collections.emptyList(), null);
-    
+
     private HabitStatistic habitStatistic = new HabitStatistic(
         1L, HabitRate.GOOD, ZonedDateTime.now(), 10, null);
 
@@ -107,7 +105,8 @@ class HabitStatisticServiceImplTest {
     void saveExceptionBadRequestMinusDayTest() {
         when(habitStatisticRepo.findHabitStatByDate(addhs.getCreatedOn(),
             addhs.getHabitId())).thenReturn(Optional.empty());
-        when(dateService.convertToDatasourceTimezone(addhs.getCreatedOn())).thenReturn(ZonedDateTime.now().minusDays(2));
+        when(dateService.convertToDatasourceTimezone(addhs.getCreatedOn()))
+            .thenReturn(ZonedDateTime.now().minusDays(2));
         when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(new HabitStatistic());
         when(modelMapper.map(new HabitStatistic(), AddHabitStatisticDto.class)).thenReturn(addhs);
         when(habitStatisticRepo.save(new HabitStatistic())).thenReturn(new HabitStatistic());
@@ -175,7 +174,7 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void getTodayStatisticsForAllHabitItemsTest() {
-        when(habitStatisticRepo.getStatisticsForAllHabitItemsByDate(new Date(), "en"))
+        when(habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), "en"))
             .thenReturn(new ArrayList<>());
         assertEquals(new ArrayList<HabitItemsAmountStatisticDto>(),
             habitStatisticService.getTodayStatisticsForAllHabitItems("en"));
@@ -197,7 +196,7 @@ class HabitStatisticServiceImplTest {
     }
 
     @Test
-     void getInfoAboutUserHabitsExceptionTest() {
+    void getInfoAboutUserHabitsExceptionTest() {
         when(habitRepo.findAllByUserId(anyLong())).thenReturn(Optional.of(Collections.emptyList()));
         assertThrows(NotFoundException.class, () ->
             habitStatisticService.getInfoAboutUserHabits(1L)

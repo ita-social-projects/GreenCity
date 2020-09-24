@@ -29,10 +29,10 @@ public class RatingStatistics {
     private RatingCalculationEnum ratingCalculationEnum;
 
     @Column(name = "points_changed")
-    private float pointsChanged;
+    private double pointsChanged;
 
     @Column(name = "current_rating")
-    private float rating;
+    private double rating;
 
     @ManyToOne
     private User user;
