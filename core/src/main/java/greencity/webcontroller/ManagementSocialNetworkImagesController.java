@@ -2,7 +2,7 @@ package greencity.webcontroller;
 
 import greencity.dto.PageableDto;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
-import greencity.dto.socialnetwork.SocialNetworkResponseDTO;
+import greencity.entity.SocialNetworkImage;
 import greencity.service.SocialNetworkImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -16,20 +16,21 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/socialnetworkimages")
-public class ManagmentSocialNetworkImagesController {
+public class ManagementSocialNetworkImagesController {
     private final SocialNetworkImageService socialNetworkImageService;
     /**
-     * Method that returns management page with all {@link greencity.entity.SocialNetworkImage}.
+     * Method that returns management page with all {@link SocialNetworkImage}.
      *
-     * @param query    Query for searching related data
-     * @param model    Model that will be configured and returned to user.
+     * @param query Query for searching related data
+     * @param model Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      * @author Orest Mamchuk
      */
+
     @GetMapping
     public String getAllSocialNetworkImages(@RequestParam(required = false, name = "query") String query, Model model,
-                               @ApiIgnore Pageable pageable) {
+                                            @ApiIgnore Pageable pageable) {
         PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages =
                 query == null || query.isEmpty() ? socialNetworkImageService.findAll(pageable)
                         : socialNetworkImageService.searchBy(pageable, query);

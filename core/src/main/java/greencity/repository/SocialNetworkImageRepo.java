@@ -40,7 +40,4 @@ public interface SocialNetworkImageRepo extends JpaRepository<SocialNetworkImage
             + "OR LOWER(s.imagePath) LIKE LOWER(CONCAT('%', :query, '%'))"
             + "OR LOWER(s.hostPath) LIKE LOWER(CONCAT('%', :query, '%')) ")
     Page<SocialNetworkImage> searchBy(Pageable paging, String query);
-
-
-
 }
