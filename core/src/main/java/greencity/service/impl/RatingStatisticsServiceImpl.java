@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
+import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.entity.RatingStatistics;
 import greencity.repository.RatingStatisticsRepo;
 import greencity.service.RatingStatisticsService;
@@ -27,13 +28,26 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     @Override
-    public PageableAdvancedDto<RatingStatisticsDto> getRatingStatisticsForManagementByPage(Pageable pageable) {
+    public PageableAdvancedDto<RatingStatisticsDtoForTables> getRatingStatisticsForManagementByPage(Pageable pageable) {
         Page<RatingStatistics> ratingStatistics = ratingStatisticsRepo.findAll(pageable);
         List<RatingStatisticsDto> ratingStatisticsDtos = ratingStatistics.get()
             .map(ratingStat -> modelMapper.map(ratingStat, RatingStatisticsDto.class))
             .collect(Collectors.toList());
+
+        List<RatingStatisticsDtoForTables> ratingStatisticsDtoForTablesDtos = ratingStatisticsDtos.stream()
+            .map(x -> RatingStatisticsDtoForTables.builder()
+                .id(x.getId())
+                .createDate(x.getCreateDate())
+                .eventName(x.getRatingCalculationEnum().toString())
+                .pointsChanged(x.getPointsChanged())
+                .rating(x.getRating())
+                .userId(x.getUser().getId())
+                .userEmail(x.getUser().getEmail())
+                .build())
+            .collect(Collectors.toList());
+
         return new PageableAdvancedDto<>(
-            ratingStatisticsDtos,
+            ratingStatisticsDtoForTablesDtos,
             ratingStatistics.getTotalElements(),
             ratingStatistics.getPageable().getPageNumber(),
             ratingStatistics.getTotalPages(),

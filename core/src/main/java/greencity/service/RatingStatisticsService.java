@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
+import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.entity.RatingStatistics;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,7 @@ public interface RatingStatisticsService {
      * @return a dto of {@link PageableAdvancedDto}.
      * @author Dovganyuk Taras
      */
-    PageableAdvancedDto<RatingStatisticsDto> getRatingStatisticsForManagementByPage(Pageable pageable);
+    PageableAdvancedDto<RatingStatisticsDtoForTables> getRatingStatisticsForManagementByPage(Pageable pageable);
 
     /**
      * Find {@link RatingStatistics} for management.

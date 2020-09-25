@@ -58,9 +58,9 @@
                     <th:block th:each="rating, iterStatus :${ratings.getPage()}">
                         <tr>
                             <td th:text="${rating.id}"></td>
-                            <td th:text="${rating.ratingCalculationEnum.name()}"></td>
-                            <td th:text="${rating.user.id}"></td>
-                            <td th:text="${rating.user.email}"></td>
+                            <td th:text="${rating.eventName}"></td>
+                            <td th:text="${rating.userId}"></td>
+                            <td th:text="${rating.userEmail}"></td>
                             <td th:text="${rating.createDate}"></td>
                             <td th:text="${rating.pointsChanged}"></td>
                             <td th:text="${rating.rating}"></td>
