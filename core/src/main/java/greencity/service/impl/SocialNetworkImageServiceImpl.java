@@ -3,6 +3,12 @@ package greencity.service.impl;
 import greencity.constant.AppConstant;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
+import greencity.dto.PageableDto;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
+import greencity.dto.socialnetwork.SocialNetworkResponseDTO;
+import greencity.entity.Place;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
 import greencity.service.FileService;
@@ -12,9 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -24,7 +33,9 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static greencity.constant.CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME;
 
@@ -35,6 +46,7 @@ import static greencity.constant.CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME;
 public class SocialNetworkImageServiceImpl implements SocialNetworkImageService {
     private  final SocialNetworkImageRepo socialNetworkImageRepo;
     private  final FileService fileService;
+    private final ModelMapper modelMapper;
 
     /**
      * Method creates or returns existed {@link SocialNetworkImage} by given url.
@@ -57,6 +69,44 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
+    @Override
+    public PageableDto<SocialNetworkImageResponseDTO> findAll(Pageable pageable) {
+        log.info(LogMessage.IN_FIND_ALL);
+
+        Page<SocialNetworkImage> pages = socialNetworkImageRepo.findAll(pageable);
+        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = pages.stream()
+                .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(socialNetworkImageResponseDTOS,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber(),
+                pages.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
+    @Override
+    public PageableDto<SocialNetworkImageResponseDTO> searchBy(Pageable paging, String query) {
+        Page<SocialNetworkImage> page = socialNetworkImageRepo.searchBy(paging, query);
+        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = page.stream()
+                .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(
+                socialNetworkImageResponseDTOS,
+                page.getTotalElements(),
+                page.getPageable().getPageNumber(),
+                page.getTotalPages()
+        );
     }
 
     /**
