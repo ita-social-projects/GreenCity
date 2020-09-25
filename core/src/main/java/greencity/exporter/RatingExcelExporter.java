@@ -4,6 +4,7 @@ import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Dovganyuk Taras
  */
+@Slf4j
 @Component
 public class RatingExcelExporter {
     /**
@@ -98,7 +100,7 @@ public class RatingExcelExporter {
 
             workbook.write(outputStream);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            log.error("Export to excel file error {}", ex.getMessage());
         }
     }
 }
