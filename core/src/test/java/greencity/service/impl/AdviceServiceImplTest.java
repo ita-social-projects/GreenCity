@@ -17,17 +17,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AdviceServiceImplTest {
@@ -114,10 +115,15 @@ class AdviceServiceImplTest {
 
     @Test
     void update() {
-        when(habitDictionaryRepo.findById(anyLong())).thenReturn(Optional.of(habitDictionary));
+        List<AdviceTranslation> adviceTranslationList = Collections.singletonList(adviceTranslation);
+        advice.setTranslations(adviceTranslationList);
+
         when(adviceRepo.findById(anyLong())).thenReturn(Optional.of(advice));
-        when(adviceRepo.save(advice)).thenReturn(advice);
-        when(adviceService.update(advicePostDTO, 1L)).thenReturn(advice);
+        when(habitDictionaryRepo.findById(anyLong())).thenReturn(Optional.of(habitDictionary));
+        when(modelMapper.map(advicePostDTO.getTranslations(), new TypeToken<List<AdviceTranslation>>() {
+        }.getType())).thenReturn(adviceTranslationList);
+        when(adviceTranslationRepo.saveAll(adviceTranslationList)).thenReturn(adviceTranslationList);
+
         assertEquals(advice, adviceService.update(advicePostDTO, 1L));
     }
 
@@ -137,6 +143,6 @@ class AdviceServiceImplTest {
     @Test
     void deleteFailed() {
         doThrow(new EmptyResultDataAccessException(1)).when(adviceRepo).deleteById(1L);
-        Assertions.assertThrows(NotDeletedException.class,() -> adviceService.delete(1L));
+        Assertions.assertThrows(NotDeletedException.class, () -> adviceService.delete(1L));
     }
 }
