@@ -305,6 +305,7 @@ class PlaceServiceImplTest {
         List<Place> expectedList = Arrays.asList(new Place(), new Place());
 
         when(placeRepo.findAll()).thenReturn(expectedList);
+        assertEquals(expectedList, placeService.findAll());
     }
 
     @Test
