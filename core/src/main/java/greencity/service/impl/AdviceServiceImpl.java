@@ -5,6 +5,7 @@ import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -113,18 +114,29 @@ public class AdviceServiceImpl implements AdviceService {
     /**
      * Method updates {@link Advice}.
      *
-     * @param advice {@link AdviceDTO} Object
+     * @param advicePostDTO {@link AdviceDTO} Object
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
     @Override
-    public Advice update(AdvicePostDTO advice, Long id) {
-        return adviceRepo.findById(id)
-            .map(employee -> {
-                employee.setHabitDictionary(habitDictionaryRepo.findById(advice.getHabitDictionary().getId()).get());
-                return adviceRepo.save(employee);
-            })
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
+    public Advice update(AdvicePostDTO advicePostDTO, Long id) {
+        Advice advice = adviceRepo.findById(id).orElseThrow(
+            () -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
+        adviceTranslationRepo.deleteAll(advice.getTranslations());
+        Advice saveAdvice = Advice.builder()
+            .id(id)
+            .habitDictionary(habitDictionaryRepo.findById(advicePostDTO.getHabitDictionary().getId())
+                .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED)))
+            .translations(modelMapper.map(advicePostDTO.getTranslations(),
+                new TypeToken<List<AdviceTranslation>>() {
+                }.getType()))
+            .build();
+        saveAdvice.getTranslations()
+            .forEach(adviceTranslation -> adviceTranslation.setAdvice(saveAdvice));
+
+        adviceRepo.save(saveAdvice);
+        adviceTranslationRepo.saveAll(saveAdvice.getTranslations());
+        return saveAdvice;
     }
 
     /**
