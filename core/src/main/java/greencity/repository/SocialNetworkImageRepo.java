@@ -20,16 +20,6 @@ public interface SocialNetworkImageRepo extends JpaRepository<SocialNetworkImage
     Optional<SocialNetworkImage> findByHostPath(String hostPath);
 
     /**
-     * Find {@link SocialNetworkImage} by page.
-     *
-     * @param pageable pageable configuration.
-     * @return {@link Page}
-     * @author Orest Mamchuk
-     */
-    Page<SocialNetworkImage> findAll(Pageable pageable);
-
-
-    /**
      *  Method returns {@link SocialNetworkImage} by search query and page.
      *
      * @param paging {@link Pageable}.
