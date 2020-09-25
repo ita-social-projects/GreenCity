@@ -1,4 +1,5 @@
 # GreenCity    [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ita-social-projects/GreenCity/blob/master/LICENSE) [![GitHub release](https://img.shields.io/static/v1?label=Pre-release&message=v.3.0.0&color=yellowgreen)](https://github.com/ita-social-projects/GreenCity/releases/)
+[![Build Status](https://travis-ci.org/ita-social-projects/GreenCity.png?branch=dev)](https://travis-ci.org/ita-social-projects/GreenCity)
 
 
 
