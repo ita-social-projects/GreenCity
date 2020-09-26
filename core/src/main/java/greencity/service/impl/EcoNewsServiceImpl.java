@@ -209,6 +209,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ecoNewsRepo.deleteById(findById(id).getId());
     }
 
+    @Override
+    public void deleteAll(List<Long> listId) {
+        listId.forEach(ecoNewsRepo::deleteById);
+    }
+
     /**
      * Method for getting EcoNews by searchQuery.
      *

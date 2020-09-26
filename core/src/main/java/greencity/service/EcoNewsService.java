@@ -76,6 +76,8 @@ public interface EcoNewsService {
      */
     void delete(Long id);
 
+    void deleteAll(List<Long> listId);
+
     /**
      * Method for getting EcoNews by searchQuery.
      *
