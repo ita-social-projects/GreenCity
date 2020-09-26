@@ -2,10 +2,7 @@ package greencity.service.impl;
 
 import greencity.repository.UserRepo;
 import greencity.service.GraphService;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -75,9 +72,9 @@ public class GraphServiceImpl implements GraphService {
      */
     @Override
     public Map<Integer, Integer> getRegistrationStatistics() {
-        List<Integer> months = userRepo.findAllRegistrationDates();
-        Map<Integer, Integer> map = initializeMapWithMonths(new LinkedHashMap<>());
-        months.forEach(month -> map.put(month - 1, map.get(month - 1) + 1));
+        List<Integer> months = userRepo.findAllRegistrationMonths();
+        Map<Integer, Integer> map = initializeMapWithMonths(new TreeMap<>());
+        months.forEach(month -> map.put(month, map.get(month) + 1));
         return map;
     }
 

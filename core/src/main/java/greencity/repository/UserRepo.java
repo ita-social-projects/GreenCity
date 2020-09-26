@@ -4,9 +4,8 @@ import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -217,11 +216,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<String> findAllUsersCities();
 
     /**
-     * Find and return all registration dates.
+     * Find and return all registration months.
      *
      * @return {@link List} of months
      **/
-    @Query("SELECT month(u.dateOfRegistration) FROM User u WHERE "
+    @Query("SELECT month(u.dateOfRegistration) - 1 FROM User u WHERE "
         + "year(u.dateOfRegistration) = year(CURRENT_TIMESTAMP)")
-    List<Integer> findAllRegistrationDates();
+    List<Integer> findAllRegistrationMonths();
 }
