@@ -27,7 +27,7 @@ public class ManagementPlacesController {
      * @return View template path {@link String}.
      * @author Olena Petryshak
      */
-    @GetMapping
+    @GetMapping("")
     public String getAllPlaces(@RequestParam(required = false, name = "query") String query, Model model,
                                @ApiIgnore Pageable pageable) {
         PageableDto<AdminPlaceDto> allPlaces =
