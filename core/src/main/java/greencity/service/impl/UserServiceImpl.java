@@ -274,13 +274,14 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User update(UserUpdateDto dto, String email) {
+    public UserUpdateDto update(UserUpdateDto dto, String email) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setName(dto.getName());
         user.setEmailNotification(dto.getEmailNotification());
-        return userRepo.save(user);
+        userRepo.save(user);
+        return dto;
     }
 
     /**
