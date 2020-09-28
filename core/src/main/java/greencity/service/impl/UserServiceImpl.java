@@ -1,7 +1,6 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -22,12 +21,6 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -38,6 +31,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -272,13 +274,14 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User update(UserUpdateDto dto, String email) {
+    public UserUpdateDto update(UserUpdateDto dto, String email) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setName(dto.getName());
         user.setEmailNotification(dto.getEmailNotification());
-        return userRepo.save(user);
+        userRepo.save(user);
+        return dto;
     }
 
     /**

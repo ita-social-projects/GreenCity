@@ -171,7 +171,7 @@ public interface UserService {
      * @return {@link User}.
      * @author Nazar Stasyuk
      */
-    User update(UserUpdateDto dto, String email);
+    UserUpdateDto update(UserUpdateDto dto, String email);
 
     /**
      * Updates refresh token for a given user.
