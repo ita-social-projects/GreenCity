@@ -16,6 +16,12 @@
     <description>Project named Green City by SoftServe ITA team Lv-427.Java</description>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>core</module>
+        <module>email</module>
+        <module>dao</module>
+    </modules>
+
     <properties>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
@@ -76,10 +82,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <modules>
-        <module>core</module>
-        <module>email</module>
-    </modules>
-
 </project>
