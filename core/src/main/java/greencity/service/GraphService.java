@@ -9,15 +9,13 @@ public interface GraphService {
      * Get statistic for all users by city.
      *
      * @return {@link List} of {@link User}.
-     * @author Vasyl Zhovnir.
      */
     Map<String, Integer> getGeneralStatisticsForAllUsersByCities();
 
     /**
      * Get general registration statistics.
      *
-     * @return {@link List} of {@link User}.
-     * @author Vasyl Zhovnir.
+     * @return {@link Map} with data for statistics.
      */
     Map<Integer, Integer> getRegistrationStatistics();
 }
