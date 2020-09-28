@@ -352,9 +352,7 @@ class UserServiceImplTest {
         UserUpdateDto userUpdateDto = new UserUpdateDto();
         userUpdateDto.setName(user.getName());
         userUpdateDto.setEmailNotification(user.getEmailNotification());
-        User user = userService.update(userUpdateDto, "");
-        assertEquals(userUpdateDto.getName(), user.getName());
-        assertEquals(userUpdateDto.getEmailNotification(), user.getEmailNotification());
+        assertEquals(userUpdateDto, userService.update(userUpdateDto, ""));
         verify(userRepo, times(1)).save(any());
     }
 

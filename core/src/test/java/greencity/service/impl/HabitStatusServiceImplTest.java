@@ -25,8 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -175,7 +174,7 @@ class HabitStatusServiceImplTest {
         when(habitStatusCalendarService
                 .findHabitStatusCalendarByEnrollDateAndHabitStatus(date, habitStatus)).thenReturn(habitStatusCalendar);
         habitStatusService.unenrollHabit(date,habitId,userId);
-
+        verify(habitStatusCalendarService, times(1)).delete(habitStatusCalendar);
     }
 
     @Test
@@ -231,6 +230,7 @@ class HabitStatusServiceImplTest {
         when(habitStatusRepo.save(habitStatus)).thenReturn(habitStatus);
 
         habitStatusService.enrollHabitInDate(habitId,userId, yesterday);
+        verify(habitStatusRepo, times(1)).save(habitStatus);
 
     }
 
@@ -262,7 +262,7 @@ class HabitStatusServiceImplTest {
         when(habitStatusRepo.save(habitStatus)).thenReturn(habitStatus);
 
         habitStatusService.enrollHabitInDate(habitId,userId, yesterday2);
-
+        verify(habitStatusRepo, times(1)).save(habitStatus);
     }
 
     @Test
@@ -296,8 +296,6 @@ class HabitStatusServiceImplTest {
         assertThrows(BadRequestException.class, () ->
                 habitStatusService.enrollHabitInDate(habitId, userId, date)
         );
-
-
     }
 
 }
