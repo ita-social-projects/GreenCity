@@ -95,12 +95,6 @@ public class ManagementPlacesController {
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
-    @ApiOperation(value = "Get all Places by given IDs")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-
     /**
      * Method for deleting {@link Place} by given list of ids.
      *
