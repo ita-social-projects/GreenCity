@@ -1,8 +1,8 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import static greencity.constant.ErrorMessage.*;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -21,12 +21,6 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
 import greencity.service.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -37,6 +31,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -107,17 +110,22 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
+    public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
         Page<User> users = userRepo.findAll(pageable);
         List<UserManagementDto> userManagementDtos =
             users.getContent().stream()
                 .map(user -> modelMapper.map(user, UserManagementDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<>(
+        return new PageableAdvancedDto<>(
             userManagementDtos,
             users.getTotalElements(),
             users.getPageable().getPageNumber(),
-            users.getTotalPages());
+            users.getTotalPages(),
+            users.getNumber(),
+            users.hasPrevious(),
+            users.hasNext(),
+            users.isFirst(),
+            users.isLast());
     }
 
     /**
@@ -266,13 +274,14 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User update(UserUpdateDto dto, String email) {
+    public UserUpdateDto update(UserUpdateDto dto, String email) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setName(dto.getName());
         user.setEmailNotification(dto.getEmailNotification());
-        return userRepo.save(user);
+        userRepo.save(user);
+        return dto;
     }
 
     /**
@@ -978,16 +987,20 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserManagementDto> searchBy(Pageable paging, String query) {
+    public PageableAdvancedDto<UserManagementDto> searchBy(Pageable paging, String query) {
         Page<User> page = userRepo.searchBy(paging, query);
         List<UserManagementDto> users = page.stream()
             .map(user -> modelMapper.map(user, UserManagementDto.class))
             .collect(Collectors.toList());
-        return new PageableDto<>(
+        return new PageableAdvancedDto<>(
             users,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages()
-        );
+            page.getTotalPages(),
+            page.getNumber(),
+            page.hasPrevious(),
+            page.hasNext(),
+            page.isFirst(),
+            page.isLast());
     }
 }

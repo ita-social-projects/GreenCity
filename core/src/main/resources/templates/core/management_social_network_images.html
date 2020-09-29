@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Social network images management</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
+    <script th:src="@{/management/socialnetworkimages/buttonsAJAX.js}"></script>
+</head>
+<body>
+<div id="header" th:insert="core/header"></div>
+<div class="main-content">
+    <div class="container-xl">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h2>Manage <strong>Social network images</strong></h2>
+                        </div>
+                        <div class="col-sm-6">
+                                <span class="search-box-right">
+                                    <form class="form-inline searching" action="/management/socialnetworkimages" method="get">
+                                        <i class="material-icons"></i>
+                                        <input type="text" name="query" class="form-control" placeholder="Search…">
+                                    </form>
+                                </span>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr class="table-primary">
+                        <th>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll">
+                                    <label for="selectAll"></label>
+                                </span>
+                        </th>
+                        <th>Id</th>
+                        <th>Image path</th>
+                        <th>Host path</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <th:block th:each="socialnetworkimage, iterStatus :${pageable.getPage()}">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1" name="options[]" th:value="${socialnetworkimage.id}">
+                                    <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                </span>
+                            </td>
+                            <td th:text="${socialnetworkimage.id}"></td>
+                            <td th:text="${socialnetworkimage.hostPath}"> <a> th:href="${socialnetworkimage.hostPath}"</a></td>
+                            <td>    <img th:src="${socialnetworkimage.imagePath}"></td>
+                        </tr>
+                        </tbody>
+                    </th:block>
+                </table>
+                <div class="clearfix">
+                    <div class="hint-text">Showing <b
+                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b
+                            th:text="${pageable.getTotalElements()}">25</b> entries
+                    </div>
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
+                                th:href="@{/management/socialnetworkimages(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
+                            th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
+                                th:href="@{/management/socialnetworkimages(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                        <li class="page-item"
+                            th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
+                                th:href="@{/management/socialnetworkimages(page=${pageable.getCurrentPage()+1})}"
+                                class="page-link">Next</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer" th:insert="core/footer"></div>
+</body>
+</html>

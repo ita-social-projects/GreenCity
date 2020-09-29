@@ -39,11 +39,26 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
     /**
+     * Method intercept exception {@link NotUpdatedException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contains detail about occur exception.
+     * @return ResponseEntity which contain http status and body with message of exception.
+     * @author Yurii Savchenko
+     */
+    @ExceptionHandler(NotUpdatedException.class)
+    public final ResponseEntity<Object> handlerNotUpdatedException(NotUpdatedException ex, WebRequest request) {
+        log.info(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
      * Method intercept exception {@link UserHasNoAvailableHabitDictionaryException}.
      *
      * @param ex      Exception witch should be intercepted.
-     * @param request contain  detail about occur exception
-     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @param request contain detail about occur exception.
+     * @return ResponseEntity which contains http status and body with message of exception.
      * @author Yurii Savchenko
      */
     @ExceptionHandler(UserHasNoAvailableHabitDictionaryException.class)

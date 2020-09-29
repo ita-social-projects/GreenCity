@@ -218,11 +218,10 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping
-    public ResponseEntity updateUser(@Valid @RequestBody UserUpdateDto dto,
+    public ResponseEntity<UserUpdateDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
                                      @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
-        userService.update(dto, email);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
     }
 
 

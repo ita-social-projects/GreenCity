@@ -109,7 +109,7 @@ public class User {
     private List<User> userFriends = new ArrayList<>();
 
     @Column(name = "rating")
-    private Float rating;
+    private Double rating;
 
     @Column(name = "first_name")
     private String firstName;

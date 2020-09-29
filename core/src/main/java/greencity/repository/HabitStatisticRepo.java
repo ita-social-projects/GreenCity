@@ -4,7 +4,6 @@ import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.Tuple;
@@ -86,7 +85,9 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     @Query("SELECT habitDictTranslation.habitItem, SUM(habitStatistic.amountOfItems) "
         + "FROM HabitStatistic habitStatistic "
         + "        INNER JOIN Habit habit ON habitStatistic.habit.id = habit.id AND habit.statusHabit = TRUE "
-        + "                AND FUNCTION('DATE', habitStatistic.createdOn) = :statisticCreationDate "
+        + "                AND year(habitStatistic.createdOn) = year(:statisticCreationDate) "
+        + "                AND month(habitStatistic.createdOn) = month(:statisticCreationDate) "
+        + "                AND day(habitStatistic.createdOn) = day(:statisticCreationDate) "
         + "        INNER JOIN HabitDictionaryTranslation habitDictTranslation "
         + "                ON habitDictTranslation.habitDictionary.id = habit.habitDictionary.id "
         + "        INNER JOIN Language language ON habitDictTranslation.language.id = language.id "
@@ -94,7 +95,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
         + "GROUP BY habitDictTranslation.habitItem "
         + "ORDER BY COUNT(habit) DESC ")
     List<Tuple> getStatisticsForAllHabitItemsByDate(
-        @Param("statisticCreationDate") Date statisticCreationDate,
+        @Param("statisticCreationDate") ZonedDateTime statisticCreationDate,
         @Param("languageCode") String languageCode
     );
 

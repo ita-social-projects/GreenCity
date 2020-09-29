@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -107,10 +108,10 @@ public interface UserService {
      * Find {@link User} for management by page .
      *
      * @param pageable a value with pageable configuration.
-     * @return a dto of {@link PageableDto}.
+     * @return a dto of {@link PageableAdvancedDto}.
      * @author Vasyl Zhovnir
      */
-    PageableDto<UserManagementDto> findUserForManagementByPage(Pageable pageable);
+    PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable);
 
     /**
      * Method that allows you to update {@link User} by dto.
@@ -170,7 +171,7 @@ public interface UserService {
      * @return {@link User}.
      * @author Nazar Stasyuk
      */
-    User update(UserUpdateDto dto, String email);
+    UserUpdateDto update(UserUpdateDto dto, String email);
 
     /**
      * Updates refresh token for a given user.
@@ -427,7 +428,7 @@ public interface UserService {
      *
      * @param paging {@link Pageable}.
      * @param query  query to search,
-     * @return PageableDto of {@link UserManagementDto} instances.
+     * @return {@link PageableAdvancedDto} of {@link UserManagementDto} instances.
      */
-    PageableDto<UserManagementDto> searchBy(Pageable paging, String query);
+    PageableAdvancedDto<UserManagementDto> searchBy(Pageable paging, String query);
 }

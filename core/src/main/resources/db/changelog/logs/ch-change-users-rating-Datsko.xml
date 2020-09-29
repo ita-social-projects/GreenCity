@@ -10,4 +10,8 @@
             <column name="rating" type="real"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-8_datsko-2" author="Mykola Lehkyi">
+        <modifyDataType tableName="users" columnName="rating" newDataType="double"/>
+    </changeSet>
 </databaseChangeLog>

@@ -2,13 +2,13 @@ package greencity.validator;
 
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.InvalidURLException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
