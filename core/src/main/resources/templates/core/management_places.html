@@ -17,11 +17,16 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
           rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/places/buttonsAJAX.js}"></script>
+    <style>
+        .displayNone {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
@@ -41,6 +46,10 @@
                                         <input type="text" name="query" class="form-control" placeholder="Search…">
                                     </form>
                                 </span>
+                            <a href="#addPlaceModal" id="addPlaceModalBtn" class="btn btn-success"
+                               data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add Place</span></a>
+                            <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
+                                    class="material-icons">&#xE15C;</i> <span>Delete</span></a>
                         </div>
                     </div>
                 </div>
@@ -65,7 +74,9 @@
                         <tr>
                             <td>
                                     <span class="custom-checkbox">
-                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}"
+                                               th:disabled="${place.getStatus().toString().equals('DELETED')}"
+                                               id="checkbox1"
                                                name="options[]" th:value="${place.getId()}">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
@@ -100,6 +111,12 @@
                                     </tbody>
                                 </table>
                             </td>
+                            <td>
+                                <a th:href="@{/place/find/(id=${place.getId()})}" class="edit eBtn"><i
+                                        class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                <a th:href="@{/management/places(id=${place.getId()})}" class="delete eDelBtn"
+                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                            </td>
                         </tr>
                         </tbody>
                     </th:block>
@@ -125,7 +142,184 @@
             </div>
         </div>
     </div>
+    <!-- Add Modal HTML -->
+    <div id="addPlaceModal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form th:action="@{places}" method="post" id="addPlaceForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Place</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div name="map" id="map"></div>
+                    <div class="modal-body">
+                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="hidden" name="latitude" value="2.5" id="latitude"/>
+                            <input type="hidden" name="longitude" value="2.5" id="longitude"/>
+                            <input type="text" class="form-control" id='address' name="address">
+                            <span th:id="errorModalSavelocation.address" class="errorSpan"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Place name</label>
+                            <input type="text" class="form-control" name="name">
+                            <span th:id="errorModalSavename" class="errorSpan"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <input type="text" class="form-control" name="status" value="APPROVED" readonly required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select class="form-control" name="category">
+                                <option selected="selected"></option>
+                                <th:block th:each="category : ${categoryList}">
+                                    <tr>
+                                        <option>
+                                            <td th:text="${category.getName()}"></td>
+                                        </option>
+                                    </tr>
+                                </th:block>
+                            </select>
+                            <span th:id="errorModalSavecategory.name" class="errorSpan"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Opening Hours</label>
+                            <div th:each="day: ${#strings.arraySplit('MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY',',')}">
+                                <div class="form-row">
+                                    <div class="form-group col-md-3 week-day">
+                                        <input class="form-check-input" type="checkbox" name="day">
+                                        <label class="form-check-label">
+                                            <span th:text="${day}"></span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group col-md-4 work-hours">
+                                        <div class="form-row">
+                                            <div class="form-group col-6">
+                                                <label for="startTime">start time</label>
+                                                <input type="time" class="form-control-sm" id="startTime">
+                                            </div>
+                                            <div class="form-group col-6">
+                                                <label for="endTime">end time</label>
+                                                <input type="time" class="form-control-sm" id="endTime">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-5 break-time">
+                                        <button class="btn btn-success btn-sm add-break" id="brh">Add break hours
+                                        </button>
+                                        <div class="form-row break-hours displayNone">
+                                            <div class="form-group">
+                                                <div class="form-row">
+                                                    <div class="form-group col-5">
+                                                        <label for="startBreak">start break</label>
+                                                        <input type="time" class="form-control-sm" id="startBreak">
+                                                    </div>
+                                                    <div class="form-group col-5">
+                                                        <label for="endBreak">end break</label>
+                                                        <input type="time" class="form-control-sm" id="endBreak">
+                                                    </div>
+                                                    <div class="=col-2">
+                                                        <i class="material-icons removeBreak" data-toggle="tooltip"
+                                                           title="Delete break hours">&#xE872;</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span th:id="errorModalSaveopeningHoursList" class="errorSpan"></span>
+                        </div>
+                        <div class="form-group">
+                            <div id="discounts"></div>
+                            <button class="btn btn-info" id="addDiscount">Add Discount</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Photo</label>
+                            <input type="file" class="form-control" name="photo" id="creationFile">
+                            <span th:id="errorModalSavefile" class="errorSpan"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success" value="Add" id="submitAddBtn">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal HTML -->
+    <div id="deletePlaceModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="deletePlaceForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete Place</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete that Record?</p>
+                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <a href="" id="deleteOneSubmit" class="btn btn-danger">Delete</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Delete all selected Modal HTML -->
+    <div id="deleteAllSelectedModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete all selected</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete these Records?</p>
+                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <a href="" id="deleteAllSubmit" class="btn btn-danger">Delete</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
+
+<style>
+    #map {
+        height: 350px;
+        width: 100%;
+    }
+</style>
+
+<script defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3xs7Kczo46LFcQRFKPMdrE0lU4qsR_S4&callback=initMap">
+</script>
+<script th:inline="javascript">
+    $(document).on('click', '.removeBreak', function (event) {
+        event.preventDefault();
+        $('.removeBreak').closest('.break-time').find('.add-break').show()
+        $(this).closest('.break-hours').hide();
+    });
+
+    $(document).on('click', '.add-break', function (event) {
+        event.preventDefault();
+        $(this).next().show();
+        $(this).hide();
+    });
+    let discountSpecifications = /*[[${discountSpecifications}]]*/ [];
+</script>
 </body>
 </html>
