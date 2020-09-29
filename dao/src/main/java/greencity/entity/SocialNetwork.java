@@ -1,8 +1,8 @@
 package greencity.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 @Entity
 @NoArgsConstructor
@@ -16,7 +16,7 @@ public class SocialNetwork {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Length(min = 1, max = 500)
+    @Size(min = 1, max = 500)
     @Column(name = "social_network_url", length = 500)
     String url;
 
