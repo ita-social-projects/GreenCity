@@ -4,13 +4,15 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface EcoNewsService {
     /**
@@ -76,6 +78,11 @@ public interface EcoNewsService {
      */
     void delete(Long id);
 
+    /**
+     * Method deletes all {@link EcoNews} by list of ids.
+     *
+     * @param listId list of id {@link EcoNews}
+     */
     void deleteAll(List<Long> listId);
 
     /**
@@ -122,4 +129,20 @@ public interface EcoNewsService {
      * @author Dovganyuk Taras
      */
     void unlikeComment(User user, EcoNewsComment comment);
+
+    /**
+     * Method returns {@link EcoNewsDto} by search query and page.
+     *
+     * @param paging {@link Pageable}.
+     * @param query query to search.
+     * @return list of {@link EcoNewsDto}.
+     */
+    PageableDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query);
+
+    /**
+     * Method for updating {@link EcoNews} instance.
+     *
+     * @param ecoNewsDtoManagement - instance of {@link EcoNewsDtoManagement}.
+     */
+    void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile multipartFile);
 }

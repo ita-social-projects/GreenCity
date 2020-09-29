@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title>Tips&Tricks management</title>
+    <title>Eco news management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
@@ -38,12 +38,12 @@
                         </div>
                             <div class="col-sm-6">
                                 <span class="search-box-right">
-                                    <form class="form-inline searching" action="/management/users" method="get">
+                                    <form class="form-inline searching" action="/management/eco-news" method="get">
                                         <i class="material-icons"></i>
                                         <input type="text" name="query" class="form-control" placeholder="Search…">
                                     </form>
                                 </span>
-                                <a href="#addTipsAndTricksModal" id="addTipsAndTricksModalBtn" class="btn btn-success"
+                                <a href="#addEcoNewsModal" id="addEcoNewsModalBtn" class="btn btn-success"
                                    data-toggle="modal"><i class="material-icons">&#xE147;</i>
                                     <span>Add New Eco News</span></a>
                                 <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
@@ -134,13 +134,13 @@
             </div>
         </div>
     </div>
-
-    <div id="addTipsAndTricksModal" class="modal fade">
+    <!-- Add Modal HTML -->
+    <div id="addEcoNewsModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form th:action="@{management/tipsandtricks/save}" method="post" id="addTipsAndTricksForm">
+                <form th:action="@{management/econews}" method="post" id="addEcoNewsForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Add Tips&Tricks</h4>
+                        <h4 class="modal-title">Add EcoNews</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -159,10 +159,6 @@
                             <label>Tags</label>
                             <input type="text" class="form-control" name="tags" required>
                             <span th:id="errorModalSavetags" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Image</label>
-                            <input type="text" class="form-control" name="image">
                         </div>
                         <div class="form-group">
                             <label>Source</label>
@@ -184,12 +180,12 @@
         </div>
     </div>
     <!-- Edit Modal HTML -->
-    <div id="editTipsAndTricksModal" class="modal fade">
+    <div id="editEcoNewsModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="editTipsAndTricksForm">
+                <form id="editEcoNewsForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Edit Tips&Tricks</h4>
+                        <h4 class="modal-title">Edit </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -202,11 +198,6 @@
                             <label for="title">Title</label>
                             <input type="text" class="form-control" id="title" name="title" required>
                             <span th:id="errorModalUpdatetitle" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="text">Author</label>
-                            <input type="text" class="form-control" id="author" name="text" required>
-                            <span th:id="errorModalUpdatetext" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
                             <label for="text">Text</label>
@@ -240,13 +231,14 @@
             </div>
         </div>
     </div>
+
     <!-- Delete Modal HTML -->
     <div id="deleteEcoNewsModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="deleteTipsAndTricksForm">
+                <form id="deleteEcoNewsForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete Tips&Tricks</h4>
+                        <h4 class="modal-title">Delete Eco News</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
