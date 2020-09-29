@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.GreenCityApplication;
 import greencity.entity.HabitStatistic;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = GreenCityApplication.class)
 @AutoConfigureTestDatabase(replace = Replace.ANY)
 class HabitStatisticRepoTest {
     @Autowired
