@@ -7,6 +7,7 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.entity.FactOfTheDay;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
@@ -94,7 +95,7 @@ public class ManagementFactOfTheDayController {
             return genericResponseDto;
         }
         factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return GenericResponseDto.builder().build();
+        return new GenericResponseDto();
     }
 
     /**
@@ -113,15 +114,10 @@ public class ManagementFactOfTheDayController {
     public GenericResponseDto updateFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
                                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+            buildGenericResponseDto(bindingResult);
         }
         factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return GenericResponseDto.builder().build();
+        return new GenericResponseDto();
     }
 
     /**

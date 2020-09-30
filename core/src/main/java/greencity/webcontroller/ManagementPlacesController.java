@@ -2,8 +2,8 @@ package greencity.webcontroller;
 
 import greencity.annotations.CurrentUser;
 import greencity.dto.PageableDto;
-import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.specification.SpecificationNameDto;
@@ -22,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -68,15 +67,10 @@ public class ManagementPlacesController {
     public GenericResponseDto savePlace(@Valid @RequestBody PlaceAddDto placeAddDto, BindingResult bindingResult,
                                         @ApiIgnore @CurrentUser User user) {
         if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+            buildGenericResponseDto(bindingResult);
         }
         placeService.save(placeAddDto, user.getEmail());
-        return GenericResponseDto.builder().build();
+        return new GenericResponseDto();
     }
 
     /**

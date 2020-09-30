@@ -1,8 +1,8 @@
 package greencity.webcontroller;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.security.service.OwnSecurityService;
@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -60,15 +59,10 @@ public class ManagementUserController {
     @ResponseBody
     public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+            buildGenericResponseDto(bindingResult);
         }
         ownSecurityService.managementRegisterUser(userDto);
-        return GenericResponseDto.builder().build();
+        return new GenericResponseDto();
     }
 
     /**
@@ -82,15 +76,10 @@ public class ManagementUserController {
     @ResponseBody
     public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+            buildGenericResponseDto(bindingResult);
         }
         userService.updateUser(userDto);
-        return GenericResponseDto.builder().build();
+        return new GenericResponseDto();
     }
 
     /**
