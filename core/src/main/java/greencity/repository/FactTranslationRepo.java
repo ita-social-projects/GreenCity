@@ -35,7 +35,7 @@ public interface FactTranslationRepo extends JpaRepository<FactTranslation, Long
      * @return {@link FactTranslation} in Optional
      * @author Vitaliy Dzen
      */
-    Optional<FactTranslation> findFactTranslationByLanguage_CodeAndHabitFact(String languageCode, String habitFact);
+    Optional<FactTranslation> findFactTranslationByLanguageCodeAndHabitFact(String languageCode, String habitFact);
 
     /**
      * Method finds random fact in 3 languages between all facts that were not used during this iteration.
