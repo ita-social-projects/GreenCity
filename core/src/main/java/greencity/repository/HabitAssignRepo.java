@@ -11,19 +11,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long> {
-    @Query("SELECT u.habitAssigns FROM User u WHERE u.id = ?1")
     Optional<List<HabitAssign>> findAllByUserId(Long userId);
 
-    @Query(nativeQuery = true, value = "SELECT ha FROM habit_assign ha "
-        + "WHERE ha.users_id = ?1 AND ha.acquired = ?2")
-    Optional<List<HabitAssign>> findByUserIdAndAcquiredStatus(Long userId, boolean acquired);
+    Optional<List<HabitAssign>> findByUserIdAndAcquired(Long userId, boolean acquired);
 
-    @Modifying
-    @Query("UPDATE HabitAssign SET acquired = ?2 WHERE id = ?1")
-    void updateHabitAssignAcquiredStatusById(Long id, boolean acquired);
+    Optional<HabitAssign> findByHabitIdAndUserId(Long habitId, Long userId);
 
-    @Query(nativeQuery = true, value = "SELECT count(ha) FROM habit_assign ha "
-        + "WHERE ha.users_id = ?1 AND ha.acquired = true")
     int countHabitAssignsByUserId(Long userId);
 
     @Query(nativeQuery = true, value = "SELECT count(h) "
@@ -35,12 +28,9 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long> {
         + "AND hs.create_date > ?2 OR hs.create_date < ?3")
     int countMarkedHabitAssignsByUserIdAndPeriod(Long userId, ZonedDateTime start, ZonedDateTime end);
 
-    @Modifying
-    @Query(nativeQuery = true, value = "DELETE FROM habit_assign ha"
-        + "WHERE ha.user_id = ?2 AND ha.habit_id = ?1")
     void deleteByHabitIdAndUserId(Long habitId, Long userId);
 
-    @Query(nativeQuery = true, value = "SELECT ha FROM habit_assign ha "
-        + "WHERE ha.habit_id = ?1 AND ha.user_id = ?2")
-    Optional<HabitAssign> findByHabitIdAndUserId(Long habitId, Long userId);
+    @Modifying
+    @Query(nativeQuery = true, value = "UPDATE habit_assign SET acquired = ?2 WHERE id = ?1")
+    void updateAcquiredById(Long id, boolean acquired);
 }

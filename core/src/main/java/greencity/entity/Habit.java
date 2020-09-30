@@ -1,16 +1,8 @@
 package greencity.entity;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
@@ -20,37 +12,24 @@ import lombok.ToString;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"users", "habitTranslations", "habitStatistics"})
+    exclude = {"habitAssigns", "habitTranslations", "habitStatistics"})
 @ToString(
-    exclude = {"users", "habitTranslations", "habitStatistics"})
+    exclude = {"habitAssigns", "habitTranslations", "habitStatistics"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
 
+    @Column(name = "image", nullable = false)
+    private String image;
+
     @OneToMany(mappedBy = "habit", fetch = FetchType.LAZY)
     private List<HabitTranslation> habitTranslations;
 
-    @ManyToMany
-    @JoinTable(
-        name = "habits_users_assign",
-        joinColumns = @JoinColumn(name = "habit_id"),
-        inverseJoinColumns = @JoinColumn(name = "users_id"))
-    private List<User> users;
-
-    @Column(name = "status", nullable = false)
-    private Boolean statusHabit;
-
-    @Column(name = "create_date", nullable = false)
-    private ZonedDateTime createDate;
+    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
+    private List<HabitAssign> habitAssigns;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
     private List<HabitStatistic> habitStatistics;
-
-    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
-    private List<HabitStatus> habitStatuses;
-
-    @Column(nullable = false)
-    private String image;
 }
