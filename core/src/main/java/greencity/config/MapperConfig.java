@@ -12,10 +12,8 @@ import org.springframework.context.annotation.Configuration;
 @AllArgsConstructor
 public class MapperConfig {
     private UserGoalResponseDtoMapper userGoalResponseDtoMapper;
-    private HabitMapper habitMapper;
     private GoalDtoMapper goalDtoMapper;
     private EcoNewsDtoMapper ecoNewsDtoMapper;
-    private HabitCreateDtoMapper habitCreateDtoMapper;
     private HabitStatisticMapper habitStatisticMapper;
     private AddHabitStatisticDtoMapper addHabitStatisticDtoMapper;
     private AddEcoNewsDtoRequestMapper addEcoNewsDtoRequestMapper;
@@ -41,6 +39,8 @@ public class MapperConfig {
     private AddTipsAndTricksCommentDtoRequestMapper addTipsAndTricksCommentDtoRequestMapper;
     private AddTipsAndTricksCommentDtoResponseMapper addTipsAndTricksCommentDtoResponseMapper;
     private HabitStatusDtoMapper habitStatusDtoMapper;
+    private HabitAssignDtoMapper habitAssignDtoMapper;
+    private HabitDtoMapper habitDtoMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -79,9 +79,8 @@ public class MapperConfig {
         modelMapper.addConverter(addHabitStatisticDtoMapper);
         modelMapper.addConverter(ecoNewsAuthorDtoMapper);
         modelMapper.addConverter(discountValueMapper);
-        modelMapper.addConverter(habitCreateDtoMapper);
         modelMapper.addConverter(habitStatisticMapper);
-        modelMapper.addConverter(habitMapper);
+        modelMapper.addConverter(habitDtoMapper);
         modelMapper.addConverter(favoritePlaceWithLocationMapper);
         modelMapper.addConverter(adviceTranslateMapper);
         modelMapper.addConverter(favoritePlaceDtoMapper);
@@ -99,5 +98,6 @@ public class MapperConfig {
         modelMapper.addConverter(addTipsAndTricksCommentDtoRequestMapper);
         modelMapper.addConverter(addTipsAndTricksCommentDtoResponseMapper);
         modelMapper.addConverter(habitStatusDtoMapper);
+        modelMapper.addConverter(habitAssignDtoMapper);
     }
 }

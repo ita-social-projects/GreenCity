@@ -1,4 +1,4 @@
-package greencity.dto.habitstatistic;
+package greencity.dto.habittranslation;
 
 import lombok.*;
 
@@ -7,10 +7,10 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class HabitDictionaryTranslationsDto {
+@Builder
+public class HabitTranslationDto {
+    private Long id;
     private String name;
-
-    private String description;
-
     private String habitItem;
+    private String description;
 }
