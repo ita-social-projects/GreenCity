@@ -55,6 +55,48 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <tr>
+                        <td>
+                            <form method="POST" action="/management/rating">
+                                <input type="search" th:name="id" placeholder="Search"/>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="/management/rating">
+                                <input type="search" th:name="event_name" placeholder="Search"/>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="/management/rating">
+                                <input type="search" th:name="user_id" placeholder="Search"/>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="/management/rating">
+                                <input type="search" th:name="user_email" placeholder="Search"/>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="/management/rating" name="dateRangeForm">
+                                <div class="input-group input-daterange">
+                                    <input type="search" name="start_date" class="form-control"/>
+                                    <div class="input-group-addon">to</div>
+                                    <input type="search" name="end_date" class="form-control"/>
+                                    <button type="submit" id="searchByDates"><i class="fa fa-search"></i></button>
+                                </div>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="${contextPath}/rooms">
+                                <input type="search" placeholder="Search"/>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="${contextPath}/rooms">
+                                <input type="search" placeholder="Search"/>
+                            </form>
+                        </td>
+                    </tr>
                     <th:block th:each="rating, iterStatus :${ratings.getPage()}">
                         <tr>
                             <td th:text="${rating.id}"></td>
@@ -116,5 +158,22 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
+
+<!-- Include Date Range Picker -->
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+<script>
+    $('.input-daterange input').each(function () {
+        $(this).datepicker({
+            format: 'yyyy-mm-dd',
+            todayHighlight: true,
+            autoclose: true,
+            orientation: 'top'
+        });
+    });
+</script>
 </body>
 </html>

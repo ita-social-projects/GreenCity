@@ -6,13 +6,17 @@ import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.entity.RatingStatistics;
 import greencity.exporter.RatingExcelExporter;
+import greencity.filters.RatingStatisticsSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.service.RatingStatisticsService;
+import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +26,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
@@ -30,16 +36,19 @@ import springfox.documentation.annotations.ApiIgnore;
 public class ManagementRatingStatisticsController {
     private RatingStatisticsService ratingStatisticsService;
     private RatingExcelExporter ratingExcelExporter;
+    private UserService userService;
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private Predicate allPredicate;
 
     /**
      * Constructor.
      */
     @Autowired
     public ManagementRatingStatisticsController(RatingStatisticsService ratingStatisticsService,
-                                                RatingExcelExporter ratingExcelExporter) {
+                                                RatingExcelExporter ratingExcelExporter, UserService userService) {
         this.ratingStatisticsService = ratingStatisticsService;
         this.ratingExcelExporter = ratingExcelExporter;
+        this.userService = userService;
     }
 
     /**
@@ -79,5 +88,28 @@ public class ManagementRatingStatisticsController {
 
         List<RatingStatisticsDto> ratingStatisticsList = ratingStatisticsService.getAllRatingStatistics();
         ratingExcelExporter.export(response.getOutputStream(), ratingStatisticsList);
+    }
+
+    /**
+     * dfg.
+     */
+    @PostMapping("")
+    public String filterData(Model model,
+                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+                             @RequestParam(value = "id", required = false) String id,
+                             @RequestParam(value = "event_name", required = false) String eventName,
+                             @RequestParam(value = "user_id", required = false) String userId,
+                             @RequestParam(value = "user_email", required = false) String userEmail,
+                             @RequestParam(value = "start_date", required = false) String startDate,
+                             @RequestParam(value = "end_date", required = false) String endDate) {
+        SearchCriteria searchCriteria =
+            ratingStatisticsService.buildSearchCriteria(id, eventName, userId, userEmail, startDate, endDate);
+        RatingStatisticsSpecification spec = new RatingStatisticsSpecification(searchCriteria, userService);
+        Pageable paging =
+            PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+        PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
+            ratingStatisticsService.getFilteredDataForManagementByPage(paging, spec);
+        model.addAttribute("ratings", pageableDto);
+        return "core/management_user_rating";
     }
 }

@@ -418,7 +418,7 @@ public interface UserService {
      * Method that allow you to find {@link User} by ID and token.
      *
      * @param userId - {@link User}'s id
-     * @param token - {@link User}'s token
+     * @param token  - {@link User}'s token
      * @return {@link Optional} of {@link User}
      */
     Optional<User> findByIdAndToken(Long userId, String token);
@@ -431,4 +431,12 @@ public interface UserService {
      * @return {@link PageableAdvancedDto} of {@link UserManagementDto} instances.
      */
     PageableAdvancedDto<UserManagementDto> searchBy(Pageable paging, String query);
+
+
+    /**
+     * Method for getting all Users.
+     *
+     * @return {@link List} of {@link User} instances.
+     */
+    List<User> findAll();
 }
