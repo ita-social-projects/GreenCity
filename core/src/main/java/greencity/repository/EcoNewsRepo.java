@@ -1,13 +1,14 @@
 package greencity.repository;
 
 import greencity.entity.EcoNews;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
@@ -73,4 +74,26 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
         value = " SELECT COUNT(author_id) "
             + " FROM eco_news WHERE author_id = :userId")
     Long getAmountOfPublishedNewsByUserId(@Param("userId") Long id);
+
+    /**
+     *  Method returns {@link EcoNews} by search query and page.
+     *
+     * @param paging {@link Pageable}.
+     * @param query  query to search.
+     * @return list of {@link EcoNews}.
+     */
+    @Query(nativeQuery = true, value =
+        "Select e.id, e.title, e.author_id, e.text, u.name, e.creation_date, e.source, t.name, e.image_path "
+            + "FROM eco_news e "
+            + "JOIN users u on u.id = e.author_id "
+            + "JOIN eco_news_tags ent on e.id = ent.eco_news_id "
+            + "JOIN tags t on t.id = ent.tags_id "
+            + "WHERE concat(e.id,'') like :query or "
+            + "    lower(e.title) like lower(concat('%', :query, '%')) or "
+            + "    lower(e.text) like lower(concat('%', :query, '%')) or "
+            + "    lower(u.name) like lower(concat('%', :query, '%')) or "
+            + "    lower(concat(e.creation_date,'')) like lower(concat('%', :query, '%')) or "
+            + "    lower(e.source) like lower(concat('%', :query, '%')) or "
+            + "    lower(t.name) like lower(concat('%', :query, '%'))")
+    Page<EcoNews> searchEcoNewsBy(Pageable paging, String query);
 }
