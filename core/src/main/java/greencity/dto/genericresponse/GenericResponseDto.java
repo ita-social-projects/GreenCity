@@ -1,5 +1,6 @@
 package greencity.dto.genericresponse;
 
+import greencity.entity.Place;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,12 @@ import org.springframework.validation.FieldError;
 public class GenericResponseDto {
     List<FieldErrorDto> errors = new ArrayList<>();
 
+    /**
+     * Method which build GenericResponseDto and add fieldErrors.
+     *
+     * @param bindingResult {@link BindingResult}
+     * @return {@link GenericResponseDto}
+     */
     public static GenericResponseDto buildGenericResponseDto(BindingResult bindingResult) {
         GenericResponseDto genericResponseDto = new GenericResponseDto();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
@@ -22,5 +29,4 @@ public class GenericResponseDto {
         }
         return genericResponseDto;
     }
-
 }
