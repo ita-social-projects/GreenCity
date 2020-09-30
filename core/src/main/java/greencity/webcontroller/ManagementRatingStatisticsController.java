@@ -36,19 +36,19 @@ import springfox.documentation.annotations.ApiIgnore;
 public class ManagementRatingStatisticsController {
     private RatingStatisticsService ratingStatisticsService;
     private RatingExcelExporter ratingExcelExporter;
-    private UserService userService;
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private Predicate allPredicate;
+    private RatingStatisticsSpecification spec;
 
     /**
      * Constructor.
      */
     @Autowired
     public ManagementRatingStatisticsController(RatingStatisticsService ratingStatisticsService,
-                                                RatingExcelExporter ratingExcelExporter, UserService userService) {
+                                                RatingExcelExporter ratingExcelExporter,
+                                                RatingStatisticsSpecification spec) {
         this.ratingStatisticsService = ratingStatisticsService;
         this.ratingExcelExporter = ratingExcelExporter;
-        this.userService = userService;
+        this.spec = spec;
     }
 
     /**
@@ -67,6 +67,8 @@ public class ManagementRatingStatisticsController {
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
             ratingStatisticsService.getRatingStatisticsForManagementByPage(paging);
         model.addAttribute("ratings", pageableDto);
+        spec.setAllPredicates(null);
+        spec.setSearchCriteria(SearchCriteria.builder().type("").build());
         return "core/management_user_rating";
     }
 
@@ -91,6 +93,27 @@ public class ManagementRatingStatisticsController {
     }
 
     /**
+     * Export {@link RatingStatistics} to Excel file.
+     *
+     * @author Dovganyuk Taras
+     */
+    @GetMapping("/exportFiltered")
+    public void exportFilteredToExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+
+        String currentDate = dateFormat.format(new Date());
+        String fileName = "user_rating_statistics" + currentDate + ".xlsx";
+        String headerValue = "attachment; filename=" + fileName;
+
+        response.setHeader(headerKey, headerValue);
+
+        List<RatingStatisticsDto> ratingStatisticsList =
+            ratingStatisticsService.getFilteredRatingStatisticsForExcel(spec);
+        ratingExcelExporter.export(response.getOutputStream(), ratingStatisticsList);
+    }
+
+    /**
      * dfg.
      */
     @PostMapping("")
@@ -104,9 +127,9 @@ public class ManagementRatingStatisticsController {
                              @RequestParam(value = "end_date", required = false) String endDate) {
         SearchCriteria searchCriteria =
             ratingStatisticsService.buildSearchCriteria(id, eventName, userId, userEmail, startDate, endDate);
-        RatingStatisticsSpecification spec = new RatingStatisticsSpecification(searchCriteria, userService);
         Pageable paging =
             PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+        spec.setSearchCriteria(searchCriteria);
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
             ratingStatisticsService.getFilteredDataForManagementByPage(paging, spec);
         model.addAttribute("ratings", pageableDto);

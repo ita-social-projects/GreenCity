@@ -35,10 +35,18 @@ public interface RatingStatisticsService {
     /**
      * Find {@link RatingStatistics} for management.
      *
-     * @return a dto of {@link PageableDto}.
+     * @return a list of {@link RatingStatisticsDto}.
      * @author Dovganyuk Taras
      */
     List<RatingStatisticsDto> getAllRatingStatistics();
+
+    /**
+     * Find {@link RatingStatistics} for export to excel file.
+     *
+     * @return a list of {@link RatingStatisticsDto}.
+     * @author Dovganyuk Taras
+     */
+    List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(RatingStatisticsSpecification spec);
 
     /**
      * Find {@link RatingStatistics} for management.

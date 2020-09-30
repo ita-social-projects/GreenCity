@@ -17,34 +17,54 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
+@Setter
+@Component
 @Slf4j
 public class RatingStatisticsSpecification implements Specification<RatingStatistics> {
     private SearchCriteria searchCriteria;
     private UserService userService;
+    private Predicate allPredicates;
+
+    /**
+     * jijij.
+     *
+     */
+    public RatingStatisticsSpecification(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public Predicate toPredicate(Root<RatingStatistics> root, CriteriaQuery<?> criteriaQuery,
                                  CriteriaBuilder criteriaBuilder) {
+        if (allPredicates == null) {
+            allPredicates = criteriaBuilder.conjunction();
+        }
         if (searchCriteria.getType().equals("id")) {
-            return getIdPredicate(root, criteriaBuilder);
+            allPredicates = criteriaBuilder.and(allPredicates,  getIdPredicate(root, criteriaBuilder));
+            return allPredicates;
         }
         if (searchCriteria.getType().equals("enum")) {
-            return getEventNamePredicate(root, criteriaBuilder);
+            allPredicates = criteriaBuilder.and(allPredicates,  getEventNamePredicate(root, criteriaBuilder));
+            return allPredicates;
         }
         if (searchCriteria.getType().equals("userId")) {
-            return getUserIdPredicate(root, criteriaBuilder);
+            allPredicates = criteriaBuilder.and(allPredicates,  getUserIdPredicate(root, criteriaBuilder));
+            return allPredicates;
         }
         if (searchCriteria.getType().equals("userMail")) {
-            return getUserMailPredicate(root, criteriaBuilder);
+            allPredicates = criteriaBuilder.and(allPredicates,  getUserMailPredicate(root, criteriaBuilder));
+            return allPredicates;
         }
         if (searchCriteria.getType().equals("dateRange")) {
-            return getDataRangePredicate(root, criteriaBuilder);
+            allPredicates = criteriaBuilder.and(allPredicates,  getDataRangePredicate(root, criteriaBuilder));
+            return allPredicates;
         }
-        return criteriaBuilder.conjunction();
+        return allPredicates;
     }
 
     private Predicate getIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder) {

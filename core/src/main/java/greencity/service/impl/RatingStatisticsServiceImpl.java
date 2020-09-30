@@ -76,6 +76,13 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     @Override
+    public List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(RatingStatisticsSpecification spec) {
+        return ratingStatisticsRepo.findAll(spec).stream()
+            .map(ratingStat -> modelMapper.map(ratingStat, RatingStatisticsDto.class))
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public PageableAdvancedDto<RatingStatisticsDtoForTables> getFilteredDataForManagementByPage(
         Pageable pageable, RatingStatisticsSpecification spec) {
         Page<RatingStatistics> ratingStatistics = ratingStatisticsRepo.findAll(spec, pageable);

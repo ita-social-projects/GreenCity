@@ -36,8 +36,14 @@
                             <h2>Manage <strong>User rating statistics</strong></h2>
                         </div>
                         <div class="col-sm-6">
+                            <a href="/management/rating">
+                                <button type="button" class="btn btn-success">Clear filters</button>
+                            </a>
+                            <a href="/management/rating/exportFiltered">
+                                <button type="button" class="btn btn-success">Export filtered to Excel</button>
+                            </a>
                             <a href="/management/rating/export">
-                                <button type="button" class="btn btn-success">Export to Excel</button>
+                                <button type="button" class="btn btn-success">Export all to Excel</button>
                             </a>
                         </div>
                     </div>
@@ -87,13 +93,13 @@
                             </form>
                         </td>
                         <td>
-                            <form method="POST" action="${contextPath}/rooms">
-                                <input type="search" placeholder="Search"/>
+                            <form method="POST" action="/management/rating">
+                                <input type="search" th:name="points_changed" placeholder="Search"/>
                             </form>
                         </td>
                         <td>
-                            <form method="POST" action="${contextPath}/rooms">
-                                <input type="search" placeholder="Search"/>
+                            <form method="POST" action="/management/rating">
+                                <input type="search" th:name="current_rating" placeholder="Search"/>
                             </form>
                         </td>
                     </tr>
