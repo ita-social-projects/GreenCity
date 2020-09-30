@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.dto.habitstatistic.HabitDictionaryTranslationsDto;
 import greencity.entity.HabitDictionary;
 import greencity.entity.HabitDictionaryTranslation;
 import java.util.List;
@@ -53,7 +52,7 @@ public interface HabitDictionaryTranslationRepo extends JpaRepository<HabitDicti
      * Method returns all habits by language.
      *
      * @param language code language.
-     * @return Pageable of available {@link HabitDictionaryTranslationsDto}`s.
+     * @return Pageable of available {@link HabitDictionaryTranslation}`s.
      * @author Dovganyuk Taras
      */
     Page<HabitDictionaryTranslation> findAllByLanguageCode(Pageable pageable, String language);
