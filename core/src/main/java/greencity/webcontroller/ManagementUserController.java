@@ -58,11 +58,10 @@ public class ManagementUserController {
     @PostMapping("/register")
     @ResponseBody
     public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return buildGenericResponseDto(bindingResult);
+        if (!bindingResult.hasErrors()) {
+            ownSecurityService.managementRegisterUser(userDto);
         }
-        ownSecurityService.managementRegisterUser(userDto);
-        return new GenericResponseDto();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
@@ -75,11 +74,10 @@ public class ManagementUserController {
     @PutMapping
     @ResponseBody
     public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return buildGenericResponseDto(bindingResult);
+        if (!bindingResult.hasErrors()) {
+            userService.updateUser(userDto);
         }
-        userService.updateUser(userDto);
-        return new GenericResponseDto();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
