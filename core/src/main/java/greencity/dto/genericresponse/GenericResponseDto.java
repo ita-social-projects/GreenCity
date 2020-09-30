@@ -1,6 +1,5 @@
 package greencity.dto.genericresponse;
 
-import greencity.entity.Place;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;

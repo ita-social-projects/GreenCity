@@ -119,7 +119,7 @@ public class ManagementTipsAndTricksController {
                                      @ImageValidation
                                      @RequestPart(required = false, name = "file") MultipartFile file) {
         if (bindingResult.hasErrors()) {
-            buildGenericResponseDto(bindingResult);
+            return buildGenericResponseDto(bindingResult);
         }
         tipsAndTricksService.update(tipsAndTricksDtoManagement, file);
         return new GenericResponseDto();
@@ -146,7 +146,7 @@ public class ManagementTipsAndTricksController {
                                    @RequestParam(required = false, name = "file") MultipartFile file,
                                    @ApiIgnore Principal principal) {
         if (bindingResult.hasErrors()) {
-            buildGenericResponseDto(bindingResult);
+            return buildGenericResponseDto(bindingResult);
         }
         tipsAndTricksService.save(tipsAndTricksDtoRequest, file, principal.getName());
         return new GenericResponseDto();

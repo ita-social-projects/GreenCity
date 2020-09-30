@@ -67,7 +67,7 @@ public class ManagementPlacesController {
     public GenericResponseDto savePlace(@Valid @RequestBody PlaceAddDto placeAddDto, BindingResult bindingResult,
                                         @ApiIgnore @CurrentUser User user) {
         if (bindingResult.hasErrors()) {
-            buildGenericResponseDto(bindingResult);
+            return buildGenericResponseDto(bindingResult);
         }
         placeService.save(placeAddDto, user.getEmail());
         return new GenericResponseDto();

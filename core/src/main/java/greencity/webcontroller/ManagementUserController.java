@@ -59,7 +59,7 @@ public class ManagementUserController {
     @ResponseBody
     public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            buildGenericResponseDto(bindingResult);
+            return buildGenericResponseDto(bindingResult);
         }
         ownSecurityService.managementRegisterUser(userDto);
         return new GenericResponseDto();
@@ -76,7 +76,7 @@ public class ManagementUserController {
     @ResponseBody
     public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            buildGenericResponseDto(bindingResult);
+            return buildGenericResponseDto(bindingResult);
         }
         userService.updateUser(userDto);
         return new GenericResponseDto();

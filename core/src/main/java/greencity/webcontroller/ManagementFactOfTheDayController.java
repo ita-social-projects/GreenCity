@@ -87,7 +87,7 @@ public class ManagementFactOfTheDayController {
     public GenericResponseDto saveFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
                                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            buildGenericResponseDto(bindingResult);
+            return buildGenericResponseDto(bindingResult);
         }
         factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         return new GenericResponseDto();
@@ -109,7 +109,7 @@ public class ManagementFactOfTheDayController {
     public GenericResponseDto updateFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
                                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            buildGenericResponseDto(bindingResult);
+            return buildGenericResponseDto(bindingResult);
         }
         factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         return new GenericResponseDto();
