@@ -85,7 +85,6 @@ $(document).ready(function () {
     function addBreakTime(event) {
         $(this).hide();
         event.preventDefault();
-        console.log('add');
         let startTimeInput = "<input name='startTime'  class='form-control-sm' type='time'>";
         let endTimeInput = "<input name='endtTime' class='form-control-sm' type='time'>";
         let removeButton = '<i class="material-icons removeBreak" data-toggle="tooltip"  title="Delete break hours">&#xE872;</i>'
@@ -183,12 +182,12 @@ $(document).ready(function () {
         $("input:checkbox[name=day]:checked").each(function () {
             let openHour = {};
             openHour.weekDay = $(this).next().find('span').text();
-            openHour.openTime = $(this).closest('div').find('input[name=openTime]').val();
-            openHour.closeTime = $(this).closest('div').find('input[name=closeTime]').val();
+            openHour.openTime = $(this).closest('div.form-row').find('input[name=openTime]').val();
+            openHour.closeTime = $(this).closest('div.form-row').find('input[name=closeTime]').val();
             let breakTime = {};
-            breakTime.startTime = $(this).closest('div').find('input[name=startTime]').val();
-            breakTime.endTime = $(this).closest('div').find('input[name=endTime]').val();
-            if (breakTime.startTime === undefined) {
+            breakTime.startTime = $(this).closest('div.form-row').find('input[name=startTime]').val();
+            breakTime.endTime = $(this).closest('div.form-row').find('input[name=endTime]').val();
+            if (breakTime.startTime === "" || breakTime.endTime === "") {
                 breakTime = null;
             }
             openHour.breakTime = breakTime;
