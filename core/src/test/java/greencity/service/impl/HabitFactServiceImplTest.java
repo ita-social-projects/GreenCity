@@ -94,7 +94,7 @@ import org.modelmapper.TypeToken;
 
     @Test
      void getHabitFactByName() {
-        when(factTranslationRepo.findFactTranslationByLanguageCodeAndHabitFact("en", "test"))
+        when(factTranslationRepo.findFactTranslationByLanguage_CodeAndHabitFact("en", "test"))
             .thenReturn(Optional.of(factTranslation));
         when(modelMapper.map(factTranslation, HabitFactDTO.class)).thenReturn(habitFactDTO);
         assertEquals(habitFactDTO, habitFactService.getHabitFactByName("en", "test"));

@@ -95,7 +95,7 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public AdviceDTO getAdviceByName(String language, String name) {
         return modelMapper.map(adviceTranslationRepo
-            .findAdviceTranslationByLanguageCodeAndAdvice(language, name).orElseThrow(() ->
+            .findAdviceTranslationByLanguage_CodeAndAdvice(language, name).orElseThrow(() ->
                 new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDTO.class);
     }
 

@@ -94,7 +94,7 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     public HabitFactDTO getHabitFactByName(String language, String name) {
-        return modelMapper.map(factTranslationRepo.findFactTranslationByLanguageCodeAndHabitFact(language, name)
+        return modelMapper.map(factTranslationRepo.findFactTranslationByLanguage_CodeAndHabitFact(language, name)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
             HabitFactDTO.class);
     }
