@@ -5,8 +5,8 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
-import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.entity.FactOfTheDay;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
@@ -23,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -85,16 +84,10 @@ public class ManagementFactOfTheDayController {
     @PostMapping("/")
     public GenericResponseDto saveFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
                                                BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+        if (!bindingResult.hasErrors()) {
+            factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         }
-        factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return GenericResponseDto.builder().build();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
@@ -112,16 +105,10 @@ public class ManagementFactOfTheDayController {
     @PutMapping("/")
     public GenericResponseDto updateFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
                                                  BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+        if (!bindingResult.hasErrors()) {
+            factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         }
-        factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
-        return GenericResponseDto.builder().build();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
