@@ -4,6 +4,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
@@ -58,8 +59,10 @@ public interface RatingStatisticsService {
         Pageable pageable, RatingStatisticsSpecification spec);
 
     /**
-     * sdasd.
+     *   * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
+     *
+     * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
+     * @return {@link SearchCriteria}.
      */
-    SearchCriteria buildSearchCriteria(String id, String eventName, String userId, String userEmail,
-                                       String startDate, String endDate);
+    SearchCriteria buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto);
 }

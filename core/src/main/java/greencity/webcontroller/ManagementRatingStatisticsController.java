@@ -4,31 +4,30 @@ import greencity.annotations.ApiPageable;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.exporter.RatingExcelExporter;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.service.RatingStatisticsService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
@@ -93,7 +92,7 @@ public class ManagementRatingStatisticsController {
     }
 
     /**
-     * Export {@link RatingStatistics} to Excel file.
+     * Export filtered {@link RatingStatistics} to Excel file.
      *
      * @author Dovganyuk Taras
      */
@@ -114,19 +113,16 @@ public class ManagementRatingStatisticsController {
     }
 
     /**
-     * dfg.
+     * Returns  management page with User rating statistics with filtered data.
+     *
+     * @param model                   ModelAndView that will be configured and returned to user.
+     * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
      */
-    @PostMapping("")
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
                              @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
-                             @RequestParam(value = "id", required = false) String id,
-                             @RequestParam(value = "event_name", required = false) String eventName,
-                             @RequestParam(value = "user_id", required = false) String userId,
-                             @RequestParam(value = "user_email", required = false) String userEmail,
-                             @RequestParam(value = "start_date", required = false) String startDate,
-                             @RequestParam(value = "end_date", required = false) String endDate) {
-        SearchCriteria searchCriteria =
-            ratingStatisticsService.buildSearchCriteria(id, eventName, userId, userEmail, startDate, endDate);
+                             RatingStatisticsViewDto ratingStatisticsViewDto) {
+        SearchCriteria searchCriteria = ratingStatisticsService.buildSearchCriteria(ratingStatisticsViewDto);
         Pageable paging =
             PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
         spec.setSearchCriteria(searchCriteria);

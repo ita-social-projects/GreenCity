@@ -3,17 +3,15 @@ package greencity.service.impl;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;
 import greencity.service.RatingStatisticsService;
-import greencity.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     private RatingStatisticsRepo ratingStatisticsRepo;
     private final ModelMapper modelMapper;
-    private UserService userService;
 
     private PageableAdvancedDto<RatingStatisticsDtoForTables> ratingStatisticsDtoMapper(
         Page<RatingStatistics> ratingStatistics) {
@@ -90,44 +87,60 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     /**
-     * sdfsdf.
+     *   * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
+     *
+     * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
+     * @return {@link SearchCriteria}.
      */
-    public SearchCriteria buildSearchCriteria(String id, String eventName, String userId, String userEmail,
-                                              String startDate, String endDate) {
+    public SearchCriteria buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto) {
         SearchCriteria searchCriteria = null;
-        if (id != null) {
+        if (ratingStatisticsViewDto.getId() != null) {
             searchCriteria = SearchCriteria.builder()
                 .key("id")
                 .type("id")
-                .value(id)
+                .value(ratingStatisticsViewDto.getId())
                 .build();
         }
-        if (eventName != null) {
+        if (ratingStatisticsViewDto.getEventName() != null) {
             searchCriteria = SearchCriteria.builder()
                 .key("ratingCalculationEnum")
                 .type("enum")
-                .value(eventName)
+                .value(ratingStatisticsViewDto.getEventName())
                 .build();
         }
-        if (userId != null) {
+        if (ratingStatisticsViewDto.getUserId() != null) {
             searchCriteria = SearchCriteria.builder()
                 .key("user")
                 .type("userId")
-                .value(userId)
+                .value(ratingStatisticsViewDto.getUserId())
                 .build();
         }
-        if (userEmail != null) {
+        if (ratingStatisticsViewDto.getUserEmail() != null) {
             searchCriteria = SearchCriteria.builder()
                 .key("user")
                 .type("userMail")
-                .value(userEmail)
+                .value(ratingStatisticsViewDto.getUserEmail())
                 .build();
         }
-        if (startDate != null && endDate != null) {
+        if (ratingStatisticsViewDto.getStartDate() != null && ratingStatisticsViewDto.getEndDate() != null) {
             searchCriteria = SearchCriteria.builder()
                 .key("createDate")
                 .type("dateRange")
-                .value(new String[] {startDate, endDate})
+                .value(new String[] {ratingStatisticsViewDto.getStartDate(), ratingStatisticsViewDto.getEndDate()})
+                .build();
+        }
+        if (ratingStatisticsViewDto.getPointsChanged() != null) {
+            searchCriteria = SearchCriteria.builder()
+                .key("pointsChanged")
+                .type("pointsChanged")
+                .value(ratingStatisticsViewDto.getPointsChanged())
+                .build();
+        }
+        if (ratingStatisticsViewDto.getCurrentRating() != null) {
+            searchCriteria = SearchCriteria.builder()
+                .key("rating")
+                .type("currentRating")
+                .value(ratingStatisticsViewDto.getCurrentRating())
                 .build();
         }
         return searchCriteria;

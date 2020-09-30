@@ -16,7 +16,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,8 +30,7 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
     private Predicate allPredicates;
 
     /**
-     * jijij.
-     *
+     * Constructor.
      */
     public RatingStatisticsSpecification(UserService userService) {
         this.userService = userService;
@@ -45,29 +43,37 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
             allPredicates = criteriaBuilder.conjunction();
         }
         if (searchCriteria.getType().equals("id")) {
-            allPredicates = criteriaBuilder.and(allPredicates,  getIdPredicate(root, criteriaBuilder));
+            allPredicates = criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder));
             return allPredicates;
         }
         if (searchCriteria.getType().equals("enum")) {
-            allPredicates = criteriaBuilder.and(allPredicates,  getEventNamePredicate(root, criteriaBuilder));
+            allPredicates = criteriaBuilder.and(allPredicates, getEventNamePredicate(root, criteriaBuilder));
             return allPredicates;
         }
         if (searchCriteria.getType().equals("userId")) {
-            allPredicates = criteriaBuilder.and(allPredicates,  getUserIdPredicate(root, criteriaBuilder));
+            allPredicates = criteriaBuilder.and(allPredicates, getUserIdPredicate(root, criteriaBuilder));
             return allPredicates;
         }
         if (searchCriteria.getType().equals("userMail")) {
-            allPredicates = criteriaBuilder.and(allPredicates,  getUserMailPredicate(root, criteriaBuilder));
+            allPredicates = criteriaBuilder.and(allPredicates, getUserMailPredicate(root, criteriaBuilder));
             return allPredicates;
         }
         if (searchCriteria.getType().equals("dateRange")) {
-            allPredicates = criteriaBuilder.and(allPredicates,  getDataRangePredicate(root, criteriaBuilder));
+            allPredicates = criteriaBuilder.and(allPredicates, getDataRangePredicate(root, criteriaBuilder));
+            return allPredicates;
+        }
+        if (searchCriteria.getType().equals("pointsChanged")) {
+            allPredicates = criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder));
+            return allPredicates;
+        }
+        if (searchCriteria.getType().equals("currentRating")) {
+            allPredicates = criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder));
             return allPredicates;
         }
         return allPredicates;
     }
 
-    private Predicate getIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder) {
+    private Predicate getNumericPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder) {
         try {
             return criteriaBuilder
                 .equal(root.get(searchCriteria.getKey()), searchCriteria.getValue());
