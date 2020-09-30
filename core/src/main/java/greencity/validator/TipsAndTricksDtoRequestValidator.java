@@ -25,10 +25,10 @@ public class TipsAndTricksDtoRequestValidator
         if (dto.getSource() != null && !dto.getSource().isEmpty()) {
             isUrlValid(dto.getSource());
         }
-        if (Boolean.TRUE.equals(tagService.isValidNumOfUniqueTags(dto.getTags())) ||
-                !Boolean.TRUE.equals(tagService.isAllTipsAndTricksValid(dto.getTags()))) {
-                throw new TagNotFoundDuringValidation(ErrorMessage.TAGS_NOT_FOUND);
-            }
+        if ((Boolean.TRUE.equals(tagService.isValidNumOfUniqueTags(dto.getTags())))
+                || (!Boolean.TRUE.equals(tagService.isAllTipsAndTricksValid(dto.getTags())))) {
+            throw new TagNotFoundDuringValidation(ErrorMessage.TAGS_NOT_FOUND);
+        }
         return true;
     }
 }
