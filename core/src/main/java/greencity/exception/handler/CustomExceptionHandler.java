@@ -39,16 +39,24 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
     /**
-     * Method intercept exception {@link UserHasNoAvailableHabitDictionaryException}.
+     * Method intercept exception {@link UserHasNoAvailableHabitTranslationException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain  detail about occur exception
      * @return ResponseEntity witch  contain http status and body  with message of exception.
      * @author Yurii Savchenko
      */
-    @ExceptionHandler(UserHasNoAvailableHabitDictionaryException.class)
+    @ExceptionHandler(UserHasNoAvailableHabitTranslationException.class)
     public final ResponseEntity<Object> handleUserHasNoAvailableHabitDictionaryException(
-        UserHasNoAvailableHabitDictionaryException ex, WebRequest request) {
+        UserHasNoAvailableHabitTranslationException ex, WebRequest request) {
+        log.info(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(UserAlreadyHasHabitAssignedException.class)
+    public final ResponseEntity<Object> handleUserAlreadyHasHabitAssignedException(
+        UserAlreadyHasHabitAssignedException ex, WebRequest request) {
         log.info(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
