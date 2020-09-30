@@ -87,12 +87,7 @@ public class ManagementFactOfTheDayController {
     public GenericResponseDto saveFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
                                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+            buildGenericResponseDto(bindingResult);
         }
         factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         return new GenericResponseDto();
