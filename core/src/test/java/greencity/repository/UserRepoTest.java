@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -23,10 +24,11 @@ import org.springframework.test.context.jdbc.Sql;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static greencity.entity.enums.UserStatus.ACTIVATED;
 import static greencity.entity.enums.UserStatus.DEACTIVATED;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @DataJpaTest
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = GreenCityApplication.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class UserRepoTest {
     @Autowired
     private UserRepo userRepo;
