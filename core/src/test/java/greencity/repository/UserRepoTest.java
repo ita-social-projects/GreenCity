@@ -4,13 +4,13 @@ import greencity.GreenCityApplication;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,13 +19,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static greencity.entity.enums.UserStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static greencity.entity.enums.UserStatus.ACTIVATED;
+import static greencity.entity.enums.UserStatus.DEACTIVATED;
 
 @DataJpaTest
-@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = GreenCityApplication.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class UserRepoTest {
@@ -43,6 +42,7 @@ class UserRepoTest {
             .role(ROLE.ROLE_USER)
             .userStatus(ACTIVATED)
             .refreshTokenKey("secret")
+            .city("New York")
             .build();
 
     private final User testUser2 =
@@ -56,13 +56,13 @@ class UserRepoTest {
             .role(ROLE.ROLE_ADMIN)
             .userStatus(ACTIVATED)
             .refreshTokenKey("secret2")
+            .city("Kyiv")
             .build();
 
     @Test
     @Sql("classpath:sql/populate_users_for_test.sql")
     void findByEmailTest() {
-        Optional<User> userByEmail = userRepo.findByEmail("test@email.com");
-        User user = userByEmail.get();
+        User user = userRepo.findByEmail("test@email.com").get();
         assertEquals(testUser.getId(), user.getId());
         assertEquals(testUser.getName(), user.getName());
     }
@@ -85,20 +85,17 @@ class UserRepoTest {
     @Test
     @Sql("classpath:sql/populate_users_for_test.sql")
     void findIdByEmailTest() {
-        Optional<Long> idByEmail = userRepo.findIdByEmail("test@email.com");
-        Long id = idByEmail.get();
+        Long id = userRepo.findIdByEmail("test@email.com").get();
         assertEquals(testUser.getId(), id);
     }
 
     @Test
     @Sql("classpath:sql/populate_users_for_test.sql")
     void findNotDeactivatedByEmailTest() {
-        Optional<User> optionalUser = userRepo.findNotDeactivatedByEmail("test@email.com");
-        User user = optionalUser.get();
+        User user = userRepo.findNotDeactivatedByEmail("test@email.com").get();
         assertEquals(testUser.getId(), user.getId());
         assertEquals(testUser.getEmail(), user.getEmail());
     }
-    //todo: check deactivated user test
 
     @Test
     @Sql("classpath:sql/populate_users_for_test.sql")
@@ -109,14 +106,12 @@ class UserRepoTest {
         assertEquals(testUser.getEmail(), users.get(0).getEmail());
     }
 
-    //todo: empty list
-
     @Test
     @Sql("classpath:sql/populate_users_for_test.sql")
     void updateUserRefreshTokenTest() {
         userRepo.updateUserRefreshToken("newToken", 1L);
-        Optional<User> byId = userRepo.findById(1L);
-        String refreshTokenKey = byId.get().getRefreshTokenKey();
+        User user = userRepo.findById(1L).get();
+        String refreshTokenKey = user.getRefreshTokenKey();
         assertEquals("newToken", refreshTokenKey);
     }
 
@@ -124,7 +119,7 @@ class UserRepoTest {
     @Sql("classpath:sql/populate_users_for_test.sql")
     void countAllByUserStatusTest() {
         long count = userRepo.countAllByUserStatus(ACTIVATED);
-        assertEquals(5, count);
+        assertEquals(10, count);
     }
 
     @Test
@@ -161,20 +156,17 @@ class UserRepoTest {
     @Sql("classpath:sql/populate_users_for_test.sql")
     void deleteUserFriendByIdTest() {
         userRepo.deleteUserFriendById(1L, 2L);
-        Optional<User> optionalUser = userRepo.findById(1L);
-        User user = optionalUser.get();
-        assertEquals(Collections.emptyList(), user.getUserFriends());
+        User user = userRepo.findById(1L).get();
+        assertEquals(6, user.getUserFriends().size());
     }
 
     @Test
     @Sql("classpath:sql/populate_users_for_test.sql")
     void addNewFriendTest() {
-        List<User> list = List.of(testUser2, User.builder().id(3L).build());
         userRepo.addNewFriend(1L, 3L);
-        Optional<User> optionalUser = userRepo.findById(1L);
-        User user = optionalUser.get();
+        User user = userRepo.findById(1L).get();
         List<User> userFriends = user.getUserFriends();
-        assertEquals(list.get(1).getId(), userFriends.get(1).getId());
+        assertEquals(3, userFriends.get(7).getId());
     }
 
     @Test
@@ -201,6 +193,23 @@ class UserRepoTest {
     void deactivateSelectedUsersTest() {
         userRepo.deactivateSelectedUsers(List.of(2L));
         User user = userRepo.findById(2L).get();
-        assertEquals(UserStatus.DEACTIVATED, user.getUserStatus());
+        assertEquals(DEACTIVATED, user.getUserStatus());
+    }
+
+    @Test
+    @Sql("classpath:sql/populate_users_for_test.sql")
+    void searchByTest() {
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<User> page = userRepo.searchBy(pageable, "SuperTest");
+        List<User> collect = page.get().collect(Collectors.toList());
+        assertEquals(testUser.getName(), collect.get(0).getName());
+    }
+
+    @Test
+    @Sql("classpath:sql/populate_users_for_test.sql")
+    void findAllUsersCitiesTest() {
+        List<String> cities = userRepo.findAllUsersCities();
+        assertEquals(testUser.getCity(), cities.get(0));
+        assertEquals(testUser2.getCity(), cities.get(1));
     }
 }
