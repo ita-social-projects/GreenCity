@@ -65,4 +65,9 @@ public interface RatingStatisticsService {
      * @return {@link SearchCriteria}.
      */
     List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto);
+
+    /**
+     * sdfd.
+     */
+    RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto);
 }

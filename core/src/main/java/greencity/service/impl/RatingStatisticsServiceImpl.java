@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     private RatingStatisticsRepo ratingStatisticsRepo;
     private final ModelMapper modelMapper;
+    private final BeanFactory beanFactory;
 
     private PageableAdvancedDto<RatingStatisticsDtoForTables> ratingStatisticsDtoMapper(
         Page<RatingStatistics> ratingStatistics) {
@@ -95,7 +97,7 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
      */
     public List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
-        SearchCriteria searchCriteria = null;
+        SearchCriteria searchCriteria;
         if (!ratingStatisticsViewDto.getId().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key("id")
@@ -153,5 +155,14 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
             criteriaList.add(searchCriteria);
         }
         return criteriaList;
+    }
+
+    /**
+     * Returns {@link RatingStatisticsSpecification} for entered filter parameters.
+     *
+     * @param ratingStatisticsViewDto contains data from filters
+     */
+    public RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto) {
+        return   beanFactory.getBean(RatingStatisticsSpecification.class, buildSearchCriteria(ratingStatisticsViewDto));
     }
 }

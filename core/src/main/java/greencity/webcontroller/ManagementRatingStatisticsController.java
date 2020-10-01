@@ -8,7 +8,6 @@ import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.exporter.RatingExcelExporter;
 import greencity.filters.RatingStatisticsSpecification;
-import greencity.filters.SearchCriteria;
 import greencity.service.RatingStatisticsService;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -36,7 +35,6 @@ public class ManagementRatingStatisticsController {
     private RatingStatisticsService ratingStatisticsService;
     private RatingExcelExporter ratingExcelExporter;
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private RatingStatisticsSpecification spec;
 
     /**
      * Constructor.
@@ -47,7 +45,6 @@ public class ManagementRatingStatisticsController {
                                                 RatingStatisticsSpecification spec) {
         this.ratingStatisticsService = ratingStatisticsService;
         this.ratingExcelExporter = ratingExcelExporter;
-        this.spec = spec;
     }
 
     /**
@@ -94,8 +91,10 @@ public class ManagementRatingStatisticsController {
      *
      * @author Dovganyuk Taras
      */
-    @GetMapping("/exportFiltered")
-    public void exportFilteredToExcel(HttpServletResponse response) throws IOException {
+    @PostMapping(value = "/exportFiltered", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public void exportFilteredToExcel(HttpServletResponse response,
+                                      RatingStatisticsViewDto ratingStatisticsViewDto)
+        throws IOException {
         response.setContentType("application/octet-stream");
         String headerKey = "Content-Disposition";
 
@@ -106,7 +105,8 @@ public class ManagementRatingStatisticsController {
         response.setHeader(headerKey, headerValue);
 
         List<RatingStatisticsDto> ratingStatisticsList =
-            ratingStatisticsService.getFilteredRatingStatisticsForExcel(spec);
+            ratingStatisticsService
+                .getFilteredRatingStatisticsForExcel(ratingStatisticsService.getSpecification(ratingStatisticsViewDto));
         ratingExcelExporter.export(response.getOutputStream(), ratingStatisticsList);
     }
 
@@ -120,12 +120,12 @@ public class ManagementRatingStatisticsController {
     public String filterData(Model model,
                              @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
                              RatingStatisticsViewDto ratingStatisticsViewDto) {
-        List<SearchCriteria> searchCriteria = ratingStatisticsService.buildSearchCriteria(ratingStatisticsViewDto);
         Pageable paging =
             PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
-        spec.setSearchCriteriaList(searchCriteria);
+
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
-            ratingStatisticsService.getFilteredDataForManagementByPage(paging, spec);
+            ratingStatisticsService.getFilteredDataForManagementByPage(paging,
+                ratingStatisticsService.getSpecification(ratingStatisticsViewDto));
         model.addAttribute("ratings", pageableDto);
         model.addAttribute("fields", ratingStatisticsViewDto);
         return "core/management_user_rating";

@@ -39,9 +39,7 @@
                             <a href="/management/rating">
                                 <button type="button" class="btn btn-success">Clear filters</button>
                             </a>
-                            <a href="/management/rating/exportFiltered">
-                                <button type="button" class="btn btn-success">Export filtered to Excel</button>
-                            </a>
+                            <button type="submit" class="btn btn-success" onclick="exportFiltered()">Export filtered to Excel</button>
                             <a href="/management/rating/export">
                                 <button type="button" class="btn btn-success">Export all to Excel</button>
                             </a>
@@ -62,7 +60,7 @@
                     </thead>
                     <tbody>
 
-                    <form method="POST" action="/management/rating">
+                    <form method="POST" action="/management/rating" id = "searchForm">
                         <tr>
                             <td>
 
@@ -191,6 +189,12 @@
             orientation: 'top'
         });
     });
+
+    function exportFiltered() {
+        document.getElementById("searchForm").action = "/management/rating/exportFiltered";
+        document.getElementById("searchForm").submit();
+        document.getElementById("searchForm").action = "/management/rating";
+    }
 </script>
 </body>
 </html>
