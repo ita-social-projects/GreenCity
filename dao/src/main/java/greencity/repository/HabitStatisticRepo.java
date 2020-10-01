@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import java.time.ZonedDateTime;
@@ -42,10 +41,10 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
                                                @Param("firstDayOfMonth") ZonedDateTime firstDay);
 
     /**
-     * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
+     * Method for finding all {@link HabitStatistic} by {@link Habit id}.
      *
      * @param habitId {@link Habit} id.
-     * @return list of {@link HabitStatisticDto} instances.
+     * @return list of {@link HabitStatistic} instances.
      */
     List<HabitStatistic> findAllByHabitId(Long habitId);
 
