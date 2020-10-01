@@ -60,7 +60,7 @@
                     </thead>
                     <tbody>
 
-                    <form method="POST" action="/management/rating" id = "searchForm">
+                    <form method="POST" action="/management/rating" id = "searchForm" onsubmit="applyFilters()">
                         <tr>
                             <td>
 
@@ -193,8 +193,13 @@
     function exportFiltered() {
         document.getElementById("searchForm").action = "/management/rating/exportFiltered";
         document.getElementById("searchForm").submit();
-        document.getElementById("searchForm").action = "/management/rating";
+
     }
+    function applyFilters() {
+        document.getElementById("searchForm").action = "/management/rating";
+        document.getElementById("searchForm").submit();
+    }
+
 </script>
 </body>
 </html>

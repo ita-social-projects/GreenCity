@@ -288,20 +288,3 @@ input[type=search] {
     box-sizing: border-box;
     -webkit-appearance: none;
 }
-
-/*!* Style the submit button *!*/
-/*#searchByDates {*/
-/*    float: left;*/
-/*    width: 20%;*/
-/*    padding: 10px;*/
-/*    background: #2196F3;*/
-/*    color: white;*/
-/*    font-size: 17px;*/
-/*    border: 1px solid grey;*/
-/*    border-left: none; !* Prevent double borders *!*/
-/*    cursor: pointer;*/
-/*}*/
-
-/*#searchByDates {*/
-/*    background: #0b7dda;*/
-/*}*/
