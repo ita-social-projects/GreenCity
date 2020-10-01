@@ -20,6 +20,7 @@
         <mockito-core.version>3.3.3</mockito-core.version>
         <modelmapper.version>2.3.5</modelmapper.version>
         <caffeine.version>2.8.1</caffeine.version>
+        <liquibase.version>3.8.4</liquibase.version>
         <jackson.version>2.10.1</jackson.version>
         <powermock.version>2.0.4</powermock.version>
         <swagger.version>2.9.2</swagger.version>
@@ -50,6 +51,17 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-maven-plugin</artifactId>
+            <version>${liquibase.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -179,6 +191,11 @@
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-storage</artifactId>
             <version>${cloudstorage.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
