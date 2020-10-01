@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = GreenCityApplication.class)
 @DataJpaTest
+@Sql("classpath:sql/open_hours.sql")
 class OpenHoursRepoTest {
 
     @Autowired
@@ -31,7 +32,6 @@ class OpenHoursRepoTest {
         .build();
 
     @Test
-    @Sql("classpath:sql/open_hours.sql")
     void findAllByPlaceTest() {
         List<OpeningHours> openingHours = openHoursRepo.findAllByPlace(place);
         assertEquals(2, openingHours.size());
@@ -39,14 +39,12 @@ class OpenHoursRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/open_hours.sql")
     void findAllByPlaceIdTest() {
         Set<OpeningHours> openingHours = openHoursRepo.findAllByPlaceId(place.getId());
         assertEquals(2, openingHours.size());
     }
 
     @Test
-    @Sql("classpath:sql/open_hours.sql")
     void deleteAllByPlaceIdTest() {
         openHoursRepo.deleteAllByPlaceId(1L);
         Set<OpeningHours> all = getOpeningHours();

@@ -21,20 +21,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = GreenCityApplication.class)
 @DataJpaTest
+@Sql("classpath:sql/place_comment.sql")
 class PlaceCommentRepoTest {
 
     @Autowired
     PlaceCommentRepo placeCommentRepo;
 
     @Test
-    @Sql("classpath:sql/place_comment.sql")
     void findByIdTest() {
         Comment comment = placeCommentRepo.findById(1L).get();
         assertEquals(1, comment.getId());
     }
 
     @Test
-    @Sql("classpath:sql/place_comment.sql")
     void findAll() {
         Pageable pageable = PageRequest.of(0, 2);
         Page<Comment> comments = placeCommentRepo.findAll(pageable);

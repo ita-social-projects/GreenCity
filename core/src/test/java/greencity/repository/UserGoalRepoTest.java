@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = GreenCityApplication.class)
 @DataJpaTest
+@Sql("classpath:sql/user_goal.sql")
 class UserGoalRepoTest {
 
     @Autowired
     UserGoalRepo userGoalRepo;
 
     @Test
-    @Sql("classpath:sql/user_goal.sql")
     void findAllByUserIdTest() {
         List<UserGoal> userGoals = userGoalRepo.findAllByUserId(1L);
         assertEquals(2, userGoals.size());
@@ -31,7 +31,6 @@ class UserGoalRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/user_goal.sql")
     void findGoalByUserGoalIdTest() {
         Goal goal = userGoalRepo.findGoalByUserGoalId(1L).get();
         assertEquals(1, goal.getId());

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +28,7 @@ import static greencity.entity.enums.UserStatus.DEACTIVATED;
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = GreenCityApplication.class)
+@Sql("classpath:sql/populate_users_for_test.sql")
 class UserRepoTest {
     @Autowired
     private UserRepo userRepo;
@@ -62,7 +62,6 @@ class UserRepoTest {
             .build();
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void findByEmailTest() {
         User user = userRepo.findByEmail("test@email.com").get();
         assertEquals(testUser.getId(), user.getId());
@@ -70,7 +69,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void findAllTest() {
         List<User> users = List.of(testUser, testUser2);
         Pageable pageable = PageRequest.of(0, 2);
@@ -85,14 +83,12 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void findIdByEmailTest() {
         Long id = userRepo.findIdByEmail("test@email.com").get();
         assertEquals(testUser.getId(), id);
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void findNotDeactivatedByEmailTest() {
         User user = userRepo.findNotDeactivatedByEmail("test@email.com").get();
         assertEquals(testUser.getId(), user.getId());
@@ -100,7 +96,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void findAllByEmailNotificationTest() {
         List<User> users =
             userRepo.findAllByEmailNotification(EmailNotification.DISABLED);
@@ -109,7 +104,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void updateUserRefreshTokenTest() {
         userRepo.updateUserRefreshToken("newToken", 1L);
         User user = userRepo.findById(1L).get();
@@ -118,14 +112,12 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void countAllByUserStatusTest() {
         long count = userRepo.countAllByUserStatus(ACTIVATED);
         assertEquals(10, count);
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void getProfilePicturePathByUserIdTest() {
         testUser.setProfilePicturePath("someSecretPathToPicture");
         String path = userRepo.getProfilePicturePathByUserId(1L).get();
@@ -133,7 +125,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void getAllUserFriendsTest() {
         testUser.setUserFriends(List.of(testUser2));
         List<User> userFriends = userRepo.getAllUserFriends(1L);
@@ -143,7 +134,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void getAllUserFriendsByPageTest() {
         testUser.setUserFriends(List.of(testUser2));
         Pageable pageable = PageRequest.of(0, 1);
@@ -155,7 +145,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void deleteUserFriendByIdTest() {
         userRepo.deleteUserFriendById(1L, 2L);
         User user = userRepo.findById(1L).get();
@@ -163,7 +152,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void addNewFriendTest() {
         userRepo.addNewFriend(1L, 3L);
         User user = userRepo.findById(1L).get();
@@ -172,7 +160,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void getSixFriendsWithTheHighestRatingTest() {
         List<User> friends = userRepo.getSixFriendsWithTheHighestRating(1L);
         assertEquals(6, friends.size());
@@ -181,7 +168,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void updateUserLastActivityTimeTest() {
         Date date = Calendar.getInstance().getTime();
         userRepo.updateUserLastActivityTime(1L, date);
@@ -191,7 +177,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void deactivateSelectedUsersTest() {
         userRepo.deactivateSelectedUsers(List.of(2L));
         User user = userRepo.findById(2L).get();
@@ -199,7 +184,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void searchByTest() {
         Pageable pageable = PageRequest.of(0, 1);
         Page<User> page = userRepo.searchBy(pageable, "SuperTest");
@@ -208,7 +192,6 @@ class UserRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/populate_users_for_test.sql")
     void findAllUsersCitiesTest() {
         List<String> cities = userRepo.findAllUsersCities();
         assertEquals(testUser.getCity(), cities.get(0));

@@ -21,12 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = GreenCityApplication.class)
+@Sql("classpath:sql/place_repo.sql")
 class PlaceRepoTest {
     @Autowired
     PlaceRepo placeRepo;
 
     @Test
-    @Sql("classpath:sql/place_repo.sql")
     void findAllByStatusOrderByModifiedDateDescTest() {
         Pageable pageable = PageRequest.of(0, 6);
         Page<Place> page = placeRepo.findAllByStatusOrderByModifiedDateDesc(PlaceStatus.PROPOSED, pageable);
@@ -35,7 +35,6 @@ class PlaceRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/place_repo.sql")
     void findAllByStatusOrderByModifiedDateDescOrderTest() {
         Pageable pageable = PageRequest.of(0, 6);
         Page<Place> page = placeRepo.findAllByStatusOrderByModifiedDateDesc(PlaceStatus.PROPOSED, pageable);
@@ -44,7 +43,6 @@ class PlaceRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/place_repo.sql")
     void getAverageRateTest() {
         Double averageRate = placeRepo.getAverageRate(1L);
         System.out.println(averageRate);
@@ -52,14 +50,12 @@ class PlaceRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/place_repo.sql")
     void getPlacesByStatusTest() {
         List<Place> places = placeRepo.getPlacesByStatus(PlaceStatus.PROPOSED);
         assertEquals(5, places.size());
     }
 
     @Test
-    @Sql("classpath:sql/place_repo.sql")
     void findPlacesByMapsBoundsTest() {
         List<Place> places = placeRepo.findPlacesByMapsBounds(
             50.575, 25.0455, 45.475, 23.0212, PlaceStatus.PROPOSED);
@@ -67,7 +63,6 @@ class PlaceRepoTest {
     }
 
     @Test
-    @Sql("classpath:sql/place_repo.sql")
     void searchByTest() {
         Pageable pageable = PageRequest.of(0, 6);
         Page<Place> page = placeRepo.searchBy(pageable, "InterestingPlace2");
