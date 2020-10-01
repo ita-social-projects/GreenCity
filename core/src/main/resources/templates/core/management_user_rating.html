@@ -61,48 +61,59 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>
-                            <form method="POST" action="/management/rating">
-                                <input type="search" th:name="id" placeholder="Search"/>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="POST" action="/management/rating">
-                                <input type="search" th:name="eventName" placeholder="Search"/>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="POST" action="/management/rating">
-                                <input type="search" th:name="userId" placeholder="Search"/>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="POST" action="/management/rating">
-                                <input type="search" th:name="userEmail" placeholder="Search"/>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="POST" action="/management/rating" name="dateRangeForm">
+
+                    <form method="POST" action="/management/rating">
+                        <tr>
+                            <td>
+
+                                <input type="search" th:name="id" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.id }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="eventName" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.eventName }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="userId" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.userId }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="userEmail" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.userEmail }"/>
+
+                            </td>
+                            <td>
                                 <div class="input-group input-daterange">
-                                    <input type="search" name="startDate" class="form-control"/>
+                                    <input type="search" name="startDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.startDate }"/>
                                     <div class="input-group-addon">to</div>
-                                    <input type="search" name="endDate" class="form-control"/>
+                                    <input type="search" name="endDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.endDate }"/>
                                     <button type="submit" id="searchByDates"><i class="fa fa-search"></i></button>
                                 </div>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="POST" action="/management/rating">
-                                <input type="search" th:name="pointsChanged" placeholder="Search"/>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="POST" action="/management/rating">
-                                <input type="search" th:name="currentRating" placeholder="Search"/>
-                            </form>
-                        </td>
-                    </tr>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="pointsChanged" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.pointsChanged }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="currentRating" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.currentRating }"/>
+
+                            </td>
+                        </tr>
+                    </form>
+
                     <th:block th:each="rating, iterStatus :${ratings.getPage()}">
                         <tr>
                             <td th:text="${rating.id}"></td>

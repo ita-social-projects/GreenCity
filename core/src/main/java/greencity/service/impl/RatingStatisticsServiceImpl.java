@@ -9,6 +9,7 @@ import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;
 import greencity.service.RatingStatisticsService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -87,62 +88,70 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     /**
-     *   * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
+     * * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
      *
      * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
      * @return {@link SearchCriteria}.
      */
-    public SearchCriteria buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto) {
+    public List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
         SearchCriteria searchCriteria = null;
-        if (ratingStatisticsViewDto.getId() != null) {
+        if (!ratingStatisticsViewDto.getId().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key("id")
                 .type("id")
                 .value(ratingStatisticsViewDto.getId())
                 .build();
+            criteriaList.add(searchCriteria);
         }
-        if (ratingStatisticsViewDto.getEventName() != null) {
+        if (!ratingStatisticsViewDto.getEventName().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key("ratingCalculationEnum")
                 .type("enum")
                 .value(ratingStatisticsViewDto.getEventName())
                 .build();
+            criteriaList.add(searchCriteria);
         }
-        if (ratingStatisticsViewDto.getUserId() != null) {
+        if (!ratingStatisticsViewDto.getUserId().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key("user")
                 .type("userId")
                 .value(ratingStatisticsViewDto.getUserId())
                 .build();
+            criteriaList.add(searchCriteria);
         }
-        if (ratingStatisticsViewDto.getUserEmail() != null) {
+        if (!ratingStatisticsViewDto.getUserEmail().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key("user")
                 .type("userMail")
                 .value(ratingStatisticsViewDto.getUserEmail())
                 .build();
+            criteriaList.add(searchCriteria);
         }
-        if (ratingStatisticsViewDto.getStartDate() != null && ratingStatisticsViewDto.getEndDate() != null) {
+        if (!ratingStatisticsViewDto.getStartDate().isEmpty() && !ratingStatisticsViewDto.getEndDate().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key("createDate")
                 .type("dateRange")
                 .value(new String[] {ratingStatisticsViewDto.getStartDate(), ratingStatisticsViewDto.getEndDate()})
                 .build();
+            criteriaList.add(searchCriteria);
         }
-        if (ratingStatisticsViewDto.getPointsChanged() != null) {
+        if (!ratingStatisticsViewDto.getPointsChanged().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key("pointsChanged")
                 .type("pointsChanged")
                 .value(ratingStatisticsViewDto.getPointsChanged())
                 .build();
+            criteriaList.add(searchCriteria);
         }
-        if (ratingStatisticsViewDto.getCurrentRating() != null) {
+        if (!ratingStatisticsViewDto.getCurrentRating().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key("rating")
                 .type("currentRating")
                 .value(ratingStatisticsViewDto.getCurrentRating())
                 .build();
+            criteriaList.add(searchCriteria);
         }
-        return searchCriteria;
+        return criteriaList;
     }
 }

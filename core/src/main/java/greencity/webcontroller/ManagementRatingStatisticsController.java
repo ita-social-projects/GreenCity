@@ -66,8 +66,6 @@ public class ManagementRatingStatisticsController {
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
             ratingStatisticsService.getRatingStatisticsForManagementByPage(paging);
         model.addAttribute("ratings", pageableDto);
-        spec.setAllPredicates(null);
-        spec.setSearchCriteria(SearchCriteria.builder().type("").build());
         return "core/management_user_rating";
     }
 
@@ -122,13 +120,14 @@ public class ManagementRatingStatisticsController {
     public String filterData(Model model,
                              @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
                              RatingStatisticsViewDto ratingStatisticsViewDto) {
-        SearchCriteria searchCriteria = ratingStatisticsService.buildSearchCriteria(ratingStatisticsViewDto);
+        List<SearchCriteria> searchCriteria = ratingStatisticsService.buildSearchCriteria(ratingStatisticsViewDto);
         Pageable paging =
             PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
-        spec.setSearchCriteria(searchCriteria);
+        spec.setSearchCriteriaList(searchCriteria);
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
             ratingStatisticsService.getFilteredDataForManagementByPage(paging, spec);
         model.addAttribute("ratings", pageableDto);
+        model.addAttribute("fields", ratingStatisticsViewDto);
         return "core/management_user_rating";
     }
 }

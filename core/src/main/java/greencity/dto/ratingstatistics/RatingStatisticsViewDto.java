@@ -7,6 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Builder
 public class RatingStatisticsViewDto {
     private String id;
     private String eventName;

@@ -64,5 +64,5 @@ public interface RatingStatisticsService {
      * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
      * @return {@link SearchCriteria}.
      */
-    SearchCriteria buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto);
+    List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto);
 }

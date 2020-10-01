@@ -1,9 +1,11 @@
 package greencity.filters;
 
 import greencity.annotations.RatingCalculationEnum;
+import greencity.constant.ErrorMessage;
 import greencity.entity.RatingStatistics;
 import greencity.entity.User;
-import greencity.service.UserService;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.repository.UserRepo;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -25,55 +27,55 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class RatingStatisticsSpecification implements Specification<RatingStatistics> {
-    private SearchCriteria searchCriteria;
-    private UserService userService;
-    private Predicate allPredicates;
+    private List<SearchCriteria> searchCriteriaList;
+    private UserRepo userRepo;
 
     /**
      * Constructor.
      */
-    public RatingStatisticsSpecification(UserService userService) {
-        this.userService = userService;
+    public RatingStatisticsSpecification(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
 
     @Override
     public Predicate toPredicate(Root<RatingStatistics> root, CriteriaQuery<?> criteriaQuery,
                                  CriteriaBuilder criteriaBuilder) {
-        if (allPredicates == null) {
-            allPredicates = criteriaBuilder.conjunction();
-        }
-        if (searchCriteria.getType().equals("id")) {
-            allPredicates = criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder));
-            return allPredicates;
-        }
-        if (searchCriteria.getType().equals("enum")) {
-            allPredicates = criteriaBuilder.and(allPredicates, getEventNamePredicate(root, criteriaBuilder));
-            return allPredicates;
-        }
-        if (searchCriteria.getType().equals("userId")) {
-            allPredicates = criteriaBuilder.and(allPredicates, getUserIdPredicate(root, criteriaBuilder));
-            return allPredicates;
-        }
-        if (searchCriteria.getType().equals("userMail")) {
-            allPredicates = criteriaBuilder.and(allPredicates, getUserMailPredicate(root, criteriaBuilder));
-            return allPredicates;
-        }
-        if (searchCriteria.getType().equals("dateRange")) {
-            allPredicates = criteriaBuilder.and(allPredicates, getDataRangePredicate(root, criteriaBuilder));
-            return allPredicates;
-        }
-        if (searchCriteria.getType().equals("pointsChanged")) {
-            allPredicates = criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder));
-            return allPredicates;
-        }
-        if (searchCriteria.getType().equals("currentRating")) {
-            allPredicates = criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder));
-            return allPredicates;
+        Predicate allPredicates = criteriaBuilder.conjunction();
+        for (SearchCriteria searchCriteria : searchCriteriaList) {
+            if (searchCriteria.getType().equals("id")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
+            }
+            if (searchCriteria.getType().equals("enum")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getEventNamePredicate(root, criteriaBuilder, searchCriteria));
+            }
+            if (searchCriteria.getType().equals("userId")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getUserIdPredicate(root, criteriaBuilder, searchCriteria));
+            }
+            if (searchCriteria.getType().equals("userMail")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getUserMailPredicate(root, criteriaBuilder, searchCriteria));
+            }
+            if (searchCriteria.getType().equals("dateRange")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getDataRangePredicate(root, criteriaBuilder, searchCriteria));
+            }
+            if (searchCriteria.getType().equals("pointsChanged")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
+            }
+            if (searchCriteria.getType().equals("currentRating")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
+            }
         }
         return allPredicates;
     }
 
-    private Predicate getNumericPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder) {
+    private Predicate getNumericPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
+                                          SearchCriteria searchCriteria) {
         try {
             return criteriaBuilder
                 .equal(root.get(searchCriteria.getKey()), searchCriteria.getValue());
@@ -83,7 +85,8 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
         }
     }
 
-    private Predicate getEventNamePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder) {
+    private Predicate getEventNamePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
+                                            SearchCriteria searchCriteria) {
         List<RatingCalculationEnum> enumValues = Arrays.asList(RatingCalculationEnum.values());
         List<RatingCalculationEnum> selectedEnums = enumValues.stream()
             .filter(x -> x.toString().toLowerCase().contains(((String) searchCriteria.getValue()).toLowerCase()))
@@ -97,9 +100,12 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
         return predicate;
     }
 
-    private Predicate getUserIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder) {
+    private Predicate getUserIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
+                                         SearchCriteria searchCriteria) {
         try {
-            User user = userService.findById(Long.valueOf((String) searchCriteria.getValue()));
+            User user = userRepo.findById(Long.valueOf((String) searchCriteria.getValue()))
+                .orElseThrow(
+                    () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + searchCriteria.getValue()));
             return criteriaBuilder.equal(root.get(searchCriteria.getKey()), user);
         } catch (NumberFormatException ex) {
             return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
@@ -107,8 +113,9 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
         }
     }
 
-    private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder) {
-        List<User> users = userService.findAll();
+    private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
+                                           SearchCriteria searchCriteria) {
+        List<User> users = userRepo.findAll();
 
         Set<String> userEmails = users.stream()
             .map(User::getEmail)
@@ -116,7 +123,8 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
             .collect(Collectors.toSet());
 
         Set<User> userSet = userEmails.stream()
-            .map(email -> userService.findByEmail(email))
+            .map(email -> userRepo.findByEmail(email).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + searchCriteria.getValue())))
             .collect(Collectors.toSet());
 
         Predicate predicate = criteriaBuilder.disjunction();
@@ -127,7 +135,8 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
         return predicate;
     }
 
-    private Predicate getDataRangePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder) {
+    private Predicate getDataRangePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
+                                            SearchCriteria searchCriteria) {
         try {
             String[] dates = (String[]) searchCriteria.getValue();
             LocalDate date1 = LocalDate.parse(dates[0]);
