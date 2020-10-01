@@ -4,8 +4,10 @@ import greencity.annotations.ApiPageable;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.exporter.RatingExcelExporter;
+import greencity.filters.RatingStatisticsSpecification;
 import greencity.service.RatingStatisticsService;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -19,9 +21,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -37,7 +41,8 @@ public class ManagementRatingStatisticsController {
      */
     @Autowired
     public ManagementRatingStatisticsController(RatingStatisticsService ratingStatisticsService,
-                                                RatingExcelExporter ratingExcelExporter) {
+                                                RatingExcelExporter ratingExcelExporter,
+                                                RatingStatisticsSpecification spec) {
         this.ratingStatisticsService = ratingStatisticsService;
         this.ratingExcelExporter = ratingExcelExporter;
     }
@@ -79,5 +84,50 @@ public class ManagementRatingStatisticsController {
 
         List<RatingStatisticsDto> ratingStatisticsList = ratingStatisticsService.getAllRatingStatistics();
         ratingExcelExporter.export(response.getOutputStream(), ratingStatisticsList);
+    }
+
+    /**
+     * Export filtered {@link RatingStatistics} to Excel file.
+     *
+     * @author Dovganyuk Taras
+     */
+    @PostMapping(value = "/exportFiltered", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public void exportFilteredToExcel(HttpServletResponse response,
+                                      RatingStatisticsViewDto ratingStatisticsViewDto)
+        throws IOException {
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+
+        String currentDate = dateFormat.format(new Date());
+        String fileName = "user_rating_statistics" + currentDate + ".xlsx";
+        String headerValue = "attachment; filename=" + fileName;
+
+        response.setHeader(headerKey, headerValue);
+
+        List<RatingStatisticsDto> ratingStatisticsList =
+            ratingStatisticsService
+                .getFilteredRatingStatisticsForExcel(ratingStatisticsService.getSpecification(ratingStatisticsViewDto));
+        ratingExcelExporter.export(response.getOutputStream(), ratingStatisticsList);
+    }
+
+    /**
+     * Returns  management page with User rating statistics with filtered data.
+     *
+     * @param model                   ModelAndView that will be configured and returned to user.
+     * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
+     */
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String filterData(Model model,
+                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+                             RatingStatisticsViewDto ratingStatisticsViewDto) {
+        Pageable paging =
+            PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
+
+        PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
+            ratingStatisticsService.getFilteredDataForManagementByPage(paging,
+                ratingStatisticsService.getSpecification(ratingStatisticsViewDto));
+        model.addAttribute("ratings", pageableDto);
+        model.addAttribute("fields", ratingStatisticsViewDto);
+        return "core/management_user_rating";
     }
 }

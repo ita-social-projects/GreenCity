@@ -36,8 +36,12 @@
                             <h2>Manage <strong>User rating statistics</strong></h2>
                         </div>
                         <div class="col-sm-6">
+                            <a href="/management/rating">
+                                <button type="button" class="btn btn-success">Clear filters</button>
+                            </a>
+                            <button type="submit" class="btn btn-success" onclick="exportFiltered()">Export filtered to Excel</button>
                             <a href="/management/rating/export">
-                                <button type="button" class="btn btn-success">Export to Excel</button>
+                                <button type="button" class="btn btn-success">Export all to Excel</button>
                             </a>
                         </div>
                     </div>
@@ -55,6 +59,59 @@
                     </tr>
                     </thead>
                     <tbody>
+
+                    <form method="POST" action="/management/rating" id = "searchForm" onsubmit="applyFilters()">
+                        <tr>
+                            <td>
+
+                                <input type="search" th:name="id" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.id }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="eventName" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.eventName }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="userId" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.userId }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="userEmail" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.userEmail }"/>
+
+                            </td>
+                            <td>
+                                <div class="input-group input-daterange">
+                                    <input type="search" name="startDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.startDate }"/>
+                                    <div class="input-group-addon">to</div>
+                                    <input type="search" name="endDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.endDate }"/>
+                                    <button type="submit" id="searchByDates"><i class="fa fa-search"></i></button>
+                                </div>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="pointsChanged" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.pointsChanged }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="currentRating" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.currentRating }"/>
+
+                            </td>
+                        </tr>
+                    </form>
+
                     <th:block th:each="rating, iterStatus :${ratings.getPage()}">
                         <tr>
                             <td th:text="${rating.id}"></td>
@@ -116,5 +173,33 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
+
+<!-- Include Date Range Picker -->
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+<script>
+    $('.input-daterange input').each(function () {
+        $(this).datepicker({
+            format: 'yyyy-mm-dd',
+            todayHighlight: true,
+            autoclose: true,
+            orientation: 'top'
+        });
+    });
+
+    function exportFiltered() {
+        document.getElementById("searchForm").action = "/management/rating/exportFiltered";
+        document.getElementById("searchForm").submit();
+
+    }
+    function applyFilters() {
+        document.getElementById("searchForm").action = "/management/rating";
+        document.getElementById("searchForm").submit();
+    }
+
+</script>
 </body>
 </html>
