@@ -3,11 +3,10 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkResponseDTO;
-
-import greencity.dto.user.UserManagementDto;
 import greencity.entity.SocialNetworkImage;
-import greencity.entity.User;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * SocialNetworkImageService interface.
@@ -39,4 +38,19 @@ public interface SocialNetworkImageService {
      * @return PageableDto of {@link SocialNetworkResponseDTO} instances.
      */
     PageableDto<SocialNetworkImageResponseDTO> searchBy(Pageable paging, String query);
+
+    /**
+     * Method for deleting the {@link SocialNetworkImage} instance by its id.
+     *
+     * @param id - {@link SocialNetworkImage} instance id which will be deleted.
+     */
+    void delete(Long id);
+
+    /**
+     * Method deletes all {@link SocialNetworkImage} by list of ids.
+     *
+     * @param listId list of id {@link SocialNetworkImage}
+     */
+    void deleteAll(List<Long> listId);
+
 }

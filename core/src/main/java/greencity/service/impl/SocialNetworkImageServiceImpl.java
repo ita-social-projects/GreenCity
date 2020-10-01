@@ -5,10 +5,7 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
-import greencity.dto.socialnetwork.SocialNetworkResponseDTO;
-import greencity.entity.Place;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
 import greencity.service.FileService;
@@ -107,6 +104,26 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
                 page.getPageable().getPageNumber(),
                 page.getTotalPages()
         );
+    }
+
+    /**
+     * Method for deleting {@link SocialNetworkImage} by its id.
+     *
+     * @param id - {@link SocialNetworkImage} instance id which will be deleted.
+     */
+    @Override
+    public void delete(Long id) {
+        socialNetworkImageRepo.deleteById(id);
+    }
+
+    /**
+     * Method for deleting all {@link SocialNetworkImage} instance by list of IDs.
+     *
+     * @param listId list of id {@link SocialNetworkImage}
+     */
+    @Override
+    public void deleteAll(List<Long> listId) {
+        listId.forEach(socialNetworkImageRepo::deleteById);
     }
 
     /**

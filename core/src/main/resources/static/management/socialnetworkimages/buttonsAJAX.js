@@ -24,4 +24,51 @@ $(document).ready(function() {
             $("#selectAll").prop("checked", false);
         }
     });
+
+    //delete button in deleteSocialNetworkImagesModal
+    $('#deleteOneSubmit').on('click', function (event) {
+        event.preventDefault();
+        var href = $(this).attr('href');
+        $.ajax({
+            url: href,
+            type: 'delete',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                location.reload();
+            }
+        });
+    });
+
+    //delete button on the right in the table
+    $('td .delete.eDelBtn').on('click', function (event) {
+        event.preventDefault();
+        $('#deleteSocialNetworkImagesModal').modal();
+        var href = $(this).attr('href');
+        $('#deleteOneSubmit').attr('href', href);
+    });
+
+    //delete button in deleteAllSelectedModal
+    $('#deleteAllSubmit').on('click', function (event) {
+        event.preventDefault();
+        var checkbox = $('table tbody input[type="checkbox"]');
+        var payload = [];
+        checkbox.each(function () {
+            if (this.checked) {
+                payload.push(this.value);
+            }
+        });
+        var href = '/management/socialnetworkimages/deleteAll';
+        $.ajax({
+            url: href,
+            type: 'delete',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                location.reload();
+            },
+            data: JSON.stringify(payload)
+        });
+    });
+
 });
