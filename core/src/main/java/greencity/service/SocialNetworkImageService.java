@@ -3,10 +3,7 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkResponseDTO;
-
-import greencity.dto.user.UserManagementDto;
 import greencity.entity.SocialNetworkImage;
-import greencity.entity.User;
 import org.springframework.data.domain.Pageable;
 
 /**
