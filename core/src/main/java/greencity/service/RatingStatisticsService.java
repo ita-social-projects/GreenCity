@@ -67,7 +67,9 @@ public interface RatingStatisticsService {
     List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto);
 
     /**
-     * sdfd.
+     * Returns {@link RatingStatisticsSpecification} for entered filter parameters.
+     *
+     * @param ratingStatisticsViewDto contains data from filters
      */
     RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto);
 }
