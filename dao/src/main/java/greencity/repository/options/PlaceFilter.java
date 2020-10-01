@@ -1,6 +1,5 @@
 package greencity.repository.options;
 
-import greencity.constant.AppConstant;
 import greencity.constant.RepoConstants;
 import greencity.dto.filter.FilterDiscountDto;
 import greencity.dto.filter.FilterPlaceDto;
@@ -108,7 +107,7 @@ public class PlaceFilter implements Specification<Place> {
         if (null == currentTime) {
             return cb.conjunction();
         }
-        LocalDateTime time = LocalDateTime.parse(currentTime, DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT));
+        LocalDateTime time = LocalDateTime.parse(currentTime, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         return cb.and(cb.equal(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_DAY), time.getDayOfWeek()),
             cb.lessThan(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_OPEN), time.toLocalTime()),
             cb.greaterThan(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_CLOSE), time.toLocalTime()));

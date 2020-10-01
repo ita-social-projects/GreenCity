@@ -6,13 +6,16 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,15 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -39,7 +36,7 @@ public class ManagementEcoNewsController {
     /**
      * Method that returns management page with all {@link EcoNews}.
      *
-     * @param model Model that will be configured and returned to user.
+     * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      */
@@ -47,8 +44,8 @@ public class ManagementEcoNewsController {
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
                                 @ApiIgnore Pageable pageable) {
         PageableDto<EcoNewsDto> allEcoNews =
-                query == null || query.isEmpty() ? ecoNewsService.findAll(pageable)
-                        : ecoNewsService.searchEcoNewsBy(pageable, query);
+            query == null || query.isEmpty() ? ecoNewsService.findAll(pageable)
+                : ecoNewsService.searchEcoNewsBy(pageable, query);
         model.addAttribute("pageable", allEcoNews);
         return "core/management_eco_news";
     }
@@ -92,13 +89,13 @@ public class ManagementEcoNewsController {
      * Method for creating {@link EcoNews}.
      *
      * @param addEcoNewsDtoRequest dto for {@link EcoNews} entity.
-     * @param file of {@link MultipartFile}
+     * @param file                 of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
     @ApiOperation(value = "Save EcoNews.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
     @PostMapping("/")
@@ -108,29 +105,23 @@ public class ManagementEcoNewsController {
                                           @ImageValidation
                                           @RequestParam(required = false, name = "file") MultipartFile file,
                                           @ApiIgnore Principal principal) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                        new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+        if (!bindingResult.hasErrors()) {
+            ecoNewsService.save(addEcoNewsDtoRequest, file, principal.getName());
         }
-        ecoNewsService.save(addEcoNewsDtoRequest, file, principal.getName());
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
      * Method which updates {@link EcoNews}.
      *
      * @param ecoNewsDtoManagement of {@link EcoNewsDtoManagement}.
-     * @param file                       of {@link MultipartFile}.
+     * @param file                 of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
     @ApiOperation(value = "Update Econews.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")
@@ -139,15 +130,9 @@ public class ManagementEcoNewsController {
                                      BindingResult bindingResult,
                                      @ImageValidation
                                      @RequestPart(required = false, name = "file") MultipartFile file) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                        new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+        if (!bindingResult.hasErrors()) {
+            ecoNewsService.update(ecoNewsDtoManagement, file);
         }
-        ecoNewsService.update(ecoNewsDtoManagement, file);
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return buildGenericResponseDto(bindingResult);
     }
 }

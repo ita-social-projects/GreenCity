@@ -112,7 +112,9 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_SAVE, dto.getName(), email);
 
         proposePlaceService.checkLocationValues(dto.getLocation());
-        proposePlaceService.checkInputTime(dto.getOpeningHoursList());
+        if (dto.getOpeningHoursList() != null) {
+            proposePlaceService.checkInputTime(dto.getOpeningHoursList());
+        }
 
         Place place = modelMapper.map(dto, Place.class);
         setUserToPlaceByEmail(email, place);
