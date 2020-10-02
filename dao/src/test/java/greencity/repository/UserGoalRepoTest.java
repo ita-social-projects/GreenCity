@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.GreenCityApplication;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = GreenCityApplication.class)
 @DataJpaTest
 @Sql("classpath:sql/user_goal.sql")
 class UserGoalRepoTest {

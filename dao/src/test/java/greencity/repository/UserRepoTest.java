@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.GreenCityApplication;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
@@ -27,7 +26,6 @@ import static greencity.entity.enums.UserStatus.DEACTIVATED;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = GreenCityApplication.class)
 @Sql("classpath:sql/populate_users_for_test.sql")
 class UserRepoTest {
     @Autowired

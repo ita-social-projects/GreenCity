@@ -1,7 +1,6 @@
 package greencity.repository;
 
 
-import greencity.GreenCityApplication;
 import greencity.entity.Comment;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,14 +11,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = GreenCityApplication.class)
 @DataJpaTest
 @Sql("classpath:sql/place_comment.sql")
 class PlaceCommentRepoTest {

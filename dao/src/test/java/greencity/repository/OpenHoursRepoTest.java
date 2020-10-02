@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.GreenCityApplication;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import java.util.List;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = GreenCityApplication.class)
 @DataJpaTest
 @Sql("classpath:sql/open_hours.sql")
 class OpenHoursRepoTest {
