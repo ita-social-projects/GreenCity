@@ -177,7 +177,7 @@
                         <div class="form-group">
                             <label>Category</label>
                             <select class="form-control" name="category" id="category">
-                                <option selected="selected"></option>
+                                <option selected="selected" id="empty-category"></option>
                                 <th:block th:each="category : ${categoryList}">
                                     <tr>
                                         <option>
@@ -312,17 +312,6 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3xs7Kczo46LFcQRFKPMdrE0lU4qsR_S4&callback=initMap">
 </script>
 <script th:inline="javascript">
-    $(document).on('click', '.removeBreak', function (event) {
-        event.preventDefault();
-        $('.removeBreak').closest('.break-time').find('.add-break').show()
-        $(this).closest('.break-hours').hide();
-    });
-
-    $(document).on('click', '.add-break', function (event) {
-        event.preventDefault();
-        $(this).next().show();
-        $(this).hide();
-    });
     let discountSpecifications = /*[[${discountSpecifications}]]*/ [];
 </script>
 </body>

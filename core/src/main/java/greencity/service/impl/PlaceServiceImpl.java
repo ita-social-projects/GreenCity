@@ -180,13 +180,15 @@ public class PlaceServiceImpl implements PlaceService {
         Set<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
         discountService.deleteAllByPlaceId(updatedPlace.getId());
         Set<DiscountValue> newDiscounts = new HashSet<>();
-        discounts.forEach(d -> {
-            DiscountValue discount = modelMapper.map(d, DiscountValue.class);
-            discount.setSpecification(specificationService.findByName(d.getSpecification().getName()));
-            discount.setPlace(updatedPlace);
-            discountService.save(discount);
-            newDiscounts.add(discount);
-        });
+        if (discounts != null) {
+            discounts.forEach(d -> {
+                DiscountValue discount = modelMapper.map(d, DiscountValue.class);
+                discount.setSpecification(specificationService.findByName(d.getSpecification().getName()));
+                discount.setPlace(updatedPlace);
+                discountService.save(discount);
+                newDiscounts.add(discount);
+            });
+        }
         discountsOld.addAll(newDiscounts);
     }
 

@@ -68,6 +68,9 @@ $(document).ready(function () {
     // Add place button (popup)
     $('#addPlaceModalBtn').on('click', function (event) {
         clearAllErrorsSpan();
+        clearEditModal();
+        $('#submitAddBtn').val("Add");
+        $('.modal-title').text("Add Place");
     });
 
     $('#addDiscount').on('click', addDiscountValue);
@@ -75,26 +78,17 @@ $(document).ready(function () {
         $(this).closest('.discount').remove();
     });
 
-    $(document).on('click', '.addBreakTime', addBreakTime);
+    $(document).on('click', '.add-break', function (event) {
+        event.preventDefault();
+        $(this).hide();
+        $(this).closest('.break-time').find('.break-hours').show();
+    });
     $(document).on('click', '.removeBreak', function (event) {
         event.preventDefault();
-        $(this).closest('.breaks').find('.addBreakTime').show();
-        $(this).closest('.break').remove();
+        $(this).closest('.break-time').find('.add-break').show();
+        $(this).closest('.break-hours').find('input').val('');
+        $(this).closest('.break-time').find('.break-hours').hide();
     });
-
-    function addBreakTime(event) {
-        $(this).hide();
-        event.preventDefault();
-        let startTimeInput = "<input name='startTime'  class='form-control-sm' type='time'>";
-        let endTimeInput = "<input name='endtTime' class='form-control-sm' type='time'>";
-        let removeButton = '<i class="material-icons removeBreak" data-toggle="tooltip"  title="Delete break hours">&#xE872;</i>'
-        let startDiv = "<div class='text-right'>" + "<label>Break(Start)</label>" +
-            startTimeInput + " </div>"
-        let endDiv = "<div class='text-right'>" + "<label>Break(End)</label>" +
-            endTimeInput + "</div>"
-        let breakDiv = "<div class='break form-inline'>" + startDiv + endDiv + removeButton
-        $(this).closest('.breaks').append(breakDiv);
-    }
 
     function addDiscountValue(event) {
         event.preventDefault();
@@ -249,10 +243,9 @@ $(document).ready(function () {
 
     function clearEditModal() {
         $('input[name=day]').prop('checked', false);
-        $('input[name=openTime]').val('');
-        $('input[name=closeTime]').val('');
-        $('input[name=startTime]').val('');
-        $('input[name=endTime]').val('');
+        $('#addPlaceModal').find('input').not('input[name=status]').not('#submitAddBtn').val('');
+        $('#empty-category').prop("selected", true);
+        deleteMarkers();
         $('.discount').remove();
     }
 
@@ -265,7 +258,6 @@ $(document).ready(function () {
         $('#addPlaceModal').modal();
         let href = $(this).attr('href');
         $.get(href, function (place) {
-            console.log("edit");
             $('#id').val(place.id)
             $('#placeName').val(place.name);
             $('#address').val(place.location.address);
@@ -278,15 +270,15 @@ $(document).ready(function () {
             };
             addMarker(location);
             place.openingHoursList.forEach(function (day) {
-                let weekDay = $(`#${day.weekDay}`);
-                weekDay.prop('checked', true);
-                weekDay.closest('div.form-row').find('input[name=openTime]').val(day.openTime);
-                weekDay.closest('div.form-row').find('input[name=closeTime]').val(day.closeTime);
+                let dayElement = $(`#${day.weekDay}`);
+                dayElement.prop('checked', true);
+                dayElement.closest('div.form-row').find('input[name=openTime]').val(day.openTime);
+                dayElement.closest('div.form-row').find('input[name=closeTime]').val(day.closeTime);
                 if (day.breakTime !== null) {
-                    weekDay.closest('div.form-row').find('.add-break').hide();
-                    weekDay.closest('div.form-row').find('.break-hours').show();
-                    weekDay.closest('div.form-row').find('input[name=startTime]').val(day.breakTime.startTime);
-                    weekDay.closest('div.form-row').find('input[name=endTime]').val(day.breakTime.endTime);
+                    dayElement.closest('div.form-row').find('.add-break').hide();
+                    dayElement.closest('div.form-row').find('.break-hours').show();
+                    dayElement.closest('div.form-row').find('input[name=startTime]').val(day.breakTime.startTime);
+                    dayElement.closest('div.form-row').find('input[name=endTime]').val(day.breakTime.endTime);
                 }
             });
             $('#category').val(place.category.name);
