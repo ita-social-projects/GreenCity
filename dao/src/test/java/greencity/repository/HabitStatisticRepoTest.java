@@ -1,6 +1,6 @@
 package greencity.repository;
 
-import greencity.GreenCityApplication;
+import greencity.DaoApplication;
 import greencity.entity.HabitStatistic;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = GreenCityApplication.class)
+@ContextConfiguration(classes = DaoApplication.class)
 @AutoConfigureTestDatabase(replace = Replace.ANY)
 class HabitStatisticRepoTest {
     @Autowired
