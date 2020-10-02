@@ -110,6 +110,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private User createNewRegisteredUser(OwnSignUpDto dto, String refreshTokenKey) {
         return User.builder()
             .name(dto.getName())
+            .firstName(dto.getName())
             .email(dto.getEmail())
             .dateOfRegistration(LocalDateTime.now())
             .role(ROLE.ROLE_USER)

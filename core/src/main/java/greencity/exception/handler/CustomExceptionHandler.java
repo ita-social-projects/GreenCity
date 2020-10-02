@@ -39,6 +39,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
     /**
+     * Method intercept exception {@link BadVerifyEmailTokenException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contains detail about occur exception.
+     * @return ResponseEntity which contain http status and body with message of exception.
+     */
+    @ExceptionHandler(BadVerifyEmailTokenException.class)
+    public final ResponseEntity<Object> handlerBadVerifyEmailTokenException(
+        BadVerifyEmailTokenException ex, WebRequest request) {
+        log.info(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
      * Method intercept exception {@link NotUpdatedException}.
      *
      * @param ex      Exception witch should be intercepted.
