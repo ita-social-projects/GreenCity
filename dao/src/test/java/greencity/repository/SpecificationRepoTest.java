@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ContextConfiguration(classes = DaoApplication.class)
 @Sql("classpath:sql/specification.sql")
 class SpecificationRepoTest {
-
     @Autowired
     private SpecificationRepo specificationRepo;
 
