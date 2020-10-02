@@ -38,7 +38,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long> {
      * @return {@link EcoNews} for specific tags.
      */
     @Query(nativeQuery = true, value =
-        "SELECT DISTINCT en.* FROM eco_news AS en "
+        "SELECT en.* FROM eco_news AS en "
             + "INNER JOIN eco_news_tags AS entag "
             + "ON en.id = entag.eco_news_id "
             + "INNER JOIN tags AS t ON entag.tags_id = t.id "
