@@ -19,6 +19,10 @@ public class OwnSignUpDto {
     @Length(
         min = USERNAME_MIN_LENGTH,
         max = USERNAME_MAX_LENGTH)
+    @Pattern(
+        regexp = "^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*$",
+        message = INVALID_USERNAME
+    )
     private String name;
 
     @NotBlank

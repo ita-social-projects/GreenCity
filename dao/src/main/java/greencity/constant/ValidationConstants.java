@@ -5,6 +5,7 @@ public final class ValidationConstants {
     public static final int USERNAME_MAX_LENGTH = 20;
     public static final String INVALID_EMAIL = "{greenCity.validation.invalid.email}";
     public static final String INVALID_PASSWORD = "{greenCity.validation.invalid.password}";
+    public static final String INVALID_USERNAME = "{greenCity.validation.invalid.username}";
 
     public static final String NEGATIVE_ID = "{greenCity.validation.negative.id}";
 
