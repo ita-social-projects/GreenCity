@@ -203,7 +203,7 @@ public class PlaceServiceImpl implements PlaceService {
         Set<OpeningHours> openingHoursSetOld = openingHoursService.findAllByPlaceId(updatedPlace.getId());
         openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> hours = new HashSet<>();
-        if (hoursUpdateDtoSet!=null) {
+        if (hoursUpdateDtoSet != null) {
             hoursUpdateDtoSet.forEach(h -> {
                 OpeningHours openingHours = modelMapper.map(h, OpeningHours.class);
                 openingHours.setPlace(updatedPlace);

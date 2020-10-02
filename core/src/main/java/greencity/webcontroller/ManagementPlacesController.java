@@ -8,7 +8,6 @@ import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.specification.SpecificationNameDto;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.service.CategoryService;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
@@ -94,7 +92,8 @@ public class ManagementPlacesController {
      */
     @ResponseBody
     @PutMapping
-    public GenericResponseDto updatePlace(@Valid @RequestBody PlaceUpdateDto placeUpdateDto, BindingResult bindingResult) {
+    public GenericResponseDto updatePlace(@Valid @RequestBody PlaceUpdateDto placeUpdateDto,
+                                          BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             placeService.update(placeUpdateDto);
         }
