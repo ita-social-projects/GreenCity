@@ -70,7 +70,7 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public Boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames) {
+    public boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames) {
         try {
             findTipsAndTricksTagsByNames(tipsAndTricksTagNames);
         } catch (TagNotFoundException e) {
@@ -83,7 +83,7 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public Boolean isValidNumOfUniqueTags(List<String> tagNames) {
+    public boolean isValidNumOfUniqueTags(List<String> tagNames) {
         Set<String> tagsSet = new HashSet<>(tagNames);
         if (tagsSet.size() < tagNames.size()) {
             throw new DuplicatedTagException(ErrorMessage.DUPLICATED_TAG);

@@ -286,3 +286,11 @@ table.table .avatar {
     top: 8px;
     left: 10px;
 }
+input[type=search] {
+    border: 1px dotted #999;
+    border-radius: 0;
+    width : 110px;
+    margin: 0;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+}

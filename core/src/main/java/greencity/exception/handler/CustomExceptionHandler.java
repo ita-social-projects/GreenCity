@@ -169,6 +169,35 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Method intercept exception {@link WrongEmailException}.
+     *
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @author Mykola Lehkyi
+     */
+    @ExceptionHandler(WrongEmailException.class)
+    public final ResponseEntity<Object> handleWrongEmailException(WrongEmailException exception, WebRequest request) {
+        log.info(exception.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercept exception {@link WrongPasswordException}.
+     *
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @author Mykola Lehkyi
+     */
+    @ExceptionHandler(WrongPasswordException.class)
+    public final ResponseEntity<Object> handleWrongPasswordException(WrongPasswordException exception,
+                                                                     WebRequest request) {
+        log.info(exception.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
      * Method intercept exception {@link UserAlreadyRegisteredException}.
      *
      * @param ex Exception witch should be intercepted.

@@ -25,10 +25,8 @@ public class TipsAndTricksDtoRequestValidator
         if (dto.getSource() != null && !dto.getSource().isEmpty()) {
             isUrlValid(dto.getSource());
         }
-        if (tagService.isValidNumOfUniqueTags(dto.getTags())) {
-            if (tagService.isAllTipsAndTricksValid(dto.getTags())) {
-                return true;
-            }
+        if ((tagService.isValidNumOfUniqueTags(dto.getTags()))
+                && (!tagService.isAllTipsAndTricksValid(dto.getTags()))) {
             throw new TagNotFoundDuringValidation(ErrorMessage.TAGS_NOT_FOUND);
         }
         return true;
