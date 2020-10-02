@@ -59,6 +59,14 @@ public interface PlaceService {
     Optional<Place> findByIdOptional(Long id);
 
     /**
+     * Method with return {@link PlaceUpdateDto} by comment id.
+     *
+     * @param id of {@link PlaceUpdateDto}.
+     * @return {@link PlaceUpdateDto}.
+     */
+    PlaceUpdateDto findPlaceUpdateDto(Long id);
+
+    /**
      * Method for saving proposed {@link Place} to database.
      *
      * @param dto - dto for Place entity

@@ -24,7 +24,7 @@ function initMap() {
 
 // Adds a marker to the map and push to the array.
 function addMarker(location) {
-    const marker = new google.maps.Marker({
+    let marker = new google.maps.Marker({
         position: location,
         map: map,
     });
@@ -119,7 +119,7 @@ $(document).ready(function () {
             obj[item.name] = item.value;
             return obj;
         }, {});
-        let newPlace = {
+        let place = {
             "name": formData.name,
             "location":
                 {
@@ -131,13 +131,17 @@ $(document).ready(function () {
             "category": formData.category,
             "photo": formData.photo
         }
-        newPlace.discountValues = getDiscountValues();
-        newPlace.openingHoursList = getOpeningHours();
+        place.discountValues = getDiscountValues();
+        place.openingHoursList = getOpeningHours();
+        if (formData.id !== '') {
+            place.id = formData.id;
+        }
 
         // Ajax request
+        let type = $('#id').val() ? 'put' : 'post';
         $.ajax({
-            url: '/management/places/',
-            type: 'post',
+            url: '/management/places',
+            type: type,
             dataType: 'json',
             contentType: 'application/json',
             success: function (data) {
@@ -149,7 +153,7 @@ $(document).ready(function () {
                     location.reload();
                 }
             },
-            data: JSON.stringify(newPlace)
+            data: JSON.stringify(place)
         });
     });
 
@@ -199,11 +203,11 @@ $(document).ready(function () {
         return openingHours;
     }
 
-    $('td .delete.eDelBtn').on('click',function(event){
+    $('td .delete.eDelBtn').on('click', function (event) {
         event.preventDefault();
         $('#deletePlaceModal').modal();
         let href = $(this).attr('href');
-        $('#deleteOneSubmit').attr('href',href);
+        $('#deleteOneSubmit').attr('href', href);
     });
 
     //delete в deletePlaceModal
@@ -242,4 +246,74 @@ $(document).ready(function () {
             data: JSON.stringify(payload)
         });
     });
+
+    function clearEditModal() {
+        $('input[name=day]').prop('checked', false);
+        $('input[name=openTime]').val('');
+        $('input[name=closeTime]').val('');
+        $('input[name=startTime]').val('');
+        $('input[name=endTime]').val('');
+        $('.discount').remove();
+    }
+
+    // Button edit
+    $('td .edit.eBtn').on('click', function (event) {
+        event.preventDefault();
+        $('#submitAddBtn').val("Edit");
+        $('.modal-title').text("Edit Place");
+        clearEditModal();
+        $('#addPlaceModal').modal();
+        let href = $(this).attr('href');
+        $.get(href, function (place) {
+            console.log("edit");
+            $('#id').val(place.id)
+            $('#placeName').val(place.name);
+            $('#address').val(place.location.address);
+            $('input[name=latitude]').val(place.location.lat);
+            $('input[name=longitude]').val(place.location.lng);
+            deleteMarkers();
+            let location = {
+                lat: place.location.lat,
+                lng: place.location.lng
+            };
+            addMarker(location);
+            place.openingHoursList.forEach(function (day) {
+                let weekDay = $(`#${day.weekDay}`);
+                weekDay.prop('checked', true);
+                weekDay.closest('div.form-row').find('input[name=openTime]').val(day.openTime);
+                weekDay.closest('div.form-row').find('input[name=closeTime]').val(day.closeTime);
+                if (day.breakTime !== null) {
+                    weekDay.closest('div.form-row').find('.add-break').hide();
+                    weekDay.closest('div.form-row').find('.break-hours').show();
+                    weekDay.closest('div.form-row').find('input[name=startTime]').val(day.breakTime.startTime);
+                    weekDay.closest('div.form-row').find('input[name=endTime]').val(day.breakTime.endTime);
+                }
+            });
+            $('#category').val(place.category.name);
+            place.discountValues.forEach(value => {
+                addDiscountValueForUpdate(value);
+            });
+
+        });
+    });
+
+    function addDiscountValueForUpdate(discount) {
+        let specificationOption = '';
+        for (let i = 0; i < discountSpecifications.length; i++) {
+            if (discountSpecifications[i] === discount.specification.name) {
+                specificationOption += `<option value=${discountSpecifications[i]} selected="true">${discountSpecifications[i]}</option>`
+            } else {
+                specificationOption += `<option value=${discountSpecifications[i]}>${discountSpecifications[i]}</option>`
+            }
+        }
+        let discValue = discount.value;
+        let discountValueInput = '<input name="discountValue" class="form-control" type="number" value="' + discValue + '"/>';
+
+        let removeButton = "<button class='btn btn-warning remove'>remove</button>"
+        let discDiv = "<div class='discount form-inline'>" +
+            "<select class='form-control'>" + specificationOption + "</select>" +
+            discountValueInput +
+            removeButton + "</div>"
+        $('#discounts').append(discDiv);
+    }
 });

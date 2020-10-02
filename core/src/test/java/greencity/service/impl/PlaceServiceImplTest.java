@@ -221,6 +221,19 @@ class PlaceServiceImplTest {
     }
 
     @Test
+    void findPlaceUpdateDtoTest() {
+        Place genericEntity = new Place();
+        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity));
+        when(modelMapper.map(genericEntity, PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
+        PlaceUpdateDto foundEntity = placeService.findPlaceUpdateDto(1L);
+        assertEquals(placeUpdateDto, foundEntity);
+
+        verify(placeRepo).findById(1L);
+        verify(modelMapper).map(genericEntity, PlaceUpdateDto.class);
+    }
+
+    @Test
     void getInfoByIdTest() {
         PlaceInfoDto gen = new PlaceInfoDto();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
@@ -456,7 +469,7 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void searchByTest(){
+    void searchByTest() {
         String searchQuery = "test";
         Pageable pageable = PageRequest.of(0, 1);
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
@@ -465,7 +478,7 @@ class PlaceServiceImplTest {
             pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
         PageableDto<AdminPlaceDto> result =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
-        assertEquals(result, placeService.searchBy(pageable,searchQuery));
+        assertEquals(result, placeService.searchBy(pageable, searchQuery));
         verify(placeRepo).searchBy(pageable, searchQuery);
     }
 }
