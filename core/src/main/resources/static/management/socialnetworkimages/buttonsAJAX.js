@@ -84,16 +84,6 @@ $(document).ready(function() {
             "hostPath": formData.hostPath,
             "imagePath": formData.imagePath
         };
-        // for (var key in formData) {
-        //
-        //     if (key.startsWith("tags") && formData["tags"].trim().length !== 0) {
-        //         var tag = formData["tags"].toString().split(/[\s,]+/);
-        //
-        //         for (var i = 0; i < tag.length; i++) {
-        //             payload.tags.push(tag[i]);
-        //         }
-        //     }
-        // }
         var result = new FormData();
         result.append("socialNetworkImageRequestDTO", new Blob([JSON.stringify(payload)], {type: "application/json"}));
         var file = document.getElementById("creationFile").files[0];
