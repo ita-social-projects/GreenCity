@@ -6,6 +6,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -56,18 +57,45 @@ public class ManagementPlacesController {
     }
 
     /**
+     * Method for getting PlaceUpdateDto by id.
+     *
+     * @return {@link PlaceUpdateDto} instance.
+     */
+    @GetMapping("/find")
+    public ResponseEntity<PlaceUpdateDto> getPlaceById(@RequestParam("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.findPlaceUpdateDto(id));
+    }
+
+    /**
      * Method which saves {@link Place}.
      *
      * @param placeAddDto dto with info for registering place.
-     * @param user        is an admin
+     * @param user  {@link User} is an admin
      * @return {@link GenericResponseDto}
      */
-    @PostMapping("/")
+    @PostMapping
     @ResponseBody
-    public GenericResponseDto savePlace(@Valid @RequestBody PlaceAddDto placeAddDto, BindingResult bindingResult,
+    public GenericResponseDto savePlace(@Valid @RequestBody PlaceAddDto placeAddDto,
+                                        BindingResult bindingResult,
                                         @ApiIgnore @CurrentUser User user) {
         if (!bindingResult.hasErrors()) {
             placeService.save(placeAddDto, user.getEmail());
+        }
+        return buildGenericResponseDto(bindingResult);
+    }
+
+    /**
+     * Method which updates {@link Place}.
+     *
+     * @param placeUpdateDto of {@link PlaceUpdateDto}
+     * @return {@link GenericResponseDto}
+     */
+    @ResponseBody
+    @PutMapping
+    public GenericResponseDto updatePlace(@Valid @RequestBody PlaceUpdateDto placeUpdateDto,
+                                          BindingResult bindingResult) {
+        if (!bindingResult.hasErrors()) {
+            placeService.update(placeUpdateDto);
         }
         return buildGenericResponseDto(bindingResult);
     }

@@ -26,6 +26,9 @@
         .displayNone {
             display: none;
         }
+        table {
+            table-layout: auto;
+        }
     </style>
 </head>
 <body>
@@ -112,9 +115,10 @@
                                 </table>
                             </td>
                             <td>
-                                <a th:href="@{/place/find/(id=${place.getId()})}" class="edit eBtn"><i
+
+                                <a th:if="${!place.getStatus().toString().equals('DELETED')}" th:href="@{/management/places/find(id=${place.getId()})}" class="edit eBtn"><i
                                         class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a th:href="@{/management/places(id=${place.getId()})}" class="delete eDelBtn"
+                                <a th:if="${!place.getStatus().toString().equals('DELETED')}" th:href="@{/management/places(id=${place.getId()})}" class="delete eDelBtn"
                                    data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>
@@ -151,9 +155,9 @@
                         <h4 class="modal-title">Add Place</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
+                    <input style="display: none" name="id" id="id">
                     <div name="map" id="map"></div>
                     <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
                             <label>Address</label>
                             <input type="hidden" name="latitude" value="2.5" id="latitude"/>
@@ -163,7 +167,7 @@
                         </div>
                         <div class="form-group">
                             <label>Place name</label>
-                            <input type="text" class="form-control" name="name">
+                            <input type="text" class="form-control" id ="placeName" name="name">
                             <span th:id="errorModalSavename" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
@@ -172,8 +176,8 @@
                         </div>
                         <div class="form-group">
                             <label>Category</label>
-                            <select class="form-control" name="category">
-                                <option selected="selected"></option>
+                            <select class="form-control" name="category" id="category">
+                                <option selected="selected" id="empty-category"></option>
                                 <th:block th:each="category : ${categoryList}">
                                     <tr>
                                         <option>
@@ -190,7 +194,7 @@
                             <div th:each="day: ${#strings.arraySplit('MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY',',')}">
                                 <div class="form-row">
                                     <div class="form-group col-md-3 week-day">
-                                        <input class="form-check-input" type="checkbox" name="day">
+                                        <input class="form-check-input" th:id="${day}" type="checkbox" name="day">
                                         <label class="form-check-label">
                                             <span th:text="${day}"></span>
                                         </label>
@@ -308,17 +312,6 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3xs7Kczo46LFcQRFKPMdrE0lU4qsR_S4&callback=initMap">
 </script>
 <script th:inline="javascript">
-    $(document).on('click', '.removeBreak', function (event) {
-        event.preventDefault();
-        $('.removeBreak').closest('.break-time').find('.add-break').show()
-        $(this).closest('.break-hours').hide();
-    });
-
-    $(document).on('click', '.add-break', function (event) {
-        event.preventDefault();
-        $(this).next().show();
-        $(this).hide();
-    });
     let discountSpecifications = /*[[${discountSpecifications}]]*/ [];
 </script>
 </body>
