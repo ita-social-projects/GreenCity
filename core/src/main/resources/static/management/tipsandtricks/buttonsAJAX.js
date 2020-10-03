@@ -83,7 +83,6 @@ $(document).ready(function () {
             "id": formData.id,
             "title": formData.title,
             "text": formData.text,
-            "image": formData.image,
             "source": formData.source,
             "tags": []
         };

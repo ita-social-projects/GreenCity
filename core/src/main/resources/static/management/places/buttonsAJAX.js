@@ -24,7 +24,7 @@ function initMap() {
 
 // Adds a marker to the map and push to the array.
 function addMarker(location) {
-    const marker = new google.maps.Marker({
+    let marker = new google.maps.Marker({
         position: location,
         map: map,
     });
@@ -68,6 +68,9 @@ $(document).ready(function () {
     // Add place button (popup)
     $('#addPlaceModalBtn').on('click', function (event) {
         clearAllErrorsSpan();
+        clearEditModal();
+        $('#submitAddBtn').val("Add");
+        $('.modal-title').text("Add Place");
     });
 
     $('#addDiscount').on('click', addDiscountValue);
@@ -75,26 +78,17 @@ $(document).ready(function () {
         $(this).closest('.discount').remove();
     });
 
-    $(document).on('click', '.addBreakTime', addBreakTime);
+    $(document).on('click', '.add-break', function (event) {
+        event.preventDefault();
+        $(this).hide();
+        $(this).closest('.break-time').find('.break-hours').show();
+    });
     $(document).on('click', '.removeBreak', function (event) {
         event.preventDefault();
-        $(this).closest('.breaks').find('.addBreakTime').show();
-        $(this).closest('.break').remove();
+        $(this).closest('.break-time').find('.add-break').show();
+        $(this).closest('.break-hours').find('input').val('');
+        $(this).closest('.break-time').find('.break-hours').hide();
     });
-
-    function addBreakTime(event) {
-        $(this).hide();
-        event.preventDefault();
-        let startTimeInput = "<input name='startTime'  class='form-control-sm' type='time'>";
-        let endTimeInput = "<input name='endtTime' class='form-control-sm' type='time'>";
-        let removeButton = '<i class="material-icons removeBreak" data-toggle="tooltip"  title="Delete break hours">&#xE872;</i>'
-        let startDiv = "<div class='text-right'>" + "<label>Break(Start)</label>" +
-            startTimeInput + " </div>"
-        let endDiv = "<div class='text-right'>" + "<label>Break(End)</label>" +
-            endTimeInput + "</div>"
-        let breakDiv = "<div class='break form-inline'>" + startDiv + endDiv + removeButton
-        $(this).closest('.breaks').append(breakDiv);
-    }
 
     function addDiscountValue(event) {
         event.preventDefault();
@@ -119,7 +113,7 @@ $(document).ready(function () {
             obj[item.name] = item.value;
             return obj;
         }, {});
-        let newPlace = {
+        let place = {
             "name": formData.name,
             "location":
                 {
@@ -131,13 +125,17 @@ $(document).ready(function () {
             "category": formData.category,
             "photo": formData.photo
         }
-        newPlace.discountValues = getDiscountValues();
-        newPlace.openingHoursList = getOpeningHours();
+        place.discountValues = getDiscountValues();
+        place.openingHoursList = getOpeningHours();
+        if (formData.id !== '') {
+            place.id = formData.id;
+        }
 
         // Ajax request
+        let type = $('#id').val() ? 'put' : 'post';
         $.ajax({
-            url: '/management/places/',
-            type: 'post',
+            url: '/management/places',
+            type: type,
             dataType: 'json',
             contentType: 'application/json',
             success: function (data) {
@@ -149,7 +147,7 @@ $(document).ready(function () {
                     location.reload();
                 }
             },
-            data: JSON.stringify(newPlace)
+            data: JSON.stringify(place)
         });
     });
 
@@ -199,11 +197,11 @@ $(document).ready(function () {
         return openingHours;
     }
 
-    $('td .delete.eDelBtn').on('click',function(event){
+    $('td .delete.eDelBtn').on('click', function (event) {
         event.preventDefault();
         $('#deletePlaceModal').modal();
         let href = $(this).attr('href');
-        $('#deleteOneSubmit').attr('href',href);
+        $('#deleteOneSubmit').attr('href', href);
     });
 
     //delete в deletePlaceModal
@@ -242,4 +240,72 @@ $(document).ready(function () {
             data: JSON.stringify(payload)
         });
     });
+
+    function clearEditModal() {
+        $('input[name=day]').prop('checked', false);
+        $('#addPlaceModal').find('input').not('input[name=status]').not('#submitAddBtn').val('');
+        $('#empty-category').prop("selected", true);
+        deleteMarkers();
+        $('.discount').remove();
+    }
+
+    // Button edit
+    $('td .edit.eBtn').on('click', function (event) {
+        event.preventDefault();
+        $('#submitAddBtn').val("Edit");
+        $('.modal-title').text("Edit Place");
+        clearEditModal();
+        $('#addPlaceModal').modal();
+        let href = $(this).attr('href');
+        $.get(href, function (place) {
+            $('#id').val(place.id)
+            $('#placeName').val(place.name);
+            $('#address').val(place.location.address);
+            $('input[name=latitude]').val(place.location.lat);
+            $('input[name=longitude]').val(place.location.lng);
+            deleteMarkers();
+            let location = {
+                lat: place.location.lat,
+                lng: place.location.lng
+            };
+            addMarker(location);
+            place.openingHoursList.forEach(function (day) {
+                let dayElement = $(`#${day.weekDay}`);
+                dayElement.prop('checked', true);
+                dayElement.closest('div.form-row').find('input[name=openTime]').val(day.openTime);
+                dayElement.closest('div.form-row').find('input[name=closeTime]').val(day.closeTime);
+                if (day.breakTime !== null) {
+                    dayElement.closest('div.form-row').find('.add-break').hide();
+                    dayElement.closest('div.form-row').find('.break-hours').show();
+                    dayElement.closest('div.form-row').find('input[name=startTime]').val(day.breakTime.startTime);
+                    dayElement.closest('div.form-row').find('input[name=endTime]').val(day.breakTime.endTime);
+                }
+            });
+            $('#category').val(place.category.name);
+            place.discountValues.forEach(value => {
+                addDiscountValueForUpdate(value);
+            });
+
+        });
+    });
+
+    function addDiscountValueForUpdate(discount) {
+        let specificationOption = '';
+        for (let i = 0; i < discountSpecifications.length; i++) {
+            if (discountSpecifications[i] === discount.specification.name) {
+                specificationOption += `<option value=${discountSpecifications[i]} selected="true">${discountSpecifications[i]}</option>`
+            } else {
+                specificationOption += `<option value=${discountSpecifications[i]}>${discountSpecifications[i]}</option>`
+            }
+        }
+        let discValue = discount.value;
+        let discountValueInput = '<input name="discountValue" class="form-control" type="number" value="' + discValue + '"/>';
+
+        let removeButton = "<button class='btn btn-warning remove'>remove</button>"
+        let discDiv = "<div class='discount form-inline'>" +
+            "<select class='form-control'>" + specificationOption + "</select>" +
+            discountValueInput +
+            removeButton + "</div>"
+        $('#discounts').append(discDiv);
+    }
 });

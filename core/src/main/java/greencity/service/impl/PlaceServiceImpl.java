@@ -180,13 +180,15 @@ public class PlaceServiceImpl implements PlaceService {
         Set<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
         discountService.deleteAllByPlaceId(updatedPlace.getId());
         Set<DiscountValue> newDiscounts = new HashSet<>();
-        discounts.forEach(d -> {
-            DiscountValue discount = modelMapper.map(d, DiscountValue.class);
-            discount.setSpecification(specificationService.findByName(d.getSpecification().getName()));
-            discount.setPlace(updatedPlace);
-            discountService.save(discount);
-            newDiscounts.add(discount);
-        });
+        if (discounts != null) {
+            discounts.forEach(d -> {
+                DiscountValue discount = modelMapper.map(d, DiscountValue.class);
+                discount.setSpecification(specificationService.findByName(d.getSpecification().getName()));
+                discount.setPlace(updatedPlace);
+                discountService.save(discount);
+                newDiscounts.add(discount);
+            });
+        }
         discountsOld.addAll(newDiscounts);
     }
 
@@ -203,12 +205,14 @@ public class PlaceServiceImpl implements PlaceService {
         Set<OpeningHours> openingHoursSetOld = openingHoursService.findAllByPlaceId(updatedPlace.getId());
         openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> hours = new HashSet<>();
-        hoursUpdateDtoSet.forEach(h -> {
-            OpeningHours openingHours = modelMapper.map(h, OpeningHours.class);
-            openingHours.setPlace(updatedPlace);
-            openingHoursService.save(openingHours);
-            hours.add(openingHours);
-        });
+        if (hoursUpdateDtoSet != null) {
+            hoursUpdateDtoSet.forEach(h -> {
+                OpeningHours openingHours = modelMapper.map(h, OpeningHours.class);
+                openingHours.setPlace(updatedPlace);
+                openingHoursService.save(openingHours);
+                hours.add(openingHours);
+            });
+        }
         openingHoursSetOld.addAll(hours);
     }
 
@@ -333,6 +337,16 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public Optional<Place> findByIdOptional(Long id) {
         return placeRepo.findById(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PlaceUpdateDto findPlaceUpdateDto(Long id) {
+        Place place =
+            placeRepo.findById(id).orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(place, PlaceUpdateDto.class);
     }
 
     /**
