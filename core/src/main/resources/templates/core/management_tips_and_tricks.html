@@ -83,7 +83,7 @@
                             <td th:text="${tipsAndTricks.getId()}"></td>
                             <td th:text="${tipsAndTricks.getTitle()}"></td>
                             <td th:text="${tipsAndTricks.getAuthor().getName()}"></td>
-                            <td th:text="${tipsAndTricks.getImagePath()}"></td>
+                            <td><img th:src="${tipsAndTricks.getImagePath()}" th:width="150" th:height="100"></td>
                             <td th:text="${#temporals.format(tipsAndTricks.getCreationDate(), 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
                                 <a th:href="@{/management/tipsandtricks/find/(id=${tipsAndTricks.getId()})}"
@@ -143,10 +143,6 @@
                             <label>Tags</label>
                             <input type="text" class="form-control" name="tags" required>
                             <span th:id="errorModalSavetags" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Image</label>
-                            <input type="text" class="form-control" name="image">
                         </div>
                         <div class="form-group">
                             <label>Source</label>

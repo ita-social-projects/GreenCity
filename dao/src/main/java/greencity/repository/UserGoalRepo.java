@@ -22,7 +22,6 @@ public interface UserGoalRepo extends JpaRepository<UserGoal, Long> {
      * @param userGoalId - id of userGoal.
      * @return {@link Goal}
      */
-
     @Query("SELECT ug.goal FROM UserGoal ug WHERE ug.id = ?1")
     Optional<Goal> findGoalByUserGoalId(Long userGoalId);
 }
