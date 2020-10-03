@@ -155,8 +155,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      * @param id {@link SocialNetworkImage} instance id.
      * @return {@link SocialNetworkImage}
      */
-    @Override
-    public SocialNetworkImage findById(Long id) {
+    private SocialNetworkImage findById(Long id) {
         return socialNetworkImageRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.SOCIAL_NETWORK_IMAGE_FOUND_BY_ID + id));

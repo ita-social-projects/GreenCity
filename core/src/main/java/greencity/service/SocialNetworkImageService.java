@@ -65,14 +65,6 @@ public interface SocialNetworkImageService {
     SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile image);
 
     /**
-     * Method for getting the {@link SocialNetworkImage} instance by its id.
-     *
-     * @param id {@link SocialNetworkImage} instance id.
-     * @return {@link SocialNetworkImage} instance.
-     */
-    SocialNetworkImage findById(Long id);
-
-    /**
      * Method for getting the {@link SocialNetworkImageResponseDTO} instance by its id.
      *
      * @param id {@link SocialNetworkImageResponseDTO} instance id.
