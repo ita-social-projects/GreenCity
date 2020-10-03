@@ -32,6 +32,7 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 @RequestMapping("/management/socialnetworkimages")
 public class ManagementSocialNetworkImagesController {
     private final SocialNetworkImageService socialNetworkImageService;
+
     /**
      * Method that returns management page with all {@link SocialNetworkImage}.
      *
@@ -135,5 +136,4 @@ public class ManagementSocialNetworkImagesController {
         }
         return buildGenericResponseDto(bindingResult);
     }
-
 }

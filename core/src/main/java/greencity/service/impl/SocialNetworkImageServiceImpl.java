@@ -132,7 +132,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     @Override
-    public SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile image) {
+    public SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+                                              MultipartFile image) {
         SocialNetworkImage toSave = modelMapper.map(socialNetworkImageRequestDTO, SocialNetworkImage.class);
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
@@ -148,6 +149,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
+     * {@inheritDoc}
      * Method for finding {@link SocialNetworkImage} by id
      *
      * @param id {@link SocialNetworkImage} instance id.
@@ -161,6 +163,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
+     * {@inheritDoc}
      * Method for finding {@link SocialNetworkImageResponseDTO} by id
      *
      * @param id {@link SocialNetworkImageResponseDTO} instance id.
@@ -173,6 +176,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
+     * {@inheritDoc}
      * Method for updating {@link SocialNetworkImage}
      *
      * @param socialNetworkImageResponseDTO - instance of {@link SocialNetworkImageResponseDTO}.
