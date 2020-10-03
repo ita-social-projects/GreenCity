@@ -59,8 +59,8 @@
                                 </span>
                         </th>
                         <th>Id</th>
-                        <th>Image path</th>
                         <th>Host path</th>
+                        <th>Image path</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -74,8 +74,8 @@
                                 </span>
                             </td>
                             <td th:text="${socialnetworkimage.id}"></td>
-                            <td th:text="${socialnetworkimage.hostPath}"> <a> th:href="${socialnetworkimage.hostPath}"</a></td>
-                            <td>    <img th:src="${socialnetworkimage.imagePath}"></td>
+                            <td> <a th:href="${socialnetworkimage.hostPath}" th:text="${socialnetworkimage.hostPath}"></a> </td>
+                            <td><img th:src="${socialnetworkimage.imagePath}" th:width="100" th:height="100"> </td>
                             <td>
                                 <a th:href="@{/management/socialnetworkimages/find/(id=${socialnetworkimage.getId()})}" class="edit eBtn">
                                     <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
@@ -123,30 +123,15 @@
                     <div class="modal-body">
                         <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
-                            <label>Title</label>
-                            <input type="text" class="form-control" name="title" required>
-                            <span th:id="errorModalSavetitle" class="errorSpan"></span>
+                            <label>Host path</label>
+                            <input type="text" class="form-control" name="hostPath" required>
+                            <span th:id="errorModalSaveimagepath" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label>Text</label>
-                            <input type="text" class="form-control" name="text" required>
-                            <span th:id="errorModalSavetext" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Tags</label>
-                            <input type="text" class="form-control" name="tags" required>
-                            <span th:id="errorModalSavetags" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Source</label>
-                            <input type="text" class="form-control" name="source">
-                        </div>
-                        <div class="form-group">
-                            <label>Image</label>
-                            <input type="file" class="form-control" name="file" id="creationFile">
+                            <label>Image path</label>
+                            <input type="file" class="form-control" name="imagePath" id="creationFile">
                             <span th:id="errorModalSavefile" class="errorSpan"></span>
                         </div>
-
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -156,6 +141,7 @@
             </div>
         </div>
     </div>
+
     <!-- Edit Modal HTML -->
     <div id="editSocialNetworkImagesModal" class="modal fade">
         <div class="modal-dialog">
@@ -172,30 +158,16 @@
                             <span th:id="errorModalUpdateid" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label for="title">Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required>
-                            <span th:id="errorModalUpdatetitle" class="errorSpan"></span>
+                            <label for="hostPath">Host path</label>
+                            <input type="text" class="form-control" id="hostPath" name="hostPath" required>
+                            <span th:id="errorModalUpdatehostpath" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label for="text">Text</label>
-                            <input type="text" class="form-control" id="text" name="text" required>
-                            <span th:id="errorModalUpdatetext" class="errorSpan"></span>
+                            <label for="imagePath">Image path</label>
+                            <input type="text" class="form-control" id="imagePath" name="imagePath" readonly required>
                         </div>
                         <div class="form-group">
-                            <label for="tags">Tags</label>
-                            <input type="text" class="form-control" id="tags" name="tags" required>
-                            <span th:id="errorModalUpdatetags" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="imagePath">Image</label>
-                            <input type="text" class="form-control" id="imagePath" name="imagePath">
-                        </div>
-                        <div class="form-group">
-                            <label for="source">Source</label>
-                            <input type="text" class="form-control" id="source" name="source">
-                        </div>
-                        <div class="form-group">
-                            <label for="file">Image</label>
+                            <label for="file">Image path</label>
                             <input type="file" class="form-control" id="file" name="file">
                             <span th:id="errorModalUpdatefile" class="errorSpan"></span>
                         </div>
