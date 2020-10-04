@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,71 +37,42 @@ public class RatingExcelExporter {
 
             XSSFSheet sheet = workbook.createSheet("Rating");
             Row row = sheet.createRow(0);
-            Cell cell = row.createCell(0);
-            cell.setCellStyle(style);
-            cell.setCellValue("ID");
-
-            cell = row.createCell(1);
-            cell.setCellStyle(style);
-            cell.setCellValue("Event");
-
-            cell = row.createCell(2);
-            cell.setCellStyle(style);
-            cell.setCellValue("Date");
-
-            cell = row.createCell(3);
-            cell.setCellStyle(style);
-            cell.setCellValue("UserID");
-
-            cell = row.createCell(4);
-            cell.setCellStyle(style);
-            cell.setCellValue("User email");
-
-            cell = row.createCell(5);
-            cell.setCellStyle(style);
-            cell.setCellValue("PointsChanged");
-
-            cell = row.createCell(6);
-            cell.setCellStyle(style);
-            cell.setCellValue("Current rating");
+            setCell(row, 0, style, "Id");
+            setCell(row, 1, style, "Event");
+            setCell(row, 2, style, "Date");
+            setCell(row, 3, style, "UserId");
+            setCell(row, 4, style, "User email");
+            setCell(row, 5, style, "Points changed");
+            setCell(row, 6, style, "Current rating");
 
             int rowCount = 1;
             for (RatingStatisticsDto dto : ratingStatisticsDtoList) {
                 row = sheet.createRow(rowCount++);
 
-                cell = row.createCell(0);
-                cell.setCellValue(dto.getId());
-                sheet.autoSizeColumn(0);
-
-                cell = row.createCell(1);
-                cell.setCellValue(dto.getRatingCalculationEnum().toString());
-                sheet.autoSizeColumn(1);
-
-                cell = row.createCell(2);
-                cell.setCellValue(dto.getCreateDate().toString());
-                sheet.autoSizeColumn(2);
-
-                cell = row.createCell(3);
-                cell.setCellValue(dto.getUser().getId());
-                sheet.autoSizeColumn(3);
-
-                cell = row.createCell(4);
-                cell.setCellValue(dto.getUser().getEmail());
-                sheet.autoSizeColumn(4);
-
-
-                cell = row.createCell(5);
-                cell.setCellValue(dto.getPointsChanged());
-                sheet.autoSizeColumn(5);
-
-                cell = row.createCell(6);
-                cell.setCellValue(dto.getRating());
-                sheet.autoSizeColumn(6);
+                setCell(row, 0, dto.getId().toString(), sheet);
+                setCell(row, 1, dto.getRatingCalculationEnum().toString(), sheet);
+                setCell(row, 2, dto.getCreateDate().toString(), sheet);
+                setCell(row, 3, dto.getUser().getId().toString(), sheet);
+                setCell(row, 4, dto.getUser().getEmail(), sheet);
+                setCell(row, 5, Float.toString(dto.getPointsChanged()), sheet);
+                setCell(row, 5, Float.toString(dto.getRating()), sheet);
             }
 
             workbook.write(outputStream);
         } catch (IOException ex) {
             log.error("Export to excel file error {}", ex.getMessage());
         }
+    }
+
+    private static void setCell(Row row, Integer cellNumber, CellStyle style, String cellName) {
+        Cell cell = row.createCell(cellNumber);
+        cell.setCellStyle(style);
+        cell.setCellValue(cellName);
+    }
+
+    private static void setCell(Row row, Integer cellNumber, String value, Sheet sheet) {
+        Cell cell = row.createCell(cellNumber);
+        cell.setCellValue(value);
+        sheet.autoSizeColumn(cellNumber);
     }
 }

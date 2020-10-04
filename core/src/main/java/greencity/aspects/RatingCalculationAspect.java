@@ -37,6 +37,9 @@ public class RatingCalculationAspect {
      */
     @Pointcut("@annotation(ratingCalculation)")
     public void myAnnotationPointcut(RatingCalculation ratingCalculation) {
+        /*
+         * Complete if needed.
+         */
     }
 
     /**
