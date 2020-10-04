@@ -41,6 +41,11 @@
                                         <input type="text" name="query" class="form-control" placeholder="Search…">
                                     </form>
                                 </span>
+                                <a href="#addSocialNetworkImagesModal" id="addSocialNetworkImagesBtn" class="btn btn-success"
+                                   data-toggle="modal"><i class="material-icons">&#xE147;</i>
+                                    <span>Add Social Network Images News</span></a>
+                                <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
+                                        class="material-icons">&#xE15C;</i> <span>Delete</span></a>
                         </div>
                     </div>
                 </div>
@@ -54,8 +59,8 @@
                                 </span>
                         </th>
                         <th>Id</th>
-                        <th>Image path</th>
                         <th>Host path</th>
+                        <th>Image path</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -69,8 +74,16 @@
                                 </span>
                             </td>
                             <td th:text="${socialnetworkimage.id}"></td>
-                            <td th:text="${socialnetworkimage.hostPath}"> <a> th:href="${socialnetworkimage.hostPath}"</a></td>
-                            <td>    <img th:src="${socialnetworkimage.imagePath}"></td>
+                            <td> <a th:href="${socialnetworkimage.hostPath}" th:text="${socialnetworkimage.hostPath}"></a> </td>
+                            <td><img th:src="${socialnetworkimage.imagePath}" th:width="100" th:height="100"> </td>
+                            <td>
+                                <a th:href="@{/management/socialnetworkimages/find/(id=${socialnetworkimage.getId()})}" class="edit eBtn">
+                                    <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                                </a>
+                                <a th:href="@{/management/socialnetworkimages/delete/(id=${socialnetworkimage.getId()})}" class="delete eDelBtn" data-toggle="modal">
+                                    <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                                </a>
+                            </td>
                         </tr>
                         </tbody>
                     </th:block>
@@ -94,6 +107,119 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Modal HTML -->
+    <div id="addSocialNetworkImagesModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{management/socialnetworkimages}" method="post" id="addSocialNetworkImagesForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Social Network Images</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
+                        <div class="form-group">
+                            <label>Host path</label>
+                            <input type="text" class="form-control" name="hostPath" required>
+                            <span th:id="errorModalSaveimagepath" class="errorSpan"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Image path</label>
+                            <input type="file" class="form-control" name="imagePath" id="creationFile">
+                            <span th:id="errorModalSavefile" class="errorSpan"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success" value="Add" id="submitAddBtn">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal HTML -->
+    <div id="editSocialNetworkImagesModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editSocialNetworkImagesForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="id">ID</label>
+                            <input type="text" class="form-control" id="id" name="id" readonly required>
+                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="hostPath">Host path</label>
+                            <input type="text" class="form-control" id="hostPath" name="hostPath" required>
+                            <span th:id="errorModalUpdatehostpath" class="errorSpan"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="imagePath">Image path</label>
+                            <input type="text" class="form-control" id="imagePath" name="imagePath" readonly required>
+                        </div>
+                        <div class="form-group">
+                            <label for="file">Image path</label>
+                            <input type="file" class="form-control" id="file" name="file">
+                            <span th:id="errorModalUpdatefile" class="errorSpan"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-info" value="Save" id="submitEditBtn">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal HTML -->
+    <div id="deleteSocialNetworkImagesModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="deleteSocialNetworkImagesForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete Social Network Images</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete that Record?</p>
+                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <a href="" id="deleteOneSubmit" class="btn btn-danger">Delete</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Delete all selected Modal HTML -->
+    <div id="deleteAllSelectedModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete all selected</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete these Records?</p>
+                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <a href="" id="deleteAllSubmit" class="btn btn-danger">Delete</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
