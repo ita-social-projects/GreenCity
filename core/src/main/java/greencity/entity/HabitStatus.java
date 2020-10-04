@@ -23,9 +23,6 @@ public class HabitStatus {
     @Column(name = "habit_streak")
     private Integer habitStreak;
 
-    @Column(name = "suspended")
-    private boolean suspended;
-
     @Column(name = "last_enrollment")
     private LocalDateTime lastEnrollmentDate;
 

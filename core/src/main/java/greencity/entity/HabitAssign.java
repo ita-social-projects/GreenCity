@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import javax.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,9 @@ public class HabitAssign {
     @Column(name = "create_date", nullable = false)
     private ZonedDateTime createDate;
 
+    @Column(name = "suspended", nullable = false)
+    private Boolean suspended;
+
     @ManyToOne
     private Habit habit;
 
@@ -31,4 +35,7 @@ public class HabitAssign {
 
     @OneToOne(mappedBy = "habitAssign", cascade = CascadeType.ALL)
     private HabitStatus habitStatus;
+
+    @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
+    private List<HabitStatistic> habitStatistic;
 }

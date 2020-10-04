@@ -127,4 +127,28 @@
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habit_assign"/>
     </changeSet>
+
+    <changeSet id="14" author="Kravchenko">
+        <dropForeignKeyConstraint baseTableName="habit_statistics" constraintName="FK_habit_habit_statistics"/>
+
+        <renameColumn tableName="habit_statistics" oldColumnName="habit_id"
+                      newColumnName="habit_assign_id"/>
+
+        <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_statistics"
+                                 constraintName="fk_habit_assign_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habit_assign"/>
+    </changeSet>
+
+    <changeSet id="15" author="Kravchenko">
+        <dropColumn tableName="habit_status" columnName="suspended"/>
+
+        <addColumn tableName="habit_assign">
+            <column name="suspended" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <renameColumn tableName="habit_statistics" oldColumnName="date" newColumnName="create_date"/>
+    </changeSet>
 </databaseChangeLog>
