@@ -4,51 +4,88 @@ import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatus;
 import greencity.entity.User;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
     /**
-     * Method return {@link HabitStatus} by habitAssignId.
+     * Method to return {@link HabitStatus} by {@link HabitAssign} id.
      *
-     * @param habitAssignId - id of {@link HabitAssign}
-     * @return {@link HabitStatus}
+     * @param habitAssignId - id of {@link HabitAssign}.
+     * @return {@link HabitStatus} instance, if it doesn't exist returns Optional.
      */
+    @Query(value = "SELECT hs FROM HabitStatus hs "
+        + "WHERE hs.habitAssign.id = :habitAssignId")
     Optional<HabitStatus> findByHabitAssignId(Long habitAssignId);
 
     /**
-     * Method return {@link HabitStatus} by habitAssignId.
+     * Method to return active {@link HabitStatus} by {@link Habit} id and {@link User} id.
      *
      * @param userId  {@link User} id.
      * @param habitId {@link Habit} id.
-     * @return {@link HabitStatus}
+     * @return {@link HabitStatus} instance, if it doesn't exist returns Optional.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM habit_status hs "
-        + "INNER JOIN habit_assign ha ON hs.habit_assign_id = ha.id "
-        + "WHERE ha.user_id = ?1 AND ha.habit_id = ?2")
-    Optional<HabitStatus> findByUserIdAndHabitId(Long userId, Long habitId);
+    @Query(value = "SELECT hs FROM HabitStatus hs "
+        + "WHERE hs.habitAssign.user.id = :userId AND hs.habitAssign.habit.id = :habitId "
+        + "AND hs.habitAssign.suspended = false")
+    Optional<HabitStatus> findByUserIdAndHabitId(@Param("userId") Long userId,
+                                                 @Param("habitId") Long habitId);
 
     /**
-     * Method delete {@link HabitStatus} by habitAssignId.
+     * Method to return {@link HabitStatus} by {@link Habit}, {@link User} id's
+     * and {@link ZonedDateTime} dateTime.
      *
-     * @param habitAssignId - id of {@link HabitAssign}
+     * @param userId  {@link User} id.
+     * @param habitId {@link Habit} id.
+     * @return {@link HabitStatus} instance, if it doesn't exist returns Optional.
      */
-    void deleteByHabitAssignId(Long habitAssignId);
+    @Query(value = "SELECT hs FROM HabitStatus hs "
+        + "WHERE hs.habitAssign.habit.id = :habitId AND hs.habitAssign.user.id = :userId "
+        + "AND DATE(hs.habitAssign.createDate) = :dateTime")
+    Optional<HabitStatus> findByUserIdAndHabitIdAndCreateDate(@Param("userId") Long userId,
+                                                              @Param("habitId") Long habitId,
+                                                              @Param("dateTime") ZonedDateTime dateTime);
 
     /**
-     * Method delete {@link HabitStatus} by userId and habitId.
+     * Method to delete {@link HabitStatus} by {@link HabitAssign} id.
+     *
+     * @param habitAssignId - id of {@link HabitAssign}.
+     */
+    @Modifying
+    @Query(value = "DELETE FROM HabitStatus hs "
+        + "WHERE hs.habitAssign.id = :habitAssignId")
+    void deleteByHabitAssignId(@Param("habitAssignId") Long habitAssignId);
+
+    /**
+     * Method to delete {@link HabitStatus} by {@link User} id and {@link Habit} id.
      *
      * @param userId  {@link User} id.
      * @param habitId {@link Habit} id.
      */
     @Modifying
-    @Query(nativeQuery = true, value = "DELETE FROM habit_status hs "
-        + "USING habit_assign ha "
-        + "WHERE hs.habit_assign_id = ha.id "
-        + "AND ha.user_id = ?1 AND ha.habit_id = ?2")
-    void deleteByUserIdAndHabitId(Long userId, Long habitId);
+    @Query(value = "DELETE FROM HabitStatus hs "
+        + "WHERE hs.habitAssign.user.id = :userId AND hs.habitAssign.habit.id = :habitId "
+        + "AND hs.habitAssign.suspended = false")
+    void deleteByUserIdAndHabitId(@Param("userId") Long userId, @Param("habitId") Long habitId);
+
+    /**
+     * Method delete {@link HabitStatus} by {@link User} id and {@link Habit} id.
+     *
+     * @param userId  {@link User} id.
+     * @param habitId {@link Habit} id.
+     */
+    @Modifying
+    @Query(value = "DELETE FROM HabitStatus hs "
+        + "WHERE hs.habitAssign.user.id = :userId AND hs.habitAssign.habit.id = :habitId "
+        + "AND DATE(hs.habitAssign.createDate) = :dateTime "
+        + "AND hs.habitAssign.suspended = false")
+    void deleteByUserIdAndHabitIdAndCreateDate(@Param("userId") Long userId,
+                                               @Param("habitId") Long habitId,
+                                               @Param("dateTime") ZonedDateTime dateTime);
 }

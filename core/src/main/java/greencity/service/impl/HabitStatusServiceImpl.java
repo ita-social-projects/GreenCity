@@ -12,6 +12,7 @@ import greencity.service.HabitStatusService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -27,12 +28,10 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     private final ModelMapper modelMapper;
 
     /**
-     * Method save {@link HabitStatus} for user by {@link HabitAssign}.
-     *
-     * @param habitAssign target habitAssign
+     * {@inheritDoc}
      */
     @Override
-    public void saveByHabitAssign(HabitAssign habitAssign) {
+    public void saveStatusByHabitAssign(HabitAssign habitAssign) {
         HabitStatus habitStatus = HabitStatus.builder()
             .habitStreak(0)
             .habitAssign(habitAssign)
@@ -44,64 +43,37 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method delete {@link HabitStatus} by habitAssignId.
-     *
-     * @param habitAssignId target userId
-     */
-    @Transactional
-    @Override
-    public void deleteStatusByHabitAssignId(Long habitAssignId) {
-        habitStatusRepo.findByHabitAssignId(habitAssignId)
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_NOT_DELETED));
-        habitStatusRepo.deleteByHabitAssignId(habitAssignId);
-    }
-
-    /**
-     * Method delete {@link HabitStatus} by habitAssign.
-     *
-     * @param userId  target userId
-     * @param habitId target habitId
-     */
-    @Transactional
-    @Override
-    public void deleteStatusByUserIdAndHabitId(Long userId, Long habitId) {
-        habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_NOT_DELETED));
-        habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
-    }
-
-    /**
-     * Find {@link HabitStatus} by habitAssignId.
-     *
-     * @param habitAssignId target habitAssignId
-     * @return {@link HabitStatusDto}
+     * {@inheritDoc}
      */
     @Override
     public HabitStatusDto findStatusByHabitAssignId(Long habitAssignId) {
         return modelMapper.map(habitStatusRepo.findByHabitAssignId(habitAssignId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT)),
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN)),
             HabitStatusDto.class);
     }
 
     /**
-     * Find {@link HabitStatus} by habit and user id's.
-     *
-     * @param userId  target userId
-     * @param habitId target habitId
-     * @return {@link HabitStatusDto}
+     * {@inheritDoc}
      */
     @Override
-    public HabitStatusDto findStatusByUserIdAndHabitId(Long userId, Long habitId) {
+    public HabitStatusDto findActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
         return modelMapper.map(habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
                 .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT)),
             HabitStatusDto.class);
     }
 
     /**
-     * Method enroll {@link Habit}.
-     *
-     * @param habitAssignId - id of habitAssign which we enroll
-     * @return {@link HabitStatusDto}
+     * {@inheritDoc}
+     */
+    @Override
+    public HabitStatusDto findStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime dateTime) {
+        return modelMapper.map(habitStatusRepo.findByUserIdAndHabitIdAndCreateDate(userId, habitId, dateTime)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT)),
+            HabitStatusDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public HabitStatusDto enrollHabit(Long habitAssignId) {
@@ -138,10 +110,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method unenroll habit in defined date.
-     *
-     * @param habitAssignId - id of habitAssign
-     * @param date          - date we want unenroll
+     * {@inheritDoc}
      */
     @Override
     public void unenrollHabit(LocalDate date, Long habitAssignId) {
@@ -170,10 +139,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method enroll habit for defined date.
-     *
-     * @param habitAssignId - id of habit
-     * @param date          - date we want enroll
+     * {@inheritDoc}
      */
     @Override
     public void enrollHabitInDate(Long habitAssignId, LocalDate date) {
@@ -240,5 +206,38 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         }
 
         return daysStreak;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteStatusByHabitAssignId(Long habitAssignId) {
+        habitStatusRepo.findByHabitAssignId(habitAssignId)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusRepo.deleteByHabitAssignId(habitAssignId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
+        habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime zonedDateTime) {
+        habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
     }
 }
