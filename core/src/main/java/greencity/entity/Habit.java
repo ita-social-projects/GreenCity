@@ -12,9 +12,9 @@ import lombok.*;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"habitAssigns", "habitTranslations", "habitStatistics"})
+    exclude = {"habitAssigns", "habitTranslations"})
 @ToString(
-    exclude = {"habitAssigns", "habitTranslations", "habitStatistics"})
+    exclude = {"habitAssigns", "habitTranslations"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,4 @@ public class Habit {
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
     private List<HabitAssign> habitAssigns;
-
-    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
-    private List<HabitStatistic> habitStatistics;
 }
