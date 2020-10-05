@@ -111,6 +111,22 @@ class EcoNewsCommentControllerTest {
     }
 
     @Test
+    void getAllActiveComments() throws Exception {
+        User user = getUser();
+        when(userService.findByEmail(anyString())).thenReturn(user);
+
+        int pageNumber = 5;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        mockMvc.perform(get(ecoNewsCommentControllerLink + "/active?ecoNewsId=1&page=5")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(eq("test@gmail.com"));
+        verify(ecoNewsCommentService).getAllActiveComments(eq(pageable), eq(user), eq(1L));
+    }
+
+    @Test
     void getCountOfComments() throws Exception {
         mockMvc.perform(get(ecoNewsCommentControllerLink + "/count/comments/{ecoNewsId}", 1))
             .andExpect(status().isOk());
@@ -133,6 +149,23 @@ class EcoNewsCommentControllerTest {
 
         verify(userService).findByEmail(eq("test@gmail.com"));
         verify(ecoNewsCommentService).findAllReplies(eq(pageable), eq(1L), eq(user));
+    }
+
+    @Test
+    void findAllActiveReplies() throws Exception {
+        User user = getUser();
+        when(userService.findByEmail(anyString())).thenReturn(user);
+
+        int pageNumber = 5;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        mockMvc.perform(get(ecoNewsCommentControllerLink + "/replies/active/{parentCommentId}?page=5&size=20", 1)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(eq("test@gmail.com"));
+        verify(ecoNewsCommentService).findAllActiveReplies(eq(pageable), eq(1L), eq(user));
     }
 
     @Test

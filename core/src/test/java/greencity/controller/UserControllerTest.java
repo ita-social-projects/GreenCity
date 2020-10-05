@@ -22,11 +22,9 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -38,9 +36,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -492,6 +493,27 @@ class UserControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).getSixFriendsWithTheHighestRating(eq(1L));
+    }
+
+    @Test
+    void getUserProfileInformationTest() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/profile/", 1))
+            .andExpect(status().isOk());
+        verify(userService).getUserProfileInformation(eq(1L));
+    }
+
+    @Test
+    void checkIfTheUserIsOnlineTest() throws Exception {
+        mockMvc.perform(get(userLink + "/isOnline/{userId}/", 1))
+            .andExpect(status().isOk());
+        verify(userService).checkIfTheUserIsOnline(eq(1L));
+    }
+
+    @Test
+    void getUserProfileStatistics() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/profileStatistics/", 1))
+            .andExpect(status().isOk());
+        verify(userService).getUserProfileStatistics(eq(1L));
     }
 
     @Test
