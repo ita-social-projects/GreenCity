@@ -22,7 +22,7 @@ public class HabitStatistic {
     private HabitRate habitRate;
 
     @Column(name = "create_date", nullable = false)
-    private ZonedDateTime createdOn;
+    private ZonedDateTime createDate;
 
     @Column(name = "amount_of_items")
     private Integer amountOfItems;
