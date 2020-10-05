@@ -305,7 +305,7 @@ public interface UserService {
      * @param email {@link String} - email of user that need to update.
      * @return {@link User}.
      */
-    User deleteUserProfilePicture(String email);
+    void deleteUserProfilePicture(String email);
 
     /**
      * Get list user friends by user id {@link User}.

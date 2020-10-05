@@ -718,12 +718,12 @@ public class UserServiceImpl implements UserService {
      * @return {@link User}
      */
     @Override
-    public User deleteUserProfilePicture(String email) {
+    public void deleteUserProfilePicture(String email) {
         User user = userRepo
                 .findByEmail(email)
                 .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setProfilePicturePath(defaultProfilePicture);
-        return userRepo.save(user);
+        userRepo.save(user);
     }
 
     /**
