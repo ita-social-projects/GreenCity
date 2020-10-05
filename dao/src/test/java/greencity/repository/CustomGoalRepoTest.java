@@ -2,6 +2,9 @@ package greencity.repository;
 
 import greencity.DaoApplication;
 import greencity.entity.CustomGoal;
+import greencity.entity.Goal;
+import greencity.entity.enums.GoalStatus;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,5 +40,12 @@ class CustomGoalRepoTest {
     void findAllTest() {
         List<CustomGoal> customGoals = customGoalRepo.findAllByUserId(1L);
         assertEquals(4, customGoals.size());
+    }
+
+    @Test
+    void changeCustomGoalStatus() {
+        List<CustomGoal> goals = customGoalRepo.findAllByUserId(1L);
+        customGoalRepo.changeCustomGoalStatus(1L, 1L, "DISABLED", LocalDateTime.now());
+        assertEquals(GoalStatus.DISABLED, goals.get(0).getUserGoals().get(0).getStatus());
     }
 }

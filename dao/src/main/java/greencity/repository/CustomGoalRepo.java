@@ -2,8 +2,10 @@ package greencity.repository;
 
 import greencity.entity.CustomGoal;
 import greencity.entity.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -42,4 +44,17 @@ public interface CustomGoalRepo extends JpaRepository<CustomGoal, Long> {
      * @return list of {@link CustomGoal}
      */
     List<CustomGoal> findAllByUserId(Long id);
+
+    /**
+     * Method change custom goal status.
+     *
+     * @author Marian Datsko
+     */
+    @Modifying
+    @Query(nativeQuery = true, value = " UPDATE user_goals "
+        + " SET status = :status, date_completed = :date WHERE custom_goal_id = :id AND user_id = :userId ")
+    void changeCustomGoalStatus(@Param(value = "userId") Long userId,
+                                @Param(value = "id") Long id,
+                                @Param(value = "status") String status,
+                                @Param(value = "date") LocalDateTime date);
 }
