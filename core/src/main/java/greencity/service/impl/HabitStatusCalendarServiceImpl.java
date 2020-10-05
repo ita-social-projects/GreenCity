@@ -1,25 +1,27 @@
 package greencity.service.impl;
 
+import greencity.constant.ErrorMessage;
 import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitStatusCalendarRepo;
+import greencity.repository.HabitStatusRepo;
 import greencity.service.HabitStatusCalendarService;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarService {
-    private HabitStatusCalendarRepo habitStatusCalendarRepo;
+    private final HabitStatusCalendarRepo habitStatusCalendarRepo;
+    private final HabitStatusRepo habitStatusRepo;
 
     /**
-     * Method save {@link HabitStatusCalendar}.
-     *
-     * @param habitStatusCalendar - {@link HabitStatusCalendar} which will be saved
+     * {@inheritDoc}
      */
     @Override
     public void save(HabitStatusCalendar habitStatusCalendar) {
@@ -27,11 +29,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method find {@link HabitStatusCalendar} by date and {@link HabitStatus}.
-     *
-     * @param date        - after this date the search is performed
-     * @param habitStatus - target {@link HabitStatus}
-     * @return {@link HabitStatusCalendar}
+     * {@inheritDoc}
      */
     @Override
     public HabitStatusCalendar findHabitStatusCalendarByEnrollDateAndHabitStatus(LocalDate date,
@@ -40,9 +38,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method delete {@link HabitStatusCalendar}.
-     *
-     * @param habitStatusCalendar - {@link HabitStatusCalendar} which will be deleted
+     * {@inheritDoc}
      */
     @Override
     public void delete(HabitStatusCalendar habitStatusCalendar) {
@@ -50,10 +46,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method return the latest EnrollDate of {@link HabitStatus}.
-     *
-     * @param habitStatus target {@link HabitStatus}
-     * @return {@link LocalDateTime}
+     * {@inheritDoc}
      */
     @Override
     public LocalDate findTopByEnrollDateAndHabitStatus(HabitStatus habitStatus) {
@@ -61,11 +54,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method return all enrolled {@link HabitStatus} after dateTime.
-     *
-     * @param dateTime    after this date the search is performed
-     * @param habitStatus target {@link HabitStatus}
-     * @return {@link List} of {@link HabitStatusCalendar}
+     * {@inheritDoc}
      */
     @Override
     public List<LocalDate> findEnrolledDatesAfter(LocalDate dateTime, HabitStatus habitStatus) {
@@ -78,11 +67,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method return all enrolled {@link HabitStatus} before dateTime.
-     *
-     * @param dateTime    after this date the search is performed
-     * @param habitStatus target {@link HabitStatus}
-     * @return {@link List} of {@link HabitStatusCalendar}
+     * {@inheritDoc}
      */
     @Override
     public List<LocalDate> findEnrolledDatesBefore(LocalDate dateTime, HabitStatus habitStatus) {
@@ -92,5 +77,16 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
         habitStatusCalendars.forEach(habitStatusCalendar -> dates.add(habitStatusCalendar.getEnrollDate()));
 
         return dates;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteAllByHabitStatusId(Long habitStatusId) {
+        habitStatusRepo.findById(habitStatusId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.NO_HABIT_STATUS + habitStatusId));
+        habitStatusCalendarRepo.deleteAllByHabitStatusId(habitStatusId);
     }
 }
