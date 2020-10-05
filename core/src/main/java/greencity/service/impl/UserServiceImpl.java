@@ -1,5 +1,7 @@
 package greencity.service.impl;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -32,6 +34,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -39,6 +43,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static greencity.constant.AppConstant.GOOGLE_PICTURE;
 import static greencity.constant.ErrorMessage.*;
 
 /**
@@ -66,6 +71,8 @@ public class UserServiceImpl implements UserService {
     private final SocialNetworkImageService socialNetworkImageService;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
+    @Value("${defaultProfilePicture}")
+    private String defaultProfilePicture;
 
     /**
      * Autowired mapper.
@@ -706,6 +713,21 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new BadRequestException(IMAGE_EXISTS);
         }
+        return userRepo.save(user);
+    }
+
+    /**
+     * Delete user profile picture {@link User}.
+     *
+     * @param email {@link String} - email of user that need to update.
+     * @return {@link User}
+     */
+    @Override
+    public User deleteUserProfilePicture(String email) {
+        User user = userRepo
+                .findByEmail(email)
+                .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+        user.setProfilePicturePath(defaultProfilePicture);
         return userRepo.save(user);
     }
 

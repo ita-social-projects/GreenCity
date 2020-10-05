@@ -1,10 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiLocale;
-import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUserId;
-import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidLanguage;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.constant.ValidationConstants;
@@ -30,11 +26,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -47,6 +38,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/user")
@@ -601,6 +601,26 @@ public class UserController {
         @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.updateUserProfilePicture(image, email, userProfilePictureDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Delete user profile picture  {@link User}.
+     *
+     * @return {@link ResponseEntity}.
+     */
+    @ApiOperation(value = "Delete user profile picture")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping(path = "/deleteProfilePicture")
+    public ResponseEntity<HttpStatus> deleteUserProfilePicture(@ApiIgnore
+                                                               @AuthenticationPrincipal Principal principal)  {
+        String email = principal.getName();
+        userService.deleteUserProfilePicture(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
