@@ -36,9 +36,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssign getById(Long habitAssignId) {
-        return habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+    public HabitAssignDto getById(Long habitAssignId) {
+        return modelMapper.map(habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
+            HabitAssignDto.class);
     }
 
     /**

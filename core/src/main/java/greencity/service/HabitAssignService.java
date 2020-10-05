@@ -11,9 +11,9 @@ public interface HabitAssignService {
     /**
      * Method to find {@link HabitAssign} by id.
      *
-     * @return {@link HabitAssign}.
+     * @return {@link HabitAssignDto}.
      */
-    HabitAssign getById(Long habitAssignId);
+    HabitAssignDto getById(Long habitAssignId);
 
     /**
      * Method for assigning {@link Habit} for user.
