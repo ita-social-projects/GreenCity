@@ -18,6 +18,15 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     JpaSpecificationExecutor<HabitAssign> {
     /**
      * Method to find all {@link HabitAssign} by {@link User} id
+     * (including suspended).
+     *
+     * @param userId {@link User} id.
+     * @return list of {@link HabitAssign} instances.
+     */
+    List<HabitAssign> findAllByUserId(Long userId);
+
+    /**
+     * Method to find all {@link HabitAssign} by {@link User} id
      * (with not suspended status).
      *
      * @param userId {@link User} id.
