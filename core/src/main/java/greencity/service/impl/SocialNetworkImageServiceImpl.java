@@ -5,8 +5,11 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.entity.SocialNetworkImage;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.SocialNetworkImageRepo;
 import greencity.service.FileService;
 import greencity.service.SocialNetworkImageService;
@@ -19,9 +22,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.imageio.ImageIO;
@@ -104,6 +109,85 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
                 page.getPageable().getPageNumber(),
                 page.getTotalPages()
         );
+    }
+
+    /**
+     * Method for deleting {@link SocialNetworkImage} by its id.
+     *
+     * @param id - {@link SocialNetworkImage} instance id which will be deleted.
+     */
+    @Override
+    public void delete(Long id) {
+        socialNetworkImageRepo.deleteById(id);
+    }
+
+    /**
+     * Method for deleting all {@link SocialNetworkImage} instance by list of IDs.
+     *
+     * @param listId list of id {@link SocialNetworkImage}
+     */
+    @Override
+    public void deleteAll(List<Long> listId) {
+        listId.forEach(socialNetworkImageRepo::deleteById);
+    }
+
+    @Override
+    public SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+                                              MultipartFile image) {
+        SocialNetworkImage toSave = modelMapper.map(socialNetworkImageRequestDTO, SocialNetworkImage.class);
+        if (image != null) {
+            toSave.setImagePath(fileService.upload(image).toString());
+        }
+
+        try {
+            socialNetworkImageRepo.save(toSave);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotSavedException(ErrorMessage.SOCIAL_NETWORK_IMAGE_NOT_SAVED);
+        }
+
+        return modelMapper.map(toSave, SocialNetworkImageResponseDTO.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Method for finding {@link SocialNetworkImage} by id
+     *
+     * @param id {@link SocialNetworkImage} instance id.
+     * @return {@link SocialNetworkImage}
+     */
+    private SocialNetworkImage findById(Long id) {
+        return socialNetworkImageRepo
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.SOCIAL_NETWORK_IMAGE_FOUND_BY_ID + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     * Method for finding {@link SocialNetworkImageResponseDTO} by id
+     *
+     * @param id {@link SocialNetworkImageResponseDTO} instance id.
+     * @return dto {@link SocialNetworkImageResponseDTO}
+     */
+    @Override
+    public SocialNetworkImageResponseDTO findDtoById(Long id) {
+        SocialNetworkImage socialNetworkImage = findById(id);
+        return modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Method for updating {@link SocialNetworkImage}
+     *
+     * @param socialNetworkImageResponseDTO - instance of {@link SocialNetworkImageResponseDTO}.
+     */
+    @Override
+    public void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile image) {
+        SocialNetworkImage toUpdate = findById(socialNetworkImageResponseDTO.getId());
+        toUpdate.setHostPath(socialNetworkImageResponseDTO.getHostPath());
+        if (image != null) {
+            toUpdate.setImagePath(fileService.upload(image).toString());
+        }
+        socialNetworkImageRepo.save(toUpdate);
     }
 
     /**

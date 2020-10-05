@@ -30,8 +30,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @NoArgsConstructor
 public class RatingStatisticsSpecification implements Specification<RatingStatistics> {
-    private List<SearchCriteria> searchCriteriaList;
-    private UserRepo userRepo;
+    private transient List<SearchCriteria> searchCriteriaList;
+    private transient UserRepo userRepo;
 
     /**
      * Constructor.
