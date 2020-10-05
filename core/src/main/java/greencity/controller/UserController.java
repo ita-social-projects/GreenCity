@@ -40,10 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
