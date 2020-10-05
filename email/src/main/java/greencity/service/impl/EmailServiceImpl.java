@@ -40,6 +40,7 @@ public class EmailServiceImpl implements EmailService {
     private final String ecoNewsLink;
     private final String serverLink;
     private final String senderEmailAddress;
+    private static final String PARAM_USER_ID = "&user_id=";
 
     /**
      * Constructor.
@@ -137,7 +138,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
         model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token="
-            + token + "&user_id=" + id);
+            + token + PARAM_USER_ID + id);
         String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
         sendEmail(email, EmailConstants.VERIFY_EMAIL, template);
     }
@@ -153,7 +154,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
         model.put(EmailConstants.APPROVE_REGISTRATION, clientLink + "/#/auth/restore?" + "token=" + token
-            + "&user_id=" + userId);
+            + PARAM_USER_ID + userId);
         String template = createEmailTemplate(model, EmailConstants.USER_APPROVAL_EMAIL_PAGE);
         sendEmail(email, EmailConstants.APPROVE_REGISTRATION_SUBJECT, template);
     }
@@ -172,7 +173,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, userName);
         model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" + token
-            + "&user_id=" + userId);
+            + PARAM_USER_ID + userId);
         String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);
         sendEmail(userEmail, EmailConstants.CONFIRM_RESTORING_PASS, template);
     }

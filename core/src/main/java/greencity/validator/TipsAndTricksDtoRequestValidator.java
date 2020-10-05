@@ -18,6 +18,7 @@ public class TipsAndTricksDtoRequestValidator
 
     @Override
     public void initialize(ValidTipsAndTricksDtoRequest constraintAnnotation) {
+        // Initializes the validator in preparation for #isValid calls
     }
 
     @Override

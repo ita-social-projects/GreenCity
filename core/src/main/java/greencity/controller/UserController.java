@@ -592,7 +592,7 @@ public class UserController {
     @PatchMapping(path = "/profilePicture",
         consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpStatus> updateUserProfilePicture(
-        @ApiParam(value = SwaggerExampleModel.userProfilePictureDto, required = true)
+        @ApiParam(value = SwaggerExampleModel.USER_PROFILE_PICTURE_DTO, required = true)
         @RequestPart UserProfilePictureDto userProfilePictureDto,
         @ApiParam(value = "Profile picture")
         @ImageValidation

@@ -72,7 +72,7 @@ public class EcoNewsController {
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AddEcoNewsDtoResponse> save(
-            @ApiParam(value = SwaggerExampleModel.addEcoNewsRequest, required = true)
+            @ApiParam(value = SwaggerExampleModel.ADD_ECO_NEWS_REQUEST, required = true)
             @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
             @ApiParam(value = "Image of eco news")
             @ImageValidation

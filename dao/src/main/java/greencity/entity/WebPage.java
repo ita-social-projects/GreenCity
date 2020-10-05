@@ -19,8 +19,8 @@ public class WebPage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String webPage;
+    @Column(name = "web_page", nullable = false, unique = true)
+    private String page;
 
     @ManyToMany
     private List<Place> places = new ArrayList<>();

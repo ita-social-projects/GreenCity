@@ -341,16 +341,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     */
-    @Override
-    public PlaceUpdateDto findPlaceUpdateDto(Long id) {
-        Place place =
-            placeRepo.findById(id).orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
-        return modelMapper.map(place, PlaceUpdateDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
      *
      * @author Dmytro Dovhal
      */

@@ -20,7 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
  * @author Rostyslav Khasanov
  */
 public class UserFilter implements Specification<User> {
-    private FilterUserDto filterUserDto;
+    private final transient FilterUserDto filterUserDto;
 
     /**
      * The constructor takes {@link FilterUserDto} object.

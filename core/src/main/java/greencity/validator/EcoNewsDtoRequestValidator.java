@@ -13,6 +13,7 @@ import javax.validation.ConstraintValidatorContext;
 public class EcoNewsDtoRequestValidator implements ConstraintValidator<ValidEcoNewsDtoRequest, AddEcoNewsDtoRequest> {
     @Override
     public void initialize(ValidEcoNewsDtoRequest constraintAnnotation) {
+        // Initializes the validator in preparation for #isValid calls
     }
 
     @Override
