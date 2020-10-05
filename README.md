@@ -26,7 +26,7 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 ### 4.1. Required to install
 
-* Java 8
+* Java 11
 * PostgreSQL 9.5 or higher
 
 ### 4.2. How to run
