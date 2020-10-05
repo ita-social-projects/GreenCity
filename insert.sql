@@ -1,200 +1,137 @@
-﻿INSERT INTO users (date_of_registration, email, email_notification, name, last_visit, role, user_status, refresh_token_key)
-VALUES ('2019-09-03 11:42:37.823000', 'nazar.stasyuk@gmail.com', 0, 'Назар Стасюк', '2019-09-03 11:42:37.823000', 0, 2, 'a06b0b4e-8696-419c-a776-611c36f79d39'),
-       ('2019-09-03 12:17:18.345000', 'dovgal.dmytr@gmail.com', 0, 'Dima Dovhal', '2019-09-03 12:17:18.346000', 0, 2, 'f9aef11e-2bfd-4136-aafd-e0c7b92f396a'),
-       ('2019-09-04 13:20:31.755000', 'rapac@clockus.ru', 0, 'Paul Kos', '2019-09-04 13:20:31.757000', 1, 2, '6f9d42f5-2324-492e-8d99-75e5834aa739'),
-       ('2019-09-04 13:38:44.518000', 'rsssac@clockus.ru', 0, 'Roman KOcak', '2019-09-04 13:38:44.518000', 0, 2, 'b3ad7c1d-a058-40ee-908c-65902ef96371'),
-       ('2019-09-04 13:39:25.827000', 'rsssasssc@clockus.ru', 0, 'Misha Pavluv', '2019-09-04 13:39:25.827000', 0, 2, '8171edb1-3a9c-4074-a305-fcdc24de470f'),
-       ('2019-09-04 13:40:21.531000', '1warsssasssc@clockus.ru', 0, 'Taras Tymkiv', '2019-09-04 13:40:21.531000', 0, 2, 'c7e5ea40-610a-4908-8085-c3a96127e38d'),
-       ('2019-09-04 13:43:00.061000', '1warssssssssasssc@clockus.ru', 0, 'Ihor Zdebskiy', '2019-09-04 13:43:00.061000', 0, 2, 'dba595ab-6d07-45a7-8f32-2e7956e68e46'),
-       ('2019-09-04 13:44:08.939000', '1warssssssssassssc@clockus.ru', 0, 'Amon Azarov', '2019-09-04 13:44:08.939000', 0, 2, 'c3d9f0ed-d639-4e00-9928-07b7afe3d779'),
-       ('2019-09-04 14:04:14.931000', 'rostuk.khasanov@gmail.com', 0, 'Rostyslav Khasanov', '2019-09-04 14:04:14.931000', 1, 2, '4238c90e-ea52-4331-8b62-be2511f3ac09'),
-       ('2019-10-01 19:22:25.209000', 'milanmarian@mail.ru', 0, 'Marian Milian', '2019-10-01 19:22:25.209000', 1, 2, '16a02c58-915f-4a7d-b69b-2d86038fa66f'),
-       ('2019-10-01 19:22:25.209000', 'milan@mail.ru', 0, 'M M', '2019-10-01 19:22:25.209000', 1, 2, '827947d3-da8b-4c66-a290-720e6c111531'),
-       ('2019-10-01 19:22:25.209000', 'greencity448@gmail.com', 0, 'greencity 448', '2019-10-01 19:22:25.209000', 1, 2, '91e9d3f7-f92a-4557-9f5b-462133fa1090');
+﻿INSERT INTO users (date_of_registration, email, email_notification, name, last_visit, role, user_status, refresh_token_key, rating, last_activity_time, first_name, city, user_credo, show_location, show_eco_place, show_shopping_list)
+VALUES ('2020-09-10 20:00:00', 'majboroda.artur@mail.com', 0, 'artur', '2020-09-10 21:00:00', 0, 2, 'z4hbh12chxb6vg1urh117-btu1wf-9jltmjl', 10, '2020-09-10 21:00:00', 'Artur', 'Lviv', 'Те, що противно природі, до добра ніколи не веде.', true, true, true),
+       ('2020-09-10 20:00:00', 'komarov.eduard@mail.com', 0, 'eduard', '2020-09-10 21:00:00', 0, 2, '4u-qx6uyo-k1-6bscsluy3phvhkhvxvul2-3', 20, '2020-09-10 21:00:00', 'Eduard', 'Kyiv', 'Людина і природа - приклад ідеальної гармонії.', true, true, true),
+       ('2020-03-10 20:00:00', 'oleksiv.shamil@mail.com', 0, 'shamil', '2020-09-10 21:00:00', 0, 2, '5rrbeueh431wzhhpwso070ci813u678jopzn', 20, '2020-03-10 21:00:00', 'Shamil', 'Dnipro', 'У свою годину своя поезія в природі', true, true, true),
+       ('2020-08-10 20:00:00', 'irshov.grugorij@mail.com', 0, 'grugorij', '2020-09-10 21:00:00', 0, 2, 'hluhf7-n-ppl18sws9i-cfnve8dh2w2yzvth', 20, '2020-08-10 21:00:00', 'Grugorij', 'Kyiv', 'Немає нічого більш винахідливого, ніж природа.', true, true, true),
+       ('2020-09-10 20:00:00', 'liakh.roman@mail.com', 0, 'roman', '2020-09-10 21:00:00', 0, 2, 'urx64695muw9dv56xefu8tzh-h5lxuj3tt3s', 20, '2020-09-10 21:00:00', 'Roman', 'Lviv', 'Людина не стане паном природи, поки вона не стала паном самого себе', true, true, true),
+       ('2020-09-10 20:00:00', 'miasnuk.ihor@mail.com', 0, 'ihor', '2020-09-10 21:00:00', 0, 2, '71-9b3xllh-bhf6tyre9kfrwax1p7f1nrbai', 20, '2020-09-10 21:00:00', 'Ihor', 'Kyiv', 'Шукання цілей в природі має своїм джерелом невігластво.', true, true, true),
+       ('2020-06-10 20:00:00', 'efimov.ivan@mail.com', 0, 'ivan', '2020-09-10 21:00:00', 0, 2, 'gfzymgr7smf11pc8ib2g-2xx3w04cc65reqb', 20, '2020-06-10 21:00:00', 'Ivan', 'Dnipro', 'Основним законом природи є збереження людства.', true, true, true),
+       ('2020-09-10 20:00:00', 'pochynok.petro@mail.com', 0, 'petro', '2020-09-10 21:00:00', 0, 2, 'ge2k72jqhg4b2qm4wr3hyf9z5gfoes588qpd', 20, '2020-09-10 21:00:00', 'Petro', 'Lviv', 'Найближче до Божества в цьому світі перебуває природа.', true, true, true),
+       ('2020-09-10 20:00:00', 'serdyuk.orest@mail.com', 0, 'orest', '2020-09-10 21:00:00', 0, 2, '2lkgps5vmu-kh8eu9tuyvlxyrnerjgics62y', 20, '2020-09-10 21:00:00', 'Orest', 'Kyiv', 'Творіння природи досконаліше творінь мистецтва.', true, true, true),
+       ('2020-08-10 20:00:00', 'shevtsov.oleksiy@mail.com', 0, 'oleksiy', '2020-09-10 21:00:00', 0, 2, 's-9pk7wplpebeyorjs-x-ckmkkdfqymvhpje', 20, '2020-08-10 21:00:00', 'Oleksiy', 'Kyiv', 'Природа - будинок, в якому живе людина.', true, true, true),
+       ('2020-09-10 20:00:00', 'shumilo.yan@mail.com', 0, 'yan', '2020-09-10 21:00:00', 0, 2, '1r34z0-sntpdsbfqgwgp5x95mcdmnkrmxm6q', 20, '2020-09-10 21:00:00', 'Yan', 'Lviv', 'Найпрекрасніше в природі - відсутність людини', true, true, true),
+       ('2020-09-10 20:00:00', 'volianskiy.ihor@mail.com', 0, 'ihor', '2020-09-10 21:00:00', 0, 2, '1ppxdc33xgp58jpsd3ot674c7m2dk7fxpvls', 20, '2020-09-10 21:00:00', 'Ihor', 'Kharkiv', 'Природа - це все, що створено не людиною.', true, true, true),
+       ('2020-06-10 20:00:00', 'tsal.vitaliy@mail.com', 0, 'vitaliy', '2020-09-10 21:00:00', 0, 2, 'nv0uyb3wts40dn59hxjtn0y99ozdzqg7qv41', 20, '2020-06-10 21:00:00', 'Vitaliy', 'Kyiv', 'Природа щедра у своїх діях і бережлива в пропонованих нею причинах.', true, true, true),
+       ('2020-09-10 20:00:00', 'tarasyuk.danylo@mail.com', 0, 'danylo', '2020-09-10 21:00:00', 0, 2, '9jx2qsdc68jreooqjdrvcm4om6w3gkrs15e5', 20, '2020-09-10 21:00:00', 'Danylo', 'Dnipro', 'Природа людини полягає в тому, щоб весь час йти вперед.', true, true, true),
+       ('2020-02-10 20:00:00', 'spilberg.marian@mail.com', 0, 'marian', '2020-09-10 21:00:00', 0, 2, 'v9b7mrhgv2vgylk3mbqgap3vqxbkwc3jhk0w', 20, '2020-02-10 21:00:00', 'Marian', 'Kharkiv', 'Вітер є подихом природи.', true, true, true),
+       ('2020-06-10 20:00:00', 'sirko.ivan@mail.com', 0, 'ivan', '2020-09-10 21:00:00', 0, 2, 'yqoc64aqppu29vwuv1xjvmzvkrjpfq-0gamn', 20, '2020-06-10 21:00:00', 'Ivan', 'Kyiv', ' У природі є і зерна, і труха.', true, true, true),
+       ('2020-01-10 20:00:00', 'samsonov.rafael@mail.com', 0, 'Rafael', '2020-09-10 21:00:00', 0, 2, 'b9mq-zgsbz0sbe-48mgknakngryo1vrxiufp', 20, '2020-01-10 21:00:00', 'Rafael', 'Lviv', ' У природі ніщо не пропадає, крім самої природи.', true, true, true),
+       ('2020-03-10 20:00:00', 'bytko.makar@mail.com', 0, 'makar', '2020-09-10 21:00:00', 0, 2, 'f781l5dghyz5gfksqdn2563hs1-ggol4l9u8', 20, '2020-03-10 21:00:00', 'Makar', 'Kyiv', ' Час знищує помилкові думки, а судження природи підтверджує.', true, true, true),
+       ('2020-10-10 20:00:00', 'pavluk.lyka@mail.com', 0, 'lyka', '2020-09-10 21:00:00', 0, 2, 'udjysmn69eylpy30zxzigjwou5-2chze1uao', 20, '2020-10-10 21:00:00', 'Lyka', 'Kharkiv', 'Природа не храм, а майстерня, і людина в ній працівник.', true, true, true),
+       ('2020-09-10 20:00:00', 'davudov.illia@mail.com', 0, 'Illia', '2020-09-10 21:00:00', 0, 2, 'ap8mkg6hosr9nr9zq-xgqskay2vyzdxvlmuy', 20, '2020-09-10 21:00:00', 'Illia', 'Kyiv', ' Природа не робить людей, люди роблять себе самі.', true, true, true);
 
 INSERT INTO own_security (password, user_id)
-VALUES ('$2a$10$mAzH0BvVs/g2m6zl8CYxDuiLCu1V.PZjuGhKzHRdVxndDfExts4oO', 1),
-       ('$2a$10$HqJME/hE.0THMpGbzBci5usUe9T7t4dfLyL./JbndpWgGhjD2qyqC', 2),
-       ('$2a$10$Mdu2vmDtmjgATCh0EpZ6V.Q3uhJn5Kz4biDu.Ol3EX55Pv4D7Ltla', 3),
-       ('$2a$10$5ms4Ni.xuIfSXp1RxScQjOlQvLbrCUlZUNNtkQm23jc99NQXkppMe', 4),
-       ('$2a$10$QCM1BwKCmM2GCSeK6pTpOeaXrcYOLCleifvrytgwgB3FnoE497dV.', 5),
-       ('$2a$10$bQggp0SIPwHh5D/ahmm4reKJtsod6dcEo79WJBO0aIAUIs/j9JGrC', 6),
-       ('$2a$10$v.k/53rC6NnIsosZEH0ezecuKWrG8fL4yOHXW5w3AudFeFUub0It2', 7),
-       ('$2a$10$hSKDmeUboTyvBpUnXj8c2ulIXBeHq5rd4h.H0Oj8gpzYlwS0L78qO', 8),
-       ('$2a$10$cgaNMFjdAFX6k810YSZDSuvKVlWFcq6/F7p2lcgLzK6sFB48dky2W', 9),
-       ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 10),
-       ('$2a$10$uptb7Z/KAiv9Bi5iaMPOHer4ScyDaiSVNR33eUcGqTjDHQ9twdmOS', 11),
-       ('$2a$10$MwSE7uTZuKhCOjRddnpZ6eXiJT7sE3n8YsiHDJCo9MCv3yvy64Cf6', 12);
+VALUES ('stUqzeknlmu20e7LSo$XgmMipqvyYXj/$mRRPfLzyPOSyIWeimtaZ00q$$dg', 1),
+       ('WlDUCAmtECANY0WyLWEnlsROlT97JvZqdJmHQsO1oNSaOljjGjl8$/5slYwQ', 2),
+       ('9IzJWZrdoKAjsCQzezfkXAFewQgE75Gea9kTerb7a5lMLJA0uOMtuXf38Wxj', 3),
+       ('NJ2oigkZhQtwufogLjIcyMj$9pc4C5TFyCraOy$h4J/fdZ2WjVp$jelABysW', 4),
+       ('4uhbB190/qcinrbywziDTOVEjPTWQK/JO6O$J1mfA9Xo5wWMog7sHgTGrYu0', 5),
+       ('sssPFUm1OePfQCVC5x0L81qrirXpCyS$mkeUzkTZOHBewb6h8hQpZfyl/Inv', 6),
+       ('4W448ajP0WaoJsUGgh0vdVKhKCWRMVdsh4$tmohCrKTE3cT7rHHOGbxwYjJR', 7),
+       ('floR7QuomhIl1JLAC7k3mP$AdkNjfhxQ2zdiUuTByEoekyaqD5ehDDGK1cB3', 8),
+       ('$E$9Us99Jya3g8TiJgy1BdK1V4/YZHv0znml6KC6GctznyZ8K7tlrneNE3rr', 9),
+       ('pP6CJUI2BTr/BJyfNIPTUUZNwxJ9hmTGhglgosr48P4SVKj8lvaG0W34QsO1', 10),
+       ('zYoFAtd8XXcuO/Onjz21$2cWLRO7Rkns1yIfIFik/ubhuQnmN9T7ZpKQa/Wi', 11),
+       ('bJ3KHLxxVj60MevjBj1dTy1fZVZczHMFgi0Cq9XsymUOkIgbfntECNqk$ocz', 12),
+       ('G0JhOFnHETp2h6MvdssJVxOKZsnbN2caX39KX9GMbAIerT7wsQp1beYQlF4a', 13),
+       ('W5OzDgI42hPW9HrpNrzYxwhcIeb9S383trV4S7/91/rUdK0tmBOp3GSI2Xpu', 14),
+       ('J31y24$2Psy3T87HMMfyBOcnWoZP8AwAyzntB1q$c$C9u2gcpnvoW$XNBU2h', 15),
+       ('wObyVX9jd0nJeOXgc1fF//o/UBH1T8hZqiheMaEW4A/QUwKtmrbqCtOc4fVw', 16),
+       ('2Nbr2WDF0XZPd8vAqyfDmlo3C9eFjXfuxh8yrn0I$FiDg4sOQjKFlryPAlBz', 17),
+       ('PI3YKYPjgh0Gsy5Da$IcX7NBkq/cEKiPHCXVGGU/Lcpannd7rhyS01t432AS', 18),
+       ('KqA0tXuyR7qhFoGIA5mZdSBf0NB0ho/ocq7UM4SlKdCwDU40dG4Q96nlDIBH', 19),
+       ('G2F42pURxPrpJZZOk8ikyZ4c2pVY0q7kDsQlNLUdpIBr9MuPALhaIB7fnRvD', 20);
 
-INSERT INTO categories (name)
-VALUES ('Food');
+INSERT INTO users_friends (user_id, friend_id)
+VALUES (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7),
+       (2, 1), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7),
+       (3, 1), (3, 2), (2, 4), (2, 5), (2, 6), (2, 7),
+       (4, 1), (4, 2), (4, 3), (4, 5), (4, 6), (4, 7),
+       (5, 1), (5, 2), (5, 3), (5, 4), (5, 6), (5, 7),
+       (6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 7),
+       (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6);
 
-INSERT INTO locations (address, lat, lng)
-VALUES ('вулиця Під Дубом', 49.84988, 24.022533),
-       ('Вулиця Кульпарківська, 226а, Львів, Львівська область, 79000', 49.807129, 23.977985),
-       ('Площа Ринок, Львів, Львівська область, 79000', 49.842042, 24.030359),
-       ('Проспект В''ячеслава Чорновола, 2, Львів, Львівська область, 79000', 49.847489, 24.025975),
-       ('Площа Ринок, 14 (підвал), Львів, Львівська область, 79000', 49.841311, 24.03229);
 
-INSERT INTO places (name, phone, email, modified_date, status, author_id, category_id, description, location_id)
-VALUES ('Forum', '0322 489 850', 'forum_lviv@gmail.com', '2004-05-23T14:25:10', 2, 1, 1, 'Shopping center', 1),
-       ('Victoria Gardens', '0322 590 202', 'victoria_gardens@gmail.com', '2005-05-23T14:25:10', 2, 1, 1, 'Shopping center', 2),
-       ('Pravda', '0322 157 694', 'pravda_lviv@gmail.com', '2016-09-23T14:25:10', 2, 1, 1, 'Restaurant', 3),
-       ('Malevych', '0322 849 348', 'malevych_lviv@gmail.com', '2011-08-23T14:25:10', 2, 1, 1, 'Restaurant', 4),
-       ('Kryivka', '067 310 3145', 'kryivka_lviv@gmail.com', '2009-07-23T14:25:10', 2, 1, 1, 'Restaurant', 5);
+INSERT INTO user_achievements (user_id, achievement_id, achievement_status)
+VALUES (1, 1, 'ACTIVE'),
+       (1, 2, 'ACTIVE'),
+       (1, 3, 'ACTIVE'),
+       (1, 4, 'INACTIVE'),
+       (5, 5, 'ACTIVE'),
+       (6, 6, 'ACTIVE'),
+       (7, 7, 'ACTIVE'),
+       (8, 8, 'ACTIVE'),
+       (9, 9, 'INACTIVE'),
+       (10, 10, 'ACTIVE');
 
-INSERT INTO specifications (name)
-VALUES ('Animal'),
-       ('Own cup'),
-       ('Karaoke'),
-       ('Shopping'),
-       ('Ukrainian food'),
-       ('Dance');
+INSERT INTO custom_goals (text, user_id)
+VALUES ('Choose eco-transport', 1),
+       ('Buy a bamboo brush', 1),
+       ('Buy composter', 1),
+       ('Start sorting trash', 1),
+       ('Start recycling batteries', 2),
+       ('Finish book about vegans', 2),
+       ('Give up plastic', 3),
+       ('Carry a paper bag', 3),
+       ('Use paper cups', 3),
+       ('Buy only loose tea', 3);
 
-INSERT INTO favorite_places (place_id, user_id, name)
-VALUES (1, 1, 'Forum'),
-       (2, 2, 'Victoria Gardens'),
-       (3, 3, 'Pravda');
+INSERT INTO goals (id)
+VALUES (1), (2), (3),
+       (4), (5), (6),
+       (7), (8), (9), (10);
 
-INSERT INTO estimates (rate, place_id, user_id)
-VALUES (5, 1, 1),
-       (4, 2, 2),
-       (2, 3, 1),
-       (3, 4, 2),
-       (5, 5, 1);
 
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 1),
-       ('20:00:00', '06:00:00', 1, 1),
-       ('20:00:00', '06:00:00', 2, 1),
-       ('20:00:00', '06:00:00', 3, 1),
-       ('20:00:00', '06:00:00', 4, 1);
+INSERT INTO user_goals (user_id, goal_id, status, date_completed, custom_goal_id)
+VALUES (1, 2, 'DONE', '2020-09-10 20:00:001', null),
+       (1, 5, 'DONE', '2020-09-11 18:00:001', null),
+       (2, 3, 'ACTIVE', null, null),
+       (2, 1, 'DONE', '2020-10-05 20:00:001', null),
+       (3, null, 'DONE', '2020-09-10 20:00:001', 1),
+       (3, null, 'ACTIVE', null, 2),
+       (4, null, 'ACTIVE', null, 3),
+       (4, null, 'DONE', '2020-09-10 22:00:001', 4),
+       (5, null, 'ACTIVE', null, 5),
+       (5, null, 'DONE', '2020-09-10 21:15:001', 6);
 
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 2),
-       ('20:00:00', '06:00:00', 1, 2),
-       ('20:00:00', '06:00:00', 2, 2),
-       ('20:00:00', '06:00:00', 3, 2),
-       ('20:00:00', '06:00:00', 4, 2);
 
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 3),
-       ('20:00:00', '06:00:00', 1, 3),
-       ('20:00:00', '06:00:00', 2, 3),
-       ('20:00:00', '06:00:00', 3, 3),
-       ('20:00:00', '06:00:00', 4, 3);
+INSERT INTO achievements (title, description, message)
+VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!'),
+       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
+       ('Сonscious', 'Made first habit', 'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
+       ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!'),
+       ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!'),
+       ('ach6', 'get ach 6', 'info'),
+       ('ach7', 'get ach 7', 'info'),
+       ('ach8', 'get ach 8', 'info'),
+       ('ach9', 'get ach 9', 'info'),
+       ('ach10', 'get ach 10', 'info');
 
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 4),
-       ('20:00:00', '06:00:00', 1, 4),
-       ('20:00:00', '06:00:00', 2, 4),
-       ('20:00:00', '06:00:00', 3, 4),
-       ('20:00:00', '06:00:00', 4, 4);
-
-INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
-VALUES ('20:00:00', '06:00:00', 0, 5),
-       ('20:00:00', '06:00:00', 1, 5),
-       ('20:00:00', '06:00:00', 2, 5),
-       ('20:00:00', '06:00:00', 3, 5),
-       ('20:00:00', '06:00:00', 4, 5);
-
-INSERT INTO discount_values(id, value, place_id, specification_id)
-VALUES (1, 3, 1, 1),
-       (2, 13, 2, 2),
-       (3, 33, 3, 3),
-       (4, 63, 4, 4),
-       (5, 93, 5, 5),
-       (6, 50, 5, 6);
-
-INSERT INTO habit_dictionary (image)
-VALUES ('bag'),
-       ('cap');
-
-INSERT INTO languages(code)
-VALUES ('uk'),
+INSERT INTO languages (code)
+VALUES ('ua'),
        ('en'),
        ('ru');
 
-INSERT INTO habit_dictionary_translation(name, description, habit_item, language_id, habit_dictionary_id)
-VALUES ('Економити пакети', 'Опис пакетів', 'Пакети', 1, 1),
-       ('Save bags', 'bag description', 'bags', 2, 1),
-       ('экономить пакеты', 'описание пакетов', 'Пакеты', 3, 1),
-       ('Відмовитись від одноразових стаканчиків', 'Опис стаканчиків', 'Стаканчики',1, 2),
-       ('Discard disposable cups', 'cap description', 'caps',2, 2),
-       ('Отказаться от одноразовых стаканчиков', 'описание стаканчиков', 'Стаканчики',3, 2);
+-- TODO: Update insert.sql after Habits structure got refactored -- --
+INSERT INTO habit_dictionary (image)
+VALUES ('image1'),
+       ('image2'),
+       ('image3'),
+       ('image4'),
+       ('image5');
+-- HABIT END --
 
-INSERT INTO habits (habit_dictionary_id, status, create_date)
-VALUES (1, true, '2019-11-12 19:03:33'),
-       (2, true, '2019-11-12 15:12:59'),
-       (1, true, '2019-11-14 11:33:01'),
-       (2, true, '2019-11-15 20:01:19'),
-       (1, true, '2019-11-15 10:21:11'),
-       (2, true, '2019-11-16 17:01:09'),
-       (1, true, '2019-11-20 19:11:51'),
-       (2, true, '2019-11-20 21:12:52');
-
-INSERT INTO habit_statistics(rate, date, amount_of_items, habit_id)
-VALUES ('GOOD', '2019-11-13', 12, 1),
-       ('NORMAL', '2019-11-14', 9, 2),
-       ('BAD', '2019-11-14', 2, 3),
-       ('NORMAL', '2019-11-15', 5, 4),
-       ('NORMAL', '2019-11-15', 7, 5),
-       ('GOOD', '2019-11-16', 14, 6),
-       ('NORMAL', '2019-11-16', 7, 7),
-       ('GOOD', '2019-11-16', 15, 8);
-
-
-INSERT INTO goals(id)
+INSERT INTO advices (habit_dictionary_id)
 VALUES (1),
+       (1),
        (2),
+       (2),
+       (3),
        (3),
        (4),
        (5);
 
-INSERT INTO custom_goals(text, user_id)
-VALUES ('Buy a bamboo brush', 1),
-       ('Buy composter', 1),
-       ('Start sorting trash', 2),
-       ('Start recycling batteries', 2),
-       ('Finish book about vegans', 3);
-
-INSERT INTO advices(habit_dictionary_id)
-VALUES (1),
-       (2),
-       (1),
-       (1),
-       (1),
-       (1);
-
-INSERT INTO habit_facts (habit_dictionary_id)
-VALUES (1),
-       (2),
-       (2),
-       (2),
-       (2),
-       (1),
-       (1),
-       (1);
-
-INSERT INTO goal_translations(text, goal_id, language_id)
-VALUES ('Купіть бамбукову щітку', 1, 1),
-       ('Buy a bamboo brush', 1, 2),
-       ('Купите бамбуковую щетку', 1, 3),
-       ('Купіть компостер', 2, 1),
-       ('Buy composter', 2, 2),
-       ('Купить компостер', 2, 3),
-       ('Почніть сортувати сміття', 3, 1),
-       ('Start sorting trash', 3, 2),
-       ('Начните сортировать мусор', 3, 3),
-       ('Почніть переробляти батарейки', 4, 1),
-       ('Start recycling batteries', 4, 2),
-       ('Начните перерабатывать батарейки', 4, 3),
-       ('Прочитайте книгу про вегетаріанство', 5, 1),
-       ('Finish book about vegans', 5, 2),
-       ('Прочитайте книгу о вегетарианстве', 5, 3);
-
-
-INSERT INTO advice_translations(language_id, advice_id, content)
+INSERT INTO advice_translations (language_id, advice_id, content)
 VALUES (1, 1, 'Покладіть по одній еко-сумці в кожну сумку чи рюкзак, так вона завжди буде з вами, якщо ви несподівано вирушите в магазин.'),
        (2, 1, 'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
        (3, 1, 'Положите по одной эко-сумке в каждую сумку или рюкзак, чтобы она всегда была с вами, если вы неожиданно отправитесь в магазин.'),
@@ -214,54 +151,90 @@ VALUES (1, 1, 'Покладіть по одній еко-сумці в кожн�
        (2, 6, 'Eco Bags are very popular with athletes and anyone who leads a healthy lifestyle.'),
        (3, 6, 'Эко-сумки очень популярны у спортсменов и тех, кто ведет здоровый образ жизни.');
 
-INSERT INTO fact_translations(language_id, habit_fact_id, content)
-VALUES (1, 1, 'Покладіть  до кожної сумки чи рюкзаку одну еко-сумку, так вона буде завжди з вами, якщо ви неочікувано зайдете в магазин.'),
-       (2, 1, 'Put one eco-bag in each bag or backpack, so it will always be with you if you unexpectedly go to the store.'),
-       (3, 1, 'Положите в каждой сумки или рюкзаке одну эко-сумку, так она будет всегда с вами, если вы неожиданно зайдете в магазин.'),
-       (1, 2, 'Більшість шкідливих речовин містяться навіть не в стаканчиках, а в кришечках та трубочках. Їх переважно виготовляють з 6-го або 7-го типів пластику. Вони виділяють токсичну речовину — Дисанол-А.'),
-       (2, 2, 'Most harmful substances are not even contained in cups but in lids and tubes. They are preferably made of 6 or 7 types of plastic. They secrete a toxic substance - Disanol-A.'),
-       (3, 2, 'Большинство вредных веществ содержатся даже не в стаканчиках, а в крышечках и трубочках. Их преимущественно изготавливают из 6-го или 7-го типов пластика. Они выделяют токсическое вещество - Дисанол-А.'),
-       (1, 3, 'На заводі зі стаканчиків знімається плівка, і картон вдається переробити. Але наразі виникають проблеми з логістикою між Львовом та Харківською областю. На це поки що немає фінансів'),
-       (2, 3, 'At the factory, the film is removed from the cups and the cardboard can be recycled. But now there are problems with logistics between Lviv and Kharkiv region. There is no finance for this yet'),
-       (3, 3, 'На заводе по стаканчиков снимается пленка, и картон удается переделать. Но пока возникают проблемы с логистикой между Львовом и Харьковской области. На это пока нет денег'),
-       (1, 4, 'Сміттєспалювального заводу, який би утилізовував небезпечні стаканчики, в Україні поки що не збудували'),
-       (2, 4, 'A waste incineration plant that would dispose of hazardous cups in Ukraine has not yet been built'),
-       (3, 4, 'Мусоросжигательного завода, который бы утилизовував опасные стаканчики, в Украине пока не построили'),
-       (1, 5, 'Культура кави з собою дуже глибоко вкорінилася в нашому житті, і через це щодня тисячі паперових стаканчиків опиняються на смітнику.'),
-       (2, 5, 'The coffee culture is deeply rooted in our lives, and because of this, thousands of paper cups are thrown into the dump every day.'),
-       (3, 5, 'Культура кофе с собой очень глубоко укоренилась в нашей жизни, и поэтому каждый день тысячи бумажных стаканчиков оказываются на свалке.'),
-       (1, 6, 'Одноразові пакети на касі в супермаркетах коштують 2-3 гривні. Вони не тільки забруднюють навколишнє середовище, а ще й з’їдають частину вашого бюджету. Набагато практичніше носити з собою складну сумочку з тканини, ще зовсім недавно так робили всі люди.'),
-       (2, 6, 'Disposable packages at checkout in supermarkets cost 2-3 hryvnias. Not only do they pollute the environment, they also eat up part of your budget. It is much more practical to carry a sophisticated fabric bag with you, as recently as all people have done.'),
-       (3, 6, 'Одноразовые пакеты на кассе в супермаркетах стоят 2-3 гривны. Они не только загрязняют окружающую среду, но и съедают часть вашего бюджета. Гораздо практичнее носить с собой сложную сумочку из ткани, еще совсем недавно так делали все люди.'),
-       (1, 7, 'За даними ООН, приблизно 5 трильйонів поліетиленових пакетів споживаються у світі щороку, або близько 10 мільйонів - щохвилини.'),
-       (2, 7, 'According to the UN, about 5 trillion plastic bags are consumed in the world each year, or about 10 million every minute.'),
-       (3, 7, 'По данным ООН, примерно 5000000000000 полиэтиленовых пакетов потребляются в мире ежегодно, или около 10000000 - ежеминутно.'),
-       (1, 8, 'Наразі, близько 60 країн світу почали боротьбу із пластиком на законодавчому рівні.'),
-       (2, 8, 'Currently, around 60 countries have begun to fight plastic at the legislative level.'),
-       (3, 8, 'Сейчас около 60 стран мира начали борьбу с пластиком на законодательном уровне.');
+INSERT INTO break_time (end_time, start_time)
+VALUES ('10:00:00', '06:00:00'),
+       ('10:00:00', '06:00:00'),
+       ('10:00:00', '06:00:00'),
+       ('10:00:00', '06:00:00'),
+       ('10:00:00', '06:00:00'),
+       ('12:00:00', '10:00:00'),
+       ('12:00:00', '10:00:00');
 
-INSERT INTO user_goals(user_id, goal_id, custom_goal_id, status, date_completed)
-VALUES (1, 1, null, 'ACTIVE', null),
-       (2, 3, null, 'ACTIVE', null),
-       (2, 4, null, 'DONE', '2019-11-14 19:04:51'),
-       (1, null, 1, 'DONE', '2019-11-15 12:44:36'),
-       (3, null, 2, 'ACTIVE', null),
-       (3, null, 3, 'DONE', '2019-11-11 13:55:13');
+INSERT INTO categories (name, parent_category_id)
+VALUES ('Food', null),
+       ('Park', null),
+       ('Castle', null),
+       ('Museum', null),
+       ('Hotel', null);
 
-INSERT INTO achievements(title, description, message)
-VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!'),
-       ('Eco friend', 'Start to track a habit',
-        'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
-       ('Сonscious', 'Made first habit',
-        'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
-       ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!'),
-       ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!'),
-       ('ach6', 'get ach 6', 'info'),
-       ('ach7', 'get ach 7', 'info'),
-       ('ach8', 'get ach 8', 'info'),
-       ('ach9', 'get ach 9', 'info');
+INSERT INTO locations (address, lat, lng)
+VALUES ('вулиця Під Дубом', 49.84988, 24.022533),
+       ('Вулиця Кульпарківська, 226а, Львів, Львівська область, 79000', 49.807129, 23.977985),
+       ('Площа Ринок, Львів, Львівська область, 79000', 49.842042, 24.030359),
+       ('Проспект В''ячеслава Чорновола, 2, Львів, Львівська область, 79000', 49.847489, 24.025975),
+       ('Площа Ринок, 14 (підвал), Львів, Львівська область, 79000', 49.841311, 24.03229),
+       ('Вулиця Замкова, Львів, Львівська область, 79000', 49.951311, 24.03207),
+       ('Софіївка, Галицький район, Львів, Львівська область, 79000', 49.855311, 24.03299),
+       ('Вулиця Мечникова 33, Львів, Львівська область, 79000', 49.841912, 24.12229),
+       ('Вулиця Високий Замок, Львів, Львівська область, 79000', 49.842213, 24.23229),
+       ('Вулиця Академіка А.Сахарова, Львів, Львівська область, 79000', 49.804341, 24.03959);
 
-INSERT INTO tags(name)
+INSERT INTO places (description, email, modified_date, name, phone, status, author_id, category_id, location_id)
+VALUES ('Shopping center', 'forum_lviv@gmail.com', '2020-09-10 20:15:00', 'Forum', '0322 489 850', 2, 1, 1, 1),
+       ('Shopping center', 'victoria_gardens@gmail.com', '2020-08-10 20:20:00', 'Victoria Gardens', '0322 590 202', 2, 1, 1, 2),
+       ('Restaurant', 'pravda_lviv@gmail.com', '2020-07-10 16:31:00', 'Pravda', '0322 157 694', 2, 1, 1, 3),
+       ('Restaurant', 'malevych_lviv@gmail.com', '2020-06-10 18:05:00', 'Malevych', '0322 849 348', 2, 1, 1, 4),
+       ('Restaurant', 'kryivka_lviv@gmail.com', '2020-06-10 20:00:00', 'Kryivka', '067 310 3145', 2, 1, 1, 5),
+       ('Park', 'high_castle@gmail.com', '2020-06-10 20:00:00', 'Park High Castle', '03222 47092', 2, 2, 3, 6),
+       ('Park', 'str_park@gmail.com', '2020-06-10 21:00:00', 'Stryiskyi Park', '03222 47792', 2, 2, 2, 7),
+       ('Cemetery', 'lych_cem@gmail.com', '2020-06-10 22:00:00', 'Lychakiv Cemetery', '0322 755 415', 2, 2, 4, 8),
+       ('Castle', 'mou_high@gmail.com', '2020-06-10 20:33:00', 'Mountain High Castle', '03288 47792', 2, 2, 3, 9),
+       ('Hotel', 'eco_tel@gmail.com', '2020-06-10 20:15:00', 'Ekotel', '03791 47792', 2, 2, 5, 10);
+
+
+INSERT INTO comments (created_date, modified_date, text, estimate_id, parent_comment_id, place_id, user_id)
+VALUES ('2020-02-10 14:15:00', '2020-02-10 14:15:00', 'Прекрасне місце, раджу.', null, null, 1, 1),
+       ('2020-02-10 14:15:00', '2020-02-10 14:15:00', 'Завжди проводжу тут час.', null, null, 1, 2),
+       ('2020-04-10 19:30:00', '2020-04-10 19:30:00', 'Одне з найцікавіших місць у Львові.', null, null, 2, 3),
+       ('2020-04-10 19:30:00', '2020-04-10 19:30:00', 'What a beautiful place.', null, null, 2, 5),
+       ('2020-04-10 13:54:00', '2020-04-10 13:54:00', 'Мені не дуже сподобалось.', null, null, 3, 6),
+       ('2020-05-10 12:10:00', '2020-05-10 12:10:00', 'Як і всюди у Львові, прекрасно.', null, null, 3, 8),
+       ('2020-05-10 20:19:00', '2020-05-10 20:19:00', 'Раджу відвідати.', null, null, 4, 10),
+       ('2020-06-10 20:22:00', '2020-06-10 20:22:00', 'Always come back here.', null, null, 4, 13),
+       ('2020-06-10 18:33:00', '2020-06-10 18:33:00', 'Чудово провів тут час.', null, null, 5, 14),
+       ('2020-09-10 14:59:00', '2020-09-10 14:59:00', 'Recommend!', null, null, 5, 15);
+
+INSERT INTO estimates (rate, comment_id, place_id, user_id)
+VALUES (5, 1, 1, 1),
+       (3, 2, 2, 1),
+       (5, 3, 3, 3),
+       (5, 4, 4, 5),
+       (3, 5, 5, 6),
+       (5, 6, 6, 8),
+       (4, 7, 7, 10),
+       (5, 8, 8, 13),
+       (5, 9, 9, 14),
+       (4, 10, 10, 15);
+
+INSERT INTO specifications (name)
+VALUES ('Animal'),
+       ('Own cup'),
+       ('Karaoke'),
+       ('Shopping'),
+       ('Ukrainian food'),
+       ('Dance');
+
+INSERT INTO discount_values (value, place_id, specification_id)
+VALUES (3, 1, 1),
+       (13, 2, 2),
+       (20, 3, 3),
+       (61, 4, 4),
+       (91, 5, 5),
+       (45, 6, 6),
+       (45, 8, 6),
+       (45, 9, 6);
+
+INSERT INTO tags (name)
 VALUES ('News'),
        ('Events'),
        ('Education'),
@@ -273,36 +246,37 @@ VALUES ('News'),
        ('3 r''s'),
        ('Eco-city');
 
-INSERT INTO eco_news(creation_date, image_path, author_id, text, title)
-VALUES ('2020-04-11 18:33:51', 'шлях до картинки', 1,
+INSERT INTO eco_news (creation_date, image_path, author_id, text, title, source)
+VALUES ('2020-09-11 18:33:51', 'шлях до картинки', 1,
         'No matter where you live , you can make a difference in the impact of big agriculture. Purchasing foods produced by small, local farms, opting for organic produce whenever possible',
-        'A New Way To Buy Food'),
-       ('2020-04-11 18:55:18', 'шлях до картинки', 2,
+        'A New Way To Buy Food', null),
+       ('2020-09-11 18:55:18', 'шлях до картинки', 2,
         'The benefits of biodegradable substances are only felt when they are disposed of properly. Compost piles capture and return all of the recycled nutrients to the environment, and help to sustain new life. ',
-        'Why Biodegradable Products are Better for the Planet'),
-       ('2020-04-11 19:06:36', 'шлях до картинки', 3,
+        'Why Biodegradable Products are Better for the Planet', null),
+       ('2020-09-11 19:06:36', 'шлях до картинки', 3,
         'Over six gallons of water are required to produce one gallon of wine.',
-        'Sustainable Wine Is Less Damaging to the Environment, But How Can You Spot It?'),
-       ('2020-04-11 19:14:15', 'шлях до картинки', 4,
+        'Sustainable Wine Is Less Damaging to the Environment, But How Can You Spot It?', null),
+       ('2020-09-11 19:14:15', 'шлях до картинки', 4,
         'Instead of trying to get rid of those lawn and garden weeds, harvest them for free homegrown meals.',
-        'Please eat the dandelions: 9 edible garden weeds'),
-       ('2020-04-11 19:22:57', 'шлях до картинки', 5,
+        'Please eat the dandelions: 9 edible garden weeds', null),
+       ('2020-09-11 19:22:57', 'шлях до картинки', 5,
         'Weather happens hour by hour, day by day—it''s a thunderstorm, a heat wave, a windy afternoon. Taken as averages over decades and centuries, those patterns of precipitation, temperature, and wind for a given region comprise our climate.',
-        'Climate Change'),
-       ('2020-04-11 19:31:35', 'шлях до картинки', 6,
+        'Climate Change', null),
+       ('2020-09-11 19:31:35', 'шлях до картинки', 6,
         'According to the Environmental Protection Agency, food waste in the United States has tripled since 1960. In landfills, its decomposition generates methane, a potent greenhouse gas.',
-        'A Growing Problem'),
-       ('2020-04-11 19:44:19', 'шлях до картинки', 7,
+        'A Growing Problem', null),
+       ('2020-09-11 19:44:19', 'шлях до картинки', 7,
         'Global warming — a component of climate change — is the rapid increase in recorded temperatures of the ocean, land, and air caused by rising levels of carbon dioxide and other greenhouse gases in the atmosphere.',
-        'Global Warming'),
-       ('2020-04-11 19:50:56', 'шлях до картинки', 8,
+        'Global Warming', null),
+       ('2020-09-11 19:50:56', 'шлях до картинки', 8,
         'Researchers have found evidence of rainforests near the South Pole 90 million years ago, suggesting the climate was exceptionally warm at the time',
-        'Traces of ancient rainforest in Antarctica point to a warmer prehistoric world'),
-       ('2020-04-11 19:55:05', 'шлях до картинки', 9, 'Rising sea surface temperatures and acidic waters could eliminate nearly all existing coral reef habitats by 2100, suggesting restoration projects in these areas will likely meet serious challenges','Warming, acidic oceans may nearly eliminate coral reef habitats by 2100'),
-       ('2020-04-11 20:12:56', 'шлях до картинки', 10, 'Four fossilized monkey teeth discovered deep in the Peruvian Amazon provide new evidence that more than one group of ancient primates journeyed across the Atlantic Ocean from Africa.', 'Ancient Teeth from Peru Hint Now-Extinct Monkeys Crossed Atlantic from Africa'),
-       ('2020-04-11 20:15:03', 'шлях до картинки', 11, 'Researchers from Cambridge University and University of California San Diego have 3D printed coral-inspired structures that are capable of growing dense populations of microscopic algae', '3D-printed corals could improve bioenergy and help coral reefs');
+        'Traces of ancient rainforest in Antarctica point to a warmer prehistoric world', null),
+       ('2020-09-11 19:55:05', 'шлях до картинки', 9, 'Rising sea surface temperatures and acidic waters could eliminate nearly all existing coral reef habitats by 2100, suggesting restoration projects in these areas will likely meet serious challenges','Warming, acidic oceans may nearly eliminate coral reef habitats by 2100', null),
+       ('2020-09-11 20:12:56', 'шлях до картинки', 10, 'Four fossilized monkey teeth discovered deep in the Peruvian Amazon provide new evidence that more than one group of ancient primates journeyed across the Atlantic Ocean from Africa.', 'Ancient Teeth from Peru Hint Now-Extinct Monkeys Crossed Atlantic from Africa', null),
+       ('2020-09-11 20:15:03', 'шлях до картинки', 11, 'Researchers from Cambridge University and University of California San Diego have 3D printed coral-inspired structures that are capable of growing dense populations of microscopic algae', '3D-printed corals could improve bioenergy and help coral reefs', null);
 
-INSERT INTO eco_news_tags(eco_news_id, tags_id)
+
+INSERT INTO eco_news_tags (eco_news_id, tags_id)
 VALUES (1, 4),
        (2, 4),
        (3, 1),
@@ -315,21 +289,295 @@ VALUES (1, 4),
        (10, 1),
        (11, 1);
 
-INSERT INTO tips_and_tricks(title, text, creation_date, author_id, image_path, source)
-VALUES ('Don''t take home any unnecessary trash or junk',
-        'If you want a flyer or business card, take a photo rather than taking it home. This is especially relevant at concerts and outings where freebies are being passed out.',
-        '2020-05-11 18:55:18', 1, 'image path', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Go paperless',
-        'We know this can be a challenge, but opting for kindles, online books, or even renting from the library or borrowing from a friend makes a huge difference.',
-        '2020-05-12 18:55:18', 2, 'image path', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Use reusable storage bags instead of ziplock bags',
-        'Say goodbye to plastic ziplock bags for good. Reusable storage bags are the perfect alternative to single-use plastic bags and are so much more versatile.',
-        '2020-05-13 18:55:18', 3, 'image path', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/');
+INSERT INTO econews_comment (text, created_date, modified_date, parent_comment_id, user_id, eco_news_id, deleted)
+VALUES ('Досить інтересно.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 1, 1, false),
+       ('Завжди цікаво почитати новини на цю тему.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 2, 2, false),
+       ('Як завжди, цікаві новини.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 3, 3, false),
+       ('Ставлю лайк новині.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 4, 4, false),
+       ('Тяжко повірити у достовірність наданої інформації.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 5, 5, false),
+       ('Ого...', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 6, 6, false),
+       ('Глобальне потепління - погано.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 7, 7, false),
+       ('90 мільйонів років, ого.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 8, 8, false),
+       ('Потрібно діяти, поки ще є час.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 10, 9, false),
+       ('Люблю мавп, досить інтересні тварини.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 11, 10, false),
+       ('Кебридж як завжди, у всьому перший.', '2020-09-15 20:00:00', '2020-09-15 20:00:00', null, 12, 11, false);
 
-INSERT INTO tips_and_tricks_tags(tips_and_tricks_id, tags_id)
+INSERT INTO econews_comment_users_liked (econews_comment_id, users_liked_id)
+VALUES (1, 1),
+       (2, 2),
+       (3, 1),
+       (4, 1),
+       (5, 2),
+       (7, 1),
+       (8, 3),
+       (9, 3),
+       (11, 10);
+
+INSERT INTO fact_of_the_day (name, create_date)
+VALUES ('27,000 дерев знищується кожен день для виробництва туалетного папіру.', '2020-09-10 20:00:00'),
+       ('Переробка однієї алюмінієвої банки зможе надати достатньо електроенергії, щоб телевізор працював мінімум 3 години. 80 мільярдів алюмінієвих банок використовується щоденно', '2020-09-10 20:01:00'),
+       ('Папір може бути перероблений тільки шість разів. Після цього волокна дуже слабкі щоб триматися разом', '2020-09-10 20:02:00'),
+       ('40% усієї води у світі продається у пляшках.', '2020-09-10 20:03:00'),
+       ('Скляна пляшка зроблена у наш час потребує 4000 років для розкладання', '2020-09-10 20:04:00'),
+       ('Найстарішому дереву у світі більше 4600 років.', '2020-09-10 20:05:00'),
+       ('Наша планета збільшується на 77 мільйонів жителів щорічно.', '2020-09-10 20:06:00'),
+       ('Сміттєзвалища складаються на  35% з пакувальних матеріалів.', '2020-09-10 20:07:00'),
+       ('Тропічні ліси скорочуються на 100 акрів щохвилинно.', '2020-09-10 20:08:00'),
+       ('30% відсотків холодного повітря зникає з вашого холодильника коли Ви його відчиняєте.', '2020-09-10 20:09:00');
+
+INSERT INTO fact_of_the_day_translations (content, fact_of_the_day_id, language_id)
+VALUES ('27,000 дерев знищується кожен день для виробництва туалетного папeру.', 1, 1),
+       ('27,000 trees are destroyed every day to produce toilet paper.', 1, 2),
+       ('27,000 деревьев уничтожается каждый день для производства туалетной бумаги.', 1, 3),
+       ('Переробка однієї алюмінієвої банки зможе надати достатньо електроенергії, щоб телевізор працював мінімум 3 години. 80 мільярдів алюмінієвих банок використовується щоденно.', 2, 1),
+       ('Recycling one aluminum can will provide enough electricity to keep the TV running for at least 3 hours. 80 billion aluminum cans are used daily.', 2, 2),
+       ('Переработка одной алюминиевой банки сможет предоставить достаточно электроэнергии, чтобы телевизор работал минимум 3 часа. 80 миллиардов алюминиевых банок используется ежедневно.', 2, 3),
+       ('Папір може бути перероблений тільки шість разів. Після цього волокна дуже слабкі щоб триматися разом.', 3, 1),
+       ('Paper can only be recycled six times. After that, the fibers are too weak to stick together.', 3, 2),
+       ('Бумага может быть переработан только шесть раз. После этого волокна очень слабые чтобы держаться вместе.', 3, 3),
+       ('40% усієї води у світі продається у пляшках.', 4, 1),
+       ('40% of all water in the world is sold in bottles.', 4, 2),
+       ('40% всей воды в мире продается в бутылках.', 4, 3),
+       ('Скляна пляшка зроблена у наш час потребує 4000 років для розкладання.', 5, 1),
+       ('A glass bottle made nowadays takes 4000 years to decompose.', 5, 2),
+       ('Стеклянная бутылка сделана в наше время требует 4000 для разложения.', 5, 3),
+       ('Найстаршому дереву у світі більше 4600 років.', 6, 1),
+       ('The oldest tree in the world is more than 4600 years old.', 6, 2),
+       ('Самое старое дерево в мире имеет более 4600 лет.', 6, 3),
+       ('Наша планета збільшується на 77 мільйонів жителів щорічно.', 7, 1),
+       ('Our planet is growing by 77 million people every year.', 7, 2),
+       ('Наша планета увеличивается на 77 миллионов жителей ежегодно.', 7, 3),
+       ('Сміттєзвалища складаються на 35% з пакувальних матеріалів.', 8, 1),
+       ('Landfills consist of 35% of packaging materials.', 8, 2),
+       ('Свалки состоят на 35% из упаковочных материалов.', 8, 3),
+       ('Тропічні ліси скорочуються на 100 акрів щохвилинно.', 9, 1),
+       ('Rainforests are declining by 100 acres every minute.', 9, 2),
+       ('Тропические леса сокращаются на 100 акров ежеминутно.', 9, 3),
+       ('30% відсотків холодного повітря зникає з вашого холодильника коли Ви його відчиняєте.', 10, 1),
+       ('30% of the cold air disappears from your refrigerator when you open it.', 10, 2),
+       ('30% процентов холодного воздуха исчезает из вашего холодильника когда Вы его открываете.', 10, 3);
+
+INSERT INTO favorite_places (name, place_id, user_id)
+VALUES ('Forum', 1, 1),
+       ('Victoria Gardens', 2, 1),
+       ('Pravda', 3, 2),
+       ('Malevych', 4, 2),
+       ('Kryivka', 5, 3),
+       ('Park High Castle', 6, 5),
+       ('Stryiskyi Park', 7, 7),
+       ('Lychakiv Cemetery', 8, 8),
+       ('Mountain High Castle', 9, 11),
+       ('Ekotel', 10, 12);
+
+INSERT INTO goal_translations (text, goal_id, language_id)
+VALUES ('Вибирайте екотранспорт', 1, 1),
+       ('Choose eco-transport', 1, 2),
+       ('Выбирайте эко-транспорт', 1, 3),
+       ('Купіть бамбукову щітку', 2, 1),
+       ('Buy a bamboo brush', 2, 2),
+       ('Купитe бамбуковую щетку', 2, 3),
+       ('Придбайте компостер', 3, 1),
+       ('Buy composter', 3, 2),
+       ('Купите компостер', 3, 3),
+       ('Почніть сортувати сміття', 4, 1),
+       ('Start sorting trash', 4, 2),
+       ('Начните сортировать мусор', 4, 3),
+       ('Почніть переробляти акумулятори', 5, 1),
+       ('Start recycling batteries', 5, 2),
+       ('Начать переработку аккумуляторов', 5, 3),
+       ('Прочитати книгу про вегетаріанство', 6, 1),
+       ('Finish book about vegans', 6, 2),
+       ('Закончить книгу о вегетарианстве', 6, 3),
+       ('Відмовтеся від пластику', 7, 1),
+       ('Give up plastic', 7, 2),
+       ('Откажитесь от пластика', 7, 3),
+       ('Носіть паперовий пакет', 8, 1),
+       ('Carry a paper bag', 8, 2),
+       ('Носите бумажный пакет', 8, 3),
+       ('Використовуйте паперові склянки', 9, 1),
+       ('Use paper cups', 9, 2),
+       ('Используйте бумажные стаканчики', 9, 3),
+       ('Купуйте тільки розсипний чай', 10, 1),
+       ('Buy only loose tea', 10, 2),
+       ('Покупайте только рассыпной чай', 10, 3);
+
+-- TODO: Update insert.sql after Habits structure got refactored --
+INSERT INTO habit_facts (habit_dictionary_id)
+VALUES (1),
+       (2),
+       (2),
+       (2),
+       (2),
+       (1),
+       (1),
+       (1);
+
+INSERT INTO fact_translations (language_id, habit_fact_id, content, fact_of_day_status)
+VALUES (1, 1, 'testFactTranslationsContent', 2);
+
+INSERT INTO habit_dictionary_translation (name, description, habit_item, language_id, habit_dictionary_id)
+VALUES ('testHabitDictionaryTranslationName', 'testHabitDictionaryTranslationDescription', 'testHabitItem', 1, 1);
+
+INSERT INTO habits (habit_dictionary_id, status, create_date)
+VALUES (1, true, '2020-09-10 20:00:00');
+
+INSERT INTO habit_statistics (rate, date, amount_of_items, habit_id)
+VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);
+
+INSERT INTO habit_status (working_days, habit_streak, suspended, habit_id, last_enrollment, user_id, create_date)
+VALUES (5, 4, false, 1, '2020-09-10 20:00:00.823000', 1, '2020-09-10 20:00:00.823000');
+
+INSERT INTO habit_status_calendar (enroll_date, habit_status_id)
+VALUES ('2020-09-10', 1);
+
+INSERT INTO habits_users_assign (habit_id, users_id)
+VALUES (1, 1);
+-- HABITS END --
+
+INSERT INTO news_subscribers (email_address, unsubscribe_token)
+VALUES ('majboroda.artur@mail.com', 'a06b0b4e-8696-419c-a776-611c36f79d39'),
+       ('komarov.eduard@mail.com', 'pWGIcOYIbvZiHNcPG68NHiTcofV1kk5FvWah'),
+       ('oleksiv.shamil@mail.com', 'pdaTEKlxUrvo0riNtA5BNvCEKReEa4EZagks'),
+       ('irshov.grugorij@mail.com', '5zHqn2tdGNdJcYjrva4t2QPkMdRFT8l08MRV'),
+       ('liakh.roman@mail.com', 'oDXVDh8OLe1FP54UmsUfQrf2GM2ixbxLrHWf'),
+       ('miasnuk.ihor@mail.com', 'IF7PgvPerJVyJfc9bCBx1VGeSV6yiZe3yY6U'),
+       ('efimov.ivan@mail.com', 'XenutRA9yZdU7TiNV0ZiwnVzLdGqimiB9ND8'),
+       ('pochynok.petro@mail.com', 'dbjhgbNdQxJKkhBlc7lbrq8CSCOm2GFjIbFb'),
+       ('serdyuk.orest@mail.com', '9I0hlPphve3uZXXU2nZO3cejdM3p0tKVN4aW'),
+       ('shevtsov.oleksiy@mail.com', 'zweNp5Vxde2kPzIS0T1qSnzB7E5GTtO6OiNA'),
+       ('shumilo.yan@mail.com', 'DHkLXwmvDfN7MsOmEZPWAHdHoZp8JgvDCbdm'),
+       ('volianskiy.ihor@mail.com', 'f1rO4XcGPvGBN1AECNfqwdNdT5j9mGGa4arF'),
+       ('tsal.vitaliy@mail.com', 'utntxJQEGdpGcUmlao4CmiFybBrUulCtPTwo'),
+       ('tarasyuk.danylo@mail.com', 'f32YU9TDLLP5QtOYYYWVc1bGrxCbFxWIpZeX'),
+       ('spilberg.marian@mail.com', 'IC00aKlv3o7pqcADMbCtCd32L9xnHA80S3rM'),
+       ('sirko.ivan@mail.com', 'UmbefZkurK9qabZ3cchOoHfbsJ8YpXIMVAwo'),
+       ('samsonov.rafael@mail.com', 'Tpm35L1Fcv3jrAe5ZQLUGeoi1889eMf7V7kd'),
+       ('bytko.makar@mail.com', 'pZ8YbdKLheKFBgcUXGPO9uqpt4B2OLifuEl0');
+
+INSERT INTO opening_hours (close_time, open_time, week_day, place_id)
+VALUES ('20:00:00', '06:00:00', 0, 1),
+       ('20:00:00', '06:00:00', 1, 1),
+       ('20:00:00', '06:00:00', 2, 1),
+       ('20:00:00', '06:00:00', 3, 1),
+       ('20:00:00', '06:00:00', 4, 1),
+
+       ('20:00:00', '06:00:00', 0, 2),
+       ('20:00:00', '06:00:00', 1, 2),
+       ('20:00:00', '06:00:00', 2, 2),
+       ('20:00:00', '06:00:00', 3, 2),
+       ('20:00:00', '06:00:00', 4, 2),
+
+       ('20:00:00', '06:00:00', 0, 3),
+       ('20:00:00', '06:00:00', 1, 3),
+       ('20:00:00', '06:00:00', 2, 3),
+       ('20:00:00', '06:00:00', 3, 3),
+       ('20:00:00', '06:00:00', 4, 3),
+
+       ('20:00:00', '06:00:00', 0, 4),
+       ('20:00:00', '06:00:00', 1, 4),
+       ('20:00:00', '06:00:00', 2, 4),
+       ('20:00:00', '06:00:00', 3, 4),
+       ('20:00:00', '06:00:00', 4, 4),
+
+       ('20:00:00', '06:00:00', 0, 5),
+       ('20:00:00', '06:00:00', 1, 5),
+       ('20:00:00', '06:00:00', 2, 5),
+       ('20:00:00', '06:00:00', 3, 5),
+       ('20:00:00', '06:00:00', 4, 5),
+
+       ('20:00:00', '06:00:00', 0, 6),
+       ('20:00:00', '06:00:00', 1, 6),
+       ('20:00:00', '06:00:00', 2, 6),
+       ('20:00:00', '06:00:00', 3, 6),
+       ('20:00:00', '06:00:00', 4, 6),
+
+       ('20:00:00', '06:00:00', 0, 7),
+       ('20:00:00', '06:00:00', 1, 7),
+       ('20:00:00', '06:00:00', 2, 7),
+       ('20:00:00', '06:00:00', 3, 7),
+       ('20:00:00', '06:00:00', 4, 7),
+
+       ('20:00:00', '06:00:00', 0, 8),
+       ('20:00:00', '06:00:00', 1, 8),
+       ('20:00:00', '06:00:00', 2, 8),
+       ('20:00:00', '06:00:00', 3, 8),
+       ('20:00:00', '06:00:00', 4, 8),
+
+       ('20:00:00', '06:00:00', 0, 9),
+       ('20:00:00', '06:00:00', 1, 9),
+       ('20:00:00', '06:00:00', 2, 9),
+       ('20:00:00', '06:00:00', 3, 9),
+       ('20:00:00', '06:00:00', 4, 9),
+
+       ('20:00:00', '06:00:00', 0, 10),
+       ('20:00:00', '06:00:00', 1, 10),
+       ('20:00:00', '06:00:00', 2, 10),
+       ('20:00:00', '06:00:00', 3, 10),
+       ('20:00:00', '06:00:00', 4, 10);
+
+INSERT INTO social_network_images (image_path, host_path)
+VALUES ('https://storage.cloud.google.com/staging.greencity-c5a3a.appspot.com/2dbb72fd-310a-4f99-8b2a-67e31dedd7e9', 'www.facebook.com'),
+       ('https://storage.cloud.google.com/staging.greencity-c5a3a.appspot.com/b043bbaa-044c-4df7-bf48-823114b4ec40', 'www.google.com'),
+       ('https://storage.cloud.google.com/staging.greencity-c5a3a.appspot.com/ad823c72-9015-4cd9-8b52-e09c8a6aaf5b', 'instagram.com');
+
+INSERT INTO social_networks (user_id, social_network_url, social_network_image_id)
+VALUES (1, 'https://www.facebook.com/greencitysocialproject1', 2),
+       (2, 'https://www.facebook.com/greencitysocialproject1', 2),
+       (5, 'https://www.facebook.com/greencitysocialproject1', 2),
+       (6, 'https://www.facebook.com/greencitysocialproject1', 2),
+       (9, 'https://www.facebook.com/greencitysocialproject1', 2),
+       (12, 'https://www.facebook.com/greencitysocialproject1', 2);
+
+INSERT INTO tips_and_tricks (title, text, creation_date, author_id, image_path, source)
+VALUES ('Don''t take home any unnecessary trash or junk', 'If you want a flyer or business card, take a photo rather than taking it home. This is especially relevant at concerts and outings where freebies are being passed out.',
+        '2020-09-10 20:00:00', 1, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Go paperless', 'We know this can be a challenge, but opting for kindles, online books, or even renting from the library or borrowing from a friend makes a huge difference.',
+        '2020-09-10 20:00:00', 2, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Try to refuse junk mail', 'The junk mail epidemic is real. We always end up recycling it, but we found out there is a better option.',
+        '2020-09-10 20:00:00', 3, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Say no to plastic bags for groceries or produce and bring your own instead', 'Remember, you don’t need to use produce bags. You can purchase reusable bags specifically for produce.',
+        '2020-09-10 20:00:00', 4, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Invest in higher quality items', 'Higher quality items will last longer in the long run and will save you money.',
+        '2020-09-10 20:00:00', 5, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Use kitchen towels instead of paper towels', 'This simple switch can have a huge impact and it’s something you can start doing right now.',
+        '2020-09-10 20:00:00', 6, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Buy second-hand or from eco-conscious brands', 'Make an effort to stop buying things that you don’t need. ',
+        '2020-09-10 20:00:00', 7, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Ditch plastic straws', 'A simple change you can make is saying no to disposable straws.',
+        '2020-09-10 20:00:00', 8, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Use reusable storage bags instead of ziplock bags', 'Say goodbye to plastic ziplock bags for good. Reusable storage bags are the perfect alternative to single-use plastic bags and are so much more versatile.',
+        '2020-09-10 20:00:00', 9, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       ('Rethink your coffee choices', 'Using a french press is the perfect zero waste option for brewing coffee.',
+        '2020-09-10 20:00:00', 10, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/');
+
+INSERT INTO tips_and_tricks_tags (tips_and_tricks_id, tags_id)
 VALUES (1, 6),
        (1, 8),
        (1, 10),
        (2, 8),
        (3, 6),
-       (3, 7)
+       (3, 7),
+       (4, 3),
+       (5, 3),
+       (6, 3),
+       (7, 3),
+       (8, 3),
+       (9, 3),
+       (10, 3);
+
+INSERT INTO tipsandtricks_comment (text, created_date, modified_date, parent_comment_id, user_id, tips_and_tricks_id, deleted)
+VALUES ('Чудово. Візьму на замітку.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 1, 1, false),
+       ('Досить інтересно.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 2, 2, false),
+       ('Ніколи і не задумувався про це.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 3, 3, false),
+       ('Достатньо переконуюча порада.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 4, 4, false),
+       ('Хм, а це і правда має сенс.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 5, 5, false),
+       ('Цілком згіден.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 6, 8, false);
+
+INSERT INTO tipsandtricks_comment_users_liked (tipsandtricks_comment_id, users_liked_id)
+VALUES (1, 1),
+       (1, 1),
+       (2, 5),
+       (2, 1),
+       (3, 7),
+       (4, 1),
+       (5, 2);
