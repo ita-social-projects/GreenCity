@@ -9,10 +9,7 @@ import greencity.entity.User;
 import static greencity.entity.enums.EmailNotification.*;
 import static greencity.entity.enums.FactOfDayStatus.*;
 import greencity.message.SendHabitNotification;
-import greencity.repository.FactTranslationRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.RatingStatisticsRepo;
-import greencity.repository.UserRepo;
+import greencity.repository.*;
 import greencity.service.RatingStatisticsService;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -39,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class ScheduleConfig {
     private final FactTranslationRepo factTranslationRepo;
-    private final HabitRepo habitRepo;
+    private final HabitAssignRepo habitAssignRepo;
     private final RabbitTemplate rabbitTemplate;
     private final UserRepo userRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
@@ -55,7 +52,7 @@ public class ScheduleConfig {
         ZonedDateTime end = ZonedDateTime.now();
         ZonedDateTime start = end.minusDays(3);
         for (User user : users) {
-            int count = habitRepo.countMarkedHabitsByUserIdByPeriod(user.getId(), start, end);
+            int count = habitAssignRepo.countMarkedHabitAssignsByUserIdAndPeriod(user.getId(), start, end);
             if (count == 0) {
                 rabbitTemplate.convertAndSend(
                     EMAIL_TOPIC_EXCHANGE_NAME,
