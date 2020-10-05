@@ -67,10 +67,29 @@ public final class ErrorMessage {
     public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
     public static final String USER_HAS_NO_AVAILABLE_HABITS =
         "This user is tracking all available habits";
-    public static final String USER_ALREADY_HAS_STATUS_FOR_ASSIGNED_HABIT = "Current user already has status for habit with id: ";
+    public static final String USER_ALREADY_HAS_STATUS_FOR_ASSIGNED_HABIT =
+        "Current user already has status for habit with id: ";
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";
-    public static final String STATUS_OF_HABIT_NOT_DELETED = "status of habit assign wasn't deleted by id: ";
-    public static final String STATUS_OF_HABIT_NOT_UPDATED = "status of habit assign wasn't updated by id: ";
+    public static final String STATUS_OF_HABIT_ASSIGN_NOT_DELETED = "Status of user habit wasn't deleted by id: ";
+    public static final String STATUS_OF_HABIT_ASSIGN_NOT_UPDATED = "Status of user habit wasn't updated by id: ";
+    public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
+    public static final String HABIT_ASSIGN_SUSPENDED_STATUS_NOT_UPDATED =
+        "Habit assign suspended status wasn't updated because there is no habit assign with such user "
+            + "and habit with id : ";
+    public static final String HABIT_ASSIGN_NOT_UPDATED_BY_ID = "Habit assign does not exist by this id : ";
+    public static final String HABIT_ASSIGN_NOT_DELETED_BY_ID = "Habit assign does not exist by this id : ";
+    public static final String USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY =
+        "User already assigned and suspended this habit for today with id: ";
+    public static final String USER_HAS_NO_HABITS_WITH_SUCH_STATUS =
+        "There is no active habits for such user with such status ";
+    public static final String NO_STATUS_FOR_SUCH_HABIT_ASSIGN = "There is no status for such habit for current user";
+    public static final String NO_HABIT_STATUS = "There is no habit status with id: ";
+    public static final String USER_HAS_NO_STATUS_FOR_SUCH_HABIT =
+        "There is no status for such habit for current user";
+    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
+        "There is no habit assign for such habit and user";
+    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE =
+        "There is no habit assign for such habit, user and date";
     public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'uk' or 'ru'";
     public static final String USER_HAS_NO_AVAILABLE_CUSTOM_GOALS = "This user is tracking all available custom goals";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
@@ -92,10 +111,6 @@ public final class ErrorMessage {
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
     public static final String USER_HAS_NOT_ANY_HABITS = "There is no habits for such user.";
-    public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS =
-        "There is no active habits for such user with such status ";
-    public static final String USER_HAS_NO_STATUS_FOR_SUCH_HABIT =
-        "There is no status for such habit for current user";
     public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
