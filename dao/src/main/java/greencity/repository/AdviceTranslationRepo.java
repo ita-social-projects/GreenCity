@@ -32,5 +32,5 @@ public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, 
      * @return {@link AdviceTranslation} in Optional
      * @author Vitaliy Dzen
      */
-    Optional<AdviceTranslation> findAdviceTranslationByLanguage_CodeAndAdvice(String languageCode, String advice);
+    Optional<AdviceTranslation> findAdviceTranslationByLanguageCodeAndAdvice(String languageCode, String advice);
 }

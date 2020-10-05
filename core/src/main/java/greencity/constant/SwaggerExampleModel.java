@@ -1,7 +1,7 @@
 package greencity.constant;
 
 public final class SwaggerExampleModel {
-    public static final String userProfileRequest =
+    public static final String USER_PROFILE_REQUEST =
         "User Profile Request\n"
             + "<div>\n"
             + "\t<ul class=\"tab\">\n"
@@ -27,7 +27,7 @@ public final class SwaggerExampleModel {
             + "\t</pre>\n"
             + "</div>";
 
-    public static final String userProfilePictureDto =
+    public static final String USER_PROFILE_PICTURE_DTO =
         "User Profile Picture\n"
             + "<div>\n"
             + "\t<ul class=\"tab\">\n"
@@ -46,7 +46,7 @@ public final class SwaggerExampleModel {
             + "\t</pre>\n"
             + "</div>";
 
-    public static final String addTipsAndTricksRequest =
+    public static final String ADD_TIPS_AND_TRICKS_REQUEST =
         "Add tips & tricks request\n"
             + "<div>\n"
             + "\t<ul class=\"tab\">\n"
@@ -70,7 +70,7 @@ public final class SwaggerExampleModel {
             + "\t</pre>\n"
             + "</div>";
 
-    public static final String addEcoNewsRequest =
+    public static final String ADD_ECO_NEWS_REQUEST =
         "Add Eco News Request\n"
             + "<div>\n"
             + "\t<ul class=\"tab\">\n"

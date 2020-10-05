@@ -19,18 +19,11 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import static greencity.constant.ErrorMessage.*;
@@ -47,7 +40,6 @@ import static greencity.constant.ValidationConstants.USER_CREATED;
 @Validated
 @Slf4j
 public class OwnSecurityController {
-    private final String clientAddress;
     private final OwnSecurityService service;
     private final VerifyEmailService verifyEmailService;
     private final PasswordRecoveryService passwordRecoveryService;
@@ -55,16 +47,13 @@ public class OwnSecurityController {
     /**
      * Constructor.
      *
-     * @param clientAddress      - Google client address.
      * @param service            - {@link OwnSecurityService} - service for security logic.
      * @param verifyEmailService {@link VerifyEmailService} - service for email verification.
      */
     @Autowired
-    public OwnSecurityController(@Value("${client.address}") String clientAddress,
-                                 OwnSecurityService service,
+    public OwnSecurityController(OwnSecurityService service,
                                  VerifyEmailService verifyEmailService,
                                  PasswordRecoveryService passwordRecoveryService) {
-        this.clientAddress = clientAddress;
         this.service = service;
         this.verifyEmailService = verifyEmailService;
         this.passwordRecoveryService = passwordRecoveryService;

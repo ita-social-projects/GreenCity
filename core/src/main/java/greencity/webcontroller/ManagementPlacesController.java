@@ -63,7 +63,7 @@ public class ManagementPlacesController {
      */
     @GetMapping("/find")
     public ResponseEntity<PlaceUpdateDto> getPlaceById(@RequestParam("id") Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.findPlaceUpdateDto(id));
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getInfoForUpdatingById(id));
     }
 
     /**

@@ -84,7 +84,7 @@ class ManagementPlacesControllerTest {
     @Test
     void getPlaceByIdTest() throws Exception {
         this.mockMvc.perform(get("/management/places/find?id=1")).andExpect(status().isOk());
-        verify(placeService).findPlaceUpdateDto(1L);
+        verify(placeService).getInfoForUpdatingById(1L);
     }
 
     @Test

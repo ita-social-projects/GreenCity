@@ -52,7 +52,7 @@ public class TipsAndTricksController {
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TipsAndTricksDtoResponse> save(
-        @ApiParam(value = SwaggerExampleModel.addTipsAndTricksRequest, required = true)
+        @ApiParam(value = SwaggerExampleModel.ADD_TIPS_AND_TRICKS_REQUEST, required = true)
         @RequestPart @ValidTipsAndTricksDtoRequest TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         @ApiParam(value = "Tips & tricks image")
         @ImageValidation

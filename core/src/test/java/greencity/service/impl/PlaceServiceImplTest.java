@@ -226,7 +226,7 @@ class PlaceServiceImplTest {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity));
         when(modelMapper.map(genericEntity, PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
-        PlaceUpdateDto foundEntity = placeService.findPlaceUpdateDto(1L);
+        PlaceUpdateDto foundEntity = placeService.getInfoForUpdatingById(1L);
         assertEquals(placeUpdateDto, foundEntity);
 
         verify(placeRepo).findById(1L);

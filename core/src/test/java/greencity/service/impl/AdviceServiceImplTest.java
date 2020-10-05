@@ -94,7 +94,7 @@ class AdviceServiceImplTest {
 
     @Test
     void getAdviceByName() {
-        when(adviceTranslationRepo.findAdviceTranslationByLanguage_CodeAndAdvice("en", "test"))
+        when(adviceTranslationRepo.findAdviceTranslationByLanguageCodeAndAdvice("en", "test"))
             .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, AdviceDTO.class)).thenReturn(adviceDTO);
         assertEquals(adviceDTO, adviceService.getAdviceByName("en", "test"));

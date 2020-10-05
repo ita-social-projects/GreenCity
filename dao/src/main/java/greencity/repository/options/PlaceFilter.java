@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
  * @author Roman Zahouri, Nazar Stasyuk
  */
 public class PlaceFilter implements Specification<Place> {
-    private FilterPlaceDto filterPlaceDto;
+    private final transient FilterPlaceDto filterPlaceDto;
 
     /**
      * The constructor takes {@link FilterPlaceDto} object.

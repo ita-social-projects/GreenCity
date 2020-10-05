@@ -15,6 +15,7 @@ import static greencity.constant.ErrorMessage.USER_CANNOT_ADD_MORE_THAN_5_SOCIAL
 public class SocialNetworkLinksValidator implements ConstraintValidator<ValidSocialNetworkLinks, List<String>> {
     @Override
     public void initialize(ValidSocialNetworkLinks constraint) {
+        // Initializes the validator in preparation for #isValid calls
     }
 
     @Override
