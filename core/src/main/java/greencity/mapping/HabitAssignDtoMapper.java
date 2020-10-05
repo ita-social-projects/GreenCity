@@ -25,6 +25,7 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
         return HabitAssignDto.builder()
             .id(habitAssign.getId())
             .acquired(habitAssign.getAcquired())
+            .suspended(habitAssign.getSuspended())
             .createDateTime(habitAssign.getCreateDate())
             .habit(HabitDto.builder()
                 .id(habitAssign.getHabit().getId())

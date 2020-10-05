@@ -19,6 +19,8 @@ public class HabitAssignDto {
     @NotEmpty
     private Boolean acquired;
     @NotEmpty
+    private Boolean suspended;
+    @NotEmpty
     private ZonedDateTime createDateTime;
     @NotEmpty
     private HabitDto habit;
