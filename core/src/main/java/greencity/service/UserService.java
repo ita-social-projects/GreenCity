@@ -303,7 +303,6 @@ public interface UserService {
      * Delete user profile picture {@link User}.
      *
      * @param email {@link String} - email of user that need to update.
-     * @return {@link User}.
      */
     void deleteUserProfilePicture(String email);
 
