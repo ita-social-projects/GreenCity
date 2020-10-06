@@ -4,10 +4,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.*;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -161,10 +158,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         @NonNull MethodArgumentTypeMismatchException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         String propName = ex.getName();
-        String className = null;
-        if (ex.getRequiredType() != null) {
-            className = ex.getRequiredType().getSimpleName();
-        }
+        String className  = Objects.requireNonNull(ex.getRequiredType()).getSimpleName();
         String message = String.format("Wrong %s. Should be '%s'", propName, className);
         exceptionResponse.setMessage(message);
         log.trace(ex.getMessage(), ex);
