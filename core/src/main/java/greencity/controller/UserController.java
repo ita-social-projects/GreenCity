@@ -432,6 +432,9 @@ public class UserController {
     /**
      * Method returns list of available (not assigned) habit translations for user.
      *
+     * @param user {@link User} instance.
+     * @param locale {@link Locale} instance.
+     *
      * @return {@link ResponseEntity}.
      * @author Kuzenko Bogdan
      */
@@ -444,18 +447,17 @@ public class UserController {
     @GetMapping("/{userId}/habit/available")
     @ApiLocale
     public ResponseEntity<List<HabitTranslationDto>> getAvailableHabitTranslations(
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId,
+        @ApiIgnore @CurrentUser User user,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableHabitTranslations(userId, locale.getLanguage()));
+            .body(userService.getAvailableHabitTranslations(user.getId(), locale.getLanguage()));
     }
 
     /**
      * Method for finding all active {@link User} habit assigns.
      *
-     * @param userId {@link User} id.
+     * @param user {@link User} instance.
      * @return list of {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get all active habit assigns for current user.")
@@ -466,9 +468,9 @@ public class UserController {
     })
     @GetMapping("/{userId}/habit/assign/active")
     public ResponseEntity<List<HabitAssignDto>> getUserHabitAssigns(
-        @PathVariable @CurrentUserId Long userId) {
+        @ApiIgnore @CurrentUser User user) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitAssignService.getAllActiveHabitAssignsByUserId(userId));
+            .body(habitAssignService.getAllActiveHabitAssignsByUserId(user.getId()));
     }
 
     /**

@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -16,11 +17,9 @@ import greencity.entity.User;
 import greencity.service.HabitAssignService;
 import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
@@ -28,7 +27,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -40,7 +38,6 @@ import springfox.documentation.annotations.ApiIgnore;
 public class HabitController {
     private final HabitStatisticService habitStatisticService;
     private final HabitAssignService habitAssignService;
-    private final UserService userService;
     private final HabitService habitService;
 
     /**
@@ -56,9 +53,8 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/assign/{habitId}")
-    public ResponseEntity<Object> assign(@PathVariable Long habitId, @ApiIgnore @AuthenticationPrincipal
-        Principal principal) {
-        User user = userService.findByEmail(principal.getName());
+    public ResponseEntity<Object> assign(@PathVariable Long habitId,
+                                         @ApiIgnore @CurrentUser User user) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignHabitForUser(habitId, user));
     }
