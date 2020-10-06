@@ -754,8 +754,8 @@ public class UserServiceImpl implements UserService {
     public UserProfileStatisticsDto getUserProfileStatistics(Long userId) {
         Long amountOfPublishedNewsByUserId = ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId);
         Long amountOfWrittenTipsAndTrickByUserId = tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(userId);
-        Long amountOfAcquiredHabitsByUserId = habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
-        Long amountOfHabitsInProgressByUserId = habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId);
+        Long amountOfAcquiredHabitsByUserId = habitAssignRepo.getAmountOfAcquiredHabitsByUserId(userId);
+        Long amountOfHabitsInProgressByUserId = habitAssignRepo.getAmountOfHabitsInProgressByUserId(userId);
 
         return UserProfileStatisticsDto.builder()
             .amountWrittenTipsAndTrick(amountOfWrittenTipsAndTrickByUserId)
