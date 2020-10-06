@@ -1,7 +1,7 @@
-package greencity.dto.fact;
+package greencity.dto.habitfact;
 
 import greencity.constant.ValidationConstants;
-import greencity.dto.user.HabitDictionaryDto;
+import greencity.dto.habit.HabitDto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,7 +13,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HabitFactDTO {
+public class HabitFactDto {
     @Min(1)
     private Long id;
 
@@ -22,5 +22,5 @@ public class HabitFactDTO {
     private String content;
 
     @NotNull
-    private HabitDictionaryDto habitDictionary;
+    private HabitDto habit;
 }

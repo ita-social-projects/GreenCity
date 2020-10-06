@@ -101,11 +101,11 @@ public final class ErrorMessage {
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
     public static final String INVALID_HABIT_NAME = "Invalid habit name ";
     public static final String ADVICE_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
-    public static final String HABIT_FACT_NOT_FOUND_BY_ID = "The fact does not exist by id: ";
-    public static final String FACT_OF_DAY_NOT_FOUND_BY_LANGUAGE_ID = "The fact of day does not exist by language id: ";
-    public static final String HABIT_FACT_NOT_SAVED_BY_NAME = "The fact does not saved by name: ";
-    public static final String HABIT_FACT_NOT_UPDATED_BY_ID = "The fact does not updated by id: ";
-    public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The fact does not deleted by id: ";
+    public static final String HABIT_FACT_NOT_FOUND_BY_ID = "The habitfact does not exist by id: ";
+    public static final String FACT_OF_DAY_NOT_FOUND_BY_LANGUAGE_ID = "The habitfact of day does not exist by language id: ";
+    public static final String HABIT_FACT_NOT_SAVED_BY_NAME = "The habitfact does not saved by name: ";
+    public static final String HABIT_FACT_NOT_UPDATED_BY_ID = "The habitfact does not updated by id: ";
+    public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The habitfact does not deleted by id: ";
     public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
     public static final String ADVICE_NOT_SAVED_BY_NAME = "The name with such name already exist: ";
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
@@ -172,7 +172,7 @@ public final class ErrorMessage {
     public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
     public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_TRANSLATION_NOT_DELETED =
-        "The fact of the day translation does not deleted by id: ";
+        "The habitfact of the day translation does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";

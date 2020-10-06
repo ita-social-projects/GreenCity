@@ -151,4 +151,8 @@
 
         <renameColumn tableName="habit_statistics" oldColumnName="date" newColumnName="create_date"/>
     </changeSet>
+    
+    <changeSet id="16" author="Kravchenko">
+        <renameTable oldTableName="fact_translations" newTableName="habit_fact_translations"/>
+    </changeSet>
 </databaseChangeLog>
