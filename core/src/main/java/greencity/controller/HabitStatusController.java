@@ -2,11 +2,13 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitstatus.HabitStatusDto;
+import greencity.dto.habitstatus.UpdateHabitStatusDto;
 import greencity.service.HabitStatusService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.time.LocalDate;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -113,5 +115,24 @@ public class HabitStatusController {
     public ResponseEntity<HabitStatusDto> deleteHabitStatusByHabitAssign(@PathVariable Long habitAssignId) {
         habitStatusService.deleteStatusByHabitAssignId(habitAssignId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method to update {@link greencity.entity.HabitStatus} for {@link greencity.entity.HabitAssign} by it's id.
+     *
+     * @param habitAssignId - id of {@link greencity.entity.HabitAssign}
+     * @return {@link HabitStatusDto}
+     */
+    @ApiOperation(value = "Update status for habit assign.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping("/{habitAssignId}")
+    public ResponseEntity<HabitStatusDto> update(
+        @PathVariable Long habitAssignId, @Valid @RequestBody UpdateHabitStatusDto habitStatusForUpdateDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitStatusService
+            .update(habitAssignId, habitStatusForUpdateDto));
     }
 }

@@ -2,11 +2,13 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatus.HabitStatusDto;
+import greencity.dto.habitstatus.UpdateHabitStatusDto;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitStatusRepo;
 import greencity.service.HabitStatusCalendarService;
@@ -255,5 +257,21 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
         habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
         habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public HabitStatusDto update(Long habitAssignId, UpdateHabitStatusDto dto) {
+        HabitStatus updatable = habitStatusRepo.findByHabitAssignId(habitAssignId)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_UPDATED));
+
+        updatable.setHabitStreak(dto.getHabitStreak());
+        updatable.setLastEnrollmentDate(dto.getLastEnrollmentDate());
+        updatable.setWorkingDays(dto.getWorkingDays());
+
+        return modelMapper.map(habitStatusRepo.save(updatable), HabitStatusDto.class);
     }
 }

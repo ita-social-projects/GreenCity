@@ -1,10 +1,8 @@
 package greencity.service;
 
 import greencity.dto.habitstatus.HabitStatusDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitStatus;
-import greencity.entity.User;
+import greencity.dto.habitstatus.UpdateHabitStatusDto;
+import greencity.entity.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
@@ -98,4 +96,12 @@ public interface HabitStatusService {
      * @param dateTime  {@link ZonedDateTime} dateTime.
      */
     void deleteStatusByUserIdAndHabitIdAndAssignCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
+
+    /**
+     * Method for updating {@link HabitStatus} in database.
+     *
+     * @param dto - dto with {@link HabitStatus} id, rate and amount of items.
+     * @return {@link UpdateHabitStatusDto} instance.
+     */
+    HabitStatusDto update(Long habitAssignId, UpdateHabitStatusDto dto);
 }
