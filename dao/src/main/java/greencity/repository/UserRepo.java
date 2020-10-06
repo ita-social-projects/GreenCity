@@ -6,6 +6,7 @@ import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.persistence.NamedNativeQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -222,6 +223,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
 
     /**
      * Find and return all registration months.
+     * Runs an SQL Query which is described in {@link User} under {@link NamedNativeQuery} annotation.
+     * Spring Data JPA can run a named native query that follows the naming convention
+     * {entityClass.repositoryMethodName}.
      *
      * @return {@link List} of {@link RegistrationStatisticsDtoResponse}
      **/
@@ -234,8 +238,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link Map}
      */
     default Map<Integer, Long> findAllRegistrationMonthsMap() {
-        return findAllRegistrationMonths().stream().collect(Collectors.groupingBy(
-            RegistrationStatisticsDtoResponse::getMonth,
-            Collectors.summingLong(RegistrationStatisticsDtoResponse::getCount)));
+        return findAllRegistrationMonths().stream().collect(
+            Collectors.toMap(RegistrationStatisticsDtoResponse::getMonth, RegistrationStatisticsDtoResponse::getCount));
     }
 }
