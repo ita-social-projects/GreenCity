@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitstatus.HabitStatusDto;
+import greencity.service.HabitStatusCalendarService;
 import greencity.service.HabitStatusService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -95,6 +96,23 @@ public class HabitStatusController {
                                                             @PathVariable(value = "date")
                                                             @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date) {
         habitStatusService.enrollHabitInDate(habitAssignId, date);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method to delete {@link greencity.entity.HabitStatus} for {@link greencity.entity.HabitAssign} by it's id.
+     *
+     * @param habitAssignId - id of {@link greencity.entity.HabitAssign}
+     */
+    @ApiOperation(value = "Delete status for habit assign.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{habitAssignId}")
+    public ResponseEntity<HabitStatusDto> deleteHabitStatusByHabitAssign(@PathVariable Long habitAssignId) {
+        habitStatusService.deleteStatusByHabitAssignId(habitAssignId);
         return ResponseEntity.ok().build();
     }
 }

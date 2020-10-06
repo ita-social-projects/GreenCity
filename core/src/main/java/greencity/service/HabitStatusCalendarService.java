@@ -59,7 +59,7 @@ public interface HabitStatusCalendarService {
     /**
      * Method to delete all {@link HabitStatusCalendar} by {@link HabitStatus} id.
      *
-     * @param habitStatusId target {@link HabitStatus}.
+     * @param habitStatus {@link HabitStatus} instance.
      */
-    void deleteAllByHabitStatusId(Long habitStatusId);
+    void deleteAllByHabitStatus(HabitStatus habitStatus);
 }

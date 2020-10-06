@@ -8,9 +8,9 @@ import greencity.entity.User;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitAssignService;
+import greencity.service.HabitService;
+import greencity.service.HabitStatisticService;
 import greencity.service.HabitStatusService;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class HabitAssignServiceImpl implements HabitAssignService {
-    private final HabitRepo habitRepo;
+    private final HabitService habitService;
     private final HabitAssignRepo habitAssignRepo;
-    private final HabitStatisticRepo habitStatisticRepo;
+    private final HabitStatisticService habitStatisticService;
     private final HabitStatusService habitStatusService;
     private final ModelMapper modelMapper;
 
@@ -48,8 +48,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignDto assignHabitForUser(Long habitId, User user) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        Habit habit = habitService.getById(habitId);
 
         if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
@@ -79,9 +78,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId) {
-        habitRepo.findById(habitId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
-
+        habitService.getById(habitId);
         return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
                 .orElseThrow(() ->
                     new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID)),
@@ -94,9 +91,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public HabitAssignDto findHabitAssignByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId,
                                                                          ZonedDateTime dateTime) {
-        habitRepo.findById(habitId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
-
+        habitService.getById(habitId);
         return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(habitId, userId, dateTime)
                 .orElseThrow(() ->
                     new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID)),
@@ -173,7 +168,23 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE));
 
         habitStatusService.deleteStatusByHabitAssignId(habitAssign.getId());
-        habitStatisticRepo.deleteAllByHabitAssignId(habitAssign.getId());
+        habitStatisticService.deleteAllStatsByHabitAssignId(habitAssign.getId());
         habitAssignRepo.deleteById(habitAssign.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfHabitsInProgressByUserId(Long id) {
+        return habitAssignRepo.getAmountOfHabitsInProgressByUserId(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfAcquiredHabitsByUserId(Long id) {
+        return habitAssignRepo.getAmountOfAcquiredHabitsByUserId(id);
     }
 }

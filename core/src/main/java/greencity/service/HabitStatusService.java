@@ -10,6 +10,13 @@ import java.time.ZonedDateTime;
 
 public interface HabitStatusService {
     /**
+     * Method to find {@link HabitStatus} by id.
+     *
+     * @return {@link HabitStatusDto}.
+     */
+    HabitStatusDto getById(Long id);
+
+    /**
      * Method save {@link HabitStatus} by {@link HabitAssign}.
      *
      * @param habitAssign target {@link HabitAssign}.
@@ -84,11 +91,11 @@ public interface HabitStatusService {
 
     /**
      * Method to delete {@link HabitStatus} by {@link User}, {@link Habit} id's
-     * and {@link ZonedDateTime} dateTime.
+     * and {@link ZonedDateTime} dateTime from {@link HabitAssign}.
      *
      * @param userId  {@link User} id.
      * @param habitId {@link Habit} id.
      * @param dateTime  {@link ZonedDateTime} dateTime.
      */
-    void deleteStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
+    void deleteStatusByUserIdAndHabitIdAndAssignCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
 }

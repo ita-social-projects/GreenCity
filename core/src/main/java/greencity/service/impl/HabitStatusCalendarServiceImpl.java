@@ -1,11 +1,8 @@
 package greencity.service.impl;
 
-import greencity.constant.ErrorMessage;
 import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
-import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitStatusCalendarRepo;
-import greencity.repository.HabitStatusRepo;
 import greencity.service.HabitStatusCalendarService;
 import java.time.LocalDate;
 import java.util.LinkedList;
@@ -18,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarService {
     private final HabitStatusCalendarRepo habitStatusCalendarRepo;
-    private final HabitStatusRepo habitStatusRepo;
 
     /**
      * {@inheritDoc}
@@ -84,9 +80,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      */
     @Transactional
     @Override
-    public void deleteAllByHabitStatusId(Long habitStatusId) {
-        habitStatusRepo.findById(habitStatusId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.NO_HABIT_STATUS + habitStatusId));
-        habitStatusCalendarRepo.deleteAllByHabitStatusId(habitStatusId);
+    public void deleteAllByHabitStatus(HabitStatus habitStatus) {
+        habitStatusCalendarRepo.deleteAllByHabitStatusId(habitStatus.getId());
     }
 }

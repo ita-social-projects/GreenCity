@@ -2,9 +2,11 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatus.HabitStatusDto;
-import greencity.entity.*;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatus;
+import greencity.entity.HabitStatusCalendar;
 import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitStatusRepo;
 import greencity.service.HabitStatusCalendarService;
@@ -26,6 +28,16 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     private final HabitStatusRepo habitStatusRepo;
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final ModelMapper modelMapper;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HabitStatusDto getById(Long habitAssignId) {
+        return modelMapper.map(habitStatusRepo.findById(habitAssignId)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
+            HabitStatusDto.class);
+    }
 
     /**
      * {@inheritDoc}
@@ -214,8 +226,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     @Transactional
     @Override
     public void deleteStatusByHabitAssignId(Long habitAssignId) {
-        habitStatusRepo.findByHabitAssignId(habitAssignId)
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
+            .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
         habitStatusRepo.deleteByHabitAssignId(habitAssignId);
     }
 
@@ -225,8 +238,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     @Transactional
     @Override
     public void deleteActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
-        habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
+            .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
         habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
     }
 
@@ -235,9 +249,11 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      */
     @Transactional
     @Override
-    public void deleteStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime zonedDateTime) {
-        habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+    public void deleteStatusByUserIdAndHabitIdAndAssignCreateDate(Long userId, Long habitId,
+                                                                  ZonedDateTime zonedDateTime) {
+        HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
+            .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
         habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
     }
 }
