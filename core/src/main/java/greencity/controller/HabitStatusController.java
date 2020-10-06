@@ -2,7 +2,6 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitstatus.HabitStatusDto;
-import greencity.service.HabitStatusCalendarService;
 import greencity.service.HabitStatusService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
