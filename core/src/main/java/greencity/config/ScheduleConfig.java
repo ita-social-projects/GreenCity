@@ -4,7 +4,7 @@ import static greencity.constant.CacheConstants.FACT_OF_THE_DAY_CACHE_NAME;
 import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
 import static greencity.constant.RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME;
 import static greencity.constant.RabbitConstants.SEND_HABIT_NOTIFICATION_ROUTING_KEY;
-import greencity.entity.FactTranslation;
+import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
 import static greencity.entity.enums.EmailNotification.*;
 import static greencity.entity.enums.FactOfDayStatus.*;
@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @EnableCaching
 @AllArgsConstructor
 public class ScheduleConfig {
-    private final FactTranslationRepo factTranslationRepo;
+    private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final RabbitTemplate rabbitTemplate;
     private final UserRepo userRepo;
@@ -95,31 +95,31 @@ public class ScheduleConfig {
     }
 
     /**
-     * Once a day randomly chooses new fact of day that has not been fact of day during this iteration.
-     * factOfDay == 0 - wasn't fact of day, 1 - is today's fact of day, 2 - already was fact of day.
+     * Once a day randomly chooses new habitfact of day that has not been habitfact of day during this iteration.
+     * factOfDay == 0 - wasn't habitfact of day, 1 - is today's habitfact of day, 2 - already was habitfact of day.
      */
     @CacheEvict(value = HABIT_FACT_OF_DAY_CACHE, allEntries = true)
     @Transactional
     @Scheduled(cron = "0 0 0 * * ?")
-    public void chooseNewFactOfDay() {
-        Optional<List<FactTranslation>> list = factTranslationRepo.findRandomFact();
+    public void chooseNewHabitFactOfDay() {
+        Optional<List<HabitFactTranslation>> list = habitFactTranslationRepo.findRandomHabitFact();
         if (list.isPresent()) {
-            factTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
+            habitFactTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
         } else {
-            factTranslationRepo.updateFactOfDayStatus(USED, POTENTIAL);
-            factTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
-            list = factTranslationRepo.findRandomFact();
+            habitFactTranslationRepo.updateFactOfDayStatus(USED, POTENTIAL);
+            habitFactTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
+            list = habitFactTranslationRepo.findRandomHabitFact();
         }
-        factTranslationRepo.updateFactOfDayStatusByHabitfactId(CURRENT, list.get().get(0).getHabitFact().getId());
+        habitFactTranslationRepo.updateFactOfDayStatusByHabitFactId(CURRENT, list.get().get(0).getHabitFact().getId());
     }
 
     /**
-     * Clear fact of the day cache at 0:00 am every day.
+     * Clear habitfact of the day cache at 0:00 am every day.
      */
     @CacheEvict(value = FACT_OF_THE_DAY_CACHE_NAME, allEntries = true)
     @Transactional
     @Scheduled(cron = "0 0 0 * * ?")
-    public void chooseNewFactOfTheDay() {
+    public void chooseNewHabitFactOfTheDay() {
     }
 
     /**
