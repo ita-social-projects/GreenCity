@@ -207,7 +207,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments",
                 "/user/{userId}/customGoals",
                 "/user/{userId}/goals/{goalId}",
-                "/user/profilePicture"
+                "/user/profilePicture",
+                "/user/deleteProfilePicture"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/econews/comments",

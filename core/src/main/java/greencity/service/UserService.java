@@ -13,11 +13,12 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -297,6 +298,13 @@ public interface UserService {
      */
     User updateUserProfilePicture(MultipartFile image, String email,
                                   UserProfilePictureDto userProfilePictureDto);
+
+    /**
+     * Delete user profile picture {@link User}.
+     *
+     * @param email {@link String} - email of user that need to update.
+     */
+    void deleteUserProfilePicture(String email);
 
     /**
      * Get list user friends by user id {@link User}.
