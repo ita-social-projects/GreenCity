@@ -289,7 +289,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         String specialChar =
             RandomStringUtils
                 .random(2, 0, 0, false, false, "!@#$%^&*()-_=+{}[]|:;<>?,./".toCharArray(), secureRandom);
-        String totalChars = RandomStringUtils.random(2, 0, 0, false, false,
+        String totalChars = RandomStringUtils.random(2, 0, 0, true, true,
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray(), secureRandom);
         String combinedChars = upperCaseLetters.concat(lowerCaseLetters)
             .concat(numbers)
