@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Provides an interface to manage {@link HabitTranslation} entity.
@@ -22,9 +23,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param language code language.
      * @return {@link Optional} of {@link HabitTranslation}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM habit_translation ht "
-        + "INNER JOIN languages l ON l.id = ht.language_id "
-        + "WHERE l.code = ?2 AND ht.name = ?1);")
     Optional<HabitTranslation> findByNameAndLanguageCode(String name, String language);
 
     /**
@@ -32,7 +30,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @param habit    {@link Habit}.
      * @param language code language.
-     * @return {@link HabitTranslation}.
+     * @return {@link Optional} of {@link HabitTranslation}.
      */
     Optional<HabitTranslation> findByHabitAndLanguageCode(Habit habit, String language);
 
@@ -44,12 +42,13 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param acquired habit acquired status
      * @return List of available {@link HabitTranslation}`s.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM habit_translation ht "
-        + "INNER JOIN languages l ON l.id = ht.language_id "
-        + "WHERE l.code = ?2 AND ht.habit_id IN "
-        + "(SELECT ha.habit_id FROM habit_assign ha "
-        + "WHERE ha.user_id = ?1 AND ha.acquired = ?3);")
-    List<HabitTranslation> findHabitTranslationsByUserAndAcquiredStatus(Long userId, String language, boolean acquired);
+    @Query(value = "SELECT ht FROM HabitTranslation ht "
+        + "WHERE ht.language.code = :language AND ht.habit.id IN "
+        + "(SELECT ha.habit.id FROM HabitAssign ha "
+        + "WHERE ha.user.id = :userId AND ha.acquired = :acquired)")
+    List<HabitTranslation> findHabitTranslationsByUserAndAcquiredStatus(@Param("userId") Long userId,
+                                                                        @Param("language") String language,
+                                                                        @Param("acquired") boolean acquired);
 
     /**
      * Method returns available habit translations for specific user.
@@ -58,12 +57,12 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param language code language.
      * @return List of available {@link HabitTranslation}`s.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM habit_translation ht "
-        + "INNER JOIN languages l ON l.id = ht.language_id "
-        + "WHERE l.code = ?2 AND ht.habit_id NOT IN "
-        + "(SELECT ha.habit_id FROM habit_assign ha "
-        + "WHERE ha.user_id = ?1);")
-    List<HabitTranslation> findAvailableHabitTranslationsByUser(Long userId, String language);
+    @Query(value = "SELECT ht FROM HabitTranslation ht "
+        + "WHERE ht.language.code = :language AND ht.habit.id NOT IN "
+        + "(SELECT ha.habit.id FROM HabitAssign ha "
+        + "WHERE ha.user.id = :userId)")
+    List<HabitTranslation> findAvailableHabitTranslationsByUser(@Param("userId") Long userId,
+                                                                @Param("language") String language);
 
     /**
      * Method returns all habits by language.
