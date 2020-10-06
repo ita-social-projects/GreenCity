@@ -6,13 +6,14 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitDictionaryTranslationsDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatistic;
 import greencity.entity.User;
+import greencity.service.HabitAssignService;
 import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
@@ -29,13 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Validated
@@ -44,8 +39,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/habit")
 public class HabitController {
     private final HabitStatisticService habitStatisticService;
-    private HabitService habitService;
-    private UserService userService;
+    private final HabitAssignService habitAssignService;
+    private final UserService userService;
+    private final HabitService habitService;
 
     /**
      * Method which assign habit for {@link User}.
@@ -64,14 +60,14 @@ public class HabitController {
         Principal principal) {
         User user = userService.findByEmail(principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitService.assignHabitForUser(habitId, user));
+            .body(habitAssignService.assignHabitForUser(habitId, user));
     }
 
     /**
      * Method returns all habits, available for tracking for specific language.
      *
      * @param locale needed language code
-     * @return Pageable of {@link greencity.dto.habitstatistic.HabitDictionaryTranslationsDto}
+     * @return Pageable of {@link HabitTranslationDto}
      */
     @ApiOperation(value = "Get all habits.")
     @ApiResponses(value = {
@@ -82,7 +78,7 @@ public class HabitController {
     @GetMapping("")
     @ApiPageable
     @ApiLocale
-    public ResponseEntity<PageableDto<HabitDictionaryTranslationsDto>> getAll(
+    public ResponseEntity<PageableDto<HabitTranslationDto>> getAll(
         @ApiIgnore Pageable pageable,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -138,8 +134,7 @@ public class HabitController {
     @GetMapping("/statistic/{habitId}")
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
         @PathVariable Long habitId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticService.findAllByHabitId(habitId));
+        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(habitId));
     }
 
     /**
