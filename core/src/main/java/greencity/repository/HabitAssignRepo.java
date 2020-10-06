@@ -152,4 +152,28 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Modifying
     @Query(value = "UPDATE HabitAssign ha SET ha.acquired = :acquired WHERE ha.id = :id")
     void updateAcquiredById(@Param("id") Long id, @Param("acquired") Boolean acquired);
+
+    /**
+     * Method for getting amount of {@link Habit} in progress by {@link User} id (not suspended).
+     *
+     * @param id {@link User} id.
+     * @return amount of habits in progress by {@link User} id.
+     * @author Marian Datsko
+     */
+    @Query(value = "SELECT COUNT(ha.acquired) FROM HabitAssign ha "
+        + " WHERE ha.user.id = :userId"
+        + " AND ha.acquired = false AND ha.suspended = false")
+    Long getAmountOfHabitsInProgressByUserId(@Param("userId") Long id);
+
+    /**
+     * Method for getting amount of acquired {@link Habit} by {@link User} id.
+     *
+     * @param id {@link User} id.
+     * @return amount of acquired habits by {@link User} id.
+     * @author Marian Datsko
+     */
+    @Query(value = "SELECT COUNT(ha.acquired) FROM HabitAssign ha "
+        + " WHERE ha.user.id = :userId"
+        + " AND ha.acquired = false AND ha.suspended = true")
+    Long getAmountOfAcquiredHabitsByUserId(@Param("userId") Long id);
 }
