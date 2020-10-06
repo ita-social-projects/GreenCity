@@ -5,6 +5,9 @@ import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.entity.enums.ROLE;
+import greencity.entity.enums.UserStatus;
+import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +32,8 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +52,9 @@ class ManagementUserControllerTest {
 
     @Mock
     ModelMapper modelMapper;
+
+    @Mock
+    OwnSecurityService ownSecurityService;
 
     @BeforeEach
     void setUp() {
@@ -79,6 +86,11 @@ class ManagementUserControllerTest {
     @Test
     void updateUser() throws Exception {
         UserManagementDto userManagementDto = new UserManagementDto();
+        userManagementDto.setId(1L);
+        userManagementDto.setName("TestTest");
+        userManagementDto.setUserStatus(UserStatus.ACTIVATED);
+        userManagementDto.setEmail("test@gmail.com");
+        userManagementDto.setRole(ROLE.ROLE_USER);
         Gson gson = new Gson();
         String json = gson.toJson(userManagementDto);
         this.mockMvc.perform(put(managementUserControllerLink)
@@ -86,7 +98,7 @@ class ManagementUserControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(userService, never()).updateUser(userManagementDto);
+        verify(userService, times(1)).updateUser(userManagementDto);
     }
 
     @Test
@@ -131,5 +143,23 @@ class ManagementUserControllerTest {
 
         verify(userService, times(1)).deactivateAllUsers(longList);
 
+    }
+
+    @Test
+    void saveUser() throws Exception {
+        UserManagementDto userManagementDto = new UserManagementDto();
+        userManagementDto.setId(1L);
+        userManagementDto.setName("TestTest");
+        userManagementDto.setUserStatus(UserStatus.ACTIVATED);
+        userManagementDto.setEmail("test@gmail.com");
+        userManagementDto.setRole(ROLE.ROLE_USER);
+        Gson gson = new Gson();
+        String json = gson.toJson(userManagementDto);
+        this.mockMvc.perform(post(managementUserControllerLink + "/register")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(ownSecurityService, times(1)).managementRegisterUser(userManagementDto);
     }
 }
