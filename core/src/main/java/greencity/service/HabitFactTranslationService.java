@@ -1,10 +1,9 @@
 package greencity.service;
 
-import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.HabitFactTranslation;
 import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public interface HabitFactTranslationService {
      * Method saves new {@link HabitFact} and list of new {@link HabitFactTranslation} with relationship
      * to {@link HabitFact}.
      *
-     * @param habitFactPostDTO {@link AdvicePostDTO}.
+     * @param habitFactPostDTO {@link greencity.dto.habitfact.HabitFactDto}.
      * @return List of {@link HabitFactTranslation}.
      * @author Vitaliy Dzen.
      */

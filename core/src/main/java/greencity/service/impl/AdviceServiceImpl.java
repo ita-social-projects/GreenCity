@@ -1,8 +1,8 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.advice.AdviceDTO;
-import greencity.dto.advice.AdvicePostDTO;
+import greencity.dto.advice.AdviceDto;
+import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.exception.exceptions.NotDeletedException;
@@ -10,9 +10,10 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
-import greencity.repository.HabitDictionaryRepo;
+import greencity.repository.HabitRepo;
 import greencity.service.AdviceService;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,26 +26,12 @@ import org.springframework.stereotype.Service;
  * @author Vitaliy Dzen
  */
 @Service
+@AllArgsConstructor
 public class AdviceServiceImpl implements AdviceService {
     private final AdviceRepo adviceRepo;
-    private final HabitDictionaryRepo habitDictionaryRepo;
+    private final HabitRepo habitRepo;
     private final AdviceTranslationRepo adviceTranslationRepo;
-
     private final ModelMapper modelMapper;
-
-    /**
-     * Constructor with parameters.
-     *
-     * @author Vitaliy Dzen
-     */
-    @Autowired
-    public AdviceServiceImpl(AdviceRepo adviceRepo, HabitDictionaryRepo habitDictionaryRepo,
-                             AdviceTranslationRepo adviceTranslationRepo, ModelMapper modelMapper) {
-        this.adviceRepo = adviceRepo;
-        this.habitDictionaryRepo = habitDictionaryRepo;
-        this.adviceTranslationRepo = adviceTranslationRepo;
-        this.modelMapper = modelMapper;
-    }
 
     /**
      * Method finds all {@link Advice}.
@@ -75,53 +62,53 @@ public class AdviceServiceImpl implements AdviceService {
      * Method find {@link Advice} by id.
      *
      * @param id of {@link Advice}
-     * @return {@link AdviceDTO}
+     * @return {@link AdviceDto}
      * @author Vitaliy Dzen
      */
     @Override
-    public AdviceDTO getAdviceById(Long id) {
+    public AdviceDto getAdviceById(Long id) {
         return modelMapper.map(adviceRepo.findById(id).orElseThrow(() ->
-            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceDTO.class);
+            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceDto.class);
     }
 
     /**
      * Method find {@link Advice} by content.
      *
      * @param name of {@link Advice}
-     * @return {@link AdviceDTO}
+     * @return {@link AdviceDto}
      * @author Vitaliy Dzen
      */
     @Override
-    public AdviceDTO getAdviceByName(String language, String name) {
+    public AdviceDto getAdviceByName(String language, String name) {
         return modelMapper.map(adviceTranslationRepo
             .findAdviceTranslationByLanguage_CodeAndAdvice(language, name).orElseThrow(() ->
-                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDTO.class);
+                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDto.class);
     }
 
     /**
      * Method saves new {@link Advice}.
      *
-     * @param advicePostDTO {@link AdviceDTO}
+     * @param advicePostDTO {@link AdviceDto}
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
     @Override
-    public Advice save(AdvicePostDTO advicePostDTO) {
+    public Advice save(AdvicePostDto advicePostDTO) {
         return adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
     }
 
     /**
      * Method updates {@link Advice}.
      *
-     * @param advice {@link AdviceDTO} Object
+     * @param advice {@link AdviceDto} Object
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
     @Override
-    public Advice update(AdvicePostDTO advice, Long id) {
+    public Advice update(AdvicePostDto advice, Long id) {
         return adviceRepo.findById(id)
             .map(employee -> {
-                employee.setHabitDictionary(habitDictionaryRepo.findById(advice.getHabitDictionary().getId()).get());
+                employee.setHabit(habitRepo.findById(advice.getHabit().getId()).get());
                 return adviceRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));

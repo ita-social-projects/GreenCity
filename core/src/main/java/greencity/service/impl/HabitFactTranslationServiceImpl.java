@@ -1,16 +1,17 @@
 package greencity.service.impl;
 
+import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
 import greencity.constant.ErrorMessage;
-import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.HabitFactTranslation;
 import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
+import static greencity.entity.enums.FactOfDayStatus.CURRENT;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitFactTranslationRepo;
-import greencity.service.HabitFactTranslationService;
 import greencity.service.HabitFactService;
+import greencity.service.HabitFactTranslationService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,9 +19,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
-
-import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
-import static greencity.entity.enums.FactOfDayStatus.CURRENT;
 
 /**
  * Implementation of {@link HabitFactTranslationService}.
@@ -39,7 +37,7 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
      * Method saves new {@link HabitFact} and list of new {@link HabitFactTranslation} with relationship
      * to {@link HabitFact}.
      *
-     * @param habitFactPostDTO {@link AdvicePostDTO}.
+     * @param habitFactPostDTO {@link HabitFactPostDto}.
      * @return List of {@link HabitFactTranslation}.
      * @author Vitaliy Dzen.
      */

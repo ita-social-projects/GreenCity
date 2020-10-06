@@ -1,14 +1,10 @@
 package greencity.dto.advice;
 
 import greencity.constant.ValidationConstants;
-import greencity.dto.user.HabitDictionaryDto;
+import greencity.dto.habit.HabitDto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 @NoArgsConstructor
@@ -16,7 +12,8 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AdviceDTO {
+@Builder
+public class AdviceDto {
     @Min(1)
     private Long id;
 
@@ -24,5 +21,5 @@ public class AdviceDTO {
     @Length(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH)
     private String content;
 
-    private HabitDictionaryDto habitDictionary;
+    private HabitDto habit;
 }

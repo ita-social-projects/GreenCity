@@ -1,25 +1,21 @@
 package greencity.mapping;
 
-import greencity.dto.advice.AdviceDTO;
+import greencity.dto.advice.AdviceDto;
 
-import greencity.dto.user.HabitDictionaryDto;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.localization.AdviceTranslation;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 @Component
-public class AdviceTranslateMapper extends AbstractConverter<AdviceTranslation, AdviceDTO> {
+public class AdviceTranslateMapper extends AbstractConverter<AdviceTranslation, AdviceDto> {
     @Override
-    public AdviceDTO convert(AdviceTranslation entity) {
-        AdviceDTO adviceDto = new AdviceDTO();
-        HabitDictionaryDto habitDictionaryDto = new HabitDictionaryDto();
-        habitDictionaryDto.setId(entity.getAdvice().getHabitDictionary().getId());
-        habitDictionaryDto.setImage(entity.getAdvice().getHabitDictionary().getImage());
-        adviceDto.setId(entity.getId());
-        adviceDto.setContent(entity.getContent());
-        adviceDto.setHabitDictionary(habitDictionaryDto);
-        return adviceDto;
+    public AdviceDto convert(AdviceTranslation entity) {
+        return AdviceDto.builder()
+            .content(entity.getContent()).build();
     }
 }
