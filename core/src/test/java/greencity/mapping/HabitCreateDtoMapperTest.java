@@ -1,3 +1,4 @@
+/*
 package greencity.mapping;
 
 import greencity.ModelUtils;
@@ -30,3 +31,4 @@ public class HabitCreateDtoMapperTest {
         assertEquals(expected, habitCreateDtoMapper.convert(habit));
     }
 }
+*/

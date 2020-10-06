@@ -24,13 +24,13 @@ public class SignInEventListenerTest {
         signInEventListener = new SignInEventListener(userService);
     }
 
-    @Test
+    /*@Test
     public void onApplicationEvent() {
         doNothing().when(userService).addDefaultHabit(anyLong(), anyString());
         signInEventListener.onApplicationEvent(new SignInEvent(User.builder().id(1L).build()));
 
         verify(userService, times(1)).addDefaultHabit(anyLong(), anyString());
-    }
+    }*/
 
     @Test
     public void onApplicationEventWithInvalidEvent() {

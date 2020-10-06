@@ -1,3 +1,4 @@
+/*
 package greencity.service.impl;
 
 import greencity.ModelUtils;
@@ -8,7 +9,7 @@ import greencity.dto.goal.CustomGoalRequestDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalRequestDto;
-import greencity.dto.habitstatistic.HabitIdDto;
+import greencity.dto.user.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
@@ -74,7 +75,7 @@ class UserServiceImplTest {
     HabitDictionaryService habitDictionaryService;
 
     @Mock
-    HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
+    HabitTranslationRepo habitTranslationRepo;
 
     private User user =
         User.builder()
@@ -215,9 +216,11 @@ class UserServiceImplTest {
         verify(userRepo).delete(user);
     }
 
-    /**
+    */
+/**
      * @author Zakhar Skaletskyi
-     */
+     *//*
+
     @Test
     void findIdByEmail() {
         String email = "email";
@@ -225,9 +228,11 @@ class UserServiceImplTest {
         assertEquals(2L, (long) userService.findIdByEmail(email));
     }
 
-    /**
+    */
+/**
      * @author Zakhar Skaletskyi
-     */
+     *//*
+
     @Test
     void findIdByEmailNotFound() {
         String email = "email";
@@ -572,7 +577,7 @@ class UserServiceImplTest {
 
     @Test
     void getAvailableHabitDictionaryNoAvailable() {
-        when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en"))
+        when(habitTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en"))
             .thenReturn(Collections.emptyList());
         assertThrows(UserHasNoAvailableHabitDictionaryException.class, () ->
             userService.getAvailableHabitDictionary(userId, "en")
@@ -863,4 +868,4 @@ class UserServiceImplTest {
 
         assertFalse(userService.checkIfTheUserIsOnline(1L));
     }
-}
+}*/

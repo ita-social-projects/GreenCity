@@ -1,3 +1,4 @@
+/*
 package greencity.service.impl;
 
 import greencity.entity.HabitDictionary;
@@ -39,3 +40,4 @@ class HabitDictionaryServiceImplTest {
         });
     }
 }
+*/

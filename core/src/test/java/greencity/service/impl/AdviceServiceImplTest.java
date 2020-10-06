@@ -1,9 +1,9 @@
+/*
 package greencity.service.impl;
 
 import greencity.dto.advice.AdviceDTO;
 import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.entity.Advice;
 import greencity.entity.HabitDictionary;
 import greencity.entity.localization.AdviceTranslation;
@@ -142,3 +142,4 @@ class AdviceServiceImplTest {
                 () -> adviceService.delete(1L));
     }
 }
+*/

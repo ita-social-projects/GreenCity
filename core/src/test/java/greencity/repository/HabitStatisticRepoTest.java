@@ -1,3 +1,4 @@
+/*
 package greencity.repository;
 
 import java.util.Date;
@@ -89,3 +90,4 @@ public class HabitStatisticRepoTest {
         assertEquals(42L, mostPopularHabitTuple.get(1));
     }
 }
+*/
