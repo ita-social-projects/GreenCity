@@ -1,8 +1,11 @@
 package greencity.repository;
 
+import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -220,9 +223,19 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Find and return all registration months.
      *
-     * @return {@link List} of months
+     * @return {@link List} of {@link RegistrationStatisticsDtoResponse}
      **/
-    @Query("SELECT month(u.dateOfRegistration) - 1 FROM User u WHERE "
-        + "year(u.dateOfRegistration) = year(CURRENT_TIMESTAMP)")
-    List<Integer> findAllRegistrationMonths();
+    @Query(nativeQuery = true)
+    List<RegistrationStatisticsDtoResponse> findAllRegistrationMonths();
+
+    /**
+     * Converts result of findAllRegistrationMonths() method to {@link Map}.
+     *
+     * @return {@link Map}
+     */
+    default Map<Integer, Long> findAllRegistrationMonthsMap() {
+        return findAllRegistrationMonths().stream().collect(Collectors.groupingBy(
+            RegistrationStatisticsDtoResponse::getMonth,
+            Collectors.summingLong(RegistrationStatisticsDtoResponse::getCount)));
+    }
 }

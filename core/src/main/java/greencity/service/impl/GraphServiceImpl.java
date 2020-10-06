@@ -71,10 +71,9 @@ public class GraphServiceImpl implements GraphService {
      * {@inheritDoc}
      */
     @Override
-    public Map<Integer, Integer> getRegistrationStatistics() {
-        List<Integer> months = userRepo.findAllRegistrationMonths();
-        Map<Integer, Integer> map = initializeMapWithMonths(new TreeMap<>());
-        months.forEach(month -> map.put(month, map.get(month) + 1));
+    public Map<Integer, Long> getRegistrationStatistics() {
+        Map<Integer, Long> map = userRepo.findAllRegistrationMonthsMap();
+        initializeMapWithAbsentMonths(map);
         return map;
     }
 
@@ -82,12 +81,10 @@ public class GraphServiceImpl implements GraphService {
      * Populates map with keys that represent months.
      *
      * @param map {@link Map}
-     * @return populated {@link Map}
      */
-    Map<Integer, Integer> initializeMapWithMonths(Map<Integer, Integer> map) {
+    void initializeMapWithAbsentMonths(Map<Integer, Long> map) {
         for (int i = 0; i < 12; i++) {
-            map.put(i, 0);
+            map.putIfAbsent(i, 0L);
         }
-        return map;
     }
 }
