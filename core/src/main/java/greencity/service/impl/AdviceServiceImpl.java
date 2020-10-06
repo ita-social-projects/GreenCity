@@ -5,18 +5,18 @@ import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
+import greencity.entity.Habit;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
-import greencity.repository.HabitRepo;
 import greencity.service.AdviceService;
+import greencity.service.HabitService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +29,12 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class AdviceServiceImpl implements AdviceService {
     private final AdviceRepo adviceRepo;
-    private final HabitRepo habitRepo;
+    private final HabitService habitService;
     private final AdviceTranslationRepo adviceTranslationRepo;
     private final ModelMapper modelMapper;
 
     /**
-     * Method finds all {@link Advice}.
-     *
-     * @return List of all {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public List<LanguageTranslationDTO> getAllAdvices() {
@@ -46,10 +43,7 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method finds random {@link Advice}.
-     *
-     * @return random {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
@@ -59,11 +53,7 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method find {@link Advice} by id.
-     *
-     * @param id of {@link Advice}
-     * @return {@link AdviceDto}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public AdviceDto getAdviceById(Long id) {
@@ -72,11 +62,7 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method find {@link Advice} by content.
-     *
-     * @param name of {@link Advice}
-     * @return {@link AdviceDto}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public AdviceDto getAdviceByName(String language, String name) {
@@ -86,11 +72,7 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method saves new {@link Advice}.
-     *
-     * @param advicePostDTO {@link AdviceDto}
-     * @return instance of {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public Advice save(AdvicePostDto advicePostDTO) {
@@ -98,28 +80,21 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method updates {@link Advice}.
-     *
-     * @param advice {@link AdviceDto} Object
-     * @return instance of {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
-    public Advice update(AdvicePostDto advice, Long id) {
+    public Advice update(AdvicePostDto adviceDto, Long id) {
         return adviceRepo.findById(id)
             .map(employee -> {
-                employee.setHabit(habitRepo.findById(advice.getHabit().getId()).get());
+                Habit habit = habitService.getById(adviceDto.getHabit().getId());
+                employee.setHabit(habit);
                 return adviceRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
     }
 
     /**
-     * Method delete {@link Advice} by id.
-     *
-     * @param id Long
-     * @return id of deleted {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public Long delete(Long id) {

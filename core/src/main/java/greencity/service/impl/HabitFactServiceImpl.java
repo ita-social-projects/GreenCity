@@ -4,15 +4,16 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.HabitFactTranslation;
+import greencity.entity.Habit;
 import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
-import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.HabitFactRepo;
-import greencity.repository.HabitRepo;
+import greencity.repository.HabitFactTranslationRepo;
 import greencity.service.HabitFactService;
+import greencity.service.HabitService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class HabitFactServiceImpl implements HabitFactService {
     private final HabitFactRepo habitFactRepo;
-    private final HabitRepo habitRepo;
+    private final HabitService habitService;
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final ModelMapper modelMapper;
 
@@ -84,10 +85,11 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
-    public HabitFact update(HabitFactPostDto fact, Long id) {
+    public HabitFact update(HabitFactPostDto factDto, Long id) {
         return habitFactRepo.findById(id)
             .map(employee -> {
-                employee.setHabit(habitRepo.findById(fact.getHabit().getId()).get());
+                Habit habit = habitService.getById(factDto.getHabit().getId());
+                employee.setHabit(habit);
                 return habitFactRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_FACT_NOT_UPDATED_BY_ID));
