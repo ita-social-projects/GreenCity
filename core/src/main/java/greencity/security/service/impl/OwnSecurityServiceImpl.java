@@ -1,9 +1,6 @@
 package greencity.security.service.impl;
 
 import greencity.constant.AppConstant;
-import static greencity.constant.ErrorMessage.*;
-import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
-import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.OwnSecurity;
 import greencity.entity.RestorePasswordEmail;
@@ -27,6 +24,7 @@ import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +38,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 
 /**
  * {@inheritDoc}
@@ -57,6 +59,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final RestorePasswordEmailRepo restorePasswordEmailRepo;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
+    private static final String VALID_PW_CHARS =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
 
     /**
      * Constructor.
@@ -276,11 +280,17 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      * @return {@link String} generated password.
      */
     private String generatePassword() {
-        String upperCaseLetters = RandomStringUtils.random(2, 65, 90, true, true);
-        String lowerCaseLetters = RandomStringUtils.random(2, 97, 122, true, true);
-        String numbers = RandomStringUtils.randomNumeric(2);
-        String specialChar = RandomStringUtils.random(2, 33, 47, false, false);
-        String totalChars = RandomStringUtils.randomAlphanumeric(2);
+        SecureRandom secureRandom = new SecureRandom();
+        String upperCaseLetters =
+            RandomStringUtils.random(2, 0, 27, true, true, VALID_PW_CHARS.toCharArray(), secureRandom);
+        String lowerCaseLetters =
+            RandomStringUtils.random(2, 27, 53, true, true, VALID_PW_CHARS.toCharArray(), secureRandom);
+        String numbers = String.valueOf(secureRandom.nextInt(100));
+        String specialChar =
+            RandomStringUtils
+                .random(2, 0, 0, false, false, "!@#$%^&*()-_=+{}[]|:;<>?,./".toCharArray(), secureRandom);
+        String totalChars = RandomStringUtils.random(2, 0, 0, true, true,
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray(), secureRandom);
         String combinedChars = upperCaseLetters.concat(lowerCaseLetters)
             .concat(numbers)
             .concat(specialChar)
