@@ -54,6 +54,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
+    /**
+     * Method intercept exception {@link UserAlreadyHasHabitAssignedException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity which contain http status and body with message of exception.
+     */
     @ExceptionHandler(UserAlreadyHasHabitAssignedException.class)
     public final ResponseEntity<Object> handleUserAlreadyHasHabitAssignedException(
         UserAlreadyHasHabitAssignedException ex, WebRequest request) {
