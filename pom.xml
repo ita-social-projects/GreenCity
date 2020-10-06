@@ -18,8 +18,9 @@
 
     <modules>
         <module>core</module>
-        <module>email</module>
+        <module>service-api</module>
         <module>dao</module>
+        <module>email</module>
     </modules>
 
     <properties>
