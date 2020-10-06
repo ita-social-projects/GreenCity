@@ -41,6 +41,7 @@ public class MapperConfig {
     private HabitStatusDtoMapper habitStatusDtoMapper;
     private HabitAssignDtoMapper habitAssignDtoMapper;
     private HabitDtoMapper habitDtoMapper;
+    private HabitStatisticDtoMapper habitStatisticDtoMapper;
 
     /**
      * Provides a new ModelMapper object. Provides configuration for the object. Sets source
@@ -99,5 +100,6 @@ public class MapperConfig {
         modelMapper.addConverter(addTipsAndTricksCommentDtoResponseMapper);
         modelMapper.addConverter(habitStatusDtoMapper);
         modelMapper.addConverter(habitAssignDtoMapper);
+        modelMapper.addConverter(habitStatisticDtoMapper);
     }
 }

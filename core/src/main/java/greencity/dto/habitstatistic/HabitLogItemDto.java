@@ -1,18 +1,17 @@
-package greencity.dto.user;
+package greencity.dto.habitstatistic;
 
-import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
-public class HabitDictionaryIdDto {
-    @Min(1)
-    private Long id;
+public class HabitLogItemDto {
+    private String habitItemName;
+    private Integer habitItemAmount;
 }

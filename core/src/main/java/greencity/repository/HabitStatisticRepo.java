@@ -1,8 +1,9 @@
 package greencity.repository;
 
-import greencity.entity.*;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatistic;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.Tuple;
@@ -126,7 +127,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
         + "GROUP BY ht.habitItem "
         + "ORDER BY COUNT(hs.habitAssign.habit) DESC")
     List<Tuple> getStatisticsForAllHabitItemsByDate(
-        @Param("statisticCreationDate") Date statisticCreationDate,
+        @Param("statisticCreationDate") ZonedDateTime statisticCreationDate,
         @Param("languageCode") String languageCode
     );
 
