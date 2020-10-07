@@ -12,12 +12,12 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class AdviceTranslateMapperTest {
+class AdviceTranslateMapperTest {
     @InjectMocks
     private AdviceTranslateMapper adviceTranslateMapper;
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         AdviceTranslation adviceTranslation = ModelUtils.getAdviceTranslation();
 
         AdviceDTO expected = new AdviceDTO();

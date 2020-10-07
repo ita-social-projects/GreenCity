@@ -25,11 +25,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,6 +37,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/user")
@@ -176,7 +177,7 @@ public class UserController {
     })
     @ApiPageable
     @PostMapping("filter")
-    public ResponseEntity<PageableDto> getUsersByFilter(
+    public ResponseEntity<PageableDto<UserForListDto>> getUsersByFilter(
         @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
@@ -214,11 +215,10 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping
-    public ResponseEntity updateUser(@Valid @RequestBody UserUpdateDto dto,
+    public ResponseEntity<UserUpdateDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
                                      @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
-        userService.update(dto, email);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
     }
 
     /**
@@ -533,7 +533,7 @@ public class UserController {
     @PatchMapping(path = "/profilePicture",
         consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpStatus> updateUserProfilePicture(
-        @ApiParam(value = SwaggerExampleModel.userProfilePictureDto, required = true)
+        @ApiParam(value = SwaggerExampleModel.USER_PROFILE_PICTURE_DTO, required = true)
         @RequestPart UserProfilePictureDto userProfilePictureDto,
         @ApiParam(value = "Profile picture")
         @ImageValidation
@@ -542,6 +542,26 @@ public class UserController {
         @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.updateUserProfilePicture(image, email, userProfilePictureDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Delete user profile picture  {@link User}.
+     *
+     * @return {@link ResponseEntity}.
+     */
+    @ApiOperation(value = "Delete user profile picture")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping(path = "/deleteProfilePicture")
+    public ResponseEntity<HttpStatus> deleteUserProfilePicture(@ApiIgnore
+                                                               @AuthenticationPrincipal Principal principal)  {
+        String email = principal.getName();
+        userService.deleteUserProfilePicture(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

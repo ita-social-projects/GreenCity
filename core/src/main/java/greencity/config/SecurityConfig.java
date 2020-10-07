@@ -6,10 +6,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
+import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
-
-import greencity.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -70,185 +69,200 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
-                .and()
-                .csrf()
-                .disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilterBefore(
-                        new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .exceptionHandling()
-                .authenticationEntryPoint((req, resp, exc) -> resp.sendError(SC_UNAUTHORIZED, "Authorize first."))
-                .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
-                .and()
-                .authorizeRequests()
-                .antMatchers("/management/**", "/css/**", "/img/**").hasRole(ADMIN)
-                .antMatchers(
-                        "/ownSecurity/**",
-                        "/place/getListPlaceLocationByMapsBounds/**",
-                        "/googleSecurity/**",
-                        "/facebookSecurity/**",
-                        "/place/filter/**",
-                        "/restorePassword/**",
-                        "/changePassword/**",
-                        "/socket/**",
-                        "/factoftheday/**"
-                ).permitAll()
-                .antMatchers(
-                        HttpMethod.GET,
-                        "/category/**",
-                        "/place/info/{id}/**",
-                        "/favorite_place/favorite/{id}",
-                        "/place/info/favorite/**",
-                        "/place/statuses/**",
-                        "/user/emailNotifications/**",
-                        "/user/activatedUsersAmount",
-                        "/habit/statistic/todayStatisticsForAllHabitItems",
-                        "/place/about/{id}/**",
-                        "/specification/**",
-                        "/newsSubscriber/unsubscribe",
-                        "/econews/**",
-                        "/econews/tags/**",
-                        "/tipsandtricks/**",
-                        "/tipsandtricks/tags/**",
-                        "/search",
-                        "/econews/comments",
-                        "/econews/comments/count/comments",
-                        "/econews/comments/replies/{parentCommentId}",
-                        "/econews/comments/count/replies",
-                        "/econews/comments/count/likes",
-                        "/socket/**",
-                        "/tipsandtricks/comments/{tipsAndTricksId}",
-                        "/tipsandtricks/comments/replies/{parentCommentId}",
-                        "/tipsandtricks/comments/count/likes",
-                        "/tipsandtricks/comments/",
-                        "/tipsandtricks/comments/count/comments",
-                        "/tipsandtricks/comments/count/comments",
-                        "/habit/status/{habitId}",
-                        "/factoftheday/**"
-                ).permitAll()
-                .antMatchers(
-                        HttpMethod.POST,
-                        "/econews/tags",
-                        "/tipsandtricks/tags",
-                        "/newsSubscriber",
-                        "/socket/**",
-                        "/factoftheday/**"
-                ).permitAll()
-                .antMatchers(HttpMethod.GET,
-                        "/advices/random/*",
-                        "/facts/random/*",
-                        "/habit/statistic/*",
-                        "/user/{userId}/habits",
-                        "/user/{userId}/habits/statistic",
-                        "/user/{userId}/goals",
-                        "/user/{userId}/goals/*",
-                        "/user/{userId}/habit-dictionary/available",
-                        "/user/{userId}/customGoals",
-                        "/user/{userId}/customGoals/*",
-                        "/user/isOnline/{userId}/",
-                        "/achievements",
-                        "/facts/dayFact/*",
-                        "/user/{userId}/sixUserFriends/",
-                        "/user/{userId}/profile/",
-                        "/user/{userId}/profileStatistics/",
-                        "/goals",
-                        "/goals/shoppingList/{userId}",
-                        "/user/userAndSixFriendsWithOnlineStatus",
-                        "/user/userAndAllFriendsWithOnlineStatus",
-                        "/habit"
-                ).hasAnyRole(USER, ADMIN, MODERATOR)
-                .antMatchers(
-                        "/place/propose/**",
-                        "/place/{status}/**",
-                        "/favorite_place/**",
-                        "/place/save/favorite",
-                        "/user"
-                ).hasAnyRole(USER, ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.PATCH,
-                        "/habit/statistic/*",
-                        "/user/{userId}/goals/*",
-                        "/user/{userId}/customGoals",
-                        "/user/profilePicture",
-                        "/econews/comments",
-                        "/tipsandtricks/comments",
-                        "/user/saveProfileInf",
-                        "/goals/shoppingList/{userId}"
-                ).hasAnyRole(USER, ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.POST,
-                        "/category/**",
-                        "/place/save/favorite/**",
-                        "/habit/statistic/",
-                        "/user/{userId}/goals",
-                        "/user/{userId}/habits",
-                        "/user/{userId}/habit",
-                        "/user/{userId}/habits/statistic",
-                        "/user/{userId}/goals/*",
-                        "/user/{userId}/habit-dictionary/available",
-                        "/user/{userId}/goals",
-                        "/user/{userId}/userFriend/*",
-                        "/econews",
-                        "/user/{userId}/customGoals",
-                        "/files/image",
-                        "/tipsandtricks",
-                        "/econews/comments/{econewsId}",
-                        "/econews/comments/like",
-                        "/tipsandtricks/comments/{tipsAndTricksId}",
-                        "/tipsandtricks/comments/like",
-                        "/user/profile",
-                        "/habit/assign/{habitId}",
-                        "/habit/unassign/{habitId}",
-                        "/habit/status/enroll/{habitId}",
-                        "/habit/status/unenroll/{habitId}/{date}",
-                        "/habit/status/enroll/{habitId}/{date}"
-                ).hasAnyRole(USER, ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.DELETE,
-                        "/user/{userId}/customGoals",
-                        "/user/{userId}/userGoals",
-                        "/user/{userId}/userFriend/*",
-                        "/user/{userId}/habit/{habitId}",
-                        "/econews/comments",
-                        "/tipsandtricks/comments"
-                ).hasAnyRole(USER, ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.POST,
-                        "/user/filter",
-                        "/place/filter/predicate"
-                ).hasAnyRole(ADMIN, MODERATOR)
-                .antMatchers("/advices/*", "/facts/*").hasAnyRole(ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.PATCH,
-                        "/place/status**",
-                        "/place/statuses**",
-                        "/user/update/status"
-                ).hasAnyRole(ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.PATCH,
-                        "/user/update/role"
-                ).hasRole(ADMIN)
-                .antMatchers(HttpMethod.GET,
-                        "/user/all/",
-                        "/user/roles",
-                        "/comments",
-                        "/newsSubscriber"
-                ).hasAnyRole(ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.DELETE,
-                        "/place/{id}/**",
-                        "/place/**",
-                        "/comments",
-                        "/econews",
-                        "/tipsandtricks"
-                ).hasAnyRole(ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.PUT,
-                        "/user/**",
-                        "/ownSecurity/**"
-                ).hasAnyRole(USER, ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.PUT,
-                        "/place/update/**"
-                ).hasAnyRole(ADMIN, MODERATOR)
-                .antMatchers(HttpMethod.PATCH,
-                        "/user/update/role"
-                ).hasRole(ADMIN)
-                .anyRequest().hasAnyRole(ADMIN);
+            .and()
+            .csrf()
+            .disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore(
+                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .exceptionHandling()
+            .authenticationEntryPoint((req, resp, exc) -> resp.sendError(SC_UNAUTHORIZED, "Authorize first."))
+            .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
+            .and()
+            .authorizeRequests()
+            .antMatchers("/management/**",
+                "/econews/comments",
+                "/econews/comments/replies/{parentCommentId}").hasRole(ADMIN)
+            .antMatchers("/css/**",
+                "/img/**"
+            ).permitAll()
+            .antMatchers(HttpMethod.GET,
+                "/ownSecurity/verifyEmail",
+                "/ownSecurity/updateAccessToken",
+                "/ownSecurity/restorePassword",
+                "/googleSecurity",
+                "/facebookSecurity/generateFacebookAuthorizeURL",
+                "/facebookSecurity/facebook",
+                "/factoftheday/",
+                "/factoftheday/all",
+                "/factoftheday/find",
+                "/factoftheday/languages",
+                "/category",
+                "/place/info/{id}",
+                "/place/info/favorite/{placeId}",
+                "/favorite_place/favorite/{placeId}",
+                "/place/statuses",
+                "/habit/statistic/todayStatisticsForAllHabitItems",
+                "/place/about/{id}",
+                "/specification",
+                "/econews",
+                "/econews/newest",
+                "/econews/tags",
+                "/econews/tags/all",
+                "/econews/recommended",
+                "/econews/{id}",
+                "/econews/comments/count/comments/{ecoNewsId}",
+                "/econews/comments/count/replies/{parentCommentId}",
+                "/econews/comments/count/likes",
+                "/econews/comments/replies/active/{parentCommentId}",
+                "/econews/comments/active",
+                "/tipsandtricks/comments",
+                "/tipsandtricks/comments/count/comments",
+                "/tipsandtricks/comments/replies/{parentCommentId}",
+                "/tipsandtricks/comments/count/likes",
+                "/tipsandtricks/comments/count/replies",
+                "/tipsandtricks/{id}",
+                "/tipsandtricks",
+                "/tipsandtricks/tags",
+                "/tipsandtricks/tags/all",
+                "/search",
+                "/search/econews",
+                "/search/tipsandtricks",
+                "/habit/status/{habitId}",
+                "/user/emailNotifications",
+                "/user/activatedUsersAmount",
+                "/socket/**"
+            ).permitAll()
+            .antMatchers(HttpMethod.POST,
+                "/ownSecurity/signUp",
+                "/ownSecurity/signIn",
+                "/ownSecurity/changePassword",
+                "/place/getListPlaceLocationByMapsBounds",
+                "/place/filter"
+            ).permitAll()
+            .antMatchers(HttpMethod.GET,
+                "/achievements",
+                "/advices/random/{habitId}",
+                "/advices",
+                "/favorite_place/",
+                "/goals",
+                "/goals/shoppingList/{userId}",
+                "/habit",
+                "/habit/statistic/{habitId}",
+                "/facts",
+                "/facts/random/{habitId}",
+                "/facts/dayFact/{languageId}",
+                "/newsSubscriber/unsubscribe",
+                "/place/{status}",
+                "/user",
+                "/user/{userId}/habits",
+                "/user/{userId}/habits/statistic",
+                "/user/{userId}/goals",
+                "/user/{userId}/customGoals",
+                "/user/{userId}/goals/available",
+                "/user/{userId}/customGoals/available",
+                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/sixUserFriends/",
+                "/user/{userId}/profile/",
+                "/user/isOnline/{userId}/",
+                "/user/{userId}/profileStatistics/",
+                "/user/userAndSixFriendsWithOnlineStatus",
+                "/user/userAndAllFriendsWithOnlineStatus"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.POST,
+                "/category",
+                "/econews",
+                "/econews/comments/{econewsId}",
+                "/econews/comments/like",
+                "/files/image",
+                "/habit/assign/{habitId}",
+                "/habit/statistic/",
+                "/habit/status/enroll/{habitId}",
+                "/habit/status/unenroll/{habitId}/{date}",
+                "/habit/status/enroll/{habitId}/{date}",
+                "/newsSubscriber",
+                "/place/{placeId}/comments",
+                "/place/propose",
+                "/place/save/favorite/",
+                "/tipsandtricks/comments/{tipsAndTricksId}",
+                "/tipsandtricks/comments/like",
+                "/tipsandtricks",
+                "/user/{userId}/customGoals",
+                "/user/{userId}/goals",
+                "/user/{userId}/habit",
+                "/user/{userId}/userFriend/{friendId}"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PUT,
+                "/favorite_place/",
+                "/ownSecurity",
+                "/user/profile"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PATCH,
+                "/econews/comments",
+                "/goals/shoppingList/{userId}",
+                "/habit/statistic/{habitStatisticId}",
+                "/tipsandtricks/comments",
+                "/user/{userId}/customGoals",
+                "/user/{userId}/goals/{goalId}",
+                "/user/profilePicture",
+                "/user/deleteProfilePicture"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.DELETE,
+                "/econews/comments",
+                "/favorite_place/{placeId}",
+                "/tipsandtricks/comments",
+                "/user/{userId}/customGoals",
+                "/user/{userId}/habit/{habitId}",
+                "/user/{userId}/userGoals",
+                "/user/{userId}/userFriend/{friendId}"
+            ).hasAnyRole(USER, ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.GET,
+                "/newsSubscriber",
+                "/comments",
+                "/comments/{id}",
+                "/user/all",
+                "/user/roles"
+            ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.POST,
+                "/place/filter/predicate"
+            ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PUT,
+                "/place/update/"
+            ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.PATCH,
+                "/place/status",
+                "/place/statuses"
+            ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.DELETE,
+                "/place/{id}",
+                "/place"
+            ).hasAnyRole(ADMIN, MODERATOR)
+            .antMatchers(HttpMethod.POST,
+                "/advices",
+                "/facts",
+                "/user/filter"
+            ).hasRole(ADMIN)
+            .antMatchers(HttpMethod.PUT,
+                "/advices/{adviceId}",
+                "/facts/{factId}"
+            ).hasRole(ADMIN)
+            .antMatchers(HttpMethod.PATCH,
+                "/user",
+                "/user/status",
+                "/user/role",
+                "/user/update/role"
+            ).hasRole(ADMIN)
+            .antMatchers(HttpMethod.DELETE,
+                "/advices/{adviceId}",
+                "/econews/{econewsId}",
+                "/facts/{factId}",
+                "/comments",
+                "/tipsandtricks/{id}"
+            ).hasRole(ADMIN)
+            .anyRequest().hasAnyRole(ADMIN);
     }
 
     /**
@@ -295,10 +309,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(
-                Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
+            Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
         configuration.setAllowedHeaders(
-                Arrays.asList(
-                        "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+            Arrays.asList(
+                "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -313,8 +327,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public GoogleIdTokenVerifier googleIdTokenVerifier(@Value("${google.clientId}") String clientId) {
         return new GoogleIdTokenVerifier
-                .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList(clientId))
-                .build();
+            .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+            .setAudience(Collections.singletonList(clientId))
+            .build();
     }
 }

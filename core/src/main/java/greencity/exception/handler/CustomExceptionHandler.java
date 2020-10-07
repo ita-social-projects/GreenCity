@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpHeaders;
@@ -42,8 +43,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * Method intercept exception {@link UserHasNoAvailableHabitTranslationException}.
      *
      * @param ex      Exception witch should be intercepted.
-     * @param request contain  detail about occur exception
-     * @return ResponseEntity witch  contain http status and body  with message of exception.
+     * @param request contain detail about occur exception.
+     * @return ResponseEntity which contains http status and body with message of exception.
      * @author Yurii Savchenko
      */
     @ExceptionHandler(UserHasNoAvailableHabitTranslationException.class)
@@ -142,7 +143,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public final ResponseEntity<Object> handleConversionFailedException(
-        MethodArgumentTypeMismatchException ex, WebRequest request) {
+        @NonNull MethodArgumentTypeMismatchException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         String propName = ex.getName();
         String className = null;

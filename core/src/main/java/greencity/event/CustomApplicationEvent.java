@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 @Setter
 public abstract class CustomApplicationEvent<M> extends ApplicationEvent {
-    private M body;
+    private transient M body;
 
     /**
      * All args constructor.

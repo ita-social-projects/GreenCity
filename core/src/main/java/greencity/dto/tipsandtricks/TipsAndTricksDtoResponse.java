@@ -37,7 +37,7 @@ public class TipsAndTricksDtoResponse implements Serializable {
     private ZonedDateTime creationDate;
 
     @NotEmpty
-    private AuthorDto author;
+    private transient AuthorDto author;
 
     @NotEmpty
     private List<String> tags;

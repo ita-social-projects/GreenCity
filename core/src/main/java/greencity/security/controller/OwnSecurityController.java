@@ -13,16 +13,12 @@ import greencity.security.service.VerifyEmailService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.Principal;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import static greencity.constant.ErrorMessage.*;
-import static greencity.constant.ValidationConstants.INVALID_RESTORE_EMAIL_ADDRESS;
 import static greencity.constant.ValidationConstants.USER_CREATED;
 
 /**
@@ -45,7 +40,6 @@ import static greencity.constant.ValidationConstants.USER_CREATED;
 @Validated
 @Slf4j
 public class OwnSecurityController {
-    private final String clientAddress;
     private final OwnSecurityService service;
     private final VerifyEmailService verifyEmailService;
     private final PasswordRecoveryService passwordRecoveryService;
@@ -53,16 +47,13 @@ public class OwnSecurityController {
     /**
      * Constructor.
      *
-     * @param clientAddress      - Google client address.
      * @param service            - {@link OwnSecurityService} - service for security logic.
      * @param verifyEmailService {@link VerifyEmailService} - service for email verification.
      */
     @Autowired
-    public OwnSecurityController(@Value("${client.address}") String clientAddress,
-                                 OwnSecurityService service,
+    public OwnSecurityController(OwnSecurityService service,
                                  VerifyEmailService verifyEmailService,
                                  PasswordRecoveryService passwordRecoveryService) {
-        this.clientAddress = clientAddress;
         this.service = service;
         this.verifyEmailService = verifyEmailService;
         this.passwordRecoveryService = passwordRecoveryService;
@@ -108,16 +99,14 @@ public class OwnSecurityController {
      */
     @ApiOperation("Verify email by email token (hash that contains link for verification)")
     @ApiResponses(value = {
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN)
     })
     @GetMapping("/verifyEmail")
     public ResponseEntity<Object> verify(@RequestParam @NotBlank String token,
-                                         @RequestParam("user_id") Long userId) throws URISyntaxException {
+                                         @RequestParam("user_id") Long userId) {
         verifyEmailService.verifyByToken(userId, token);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setLocation(new URI(clientAddress));
-        return new ResponseEntity<>(responseHeaders, HttpStatus.SEE_OTHER);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -149,7 +138,7 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = USER_NOT_FOUND_BY_EMAIL)
     })
     @GetMapping("/restorePassword")
-    public ResponseEntity<Object> restore(@RequestParam @Email(message = INVALID_RESTORE_EMAIL_ADDRESS) String email) {
+    public ResponseEntity<Object> restore(@RequestParam @Email String email) {
         passwordRecoveryService.sendPasswordRecoveryEmailTo(email);
         return ResponseEntity.ok().build();
     }

@@ -1,13 +1,13 @@
 package greencity.dto.openhours;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import greencity.constant.ValidationConstants;
 import greencity.dto.breaktime.BreakTimeDto;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
+
+import javax.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import javax.validation.constraints.NotNull;
-import lombok.*;
 
 @Data
 @NoArgsConstructor

@@ -102,7 +102,7 @@ public class GoalServiceImpl implements GoalService {
             if (customGoalRepo.findById(customGoalId).isEmpty()) {
                 throw new NotFoundException(GOAL_WRONG_ID + customGoalId);
             }
-            goalRepo.changeCustomGoalStatus(userId, customGoalId, goalStatus, now);
+            customGoalRepo.changeCustomGoalStatus(userId, customGoalId, goalStatus, now);
         }
     }
 }

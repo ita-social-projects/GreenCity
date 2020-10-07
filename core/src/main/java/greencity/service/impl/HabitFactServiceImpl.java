@@ -100,7 +100,7 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     public Long delete(Long id) {
-        if (habitFactRepo.findById(id).isEmpty()) {
+        if (!(habitFactRepo.findById(id).isPresent())) {
             throw new NotDeletedException(ErrorMessage.HABIT_FACT_NOT_DELETED_BY_ID);
         }
         habitFactRepo.deleteById(id);

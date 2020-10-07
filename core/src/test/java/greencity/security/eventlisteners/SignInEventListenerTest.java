@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 
-public class SignInEventListenerTest {
+class SignInEventListenerTest {
 
     @Mock
     UserService userService;
@@ -26,16 +26,20 @@ public class SignInEventListenerTest {
 
     /*@Test
     public void onApplicationEvent() {
+    @Test
+    void onApplicationEvent() {
         doNothing().when(userService).addDefaultHabit(anyLong(), anyString());
         signInEventListener.onApplicationEvent(new SignInEvent(User.builder().id(1L).build()));
 
         verify(userService, times(1)).addDefaultHabit(anyLong(), anyString());
-    }*/
+    }
 
     @Test
-    public void onApplicationEventWithInvalidEvent() {
+    void onApplicationEventWithInvalidEvent() {
+        SignInEvent signInEvent = new SignInEvent("I'm a User");
         Assertions
             .assertThrows(ClassCastException.class,
-                () -> signInEventListener.onApplicationEvent(new SignInEvent("I'm a User")));
-    }
+                () -> signInEventListener.onApplicationEvent(signInEvent));
+    }*/
 }
+

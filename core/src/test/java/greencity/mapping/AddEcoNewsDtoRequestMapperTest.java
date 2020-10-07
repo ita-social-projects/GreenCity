@@ -12,7 +12,7 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class AddEcoNewsDtoRequestMapperTest {
+class AddEcoNewsDtoRequestMapperTest {
 
     @InjectMocks
     private AddEcoNewsDtoRequestMapper mapper;
@@ -20,7 +20,7 @@ public class AddEcoNewsDtoRequestMapperTest {
     private EcoNews ecoNews = ModelUtils.getEcoNews();
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         AddEcoNewsDtoRequest request = ModelUtils.getAddEcoNewsDtoRequest();
 
         EcoNews actual = mapper.convert(request);

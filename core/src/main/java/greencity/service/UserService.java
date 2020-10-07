@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -11,11 +12,12 @@ import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@link User} entity.
@@ -106,10 +108,10 @@ public interface UserService {
      * Find {@link User} for management by page .
      *
      * @param pageable a value with pageable configuration.
-     * @return a dto of {@link PageableDto}.
+     * @return a dto of {@link PageableAdvancedDto}.
      * @author Vasyl Zhovnir
      */
-    PageableDto<UserManagementDto> findUserForManagementByPage(Pageable pageable);
+    PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable);
 
     /**
      * Method that allows you to update {@link User} by dto.
@@ -169,7 +171,7 @@ public interface UserService {
      * @return {@link User}.
      * @author Nazar Stasyuk
      */
-    User update(UserUpdateDto dto, String email);
+    UserUpdateDto update(UserUpdateDto dto, String email);
 
     /**
      * Updates refresh token for a given user.
@@ -288,6 +290,13 @@ public interface UserService {
      */
     User updateUserProfilePicture(MultipartFile image, String email,
                                   UserProfilePictureDto userProfilePictureDto);
+
+    /**
+     * Delete user profile picture {@link User}.
+     *
+     * @param email {@link String} - email of user that need to update.
+     */
+    void deleteUserProfilePicture(String email);
 
     /**
      * Get list user friends by user id {@link User}.
@@ -409,7 +418,7 @@ public interface UserService {
      * Method that allow you to find {@link User} by ID and token.
      *
      * @param userId - {@link User}'s id
-     * @param token - {@link User}'s token
+     * @param token  - {@link User}'s token
      * @return {@link Optional} of {@link User}
      */
     Optional<User> findByIdAndToken(Long userId, String token);
@@ -419,7 +428,15 @@ public interface UserService {
      *
      * @param paging {@link Pageable}.
      * @param query  query to search,
-     * @return PageableDto of {@link UserManagementDto} instances.
+     * @return {@link PageableAdvancedDto} of {@link UserManagementDto} instances.
      */
-    PageableDto<UserManagementDto> searchBy(Pageable paging, String query);
+    PageableAdvancedDto<UserManagementDto> searchBy(Pageable paging, String query);
+
+
+    /**
+     * Method for getting all Users.
+     *
+     * @return {@link List} of {@link User} instances.
+     */
+    List<User> findAll();
 }

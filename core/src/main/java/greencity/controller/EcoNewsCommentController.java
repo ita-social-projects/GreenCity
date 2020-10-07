@@ -10,12 +10,9 @@ import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.entity.User;
 import greencity.service.EcoNewsCommentService;
-import greencity.service.EcoNewsService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,14 +23,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+
 @Validated
 @AllArgsConstructor
 @RestController
 @RequestMapping("/econews/comments")
 public class EcoNewsCommentController {
     private final EcoNewsCommentService ecoNewsCommentService;
-    private final UserService userService;
-    private final EcoNewsService ecoNewsService;
 
     /**
      * Method for creating {@link greencity.entity.EcoNewsComment}.

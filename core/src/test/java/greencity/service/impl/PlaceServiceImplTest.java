@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -220,6 +221,19 @@ class PlaceServiceImplTest {
     }
 
     @Test
+    void findPlaceUpdateDtoTest() {
+        Place genericEntity = new Place();
+        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity));
+        when(modelMapper.map(genericEntity, PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
+        PlaceUpdateDto foundEntity = placeService.getInfoForUpdatingById(1L);
+        assertEquals(placeUpdateDto, foundEntity);
+
+        verify(placeRepo).findById(1L);
+        verify(modelMapper).map(genericEntity, PlaceUpdateDto.class);
+    }
+
+    @Test
     void getInfoByIdTest() {
         PlaceInfoDto gen = new PlaceInfoDto();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
@@ -304,8 +318,20 @@ class PlaceServiceImplTest {
         List<Place> expectedList = Arrays.asList(new Place(), new Place());
 
         when(placeRepo.findAll()).thenReturn(expectedList);
-
         assertEquals(expectedList, placeService.findAll());
+    }
+
+    @Test
+    void findAllPageableTest() {
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
+        when(placeRepo.findAll(pageable)).thenReturn(pages);
+        List<AdminPlaceDto> placeDtos =
+            pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
+        PageableDto<AdminPlaceDto> result =
+            new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
+        assertEquals(result, placeService.findAll(pageable));
+        verify(placeRepo).findAll(pageable);
     }
 
     @Test
@@ -317,7 +343,7 @@ class PlaceServiceImplTest {
         placeUpdateDto.setCategory(categoryDto);
         when(categoryService.findByName(category.getName())).thenReturn(category);
         when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
-        when(modelMapper.map(placeUpdateDto.getLocation(),Location.class)).thenReturn(location);
+        when(modelMapper.map(placeUpdateDto.getLocation(), Location.class)).thenReturn(location);
 
         Place updatedPlace = placeService.update(placeUpdateDto);
 
@@ -440,5 +466,19 @@ class PlaceServiceImplTest {
         assertEquals(adminPlacePage, result);
         verify(placeRepo).findAll(any(PlaceFilter.class), any(Pageable.class));
         verify(modelMapper).map(place, AdminPlaceDto.class);
+    }
+
+    @Test
+    void searchByTest() {
+        String searchQuery = "test";
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
+        when(placeRepo.searchBy(pageable, searchQuery)).thenReturn(pages);
+        List<AdminPlaceDto> placeDtos =
+            pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
+        PageableDto<AdminPlaceDto> result =
+            new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
+        assertEquals(result, placeService.searchBy(pageable, searchQuery));
+        verify(placeRepo).searchBy(pageable, searchQuery);
     }
 }

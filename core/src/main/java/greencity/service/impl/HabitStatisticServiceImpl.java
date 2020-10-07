@@ -123,6 +123,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
 
     /**
      * {@inheritDoc}
+     *
+     * @author Yuriy Olkovskyi
      */
     @Override
     public List<HabitStatisticDto> findAllStatsByHabitId(Long habitId) {

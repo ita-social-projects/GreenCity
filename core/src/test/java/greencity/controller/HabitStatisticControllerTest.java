@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class HabitStatisticControllerTest {
+class HabitStatisticControllerTest {
     private static final String habitStatisticLink = "/habit/statistic/";
     private MockMvc mockMvc;
 
@@ -46,7 +46,7 @@ public class HabitStatisticControllerTest {
     }
 
     @Test
-    public void getTodayStatisticsForAllHabitItemsStatusCodeTest() throws Exception {
+    void getTodayStatisticsForAllHabitItemsStatusCodeTest() throws Exception {
         when(habitStatisticService.getTodayStatisticsForAllHabitItems(anyString()))
             .thenReturn(Collections.singletonList((new HabitItemsAmountStatisticDto())));
 
@@ -55,7 +55,7 @@ public class HabitStatisticControllerTest {
     }
 
     @Test
-    public void findAllByHabitIdTest() throws Exception {
+    void findAllByHabitIdTest() throws Exception {
         when(habitStatisticService.findAllByHabitId(anyLong()))
             .thenReturn(Collections.singletonList((new HabitStatisticDto())));
 
@@ -64,7 +64,7 @@ public class HabitStatisticControllerTest {
     }
 
     @Test
-    public void saveTest() throws Exception {
+    void saveTest() throws Exception {
         when(habitStatisticService.save(any(AddHabitStatisticDto.class)))
             .thenReturn(new AddHabitStatisticDto());
 
@@ -84,7 +84,7 @@ public class HabitStatisticControllerTest {
 
 
     @Test
-    public void saveBadRequestTest() throws Exception {
+    void saveBadRequestTest() throws Exception {
         mockMvc.perform(post(habitStatisticLink)
             .content("{}")
             .accept(MediaType.APPLICATION_JSON)
@@ -94,7 +94,7 @@ public class HabitStatisticControllerTest {
 
 
     @Test
-    public void updateTest() throws Exception {
+    void updateTest() throws Exception {
         when(habitStatisticService.update(anyLong(), any(UpdateHabitStatisticDto.class)))
             .thenReturn(new UpdateHabitStatisticDto());
 

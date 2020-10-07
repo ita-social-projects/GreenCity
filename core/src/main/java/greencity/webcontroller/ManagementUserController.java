@@ -1,8 +1,8 @@
 package greencity.webcontroller;
 
-import greencity.dto.PageableDto;
-import greencity.dto.genericresponse.FieldErrorDto;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.security.service.OwnSecurityService;
@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -43,7 +42,7 @@ public class ManagementUserController {
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
                               Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
-        PageableDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
+        PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
             ? userService.findUserForManagementByPage(paging) : userService.searchBy(paging, query);
         model.addAttribute("users", pageableDto);
         return "core/management_user";
@@ -59,16 +58,10 @@ public class ManagementUserController {
     @PostMapping("/register")
     @ResponseBody
     public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+        if (!bindingResult.hasErrors()) {
+            ownSecurityService.managementRegisterUser(userDto);
         }
-        ownSecurityService.managementRegisterUser(userDto);
-        return GenericResponseDto.builder().build();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
@@ -81,16 +74,10 @@ public class ManagementUserController {
     @PutMapping
     @ResponseBody
     public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+        if (!bindingResult.hasErrors()) {
+            userService.updateUser(userDto);
         }
-        userService.updateUser(userDto);
-        return GenericResponseDto.builder().build();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**

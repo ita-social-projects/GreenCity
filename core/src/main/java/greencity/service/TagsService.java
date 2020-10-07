@@ -47,7 +47,7 @@ public interface TagsService {
      * @param tipsAndTricksTagNames list of {@link String} values
      * @return {@link Boolean}
      */
-    Boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames);
+    boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames);
 
     /**
      * Method that checks if there is allowed amount (less than 3) of unique {@link Tag}s .
@@ -55,5 +55,5 @@ public interface TagsService {
      * @param tagNames list of {@link String} values
      * @return {@link Boolean}
      */
-    Boolean isValidNumOfUniqueTags(List<String> tagNames);
+    boolean isValidNumOfUniqueTags(List<String> tagNames);
 }

@@ -3,8 +3,8 @@ package greencity.webcontroller;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,16 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -128,16 +118,10 @@ public class ManagementTipsAndTricksController {
                                      BindingResult bindingResult,
                                      @ImageValidation
                                      @RequestPart(required = false, name = "file") MultipartFile file) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+        if (!bindingResult.hasErrors()) {
+            tipsAndTricksService.update(tipsAndTricksDtoManagement, file);
         }
-        tipsAndTricksService.update(tipsAndTricksDtoManagement, file);
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
@@ -160,15 +144,9 @@ public class ManagementTipsAndTricksController {
                                    @ImageValidation
                                    @RequestParam(required = false, name = "file") MultipartFile file,
                                    @ApiIgnore Principal principal) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+        if (!bindingResult.hasErrors()) {
+            tipsAndTricksService.save(tipsAndTricksDtoRequest, file, principal.getName());
         }
-        tipsAndTricksService.save(tipsAndTricksDtoRequest, file, principal.getName());
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return buildGenericResponseDto(bindingResult);
     }
 }

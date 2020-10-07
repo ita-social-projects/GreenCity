@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import java.util.List;
@@ -78,4 +79,21 @@ public interface FactOfTheDayService {
      * @return pageable of {@link FactOfTheDayDTO}
      */
     PageableDto<FactOfTheDayDTO> searchBy(Pageable pageable, String searchQuery);
+
+    /**
+     * Method return random {@link FactOfTheDay} .
+     *
+     * @return FactOfTheDay
+     * @author Mykola Lehkyi
+     */
+    FactOfTheDay getRandomFactOfTheDay();
+
+    /**
+     * Method return random {@link FactOfTheDayTranslationDTO} by languageCode.
+     *
+     * @param languageCode String
+     * @return {@link FactOfTheDayTranslationDTO}
+     * @author Mykola Lehkyi
+     */
+    FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode);
 }

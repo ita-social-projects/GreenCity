@@ -1,63 +1,32 @@
 package greencity.constant;
 
 public final class SwaggerExampleModel {
-    public static final String userProfileRequest =
-        "User Profile Request\n"
-            + "<div>\n"
-            + "\t<ul class=\"tab\">\n"
-            + "\t\t<li class=\"tabitem active\">\n"
-            + "\t\t\t<a class=\"tablinks\" data-name=\"example\">Example Value</a>\n"
-            + "\t\t</li>\n"
-            + "\t\t<li class=\"tabitem\">\n"
-            + "\t\t\t<a class=\"tablinks\" data-name=\"model\">Model</a>\n"
-            + "\t\t</li>\n"
-            + "\t</ul>\n"
-            + "\t<pre>\n"
-            + "{\n"
-            + "  \"city\": \"string\",\n"
-            + "  \"firstName\": \"string\",\n"
-            + "  \"showEcoPlace\": true,\n"
-            + "  \"showLocation\": true,\n"
-            + "  \"showShoppingList\": true,\n"
-            + "  \"socialNetworks\": [\n"
-            + "    \"string with protocol, exmpl: https://www.google.com/search?q=spring&oq=spring\"\n"
-            + "  ],\n"
-            + "  \"userCredo\": \"string\"\n"
-            + "}\n"
-            + "\t</pre>\n"
-            + "</div>";
+    private static final String BEFORE_EXAMPLE = "<div>\n"
+        + "\t<ul class=\"tab\">\n"
+        + "\t\t<li class=\"tabitem active\">\n"
+        + "\t\t\t<a class=\"tablinks\" data-name=\"example\">Example Value</a>\n"
+        + "\t\t</li>\n"
+        + "\t\t<li class=\"tabitem\">\n"
+        + "\t\t\t<a class=\"tablinks\" data-name=\"model\">Model</a>\n"
+        + "\t\t</li>\n"
+        + "\t</ul>\n"
+        + "\t<pre>\n";
 
-    public static final String userProfilePictureDto =
+    private static final String AFTER_EXAMPLE = "\t</pre>\n"
+        + "</div>";
+
+    public static final String USER_PROFILE_PICTURE_DTO =
         "User Profile Picture\n"
-            + "<div>\n"
-            + "\t<ul class=\"tab\">\n"
-            + "\t\t<li class=\"tabitem active\">\n"
-            + "\t\t\t<a class=\"tablinks\" data-name=\"example\">Example Value</a>\n"
-            + "\t\t</li>\n"
-            + "\t\t<li class=\"tabitem\">\n"
-            + "\t\t\t<a class=\"tablinks\" data-name=\"model\">Model</a>\n"
-            + "\t\t</li>\n"
-            + "\t</ul>\n"
-            + "\t<pre>\n"
+            + BEFORE_EXAMPLE
             + "{\n"
             + "  \"id\": 0,\n"
             + "  \"profilePicturePath\": \"string\"\n"
             + "}\n"
-            + "\t</pre>\n"
-            + "</div>";
+            + AFTER_EXAMPLE;
 
-    public static final String addTipsAndTricksRequest =
+    public static final String ADD_TIPS_AND_TRICKS_REQUEST =
         "Add tips & tricks request\n"
-            + "<div>\n"
-            + "\t<ul class=\"tab\">\n"
-            + "\t\t<li class=\"tabitem active\">\n"
-            + "\t\t\t<a class=\"tablinks\" data-name=\"example\">Example Value</a>\n"
-            + "\t\t</li>\n"
-            + "\t\t<li class=\"tabitem\">\n"
-            + "\t\t\t<a class=\"tablinks\" data-name=\"model\">Model</a>\n"
-            + "\t\t</li>\n"
-            + "\t</ul>\n"
-            + "\t<pre>\n"
+            + BEFORE_EXAMPLE
             + "{\n"
             + "  \"image\": \"string\",\n"
             + "  \"source\": \"string\",\n"
@@ -67,21 +36,11 @@ public final class SwaggerExampleModel {
             + "  \"text\": \"string\",\n"
             + "  \"title\": \"string\"\n"
             + "}"
-            + "\t</pre>\n"
-            + "</div>";
+            + AFTER_EXAMPLE;
 
-    public static final String addEcoNewsRequest =
+    public static final String ADD_ECO_NEWS_REQUEST =
         "Add Eco News Request\n"
-            + "<div>\n"
-            + "\t<ul class=\"tab\">\n"
-            + "\t\t<li class=\"tabitem active\">\n"
-            + "\t\t\t<a class=\"tablinks\" data-name=\"example\">Example Value</a>\n"
-            + "\t\t</li>\n"
-            + "\t\t<li class=\"tabitem\">\n"
-            + "\t\t\t<a class=\"tablinks\" data-name=\"model\">Model</a>\n"
-            + "\t\t</li>\n"
-            + "\t</ul>\n"
-            + "\t<pre>\n"
+            + BEFORE_EXAMPLE
             + "{\n"
             + "  \"image\": \"string\",\n"
             + "  \"source\": \"string\",\n"
@@ -91,8 +50,7 @@ public final class SwaggerExampleModel {
             + "  \"text\": \"string\",\n"
             + "  \"title\": \"string\"\n"
             + "}\n"
-            + "\t</pre>\n"
-            + "</div>";
+            + AFTER_EXAMPLE;
 
     private SwaggerExampleModel() {
     }

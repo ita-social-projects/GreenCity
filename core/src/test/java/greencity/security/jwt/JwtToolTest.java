@@ -21,7 +21,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 /**
  * @author Yurii Koval
  */
-@ExtendWith(SpringExtension.class)public class JwtToolTest {
+@ExtendWith(SpringExtension.class)
+class JwtToolTest {
     private final String expectedEmail = "test@gmail.com";
     private final ROLE expectedRole = ROLE.ROLE_USER;
 
@@ -39,10 +40,10 @@ import org.springframework.test.util.ReflectionTestUtils;
     }
 
     @Test
-    public void createAccessToken() {
+    void createAccessToken() {
         final String accessToken = jwtTool.createAccessToken(expectedEmail, expectedRole);
         System.out.println(accessToken);
-        String actualEmail =  Jwts.parser()
+        String actualEmail = Jwts.parser()
             .setSigningKey(jwtTool.getAccessTokenKey())
             .parseClaimsJws(accessToken)
             .getBody()
@@ -58,14 +59,14 @@ import org.springframework.test.util.ReflectionTestUtils;
     }
 
     @Test
-    public void createRefreshToken() {
+    void createRefreshToken() {
         String s = "secret-refresh-token-key";
         User user = new User();
         user.setEmail(expectedEmail);
         user.setRole(expectedRole);
         user.setRefreshTokenKey(s);
         String refreshToken = jwtTool.createRefreshToken(user);
-        String actualEmail =  Jwts.parser()
+        String actualEmail = Jwts.parser()
             .setSigningKey(user.getRefreshTokenKey())
             .parseClaimsJws(refreshToken)
             .getBody()
@@ -81,7 +82,7 @@ import org.springframework.test.util.ReflectionTestUtils;
     }
 
     @Test
-    public void getEmailOutOfAccessToken() {
+    void getEmailOutOfAccessToken() {
         String actualEmail = jwtTool.getEmailOutOfAccessToken("eyJhbGciOiJIUzI1NiJ9"
             + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGh"
             + "vcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1NzU4MzY5NjUsImV4cCI6OTk5OTk5OTk5OTk5fQ"
@@ -90,7 +91,7 @@ import org.springframework.test.util.ReflectionTestUtils;
     }
 
     @Test
-    public void isTokenValid() {
+    void isTokenValid() {
         String random = UUID.randomUUID().toString();
         assertFalse(jwtTool.isTokenValid(random, jwtTool.getAccessTokenKey()));
         boolean valid = jwtTool.isTokenValid("eyJhbGciOiJIUzI1NiJ9"
@@ -101,7 +102,7 @@ import org.springframework.test.util.ReflectionTestUtils;
     }
 
     @Test
-    public void getTokenFromHttpServletRequest() {
+    void getTokenFromHttpServletRequest() {
         final String expectedToken = "An AccessToken";
         when(request.getHeader("Authorization")).thenReturn("Bearer " + expectedToken);
         String actualToken = jwtTool.getTokenFromHttpServletRequest(request);

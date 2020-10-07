@@ -39,7 +39,7 @@
                       oldColumnName="habit_dictionary_id"
                       newColumnName="habit_id"/>
 
-        <dropForeignKeyConstraint baseTableName="advices" constraintName="FK_habit_advices"/>
+        <dropForeignKeyConstraint baseTableName="advices" constraintName="FK_advices_habit_dictionary"/>
 
         <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="advices"
                                  constraintName="fk_habit_advices_habits_habit_id" deferrable="false" initiallyDeferred="false"
@@ -52,7 +52,7 @@
                       oldColumnName="habit_dictionary_id"
                       newColumnName="habit_id"/>
 
-        <dropForeignKeyConstraint baseTableName="habit_facts" constraintName="FK_habit_advices"/>
+        <dropForeignKeyConstraint baseTableName="habit_facts" constraintName="FK_habit_facts_habit_dictionary"/>
         <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_facts"
                                  constraintName="fk_habit_facts_habits_habit_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
@@ -98,9 +98,9 @@
                                  referencedTableName="users"/>
     </changeSet>
 
-    <changeSet id="10" author="Kravchenko">
+    <!--<changeSet id="10" author="Kravchenko">
         <dropForeignKeyConstraint baseTableName="habits_users_assign" constraintName="fk_users_id"/>
-    </changeSet>
+    </changeSet>-->
 
     <changeSet id="11" author="Kravchenko">
         <renameTable oldTableName="habits_users_assign" newTableName="habits_users_acquired"/>
@@ -113,7 +113,7 @@
     <changeSet id="13" author="Kravchenko">
         <renameColumn tableName="habit_assign" oldColumnName="status" newColumnName="acquired"/>
 
-        <dropForeignKeyConstraint baseTableName="habit_status" constraintName="fk_habit_id"/>
+        <!--<dropForeignKeyConstraint baseTableName="habit_status" constraintName="fk_habit_id"/>-->
         <dropForeignKeyConstraint baseTableName="habit_status" constraintName="fk_user_id"/>
 
         <dropColumn tableName="habit_status" columnName="user_id"/>

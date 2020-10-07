@@ -52,7 +52,7 @@ public interface PlaceService {
     /**
      * Method with return {@link Optional} of {@link Place} by comment id.
      *
-     * @param  id of {@link Place}.
+     * @param id of {@link Place}.
      * @return {@link Optional} of {@link Place} .
      * @author Marian Milian
      */
@@ -82,6 +82,15 @@ public interface PlaceService {
      * @return List of places.
      */
     List<Place> findAll();
+
+    /**
+     * Find all places from DB.
+     *
+     * @param pageable {@link Pageable}.
+     * @return an object of {@link PageableDto} which contains a list of {@link AdminPlaceDto}.
+     * @author Olena Petryshak
+     */
+    PageableDto<AdminPlaceDto> findAll(Pageable pageable);
 
     /**
      * Method for deleting place by id.
@@ -172,4 +181,14 @@ public interface PlaceService {
      * @author Kateryna Horokh
      */
     PlaceUpdateDto getInfoForUpdatingById(Long id);
+
+    /**
+     * Method for getting Places by searchQuery.
+     *
+     * @param pageable    {@link Pageable}.
+     * @param searchQuery query to search,
+     * @return an object of {@link PageableDto} which contains a list of {@link AdminPlaceDto}.
+     * @author Olena Petryshak
+     */
+    PageableDto<AdminPlaceDto> searchBy(Pageable pageable, String searchQuery);
 }

@@ -12,10 +12,8 @@ import greencity.security.events.UpdatePasswordEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.RestorePasswordEmailRepo;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.refEq;
@@ -23,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +28,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-public class PasswordRecoveryServiceImplTest {
+class PasswordRecoveryServiceImplTest {
     @Mock
     private JwtTool jwtTool;
     @Mock
@@ -49,7 +46,7 @@ public class PasswordRecoveryServiceImplTest {
     private static final String PASSWORD_RECOVERY_ROUTING_KEY = "password.recovery";
 
     @Test
-    public void sendPasswordRecoveryEmailToNonExistentUserTest() {
+    void sendPasswordRecoveryEmailToNonExistentUserTest() {
         String email = "foo";
         when(userRepo.findByEmail(email)).thenReturn(Optional.empty());
         Assertions
@@ -57,7 +54,7 @@ public class PasswordRecoveryServiceImplTest {
     }
 
     @Test
-    public void sendPasswordRecoveryEmailToUserWithExistentRestorePasswordEmailTest() {
+    void sendPasswordRecoveryEmailToUserWithExistentRestorePasswordEmailTest() {
         String email = "foo";
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(
             User.builder().restorePasswordEmail(new RestorePasswordEmail()).build()
@@ -67,7 +64,7 @@ public class PasswordRecoveryServiceImplTest {
     }
 
     @Test
-    public void sendPasswordRecoveryEmailToSimpleTest() {
+    void sendPasswordRecoveryEmailToSimpleTest() {
         String email = "foo";
         User user = new User();
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
@@ -94,7 +91,7 @@ public class PasswordRecoveryServiceImplTest {
     }
 
     @Test
-    public void updatePasswordUsingTokenWithNonExistentTokenTest() {
+    void updatePasswordUsingTokenWithNonExistentTokenTest() {
         String token = "foo";
         String newPassword = "bar";
         when(restorePasswordEmailRepo.findByToken(token)).thenReturn(Optional.empty());
@@ -104,7 +101,7 @@ public class PasswordRecoveryServiceImplTest {
     }
 
     @Test
-    public void updatePasswordUsingTokenWithExpiredTokenTest() {
+    void updatePasswordUsingTokenWithExpiredTokenTest() {
         String token = "foo";
         String newPassword = "bar";
         when(restorePasswordEmailRepo.findByToken(token)).thenReturn(Optional.of(
@@ -119,7 +116,7 @@ public class PasswordRecoveryServiceImplTest {
     }
 
     @Test
-    public void updatePasswordUsingTokenSimpleTest() {
+    void updatePasswordUsingTokenSimpleTest() {
         String token = "foo";
         String newPassword = "bar";
         User user = User.builder().id(1L).email("foo@bar.com").build();

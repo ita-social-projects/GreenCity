@@ -12,12 +12,12 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class HabitStatisticMapperTest {
+class HabitStatisticMapperTest {
     @InjectMocks
     private HabitStatisticMapper habitStatisticMapper;
 
     @Test
-    public void convertTest() {
+    void convertTest() {
         AddHabitStatisticDto addHabitStatisticDto = ModelUtils.addHabitStatisticDto();
 
         HabitStatistic expected = new HabitStatistic(addHabitStatisticDto.getId(),
