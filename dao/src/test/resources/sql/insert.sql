@@ -112,16 +112,17 @@ VALUES ('ua'),
        ('en'),
        ('ru');
 
--- TODO: Update insert.sql after Habits structure got refactored -- --
-INSERT INTO habit_dictionary (image)
+INSERT INTO habits (image)
 VALUES ('image1'),
        ('image2'),
        ('image3'),
        ('image4'),
-       ('image5');
+       ('image6'),
+	   ('image7'),
+	   ('image8');
 -- HABIT END --
 
-INSERT INTO advices (habit_dictionary_id)
+INSERT INTO advices (habit_id)
 VALUES (1),
        (1),
        (2),
@@ -401,8 +402,7 @@ VALUES ('Вибирайте екотранспорт', 1, 1),
        ('Buy only loose tea', 10, 2),
        ('Покупайте только рассыпной чай', 10, 3);
 
--- TODO: Update insert.sql after Habits structure got refactored --
-INSERT INTO habit_facts (habit_dictionary_id)
+INSERT INTO habit_facts (habit_id)
 VALUES (1),
        (2),
        (2),
@@ -412,26 +412,23 @@ VALUES (1),
        (1),
        (1);
 
-INSERT INTO fact_translations (language_id, habit_fact_id, content, fact_of_day_status)
+INSERT INTO habit_fact_translations (language_id, habit_fact_id, content, fact_of_day_status)
 VALUES (1, 1, 'testFactTranslationsContent', 2);
 
-INSERT INTO habit_dictionary_translation (name, description, habit_item, language_id, habit_dictionary_id)
-VALUES ('testHabitDictionaryTranslationName', 'testHabitDictionaryTranslationDescription', 'testHabitItem', 1, 1);
+INSERT INTO habit_translation (name, description, habit_item, language_id, habit_id)
+VALUES ('testHabitTranslationName', 'testHabitDictionaryTranslationDescription', 'testHabitItem', 1, 1);
 
-INSERT INTO habits (habit_dictionary_id, status, create_date)
-VALUES (1, true, '2020-09-10 20:00:00');
+INSERT INTO habit_assign (habit_id, user_id, acquired, create_date, suspended)
+VALUES (1, 1, false, '2020-09-10 20:00:00', false);
 
-INSERT INTO habit_statistics (rate, date, amount_of_items, habit_id)
+INSERT INTO habit_statistics (rate, create_date, amount_of_items, habit_assign_id)
 VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);
 
-INSERT INTO habit_status (working_days, habit_streak, suspended, habit_id, last_enrollment, user_id, create_date)
-VALUES (5, 4, false, 1, '2020-09-10 20:00:00.823000', 1, '2020-09-10 20:00:00.823000');
+INSERT INTO habit_status (working_days, habit_streak, habit_assign_id, last_enrollment)
+VALUES (5, 4, 1, '2020-09-10 20:00:00.823000');
 
 INSERT INTO habit_status_calendar (enroll_date, habit_status_id)
 VALUES ('2020-09-10', 1);
-
-INSERT INTO habits_users_assign (habit_id, users_id)
-VALUES (1, 1);
 -- HABITS END --
 
 INSERT INTO news_subscribers (email_address, unsubscribe_token)
