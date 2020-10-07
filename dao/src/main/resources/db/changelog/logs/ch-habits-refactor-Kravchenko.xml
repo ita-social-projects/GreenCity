@@ -68,44 +68,42 @@
         <dropColumn tableName="habits" columnName="status"/>
         <dropColumn tableName="habits" columnName="create_date"/>
 
-        <addColumn tableName="habits_users_assign">
-            <column name="status" type="boolean" defaultValueBoolean="true">
+
+        <dropTable tableName="habits_users_assign"/>
+
+        <createTable tableName="habit_assign">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="acquired" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
 
             <column name="create_date" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-        </addColumn>
+
+            <column name="suspended" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="bigint" autoIncrement="false"/>
+            <column name="habit_id" type="bigint" autoIncrement="false"/>
+        </createTable>
+
+
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habit_assign"
+                                 constraintName="fk_user_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_assign"
+                                 constraintName="fk_habit_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
     </changeSet>
 
     <changeSet id="7" author="Kravchenko">
-        <addColumn tableName="habits_users_assign">
-            <column name="id" type="bigint" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
-
-    <changeSet id="8" author="Kravchenko">
-        <renameColumn tableName="habits_users_assign" oldColumnName="users_id" newColumnName="user_id"/>
-    </changeSet>
-
-    <changeSet id="10" author="Kravchenko">
-        <dropForeignKeyConstraint baseTableName="habits_users_assign" constraintName="fk_habits_users_assign_users"/>
-    </changeSet>
-
-    <changeSet id="11" author="Kravchenko">
-        <renameTable oldTableName="habits_users_assign" newTableName="habits_users_acquired"/>
-    </changeSet>
-
-    <changeSet id="12" author="Kravchenko">
-        <renameTable oldTableName="habits_users_acquired" newTableName="habit_assign"/>
-    </changeSet>
-
-    <changeSet id="13" author="Kravchenko">
-        <renameColumn tableName="habit_assign" oldColumnName="status" newColumnName="acquired"/>
-
         <dropForeignKeyConstraint baseTableName="habit_status" constraintName="fk_habit_status_habits"/>
         <dropForeignKeyConstraint baseTableName="habit_status" constraintName="fk_user_id"/>
 
@@ -121,7 +119,7 @@
                                  referencedTableName="habit_assign"/>
     </changeSet>
 
-    <changeSet id="14" author="Kravchenko">
+    <changeSet id="8" author="Kravchenko">
         <dropForeignKeyConstraint baseTableName="habit_statistics" constraintName="FK_habit_habit_statistics"/>
 
         <renameColumn tableName="habit_statistics" oldColumnName="habit_id"
@@ -133,26 +131,13 @@
                                  referencedTableName="habit_assign"/>
     </changeSet>
 
-    <changeSet id="15" author="Kravchenko">
+    <changeSet id="9" author="Kravchenko">
         <dropColumn tableName="habit_status" columnName="suspended"/>
-
-        <addColumn tableName="habit_assign">
-            <column name="suspended" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-
         <renameColumn tableName="habit_statistics" oldColumnName="date" newColumnName="create_date"/>
     </changeSet>
 
-    <changeSet id="16" author="Kravchenko">
+    <changeSet id="10" author="Kravchenko">
         <renameTable oldTableName="fact_translations" newTableName="habit_fact_translations"/>
     </changeSet>
 
-    <changeSet id="17" author="Kravchenko">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habit_assign"
-                                 constraintName="fk_user_id" deferrable="false" initiallyDeferred="false"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="users"/>
-    </changeSet>
 </databaseChangeLog>
