@@ -28,7 +28,7 @@ public class GraphController {
     @GetMapping("/displayGraph")
     public String displayGraph(Model model) {
         Map<String, Integer> usersByCities = graphService.getGeneralStatisticsForAllUsersByCities();
-        Map<Integer, Integer> generalRegistrationStatistics = graphService.getRegistrationStatistics();
+        Map<Integer, Long> generalRegistrationStatistics = graphService.getRegistrationStatistics();
         model.addAttribute("months", months);
         model.addAttribute("usersByCities", usersByCities);
         model.addAttribute("generalRegistrationStatistics", generalRegistrationStatistics);

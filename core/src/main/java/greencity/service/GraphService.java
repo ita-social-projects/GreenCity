@@ -17,5 +17,5 @@ public interface GraphService {
      *
      * @return {@link Map} with data for statistics.
      */
-    Map<Integer, Integer> getRegistrationStatistics();
+    Map<Integer, Long> getRegistrationStatistics();
 }
