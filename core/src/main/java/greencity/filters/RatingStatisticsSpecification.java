@@ -126,24 +126,8 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
 
     private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
                                            SearchCriteria searchCriteria) {
-        List<User> users = userRepo.findAll();
-
-        Set<String> userEmails = users.stream()
-            .map(User::getEmail)
-            .filter(email -> email.toLowerCase().contains(((String) searchCriteria.getValue()).toLowerCase()))
-            .collect(Collectors.toSet());
-
-        Set<User> userSet = userEmails.stream()
-            .map(email -> userRepo.findByEmail(email).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + searchCriteria.getValue())))
-            .collect(Collectors.toSet());
-
-        Predicate predicate = criteriaBuilder.disjunction();
-        for (User user : userSet) {
-            predicate =
-                criteriaBuilder.or(predicate, criteriaBuilder.equal(root.get(searchCriteria.getKey()), user));
-        }
-        return predicate;
+        return criteriaBuilder.like(root.get(searchCriteria.getKey()).get("email"),
+            "%" + searchCriteria.getValue() + "%");
     }
 
     private Predicate getDataRangePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
