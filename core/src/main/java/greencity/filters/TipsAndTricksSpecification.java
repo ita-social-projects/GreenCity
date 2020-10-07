@@ -18,6 +18,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+/**
+ * Scope {@code prototype} is used for creation
+ * new bean {@link TipsAndTricksSpecification} every time after new request.
+ */
 @Component
 @Scope("prototype")
 @Slf4j

@@ -9,8 +9,6 @@ import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
-import greencity.filters.SearchCriteria;
-import greencity.filters.TipsAndTricksSpecification;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -145,20 +143,5 @@ public interface TipsAndTricksService {
      * @return a dto of {@link PageableDto}.
      */
     PageableDto<TipsAndTricksDtoResponse> getFilteredDataForManagementByPage(
-        Pageable pageable, TipsAndTricksSpecification spec);
-
-    /**
-     * * This method used for build {@link SearchCriteria} depends on {@link TipsAndTricksViewDto}.
-     *
-     * @param tipsAndTricksViewDto used for receive parameters for filters from UI.
-     * @return {@link SearchCriteria}.
-     */
-    List<SearchCriteria> buildSearchCriteria(TipsAndTricksViewDto tipsAndTricksViewDto);
-
-    /**
-     * Returns {@link TipsAndTricksSpecification} for entered filter parameters.
-     *
-     * @param tipsAndTricksViewDto contains data from filters
-     */
-    TipsAndTricksSpecification getSpecification(TipsAndTricksViewDto tipsAndTricksViewDto);
+        Pageable pageable, TipsAndTricksViewDto tipsAndTricksViewDto);
 }

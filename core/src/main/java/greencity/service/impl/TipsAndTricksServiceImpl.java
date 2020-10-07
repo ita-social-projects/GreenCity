@@ -269,17 +269,20 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<TipsAndTricksDtoResponse> getFilteredDataForManagementByPage(Pageable pageable,
-                                                                                    TipsAndTricksSpecification spec) {
-        Page<TipsAndTricks> pages = tipsAndTricksRepo.findAll(spec, pageable);
+    public PageableDto<TipsAndTricksDtoResponse> getFilteredDataForManagementByPage(
+        Pageable pageable,
+        TipsAndTricksViewDto tipsAndTricksViewDto) {
+        Page<TipsAndTricks> pages = tipsAndTricksRepo.findAll(getSpecification(tipsAndTricksViewDto), pageable);
         return getPagesWithTipsAndTricksResponseDto(pages);
     }
 
     /**
-     * {@inheritDoc}
+     * * This method used for build {@link SearchCriteria} depends on {@link TipsAndTricksViewDto}.
+     *
+     * @param tipsAndTricksViewDto used for receive parameters for filters from UI.
+     * @return {@link SearchCriteria}.
      */
-    @Override
-    public List<SearchCriteria> buildSearchCriteria(TipsAndTricksViewDto tipsAndTricksViewDto) {
+    private List<SearchCriteria> buildSearchCriteria(TipsAndTricksViewDto tipsAndTricksViewDto) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
         SearchCriteria searchCriteria;
         if (!tipsAndTricksViewDto.getId().isEmpty()) {
@@ -318,10 +321,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     }
 
     /**
-     * {@inheritDoc}
+     * Returns {@link TipsAndTricksSpecification} for entered filter parameters.
+     *
+     * @param tipsAndTricksViewDto contains data from filters
      */
-    @Override
-    public TipsAndTricksSpecification getSpecification(TipsAndTricksViewDto tipsAndTricksViewDto) {
+    private TipsAndTricksSpecification getSpecification(TipsAndTricksViewDto tipsAndTricksViewDto) {
         return beanFactory.getBean(TipsAndTricksSpecification.class, buildSearchCriteria(tipsAndTricksViewDto));
     }
 }

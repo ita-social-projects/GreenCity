@@ -173,8 +173,9 @@ public class ManagementTipsAndTricksController {
                              @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
                              TipsAndTricksViewDto tipsAndTricksViewDto) {
         PageableDto<TipsAndTricksDtoResponse> pageableDto =
-            tipsAndTricksService.getFilteredDataForManagementByPage(pageable,
-                tipsAndTricksService.getSpecification(tipsAndTricksViewDto));
+            tipsAndTricksService.getFilteredDataForManagementByPage(
+                pageable,
+                tipsAndTricksViewDto);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("fields", tipsAndTricksViewDto);
         return "core/management_tips_and_tricks";
