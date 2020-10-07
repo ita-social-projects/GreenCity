@@ -5,6 +5,7 @@ import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
@@ -135,4 +136,12 @@ public interface TipsAndTricksService {
      * @author Dovganyuk Taras
      */
     void unlikeComment(User user, TipsAndTricksComment comment);
+
+    /**
+     * Method for finding {@link TipsAndTricksDtoResponse} by specification.
+     *
+     * @return a dto of {@link PageableDto}.
+     */
+    PageableDto<TipsAndTricksDtoResponse> getFilteredDataForManagementByPage(
+        Pageable pageable, TipsAndTricksViewDto tipsAndTricksViewDto);
 }

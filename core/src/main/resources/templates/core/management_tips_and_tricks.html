@@ -70,6 +70,48 @@
                         <th>Actions</th>
                     </tr>
                     </thead>
+                    <form method="POST" action="/management/tipsandtricks" id="searchForm" onsubmit="applyFilters()">
+
+                        <tr>
+                            <td>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="id" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.id }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="title" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.title }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="author" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.author }"/>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="input-group input-daterange">
+                                    <input type="search" name="startDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.startDate }"/>
+                                    <div class="input-group-addon">to</div>
+                                    <input type="search" name="endDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.endDate }"/>
+                                    <button type="submit" id="searchByDates"><i class="fa fa-search"></i></button>
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </form>
                     <th:block th:each="tipsAndTricks, iterStatus :${pageable.getPage()}">
                         <tbody>
                         <tr>
@@ -266,5 +308,27 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
+<!-- Include Date Range Picker -->
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+<script>
+    $('.input-daterange input').each(function () {
+        $(this).datepicker({
+            format: 'yyyy-mm-dd',
+            todayHighlight: true,
+            autoclose: true,
+            orientation: 'top'
+        });
+    });
+
+    function applyFilters() {
+        document.getElementById("searchForm").action = "/management/tipsandtricks";
+        document.getElementById("searchForm").submit();
+    }
+
+</script>
 </body>
 </html>
