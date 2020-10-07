@@ -47,7 +47,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      */
     @Query(nativeQuery = true, value = "SELECT * FROM habit_fact_translations where habit_fact_id in "
         + "(select habit_fact_id from habit_fact_translations where fact_of_day_status = 0 order by RANDOM() LIMIT 1)")
-    Optional<List<HabitFactTranslation>> findRandomHabitFact();
+    List<HabitFactTranslation> findRandomHabitFact();
 
     /**
      * Method to get list of {@link HabitFactTranslation} specified by status and {@link Language}.
@@ -57,7 +57,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @param languageId      of {@link Language}.
      * @return list of {@link HabitFactTranslation} that satisfy the conditions.
      */
-    Optional<List<HabitFactTranslation>> findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus factOfDayStatus,
+    List<HabitFactTranslation> findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus factOfDayStatus,
                                                                                Long languageId);
 
     /**

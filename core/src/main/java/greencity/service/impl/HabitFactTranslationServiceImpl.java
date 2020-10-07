@@ -1,14 +1,12 @@
 package greencity.service.impl;
 
 import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
-import greencity.constant.ErrorMessage;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
 import static greencity.entity.enums.FactOfDayStatus.CURRENT;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.service.HabitFactService;
 import greencity.service.HabitFactTranslationService;
@@ -74,8 +72,7 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
     @Override
     public LanguageTranslationDTO getHabitFactOfTheDay(Long languageId) {
         return modelMapper.map(
-            habitFactTranslationRepo.findAllByFactOfDayStatusAndLanguageId(CURRENT, languageId).orElseThrow(()
-                -> new NotFoundException(ErrorMessage.FACT_OF_DAY_NOT_FOUND_BY_LANGUAGE_ID + languageId)).get(0),
+            habitFactTranslationRepo.findAllByFactOfDayStatusAndLanguageId(CURRENT, languageId),
             LanguageTranslationDTO.class);
     }
 }

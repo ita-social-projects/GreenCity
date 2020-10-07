@@ -4,8 +4,8 @@ import greencity.constant.ValidationConstants;
 import greencity.dto.habit.HabitDto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class AdviceDto {
     private Long id;
 
     @NotBlank
-    @Length(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH)
+    @Size(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH)
     private String content;
 
     private HabitDto habit;

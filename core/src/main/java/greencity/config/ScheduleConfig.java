@@ -102,15 +102,15 @@ public class ScheduleConfig {
     @Transactional
     @Scheduled(cron = "0 0 0 * * ?")
     public void chooseNewHabitFactOfDay() {
-        Optional<List<HabitFactTranslation>> list = habitFactTranslationRepo.findRandomHabitFact();
-        if (list.isPresent()) {
+        List<HabitFactTranslation> list = habitFactTranslationRepo.findRandomHabitFact();
+        if (!list.isEmpty()) {
             habitFactTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
         } else {
             habitFactTranslationRepo.updateFactOfDayStatus(USED, POTENTIAL);
             habitFactTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
             list = habitFactTranslationRepo.findRandomHabitFact();
         }
-        habitFactTranslationRepo.updateFactOfDayStatusByHabitFactId(CURRENT, list.get().get(0).getHabitFact().getId());
+        habitFactTranslationRepo.updateFactOfDayStatusByHabitFactId(CURRENT, list.get(0).getHabitFact().getId());
     }
 
     /**

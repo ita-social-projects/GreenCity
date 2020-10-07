@@ -92,7 +92,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "FROM HabitAssign ha "
         + "WHERE ha.suspended = false "
         + "AND ha.user.id = :userId "
-        + "AND ha.createDate > :start OR ha.createDate < :end")
+        + "AND ha.createDate > :start AND ha.createDate < :end")
     int countMarkedHabitAssignsByUserIdAndPeriod(@Param("userId") Long userId,
                                                  @Param("start") ZonedDateTime start,
                                                  @Param("end") ZonedDateTime end);
@@ -123,11 +123,10 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     /**
      * Method to delete {@link HabitAssign} by it's id.
      *
+     *
      * @param id {@link HabitAssign} id.
      */
-    @Modifying
-    @Query("DELETE FROM HabitAssign ha WHERE ha.id = :id")
-    void deleteById(@Param("id") Long id);
+    void deleteById(Long id);
 
     /**
      * Method to delete {@link HabitAssign} by {@link User} and {@link Habit} id's
