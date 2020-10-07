@@ -162,8 +162,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         String propName = ex.getName();
         String className = null;
-        if (ex.getRequiredType() != null) {
-            className = ex.getRequiredType().getSimpleName();
+        Class<?> requiredType = ex.getRequiredType();
+        if (requiredType != null) {
+            className = requiredType.getSimpleName();
         }
         String message = String.format("Wrong %s. Should be '%s'", propName, className);
         exceptionResponse.setMessage(message);
