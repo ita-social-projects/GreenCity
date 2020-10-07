@@ -19,12 +19,16 @@ import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 import greencity.service.CustomGoalService;
 import greencity.service.HabitAssignService;
-import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -38,19 +42,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
-
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
 @Validated
 public class UserController {
     private final UserService userService;
-    private final HabitStatisticService habitStatisticService;
     private final CustomGoalService customGoalService;
     private final HabitAssignService habitAssignService;
 
@@ -432,7 +429,7 @@ public class UserController {
     /**
      * Method returns list of available (not assigned) habit translations for user.
      *
-     * @param user {@link User} instance.
+     * @param userId {@link User} id.
      * @param locale {@link Locale} instance.
      *
      * @return {@link ResponseEntity}.
@@ -447,17 +444,17 @@ public class UserController {
     @GetMapping("/{userId}/habit/available")
     @ApiLocale
     public ResponseEntity<List<HabitTranslationDto>> getAvailableHabitTranslations(
-        @ApiIgnore @CurrentUser User user,
+        @PathVariable @CurrentUserId Long userId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableHabitTranslations(user.getId(), locale.getLanguage()));
+            .body(userService.getAvailableHabitTranslations(userId, locale.getLanguage()));
     }
 
     /**
      * Method for finding all active {@link User} habit assigns.
      *
-     * @param user {@link User} instance.
+     * @param userId {@link User} instance.
      * @return list of {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get all active habit assigns for current user.")
@@ -468,9 +465,9 @@ public class UserController {
     })
     @GetMapping("/{userId}/habit/assign/active")
     public ResponseEntity<List<HabitAssignDto>> getUserHabitAssigns(
-        @ApiIgnore @CurrentUser User user) {
+        @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitAssignService.getAllActiveHabitAssignsByUserId(user.getId()));
+            .body(habitAssignService.getAllActiveHabitAssignsByUserId(userId));
     }
 
     /**
