@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
@@ -12,6 +13,23 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
+@SqlResultSetMapping(
+    name = "monthsStatisticsMapping",
+    classes = {
+        @ConstructorResult(
+            targetClass = RegistrationStatisticsDtoResponse.class,
+            columns = {
+                @ColumnResult(name = "month", type = Integer.class),
+                @ColumnResult(name = "count", type = Long.class)
+            }
+        )
+    }
+)
+@NamedNativeQuery(name = "User.findAllRegistrationMonths",
+    query = "SELECT EXTRACT(MONTH FROM date_of_registration) - 1 as month, count(date_of_registration) FROM users "
+        + "WHERE EXTRACT(YEAR from date_of_registration) = EXTRACT(YEAR FROM CURRENT_DATE) "
+        + "GROUP BY month",
+    resultSetMapping = "monthsStatisticsMapping")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

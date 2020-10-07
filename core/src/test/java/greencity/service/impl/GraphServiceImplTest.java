@@ -2,14 +2,14 @@ package greencity.service.impl;
 
 import greencity.repository.UserRepo;
 import java.util.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class GraphServiceImplTest {
@@ -29,16 +29,13 @@ class GraphServiceImplTest {
 
     @Test
     void getRegistrationStatistics() {
-        List<Integer> months = List.of(4, 4, 4);
-        when(userRepo.findAllRegistrationMonths()).thenReturn(months);
-        Map<Integer, Integer> map = new LinkedHashMap<>(11);
+        Map<Integer, Long> months = new LinkedHashMap<>(11);
+        months.put(4, 3L);
+        when(userRepo.findAllRegistrationMonthsMap()).thenReturn(months);
+
         for (int i = 0; i < 12; i++) {
-            if (i == 4) {
-                map.put(i, 3);
-            } else {
-                map.put(i, 0);
-            }
+            months.putIfAbsent(i, 0L);
         }
-        assertEquals(map, graphService.getRegistrationStatistics());
+        assertEquals(months, graphService.getRegistrationStatistics());
     }
 }
