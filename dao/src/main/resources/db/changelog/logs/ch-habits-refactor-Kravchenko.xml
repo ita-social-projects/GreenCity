@@ -94,11 +94,11 @@
 
 
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habit_assign"
-                                 constraintName="fk_user_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_assign_users_user_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="users"/>
         <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_assign"
-                                 constraintName="fk_habit_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_assign_habits_habit_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habits"/>
     </changeSet>
@@ -114,7 +114,7 @@
                       newColumnName="habit_assign_id"/>
 
         <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_status"
-                                 constraintName="fk_habit_assign_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_status_habit_assign_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habit_assign"/>
     </changeSet>
@@ -126,7 +126,7 @@
                       newColumnName="habit_assign_id"/>
 
         <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_statistics"
-                                 constraintName="fk_habit_assign_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_statistics_habit_assign_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habit_assign"/>
     </changeSet>
