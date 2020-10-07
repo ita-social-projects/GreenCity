@@ -21,7 +21,7 @@ public interface HabitStatisticService {
     /**
      * Method for updating {@link HabitStatistic} in database.
      *
-     * @param dto - dto with {@link HabitStatistic} id, rate and amount of items.
+     * @param dto - dto with {@link HabitStatistic} rate and amount of items.
      * @return {@link UpdateHabitStatisticDto} instance.
      */
     UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto);

@@ -100,7 +100,7 @@ public interface HabitStatusService {
     /**
      * Method for updating {@link HabitStatus} in database.
      *
-     * @param dto - dto with {@link HabitStatus} id, rate and amount of items.
+     * @param dto - dto with {@link HabitStatus} working days, habitStreak, enrollment date.
      * @return {@link UpdateHabitStatusDto} instance.
      */
     HabitStatusDto update(Long habitAssignId, UpdateHabitStatusDto dto);

@@ -2,9 +2,11 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignStatDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
+import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
@@ -186,5 +188,20 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public Long getAmountOfAcquiredHabitsByUserId(Long id) {
         return habitAssignRepo.getAmountOfAcquiredHabitsByUserId(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public HabitAssignDto updateStatus(Long habitAssignId, HabitAssignStatDto dto) {
+        HabitAssign updatable = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_ASSIGN_NOT_UPDATED_BY_ID));
+
+        updatable.setAcquired(dto.getAcquired());
+        updatable.setSuspended(dto.getSuspended());
+
+        return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignDto.class);
     }
 }

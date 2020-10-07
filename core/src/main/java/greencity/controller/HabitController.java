@@ -6,6 +6,8 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -57,6 +59,25 @@ public class HabitController {
                                          @ApiIgnore @CurrentUser User user) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignHabitForUser(habitId, user));
+    }
+
+    /**
+     * Method to update {@link greencity.entity.HabitAssign} for it's id.
+     *
+     * @param habitAssignId - id of {@link greencity.entity.HabitAssign}.
+     * @return {@link greencity.dto.habit.HabitAssignDto}.
+     */
+    @ApiOperation(value = "Update habit assign.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping("assign/{habitAssignId}")
+    public ResponseEntity<HabitAssignDto> updateAssign(
+        @PathVariable Long habitAssignId, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService
+            .updateStatus(habitAssignId, habitAssignStatDto));
     }
 
     /**
@@ -114,7 +135,7 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("/statistic/{habitStatisticId}")
-    public ResponseEntity<UpdateHabitStatisticDto> update(
+    public ResponseEntity<UpdateHabitStatisticDto> updateStatistic(
         @PathVariable Long habitStatisticId, @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService
             .update(habitStatisticId, habitStatisticForUpdateDto));
@@ -142,7 +163,7 @@ public class HabitController {
      * @param locale - Name of habit item localization language(e.x. "en" or "uk").
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those key-value pairs.
      */
-    @ApiOperation(value = "Get today's statistic for all habit items")
+    @ApiOperation(value = "Get today's statistic for all habit items.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),

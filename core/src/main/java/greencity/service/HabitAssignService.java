@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignStatDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
@@ -114,4 +115,12 @@ public interface HabitAssignService {
      * @return amount of acquired habits by user id.
      */
     Long getAmountOfAcquiredHabitsByUserId(Long id);
+
+    /**
+     * Method for updating {@link HabitAssign} in database.
+     *
+     * @param dto - dto with {@link HabitAssign} suspended and acquired status.
+     * @return {@link HabitAssignDto} instance.
+     */
+    HabitAssignDto updateStatus(Long habitAssignId, HabitAssignStatDto dto);
 }
