@@ -22,8 +22,6 @@ public class HabitStatusDto {
     @NotEmpty
     private Integer habitStreak;
     @NotEmpty
-    private boolean suspended;
-    @NotEmpty
     private LocalDateTime lastEnrollmentDate;
     @NotEmpty
     private HabitAssignDto habitAssign;

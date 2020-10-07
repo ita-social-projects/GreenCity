@@ -2,6 +2,8 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
+import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.HabitAssign;
 import java.util.stream.Collectors;
@@ -38,6 +40,19 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
                         .name(habitTranslation.getName())
                         .build()).collect(Collectors.toList()))
                 .build())
+            .habitStatus(HabitStatusDto.builder()
+                .id(habitAssign.getHabitStatus().getId())
+                .habitStreak(habitAssign.getHabitStatus().getHabitStreak())
+                .lastEnrollmentDate(habitAssign.getHabitStatus().getLastEnrollmentDate())
+                .workingDays(habitAssign.getHabitStatus().getWorkingDays())
+                .build())
+            .habitStatistic(habitAssign.getHabitStatistic()
+                .stream().map(habitStatistic -> HabitStatisticDto.builder()
+                        .id(habitStatistic.getId())
+                        .createDate(habitStatistic.getCreateDate())
+                        .amountOfItems(habitStatistic.getAmountOfItems())
+                        .habitRate(habitStatistic.getHabitRate())
+                    .build()).collect(Collectors.toList()))
             .build();
     }
 }

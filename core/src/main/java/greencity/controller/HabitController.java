@@ -14,6 +14,7 @@ import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
 import greencity.entity.User;
 import greencity.service.HabitAssignService;
@@ -62,12 +63,30 @@ public class HabitController {
     }
 
     /**
-     * Method to update {@link greencity.entity.HabitAssign} for it's id.
+     * Method return {@link HabitAssign} by it's id.
      *
-     * @param habitAssignId - id of {@link greencity.entity.HabitAssign}.
-     * @return {@link greencity.dto.habit.HabitAssignDto}.
+     * @param habitAssignId - id of {@link HabitAssign}
+     * @return {@link HabitAssignDto}
      */
-    @ApiOperation(value = "Update habit assign.")
+    @ApiOperation(value = "Get habit assign.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/assign/{habitAssignId}")
+    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long habitAssignId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.getById(habitAssignId));
+    }
+
+    /**
+     * Method to update {@link HabitAssign} for it's id.
+     *
+     * @param habitAssignId - id of {@link HabitAssign}.
+     * @return {@link HabitAssignDto}.
+     */
+    @ApiOperation(value = "Update habit assign acquired or suspended status.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
