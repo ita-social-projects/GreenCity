@@ -4,10 +4,10 @@ import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
 import greencity.entity.TipsAndTricks;
 import greencity.service.TipsAndTricksService;
 import io.swagger.annotations.ApiOperation;
@@ -18,14 +18,26 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
 @AllArgsConstructor
@@ -148,5 +160,23 @@ public class ManagementTipsAndTricksController {
             tipsAndTricksService.save(tipsAndTricksDtoRequest, file, principal.getName());
         }
         return buildGenericResponseDto(bindingResult);
+    }
+
+    /**
+     * Returns  management page with User rating statistics with filtered data.
+     *
+     * @param model                ModelAndView that will be configured and returned to user.
+     * @param tipsAndTricksViewDto used for receive parameters for filters from UI.
+     */
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String filterData(Model model,
+                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+                             TipsAndTricksViewDto tipsAndTricksViewDto) {
+        PageableDto<TipsAndTricksDtoResponse> pageableDto =
+            tipsAndTricksService.getFilteredDataForManagementByPage(pageable,
+                tipsAndTricksService.getSpecification(tipsAndTricksViewDto));
+        model.addAttribute("pageable", pageableDto);
+        model.addAttribute("fields", tipsAndTricksViewDto);
+        return "core/management_tips_and_tricks";
     }
 }

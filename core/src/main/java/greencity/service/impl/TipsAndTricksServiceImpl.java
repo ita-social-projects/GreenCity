@@ -9,20 +9,25 @@ import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.filters.SearchCriteria;
+import greencity.filters.TipsAndTricksSpecification;
 import greencity.repository.TipsAndTricksRepo;
 import greencity.service.FileService;
 import greencity.service.TagsService;
 import greencity.service.TipsAndTricksService;
 import greencity.service.UserService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -46,6 +51,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private final TagsService tagService;
 
     private final FileService fileService;
+
+    private final BeanFactory beanFactory;
 
     /**
      * {@inheritDoc}
@@ -219,15 +226,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     public PageableDto<TipsAndTricksDtoResponse> searchBy(Pageable pageable, String searchQuery) {
         Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(pageable, searchQuery);
-        List<TipsAndTricksDtoResponse> tipsAndTricksDtoResponses = page.stream()
-            .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class))
-            .collect(Collectors.toList());
-        return new PageableDto<>(
-            tipsAndTricksDtoResponses,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages()
-        );
+        return getPagesWithTipsAndTricksResponseDto(page);
     }
 
     /**
@@ -264,5 +263,65 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
     public void unlikeComment(User user, TipsAndTricksComment comment) {
         comment.getUsersLiked().remove(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<TipsAndTricksDtoResponse> getFilteredDataForManagementByPage(Pageable pageable,
+                                                                                    TipsAndTricksSpecification spec) {
+        Page<TipsAndTricks> pages = tipsAndTricksRepo.findAll(spec, pageable);
+        return getPagesWithTipsAndTricksResponseDto(pages);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SearchCriteria> buildSearchCriteria(TipsAndTricksViewDto tipsAndTricksViewDto) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        SearchCriteria searchCriteria;
+        if (!tipsAndTricksViewDto.getId().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                .key("id")
+                .type("id")
+                .value(tipsAndTricksViewDto.getId())
+                .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!tipsAndTricksViewDto.getTitle().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                .key("title")
+                .type("title")
+                .value(tipsAndTricksViewDto.getTitle())
+                .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!tipsAndTricksViewDto.getAuthor().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                .key("author")
+                .type("author")
+                .value(tipsAndTricksViewDto.getAuthor())
+                .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!tipsAndTricksViewDto.getStartDate().isEmpty() && !tipsAndTricksViewDto.getEndDate().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                .key("creationDate")
+                .type("dateRange")
+                .value(new String[] {tipsAndTricksViewDto.getStartDate(), tipsAndTricksViewDto.getEndDate()})
+                .build();
+            criteriaList.add(searchCriteria);
+        }
+        return criteriaList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TipsAndTricksSpecification getSpecification(TipsAndTricksViewDto tipsAndTricksViewDto) {
+        return beanFactory.getBean(TipsAndTricksSpecification.class, buildSearchCriteria(tipsAndTricksViewDto));
     }
 }
