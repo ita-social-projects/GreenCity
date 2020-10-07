@@ -7,15 +7,11 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.genericresponse.GenericResponseDto;
-import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,6 +22,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
+
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
 @RequiredArgsConstructor
@@ -43,9 +45,8 @@ public class ManagementEcoNewsController {
     @GetMapping
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
                                 @ApiIgnore Pageable pageable) {
-        PageableDto<EcoNewsDto> allEcoNews =
-            query == null || query.isEmpty() ? ecoNewsService.findAll(pageable)
-                : ecoNewsService.searchEcoNewsBy(pageable, query);
+        PageableDto<EcoNewsDto> allEcoNews = query == null || query.isEmpty()
+                ? ecoNewsService.findAll(pageable) : ecoNewsService.searchEcoNewsBy(pageable, query);
         model.addAttribute("pageable", allEcoNews);
         return "core/management_eco_news";
     }

@@ -45,9 +45,8 @@ public class ManagementSocialNetworkImagesController {
     @GetMapping
     public String getAllSocialNetworkImages(@RequestParam(required = false, name = "query") String query, Model model,
                                             @ApiIgnore Pageable pageable) {
-        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages =
-                query == null || query.isEmpty() ? socialNetworkImageService.findAll(pageable)
-                        : socialNetworkImageService.searchBy(pageable, query);
+        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages = query == null || query.isEmpty()
+                ? socialNetworkImageService.findAll(pageable) : socialNetworkImageService.searchBy(pageable, query);
         model.addAttribute("pageable", socialNetworkImages);
         return "core/management_social_network_images";
     }
