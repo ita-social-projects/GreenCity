@@ -1,5 +1,7 @@
 package greencity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.comment.AddCommentDto;
@@ -495,5 +497,9 @@ public class ModelUtils {
     public static FactOfTheDayPostDTO getFactOfTheDayPostDto(){
         return new FactOfTheDayPostDTO(1L,"name",
             Collections.singletonList(new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)));
+    }
+
+    public static ObjectMapper getObjectMapper() {
+        return new ObjectMapper();
     }
 }
