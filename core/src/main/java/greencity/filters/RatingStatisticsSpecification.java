@@ -6,13 +6,8 @@ import greencity.entity.RatingStatistics;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -22,14 +17,13 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
 @Slf4j
 @NoArgsConstructor
-public class RatingStatisticsSpecification implements Specification<RatingStatistics> {
+public class RatingStatisticsSpecification implements MySpecification<RatingStatistics> {
     private transient List<SearchCriteria> searchCriteriaList;
     private transient UserRepo userRepo;
 
@@ -85,17 +79,6 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
         return allPredicates;
     }
 
-    private Predicate getNumericPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
-                                          SearchCriteria searchCriteria) {
-        try {
-            return criteriaBuilder
-                .equal(root.get(searchCriteria.getKey()), searchCriteria.getValue());
-        } catch (NumberFormatException ex) {
-            return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
-                criteriaBuilder.disjunction();
-        }
-    }
-
     private Predicate getEventNamePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
                                             SearchCriteria searchCriteria) {
         List<RatingCalculationEnum> enumValues = Arrays.asList(RatingCalculationEnum.values());
@@ -128,20 +111,5 @@ public class RatingStatisticsSpecification implements Specification<RatingStatis
                                            SearchCriteria searchCriteria) {
         return criteriaBuilder.like(root.get(searchCriteria.getKey()).get("email"),
             "%" + searchCriteria.getValue() + "%");
-    }
-
-    private Predicate getDataRangePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
-                                            SearchCriteria searchCriteria) {
-        try {
-            String[] dates = (String[]) searchCriteria.getValue();
-            LocalDate date1 = LocalDate.parse(dates[0]);
-            LocalDate date2 = LocalDate.parse(dates[1]);
-            ZonedDateTime zdt1 = date1.atStartOfDay(ZoneOffset.UTC);
-            ZonedDateTime zdt2 = date2.atStartOfDay(ZoneOffset.UTC);
-            return criteriaBuilder.between(root.get(searchCriteria.getKey()), zdt1, zdt2);
-        } catch (DateTimeParseException ex) {
-            return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
-                criteriaBuilder.disjunction();
-        }
     }
 }
