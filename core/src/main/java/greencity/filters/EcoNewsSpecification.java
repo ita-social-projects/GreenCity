@@ -56,7 +56,7 @@ public class EcoNewsSpecification implements Specification<EcoNews> {
                         criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
             }
             if (searchCriteria.getType().equals("title") || searchCriteria.getType().equals("text")
-                    ||searchCriteria.getType().equals("imagePath") || searchCriteria.getType().equals("source")) {
+                    || searchCriteria.getType().equals("imagePath") || searchCriteria.getType().equals("source")) {
                 allPredicates =
                         criteriaBuilder.and(allPredicates, getStringPredicate(root, criteriaBuilder, searchCriteria));
             }
@@ -65,8 +65,8 @@ public class EcoNewsSpecification implements Specification<EcoNews> {
                         criteriaBuilder.and(allPredicates, getAuthorPredicate(root, criteriaBuilder, searchCriteria));
             }
             if (searchCriteria.getType().equals("dateRange")) {
-                allPredicates =
-                        criteriaBuilder.and(allPredicates, getDataRangePredicate(root, criteriaBuilder, searchCriteria));
+                allPredicates = criteriaBuilder
+                        .and(allPredicates, getDataRangePredicate(root, criteriaBuilder, searchCriteria));
             }
             if (searchCriteria.getType().equals("tags")) {
                 allPredicates =
