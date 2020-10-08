@@ -1,15 +1,14 @@
-/*
 package greencity.service.impl;
 
 import greencity.ModelUtils;
 
-import greencity.dto.habit.HabitDto;
+import greencity.dto.habitstatistic.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionary;
 import greencity.entity.HabitDictionaryTranslation;
 import greencity.entity.User;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.repository.HabitTranslationRepo;
+import greencity.repository.HabitDictionaryTranslationRepo;
 import greencity.repository.HabitRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +39,7 @@ class HabitServiceImplTest {
     private HabitServiceImpl habitService;
 
     @Mock
-    private HabitTranslationRepo habitTranslationRepo;
+    private HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
 
     @Mock
     private ModelMapper modelMapper;
@@ -52,7 +51,7 @@ class HabitServiceImplTest {
     void getHabitDictionaryTranslation() {
         Habit habit = ModelUtils.getHabit();
         HabitDictionaryTranslation habitDictionaryTranslation = ModelUtils.getHabitDictionaryTranslation();
-        when(habitTranslationRepo.findByHabitDictionaryAndLanguageCode(any(HabitDictionary.class), anyString()))
+        when(habitDictionaryTranslationRepo.findByHabitDictionaryAndLanguageCode(any(HabitDictionary.class), anyString()))
                 .thenReturn(Optional.of(habitDictionaryTranslation));
         assertEquals(habitDictionaryTranslation, habitService.getHabitDictionaryTranslation(habit, "en"));
     }
@@ -99,7 +98,7 @@ class HabitServiceImplTest {
         List<HabitDictionaryTranslation> habitDictionaryTranslationList = Collections.singletonList(habitDictionaryTranslation);
         Page<HabitDictionaryTranslation> pages = new PageImpl<>(habitDictionaryTranslationList);
         Pageable pageable = null;
-        when(habitTranslationRepo.findAllByLanguageCode(anyObject(),anyString())).thenReturn(pages);
+        when(habitDictionaryTranslationRepo.findAllByLanguageCode(anyObject(),anyString())).thenReturn(pages);
         assertThrows(UnsupportedOperationException.class, () ->  habitService.getAllHabitsByLanguageCode(pageable,"en"));
     }
-}*/
+}

@@ -1,9 +1,8 @@
-/*
 package greencity.service.impl;
 
 import greencity.converters.DateService;
 import greencity.dto.habitstatistic.*;
-import greencity.dto.habitstatistic.HabitLogItemDto;
+import greencity.dto.user.HabitLogItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitDictionary;
 import greencity.entity.HabitStatistic;
@@ -258,4 +257,3 @@ class HabitStatisticServiceImplTest {
         assertEquals(expected, actual);
     }
 }
-*/

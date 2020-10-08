@@ -12,8 +12,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"adviceTranslations", "goalTranslations", "habitTranslations"})
-@ToString(exclude = {"adviceTranslations", "goalTranslations", "habitTranslations"})
+@EqualsAndHashCode(exclude = {"adviceTranslations", "goalTranslations", "habitDictionaryTranslations"})
+@ToString(exclude = {"adviceTranslations", "goalTranslations", "habitDictionaryTranslations"})
 @Builder
 public class Language {
     @Id
@@ -27,7 +27,7 @@ public class Language {
     private List<AdviceTranslation> adviceTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
-    private List<HabitTranslation> habitTranslations;
+    private List<HabitDictionaryTranslation> habitDictionaryTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<GoalTranslation> goalTranslations;

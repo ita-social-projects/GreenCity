@@ -1,7 +1,7 @@
 package greencity.service;
 
-import greencity.dto.advice.AdviceDto;
-import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceDTO;
+import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import java.util.List;
@@ -32,37 +32,37 @@ public interface AdviceService {
      * Method find {@link Advice} by id.
      *
      * @param id of {@link Advice}
-     * @return {@link AdviceDto}
+     * @return {@link AdviceDTO}
      * @author Vitaliy Dzen
      */
-    AdviceDto getAdviceById(Long id);
+    AdviceDTO getAdviceById(Long id);
 
     /**
      * Method find {@link Advice} by content.
      *
      * @param name of {@link Advice}
-     * @return {@link AdviceDto}
+     * @return {@link AdviceDTO}
      * @author Vitaliy Dzen
      */
-    AdviceDto getAdviceByName(String language, String name);
+    AdviceDTO getAdviceByName(String language, String name);
 
     /**
      * Method saves new {@link Advice}.
      *
-     * @param advice {@link AdviceDto}
+     * @param advice {@link AdviceDTO}
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
-    Advice save(AdvicePostDto advice);
+    Advice save(AdvicePostDTO advice);
 
     /**
      * Method updates {@link Advice}.
      *
-     * @param advice {@link AdviceDto}
+     * @param advice {@link AdviceDTO}
      * @return instance of {@link Advice}
      * @author Vitaliy Dzen
      */
-    Advice update(AdvicePostDto advice, Long id);
+    Advice update(AdvicePostDTO advice, Long id);
 
     /**
      * Method delete {@link Advice} by id.

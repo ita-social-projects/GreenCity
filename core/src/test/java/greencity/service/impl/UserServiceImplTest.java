@@ -9,6 +9,8 @@ import greencity.dto.goal.CustomGoalRequestDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalRequestDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
@@ -20,6 +22,7 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.service.FileService;
+import greencity.service.HabitDictionaryService;
 import greencity.service.HabitService;
 import greencity.service.SocialNetworkImageService;
 import java.net.MalformedURLException;
@@ -74,6 +77,12 @@ class UserServiceImplTest {
     FileService fileService;
 
     @Mock
+    HabitDictionaryService habitDictionaryService;
+
+    @Mock
+    HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
+
+    @Mock
     EcoNewsRepo ecoNewsRepo;
 
     @Mock
@@ -108,13 +117,13 @@ class UserServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
-    /*private Habit habit =
+    private Habit habit =
         Habit.builder()
             .id(1L)
             .habitDictionary(new HabitDictionary())
             .statusHabit(true)
             .createDate(ZonedDateTime.now())
-            .build();*/
+            .build();
     private String language = "uk";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
         new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
@@ -224,6 +233,9 @@ class UserServiceImplTest {
         verify(userRepo).delete(user);
     }
 
+    /**
+     * @author Zakhar Skaletskyi
+     */
     @Test
     void findIdByEmail() {
         String email = "email";
@@ -231,6 +243,9 @@ class UserServiceImplTest {
         assertEquals(2L, (long) userService.findIdByEmail(email));
     }
 
+    /**
+     * @author Zakhar Skaletskyi
+     */
     @Test
     void findIdByEmailNotFound() {
         String email = "email";
@@ -571,7 +586,7 @@ class UserServiceImplTest {
         );
     }
 
-    /*@Test
+    @Test
     void getAvailableHabitDictionaryNoAvailable() {
         when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en"))
             .thenReturn(Collections.emptyList());
@@ -634,7 +649,7 @@ class UserServiceImplTest {
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         userService.addDefaultHabit(userId, "en");
         verify(habitRepo, times(1)).saveAll(Collections.singletonList(new Habit()));
-    }*/
+    }
 
     @Test
     void getAvailableCustomGoalsForUserWithNoGoalsTest() {
@@ -653,7 +668,7 @@ class UserServiceImplTest {
         assertEquals(userService.getAvailableCustomGoals(userId), customGoalsDtos);
     }
 
-    /*@Test
+    @Test
     void deleteHabitByUserIdAndHabitDictionaryEmptyHabitTest() {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(WrongIdException.class, () ->
@@ -707,7 +722,7 @@ class UserServiceImplTest {
         when(habitRepo.countHabitByUserId(userId)).thenReturn(2);
         userService.deleteHabitByUserIdAndHabitDictionary(userId, habit.getId());
         verify(habitRepo).updateHabitStatusById(habit.getId(), false);
-    }*/
+    }
 
     @Test
     void getActivatedUsersAmountTest() {
@@ -959,7 +974,27 @@ class UserServiceImplTest {
         assertEquals(Optional.of(user), userService.findNotDeactivatedByEmail(email));
     }
 
-    /*@Test
+
+    @Test
+    void getAvailableHabitDictionary() {
+        HabitDictionaryTranslation habitDictionaryTranslation = ModelUtils.getHabitDictionaryTranslation();
+
+        HabitDictionaryDto hd = new HabitDictionaryDto();
+        List<HabitDictionaryDto> habitDictionaryDtos = new ArrayList<>();
+        hd.setId(habitDictionaryTranslation.getHabitDictionary().getId());
+        hd.setName(habitDictionaryTranslation.getName());
+        hd.setDescription(habitDictionaryTranslation.getDescription());
+        hd.setHabitItem(habitDictionaryTranslation.getHabitItem());
+        hd.setImage(habitDictionaryTranslation.getHabitDictionary().getImage());
+        habitDictionaryDtos.add(hd);
+
+        when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(userId, "en"))
+            .thenReturn(Collections.singletonList(habitDictionaryTranslation));
+        assertEquals(habitDictionaryDtos, userService.getAvailableHabitDictionary(userId, "en"));
+    }
+
+
+    @Test
     void getUserProfileStatistics() {
         UserProfileStatisticsDto userProfileStatisticsDto = UserProfileStatisticsDto.builder()
             .amountWrittenTipsAndTrick(1L)
@@ -973,7 +1008,7 @@ class UserServiceImplTest {
         when(habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId)).thenReturn(1L);
         when(habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId)).thenReturn(1L);
         assertEquals(userProfileStatisticsDto, userService.getUserProfileStatistics(userId));
-    }*/
+    }
 
     @Test
     void getUserAndSixFriendsWithOnlineStatus() {
@@ -1105,7 +1140,7 @@ class UserServiceImplTest {
     }
 
 
-    /*@Test
+    @Test
     void createUserHabitTest2() {
         greencity.dto.habitstatistic.HabitDictionaryDto habitDictionaryDto = new greencity.dto.habitstatistic.HabitDictionaryDto();
         habitDictionaryDto.setId(1L);
@@ -1139,6 +1174,6 @@ class UserServiceImplTest {
 
 
         assertEquals(Collections.singletonList(habitCreateDto), userService.createUserHabit(userId, habitIdDtoList, language));
-    }*/
+    }
 
 }

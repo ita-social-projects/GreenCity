@@ -105,6 +105,9 @@ public class User {
     @Column(name = "refresh_token_key", nullable = false)
     private String refreshTokenKey;
 
+    @ManyToMany(mappedBy = "users")
+    private List<Habit> habits = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserGoal> userGoals = new ArrayList<>();
 
@@ -151,8 +154,8 @@ public class User {
     @Column(name = "last_activity_time")
     private LocalDateTime lastActivityTime;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<HabitAssign> habitAssigns = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<HabitStatus> habitStatuses = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<RatingStatistics> ratingStatistics = new ArrayList<>();

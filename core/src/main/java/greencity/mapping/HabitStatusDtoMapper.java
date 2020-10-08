@@ -1,7 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitDto;
+import greencity.dto.habitstatistic.HabitDto;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.entity.HabitStatus;
 import org.modelmapper.AbstractConverter;
@@ -14,18 +13,14 @@ public class HabitStatusDtoMapper extends AbstractConverter<HabitStatus, HabitSt
         return HabitStatusDto.builder()
             .id(habitStatus.getId())
             .habitStreak(habitStatus.getHabitStreak())
+            .habit(HabitDto.builder()
+                .id(habitStatus.getHabit().getId())
+                .status(habitStatus.getHabit().getStatusHabit())
+                .createDate(habitStatus.getHabit().getCreateDate())
+                .build())
             .lastEnrollmentDate(habitStatus.getLastEnrollmentDate())
+            .suspended(habitStatus.isSuspended())
             .workingDays(habitStatus.getWorkingDays())
-            .habitAssign(
-                HabitAssignDto.builder()
-                    .id(habitStatus.getHabitAssign().getId())
-                    .acquired(habitStatus.getHabitAssign().getAcquired())
-                    .createDateTime(habitStatus.getHabitAssign().getCreateDate())
-                    .suspended(habitStatus.getHabitAssign().getSuspended())
-                    .habit(HabitDto.builder()
-                        .id(habitStatus.getHabitAssign().getHabit().getId())
-                        .build())
-                    .build())
             .build();
     }
 }

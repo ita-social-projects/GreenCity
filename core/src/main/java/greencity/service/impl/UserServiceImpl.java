@@ -7,7 +7,9 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDictionaryDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.enums.EmailNotification;
@@ -52,10 +54,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final UserGoalRepo userGoalRepo;
     private final CustomGoalRepo customGoalRepo;
-    private final HabitAssignRepo habitAssignRepo;
-    private final HabitAssignService habitAssignService;
-    private final HabitTranslationRepo habitTranslationRepo;
+    private final HabitRepo habitRepo;
+    private final HabitService habitService;
+    private final HabitStatisticRepo habitStatisticRepo;
     private final GoalTranslationRepo goalTranslationRepo;
+    private final HabitDictionaryService habitDictionaryService;
+    private final HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
     private final FileService fileService;
     private final TipsAndTricksRepo tipsAndTricksRepo;
     private final EcoNewsRepo ecoNewsRepo;
@@ -501,29 +505,82 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<HabitTranslationDto> getAvailableHabitTranslations(Long userId, String language) {
-        List<HabitTranslation> availableHabitTranslations = habitTranslationRepo
-            .findAvailableHabitTranslationsByUser(userId, language);
-        if (availableHabitTranslations.isEmpty()) {
-            throw new UserHasNoAvailableHabitTranslationException(USER_HAS_NO_AVAILABLE_HABITS);
+    public List<greencity.dto.user.HabitDictionaryDto> getAvailableHabitDictionary(Long userId, String language) {
+        List<HabitDictionaryTranslation> availableHabitDictionary = habitDictionaryTranslationRepo
+            .findAvailableHabitDictionaryByUser(userId, language);
+        if (availableHabitDictionary.isEmpty()) {
+            throw new UserHasNoAvailableHabitDictionaryException(USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY);
         }
-        return availableHabitTranslations.stream()
-            .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
-            .collect(Collectors.toList());
+        return habitDictionaryDtos(availableHabitDictionary);
     }
 
-    @Transactional
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<HabitTranslationDto> getHabitTranslationsByAcquiredStatus(Long userId, String language,
-                                                                          boolean acquired) {
-        List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findHabitTranslationsByUserAndAcquiredStatus(userId, language, acquired);
-        if (habitTranslations.isEmpty()) {
-            throw new UserHasNoAvailableHabitTranslationException(USER_HAS_NO_AVAILABLE_HABITS);
+    public List<HabitCreateDto> createUserHabit(Long userId, List<HabitIdDto> habitIdDto, String language) {
+        if (checkHabitId(userId, habitIdDto)) {
+            User user = userRepo.findById(userId)
+                .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
+            List<Habit> habits = habitRepo.saveAll(convertToHabit(habitIdDto, user));
+            return convertToHabitCreateDto(habits, language);
+        } else {
+            throw new WrongIdException(ErrorMessage.HABIT_IS_SAVED);
         }
-        return habitTranslations.stream()
-            .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
+    }
+
+    /**
+     * Method convert HabitIdDto to Habit.
+     *
+     * @param habitIdDtos {@link HabitIdDto}
+     * @param user        current user.
+     * @return list habits.
+     */
+    private List<Habit> convertToHabit(List<HabitIdDto> habitIdDtos, final User user) {
+        List<HabitDictionary> habitDictionaries =
+            habitIdDtos.stream()
+                .map(HabitIdDto::getHabitDictionaryId)
+                .map(habitDictionaryService::findById)
+                .collect(Collectors.toList());
+
+        List<Habit> habits = new ArrayList<>();
+
+        for (HabitDictionary habitDictionary : habitDictionaries) {
+            Habit habit = modelMapper.map(user, Habit.class);
+            habit.setHabitDictionary(habitDictionary);
+            habits.add(habit);
+        }
+
+        return habits;
+    }
+
+    /**
+     * Method convert {@link Habit} in list {@link HabitCreateDto}.
+     *
+     * @param habits   - list {@link Habit}.
+     * @param language - languageCode.
+     * @return List {@link HabitCreateDto}.
+     */
+    private List<HabitCreateDto> convertToHabitCreateDto(List<Habit> habits, String language) {
+        List<HabitCreateDto> habitCreateDtos = habits
+            .stream()
+            .map(habit -> modelMapper.map(habit, HabitCreateDto.class))
             .collect(Collectors.toList());
+
+        List<HabitCreateDto> habitCreateDtoResultList = new ArrayList<>();
+
+        for (int i = 0; i < habits.size(); i++) {
+            HabitDictionaryTranslation htd = habitService.getHabitDictionaryTranslation(
+                habits.get(i), language);
+            HabitCreateDto habitCreateDto = habitCreateDtos.get(i);
+            HabitDictionaryDto habitDictionaryDto = habitCreateDto.getHabitDictionary();
+            habitDictionaryDto.setName(htd.getName());
+            habitDictionaryDto.setDescription(htd.getDescription());
+            habitCreateDto.setHabitDictionary(habitDictionaryDto);
+            habitCreateDtoResultList.add(habitCreateDto);
+        }
+
+        return habitCreateDtoResultList;
     }
 
     /**
@@ -548,13 +605,72 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Method check is in user habit.
+     *
+     * @param userId      Id current user.
+     * @param habitIdDtos {@link HabitIdDto}
+     * @return boolean
+     */
+    private boolean checkHabitId(Long userId, List<HabitIdDto> habitIdDtos) {
+        List<Habit> habits = habitRepo.findByUserIdAndStatusHabit(userId);
+        if (!habits.isEmpty()) {
+            for (Habit habit : habits) {
+                for (HabitIdDto habitIdDto : habitIdDtos) {
+                    if (habitIdDto.getHabitDictionaryId().equals(habit.getHabitDictionary().getId())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteHabitByUserIdAndHabitDictionary(Long userId, Long habitId) {
+        if (habitId == null) {
+            throw new NotDeletedException(ErrorMessage.DELETE_LIST_ID_CANNOT_BE_EMPTY);
+        }
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID));
+        int countHabit = habitRepo.countHabitByUserId(userId);
+        if (!habitStatisticRepo.findAllByHabitId(habit.getId()).isEmpty() && countHabit > 1) {
+            habitRepo.updateHabitStatusById(habit.getId(), false);
+        } else if (countHabit > 1) {
+            habitRepo.deleteById(habit.getId());
+        } else {
+            throw new NotDeletedException(ErrorMessage.NOT_DELETE_LAST_HABIT);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    public void addDefaultHabit(User user, String language) {
-        if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
-            habitAssignService.assignHabitForUser(1L, user);
+    public void addDefaultHabit(Long userId, String language) {
+        if (habitRepo.findByUserIdAndStatusHabit(userId).isEmpty()) {
+            HabitIdDto habitIdDto = new HabitIdDto();
+            habitIdDto.setHabitDictionaryId(1L);
+            createUserHabit(userId, Collections.singletonList(habitIdDto), language);
         }
+    }
+
+    private List<greencity.dto.user.HabitDictionaryDto> habitDictionaryDtos(
+        List<HabitDictionaryTranslation> habitDictionaryTranslations) {
+        List<greencity.dto.user.HabitDictionaryDto> habitDictionaryDtos = new ArrayList<>();
+        for (HabitDictionaryTranslation hdt : habitDictionaryTranslations) {
+            greencity.dto.user.HabitDictionaryDto hd = new greencity.dto.user.HabitDictionaryDto();
+            hd.setId(hdt.getHabitDictionary().getId());
+            hd.setName(hdt.getName());
+            hd.setDescription(hdt.getDescription());
+            hd.setHabitItem(hdt.getHabitItem());
+            hd.setImage(hdt.getHabitDictionary().getImage());
+            habitDictionaryDtos.add(hd);
+        }
+        return habitDictionaryDtos;
     }
 
     /**
@@ -603,8 +719,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserProfilePicture(String email) {
         User user = userRepo
-            .findByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+                .findByEmail(email)
+                .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
         user.setProfilePicturePath(defaultProfilePicture);
         userRepo.save(user);
     }
@@ -782,8 +898,8 @@ public class UserServiceImpl implements UserService {
     public UserProfileStatisticsDto getUserProfileStatistics(Long userId) {
         Long amountOfPublishedNewsByUserId = ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId);
         Long amountOfWrittenTipsAndTrickByUserId = tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(userId);
-        Long amountOfAcquiredHabitsByUserId = habitAssignRepo.getAmountOfAcquiredHabitsByUserId(userId);
-        Long amountOfHabitsInProgressByUserId = habitAssignRepo.getAmountOfHabitsInProgressByUserId(userId);
+        Long amountOfAcquiredHabitsByUserId = habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
+        Long amountOfHabitsInProgressByUserId = habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId);
 
         return UserProfileStatisticsDto.builder()
             .amountWrittenTipsAndTrick(amountOfWrittenTipsAndTrickByUserId)

@@ -3,13 +3,12 @@ package greencity.controller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.fact.HabitFactDTO;
+import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.Habit;
-import greencity.entity.HabitFactTranslation;
+import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
-import greencity.service.HabitFactTranslationService;
+import greencity.service.FactTranslationService;
 import greencity.service.HabitFactService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -37,18 +36,18 @@ import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 @RequestMapping("/facts")
 @AllArgsConstructor
 public class HabitFactController {
-    private final HabitFactService habitFactService;
-    private final HabitFactTranslationService habitFactTranslationService;
-    private final ModelMapper mapper;
+    private HabitFactService habitFactService;
+    private FactTranslationService factTranslationService;
+    private ModelMapper mapper;
 
     /**
-     * The controller which returns random {@link HabitFact} by {@link Habit} id.
+     * The controller which returns random {@link HabitFact} by HabitDictionary factId.
      *
-     * @param habitId {@link Habit} id.
-     * @return {@link HabitFactDto}.
+     * @param habitId HabitDictionary
+     * @return {@link HabitFactDTO}
      * @author Vitaliy Dzen
      */
-    @ApiOperation("Get random habit fact by habit id")
+    @ApiOperation("Get random fact by habit id")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -64,12 +63,12 @@ public class HabitFactController {
     }
 
     /**
-     * The controller which return today's {@link HabitFact} of the day.
+     * The controller which return today's fact of the day.
      *
-     * @param languageId id of language to display the {@link HabitFact}.
-     * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of the day.
+     * @param languageId id of language to display the fact.
+     * @return {@link LanguageTranslationDTO} of today's fact of the day.
      */
-    @ApiOperation("Get habit fact of the day")
+    @ApiOperation("Get fact of the day")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -77,17 +76,17 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/dayFact/{languageId}")
-    public LanguageTranslationDTO getHabitFactOfTheDay(
+    public LanguageTranslationDTO getFactOfTheDay(
         @PathVariable Long languageId
     ) {
-        return habitFactTranslationService.getHabitFactOfTheDay(languageId);
+        return factTranslationService.getFactOfTheDay(languageId);
     }
 
 
     /**
      * The controller which returns all {@link HabitFact}.
      *
-     * @return List of {@link HabitFactDto}.
+     * @return List of {@link HabitFactDTO}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get all facts")
@@ -105,11 +104,11 @@ public class HabitFactController {
     /**
      * The controller which save {@link HabitFact}.
      *
-     * @param fact {@link HabitFactPostDto}.
-     * @return {@link ResponseEntity}.
+     * @param fact {@link HabitFactPostDTO}
+     * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
-    @ApiOperation(value = "Save habit fact")
+    @ApiOperation(value = "Save fact")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -117,20 +116,20 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity<List<HabitFactTranslation>> save(@Valid @RequestBody HabitFactPostDto fact) {
+    public ResponseEntity<List<FactTranslation>> save(@Valid @RequestBody HabitFactPostDTO fact) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            habitFactTranslationService.saveHabitFactAndFactTranslation(fact));
+            factTranslationService.saveHabitFactAndFactTranslation(fact));
     }
 
     /**
      * The controller which update {@link HabitFact}.
      *
-     * @param dto    {@link HabitFactPostDto}.
-     * @param factId of {@link HabitFact}.
-     * @return {@link ResponseEntity}.
+     * @param dto    {@link HabitFactPostDTO}
+     * @param factId of {@link HabitFact}
+     * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
-    @ApiOperation(value = "Update habit fact")
+    @ApiOperation(value = "Update fact")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -138,20 +137,20 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PutMapping("/{factId}")
-    public ResponseEntity<HabitFactPostDto> update(
-        @Valid @RequestBody HabitFactPostDto dto, @PathVariable Long factId) {
+    public ResponseEntity<HabitFactPostDTO> update(
+        @Valid @RequestBody HabitFactPostDTO dto, @PathVariable Long factId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(habitFactService.update(dto, factId), HabitFactPostDto.class));
+            .body(mapper.map(habitFactService.update(dto, factId), HabitFactPostDTO.class));
     }
 
     /**
      * The controller which delete {@link HabitFact}.
      *
-     * @param factId of {@link HabitFact}.
-     * @return {@link ResponseEntity}.
+     * @param factId of {@link HabitFact}
+     * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
-    @ApiOperation(value = "Delete habit fact")
+    @ApiOperation(value = "Delete fact")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),

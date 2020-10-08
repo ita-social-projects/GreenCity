@@ -10,25 +10,22 @@ import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.EcoNews;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
 import greencity.entity.enums.UserStatus;
 import greencity.service.CustomGoalService;
-import greencity.service.HabitAssignService;
+import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,14 +39,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
+
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
 @Validated
 public class UserController {
-    private final UserService userService;
-    private final CustomGoalService customGoalService;
-    private final HabitAssignService habitAssignService;
+    private UserService userService;
+    private HabitStatisticService habitStatisticService;
+    private CustomGoalService customGoalService;
 
     /**
      * The method which update user status.
@@ -216,6 +219,35 @@ public class UserController {
                                      @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
+    }
+
+
+    /**
+     * Method for finding all {@link User} habits.
+     *
+     * @param userId {@link User} id.
+     * @return list of {@link HabitDto}
+     */
+    @GetMapping("/{userId}/habits")
+    @ApiLocale
+    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable @CurrentUserId Long userId,
+                                                        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(habitStatisticService.findAllHabitsAndTheirStatistics(userId, true, locale.getLanguage()));
+    }
+
+    /**
+     * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
+     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     *
+     * @param userId {@link User} id.
+     * @return {@link CalendarUsefulHabitsDto} instance.
+     */
+    @ApiOperation(value = "Find statistic about user habits.")
+    @GetMapping("/{userId}/habits/statistic")
+    public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(@PathVariable @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitStatisticService.getInfoAboutUserHabits(userId));
     }
 
     /**
@@ -427,47 +459,74 @@ public class UserController {
     }
 
     /**
-     * Method returns list of available (not assigned) habit translations for user.
-     *
-     * @param userId {@link User} id.
-     * @param locale {@link Locale} instance.
+     * Method returns list of available (not ACTIVE) habit dictionary for user.
      *
      * @return {@link ResponseEntity}.
      * @author Kuzenko Bogdan
      */
-    @ApiOperation(value = "Get available habit translations for current user.")
+    @ApiOperation(value = "Get available habit dictionary for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @GetMapping("/{userId}/habit/available")
+    @GetMapping("/{userId}/habit-dictionary/available")
     @ApiLocale
-    public ResponseEntity<List<HabitTranslationDto>> getAvailableHabitTranslations(
+    public ResponseEntity<List<HabitDictionaryDto>> getAvailableHabitDictionary(
+        @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getAvailableHabitTranslations(userId, locale.getLanguage()));
+            .body(userService.getAvailableHabitDictionary(userId, locale.getLanguage()));
     }
 
     /**
-     * Method for finding all active {@link User} habit assigns.
+     * Method saves habit, chosen by user.
      *
-     * @param userId {@link User} instance.
-     * @return list of {@link HabitAssignDto}.
+     * @param dto    - dto with habits, chosen by user.
+     * @param userId id current user.
+     * @return {@link ResponseEntity}
      */
-    @ApiOperation(value = "Get all active habit assigns for current user.")
+    @ApiOperation(value = "Save one or multiple habits for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/habit")
+    @ApiLocale
+    public ResponseEntity<List<HabitCreateDto>> saveUserHabits(
+        @Valid @RequestBody List<HabitIdDto> dto,
+        @ApiParam("Id of current user. Cannot be empty.")
+        @PathVariable @CurrentUserId Long userId,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(userService.createUserHabit(userId, dto, locale.getLanguage()));
+    }
+
+    /**
+     * Method deletes habit, chosen by user.
+     *
+     * @param habitId id with habits, chosen by user.
+     * @param userId  id current user.
+     */
+    @ApiOperation(value = "Delete habit")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @GetMapping("/{userId}/habit/assign/active")
-    public ResponseEntity<List<HabitAssignDto>> getUserHabitAssigns(
+    @DeleteMapping("/{userId}/habit/{habitId}")
+    public void deleteHabit(
+        @ApiParam("Id habit of current user. Cannot be empty.")
+        @PathVariable Long habitId,
+        @ApiParam("Id of current user. Cannot be empty.")
         @PathVariable @CurrentUserId Long userId) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitAssignService.getAllActiveHabitAssignsByUserId(userId));
+        userService.deleteHabitByUserIdAndHabitDictionary(userId, habitId);
+        ResponseEntity.status(HttpStatus.OK);
     }
 
     /**

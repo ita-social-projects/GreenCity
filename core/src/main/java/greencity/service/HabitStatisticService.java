@@ -1,12 +1,9 @@
 package greencity.service;
 
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habitstatistic.*;
 import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
+import greencity.entity.User;
 import java.util.List;
 
 public interface HabitStatisticService {
@@ -16,40 +13,65 @@ public interface HabitStatisticService {
      * @param addHabitStatisticDto - dto with {@link HabitStatistic} rate, amount of items, date and {@link Habit} id.
      * @return {@link AddHabitStatisticDto} instance.
      */
-    HabitStatisticDto save(AddHabitStatisticDto addHabitStatisticDto);
+    AddHabitStatisticDto save(AddHabitStatisticDto addHabitStatisticDto);
 
     /**
      * Method for updating {@link HabitStatistic} in database.
      *
-     * @param dto - dto with {@link HabitStatistic} rate and amount of items.
+     * @param dto - dto with {@link HabitStatistic} id, rate and amount of items.
      * @return {@link UpdateHabitStatisticDto} instance.
      */
     UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto);
 
     /**
-     * Method for finding {@link HabitStatistic} by it's id.
+     * Method for finding {@link HabitStatistic} by its id.
      *
-     * @param id {@link HabitStatistic} id.
-     * @return {@link HabitStatisticDto} instance.
+     * @param id {@link HabitStatistic} id
+     * @return a {@link HabitStatistic} instance
      */
-    HabitStatisticDto findById(Long id);
+    HabitStatistic findById(Long id);
 
     /**
-     * Method for finding all {@link HabitStatistic} by {@link HabitAssign} id
-     * (multiple statistics for one assigned habit for user).
+     * Method for finding all {@link Habit} by {@link User} email.
      *
-     * @param habitAssignId {@link HabitAssign} id.
-     * @return list of {@link HabitStatisticDto} instances.
+     * @param userId - {@link User} email.
+     * @return list of user's {@link Habit}.
      */
-    List<HabitStatisticDto> findAllStatsByHabitAssignId(Long habitAssignId);
+    List<Habit> findAllHabitsByUserId(Long userId);
 
     /**
-     * Method for finding all {@link HabitStatistic} by {@link Habit} id.
+     * Method for finding all {@link HabitDto} by {@link User} email and {@link Habit}status.
+     *
+     * @param userId {@link User} id.
+     * @param status {@link Habit} status.
+     * @return list of {@link HabitDto}
+     */
+    List<Habit> findAllHabitsByStatus(Long userId, Boolean status);
+
+    /**
+     * Method for finding some statistics by {@link User} email.
+     *
+     * @param userId {@link User} id.
+     * @return {@link CalendarUsefulHabitsDto} instance.
+     */
+    CalendarUsefulHabitsDto getInfoAboutUserHabits(Long userId);
+
+    /**
+     * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
      *
      * @param habitId {@link Habit} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
-    List<HabitStatisticDto> findAllStatsByHabitId(Long habitId);
+    List<HabitStatisticDto> findAllByHabitId(Long habitId);
+
+    /**
+     * Method for finding all habits by status with statistic for each habit.
+     *
+     * @param id     user's id.
+     * @param status status of habit.
+     * @return list of {@link HabitDto} instances.
+     */
+    List<HabitDto> findAllHabitsAndTheirStatistics(Long id, Boolean status, String language);
 
     /**
      * Returns statistics for all not taken habit items in the system for today.
@@ -63,9 +85,18 @@ public interface HabitStatisticService {
     List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language);
 
     /**
-     * Method for deleting all statistics for certain {@link HabitAssign}.
+     * Method for getting amount of habits in progress by user id.
      *
-     * @param habitAssignId {@link HabitAssign} id.
+     * @param id {@link Long} user id.
+     * @return amount of habits in progress by user id.
      */
-    void deleteAllStatsByHabitAssignId(Long habitAssignId);
+    Long getAmountOfHabitsInProgressByUserId(Long id);
+
+    /**
+     * Method for getting amount of acquired habits by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of acquired habits by user id.
+     */
+    Long getAmountOfAcquiredHabitsByUserId(Long id);
 }

@@ -3,8 +3,8 @@ package greencity.controller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
-import greencity.dto.advice.AdviceDto;
-import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceDTO;
+import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.localization.AdviceTranslation;
@@ -36,15 +36,15 @@ import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 @RequestMapping("/advices")
 @AllArgsConstructor
 public class AdviceController {
-    private final AdviceService adviceService;
-    private final AdviceTranslationService adviceTranslationService;
-    private final ModelMapper mapper;
+    private AdviceService adviceService;
+    private AdviceTranslationService adviceTranslationService;
+    private ModelMapper mapper;
 
     /**
      * The controller which returns random {@link Advice} by HabitDictionary adviceId.
      *
      * @param habitId HabitDictionary
-     * @return {@link AdviceDto}
+     * @return {@link AdviceDTO}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get random content by habit adviceId")
@@ -64,7 +64,7 @@ public class AdviceController {
     /**
      * The controller which returns all {@link Advice}.
      *
-     * @return List of {@link AdviceDto}
+     * @return List of {@link AdviceDTO}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get all advices")
@@ -81,7 +81,7 @@ public class AdviceController {
     /**
      * The controller which saveAdviceAndAdviceTranslation {@link Advice}.
      *
-     * @param advice {@link AdviceDto}
+     * @param advice {@link AdviceDTO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
@@ -92,7 +92,7 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity<List<AdviceTranslation>> save(@Valid @RequestBody AdvicePostDto advice) {
+    public ResponseEntity<List<AdviceTranslation>> save(@Valid @RequestBody AdvicePostDTO advice) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(adviceTranslationService.saveAdviceAndAdviceTranslation(advice));
     }
@@ -100,7 +100,7 @@ public class AdviceController {
     /**
      * The controller which update {@link Advice}.
      *
-     * @param dto {@link AdviceDto}
+     * @param dto {@link AdviceDTO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
@@ -111,10 +111,10 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PutMapping("/{adviceId}")
-    public ResponseEntity<AdvicePostDto> update(
-        @Valid @RequestBody AdvicePostDto dto, @PathVariable Long adviceId) {
+    public ResponseEntity<AdvicePostDTO> update(
+        @Valid @RequestBody AdvicePostDTO dto, @PathVariable Long adviceId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(adviceService.update(dto, adviceId), AdvicePostDto.class));
+            .body(mapper.map(adviceService.update(dto, adviceId), AdvicePostDTO.class));
     }
 
     /**

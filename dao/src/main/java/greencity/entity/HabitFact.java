@@ -18,8 +18,8 @@ public class HabitFact {
     private Long id;
 
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "habitFact", fetch = FetchType.LAZY)
-    private List<HabitFactTranslation> translations;
+    private List<FactTranslation> translations;
 
     @ManyToOne
-    private Habit habit;
+    private HabitDictionary habitDictionary;
 }

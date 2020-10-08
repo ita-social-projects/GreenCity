@@ -1,5 +1,6 @@
 package greencity.dto.habitstatistic;
 
+import greencity.dto.user.HabitLogItemDto;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;

@@ -65,31 +65,8 @@ public final class ErrorMessage {
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "The Habit statistic does not exist by this id : ";
     public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
     public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
-    public static final String USER_HAS_NO_AVAILABLE_HABITS =
-        "This user is tracking all available habits";
-    public static final String USER_ALREADY_HAS_STATUS_FOR_ASSIGNED_HABIT =
-        "Current user already has status for habit with id: ";
-    public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";
-    public static final String STATUS_OF_HABIT_ASSIGN_NOT_DELETED = "Status of user habit wasn't deleted by id: ";
-    public static final String STATUS_OF_HABIT_ASSIGN_NOT_UPDATED = "Status of user habit wasn't updated by id: ";
-    public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
-    public static final String HABIT_ASSIGN_SUSPENDED_STATUS_NOT_UPDATED =
-        "Habit assign suspended status wasn't updated because there is no habit assign with such user "
-            + "and habit with id : ";
-    public static final String HABIT_ASSIGN_NOT_UPDATED_BY_ID = "Habit assign does not exist by this id : ";
-    public static final String HABIT_ASSIGN_NOT_DELETED_BY_ID = "Habit assign does not exist by this id : ";
-    public static final String USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY =
-        "User already assigned and suspended this habit for today with id: ";
-    public static final String USER_HAS_NO_HABITS_WITH_SUCH_STATUS =
-        "There is no active habits for such user with such status ";
-    public static final String NO_STATUS_FOR_SUCH_HABIT_ASSIGN = "There is no status for such habit for current user";
-    public static final String NO_HABIT_STATUS = "There is no habit status with id: ";
-    public static final String USER_HAS_NO_STATUS_FOR_SUCH_HABIT =
-        "There is no status for such habit for current user";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
-        "There is no habit assign for such habit and user";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE =
-        "There is no habit assign for such habit, user and date";
+    public static final String USER_HAS_NO_AVAILABLE_HABIT_DICTIONARY =
+        "This user is tracking all available habit dictionary";
     public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'uk' or 'ru'";
     public static final String USER_HAS_NO_AVAILABLE_CUSTOM_GOALS = "This user is tracking all available custom goals";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
@@ -101,22 +78,24 @@ public final class ErrorMessage {
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
     public static final String INVALID_HABIT_NAME = "Invalid habit name ";
     public static final String ADVICE_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
-    public static final String HABIT_FACT_NOT_FOUND_BY_ID = "The habitfact does not exist by id: ";
-    public static final String FACT_OF_DAY_NOT_FOUND_BY_LANGUAGE_ID = "The habitfact of day does not exist by language id: ";
-    public static final String HABIT_FACT_NOT_SAVED_BY_NAME = "The habitfact does not saved by name: ";
-    public static final String HABIT_FACT_NOT_UPDATED_BY_ID = "The habitfact does not updated by id: ";
-    public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The habitfact does not deleted by id: ";
+    public static final String HABIT_FACT_NOT_FOUND_BY_ID = "The fact does not exist by id: ";
+    public static final String FACT_OF_DAY_NOT_FOUND_BY_LANGUAGE_ID = "The fact of day does not exist by language id: ";
+    public static final String HABIT_FACT_NOT_SAVED_BY_NAME = "The fact does not saved by name: ";
+    public static final String HABIT_FACT_NOT_UPDATED_BY_ID = "The fact does not updated by id: ";
+    public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The fact does not deleted by id: ";
     public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
     public static final String ADVICE_NOT_SAVED_BY_NAME = "The name with such name already exist: ";
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
     public static final String USER_HAS_NOT_ANY_HABITS = "There is no habits for such user.";
+    public static final String USER_HAS_NOT_HABITS_WITH_SUCH_STATUS =
+        "There is no active habits for such user with such status ";
     public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "This UserGoal is already done ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
     public static final String HABIT_IS_SAVED = "This habit is saved to user";
-    public static final String HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_ID =
-        "Habit with such userId and habitId does not exist";
+    public static final String HABIT_NOT_FOUND_BY_USER_ID_AND_HABIT_DICTIONARY_ID =
+        "Habit with such userId and habitDictionaryId does not exist";
     public static final String DELETE_LIST_ID_CANNOT_BE_EMPTY = "List with id cann`t be empty.";
     public static final String NOT_DELETE_LAST_HABIT = "Can`t delete last habit.";
     public static final String CUSTOM_GOAL_FOR_THIS_USER_ALREADY_EXIST =
@@ -124,7 +103,7 @@ public final class ErrorMessage {
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
     public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
     public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
-    public static final String HABIT_TRANSLATION_NOT_FOUND = "HabitTranslation not found";
+    public static final String HABIT_DICTIONARY_TRANSLATION_NOT_FOUND = "Don`t found HabitDictionaryTranslation";
     public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
     public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
         "Subscriber with this email address not found in the database.";
@@ -173,7 +152,7 @@ public final class ErrorMessage {
     public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
     public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_TRANSLATION_NOT_DELETED =
-        "The habitfact of the day translation does not deleted by id: ";
+        "The fact of the day translation does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";

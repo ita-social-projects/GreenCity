@@ -32,6 +32,6 @@ public class SignInEventListener implements ApplicationListener<SignInEvent> {
      */
     @Override
     public void onApplicationEvent(SignInEvent event) {
-        userService.addDefaultHabit(event.getUser(), "en");
+        userService.addDefaultHabit(event.getUser().getId(), "en");
     }
 }

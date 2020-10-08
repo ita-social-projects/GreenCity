@@ -8,12 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "habit_fact_translations")
+@Table(name = "fact_translations")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HabitFactTranslation {
+public class FactTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

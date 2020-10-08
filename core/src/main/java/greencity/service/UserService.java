@@ -5,7 +5,8 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.habitstatistic.HabitCreateDto;
+import greencity.dto.habitstatistic.HabitIdDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
@@ -229,31 +230,38 @@ public interface UserService {
     UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language);
 
     /**
-     * Method returns list of available (not ACTIVE) habitTranslations for user.
-     *
-     * @param userId   id of the {@link User} current user.
-     * @param acquired acquired status of habit
-     * @param language language code.
-     * @return List of {@link HabitTranslationDto}
-     */
-    List<HabitTranslationDto> getHabitTranslationsByAcquiredStatus(Long userId, String language, boolean acquired);
-
-    /**
      * Method returns list of available (not ACTIVE) habitDictionary for user.
      *
      * @param userId   id of the {@link User} current user.
      * @param language language code.
-     * @return List of {@link HabitTranslationDto}
+     * @return List of {@link HabitDictionaryDto}
      * @author Bogdan Kuzenko
      */
-    List<HabitTranslationDto> getAvailableHabitTranslations(Long userId, String language);
+    List<HabitDictionaryDto> getAvailableHabitDictionary(Long userId, String language);
+
+    /**
+     * Method returns list of available habit for user.
+     *
+     * @param userId     id of the {@link User} current user.
+     * @param habitIdDto {@link HabitIdDto}
+     * @return List of {@link HabitCreateDto}
+     */
+    List<HabitCreateDto> createUserHabit(Long userId, List<HabitIdDto> habitIdDto, String language);
+
+    /**
+     * Method delete habit fot user.
+     *
+     * @param userId      id current user.
+     * @param habitIdDtos {@link HabitIdDto}
+     */
+    void deleteHabitByUserIdAndHabitDictionary(Long userId, Long habitIdDtos);
 
     /**
      * Method add default habit.
      *
-     * @param user {@link User} instance.
+     * @param userId id of the current user
      */
-    void addDefaultHabit(User user, String language);
+    void addDefaultHabit(Long userId, String language);
 
     /**
      * Method returns list of available (not ACTIVE) customGoals for user.

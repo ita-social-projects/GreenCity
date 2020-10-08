@@ -1,4 +1,3 @@
-/*
 package greencity.mapping;
 
 import greencity.ModelUtils;
@@ -24,10 +23,9 @@ class AddHabitStatisticDtoMapperTest {
             .amountOfItems(habitStatistic.getAmountOfItems())
             .createdOn(habitStatistic.getCreatedOn())
             .habitRate(habitStatistic.getHabitRate())
-            .habitAssignId(habitStatistic.getHabitAssign().getId())
+            .habitId(habitStatistic.getHabit().getId())
             .build();
 
         assertEquals(expected, addHabitStatisticDtoMapper.convert(habitStatistic));
     }
 }
-*/

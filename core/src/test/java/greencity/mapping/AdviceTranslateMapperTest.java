@@ -1,9 +1,8 @@
-/*
 package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.advice.AdviceDTO;
-import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.user.HabitDictionaryDto;
 import greencity.entity.localization.AdviceTranslation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ class AdviceTranslateMapperTest {
         AdviceTranslation adviceTranslation = ModelUtils.getAdviceTranslation();
 
         AdviceDTO expected = new AdviceDTO();
-        HabitTranslationDto habitDictionaryDto = new HabitTranslationDto();
+        HabitDictionaryDto habitDictionaryDto = new HabitDictionaryDto();
         habitDictionaryDto.setId(adviceTranslation.getAdvice().getHabitDictionary().getId());
         habitDictionaryDto.setImage(adviceTranslation.getAdvice().getHabitDictionary().getImage());
         expected.setId(adviceTranslation.getId());
@@ -31,4 +30,3 @@ class AdviceTranslateMapperTest {
         assertEquals(expected, adviceTranslateMapper.convert(adviceTranslation));
     }
 }
-*/

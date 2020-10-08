@@ -1,6 +1,7 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.advice.AdvicePostDTO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
@@ -11,10 +12,12 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -28,6 +31,7 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.enums.*;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -135,7 +139,7 @@ public class ModelUtils {
         return new FavoritePlaceDto("name", 3L);
     }
 
-    /*public static AddHabitStatisticDto addHabitStatisticDto() {
+    public static AddHabitStatisticDto addHabitStatisticDto() {
         return AddHabitStatisticDto.builder()
             .id(1L)
             .amountOfItems(5)
@@ -153,9 +157,9 @@ public class ModelUtils {
             .amountOfItems(5)
             .habit(Habit.builder().id(13L).build())
             .build();
-    }*/
+    }
 
-    /*public static Habit getHabit() {
+    public static Habit getHabit() {
         return Habit.builder()
             .id(13L)
             .statusHabit(true)
@@ -181,7 +185,7 @@ public class ModelUtils {
             .language(ModelUtils.getLanguage())
             .habitDictionary(ModelUtils.getHabitDictionary())
             .build();
-    }*/
+    }
 
     public static Category getCategory() {
         return Category.builder()
@@ -190,7 +194,7 @@ public class ModelUtils {
             .build();
     }
 
-    /*public static AdviceTranslation getAdviceTranslation() {
+    public static AdviceTranslation getAdviceTranslation() {
         AdviceTranslation adviceTranslation = new AdviceTranslation();
         adviceTranslation.setId(5L);
         adviceTranslation.setLanguage(
@@ -200,7 +204,7 @@ public class ModelUtils {
             Advice.builder().id(2L).habitDictionary(HabitDictionary.builder().id(2L).image("cup").build()).build());
         adviceTranslation.setContent("Don't take a cup");
         return adviceTranslation;
-    }*/
+    }
 
     public static GoalTranslation getGoalTranslation() {
         return GoalTranslation.builder()
@@ -277,25 +281,25 @@ public class ModelUtils {
         return new Advice(1L, null, null);
     }
 
-    /*public static HabitDictionaryIdDto getHabitDictionaryIdDto() {
+    public static HabitDictionaryIdDto getHabitDictionaryIdDto() {
         return new HabitDictionaryIdDto(1L);
     }
 
     public static AdvicePostDTO getAdvicePostDTO() {
         return new AdvicePostDTO(null, getHabitDictionaryIdDto());
     }
-*/
-    public static HabitFactTranslation getFactTranslation() {
-        return new HabitFactTranslation(1L, getLanguage(), FactOfDayStatus.CURRENT, null, "Content");
+
+    public static FactTranslation getFactTranslation() {
+        return new FactTranslation(1L, getLanguage(), FactOfDayStatus.CURRENT, null, "Content");
     }
 
     public static HabitFact getHabitFact() {
         return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
     }
 
-    /*public static HabitFactPostDTO getHabitFactPostDTO() {
+    public static HabitFactPostDTO getHabitFactPostDTO() {
         return new HabitFactPostDTO(null, getHabitDictionaryIdDto());
-    }*/
+    }
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
         return LocationAddressAndGeoDto.builder()

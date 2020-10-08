@@ -1,23 +1,22 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.fact.HabitFactDTO;
+import greencity.dto.fact.HabitFactPostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.Habit;
+import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
-import greencity.entity.HabitFactTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.repository.FactTranslationRepo;
+import greencity.repository.HabitDictionaryRepo;
 import greencity.repository.HabitFactRepo;
-import greencity.repository.HabitFactTranslationRepo;
 import greencity.service.HabitFactService;
-import greencity.service.HabitService;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,78 +25,110 @@ import org.springframework.stereotype.Service;
  * @author Vitaliy Dzen
  */
 @Service
-@AllArgsConstructor
 public class HabitFactServiceImpl implements HabitFactService {
-    private final HabitFactRepo habitFactRepo;
-    private final HabitService habitService;
-    private final HabitFactTranslationRepo habitFactTranslationRepo;
+    private HabitFactRepo habitFactRepo;
+    private HabitDictionaryRepo habitDictionaryRepo;
+    private FactTranslationRepo factTranslationRepo;
     private final ModelMapper modelMapper;
 
     /**
-     * {@inheritDoc}
+     * Constructor with parameters.
+     *
+     * @author Vitaliy Dzen
+     */
+    @Autowired
+    public HabitFactServiceImpl(ModelMapper modelMapper, HabitFactRepo habitFactRepo,
+                                HabitDictionaryRepo habitDictionaryRepo, FactTranslationRepo factTranslationRepo) {
+        this.modelMapper = modelMapper;
+        this.habitFactRepo = habitFactRepo;
+        this.habitDictionaryRepo = habitDictionaryRepo;
+        this.factTranslationRepo = factTranslationRepo;
+    }
+
+    /**
+     * Method finds all {@link HabitFact}.
+     *
+     * @return List of all {@link HabitFact}
+     * @author Vitaliy Dzen
      */
     @Override
     public List<LanguageTranslationDTO> getAllHabitFacts() {
-        List<HabitFactTranslation> habitFactTranslation = habitFactTranslationRepo.findAll();
-        return modelMapper.map(habitFactTranslation, new TypeToken<List<LanguageTranslationDTO>>() {
+        List<FactTranslation> factTranslation = factTranslationRepo.findAll();
+        return modelMapper.map(factTranslation, new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType());
     }
 
     /**
-     * {@inheritDoc}
+     * Method finds random {@link HabitFact}.
+     *
+     * @return random {@link HabitFact}
+     * @author Vitaliy Dzen
      */
     @Override
     public LanguageTranslationDTO getRandomHabitFactByHabitIdAndLanguage(Long id, String language) {
-        return modelMapper.map(habitFactTranslationRepo.getRandomHabitFactTranslationByHabitIdAndLanguage(language, id)
+        return modelMapper.map(factTranslationRepo.getRandomFactTranslationByHabitIdAndLanguage(language, id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
             LanguageTranslationDTO.class);
     }
 
     /**
-     * {@inheritDoc}
+     * Method find {@link HabitFact} by id.
+     *
+     * @param id of {@link HabitFact}
+     * @return {@link HabitFactDTO}
+     * @author Vitaliy Dzen
      */
     @Override
-    public HabitFactDto getHabitFactById(Long id) {
+    public HabitFactDTO getHabitFactById(Long id) {
         return modelMapper.map(habitFactRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
-            HabitFactDto.class);
+            HabitFactDTO.class);
     }
 
     /**
-     * {@inheritDoc}
+     * Method find {@link HabitFact} by fact.
+     *
+     * @param name of {@link HabitFact}
+     * @return {@link HabitFactDTO}
+     * @author Vitaliy Dzen
      */
     @Override
-    public HabitFactDto getHabitFactByName(String language, String name) {
-        return modelMapper.map(habitFactTranslationRepo.findFactTranslationByLanguage_CodeAndHabitFact(language, name)
+    public HabitFactDTO getHabitFactByName(String language, String name) {
+        return modelMapper.map(factTranslationRepo.findFactTranslationByLanguageCodeAndHabitFact(language, name)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
-            HabitFactDto.class);
+            HabitFactDTO.class);
     }
 
     /**
-     * {@inheritDoc}
+     * Method saves new {@link HabitFact}.
+     *
+     * @param fact {@link HabitFactPostDTO}
+     * @return instance of {@link HabitFact}
+     * @author Vitaliy Dzen
      */
     @Override
-    public HabitFact save(HabitFactPostDto fact) {
+    public HabitFact save(HabitFactPostDTO fact) {
         return habitFactRepo.save(modelMapper.map(fact, HabitFact.class));
     }
 
     /**
-     * {@inheritDoc}
+     * Method updates {@link HabitFact}.
+     *
+     * @param fact {@link HabitFactPostDTO} Object
+     * @param id   of {@link HabitFact}
+     * @return instance of {@link HabitFact}
+     * @author Vitaliy Dzen
      */
     @Override
-    public HabitFact update(HabitFactPostDto factDto, Long id) {
+    public HabitFact update(HabitFactPostDTO fact, Long id) {
         return habitFactRepo.findById(id)
             .map(employee -> {
-                Habit habit = habitService.getById(factDto.getHabit().getId());
-                employee.setHabit(habit);
+                employee.setHabitDictionary(habitDictionaryRepo.findById(fact.getHabitDictionary().getId()).get());
                 return habitFactRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_FACT_NOT_UPDATED_BY_ID));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Long delete(Long id) {
         if (!(habitFactRepo.findById(id).isPresent())) {

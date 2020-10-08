@@ -1,4 +1,3 @@
-/*
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -149,4 +148,4 @@ class AdviceControllerTest {
         verify(adviceService, times(0))
             .delete(anyLong());
     }
-}*/
+}
