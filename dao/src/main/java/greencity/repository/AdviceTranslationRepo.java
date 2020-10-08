@@ -21,7 +21,7 @@ public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, 
     @Query(nativeQuery = true, value = "SELECT * FROM advice_translations WHERE language_id = "
         + "(SELECT id FROM languages WHERE code = ?1)"
         + " AND advice_id = "
-        + "(SELECT id FROM advices WHERE habit_dictionary_id = ?2 ORDER BY RANDOM() LIMIT 1);")
+        + "(SELECT id FROM advices WHERE habit_id = ?2 ORDER BY RANDOM() LIMIT 1);")
     Optional<AdviceTranslation> getRandomAdviceTranslationByHabitIdAndLanguage(String languageCode, Long habitId);
 
     /**

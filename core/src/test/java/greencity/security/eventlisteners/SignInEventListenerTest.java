@@ -24,6 +24,8 @@ class SignInEventListenerTest {
         signInEventListener = new SignInEventListener(userService);
     }
 
+    /*@Test
+    public void onApplicationEvent() {
     @Test
     void onApplicationEvent() {
         doNothing().when(userService).addDefaultHabit(anyLong(), anyString());
@@ -38,5 +40,6 @@ class SignInEventListenerTest {
         Assertions
             .assertThrows(ClassCastException.class,
                 () -> signInEventListener.onApplicationEvent(signInEvent));
-    }
+    }*/
 }
+

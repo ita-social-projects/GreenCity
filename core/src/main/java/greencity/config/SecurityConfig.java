@@ -131,7 +131,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/search",
                 "/search/econews",
                 "/search/tipsandtricks",
-                "/habit/status/{habitId}",
+                "/habit/status/{habitAssignId}",
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/socket/**"
@@ -151,6 +151,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/goals",
                 "/goals/shoppingList/{userId}",
                 "/habit",
+                "/habit/assign/{habitAssignId}",
                 "/habit/statistic/{habitId}",
                 "/facts",
                 "/facts/random/{habitId}",
@@ -164,7 +165,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals",
                 "/user/{userId}/goals/available",
                 "/user/{userId}/customGoals/available",
-                "/user/{userId}/habit-dictionary/available",
+                "/user/{userId}/habit/assign/active",
+                "/user/{userId}/habit/available",
                 "/user/{userId}/sixUserFriends/",
                 "/user/{userId}/profile/",
                 "/user/isOnline/{userId}/",
@@ -204,6 +206,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments",
                 "/goals/shoppingList/{userId}",
                 "/habit/statistic/{habitStatisticId}",
+                "/habit/assign/{habitAssignId}",
+                "/habit/status/{habitAssignId}",
                 "/tipsandtricks/comments",
                 "/user/{userId}/customGoals",
                 "/user/{userId}/goals/{goalId}",
@@ -215,7 +219,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/{placeId}",
                 "/tipsandtricks/comments",
                 "/user/{userId}/customGoals",
-                "/user/{userId}/habit/{habitId}",
                 "/user/{userId}/userGoals",
                 "/user/{userId}/userFriend/{friendId}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
@@ -260,7 +263,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/{econewsId}",
                 "/facts/{factId}",
                 "/comments",
-                "/tipsandtricks/{id}"
+                "/tipsandtricks/{id}",
+                "/habit/status/{habitAssignId}"
             ).hasRole(ADMIN)
             .anyRequest().hasAnyRole(ADMIN);
     }

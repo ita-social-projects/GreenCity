@@ -1,5 +1,5 @@
 package greencity.service.impl;
-
+/*
 import greencity.ModelUtils;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.entity.Habit;
@@ -299,3 +299,4 @@ class HabitStatusServiceImplTest {
     }
 
 }
+*/

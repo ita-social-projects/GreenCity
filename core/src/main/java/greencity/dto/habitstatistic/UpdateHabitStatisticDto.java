@@ -2,14 +2,8 @@ package greencity.dto.habitstatistic;
 
 import greencity.constant.ValidationConstants;
 import greencity.entity.enums.HabitRate;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
 @NoArgsConstructor
@@ -19,8 +13,6 @@ import org.hibernate.validator.constraints.Range;
 @EqualsAndHashCode
 @Builder
 public class UpdateHabitStatisticDto {
-    @Min(0)
-    private Long id;
     @Range(min = ValidationConstants.MIN_AMOUNT_OF_ITEMS, max = ValidationConstants.MAX_AMOUNT_OF_ITEMS)
     @NotNull
     private Integer amountOfItems;

@@ -23,20 +23,11 @@ public class HabitStatus {
     @Column(name = "habit_streak")
     private Integer habitStreak;
 
-    @Column(name = "suspended")
-    private boolean suspended;
-
     @Column(name = "last_enrollment")
     private LocalDateTime lastEnrollmentDate;
 
-    @Column(name = "create_date", nullable = false)
-    private LocalDateTime createDate;
-
-    @ManyToOne
-    private Habit habit;
-
-    @ManyToOne
-    private User user;
+    @OneToOne
+    private HabitAssign habitAssign;
 
     @OneToMany(mappedBy = "habitStatus", cascade = CascadeType.ALL)
     private List<HabitStatusCalendar> habitStatusCalendars;
