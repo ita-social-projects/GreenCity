@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public interface MySpecification<T> extends Specification<T> {
-
+    /**
+     * Used for build predicate for data range filter.
+     */
     default Predicate getDataRangePredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
                                             SearchCriteria searchCriteria) {
         try {
@@ -30,6 +32,9 @@ public interface MySpecification<T> extends Specification<T> {
         }
     }
 
+    /**
+     * Used for build predicate for numeric filter.
+     */
     default Predicate getNumericPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
                                           SearchCriteria searchCriteria) {
         try {
@@ -41,6 +46,9 @@ public interface MySpecification<T> extends Specification<T> {
         }
     }
 
+    /**
+     * Used for build predicate for string filter.
+     */
     default Predicate getStringPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
                                          SearchCriteria searchCriteria) {
         if (searchCriteria.getValue().toString().trim().equals("")) {
