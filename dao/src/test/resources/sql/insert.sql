@@ -416,7 +416,12 @@ INSERT INTO habit_fact_translations (language_id, habit_fact_id, content, fact_o
 VALUES (1, 1, 'testFactTranslationsContent', 2);
 
 INSERT INTO habit_translation (name, description, habit_item, language_id, habit_id)
-VALUES ('testHabitTranslationName', 'testHabitDictionaryTranslationDescription', 'testHabitItem', 1, 1);
+VALUES ('Економити пакети', 'Опис пакетів', 'Пакети', 1, 1),
+       ('Save bags', 'bag description', 'bags', 2, 1),
+       ('экономить пакеты', 'описание пакетов', 'Пакеты', 3, 1),
+       ('Відмовитись від одноразових стаканчиків', 'Опис стаканчиків', 'Стаканчики',1, 2),
+       ('Discard disposable cups', 'cap description', 'caps',2, 2),
+       ('Отказаться от одноразовых стаканчиков', 'описание стаканчиков', 'Стаканчики',3, 2);
 
 INSERT INTO habit_assign (habit_id, user_id, acquired, create_date, suspended)
 VALUES (1, 1, false, '2020-09-10 20:00:00', false);
