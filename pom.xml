@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -21,9 +21,14 @@
         <module>service-api</module>
         <module>dao</module>
         <module>email</module>
+        <module>service</module>
     </modules>
 
     <properties>
+        <junit-jupiter.version>5.4.2</junit-jupiter.version>
+        <mockito-junit-jupiter.version>3.3.3</mockito-junit-jupiter.version>
+        <mockito-core.version>3.3.3</mockito-core.version>
+        <modelmapper.version>2.3.5</modelmapper.version>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
