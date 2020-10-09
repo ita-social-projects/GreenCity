@@ -1,11 +1,7 @@
 package greencity.filters;
 
 import greencity.annotations.RatingCalculationEnum;
-import greencity.constant.ErrorMessage;
 import greencity.entity.RatingStatistics;
-import greencity.entity.User;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.UserRepo;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,32 +10,16 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
-@Scope("prototype")
-@Slf4j
 @NoArgsConstructor
 public class RatingStatisticsSpecification implements MySpecification<RatingStatistics> {
     private transient List<SearchCriteria> searchCriteriaList;
-    private transient UserRepo userRepo;
 
     /**
      * Constructor.
      */
     public RatingStatisticsSpecification(List<SearchCriteria> searchCriteriaList) {
         this.searchCriteriaList = searchCriteriaList;
-    }
-
-    /**
-     * Autowire {@link UserRepo}.
-     */
-    @Autowired
-    public void setUserRepo(UserRepo userRepo) {
-        this.userRepo = userRepo;
     }
 
     @Override
@@ -94,22 +74,19 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
         return predicate;
     }
 
-    private Predicate getUserIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
-                                         SearchCriteria searchCriteria) {
-        try {
-            User user = userRepo.findById(Long.valueOf((String) searchCriteria.getValue()))
-                .orElseThrow(
-                    () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + searchCriteria.getValue()));
-            return criteriaBuilder.equal(root.get(searchCriteria.getKey()), user);
-        } catch (NumberFormatException ex) {
-            return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
-                criteriaBuilder.disjunction();
-        }
-    }
-
     private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
                                            SearchCriteria searchCriteria) {
         return criteriaBuilder.like(root.get(searchCriteria.getKey()).get("email"),
             "%" + searchCriteria.getValue() + "%");
+    }
+
+    private Predicate getUserIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
+                                         SearchCriteria searchCriteria) {
+        try {
+            return criteriaBuilder.equal(root.get(searchCriteria.getKey()).get("id"), searchCriteria.getValue());
+        } catch (NumberFormatException ex) {
+            return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
+                criteriaBuilder.disjunction();
+        }
     }
 }

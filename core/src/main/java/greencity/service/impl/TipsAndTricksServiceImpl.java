@@ -326,6 +326,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @param tipsAndTricksViewDto contains data from filters
      */
     private TipsAndTricksSpecification getSpecification(TipsAndTricksViewDto tipsAndTricksViewDto) {
-        return beanFactory.getBean(TipsAndTricksSpecification.class, buildSearchCriteria(tipsAndTricksViewDto));
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(tipsAndTricksViewDto);
+        return new TipsAndTricksSpecification(searchCriteria);
     }
 }

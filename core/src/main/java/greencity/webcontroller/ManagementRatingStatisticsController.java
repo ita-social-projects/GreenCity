@@ -41,8 +41,7 @@ public class ManagementRatingStatisticsController {
      */
     @Autowired
     public ManagementRatingStatisticsController(RatingStatisticsService ratingStatisticsService,
-                                                RatingExcelExporter ratingExcelExporter,
-                                                RatingStatisticsSpecification spec) {
+                                                RatingExcelExporter ratingExcelExporter) {
         this.ratingStatisticsService = ratingStatisticsService;
         this.ratingExcelExporter = ratingExcelExporter;
     }

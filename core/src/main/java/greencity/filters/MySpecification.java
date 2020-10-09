@@ -7,12 +7,8 @@ import java.time.format.DateTimeParseException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Component;
 
-@Component
-@Scope("prototype")
 public interface MySpecification<T> extends Specification<T> {
     /**
      * Used for build predicate for data range filter.
