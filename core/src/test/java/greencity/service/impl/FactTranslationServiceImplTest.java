@@ -1,7 +1,8 @@
+/*
 package greencity.service.impl;
 
 import static greencity.ModelUtils.*;
-import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.habitfact.HabitFactPostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.FactTranslation;
 import greencity.entity.HabitFact;
@@ -77,4 +78,4 @@ class FactTranslationServiceImplTest {
             .thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> factTranslationService.getFactOfTheDay(1L));
     }
-}
+}*/

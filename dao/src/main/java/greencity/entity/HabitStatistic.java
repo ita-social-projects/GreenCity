@@ -11,8 +11,6 @@ import lombok.*;
 @Getter
 @Setter
 @Table(name = "habit_statistics")
-@EqualsAndHashCode(exclude = "habit")
-@ToString(exclude = "habit")
 @Entity
 public class HabitStatistic {
     @Id
@@ -23,12 +21,12 @@ public class HabitStatistic {
     @Column(name = "rate")
     private HabitRate habitRate;
 
-    @Column(name = "date", nullable = false)
-    private ZonedDateTime createdOn;
+    @Column(name = "create_date", nullable = false)
+    private ZonedDateTime createDate;
 
     @Column(name = "amount_of_items")
     private Integer amountOfItems;
 
     @ManyToOne
-    private Habit habit;
+    private HabitAssign habitAssign;
 }

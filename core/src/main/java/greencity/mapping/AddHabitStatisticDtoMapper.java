@@ -10,11 +10,10 @@ public class AddHabitStatisticDtoMapper extends AbstractConverter<HabitStatistic
     @Override
     protected AddHabitStatisticDto convert(HabitStatistic habitStatistic) {
         return AddHabitStatisticDto.builder()
-            .id(habitStatistic.getId())
             .amountOfItems(habitStatistic.getAmountOfItems())
-            .createdOn(habitStatistic.getCreatedOn())
+            .createDate(habitStatistic.getCreateDate())
             .habitRate(habitStatistic.getHabitRate())
-            .habitId(habitStatistic.getHabit().getId())
+            .habitAssignId(habitStatistic.getHabitAssign().getId())
             .build();
     }
 }

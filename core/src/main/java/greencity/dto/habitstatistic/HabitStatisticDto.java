@@ -1,14 +1,11 @@
 package greencity.dto.habitstatistic;
 
-import greencity.entity.HabitStatistic;
 import greencity.entity.enums.HabitRate;
 import java.time.ZonedDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,18 +14,15 @@ import lombok.Setter;
 @EqualsAndHashCode
 @Builder
 public class HabitStatisticDto {
+    @NotNull
+    @Min(1)
     private Long id;
+    @NotEmpty
     private HabitRate habitRate;
-    private ZonedDateTime createdOn;
+    @NotEmpty
+    private ZonedDateTime createDate;
+    @NotEmpty
     private Integer amountOfItems;
-
-    /**
-     * Constructor.
-     */
-    public HabitStatisticDto(HabitStatistic habitStatistic) {
-        this.id = habitStatistic.getId();
-        this.habitRate = habitStatistic.getHabitRate();
-        this.createdOn = habitStatistic.getCreatedOn();
-        this.amountOfItems = habitStatistic.getAmountOfItems();
-    }
+    @NotEmpty
+    private Long habitAssignId;
 }

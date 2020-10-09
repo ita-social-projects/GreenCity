@@ -5,11 +5,11 @@ import greencity.entity.HabitStatusCalendar;
 import greencity.repository.HabitStatusCalendarRepo;
 import greencity.service.HabitStatusCalendarService;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -17,9 +17,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     private final HabitStatusCalendarRepo habitStatusCalendarRepo;
 
     /**
-     * Method save {@link HabitStatusCalendar}.
-     *
-     * @param habitStatusCalendar - {@link HabitStatusCalendar} which will be saved
+     * {@inheritDoc}
      */
     @Override
     public void save(HabitStatusCalendar habitStatusCalendar) {
@@ -27,11 +25,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method find {@link HabitStatusCalendar} by date and {@link HabitStatus}.
-     *
-     * @param date        - after this date the search is performed
-     * @param habitStatus - target {@link HabitStatus}
-     * @return {@link HabitStatusCalendar}
+     * {@inheritDoc}
      */
     @Override
     public HabitStatusCalendar findHabitStatusCalendarByEnrollDateAndHabitStatus(LocalDate date,
@@ -40,9 +34,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method delete {@link HabitStatusCalendar}.
-     *
-     * @param habitStatusCalendar - {@link HabitStatusCalendar} which will be deleted
+     * {@inheritDoc}
      */
     @Override
     public void delete(HabitStatusCalendar habitStatusCalendar) {
@@ -50,10 +42,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method return the latest EnrollDate of {@link HabitStatus}.
-     *
-     * @param habitStatus target {@link HabitStatus}
-     * @return {@link LocalDateTime}
+     * {@inheritDoc}
      */
     @Override
     public LocalDate findTopByEnrollDateAndHabitStatus(HabitStatus habitStatus) {
@@ -61,11 +50,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method return all enrolled {@link HabitStatus} after dateTime.
-     *
-     * @param dateTime    after this date the search is performed
-     * @param habitStatus target {@link HabitStatus}
-     * @return {@link List} of {@link HabitStatusCalendar}
+     * {@inheritDoc}
      */
     @Override
     public List<LocalDate> findEnrolledDatesAfter(LocalDate dateTime, HabitStatus habitStatus) {
@@ -78,11 +63,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
     }
 
     /**
-     * Method return all enrolled {@link HabitStatus} before dateTime.
-     *
-     * @param dateTime    after this date the search is performed
-     * @param habitStatus target {@link HabitStatus}
-     * @return {@link List} of {@link HabitStatusCalendar}
+     * {@inheritDoc}
      */
     @Override
     public List<LocalDate> findEnrolledDatesBefore(LocalDate dateTime, HabitStatus habitStatus) {
@@ -92,5 +73,14 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
         habitStatusCalendars.forEach(habitStatusCalendar -> dates.add(habitStatusCalendar.getEnrollDate()));
 
         return dates;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteAllByHabitStatus(HabitStatus habitStatus) {
+        habitStatusCalendarRepo.deleteAllByHabitStatusId(habitStatus.getId());
     }
 }

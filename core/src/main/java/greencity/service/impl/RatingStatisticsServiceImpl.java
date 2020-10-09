@@ -163,6 +163,6 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
      * @param ratingStatisticsViewDto contains data from filters
      */
     public RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto) {
-        return   beanFactory.getBean(RatingStatisticsSpecification.class, buildSearchCriteria(ratingStatisticsViewDto));
+        return beanFactory.getBean(RatingStatisticsSpecification.class, buildSearchCriteria(ratingStatisticsViewDto));
     }
 }

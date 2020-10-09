@@ -40,46 +40,31 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
 
     /**
-     * Method intercept exception {@link BadVerifyEmailTokenException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contains detail about occur exception.
-     * @return ResponseEntity which contain http status and body with message of exception.
-     */
-    @ExceptionHandler(BadVerifyEmailTokenException.class)
-    public final ResponseEntity<Object> handlerBadVerifyEmailTokenException(
-        BadVerifyEmailTokenException ex, WebRequest request) {
-        log.info(ex.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link NotUpdatedException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contains detail about occur exception.
-     * @return ResponseEntity which contain http status and body with message of exception.
-     * @author Yurii Savchenko
-     */
-    @ExceptionHandler(NotUpdatedException.class)
-    public final ResponseEntity<Object> handlerNotUpdatedException(NotUpdatedException ex, WebRequest request) {
-        log.info(ex.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link UserHasNoAvailableHabitDictionaryException}.
+     * Method intercept exception {@link UserHasNoAvailableHabitTranslationException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception.
      * @return ResponseEntity which contains http status and body with message of exception.
      * @author Yurii Savchenko
      */
-    @ExceptionHandler(UserHasNoAvailableHabitDictionaryException.class)
+    @ExceptionHandler(UserHasNoAvailableHabitTranslationException.class)
     public final ResponseEntity<Object> handleUserHasNoAvailableHabitDictionaryException(
-        UserHasNoAvailableHabitDictionaryException ex, WebRequest request) {
+        UserHasNoAvailableHabitTranslationException ex, WebRequest request) {
+        log.info(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercept exception {@link UserAlreadyHasHabitAssignedException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain  detail about occur exception
+     * @return ResponseEntity which contain http status and body with message of exception.
+     */
+    @ExceptionHandler(UserAlreadyHasHabitAssignedException.class)
+    public final ResponseEntity<Object> handleUserAlreadyHasHabitAssignedException(
+        UserAlreadyHasHabitAssignedException ex, WebRequest request) {
         log.info(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -162,8 +147,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         String propName = ex.getName();
         String className = null;
-        if (ex.getRequiredType() != null) {
-            className = ex.getRequiredType().getSimpleName();
+        Class<?> requiredType = ex.getRequiredType();
+        if (requiredType != null) {
+            className = requiredType.getSimpleName();
         }
         String message = String.format("Wrong %s. Should be '%s'", propName, className);
         exceptionResponse.setMessage(message);
@@ -180,35 +166,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(BadRefreshTokenException.class)
     public final ResponseEntity<Object> handleBadRefreshTokenException(WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link WrongEmailException}.
-     *
-     * @param request contain  detail about occur exception
-     * @return ResponseEntity witch  contain http status and body  with message of exception.
-     * @author Mykola Lehkyi
-     */
-    @ExceptionHandler(WrongEmailException.class)
-    public final ResponseEntity<Object> handleWrongEmailException(WrongEmailException exception, WebRequest request) {
-        log.info(exception.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link WrongPasswordException}.
-     *
-     * @param request contain  detail about occur exception
-     * @return ResponseEntity witch  contain http status and body  with message of exception.
-     * @author Mykola Lehkyi
-     */
-    @ExceptionHandler(WrongPasswordException.class)
-    public final ResponseEntity<Object> handleWrongPasswordException(WrongPasswordException exception,
-                                                                     WebRequest request) {
-        log.info(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }

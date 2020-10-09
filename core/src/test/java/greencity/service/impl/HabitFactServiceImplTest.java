@@ -1,8 +1,9 @@
+/*
 package greencity.service.impl;
 
 import greencity.dto.advice.AdviceDTO;
-import greencity.dto.fact.HabitFactDTO;
-import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.habitfact.HabitFactDTO;
+import greencity.dto.habitfact.HabitFactPostDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.entity.FactTranslation;
@@ -31,7 +32,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
 @ExtendWith(MockitoExtension.class)
- class HabitFactServiceImplTest {
+class HabitFactServiceImplTest {
 
     @InjectMocks
     private HabitFactServiceImpl habitFactService;
@@ -51,7 +52,7 @@ import org.modelmapper.TypeToken;
     private HabitDictionary habitDictionary = new HabitDictionary(1L, "test", null, null);
     private HabitFact habitFact = new HabitFact(1L, null, habitDictionary);
     private FactTranslation factTranslation = new FactTranslation(1L, null, CURRENT, null, "test");
-    private HabitFactDTO habitFactDTO = new HabitFactDTO(1L, "fact", null);
+    private HabitFactDTO habitFactDTO = new HabitFactDTO(1L, "habitfact", null);
     private LanguageTranslationDTO languageTranslationDTO = new LanguageTranslationDTO(null, "test");
     private HabitFactPostDTO habitFactPostDTO = new HabitFactPostDTO(null, new HabitDictionaryIdDto(1L));
 
@@ -143,4 +144,4 @@ import org.modelmapper.TypeToken;
                 () -> habitFactService.delete(1L));
     }
 
-}
+}*/
