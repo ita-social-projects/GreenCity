@@ -1,4 +1,4 @@
-package greencity.constant;
+package greencity.service.constant;
 
 /**
  * Class, that contains constants used for caching.

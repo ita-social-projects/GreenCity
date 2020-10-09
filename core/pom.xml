@@ -38,7 +38,9 @@
             <groupId>greencity</groupId>
             <artifactId>service</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
+            <!--TODO #1618
+            <scope>runtime</scope>-->
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -254,7 +256,6 @@
             <artifactId>poi-ooxml</artifactId>
             <version>4.1.2</version>
         </dependency>
-
     </dependencies>
 
     <build>

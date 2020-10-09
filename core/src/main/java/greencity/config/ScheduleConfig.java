@@ -13,7 +13,6 @@ import greencity.repository.*;
 import greencity.service.RatingStatisticsService;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
