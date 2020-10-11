@@ -52,4 +52,5 @@
     <include file="db/changelog/logs/ch-social-network-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch_rating_statictics_Dovganyuk.xml"/>
     <include file="/db/changelog/logs/ch-user-username-column-type.xml"/>
+    <include file="/db/changelog/logs/ch-tips-and-tricks-translations-Petryshak.xml"/>
 </databaseChangeLog>
