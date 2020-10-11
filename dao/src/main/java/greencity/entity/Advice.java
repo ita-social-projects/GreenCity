@@ -22,5 +22,5 @@ public class Advice {
     private List<AdviceTranslation> translations;
 
     @ManyToOne
-    private HabitDictionary habitDictionary;
+    private Habit habit;
 }

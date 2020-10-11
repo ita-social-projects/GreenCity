@@ -1,22 +1,22 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.advice.AdviceDTO;
-import greencity.dto.advice.AdvicePostDTO;
+import greencity.dto.advice.AdviceDto;
+import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
-import greencity.entity.localization.AdviceTranslation;
+import greencity.entity.Habit;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
-import greencity.repository.HabitDictionaryRepo;
 import greencity.service.AdviceService;
+import greencity.service.HabitService;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -26,32 +26,15 @@ import org.springframework.stereotype.Service;
  * @author Vitaliy Dzen
  */
 @Service
+@AllArgsConstructor
 public class AdviceServiceImpl implements AdviceService {
     private final AdviceRepo adviceRepo;
-    private final HabitDictionaryRepo habitDictionaryRepo;
+    private final HabitService habitService;
     private final AdviceTranslationRepo adviceTranslationRepo;
-
     private final ModelMapper modelMapper;
 
     /**
-     * Constructor with parameters.
-     *
-     * @author Vitaliy Dzen
-     */
-    @Autowired
-    public AdviceServiceImpl(AdviceRepo adviceRepo, HabitDictionaryRepo habitDictionaryRepo,
-                             AdviceTranslationRepo adviceTranslationRepo, ModelMapper modelMapper) {
-        this.adviceRepo = adviceRepo;
-        this.habitDictionaryRepo = habitDictionaryRepo;
-        this.adviceTranslationRepo = adviceTranslationRepo;
-        this.modelMapper = modelMapper;
-    }
-
-    /**
-     * Method finds all {@link Advice}.
-     *
-     * @return List of all {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public List<LanguageTranslationDTO> getAllAdvices() {
@@ -60,10 +43,7 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method finds random {@link Advice}.
-     *
-     * @return random {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
@@ -73,78 +53,48 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * Method find {@link Advice} by id.
-     *
-     * @param id of {@link Advice}
-     * @return {@link AdviceDTO}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
-    public AdviceDTO getAdviceById(Long id) {
+    public AdviceDto getAdviceById(Long id) {
         return modelMapper.map(adviceRepo.findById(id).orElseThrow(() ->
-            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceDTO.class);
+            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceDto.class);
     }
 
     /**
-     * Method find {@link Advice} by content.
-     *
-     * @param name of {@link Advice}
-     * @return {@link AdviceDTO}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
-    public AdviceDTO getAdviceByName(String language, String name) {
+    public AdviceDto getAdviceByName(String language, String name) {
         return modelMapper.map(adviceTranslationRepo
             .findAdviceTranslationByLanguageCodeAndAdvice(language, name).orElseThrow(() ->
-                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDTO.class);
+                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDto.class);
     }
 
     /**
-     * Method saves new {@link Advice}.
-     *
-     * @param advicePostDTO {@link AdviceDTO}
-     * @return instance of {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
-    public Advice save(AdvicePostDTO advicePostDTO) {
+    public Advice save(AdvicePostDto advicePostDTO) {
         return adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
     }
 
     /**
-     * Method updates {@link Advice}.
-     *
-     * @param advicePostDTO {@link AdviceDTO} Object
-     * @return instance of {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
-    public Advice update(AdvicePostDTO advicePostDTO, Long id) {
-        Advice advice = adviceRepo.findById(id).orElseThrow(
-            () -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
-        adviceTranslationRepo.deleteAll(advice.getTranslations());
-        Advice saveAdvice = Advice.builder()
-            .id(id)
-            .habitDictionary(habitDictionaryRepo.findById(advicePostDTO.getHabitDictionary().getId())
-                .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED)))
-            .translations(modelMapper.map(advicePostDTO.getTranslations(),
-                new TypeToken<List<AdviceTranslation>>() {
-                }.getType()))
-            .build();
-        saveAdvice.getTranslations()
-            .forEach(adviceTranslation -> adviceTranslation.setAdvice(saveAdvice));
-
-        adviceRepo.save(saveAdvice);
-        adviceTranslationRepo.saveAll(saveAdvice.getTranslations());
-        return saveAdvice;
+    public Advice update(AdvicePostDto adviceDto, Long id) {
+        return adviceRepo.findById(id)
+            .map(employee -> {
+                Habit habit = habitService.getById(adviceDto.getHabit().getId());
+                employee.setHabit(habit);
+                return adviceRepo.save(employee);
+            })
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
     }
 
     /**
-     * Method delete {@link Advice} by id.
-     *
-     * @param id Long
-     * @return id of deleted {@link Advice}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
     public Long delete(Long id) {

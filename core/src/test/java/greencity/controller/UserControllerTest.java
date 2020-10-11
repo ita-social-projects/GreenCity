@@ -1,23 +1,20 @@
 package greencity.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
-import greencity.dto.habitstatistic.HabitIdDto;
+import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.BulkSaveUserGoalDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
 import greencity.entity.User;
 import greencity.entity.enums.ROLE;
-import greencity.service.CustomGoalService;
-import greencity.service.HabitStatisticService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.security.Principal;
-import java.util.List;
+import java.util.Collections;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,6 +51,10 @@ class UserControllerTest {
     private UserService userService;
     @Mock
     private HabitStatisticService habitStatisticService;
+    @Mock
+    private HabitAssignService habitAssignService;
+    @Mock
+    private HabitService habitService;
     @Mock
     private CustomGoalService customGoalService;
 
@@ -213,26 +214,21 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserHabitsTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habits?language=en", 1))
-            .andExpect(status().isCreated());
-
-        verify(habitStatisticService).findAllHabitsAndTheirStatistics(
-            eq(1L), eq(true), eq("en"));
-    }
-
-    @Test
-    void getUserHabitsWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habits", 1))
-            .andExpect(status().isCreated());
-    }
-
-    @Test
-    void findInfoAboutUserHabitsTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habits/statistic", 1))
+    void getAvailableUserHabitTranslationsTest() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/habit/available?language=en", 1))
             .andExpect(status().isOk());
 
-        verify(habitStatisticService).getInfoAboutUserHabits(eq(1L));
+        verify(userService).getAvailableHabitTranslations(
+            eq(1L), eq("en"));
+    }
+
+    @Test
+    void getUserHabitAssignsWithoutLanguageParamTest() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/habit/assign/active", 1))
+            .andExpect(status().isCreated());
+
+        verify(habitAssignService).getAllActiveHabitAssignsByUserId(
+            eq(1L));
     }
 
     @Test
@@ -387,15 +383,15 @@ class UserControllerTest {
         verify(userService).saveUserGoals(eq(1L), eq(dto), eq("en"));
     }
 
-    @Test
+    /*@Test
     void getAvailableHabitDictionaryTest() throws Exception {
         mockMvc.perform(get(userLink + "/{userId}/habit-dictionary/available?language=en", 1))
             .andExpect(status().isOk());
 
         verify(userService).getAvailableHabitDictionary(eq(1L), eq("en"));
-    }
+    }*/
 
-    @Test
+    /*@Test
     void saveUserHabitsTest() throws Exception {
         String content = "[\n"
             + "  {\n"
@@ -413,16 +409,16 @@ class UserControllerTest {
         });
 
         verify(userService).createUserHabit(eq(1L), eq(dto), eq("en"));
-    }
+    }*/
 
-    @Test
+   /* @Test
     void deleteHabitTest() throws Exception {
         mockMvc.perform(delete(userLink + "/{userId}/habit/{habitId}", 1, 1))
             .andExpect(status().isOk());
 
         verify(userService).deleteHabitByUserIdAndHabitDictionary(eq(1L), eq(1L));
     }
-
+*/
     @Test
     void bulkDeleteUserGoalsTest() throws Exception {
         mockMvc.perform(delete(userLink + "/{userId}/userGoals?ids=1,2", 1))

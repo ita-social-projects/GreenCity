@@ -2,18 +2,15 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.habitstatistic.HabitCreateDto;
-import greencity.dto.habitstatistic.HabitDictionaryTranslationsDto;
-import greencity.dto.habitstatistic.HabitDto;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
-import greencity.entity.HabitDictionaryTranslation;
-import greencity.entity.User;
+import greencity.entity.HabitTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.repository.HabitDictionaryTranslationRepo;
 import greencity.repository.HabitRepo;
+import greencity.repository.HabitTranslationRepo;
 import greencity.service.HabitService;
-import greencity.service.HabitStatusService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -21,7 +18,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link HabitService}.
@@ -31,22 +27,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class HabitServiceImpl implements HabitService {
-    private HabitDictionaryTranslationRepo habitDictionaryTranslationRepo;
-    private HabitRepo habitRepo;
-    private HabitStatusService habitStatusService;
+    private final HabitTranslationRepo habitTranslationRepo;
+    private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
 
     /**
-     * Method {@link HabitDictionaryTranslation} by {@link Habit} and languageCode.
+     * Method {@link HabitTranslation} by {@link Habit} and languageCode.
      *
-     * @return {@link HabitDictionaryTranslation}
+     * @return {@link HabitTranslation}
      * @author Kovaliv Taras
      */
     @Override
-    public HabitDictionaryTranslation getHabitDictionaryTranslation(Habit habit, String languageCode) {
-        return habitDictionaryTranslationRepo
-            .findByHabitDictionaryAndLanguageCode(habit.getHabitDictionary(), languageCode)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_DICTIONARY_TRANSLATION_NOT_FOUND));
+    public HabitTranslationDto getHabitTranslation(Habit habit, String languageCode) {
+        HabitTranslation habitTranslation = habitTranslationRepo
+            .findByHabitAndLanguageCode(habit, languageCode)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND));
+        return modelMapper.map(habitTranslation, HabitTranslationDto.class);
     }
 
     /**
@@ -62,31 +58,6 @@ public class HabitServiceImpl implements HabitService {
             .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
     }
 
-    /**
-     * Method assign {@link Habit} for user.
-     *
-     * @param habitId - id of habit user want to assign
-     * @param user    - user that assign habit
-     * @return {@link HabitCreateDto}
-     */
-    @Transactional
-    @Override
-    public HabitCreateDto assignHabitForUser(Long habitId, User user) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-
-        if (!habit.getUsers().contains(user)) {
-            habit.getUsers().add(user);
-            habitStatusService.saveByHabit(habit, user);
-        } else {
-            habitStatusService.deleteByUser(user.getId());
-            habit.getUsers().remove(user);
-            habitRepo.save(habit);
-        }
-
-        return modelMapper.map(habitRepo.save(habit), HabitCreateDto.class);
-    }
-
     @Override
     public List<HabitDto> getAllHabitsDto() {
         return habitRepo.findAll()
@@ -96,14 +67,14 @@ public class HabitServiceImpl implements HabitService {
     }
 
     @Override
-    public PageableDto<HabitDictionaryTranslationsDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
-        Page<HabitDictionaryTranslation> pages =
-            habitDictionaryTranslationRepo.findAllByLanguageCode(pageable, language);
-        List<HabitDictionaryTranslationsDto> habitDictionaryTranslationsDtos =
+    public PageableDto<HabitTranslationDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
+        Page<HabitTranslation> pages =
+            habitTranslationRepo.findAllByLanguageCode(pageable, language);
+        List<HabitTranslationDto> habitTranslationDtos =
             pages.stream()
-                .map(habit -> modelMapper.map(habit, HabitDictionaryTranslationsDto.class))
+                .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<>(habitDictionaryTranslationsDtos, pages.getTotalElements(),
+        return new PageableDto<>(habitTranslationDtos, pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages());
     }
