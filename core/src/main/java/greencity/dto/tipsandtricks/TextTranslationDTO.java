@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class TextTranslationDTO {
     @NotEmpty
-    @Size(min = 20, max = 63206)
+    @Size(min = 20, max = 4000)
     private String content;
     @NotNull
     private String languageCode;
