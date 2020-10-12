@@ -1,6 +1,6 @@
 package greencity.dto.language;
 
-import greencity.constant.ValidationConstants;
+import greencity.constant.ServiceValidationConstants;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -16,6 +16,6 @@ public class LanguageTranslationDTO {
     private LanguageDTO language;
 
     @NotBlank
-    @Size(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH)
+    @Size(min = ServiceValidationConstants.ADVICE_MIN_LENGTH, max = ServiceValidationConstants.ADVICE_MAX_LENGTH)
     private String content;
 }

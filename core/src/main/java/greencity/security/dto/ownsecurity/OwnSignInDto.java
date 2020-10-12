@@ -1,7 +1,6 @@
 package greencity.security.dto.ownsecurity;
 
 import greencity.constant.ValidationConstants;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
