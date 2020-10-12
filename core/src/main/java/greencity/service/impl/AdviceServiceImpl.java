@@ -75,22 +75,24 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
-    public Advice save(AdvicePostDto advicePostDTO) {
-        return adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
+    public AdviceDto save(AdvicePostDto advicePostDTO) {
+        Advice savedAdvice = adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
+        return modelMapper.map(savedAdvice, AdviceDto.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Advice update(AdvicePostDto adviceDto, Long id) {
-        return adviceRepo.findById(id)
+    public AdviceDto update(AdvicePostDto adviceDto, Long id) {
+        Advice advice = adviceRepo.findById(id)
             .map(employee -> {
                 Habit habit = habitService.getById(adviceDto.getHabit().getId());
                 employee.setHabit(habit);
                 return adviceRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
+        return modelMapper.map(advice, AdviceDto.class);
     }
 
     /**
