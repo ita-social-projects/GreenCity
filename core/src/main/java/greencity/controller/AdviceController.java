@@ -18,6 +18,7 @@ import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -93,8 +94,10 @@ public class AdviceController {
     })
     @PostMapping
     public ResponseEntity<List<AdviceTranslation>> save(@Valid @RequestBody AdvicePostDto advice) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(adviceTranslationService.saveAdviceAndAdviceTranslation(advice));
+        List<AdviceTranslation> response = mapper.map(adviceTranslationService.saveAdviceAndAdviceTranslation(advice),
+            new TypeToken<List<AdviceTranslation>>() {
+            }.getType());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**

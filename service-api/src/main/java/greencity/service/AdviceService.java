@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.advice.AdviceDto;
+import greencity.dto.advice.AdviceGeneralDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import java.util.List;
@@ -46,22 +47,22 @@ public interface AdviceService {
     AdviceDto getAdviceByName(String language, String name);
 
     /**
-     * Method saves new {@link AdviceDto}.
+     * Method saves new {@link AdvicePostDto}.
      *
-     * @param advice {@link AdviceDto}
-     * @return instance of {@link AdviceDto}
+     * @param advice {@link AdvicePostDto}
+     * @return instance of {@link AdviceGeneralDto}
      * @author Vitaliy Dzen
      */
-    AdviceDto save(AdvicePostDto advice);
+    AdviceGeneralDto save(AdvicePostDto advice);
 
     /**
-     * Method updates {@link AdviceDto}.
+     * Method updates {@link AdviceGeneralDto}.
      *
-     * @param advice {@link AdviceDto}
-     * @return instance of {@link AdviceDto}
+     * @param advice {@link AdvicePostDto}
+     * @return instance of {@link AdviceGeneralDto}
      * @author Vitaliy Dzen
      */
-    AdviceDto update(AdvicePostDto advice, Long id);
+    AdviceGeneralDto update(AdvicePostDto advice, Long id);
 
     /**
      * Method delete {@link AdviceDto} by id.

@@ -1,6 +1,9 @@
 package greencity.service.impl;
 
+import greencity.dto.advice.AdviceDto;
+import greencity.dto.advice.AdviceGeneralDto;
 import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceTranslationGeneralDto;
 import greencity.entity.Advice;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.repository.AdviceTranslationRepo;
@@ -36,32 +39,30 @@ public class AdviceTranslationServiceImpl implements AdviceTranslationService {
     }
 
     /**
-     * Method saves new {@link AdviceTranslation}.
-     *
-     * @param adviceTranslations {@link AdviceTranslation}
-     * @return List of {@link AdviceTranslation}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
-    public List<AdviceTranslation> saveAdviceTranslation(List<AdviceTranslation> adviceTranslations) {
-        return adviceTranslationRepo.saveAll(adviceTranslations);
+    public List<AdviceTranslationGeneralDto> saveAdviceTranslation(
+        List<AdviceTranslationGeneralDto> adviceTranslations) {
+        List<AdviceTranslation> collect = modelMapper.map(adviceTranslations,
+            new TypeToken<List<AdviceTranslation>>() {
+            }.getType());
+        List<AdviceTranslation> saved = adviceTranslationRepo.saveAll(collect);
+        return modelMapper.map(saved, new TypeToken<List<AdviceTranslationGeneralDto>>() {
+        }.getType());
     }
 
     /**
-     * Method saves new {@link Advice} and list of new {@link AdviceTranslation} with relationship to {@link Advice}.
-     *
-     * @param advicePostDTO {@link AdvicePostDto}
-     * @return List of {@link AdviceTranslation}
-     * @author Vitaliy Dzen
+     * {@inheritDoc}
      */
     @Override
-    public List<AdviceTranslation> saveAdviceAndAdviceTranslation(AdvicePostDto advicePostDTO) {
-        Advice advice = modelMapper.map(adviceService.save(advicePostDTO), Advice.class);
-        List<AdviceTranslation> adviceTranslations = modelMapper.map(advicePostDTO.getTranslations(),
-            new TypeToken<List<AdviceTranslation>>() {
+    public List<AdviceTranslationGeneralDto> saveAdviceAndAdviceTranslation(AdvicePostDto advicePostDTO) {
+        AdviceGeneralDto save = adviceService.save(advicePostDTO);
+        List<AdviceTranslationGeneralDto> list = modelMapper.map(advicePostDTO.getTranslations(),
+            new TypeToken<List<AdviceTranslationGeneralDto>>() {
             }.getType());
-        adviceTranslations.forEach(a -> a.setAdvice(advice));
+        list.forEach(a -> a.setAdvice(save));
 
-        return saveAdviceTranslation(adviceTranslations);
+        return saveAdviceTranslation(list);
     }
 }
