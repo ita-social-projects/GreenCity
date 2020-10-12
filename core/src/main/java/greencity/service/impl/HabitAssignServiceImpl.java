@@ -10,6 +10,7 @@ import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
 import greencity.service.HabitAssignService;
 import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitService habitService;
+    private final HabitRepo habitRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusService habitStatusService;
@@ -50,7 +52,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignDto assignHabitForUser(Long habitId, User user) {
-        Habit habit = habitService.getById(habitId);
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
 
         if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(

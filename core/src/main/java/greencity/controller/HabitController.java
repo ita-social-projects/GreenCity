@@ -8,6 +8,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -23,6 +24,7 @@ import greencity.service.HabitStatisticService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
@@ -30,6 +32,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -119,6 +122,24 @@ public class HabitController {
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
+    }
+
+    /**
+     * Method which return {@link HabitDto} by given id.
+     *
+     * @param id of {@link Habit}
+     * @return {@link HabitDto}
+     */
+    @ApiOperation(value = "Find habit by given id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/find")
+    public ResponseEntity<HabitDto> findHabit(@ApiIgnore @AuthenticationPrincipal
+                                                                Principal principal, @RequestParam("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitService.getById(id));
     }
 
     /**

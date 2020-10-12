@@ -53,17 +53,24 @@ public class HabitServiceImpl implements HabitService {
      * @author Kovaliv Taras
      */
     @Override
-    public Habit getById(Long id) {
-        return habitRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+    public HabitDto getById(Long id) {
+        return modelMapper.map(habitRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id)),
+            HabitDto.class);
     }
 
     @Override
-    public List<HabitDto> getAllHabitsDto() {
-        return habitRepo.findAll()
+    public PageableDto<HabitDto> getAllHabitsDto(Pageable pageable) {
+        Page<Habit> habits = habitRepo.findAll(pageable);
+        List<HabitDto> habitDtos = habitRepo.findAll()
             .stream()
             .map(habit -> modelMapper.map(habit, HabitDto.class))
             .collect(Collectors.toList());
+        return new PageableDto<>(
+            habitDtos,
+            habits.getTotalElements(),
+            habits.getPageable().getPageNumber(),
+            habits.getTotalPages());
     }
 
     @Override

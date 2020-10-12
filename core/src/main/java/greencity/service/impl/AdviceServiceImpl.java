@@ -9,10 +9,11 @@ import greencity.entity.Habit;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
+import greencity.repository.HabitRepo;
 import greencity.service.AdviceService;
-import greencity.service.HabitService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class AdviceServiceImpl implements AdviceService {
     private final AdviceRepo adviceRepo;
-    private final HabitService habitService;
+    private final HabitRepo habitRepo;
     private final AdviceTranslationRepo adviceTranslationRepo;
     private final ModelMapper modelMapper;
 
@@ -86,7 +87,8 @@ public class AdviceServiceImpl implements AdviceService {
     public Advice update(AdvicePostDto adviceDto, Long id) {
         return adviceRepo.findById(id)
             .map(employee -> {
-                Habit habit = habitService.getById(adviceDto.getHabit().getId());
+                Habit habit = habitRepo.findById(adviceDto.getHabit().getId())
+                    .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
                 employee.setHabit(habit);
                 return adviceRepo.save(employee);
             })
