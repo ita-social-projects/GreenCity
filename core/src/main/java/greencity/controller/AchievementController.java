@@ -29,6 +29,7 @@ public class AchievementController {
 
     /**
      * Method returns all achievements, available for achieving.
+     *
      * @return list of {@link AchievementDTO}
      */
     @ApiOperation(value = "Get all achievements.")
