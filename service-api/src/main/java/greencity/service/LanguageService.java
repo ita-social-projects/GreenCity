@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.language.LanguageDTO;
-import greencity.entity.Language;
 import java.util.List;
 
 /**
@@ -11,7 +10,7 @@ import java.util.List;
  */
 public interface LanguageService {
     /**
-     * Method finds all {@link Language}.
+     * Method finds all {@link LanguageDTO}.
      *
      * @return List of all {@link LanguageDTO}
      * @author Vitaliy Dzen
@@ -26,15 +25,15 @@ public interface LanguageService {
     String extractLanguageCodeFromRequest();
 
     /**
-     * Method for getting {@link Language} by code.
+     * Method for getting {@link LanguageDTO} by code.
      *
      * @param code code of language.
-     * @return {@link Language} by language code.
+     * @return {@link LanguageDTO} by language code.
      */
-    Language findByCode(String code);
+    LanguageDTO findByCode(String code);
 
     /**
-     * method, that returns codes of all {@link Language}s.
+     * method, that returns codes of all languages.
      *
      * @return {@link List} of language code strings.
      */

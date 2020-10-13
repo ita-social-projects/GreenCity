@@ -8,6 +8,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
@@ -76,6 +77,7 @@ class EcoNewsServiceImplTest {
     @Test
     void save() throws MalformedURLException {
         MultipartFile image = ModelUtils.getFile();
+        LanguageDTO dto = new LanguageDTO(1L, "en");
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
@@ -84,7 +86,7 @@ class EcoNewsServiceImplTest {
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(Collections.singletonList(tag));
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
-            .thenReturn(ModelUtils.getLanguage());
+            .thenReturn(dto);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 

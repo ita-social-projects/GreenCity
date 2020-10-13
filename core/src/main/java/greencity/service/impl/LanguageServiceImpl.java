@@ -71,9 +71,10 @@ public class LanguageServiceImpl implements LanguageService {
      * {@inheritDoc}
      */
     @Override
-    public Language findByCode(String code) {
-        return languageRepo.findByCode(code)
+    public LanguageDTO findByCode(String code) {
+        Language language = languageRepo.findByCode(code)
             .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE));
+        return modelMapper.map(language, LanguageDTO.class);
     }
 
     /**
