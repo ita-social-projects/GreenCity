@@ -15,6 +15,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
+import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
@@ -345,7 +346,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @param ecoNewsViewDto contains data from filters
      */
     public EcoNewsSpecification getSpecification(EcoNewsViewDto ecoNewsViewDto) {
-        return   beanFactory.getBean(EcoNewsSpecification.class, buildSearchCriteria(ecoNewsViewDto));
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(ecoNewsViewDto);
+        return new EcoNewsSpecification(searchCriteria);
     }
 
     /**
