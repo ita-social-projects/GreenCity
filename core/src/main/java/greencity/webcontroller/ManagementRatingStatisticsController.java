@@ -41,8 +41,7 @@ public class ManagementRatingStatisticsController {
      */
     @Autowired
     public ManagementRatingStatisticsController(RatingStatisticsService ratingStatisticsService,
-                                                RatingExcelExporter ratingExcelExporter,
-                                                RatingStatisticsSpecification spec) {
+                                                RatingExcelExporter ratingExcelExporter) {
         this.ratingStatisticsService = ratingStatisticsService;
         this.ratingExcelExporter = ratingExcelExporter;
     }
@@ -106,7 +105,7 @@ public class ManagementRatingStatisticsController {
 
         List<RatingStatisticsDto> ratingStatisticsList =
             ratingStatisticsService
-                .getFilteredRatingStatisticsForExcel(ratingStatisticsService.getSpecification(ratingStatisticsViewDto));
+                .getFilteredRatingStatisticsForExcel(ratingStatisticsViewDto);
         ratingExcelExporter.export(response.getOutputStream(), ratingStatisticsList);
     }
 
@@ -120,12 +119,9 @@ public class ManagementRatingStatisticsController {
     public String filterData(Model model,
                              @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
                              RatingStatisticsViewDto ratingStatisticsViewDto) {
-        Pageable paging =
-            PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
-
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
-            ratingStatisticsService.getFilteredDataForManagementByPage(paging,
-                ratingStatisticsService.getSpecification(ratingStatisticsViewDto));
+            ratingStatisticsService.getFilteredDataForManagementByPage(pageable,
+               ratingStatisticsViewDto);
         model.addAttribute("ratings", pageableDto);
         model.addAttribute("fields", ratingStatisticsViewDto);
         return "core/management_user_rating";
