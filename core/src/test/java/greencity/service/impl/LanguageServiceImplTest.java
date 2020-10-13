@@ -62,8 +62,10 @@ import org.modelmapper.TypeToken;
 
     @Test
      void findByCode() {
+       LanguageDTO dto = new LanguageDTO(1L, "en");
         when(languageRepo.findByCode(language.getCode())).thenReturn(Optional.of(language));
-        assertEquals(language, languageService.findByCode(language.getCode()));
+        when(modelMapper.map(language, LanguageDTO.class)).thenReturn(dto);
+       assertEquals(dto, languageService.findByCode(language.getCode()));
     }
 
     @Test

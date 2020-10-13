@@ -1,6 +1,6 @@
 package greencity.dto.advice;
 
-import greencity.constant.ValidationConstants;
+import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habit.HabitDto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -18,7 +18,7 @@ public class AdviceDto {
     private Long id;
 
     @NotBlank
-    @Size(min = ValidationConstants.ADVICE_MIN_LENGTH, max = ValidationConstants.ADVICE_MAX_LENGTH)
+    @Size(min = ServiceValidationConstants.ADVICE_MIN_LENGTH, max = ServiceValidationConstants.ADVICE_MAX_LENGTH)
     private String content;
 
     private HabitDto habit;
