@@ -47,7 +47,7 @@ public interface RatingStatisticsService {
      * @return a list of {@link RatingStatisticsDto}.
      * @author Dovganyuk Taras
      */
-    List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(RatingStatisticsSpecification spec);
+    List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(RatingStatisticsViewDto ratingStatisticsViewDto);
 
     /**
      * Find {@link RatingStatistics} for management.
@@ -56,20 +56,13 @@ public interface RatingStatisticsService {
      * @author Dovganyuk Taras
      */
     PageableAdvancedDto<RatingStatisticsDtoForTables> getFilteredDataForManagementByPage(
-        Pageable pageable, RatingStatisticsSpecification spec);
+        Pageable pageable, RatingStatisticsViewDto ratingStatisticsViewDto);
 
     /**
-     *   * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
+     * * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
      *
      * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
      * @return {@link SearchCriteria}.
      */
     List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto);
-
-    /**
-     * Returns {@link RatingStatisticsSpecification} for entered filter parameters.
-     *
-     * @param ratingStatisticsViewDto contains data from filters
-     */
-    RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto);
 }

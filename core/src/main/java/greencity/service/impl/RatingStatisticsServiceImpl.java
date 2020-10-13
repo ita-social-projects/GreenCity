@@ -74,16 +74,18 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     @Override
-    public List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(RatingStatisticsSpecification spec) {
-        return ratingStatisticsRepo.findAll(spec).stream()
+    public List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(
+        RatingStatisticsViewDto ratingStatisticsViewDto) {
+        return ratingStatisticsRepo.findAll(getSpecification(ratingStatisticsViewDto)).stream()
             .map(ratingStat -> modelMapper.map(ratingStat, RatingStatisticsDto.class))
             .collect(Collectors.toList());
     }
 
     @Override
     public PageableAdvancedDto<RatingStatisticsDtoForTables> getFilteredDataForManagementByPage(
-        Pageable pageable, RatingStatisticsSpecification spec) {
-        Page<RatingStatistics> ratingStatistics = ratingStatisticsRepo.findAll(spec, pageable);
+        Pageable pageable, RatingStatisticsViewDto ratingStatisticsViewDto) {
+        Page<RatingStatistics> ratingStatistics =
+            ratingStatisticsRepo.findAll(getSpecification(ratingStatisticsViewDto), pageable);
         return ratingStatisticsDtoMapper(ratingStatistics);
     }
 
@@ -160,7 +162,7 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
      *
      * @param ratingStatisticsViewDto contains data from filters
      */
-    public RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto) {
+    private RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto) {
         List<SearchCriteria> searchCriteria = buildSearchCriteria(ratingStatisticsViewDto);
         return new RatingStatisticsSpecification(searchCriteria);
     }
