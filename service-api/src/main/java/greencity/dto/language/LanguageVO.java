@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class LanguageGeneralDto {
+public class LanguageVO {
     private Long id;
     private String code;
 }

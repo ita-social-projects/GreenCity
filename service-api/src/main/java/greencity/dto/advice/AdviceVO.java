@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class AdviceGeneralDto {
+public class AdviceVO {
     private Long id;
 
     @LanguageTranslationConstraint
