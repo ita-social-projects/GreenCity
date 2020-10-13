@@ -530,27 +530,44 @@ VALUES (1, 'https://www.facebook.com/greencitysocialproject1', 2),
        (9, 'https://www.facebook.com/greencitysocialproject1', 2),
        (12, 'https://www.facebook.com/greencitysocialproject1', 2);
 
-INSERT INTO tips_and_tricks (title, text, creation_date, author_id, image_path, source)
-VALUES ('Don''t take home any unnecessary trash or junk', 'If you want a flyer or business card, take a photo rather than taking it home. This is especially relevant at concerts and outings where freebies are being passed out.',
-        '2020-09-10 20:00:00', 1, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Go paperless', 'We know this can be a challenge, but opting for kindles, online books, or even renting from the library or borrowing from a friend makes a huge difference.',
-        '2020-09-10 20:00:00', 2, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Try to refuse junk mail', 'The junk mail epidemic is real. We always end up recycling it, but we found out there is a better option.',
-        '2020-09-10 20:00:00', 3, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Say no to plastic bags for groceries or produce and bring your own instead', 'Remember, you don’t need to use produce bags. You can purchase reusable bags specifically for produce.',
-        '2020-09-10 20:00:00', 4, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Invest in higher quality items', 'Higher quality items will last longer in the long run and will save you money.',
-        '2020-09-10 20:00:00', 5, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Use kitchen towels instead of paper towels', 'This simple switch can have a huge impact and it’s something you can start doing right now.',
-        '2020-09-10 20:00:00', 6, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Buy second-hand or from eco-conscious brands', 'Make an effort to stop buying things that you don’t need. ',
-        '2020-09-10 20:00:00', 7, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Ditch plastic straws', 'A simple change you can make is saying no to disposable straws.',
-        '2020-09-10 20:00:00', 8, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Use reusable storage bags instead of ziplock bags', 'Say goodbye to plastic ziplock bags for good. Reusable storage bags are the perfect alternative to single-use plastic bags and are so much more versatile.',
-        '2020-09-10 20:00:00', 9, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
-       ('Rethink your coffee choices', 'Using a french press is the perfect zero waste option for brewing coffee.',
-        '2020-09-10 20:00:00', 10, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/');
+INSERT INTO tips_and_tricks (id, creation_date, author_id, image_path, source)
+VALUES (1, '2020-09-10 20:00:00', 1, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       (2, '2020-09-10 20:00:00', 2, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       (3, '2020-09-10 20:00:00', 3, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       (4, '2020-09-10 20:00:00', 4, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       (5, '2020-09-10 20:00:00', 5, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/'),
+       (6, '2020-09-10 20:00:00', 6, 'ImagePath', 'https://sweetsimplevegan.com/2019/04/25-ways-to-reduce-waste/');
+
+
+INSERT INTO title_translations(id, content, tips_and_tricks_id, language_id)
+VALUES(1, 'Не забирайте додому зайвий мотлох', 1, 1), (2, 'Don''t take home any unnecessary trash or junk', 1, 2), (3, 'Не забирайте домой ненужный хлам', 1, 3),
+      (4, 'Без паперу', 2, 1), (5, 'Go paperless', 2, 2), (6, 'Без бумаги', 2, 3),
+      (7, 'Спробуйте відмовитись від небажаної пошти', 3, 1), (8, 'Try to refuse junk mail', 3, 2), (9, 'Попробуйте отказаться от нежелательной почты', 3, 3),
+      (10, 'Скажіть «ні» поліетиленовим пакетам для продуктів, а замість них принесіть свій', 4, 1), (11, 'Say no to plastic bags for groceries or produce and bring your own instead', 4, 2), (12, 'Скажите нет пластиковым пакетам для продуктов и вместо этого принесите свои', 4, 3),
+      (13, 'Інвестуйте в предмети вищої якості', 5, 1), (14, 'Invest in higher quality items', 5, 2), (15, 'Инвестируйте в предметы более высокого качества', 5, 3),
+      (16, 'Використовуйте кухонні рушники замість паперових', 6, 1), (17, 'Use kitchen towels instead of paper towels', 6, 2), (18, 'Используйте кухонные полотенца вместо бумажных.', 6, 3);
+
+
+INSERT INTO text_translations(id, content, tips_and_tricks_id, language_id)
+VALUES(1, 'Якщо ви хочете листівку чи візитну картку, краще сфотографуйте, аніж беріть її додому. Це особливо актуально на концертах та прогулянках, де вони роздіються безкоштовно.', 1, 1),
+      (2, 'If you want a flyer or business card, take a photo rather than taking it home. This is especially relevant at concerts and outings where freebies are being passed out.', 1, 2),
+      (3, 'Если вам нужен флаер или визитка, сделайте снимок, а не забирайте его домой. Это особенно актуально на концертах и прогулках, где их раздают бессплатно.', 1, 3),
+      (4, 'Ми знаємо, що це може бути складним завданням, але вибір гарячих видань, книг в Інтернеті, або навіть оренда в бібліотеці або позичання у друга має велике значення.', 2, 1),
+      (5, 'We know this can be a challenge, but opting for kindles, online books, or even renting from the library or borrowing from a friend makes a huge difference.', 2, 2),
+      (6, 'Мы знаем, что это может быть проблемой, но выбор гарячих изданий, онлайн-книг или даже аренда в библиотеке или заимствование у друга имеет огромное значение.', 2, 3),
+      (7, 'Епідемія небажаної пошти справжня. Ми завжди закінчуємо її переробкою, але ми з’ясували, що є кращий варіант.', 3, 1),
+      (8, 'The junk mail epidemic is real. We always end up recycling it, but we found out there is a better option.', 3, 2),
+      (9, 'Эпидемия нежелательной почты реальна. Мы всегда заканчиваем ее переработкой, но мы обнаружили, что есть лучший вариант.', 3, 3),
+      (10, 'Пам’ятайте, вам не потрібно використовувати виробничі пакети. Ви можете придбати багаторазові пакети спеціально для продуктів.', 4, 1),
+      (11, 'Remember, you don’t need to use v. You can purchase reusable bags specifically for produce.', 4, 2),
+      (12, 'Помните, что пакеты для продуктов использовать не обязательно. Вы можете приобрести многоразовые пакеты специально для продуктов.', 4, 3),
+      (13, 'Предмети вищої якості в довгостроковій перспективі прослужать довше і заощадять ваші гроші.', 5, 1),
+      (14, 'Higher quality items will last longer in the long run and will save you money.', 5, 2),
+      (15, 'Вещи более высокого качества прослужат дольше и сэкономят вам деньги.', 5, 3),
+      (16, 'Ця проста заміна може мати величезний вплив, і це те, що ви можете почати робити прямо зараз.', 6, 1),
+      (17, 'This simple switch can have a huge impact and it’s something you can start doing right now.', 6, 2),
+      (18, 'Эта простая замена может иметь огромное влияние, и вы можете начать делать это прямо сейчас.', 6, 3);
+
 
 INSERT INTO tips_and_tricks_tags (tips_and_tricks_id, tags_id)
 VALUES (1, 6),
@@ -561,19 +578,16 @@ VALUES (1, 6),
        (3, 7),
        (4, 3),
        (5, 3),
-       (6, 3),
-       (7, 3),
-       (8, 3),
-       (9, 3),
-       (10, 3);
+       (6, 3);
 
-INSERT INTO tipsandtricks_comment (text, created_date, modified_date, parent_comment_id, user_id, tips_and_tricks_id, deleted)
-VALUES ('Чудово. Візьму на замітку.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 1, 1, false),
-       ('Досить інтересно.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 2, 2, false),
-       ('Ніколи і не задумувався про це.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 3, 3, false),
-       ('Достатньо переконуюча порада.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 4, 4, false),
-       ('Хм, а це і правда має сенс.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 5, 5, false),
-       ('Цілком згіден.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 6, 8, false);
+
+INSERT INTO tipsandtricks_comment (id, text, created_date, modified_date, parent_comment_id, user_id, tips_and_tricks_id, deleted)
+VALUES (1, 'Чудово. Візьму на замітку.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 1, 1, false),
+       (2, 'Досить інтересно.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 2, 2, false),
+       (3, 'Ніколи і не задумувався про це.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 3, 3, false),
+       (4, 'Достатньо переконуюча порада.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 4, 4, false),
+       (5, 'Хм, а це і правда має сенс.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 5, 5, false),
+       (6, 'Цілком згіден.', '2020-09-10 20:00:00', '2020-09-10 20:01:00', null, 6, 6, false);
 
 INSERT INTO tipsandtricks_comment_users_liked (tipsandtricks_comment_id, users_liked_id)
 VALUES (1, 1),

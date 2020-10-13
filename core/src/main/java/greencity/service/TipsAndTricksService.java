@@ -6,9 +6,7 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
-import greencity.entity.TipsAndTricks;
-import greencity.entity.TipsAndTricksComment;
-import greencity.entity.User;
+import greencity.entity.*;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +15,21 @@ public interface TipsAndTricksService {
     /**
      * Method for creating {@link TipsAndTricks} instance.
      *
-     * @param tipsAndTricksDtoRequest - dto with {@link TipsAndTricks} title and text.
+     * @param tipsAndTricksDtoRequest {@link TipsAndTricksDtoRequest}
      * @return {@link TipsAndTricksDtoResponse} instance.
      */
     TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
                                   String email);
+
+    /**
+     * Method saves new {@link TipsAndTricksDtoManagement}, {@link TitleTranslation}  and {@link TextTranslation}.
+     *
+     * @param tipsAndTricksDtoManagement {@link TipsAndTricksDtoManagement}
+     * @return instance of {@link TipsAndTricksDtoManagement}
+     */
+    TipsAndTricksDtoManagement saveTipsAndTricksWithTranslations(TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+                                                                 MultipartFile image,
+                                                                 String name);
 
     /**
      * Method for updating {@link TipsAndTricks} instance.
@@ -29,6 +37,14 @@ public interface TipsAndTricksService {
      * @param tricksDtoManagement - instance of {@link TipsAndTricksDtoManagement}.
      */
     void update(TipsAndTricksDtoManagement tricksDtoManagement, MultipartFile multipartFile);
+
+    /**
+     * Method for getting all tips & tricks by page.
+     *
+     * @param page to search for.
+     * @return PageableDto of {@link TipsAndTricksDtoManagement} instances.
+     */
+    PageableDto<TipsAndTricksDtoManagement> findAllManagementDtos(Pageable page);
 
     /**
      * Method for getting all tips & tricks by page.
@@ -138,10 +154,10 @@ public interface TipsAndTricksService {
     void unlikeComment(User user, TipsAndTricksComment comment);
 
     /**
-     * Method for finding {@link TipsAndTricksDtoResponse} by specification.
+     * Method for finding {@link TipsAndTricksDtoManagement} by specification.
      *
      * @return a dto of {@link PageableDto}.
      */
-    PageableDto<TipsAndTricksDtoResponse> getFilteredDataForManagementByPage(
+    PageableDto<TipsAndTricksDtoManagement> getFilteredDataForManagementByPage(
         Pageable pageable, TipsAndTricksViewDto tipsAndTricksViewDto);
 }

@@ -2,9 +2,9 @@ package greencity.webcontroller;
 
 import com.google.gson.Gson;
 import greencity.dto.PageableDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.service.LanguageService;
 import greencity.service.TipsAndTricksService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +43,9 @@ class ManagementTipsAndTricksControllerTest {
 
     private MockMvc mockMvc;
 
+    @Mock
+    private LanguageService languageService;
+
     @InjectMocks
     private ManagementTipsAndTricksController managementTipsAndTricksController;
 
@@ -60,18 +63,21 @@ class ManagementTipsAndTricksControllerTest {
     @Test
     void findAll() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
-        List<TipsAndTricksDtoResponse> tipsAndTricksDtoResponses = Collections.singletonList(new TipsAndTricksDtoResponse());
-        PageableDto<TipsAndTricksDtoResponse> tipsAndTricksDtoResponsePageableDto = new PageableDto<>(tipsAndTricksDtoResponses, 2, 0, 3);
-        when(tipsAndTricksService.findAll(pageable)).thenReturn(tipsAndTricksDtoResponsePageableDto);
+        List<TipsAndTricksDtoManagement> tipsAndTricksDtoManagements = Collections.singletonList(new TipsAndTricksDtoManagement());
+        PageableDto<TipsAndTricksDtoManagement> tipsAndTricksDtoManagementPageableDto = new PageableDto<>(tipsAndTricksDtoManagements, 2, 0, 3);
+        when(tipsAndTricksService.findAllManagementDtos(pageable)).thenReturn(tipsAndTricksDtoManagementPageableDto);
+        List<LanguageDTO> languageDTOS = Collections.singletonList(new LanguageDTO(1L, "ua"));
+        when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
         this.mockMvc.perform(get(managementTipsAndTricksLink)
                 .param("page", "0")
                 .param("size", "10"))
                 .andExpect(view().name("core/management_tips_and_tricks"))
-                .andExpect(model().attribute("pageable", tipsAndTricksDtoResponsePageableDto))
+                .andExpect(model().attribute("pageable", tipsAndTricksDtoManagementPageableDto))
+                .andExpect(model().attribute("languages", languageService.getAllLanguages()))
                 .andExpect(status().isOk());
 
-        verify(tipsAndTricksService).findAll(pageable);
+        verify(tipsAndTricksService).findAllManagementDtos(pageable);
 
     }
 
@@ -109,7 +115,7 @@ class ManagementTipsAndTricksControllerTest {
     }
 
     @Test
-    void update() throws Exception{
+    void update() throws Exception {
         TipsAndTricksDtoManagement tipsAndTricksDtoManagement = new TipsAndTricksDtoManagement();
         Gson gson = new Gson();
         String json = gson.toJson(tipsAndTricksDtoManagement);
@@ -118,12 +124,12 @@ class ManagementTipsAndTricksControllerTest {
         this.mockMvc.perform(multipart(managementTipsAndTricksLink + "/")
                 .file(jsonFile)
                 .with(new RequestPostProcessor() {
-            @Override
-            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
-                mockHttpServletRequest.setMethod("PUT");
-                return mockHttpServletRequest;
-            }
-        })).andExpect(status().isOk());
+                    @Override
+                    public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
+                        mockHttpServletRequest.setMethod("PUT");
+                        return mockHttpServletRequest;
+                    }
+                })).andExpect(status().isOk());
 
         verify(tipsAndTricksService, never()).update(tipsAndTricksDtoManagement, jsonFile);
     }
@@ -131,10 +137,10 @@ class ManagementTipsAndTricksControllerTest {
     @Test
     void save() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
-        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = new TipsAndTricksDtoRequest();
+        TipsAndTricksDtoManagement tipsAndTricksDtoManagement = new TipsAndTricksDtoManagement();
         Gson gson = new Gson();
-        String json = gson.toJson(tipsAndTricksDtoRequest);
-        MockMultipartFile jsonFile = new MockMultipartFile("tipsAndTricksDtoRequest", "", "application/json", json.getBytes());
+        String json = gson.toJson(tipsAndTricksDtoManagement);
+        MockMultipartFile jsonFile = new MockMultipartFile("tipsAndTricksDtoManagement", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementTipsAndTricksLink + "/")
                 .file(jsonFile)
@@ -143,6 +149,6 @@ class ManagementTipsAndTricksControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(tipsAndTricksService, never()).save(tipsAndTricksDtoRequest, jsonFile, principal.getName());
+        verify(tipsAndTricksService, never()).saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, jsonFile, principal.getName());
     }
 }
