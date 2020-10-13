@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -56,12 +55,18 @@ class TipsAndTricksControllerTest {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn("Jane.Smith@gmail.com");
         String json = "{\n" +
-            "\"title\": \"title\",\n" +
-            " \"tags\": [\"news\"],\n" +
-            " \"text\": \"content content content\", \n" +
-            "\"source\": \"\",\n" +
-            " \"image\": null\n" +
-            "}";
+                "    \"titleTranslation\":{\n" +
+                "        \"content\":\"title\",\n" +
+                "        \"languageCode\":\"en\"\n" +
+                "    },\n" +
+                "    \"textTranslation\":{\n" +
+                "        \"content\":\"content content content\",\n" +
+                "        \"languageCode\":\"en\"\n" +
+                "    },\n" +
+                "    \"tags\":[\"news\"],\n" +
+                "    \"source\":\",\",\n" +
+                "    \"image\":null\n" +
+                "}";
         MockMultipartFile jsonFile =
             new MockMultipartFile("tipsAndTricksDtoRequest", "", "application/json", json.getBytes());
 
