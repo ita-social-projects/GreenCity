@@ -102,7 +102,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                         tipsAndTricksDtoManagement.getTitleTranslations().stream()
                                 .map(el -> TitleTranslation.builder()
                                         .content(el.getContent())
-                                        .language(languageService.findByCode(el.getLanguageCode()))
+                                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()),
+                                            Language.class))
                                         .build())
                                 .collect(Collectors.toList())
                 )
@@ -110,7 +111,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                         tipsAndTricksDtoManagement.getTextTranslations().stream()
                                 .map(el -> TextTranslation.builder()
                                         .content(el.getContent())
-                                        .language(languageService.findByCode(el.getLanguageCode()))
+                                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()),
+                                            Language.class))
                                         .build())
                                 .collect(Collectors.toList())
                 )

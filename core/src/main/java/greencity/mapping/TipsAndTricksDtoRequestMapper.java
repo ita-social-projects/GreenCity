@@ -1,6 +1,8 @@
 package greencity.mapping;
 
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
+import greencity.entity.Language;
 import greencity.entity.TextTranslation;
 import greencity.entity.TipsAndTricks;
 
@@ -31,17 +33,25 @@ public class TipsAndTricksDtoRequestMapper extends AbstractConverter<TipsAndTric
      */
     @Override
     protected TipsAndTricks convert(TipsAndTricksDtoRequest tipsAndTricksDtoRequest) {
+        LanguageDTO titleTranslation = languageService.findByCode(tipsAndTricksDtoRequest
+            .getTitleTranslation().getLanguageCode());
+        LanguageDTO textTranslation = languageService.findByCode(tipsAndTricksDtoRequest
+            .getTextTranslation().getLanguageCode());
         return TipsAndTricks.builder()
                 .source(tipsAndTricksDtoRequest.getSource())
                 .titleTranslations(Collections.singletonList(TitleTranslation.builder()
                         .content(tipsAndTricksDtoRequest.getTitleTranslation().getContent())
-                        .language(languageService.findByCode(tipsAndTricksDtoRequest
-                                .getTitleTranslation().getLanguageCode()))
+                        .language(Language.builder()
+                                .id(titleTranslation.getId())
+                                .code(titleTranslation.getCode())
+                                .build())
                         .build()))
                 .textTranslations(Collections.singletonList(TextTranslation.builder()
                         .content(tipsAndTricksDtoRequest.getTextTranslation().getContent())
-                        .language(languageService.findByCode(tipsAndTricksDtoRequest
-                                .getTextTranslation().getLanguageCode()))
+                        .language(Language.builder()
+                                .id(textTranslation.getId())
+                                .code(textTranslation.getCode())
+                                .build())
                         .build()))
                 .creationDate(ZonedDateTime.now())
                 .build();
