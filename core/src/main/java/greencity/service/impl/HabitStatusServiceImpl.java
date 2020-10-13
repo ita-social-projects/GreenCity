@@ -2,22 +2,27 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitstatus.HabitStatusDto;
-import greencity.entity.Habit;
+import greencity.dto.habitstatus.UpdateHabitStatusDto;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
-import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitStatusRepo;
 import greencity.service.HabitStatusCalendarService;
 import greencity.service.HabitStatusService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -27,54 +32,67 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     private final ModelMapper modelMapper;
 
     /**
-     * Method save {@link HabitStatusCalendar} for user.
-     *
-     * @param habit target habit
-     * @param user  target habit
+     * {@inheritDoc}
      */
     @Override
-    public void saveByHabit(Habit habit, User user) {
-        HabitStatus habitStatus = new HabitStatus();
-        habitStatus.setHabitStreak(0);
-        habitStatus.setHabit(habit);
-        habitStatus.setWorkingDays(0);
-        habitStatus.setUser(user);
-        habitStatus.setCreateDate(LocalDateTime.now());
-        habitStatus.setLastEnrollmentDate(LocalDateTime.now());
+    public HabitStatusDto getById(Long habitAssignId) {
+        return modelMapper.map(habitStatusRepo.findById(habitAssignId)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
+            HabitStatusDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveStatusByHabitAssign(HabitAssign habitAssign) {
+        HabitStatus habitStatus = HabitStatus.builder()
+            .habitStreak(0)
+            .habitAssign(habitAssign)
+            .workingDays(0)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .build();
+
         habitStatusRepo.save(habitStatus);
     }
 
     /**
-     * Method delete {@link HabitStatus} by user.
-     *
-     * @param userId target userId
+     * {@inheritDoc}
      */
     @Override
-    public void deleteByUser(Long userId) {
-        habitStatusRepo.deleteHabitStatusByUserId(userId);
+    public HabitStatusDto findStatusByHabitAssignId(Long habitAssignId) {
+        return modelMapper.map(habitStatusRepo.findByHabitAssignId(habitAssignId)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN)),
+            HabitStatusDto.class);
     }
 
     /**
-     * Find {@link HabitStatus} by habit and user id's.
-     *
-     * @param habitId target habit Id
-     * @param userId  target user Id
-     * @return {@link HabitStatusDto}
+     * {@inheritDoc}
      */
     @Override
-    public HabitStatusDto findStatusByHabitIdAndUserId(Long habitId, Long userId) {
-        return modelMapper.map(habitStatusRepo.findByHabitIdAndUserId(habitId, userId), HabitStatusDto.class);
+    public HabitStatusDto findActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
+        return modelMapper.map(habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT)),
+            HabitStatusDto.class);
     }
 
     /**
-     * Method enroll {@link greencity.entity.Habit}.
-     *
-     * @param habitId - id of habit which we enroll
-     * @return {@link HabitStatusDto}
+     * {@inheritDoc}
      */
     @Override
-    public HabitStatusDto enrollHabit(Long habitId, Long userId) {
-        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId);
+    public HabitStatusDto findStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime dateTime) {
+        return modelMapper.map(habitStatusRepo.findByUserIdAndHabitIdAndCreateDate(userId, habitId, dateTime)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT)),
+            HabitStatusDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HabitStatusDto enrollHabit(Long habitAssignId) {
+        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT));
         int workingDays = habitStatus.getWorkingDays();
         habitStatus.setWorkingDays(++workingDays);
         LocalDate todayDate = LocalDate.now();
@@ -106,14 +124,12 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method unenroll Habit in defined date.
-     *
-     * @param habitId - id of habit
-     * @param date    - date we want unenroll
+     * {@inheritDoc}
      */
     @Override
-    public void unenrollHabit(LocalDate date, Long habitId, Long userId) {
-        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId);
+    public void unenrollHabit(LocalDate date, Long habitAssignId) {
+        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT));
         int daysStreak = checkHabitStreakAfterDate(date, habitStatus);
         habitStatus.setHabitStreak(daysStreak + 1);
         int workingDays = habitStatus.getWorkingDays();
@@ -137,14 +153,12 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     }
 
     /**
-     * Method enroll habit for defined date.
-     *
-     * @param habitId - id of habit
-     * @param date    - date we want enroll
+     * {@inheritDoc}
      */
     @Override
-    public void enrollHabitInDate(Long habitId, Long userId, LocalDate date) {
-        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId);
+    public void enrollHabitInDate(Long habitAssignId, LocalDate date) {
+        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT));
         HabitStatusCalendar habitCalendarOnDate =
             habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(date, habitStatus);
 
@@ -206,5 +220,58 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         }
 
         return daysStreak;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteStatusByHabitAssignId(Long habitAssignId) {
+        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
+            .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
+        habitStatusRepo.deleteByHabitAssignId(habitAssignId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
+        HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
+            .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
+        habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteStatusByUserIdAndHabitIdAndAssignCreateDate(Long userId, Long habitId,
+                                                                  ZonedDateTime zonedDateTime) {
+        HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
+            .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
+        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
+        habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public HabitStatusDto update(Long habitAssignId, UpdateHabitStatusDto dto) {
+        HabitStatus updatable = habitStatusRepo.findByHabitAssignId(habitAssignId)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_UPDATED));
+
+        updatable.setHabitStreak(dto.getHabitStreak());
+        updatable.setLastEnrollmentDate(dto.getLastEnrollmentDate());
+        updatable.setWorkingDays(dto.getWorkingDays());
+
+        return modelMapper.map(habitStatusRepo.save(updatable), HabitStatusDto.class);
     }
 }

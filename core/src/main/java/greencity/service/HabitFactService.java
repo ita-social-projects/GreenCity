@@ -1,7 +1,7 @@
 package greencity.service;
 
-import greencity.dto.fact.HabitFactDTO;
-import greencity.dto.fact.HabitFactPostDTO;
+import greencity.dto.habitfact.HabitFactDto;
+import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import java.util.List;
@@ -32,37 +32,37 @@ public interface HabitFactService {
      * Method find {@link HabitFact} by id.
      *
      * @param id of {@link HabitFact}
-     * @return {@link HabitFactDTO}
+     * @return {@link HabitFactDto}
      * @author Vitaliy Dzen
      */
-    HabitFactDTO getHabitFactById(Long id);
+    HabitFactDto getHabitFactById(Long id);
 
     /**
-     * Method find {@link HabitFact} by fact.
+     * Method find {@link HabitFact} by habitfact.
      *
      * @param name of {@link HabitFact}
-     * @return {@link HabitFactDTO}
+     * @return {@link HabitFactDto}
      * @author Vitaliy Dzen
      */
-    HabitFactDTO getHabitFactByName(String language, String name);
+    HabitFactDto getHabitFactByName(String language, String name);
 
     /**
      * Method saves new {@link HabitFact}.
      *
-     * @param fact {@link HabitFactPostDTO}
+     * @param fact {@link HabitFactPostDto}
      * @return instance of {@link HabitFact}
      * @author Vitaliy Dzen
      */
-    HabitFact save(HabitFactPostDTO fact);
+    HabitFact save(HabitFactPostDto fact);
 
     /**
      * Method updates {@link HabitFact}.
      *
-     * @param fact {@link HabitFactPostDTO}
+     * @param fact {@link HabitFactPostDto}
      * @return instance of {@link HabitFact}
      * @author Vitaliy Dzen
      */
-    HabitFact update(HabitFactPostDTO fact, Long id);
+    HabitFact update(HabitFactPostDto fact, Long id);
 
     /**
      * Method delete {@link HabitFact} by id.

@@ -1,6 +1,6 @@
 package greencity.service.impl;
 
-import greencity.dto.advice.AdvicePostDTO;
+import greencity.dto.advice.AdvicePostDto;
 import greencity.entity.Advice;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.repository.AdviceTranslationRepo;
@@ -50,12 +50,12 @@ public class AdviceTranslationServiceImpl implements AdviceTranslationService {
     /**
      * Method saves new {@link Advice} and list of new {@link AdviceTranslation} with relationship to {@link Advice}.
      *
-     * @param advicePostDTO {@link AdvicePostDTO}
+     * @param advicePostDTO {@link AdvicePostDto}
      * @return List of {@link AdviceTranslation}
      * @author Vitaliy Dzen
      */
     @Override
-    public List<AdviceTranslation> saveAdviceAndAdviceTranslation(AdvicePostDTO advicePostDTO) {
+    public List<AdviceTranslation> saveAdviceAndAdviceTranslation(AdvicePostDto advicePostDTO) {
         Advice advice = adviceService.save(advicePostDTO);
         List<AdviceTranslation> adviceTranslations = modelMapper.map(advicePostDTO.getTranslations(),
             new TypeToken<List<AdviceTranslation>>() {

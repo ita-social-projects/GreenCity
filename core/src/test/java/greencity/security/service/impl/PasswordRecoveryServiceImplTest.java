@@ -2,6 +2,7 @@ package greencity.security.service.impl;
 
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
+import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
@@ -119,7 +120,7 @@ class PasswordRecoveryServiceImplTest {
     void updatePasswordUsingTokenSimpleTest() {
         String token = "foo";
         String newPassword = "bar";
-        User user = User.builder().id(1L).email("foo@bar.com").build();
+        User user = User.builder().id(1L).userStatus(UserStatus.CREATED).email("foo@bar.com").build();
         when(restorePasswordEmailRepo.findByToken(token)).thenReturn(Optional.of(
             RestorePasswordEmail.builder()
                 .expiryDate(LocalDateTime.now().plusHours(1))
@@ -137,5 +138,11 @@ class PasswordRecoveryServiceImplTest {
         verify(applicationEventPublisher).publishEvent(refEq(
             new UpdatePasswordEvent(passwordRecoveryService.getClass(), newPassword, user.getId()), "timestamp"
         ));
+    }
+
+    @Test
+    void deleteAllExpiredPasswordResetTokensTest() {
+        passwordRecoveryService.deleteAllExpiredPasswordResetTokens();
+        verify(restorePasswordEmailRepo).deleteAllExpiredPasswordResetTokens();
     }
 }

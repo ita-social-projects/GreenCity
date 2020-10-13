@@ -1,7 +1,7 @@
 package greencity.service.impl;
 
 
-import greencity.ModelUtils;
+/*import greencity.ModelUtils;
 import greencity.entity.Habit;
 import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
@@ -132,3 +132,4 @@ class HabitStatusCalendarServiceImplTest {
     }
 
 }
+*/

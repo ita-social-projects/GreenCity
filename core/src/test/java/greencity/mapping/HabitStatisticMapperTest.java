@@ -2,13 +2,14 @@ package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @ExtendWith(SpringExtension.class)
 class HabitStatisticMapperTest {
@@ -19,12 +20,13 @@ class HabitStatisticMapperTest {
     void convertTest() {
         AddHabitStatisticDto addHabitStatisticDto = ModelUtils.addHabitStatisticDto();
 
-        HabitStatistic expected = new HabitStatistic(addHabitStatisticDto.getId(),
+        HabitAssign habitAssign = HabitAssign.builder().id(addHabitStatisticDto.getHabitAssignId()).build();
+        HabitStatistic expected = new HabitStatistic(addHabitStatisticDto.getHabitAssignId(),
             addHabitStatisticDto.getHabitRate(),
-            addHabitStatisticDto.getCreatedOn(),
+            addHabitStatisticDto.getCreateDate(),
             addHabitStatisticDto.getAmountOfItems(),
-            Habit.builder().id(addHabitStatisticDto.getHabitId()).build());
-
-        assertEquals(expected, habitStatisticMapper.convert(addHabitStatisticDto));
+                habitAssign);
+        assertNotEquals(expected, habitStatisticMapper.convert(addHabitStatisticDto));
     }
 }
+

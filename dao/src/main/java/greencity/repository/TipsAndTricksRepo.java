@@ -1,7 +1,10 @@
 package greencity.repository;
 
 import greencity.entity.TipsAndTricks;
+
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
-    JpaSpecificationExecutor<TipsAndTricks> {
+        JpaSpecificationExecutor<TipsAndTricks> {
     /**
      * Method returns {@link TipsAndTricks} by specific tags.
      *
@@ -20,10 +23,21 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @return {@link TipsAndTricks} by specific tags.
      */
     @Query("SELECT DISTINCT tt FROM TipsAndTricks tt "
-        + "JOIN tt.tags ttt "
-        + "WHERE lower(ttt.name) in :tags "
-        + "ORDER BY tt.creationDate DESC")
-    Page<TipsAndTricks> find(Pageable pageable, List<String> tags);
+            + "left JOIN tt.titleTranslations title "
+            + "left JOIN tt.tags ttt "
+            + "WHERE lower(ttt.name) in :tags "
+            + "and title.language.code = :languageCode "
+            + "ORDER BY tt.creationDate DESC")
+    Page<TipsAndTricks> find(String languageCode, Pageable pageable, List<String> tags);
+
+    /**
+     * Method returns all {@link TipsAndTricks} by id and languageCode.
+     *
+     * @param id of {@link TipsAndTricks}
+     * @param languageCode of titleTranslation.
+     * @return all {@link TipsAndTricks} by languageCode and page.
+     */
+    Optional<TipsAndTricks> findByIdAndTitleTranslationsLanguageCode(Long id, String languageCode);
 
     /**
      * Method returns all {@link TipsAndTricks} by page.
@@ -34,16 +48,27 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
     Page<TipsAndTricks> findAllByOrderByCreationDateDesc(Pageable page);
 
     /**
+     * Method returns all {@link TipsAndTricks} by languageCode and page.
+     *
+     * @param page of tips & tricks.
+     * @param languageCode of titleTranslation.
+     * @return all {@link TipsAndTricks} by languageCode and page.
+     */
+    Page<TipsAndTricks> findByTitleTranslationsLanguageCodeOrderByCreationDateDesc(String languageCode, Pageable page);
+
+    /**
      * Method returns {@link TipsAndTricks} by search query and page.
      *
      * @param searchQuery query to search
      * @return list of {@link TipsAndTricks}
      */
-    @Query("select tt from TipsAndTricks tt "
-        + "where lower(tt.title) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or lower(tt.text) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
-        + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))")
+    @Query("select distinct tt from TipsAndTricks tt "
+            + "left JOIN tt.titleTranslations title "
+            + "left JOIN tt.textTranslations textTrans "
+            + "where lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
+            + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))")
     Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery);
 
     /**
@@ -53,13 +78,17 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @param searchQuery query to search.
      * @return list of {@link TipsAndTricks}.
      */
-    @Query("select tt from TipsAndTricks tt "
-        + "where CONCAT(tt.id,'') like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or lower(tt.title) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or lower(tt.text) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.author a "
-        + "where lower(a.name) like lower(CONCAT('%', :searchQuery, '%')))")
-    Page<TipsAndTricks> searchBy(Pageable pageable, String searchQuery);
+    @Query("select distinct tt from TipsAndTricks tt "
+            + "left JOIN tt.titleTranslations title "
+            + "left JOIN tt.textTranslations textTrans "
+            + "where (CONCAT(tt.id,'') like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.author a "
+            + "where lower(a.name) like lower(CONCAT('%', :searchQuery, '%'))) "
+            + "and title.language.code = :languageCode)")
+    Page<TipsAndTricks> searchBy(Pageable pageable, String searchQuery, String languageCode);
+
 
     /**
      * Method for getting amount of written tips and trick by user id.
@@ -69,7 +98,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @author Marian Datsko
      */
     @Query(nativeQuery = true,
-        value = " SELECT COUNT(author_id) "
-            + " FROM tips_and_tricks WHERE author_id = :userId")
+            value = " SELECT COUNT(author_id) "
+                    + " FROM tips_and_tricks WHERE author_id = :userId")
     Long getAmountOfWrittenTipsAndTrickByUserId(@Param("userId") Long id);
 }
