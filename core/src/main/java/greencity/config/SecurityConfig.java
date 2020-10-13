@@ -84,11 +84,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/management/**",
-                "/econews/comments",
                 "/econews/comments/replies/{parentCommentId}").hasRole(ADMIN)
             .antMatchers("/css/**",
                 "/img/**"
             ).permitAll()
+            .antMatchers(HttpMethod.GET,
+                "/econews/comments").hasRole(ADMIN)
             .antMatchers(HttpMethod.GET,
                 "/ownSecurity/verifyEmail",
                 "/ownSecurity/updateAccessToken",
