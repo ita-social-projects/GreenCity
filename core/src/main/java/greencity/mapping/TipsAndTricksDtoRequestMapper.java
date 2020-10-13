@@ -1,5 +1,6 @@
 package greencity.mapping;
 
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.entity.Language;
 import greencity.entity.TextTranslation;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TipsAndTricksDtoRequestMapper extends AbstractConverter<TipsAndTricksDtoRequest, TipsAndTricks> {
     private final LanguageService languageService;
-    private final ModelMapper modelMapper;
 
     /**
      * Method for converting {@link TipsAndTricksDtoRequest} into {@link TipsAndTricks}.
@@ -33,19 +33,25 @@ public class TipsAndTricksDtoRequestMapper extends AbstractConverter<TipsAndTric
      */
     @Override
     protected TipsAndTricks convert(TipsAndTricksDtoRequest tipsAndTricksDtoRequest) {
-        Language titleTranslation = modelMapper.map(languageService.findByCode(tipsAndTricksDtoRequest
-            .getTitleTranslation().getLanguageCode()), Language.class);
-        Language textTranslation = modelMapper.map(languageService.findByCode(tipsAndTricksDtoRequest
-            .getTextTranslation().getLanguageCode()), Language.class);
+        LanguageDTO titleTranslation = languageService.findByCode(tipsAndTricksDtoRequest
+            .getTitleTranslation().getLanguageCode());
+        LanguageDTO textTranslation = languageService.findByCode(tipsAndTricksDtoRequest
+            .getTextTranslation().getLanguageCode());
         return TipsAndTricks.builder()
                 .source(tipsAndTricksDtoRequest.getSource())
                 .titleTranslations(Collections.singletonList(TitleTranslation.builder()
                         .content(tipsAndTricksDtoRequest.getTitleTranslation().getContent())
-                        .language(titleTranslation)
+                        .language(Language.builder()
+                                .id(titleTranslation.getId())
+                                .code(titleTranslation.getCode())
+                                .build())
                         .build()))
                 .textTranslations(Collections.singletonList(TextTranslation.builder()
                         .content(tipsAndTricksDtoRequest.getTextTranslation().getContent())
-                        .language(textTranslation)
+                        .language(Language.builder()
+                                .id(textTranslation.getId())
+                                .code(textTranslation.getCode())
+                                .build())
                         .build()))
                 .creationDate(ZonedDateTime.now())
                 .build();
