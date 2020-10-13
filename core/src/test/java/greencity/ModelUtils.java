@@ -1,6 +1,5 @@
 package greencity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
@@ -17,6 +16,7 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -27,10 +27,15 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.*;
+import greencity.dto.user.AuthorDto;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserGoalResponseDto;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.entity.*;
 import greencity.entity.enums.*;
 import greencity.entity.localization.GoalTranslation;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -46,9 +51,6 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -139,25 +141,25 @@ public class ModelUtils {
         return new FavoritePlaceDto("name", 3L);
     }
 
-    /*public static AddHabitStatisticDto addHabitStatisticDto() {
+    public static AddHabitStatisticDto addHabitStatisticDto() {
         return AddHabitStatisticDto.builder()
-                .id(1L)
                 .amountOfItems(5)
                 .habitRate(HabitRate.DEFAULT)
-                .habitId(13L)
-                .createdOn(ZonedDateTime.now())
+                .createDate(ZonedDateTime.now())
+                .habitAssignId(10L)
+
                 .build();
     }
 
     public static HabitStatistic getHabitStatistic() {
         return HabitStatistic.builder()
-                .id(1L)
-                .habitRate(HabitRate.DEFAULT)
-                .createdOn(ZonedDateTime.now())
-                .amountOfItems(5)
-                .habit(Habit.builder().id(13L).build())
-                .build();
-    }*/
+            .id(1L)
+            .habitRate(HabitRate.DEFAULT)
+            .createDate(ZonedDateTime.now())
+            .amountOfItems(5)
+            .habitAssign(HabitAssign.builder().id(13L).build())
+            .build();
+    }
 
     /*public static Habit getHabit() {
         return Habit.builder()

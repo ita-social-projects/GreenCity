@@ -413,7 +413,11 @@ VALUES (1),
        (1);
 
 INSERT INTO habit_fact_translations (language_id, habit_fact_id, content, fact_of_day_status)
-VALUES (1, 1, 'testFactTranslationsContent', 2);
+VALUES (1, 1, 'Тест факт', 2),
+       (2, 2, 'testFactTranslationsContent', 2),
+       (3, 3, 'Тест факт', 2);
+
+
 
 INSERT INTO habit_translation (name, description, habit_item, language_id, habit_id)
 VALUES ('Економити пакети', 'Опис пакетів', 'Пакети', 1, 1),
