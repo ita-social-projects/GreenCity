@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LanguageTranslationVO {
+public class LanguageTranslationDTO {
     @NotNull
     private LanguageDTO language;
 

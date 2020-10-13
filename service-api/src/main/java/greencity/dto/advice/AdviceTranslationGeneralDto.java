@@ -1,6 +1,6 @@
 package greencity.dto.advice;
 
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageGeneralDto;
 import lombok.*;
 
 @NoArgsConstructor
@@ -9,12 +9,12 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class AdviceTranslationVO {
+public class AdviceTranslationGeneralDto {
     private Long id;
 
-    private LanguageVO language;
+    private LanguageGeneralDto language;
 
-    private AdviceVO advice;
+    private AdviceGeneralDto advice;
 
     private String content;
 }

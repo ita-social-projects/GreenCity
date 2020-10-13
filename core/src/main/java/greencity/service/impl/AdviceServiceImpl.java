@@ -2,9 +2,9 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdviceDto;
-import greencity.dto.advice.AdviceVO;
+import greencity.dto.advice.AdviceGeneralDto;
 import greencity.dto.advice.AdvicePostDto;
-import greencity.dto.language.LanguageTranslationVO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.Habit;
 import greencity.exception.exceptions.NotDeletedException;
@@ -38,8 +38,8 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationVO> getAllAdvices() {
-        return modelMapper.map(adviceTranslationRepo.findAll(), new TypeToken<List<LanguageTranslationVO>>() {
+    public List<LanguageTranslationDTO> getAllAdvices() {
+        return modelMapper.map(adviceTranslationRepo.findAll(), new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType());
     }
 
@@ -47,10 +47,10 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
-    public LanguageTranslationVO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
+    public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id)
             .orElseThrow(() ->
-                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), LanguageTranslationVO.class);
+                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), LanguageTranslationDTO.class);
     }
 
     /**
@@ -76,16 +76,16 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
-    public AdviceVO save(AdvicePostDto advicePostDTO) {
+    public AdviceGeneralDto save(AdvicePostDto advicePostDTO) {
         Advice saved = adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
-        return modelMapper.map(saved, AdviceVO.class);
+        return modelMapper.map(saved, AdviceGeneralDto.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public AdviceVO update(AdvicePostDto adviceDto, Long id) {
+    public AdviceGeneralDto update(AdvicePostDto adviceDto, Long id) {
         Advice advice = adviceRepo.findById(id)
             .map(employee -> {
                 Habit habit = habitService.getById(adviceDto.getHabit().getId());
@@ -93,7 +93,7 @@ public class AdviceServiceImpl implements AdviceService {
                 return adviceRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
-        return modelMapper.map(advice, AdviceVO.class);
+        return modelMapper.map(advice, AdviceGeneralDto.class);
     }
 
     /**

@@ -1,7 +1,7 @@
 package greencity.service;
 
 import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.language.LanguageTranslationVO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
@@ -36,7 +36,7 @@ public interface HabitFactTranslationService {
      * Method to get today's {@link HabitFact} of day by language id.
      *
      * @param languageId id of {@link Language}.
-     * @return {@link LanguageTranslationVO} of today's {@link HabitFact} of day.
+     * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of day.
      */
-    LanguageTranslationVO getHabitFactOfTheDay(Long languageId);
+    LanguageTranslationDTO getHabitFactOfTheDay(Long languageId);
 }

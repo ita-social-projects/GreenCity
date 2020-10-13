@@ -1,9 +1,9 @@
 package greencity.service;
 
 import greencity.dto.advice.AdviceDto;
-import greencity.dto.advice.AdviceVO;
+import greencity.dto.advice.AdviceGeneralDto;
 import greencity.dto.advice.AdvicePostDto;
-import greencity.dto.language.LanguageTranslationVO;
+import greencity.dto.language.LanguageTranslationDTO;
 import java.util.List;
 
 /**
@@ -18,7 +18,7 @@ public interface AdviceService {
      * @return List of all {@link AdviceDto}
      * @author Vitaliy Dzen
      */
-    List<LanguageTranslationVO> getAllAdvices();
+    List<LanguageTranslationDTO> getAllAdvices();
 
     /**
      * Method finds random {@link AdviceDto}.
@@ -26,7 +26,7 @@ public interface AdviceService {
      * @return random {@link AdviceDto}
      * @author Vitaliy Dzen
      */
-    LanguageTranslationVO getRandomAdviceByHabitIdAndLanguage(Long id, String language);
+    LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language);
 
     /**
      * Method find {@link AdviceDto} by id.
@@ -50,19 +50,19 @@ public interface AdviceService {
      * Method saves new {@link AdvicePostDto}.
      *
      * @param advice {@link AdvicePostDto}
-     * @return instance of {@link AdviceVO}
+     * @return instance of {@link AdviceGeneralDto}
      * @author Vitaliy Dzen
      */
-    AdviceVO save(AdvicePostDto advice);
+    AdviceGeneralDto save(AdvicePostDto advice);
 
     /**
-     * Method updates {@link AdviceVO}.
+     * Method updates {@link AdviceGeneralDto}.
      *
      * @param advice {@link AdvicePostDto}
-     * @return instance of {@link AdviceVO}
+     * @return instance of {@link AdviceGeneralDto}
      * @author Vitaliy Dzen
      */
-    AdviceVO update(AdvicePostDto advice, Long id);
+    AdviceGeneralDto update(AdvicePostDto advice, Long id);
 
     /**
      * Method delete {@link AdviceDto} by id.

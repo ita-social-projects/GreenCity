@@ -5,7 +5,7 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.language.LanguageTranslationVO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.HabitFact;
@@ -57,7 +57,7 @@ public class HabitFactController {
     })
     @GetMapping("/random/{habitId}")
     @ApiLocale
-    public LanguageTranslationVO getRandomFactByHabitId(
+    public LanguageTranslationDTO getRandomFactByHabitId(
         @PathVariable Long habitId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return habitFactService.getRandomHabitFactByHabitIdAndLanguage(habitId, locale.getLanguage());
@@ -67,7 +67,7 @@ public class HabitFactController {
      * The controller which return today's {@link HabitFact} of the day.
      *
      * @param languageId id of language to display the {@link HabitFact}.
-     * @return {@link LanguageTranslationVO} of today's {@link HabitFact} of the day.
+     * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of the day.
      */
     @ApiOperation("Get habit fact of the day")
     @ApiResponses(value = {
@@ -77,7 +77,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/dayFact/{languageId}")
-    public LanguageTranslationVO getHabitFactOfTheDay(
+    public LanguageTranslationDTO getHabitFactOfTheDay(
         @PathVariable Long languageId
     ) {
         return habitFactTranslationService.getHabitFactOfTheDay(languageId);
@@ -98,7 +98,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public List<LanguageTranslationVO> getAll() {
+    public List<LanguageTranslationDTO> getAll() {
         return habitFactService.getAllHabitFacts();
     }
 

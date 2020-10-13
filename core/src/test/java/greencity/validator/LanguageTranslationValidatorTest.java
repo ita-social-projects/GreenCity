@@ -3,7 +3,7 @@ package greencity.validator;
 import static greencity.ModelUtils.getLanguageDTO;
 import static greencity.ModelUtils.getLanguageTranslationDTO;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageTranslationVO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.service.LanguageService;
 import java.util.Arrays;
 import java.util.List;
@@ -25,9 +25,9 @@ class LanguageTranslationValidatorTest {
 
     @Test
     void isValidTrueTest() {
-        LanguageTranslationVO ltDTO = getLanguageTranslationDTO();
+        LanguageTranslationDTO ltDTO = getLanguageTranslationDTO();
         LanguageDTO lDTO = getLanguageDTO();
-        List<LanguageTranslationVO> value = Arrays.asList(ltDTO, ltDTO, ltDTO);
+        List<LanguageTranslationDTO> value = Arrays.asList(ltDTO, ltDTO, ltDTO);
         List<LanguageDTO> languageDTOS = Arrays.asList(lDTO, lDTO, lDTO);
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
         languageTranslationValidator.initialize(null);
@@ -36,9 +36,9 @@ class LanguageTranslationValidatorTest {
 
     @Test
     void isValidFalseTest() {
-        LanguageTranslationVO ltDTO = getLanguageTranslationDTO();
+        LanguageTranslationDTO ltDTO = getLanguageTranslationDTO();
         LanguageDTO lDTO = getLanguageDTO();
-        List<LanguageTranslationVO> value = Arrays.asList(ltDTO, ltDTO, ltDTO, ltDTO);
+        List<LanguageTranslationDTO> value = Arrays.asList(ltDTO, ltDTO, ltDTO, ltDTO);
         List<LanguageDTO> languageDTOS = Arrays.asList(lDTO, lDTO, lDTO, lDTO);
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
         languageTranslationValidator.initialize(null);

@@ -3,7 +3,7 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.language.LanguageTranslationVO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
@@ -37,9 +37,9 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationVO> getAllHabitFacts() {
+    public List<LanguageTranslationDTO> getAllHabitFacts() {
         List<HabitFactTranslation> habitFactTranslation = habitFactTranslationRepo.findAll();
-        return modelMapper.map(habitFactTranslation, new TypeToken<List<LanguageTranslationVO>>() {
+        return modelMapper.map(habitFactTranslation, new TypeToken<List<LanguageTranslationDTO>>() {
         }.getType());
     }
 
@@ -47,10 +47,10 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
-    public LanguageTranslationVO getRandomHabitFactByHabitIdAndLanguage(Long id, String language) {
+    public LanguageTranslationDTO getRandomHabitFactByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(habitFactTranslationRepo.getRandomHabitFactTranslationByHabitIdAndLanguage(language, id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
-            LanguageTranslationVO.class);
+            LanguageTranslationDTO.class);
     }
 
     /**
