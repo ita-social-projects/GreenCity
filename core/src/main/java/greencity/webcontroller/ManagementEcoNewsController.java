@@ -6,6 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
@@ -13,8 +14,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -135,5 +140,24 @@ public class ManagementEcoNewsController {
             ecoNewsService.update(ecoNewsDtoManagement, file);
         }
         return buildGenericResponseDto(bindingResult);
+    }
+
+    /**
+     * Returns  management page with Eco news filtered data.
+     *
+     * @param model                   ModelAndView that will be configured and returned to user.
+     * @param ecoNewsViewDto used for receive parameters for filters from UI.
+     */
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String filterData(Model model,
+                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+                             EcoNewsViewDto ecoNewsViewDto) {
+        Pageable paging = PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(), Sort.by("creationDate").descending());
+        PageableDto<EcoNewsDto> pageableDto =
+                ecoNewsService.getFilteredDataForManagementByPage(paging, ecoNewsViewDto);
+        model.addAttribute("pageable", pageableDto);
+        model.addAttribute("fields", ecoNewsViewDto);
+        return "core/management_eco_news";
     }
 }

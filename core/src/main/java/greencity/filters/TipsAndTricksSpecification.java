@@ -2,11 +2,12 @@ package greencity.filters;
 
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TitleTranslation;
-import java.util.List;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.List;
 
 public class TipsAndTricksSpecification implements MySpecification<TipsAndTricks> {
     private transient List<SearchCriteria> searchCriteriaList;
@@ -52,12 +53,5 @@ public class TipsAndTricksSpecification implements MySpecification<TipsAndTricks
             criteriaBuilder.and(criteriaBuilder.like(titleTranslationRoot.get("content"),
                 "%" + searchCriteria.getValue() + "%"),
                 criteriaBuilder.equal(titleTranslationRoot.get("tipsAndTricks").get("id"), root.get("id")));
-    }
-
-    private Predicate getAuthorPredicate(Root<TipsAndTricks> root, CriteriaBuilder criteriaBuilder,
-                                         SearchCriteria searchCriteria) {
-        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
-            criteriaBuilder.like(root.get(searchCriteria.getKey()).get("name"),
-                "%" + searchCriteria.getValue() + "%");
     }
 }

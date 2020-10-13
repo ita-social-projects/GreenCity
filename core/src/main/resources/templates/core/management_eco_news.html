@@ -62,17 +62,70 @@
                         </th>
                         <th style="width: 3%">Id</th>
                         <th style="width: 13%">Title</th>
-                        <th style="width: 10%">Author</th>
+                        <th style="width: 8%">Author</th>
                         <th style="width: 20%">Text</th>
-                        <th style="width: 6%">Creation Date</th>
-                        <th style="width: 12%">Image</th>
-                        <th style="width: 13%">Source</th>
-                        <th style="width: 10%">Tags</th>
+                        <th style="width: 13%">Creation Date</th>
+                        <th style="width: 10%">Image</th>
+                        <th style="width: 10%">Source</th>
+                        <th style="width: 8%">Tags</th>
                         <th style="width: 7%">Actions</th>
                     </tr>
                     </thead>
-                    <th:block th:each="allEcoNews, iterStatus :${pageable.getPage()}">
+
                         <tbody>
+
+                        <form method="POST" action="/management/eco-news" id = "searchForm" onsubmit="applyFilters()">
+                            <tr>
+                                <td>
+
+                                </td>
+                                <td>
+                                    <input type="search" th:name="id" placeholder="Search"
+                                           th:value="${fields eq null ? '' : fields.id }"/>
+                                </td>
+                                <td>
+                                    <input type="search" th:name="title" placeholder="Search"
+                                           th:value="${fields eq null ? '' : fields.title }"/>
+                                </td>
+                                <td>
+                                    <input type="search" th:name="author" placeholder="Search"
+                                           th:value="${fields eq null ? '' : fields.author }"/>
+                                </td>
+                                <td>
+                                    <input type="search" th:name="text" placeholder="Search"
+                                           th:value="${fields eq null ? '' : fields.text }"/>
+                                </td>
+                                <td>
+                                    <div class="input-group input-daterange">
+                                        <input type="search" name="startDate" class="form-control"
+                                               th:value="${fields eq null ? '' : fields.startDate }" style="height: 3ch"/>
+                                        <div class="input-group-addon">to</div>
+                                        <input type="search" name="endDate" class="form-control"
+                                               th:value="${fields eq null ? '' : fields.endDate }" style="height: 3ch"/>
+                                        <button type="submit" id="searchByDates"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="search" th:name="imagePath" placeholder="Search"
+                                           th:value="${fields eq null ? '' : fields.imagePath }"/>
+                                </td>
+                                <td>
+                                    <input type="search" th:name="source" placeholder="Search"
+                                           th:value="${fields eq null ? '' : fields.source }"/>
+                                </td>
+                                <td>
+                                    <input type="search" th:name="tags" placeholder="Search"
+                                           th:value="${fields eq null ? '' : fields.tags }"/>
+                                </td>
+                                <td>
+
+                                </td>
+
+                            </tr>
+                        </form>
+
+
+                        <th:block th:each="allEcoNews, iterStatus :${pageable.getPage()}">
                         <tr>
                             <td>
                                     <span class="custom-checkbox">
@@ -93,7 +146,7 @@
                             </td>
                             <td th:text="${#temporals.format(allEcoNews.getCreationDate(), 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
-                                <img th:src="${allEcoNews.getImagePath()}" th:width="150" th:height="100">
+                                <img th:src="${allEcoNews.getImagePath()}" th:width="120" th:height="100">
                             </td>
                             <td th:text="${allEcoNews.getSource()}"></td>
                             <td>
@@ -110,8 +163,8 @@
                                 </a>
                             </td>
                         </tr>
-                        </tbody>
-                    </th:block>
+                        </th:block>
+                    </tbody>
                 </table>
                 <div class="clearfix">
                     <div class="hint-text">Showing <b
@@ -276,5 +329,28 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
+<!-- Include Date Range Picker -->
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+<script>
+    $('.input-daterange input').each(function () {
+        $(this).datepicker({
+            format: 'yyyy-mm-dd',
+            todayHighlight: true,
+            autoclose: true,
+            orientation: 'top'
+        });
+    });
+
+    function applyFilters() {
+        document.getElementById("searchForm").action = "/management/eco-news";
+        document.getElementById("searchForm").submit();
+    }
+
+</script>
+
 </body>
 </html>

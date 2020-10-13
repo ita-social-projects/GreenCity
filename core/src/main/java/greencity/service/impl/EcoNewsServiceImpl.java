@@ -6,22 +6,24 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.*;
+import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.filters.EcoNewsSpecification;
+import greencity.filters.RatingStatisticsSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,6 +54,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final FileService fileService;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
+    private final BeanFactory beanFactory;
 
     /**
      * {@inheritDoc}
@@ -320,5 +324,105 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             toUpdate.setImagePath(fileService.upload(image).toString());
         }
         ecoNewsRepo.save(toUpdate);
+    }
+
+    @Override
+    public PageableDto<EcoNewsDto> getFilteredDataForManagementByPage(
+            Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
+        Page<EcoNews> page = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
+        List<EcoNewsDto> ecoNews = page.stream()
+                .map(ecoNew -> modelMapper.map(ecoNew, EcoNewsDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(ecoNews,
+                page.getTotalElements(),
+                page.getPageable().getPageNumber(),
+                page.getTotalPages()
+        );
+    }
+
+    /**
+     * Returns {@link EcoNewsSpecification} for entered filter parameters.
+     *
+     * @param ecoNewsViewDto contains data from filters
+     */
+    public EcoNewsSpecification getSpecification(EcoNewsViewDto ecoNewsViewDto) {
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(ecoNewsViewDto);
+        return new EcoNewsSpecification(searchCriteria);
+    }
+
+    /**
+     * * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
+     *
+     * @param ecoNewsViewDto used for receive parameters for filters from UI.
+     * @return {@link SearchCriteria}.
+     */
+    public List<SearchCriteria> buildSearchCriteria(EcoNewsViewDto ecoNewsViewDto) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        SearchCriteria searchCriteria;
+        if (!ecoNewsViewDto.getId().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                    .key("id")
+                    .type("id")
+                    .value(ecoNewsViewDto.getId())
+                    .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!ecoNewsViewDto.getTitle().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                    .key("title")
+                    .type("title")
+                    .value(ecoNewsViewDto.getTitle())
+                    .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!ecoNewsViewDto.getAuthor().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                    .key("author")
+                    .type("author")
+                    .value(ecoNewsViewDto.getAuthor())
+                    .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!ecoNewsViewDto.getText().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                    .key("text")
+                    .type("text")
+                    .value(ecoNewsViewDto.getText())
+                    .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!ecoNewsViewDto.getStartDate().isEmpty() && !ecoNewsViewDto.getEndDate().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                    .key("creationDate")
+                    .type("dateRange")
+                    .value(new String[] {ecoNewsViewDto.getStartDate(), ecoNewsViewDto.getEndDate()})
+                    .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!ecoNewsViewDto.getImagePath().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                    .key("imagePath")
+                    .type("imagePath")
+                    .value(ecoNewsViewDto.getImagePath())
+                    .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!ecoNewsViewDto.getSource().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                    .key("source")
+                    .type("source")
+                    .value(ecoNewsViewDto.getSource())
+                    .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!ecoNewsViewDto.getTags().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                    .key("tags")
+                    .type("tags")
+                    .value(ecoNewsViewDto.getTags())
+                    .build();
+            criteriaList.add(searchCriteria);
+        }
+        return criteriaList;
     }
 }
