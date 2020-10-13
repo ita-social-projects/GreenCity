@@ -2,6 +2,7 @@ package greencity.security.eventlisteners;
 
 import greencity.security.events.SignInEvent;
 import greencity.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -12,18 +13,9 @@ import org.springframework.stereotype.Component;
  * @author Yurii Koval
  */
 @Component
+@AllArgsConstructor
 public class SignInEventListener implements ApplicationListener<SignInEvent> {
     private final UserService userService;
-
-    /**
-     * Constructor.
-     *
-     * @param userService {@link UserService}
-     */
-    @Autowired
-    public SignInEventListener(UserService userService) {
-        this.userService = userService;
-    }
 
     /**
      * Handles {@link SignInEvent}.
