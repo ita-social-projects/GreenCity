@@ -72,9 +72,9 @@ public class HabitStatusController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/unenroll/{habitAssignId}/{date}")
-    public ResponseEntity<HabitStatusDto> unenrollHabit(@PathVariable Long habitAssignId,
+    public ResponseEntity<Object> unenrollHabit(@PathVariable Long habitAssignId,
                                                         @PathVariable(value = "date")
-                                                        @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date) {
+                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         habitStatusService.unenrollHabit(date, habitAssignId);
         return ResponseEntity.ok().build();
     }
@@ -95,9 +95,9 @@ public class HabitStatusController {
     @PostMapping("/enroll/{habitAssignId}/{date}")
     public ResponseEntity<HabitStatusDto> enrollHabitInDate(@PathVariable Long habitAssignId,
                                                             @PathVariable(value = "date")
-                                                            @DateTimeFormat(pattern = "MM-dd-yyyy") LocalDate date) {
-        habitStatusService.enrollHabitInDate(habitAssignId, date);
-        return ResponseEntity.ok().build();
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                                    LocalDate date) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitStatusService.enrollHabitInDate(habitAssignId, date));
     }
 
     /**
@@ -112,7 +112,7 @@ public class HabitStatusController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{habitAssignId}")
-    public ResponseEntity<HabitStatusDto> deleteHabitStatusByHabitAssign(@PathVariable Long habitAssignId) {
+    public ResponseEntity<Object> deleteHabitStatusByHabitAssign(@PathVariable Long habitAssignId) {
         habitStatusService.deleteStatusByHabitAssignId(habitAssignId);
         return ResponseEntity.ok().build();
     }
