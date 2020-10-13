@@ -1,11 +1,11 @@
 package greencity.entity;
 
+import lombok.*;
+
+import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
-import javax.validation.constraints.Size;
-import lombok.*;
 
 @Entity
 @Table(name = "tips_and_tricks")
@@ -21,13 +21,11 @@ public class TipsAndTricks {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    @Size(min = 1, max = 170)
-    private String title;
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "tipsAndTricks", fetch = FetchType.LAZY)
+    private List<TitleTranslation> titleTranslations;
 
-    @Column(nullable = false)
-    @Size(min = 20, max = 63206)
-    private String text;
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "tipsAndTricks", fetch = FetchType.LAZY)
+    private List<TextTranslation> textTranslations;
 
     @Column(nullable = false)
     private ZonedDateTime creationDate;

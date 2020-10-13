@@ -1,13 +1,10 @@
 package greencity.dto.tipsandtricks;
 
-import java.util.List;
+import lombok.*;
+
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.List;
 
 import static greencity.constant.ValidationConstants.MIN_AMOUNT_OF_TAGS;
 
@@ -17,13 +14,11 @@ import static greencity.constant.ValidationConstants.MIN_AMOUNT_OF_TAGS;
 @Setter
 @EqualsAndHashCode
 public class TipsAndTricksDtoRequest {
-    @NotEmpty
-    @Size(min = 1, max = 170)
-    private String title;
+    @Valid
+    private TitleTranslationEmbeddedPostDTO titleTranslation;
 
-    @NotEmpty
-    @Size(min = 20, max = 63206)
-    private String text;
+    @Valid
+    private TextTranslationDTO textTranslation;
 
     @NotEmpty(message = MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
