@@ -2,7 +2,7 @@ package greencity.service.impl;
 
 import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
 import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.language.LanguageTranslationVO;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
@@ -66,14 +66,14 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
      * Method to get today's {@link HabitFact} of day by {@link Language} id.
      *
      * @param languageId id of {@link Language} of the {@link HabitFact}.
-     * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of day.
+     * @return {@link LanguageTranslationVO} of today's {@link HabitFact} of day.
      */
     @Cacheable(value = HABIT_FACT_OF_DAY_CACHE)
     @Override
-    public LanguageTranslationDTO getHabitFactOfTheDay(Long languageId) {
+    public LanguageTranslationVO getHabitFactOfTheDay(Long languageId) {
         return modelMapper.map(
             habitFactTranslationRepo.findAllByFactOfDayStatusAndLanguageId(CURRENT, languageId),
-            LanguageTranslationDTO.class);
+            LanguageTranslationVO.class);
     }
 }
 

@@ -1,6 +1,5 @@
 package greencity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
@@ -18,7 +17,7 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.language.LanguageTranslationVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
@@ -361,8 +360,8 @@ public class ModelUtils {
         return new LanguageDTO(1L, "en");
     }
 
-    public static LanguageTranslationDTO getLanguageTranslationDTO() {
-        return new LanguageTranslationDTO(getLanguageDTO(), "content");
+    public static LanguageTranslationVO getLanguageTranslationDTO() {
+        return new LanguageTranslationVO(getLanguageDTO(), "content");
     }
 
     public static TipsAndTricks getTipsAndTricks() {

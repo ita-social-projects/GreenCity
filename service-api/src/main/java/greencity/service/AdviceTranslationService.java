@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.dto.advice.AdviceTranslationGeneralDto;
+import greencity.dto.advice.AdviceTranslationVO;
 import greencity.dto.advice.AdvicePostDto;
 import java.util.List;
 
@@ -11,21 +11,21 @@ import java.util.List;
  */
 public interface AdviceTranslationService {
     /**
-     * Method saves new {@link AdviceTranslationGeneralDto}.
+     * Method saves new {@link AdviceTranslationVO}.
      *
-     * @param adviceTranslations {@link AdviceTranslationGeneralDto}
-     * @return instance of {@link AdviceTranslationGeneralDto}
+     * @param adviceTranslations {@link AdviceTranslationVO}
+     * @return instance of {@link AdviceTranslationVO}
      * @author Vitaliy Dzen
      */
-    List<AdviceTranslationGeneralDto> saveAdviceTranslation(List<AdviceTranslationGeneralDto> adviceTranslations);
+    List<AdviceTranslationVO> saveAdviceTranslation(List<AdviceTranslationVO> adviceTranslations);
 
     /**
-     * Method saves new {@link AdviceTranslationGeneralDto} and
-     * list of new {@link AdviceTranslationGeneralDto} with relationship to {@link AdviceTranslationGeneralDto}.
+     * Method saves new {@link AdviceTranslationVO} and
+     * list of new {@link AdviceTranslationVO} with relationship to {@link AdviceTranslationVO}.
      *
      * @param advicePostDTO {@link AdvicePostDto}
-     * @return List of {@link AdviceTranslationGeneralDto}
+     * @return List of {@link AdviceTranslationVO}
      * @author Vitaliy Dzen
      */
-    List<AdviceTranslationGeneralDto> saveAdviceAndAdviceTranslation(AdvicePostDto advicePostDTO);
+    List<AdviceTranslationVO> saveAdviceAndAdviceTranslation(AdvicePostDto advicePostDTO);
 }

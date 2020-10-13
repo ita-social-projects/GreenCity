@@ -2,7 +2,7 @@ package greencity.validator;
 
 import greencity.annotations.LanguageTranslationConstraint;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.language.LanguageTranslationVO;
 import greencity.service.LanguageService;
 import java.util.Comparator;
 import java.util.List;
@@ -12,7 +12,7 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LanguageTranslationValidator implements
-    ConstraintValidator<LanguageTranslationConstraint, List<LanguageTranslationDTO>> {
+    ConstraintValidator<LanguageTranslationConstraint, List<LanguageTranslationVO>> {
     private List<LanguageDTO> languageDTOS;
     @Autowired
     private LanguageService languageService;
@@ -24,10 +24,10 @@ public class LanguageTranslationValidator implements
     }
 
     @Override
-    public boolean isValid(List<LanguageTranslationDTO> value, ConstraintValidatorContext context) {
+    public boolean isValid(List<LanguageTranslationVO> value, ConstraintValidatorContext context) {
         List<LanguageDTO> valueLanguageDTOS = value
             .stream()
-            .map(LanguageTranslationDTO::getLanguage)
+            .map(LanguageTranslationVO::getLanguage)
             .sorted(Comparator.comparing(LanguageDTO::getCode))
             .collect(Collectors.toList());
 
