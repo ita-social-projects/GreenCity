@@ -138,6 +138,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+        if (comment.getComments() != null) {
+            comment.getComments().forEach(c -> c.setDeleted(true));
+        }
         comment.setDeleted(true);
         ecoNewsCommentRepo.save(comment);
     }
