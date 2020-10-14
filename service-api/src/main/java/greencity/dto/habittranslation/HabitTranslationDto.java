@@ -1,5 +1,6 @@
 package greencity.dto.habittranslation;
 
+import greencity.dto.language.LanguageDTO;
 import lombok.*;
 
 @NoArgsConstructor
@@ -13,4 +14,5 @@ public class HabitTranslationDto {
     private String name;
     private String habitItem;
     private String description;
+    private LanguageDTO language;
 }

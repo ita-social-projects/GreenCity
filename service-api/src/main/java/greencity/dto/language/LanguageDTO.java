@@ -2,15 +2,13 @@ package greencity.dto.language;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @EqualsAndHashCode(of = {"id", "code"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LanguageDTO {
     @Min(1)
     private Long id;

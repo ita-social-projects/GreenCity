@@ -3,6 +3,7 @@ package greencity.mapping;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.entity.HabitAssign;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
@@ -36,6 +37,9 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
                         .description(habitTranslation.getDescription())
                         .habitItem(habitTranslation.getHabitItem())
                         .name(habitTranslation.getName())
+                        .language(LanguageDTO.builder()
+                            .code(habitTranslation.getLanguage().getCode())
+                            .id(habitTranslation.getLanguage().getId()).build())
                         .build()).collect(Collectors.toList()))
                 .build())
             .build();
