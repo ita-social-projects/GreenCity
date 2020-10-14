@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     private RatingStatisticsRepo ratingStatisticsRepo;
     private final ModelMapper modelMapper;
-    private final BeanFactory beanFactory;
 
     private PageableAdvancedDto<RatingStatisticsDtoForTables> ratingStatisticsDtoMapper(
         Page<RatingStatistics> ratingStatistics) {
@@ -76,16 +74,18 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     @Override
-    public List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(RatingStatisticsSpecification spec) {
-        return ratingStatisticsRepo.findAll(spec).stream()
+    public List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(
+        RatingStatisticsViewDto ratingStatisticsViewDto) {
+        return ratingStatisticsRepo.findAll(getSpecification(ratingStatisticsViewDto)).stream()
             .map(ratingStat -> modelMapper.map(ratingStat, RatingStatisticsDto.class))
             .collect(Collectors.toList());
     }
 
     @Override
     public PageableAdvancedDto<RatingStatisticsDtoForTables> getFilteredDataForManagementByPage(
-        Pageable pageable, RatingStatisticsSpecification spec) {
-        Page<RatingStatistics> ratingStatistics = ratingStatisticsRepo.findAll(spec, pageable);
+        Pageable pageable, RatingStatisticsViewDto ratingStatisticsViewDto) {
+        Page<RatingStatistics> ratingStatistics =
+            ratingStatisticsRepo.findAll(getSpecification(ratingStatisticsViewDto), pageable);
         return ratingStatisticsDtoMapper(ratingStatistics);
     }
 
@@ -162,7 +162,8 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
      *
      * @param ratingStatisticsViewDto contains data from filters
      */
-    public RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto) {
-        return beanFactory.getBean(RatingStatisticsSpecification.class, buildSearchCriteria(ratingStatisticsViewDto));
+    private RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto) {
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(ratingStatisticsViewDto);
+        return new RatingStatisticsSpecification(searchCriteria);
     }
 }

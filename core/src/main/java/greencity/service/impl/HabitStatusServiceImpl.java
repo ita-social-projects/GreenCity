@@ -156,7 +156,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * {@inheritDoc}
      */
     @Override
-    public void enrollHabitInDate(Long habitAssignId, LocalDate date) {
+    public HabitStatusDto enrollHabitInDate(Long habitAssignId, LocalDate date) {
         HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT));
         HabitStatusCalendar habitCalendarOnDate =
@@ -182,7 +182,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             }
 
             habitStatus.setWorkingDays(habitStatus.getWorkingDays() + 1);
-            habitStatusRepo.save(habitStatus);
+            return modelMapper.map(habitStatusRepo.save(habitStatus), HabitStatusDto.class);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY);
         }

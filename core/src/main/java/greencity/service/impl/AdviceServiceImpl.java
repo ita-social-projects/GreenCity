@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdviceDto;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
@@ -76,16 +77,17 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
-    public Advice save(AdvicePostDto advicePostDTO) {
-        return adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
+    public AdviceVO save(AdvicePostDto advicePostDTO) {
+        Advice saved = adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
+        return modelMapper.map(saved, AdviceVO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Advice update(AdvicePostDto adviceDto, Long id) {
-        return adviceRepo.findById(id)
+    public AdviceVO update(AdvicePostDto adviceDto, Long id) {
+        Advice advice = adviceRepo.findById(id)
             .map(employee -> {
                 Habit habit = habitRepo.findById(adviceDto.getHabit().getId())
                     .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
@@ -93,6 +95,7 @@ public class AdviceServiceImpl implements AdviceService {
                 return adviceRepo.save(employee);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
+        return modelMapper.map(advice, AdviceVO.class);
     }
 
     /**

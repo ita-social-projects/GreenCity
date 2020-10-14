@@ -1,10 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.*;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
@@ -145,4 +142,13 @@ public interface EcoNewsService {
      * @param ecoNewsDtoManagement - instance of {@link EcoNewsDtoManagement}.
      */
     void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile multipartFile);
+
+    /**
+     * Find {@link EcoNews} for management.
+     *
+     * @return a dto of {@link PageableDto}.
+     * @author Dovganyuk Taras
+     */
+    PageableDto<EcoNewsDto> getFilteredDataForManagementByPage(
+            Pageable pageable, EcoNewsViewDto ecoNewsViewDto);
 }

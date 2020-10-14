@@ -6,25 +6,20 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
-import greencity.entity.TipsAndTricks;
-import greencity.entity.TipsAndTricksComment;
-import greencity.entity.User;
+import greencity.dto.tipsandtricks.*;
+import greencity.entity.*;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.SearchCriteria;
 import greencity.filters.TipsAndTricksSpecification;
 import greencity.repository.TipsAndTricksRepo;
-import greencity.service.FileService;
-import greencity.service.TagsService;
-import greencity.service.TipsAndTricksService;
-import greencity.service.UserService;
+import greencity.service.*;
+
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.BeanFactory;
@@ -36,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -54,12 +50,17 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     private final BeanFactory beanFactory;
 
+    private final LanguageService languageService;
+
+    private final TipsAndTricksTranslationService tipsAndTricksTranslationService;
+
     /**
      * {@inheritDoc}
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_TIPS_AND_TRICKS)
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
+    @Transactional
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
                                          String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
@@ -71,14 +72,68 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             toSave.setImagePath(fileService.upload(image).toString());
         }
         toSave.setTags(
-            tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()));
+                tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()));
+        toSave.getTitleTranslations().forEach(el -> el.setTipsAndTricks(toSave));
+        toSave.getTextTranslations().forEach(el -> el.setTipsAndTricks(toSave));
         try {
             tipsAndTricksRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.TIPS_AND_TRICKS_NOT_SAVED);
         }
+        tipsAndTricksTranslationService.saveTitleTranslations(toSave.getTitleTranslations());
+        tipsAndTricksTranslationService.saveTextTranslations(toSave.getTextTranslations());
 
         return modelMapper.map(toSave, TipsAndTricksDtoResponse.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public TipsAndTricksDtoManagement saveTipsAndTricksWithTranslations(
+            TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+            MultipartFile image,
+            String email) {
+        TipsAndTricks tipsAndTricks = TipsAndTricks.builder()
+                .source(tipsAndTricksDtoManagement.getSource())
+                .creationDate(ZonedDateTime.now())
+                .titleTranslations(
+                        tipsAndTricksDtoManagement.getTitleTranslations().stream()
+                                .map(el -> TitleTranslation.builder()
+                                        .content(el.getContent())
+                                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()),
+                                            Language.class))
+                                        .build())
+                                .collect(Collectors.toList())
+                )
+                .textTranslations(
+                        tipsAndTricksDtoManagement.getTextTranslations().stream()
+                                .map(el -> TextTranslation.builder()
+                                        .content(el.getContent())
+                                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()),
+                                            Language.class))
+                                        .build())
+                                .collect(Collectors.toList())
+                )
+                .build();
+        tipsAndTricks.setAuthor(userService.findByEmail(email));
+        tipsAndTricks.getTitleTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
+        tipsAndTricks.getTextTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
+        if (tipsAndTricksDtoManagement.getImagePath() != null) {
+            image = fileService.convertToMultipartImage(tipsAndTricksDtoManagement.getImagePath());
+        }
+        if (image != null) {
+            tipsAndTricks.setImagePath(fileService.upload(image).toString());
+        }
+        tipsAndTricks.setTags(
+                tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()));
+
+        tipsAndTricksRepo.save(tipsAndTricks);
+        tipsAndTricksTranslationService.saveTitleTranslations(tipsAndTricks.getTitleTranslations());
+        tipsAndTricksTranslationService.saveTextTranslations(tipsAndTricks.getTextTranslations());
+
+        return tipsAndTricksDtoManagement;
     }
 
     /**
@@ -89,13 +144,23 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public void update(TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
                        MultipartFile image) {
         TipsAndTricks toUpdate = findById(tipsAndTricksDtoManagement.getId());
-        toUpdate.setTitle(tipsAndTricksDtoManagement.getTitle());
-        toUpdate.setText(tipsAndTricksDtoManagement.getText());
+        toUpdate.setSource(tipsAndTricksDtoManagement.getSource());
         toUpdate.setTags(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()));
-        toUpdate.setAuthor(userService.findByEmail(tipsAndTricksDtoManagement.getEmailAuthor()));
         if (image != null) {
             toUpdate.setImagePath(fileService.upload(image).toString());
         }
+        toUpdate.getTitleTranslations()
+                .forEach(titleTranslation ->
+                        titleTranslation.setContent(tipsAndTricksDtoManagement.getTitleTranslations().stream()
+                                .filter(elem -> elem.getLanguageCode().equals(titleTranslation.getLanguage().getCode()))
+                                .findFirst().orElseThrow(RuntimeException::new).getContent()));
+
+        toUpdate.getTextTranslations()
+                .forEach(textTranslation ->
+                        textTranslation.setContent(tipsAndTricksDtoManagement.getTextTranslations().stream()
+                        .filter(elem -> elem.getLanguageCode().equals(textTranslation.getLanguage().getCode()))
+                        .findFirst().orElseThrow(RuntimeException::new).getContent()));
+
         tipsAndTricksRepo.save(toUpdate);
     }
 
@@ -104,10 +169,36 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @Cacheable(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME)
     @Override
-    public PageableDto<TipsAndTricksDtoResponse> findAll(Pageable page) {
+    public PageableDto<TipsAndTricksDtoManagement> findAllManagementDtos(Pageable page) {
         Page<TipsAndTricks> pages = tipsAndTricksRepo.findAllByOrderByCreationDateDesc(page);
 
-        return getPagesWithTipsAndTricksResponseDto(pages);
+        return getPagesWithTipsAndTricksDtoManagement(pages);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Cacheable(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME)
+    @Override
+    public PageableDto<TipsAndTricksDtoResponse> findAll(Pageable page) {
+        Page<TipsAndTricks> pages = tipsAndTricksRepo
+                .findByTitleTranslationsLanguageCodeOrderByCreationDateDesc(
+                        languageService.extractLanguageCodeFromRequest(), page);
+
+        return getPagesWithTipsAndTricksDtoResponse(pages);
+    }
+
+    private PageableDto<TipsAndTricksDtoResponse> getPagesWithTipsAndTricksDtoResponse(Page<TipsAndTricks> pages) {
+        List<TipsAndTricksDtoResponse> tipsAndTricksDtos = pages
+                .stream()
+                .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(
+                tipsAndTricksDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber(),
+                pages.getTotalPages()
+        );
     }
 
     /**
@@ -116,28 +207,31 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     public PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags) {
         Page<TipsAndTricks> pages;
+        String languageCode = languageService.extractLanguageCodeFromRequest();
         if (tags == null || tags.isEmpty()) {
-            pages = tipsAndTricksRepo.findAllByOrderByCreationDateDesc(page);
+            pages = tipsAndTricksRepo
+                    .findByTitleTranslationsLanguageCodeOrderByCreationDateDesc(
+                            languageCode,
+                            page);
         } else {
             List<String> lowerCaseTags = tags.stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
-            pages = tipsAndTricksRepo.find(page, lowerCaseTags);
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toList());
+            pages = tipsAndTricksRepo.find(languageCode, page, lowerCaseTags);
         }
-        return getPagesWithTipsAndTricksResponseDto(pages);
+        return getPagesWithTipsAndTricksDtoResponse(pages);
     }
 
-    private PageableDto<TipsAndTricksDtoResponse> getPagesWithTipsAndTricksResponseDto(Page<TipsAndTricks> pages) {
-        List<TipsAndTricksDtoResponse> tipsAndTricksDtos = pages
-            .stream()
-            .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class))
-            .collect(Collectors.toList());
-
+    private PageableDto<TipsAndTricksDtoManagement> getPagesWithTipsAndTricksDtoManagement(Page<TipsAndTricks> pages) {
+        List<TipsAndTricksDtoManagement> tipsAndTricksDtos = pages
+                .stream()
+                .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoManagement.class))
+                .collect(Collectors.toList());
         return new PageableDto<>(
-            tipsAndTricksDtos,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
+                tipsAndTricksDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber(),
+                pages.getTotalPages()
         );
     }
 
@@ -146,7 +240,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @Override
     public TipsAndTricksDtoResponse findDtoById(Long id) {
-        TipsAndTricks tipsAndTricks = findById(id);
+        TipsAndTricks tipsAndTricks = findByIdAndLanguageCode(languageService.extractLanguageCodeFromRequest(), id);
         return modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class);
     }
 
@@ -174,8 +268,17 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     public TipsAndTricks findById(Long id) {
         return tipsAndTricksRepo
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.TIPS_AND_TRICKS_NOT_FOUND_BY_ID + id));
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.TIPS_AND_TRICKS_NOT_FOUND_BY_ID + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public TipsAndTricks findByIdAndLanguageCode(String languageCode, Long id) {
+        return tipsAndTricksRepo
+                .findByIdAndTitleTranslationsLanguageCode(id, languageCode)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.TIPS_AND_TRICKS_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -209,14 +312,14 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     private PageableDto<SearchTipsAndTricksDto> getSearchTipsAndTricksDtoPageableDto(Page<TipsAndTricks> page) {
         List<SearchTipsAndTricksDto> tipsAndTricksDtos = page.stream()
-            .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, SearchTipsAndTricksDto.class))
-            .collect(Collectors.toList());
+                .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, SearchTipsAndTricksDto.class))
+                .collect(Collectors.toList());
 
         return new PageableDto<>(
-            tipsAndTricksDtos,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages()
+                tipsAndTricksDtos,
+                page.getTotalElements(),
+                page.getPageable().getPageNumber(),
+                page.getTotalPages()
         );
     }
 
@@ -225,8 +328,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @Override
     public PageableDto<TipsAndTricksDtoResponse> searchBy(Pageable pageable, String searchQuery) {
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(pageable, searchQuery);
-        return getPagesWithTipsAndTricksResponseDto(page);
+        Page<TipsAndTricks> page = tipsAndTricksRepo
+                .searchBy(pageable, searchQuery, languageService.extractLanguageCodeFromRequest());
+        return getPagesWithTipsAndTricksDtoResponse(page);
     }
 
     /**
@@ -269,11 +373,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<TipsAndTricksDtoResponse> getFilteredDataForManagementByPage(
-        Pageable pageable,
-        TipsAndTricksViewDto tipsAndTricksViewDto) {
+    public PageableDto<TipsAndTricksDtoManagement> getFilteredDataForManagementByPage(
+            Pageable pageable,
+            TipsAndTricksViewDto tipsAndTricksViewDto) {
         Page<TipsAndTricks> pages = tipsAndTricksRepo.findAll(getSpecification(tipsAndTricksViewDto), pageable);
-        return getPagesWithTipsAndTricksResponseDto(pages);
+        return getPagesWithTipsAndTricksDtoManagement(pages);
     }
 
     /**
@@ -287,34 +391,34 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         SearchCriteria searchCriteria;
         if (!tipsAndTricksViewDto.getId().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("id")
-                .type("id")
-                .value(tipsAndTricksViewDto.getId())
-                .build();
+                    .key("id")
+                    .type("id")
+                    .value(tipsAndTricksViewDto.getId())
+                    .build();
             criteriaList.add(searchCriteria);
         }
         if (!tipsAndTricksViewDto.getTitle().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("title")
-                .type("title")
-                .value(tipsAndTricksViewDto.getTitle())
-                .build();
+                    .key("title")
+                    .type("title")
+                    .value(tipsAndTricksViewDto.getTitle())
+                    .build();
             criteriaList.add(searchCriteria);
         }
         if (!tipsAndTricksViewDto.getAuthor().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("author")
-                .type("author")
-                .value(tipsAndTricksViewDto.getAuthor())
-                .build();
+                    .key("author")
+                    .type("author")
+                    .value(tipsAndTricksViewDto.getAuthor())
+                    .build();
             criteriaList.add(searchCriteria);
         }
         if (!tipsAndTricksViewDto.getStartDate().isEmpty() && !tipsAndTricksViewDto.getEndDate().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("creationDate")
-                .type("dateRange")
-                .value(new String[] {tipsAndTricksViewDto.getStartDate(), tipsAndTricksViewDto.getEndDate()})
-                .build();
+                    .key("creationDate")
+                    .type("dateRange")
+                    .value(new String[]{tipsAndTricksViewDto.getStartDate(), tipsAndTricksViewDto.getEndDate()})
+                    .build();
             criteriaList.add(searchCriteria);
         }
         return criteriaList;
@@ -326,6 +430,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @param tipsAndTricksViewDto contains data from filters
      */
     private TipsAndTricksSpecification getSpecification(TipsAndTricksViewDto tipsAndTricksViewDto) {
-        return beanFactory.getBean(TipsAndTricksSpecification.class, buildSearchCriteria(tipsAndTricksViewDto));
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(tipsAndTricksViewDto);
+        return new TipsAndTricksSpecification(searchCriteria);
     }
 }

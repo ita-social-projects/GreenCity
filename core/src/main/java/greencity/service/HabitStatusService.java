@@ -66,11 +66,11 @@ public interface HabitStatusService {
 
     /**
      * Method to enroll habit for defined date.
-     *
-     * @param habitAssignId - id of {@link HabitAssign}.
+     *  @param habitAssignId - id of {@link HabitAssign}.
      * @param date          - {@link LocalDate} date we want enroll.
+     * @return {@link HabitStatusDto}.
      */
-    void enrollHabitInDate(Long habitAssignId, LocalDate date);
+    HabitStatusDto enrollHabitInDate(Long habitAssignId, LocalDate date);
 
     /**
      * Method to delete {@link HabitStatus} by {@link HabitAssign} id.

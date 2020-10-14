@@ -5,17 +5,13 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
 import greencity.entity.TipsAndTricks;
+import greencity.service.LanguageService;
 import greencity.service.TipsAndTricksService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -25,17 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -45,6 +37,8 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 public class ManagementTipsAndTricksController {
     private TipsAndTricksService tipsAndTricksService;
 
+    private LanguageService languageService;
+
     /**
      * Method for getting tips & tricks by page.
      *
@@ -53,11 +47,10 @@ public class ManagementTipsAndTricksController {
      * @author Yurii Savchenko
      */
     @GetMapping
-    public String findAll(@RequestParam(required = false, name = "query") String query,
-                          Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<TipsAndTricksDtoResponse> pageableDto = query == null || query.isEmpty()
-            ? tipsAndTricksService.findAll(pageable) : tipsAndTricksService.searchBy(pageable, query);
+    public String findAll(Model model, @ApiIgnore Pageable pageable) {
+        PageableDto<TipsAndTricksDtoManagement> pageableDto = tipsAndTricksService.findAllManagementDtos(pageable);
         model.addAttribute("pageable", pageableDto);
+        model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_tips_and_tricks";
     }
 
@@ -68,12 +61,12 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Get tips & tricks by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = TipsAndTricksDtoManagement.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+            @ApiResponse(code = 200, message = HttpStatuses.OK, response = TipsAndTricksDtoManagement.class),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/find")
     public ResponseEntity<TipsAndTricksDtoManagement> getTipsAndTricksById(
-        @RequestParam("id") Long id) {
+            @RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.findManagementDtoById(id));
     }
 
@@ -85,8 +78,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Delete tips & tricks.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/")
     public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
@@ -102,8 +95,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Delete all tips & tricks by given IDs.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
@@ -120,8 +113,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Update tips & tricks.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")
@@ -139,25 +132,26 @@ public class ManagementTipsAndTricksController {
     /**
      * Method for creating {@link TipsAndTricks}.
      *
-     * @param tipsAndTricksDtoRequest dto for {@link TipsAndTricks} entity.
-     * @param file                    of {@link MultipartFile}
+     * @param tipsAndTricksDtoManagement dto for {@link TipsAndTricks} entity.
+     * @param file                       of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
     @ApiOperation(value = "Save tips & tricks.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
     @PostMapping("/")
     public GenericResponseDto save(@Valid
-                                   @RequestPart TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
+                                   @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
                                    BindingResult bindingResult,
                                    @ImageValidation
                                    @RequestParam(required = false, name = "file") MultipartFile file,
                                    @ApiIgnore Principal principal) {
         if (!bindingResult.hasErrors()) {
-            tipsAndTricksService.save(tipsAndTricksDtoRequest, file, principal.getName());
+            tipsAndTricksService
+                    .saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, file, principal.getName());
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -172,10 +166,10 @@ public class ManagementTipsAndTricksController {
     public String filterData(Model model,
                              @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
                              TipsAndTricksViewDto tipsAndTricksViewDto) {
-        PageableDto<TipsAndTricksDtoResponse> pageableDto =
-            tipsAndTricksService.getFilteredDataForManagementByPage(
-                pageable,
-                tipsAndTricksViewDto);
+        PageableDto<TipsAndTricksDtoManagement> pageableDto =
+                tipsAndTricksService.getFilteredDataForManagementByPage(
+                        pageable,
+                        tipsAndTricksViewDto);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("fields", tipsAndTricksViewDto);
         return "core/management_tips_and_tricks";
