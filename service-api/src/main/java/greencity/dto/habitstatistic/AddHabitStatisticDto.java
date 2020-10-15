@@ -1,8 +1,9 @@
 package greencity.dto.habitstatistic;
 
-import greencity.constant.ValidationConstants;
-import greencity.entity.enums.HabitRate;
+import greencity.constant.ServiceValidationConstants;
+import greencity.enums.HabitRate;
 import java.time.ZonedDateTime;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Range;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,7 +20,8 @@ import org.hibernate.validator.constraints.Range;
 @EqualsAndHashCode
 @Builder
 public class AddHabitStatisticDto {
-    @Range(min = ValidationConstants.MIN_AMOUNT_OF_ITEMS, max = ValidationConstants.MAX_AMOUNT_OF_ITEMS)
+    @Min(ServiceValidationConstants.MIN_AMOUNT_OF_ITEMS)
+    @Max(ServiceValidationConstants.MAX_AMOUNT_OF_ITEMS)
     @NotNull
     private Integer amountOfItems;
     @NotNull

@@ -1,6 +1,6 @@
 package greencity.dto.habitstatistic;
 
-import greencity.entity.enums.HabitRate;
+import greencity.enums.HabitRate;
 import java.time.ZonedDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;

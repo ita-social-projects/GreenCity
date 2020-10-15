@@ -4,49 +4,46 @@ import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitStatistic;
 import java.util.List;
 
 public interface HabitStatisticService {
     /**
-     * Method for creating {@link HabitStatistic} to database.
+     * Method for creating HabitStatistic to database.
      *
-     * @param addHabitStatisticDto - dto with {@link HabitStatistic} rate, amount of items, date and {@link Habit} id.
+     * @param addHabitStatisticDto - dto with HabitStatistic rate, amount of items, date and Habit id.
      * @return {@link AddHabitStatisticDto} instance.
      */
     HabitStatisticDto save(AddHabitStatisticDto addHabitStatisticDto);
 
     /**
-     * Method for updating {@link HabitStatistic} in database.
+     * Method for updating HabitStatistic in database.
      *
-     * @param dto - dto with {@link HabitStatistic} rate and amount of items.
+     * @param dto - dto with HabitStatistic rate and amount of items.
      * @return {@link UpdateHabitStatisticDto} instance.
      */
     UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto);
 
     /**
-     * Method for finding {@link HabitStatistic} by it's id.
+     * Method for finding HabitStatistic by it's id.
      *
-     * @param id {@link HabitStatistic} id.
+     * @param id HabitStatistic id.
      * @return {@link HabitStatisticDto} instance.
      */
     HabitStatisticDto findById(Long id);
 
     /**
-     * Method for finding all {@link HabitStatistic} by {@link HabitAssign} id
+     * Method for finding all HabitStatistic by HabitAssign id
      * (multiple statistics for one assigned habit for user).
      *
-     * @param habitAssignId {@link HabitAssign} id.
+     * @param habitAssignId HabitAssign id.
      * @return list of {@link HabitStatisticDto} instances.
      */
     List<HabitStatisticDto> findAllStatsByHabitAssignId(Long habitAssignId);
 
     /**
-     * Method for finding all {@link HabitStatistic} by {@link Habit} id.
+     * Method for finding all HabitStatistic by Habit id.
      *
-     * @param habitId {@link Habit} id.
+     * @param habitId Habit id.
      * @return list of {@link HabitStatisticDto} instances.
      */
     List<HabitStatisticDto> findAllStatsByHabitId(Long habitId);
@@ -63,9 +60,9 @@ public interface HabitStatisticService {
     List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language);
 
     /**
-     * Method for deleting all statistics for certain {@link HabitAssign}.
+     * Method for deleting all statistics for certain HabitAssign.
      *
-     * @param habitAssignId {@link HabitAssign} id.
+     * @param habitAssignId HabitAssign id.
      */
     void deleteAllStatsByHabitAssignId(Long habitAssignId);
 }
