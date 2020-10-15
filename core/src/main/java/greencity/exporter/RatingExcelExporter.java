@@ -55,7 +55,7 @@ public class RatingExcelExporter {
                 setCell(row, 3, dto.getUser().getId().toString(), sheet);
                 setCell(row, 4, dto.getUser().getEmail(), sheet);
                 setCell(row, 5, Float.toString(dto.getPointsChanged()), sheet);
-                setCell(row, 5, Float.toString(dto.getRating()), sheet);
+                setCell(row, 6, Float.toString(dto.getRating()), sheet);
             }
 
             workbook.write(outputStream);
