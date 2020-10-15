@@ -48,11 +48,9 @@ public interface MySpecification<T> extends Specification<T> {
      */
     default Predicate getStringPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
                                          SearchCriteria searchCriteria) {
-        if (searchCriteria.getValue().toString().trim().equals("")) {
-            return criteriaBuilder.conjunction();
-        }
-        return criteriaBuilder.like(root.get(searchCriteria.getKey()),
-            "%" + searchCriteria.getValue() + "%");
+        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
+            criteriaBuilder.like(root.get(searchCriteria.getKey()),
+                "%" + searchCriteria.getValue() + "%");
     }
 
     /**
