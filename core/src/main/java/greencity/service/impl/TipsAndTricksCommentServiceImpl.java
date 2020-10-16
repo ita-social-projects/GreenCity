@@ -47,18 +47,20 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
                                                    User user) {
         TipsAndTricks tipsAndTricks = tipsAndTricksService.findById(tipsandtricksId);
         TipsAndTricksComment tipsAndTricksComment =
-            modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class);
+                modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class);
         tipsAndTricksComment.setUser(user);
         tipsAndTricksComment.setTipsAndTricks(tipsAndTricks);
-        if (addTipsAndTricksCommentDtoRequest.getParentCommentId()!=null && addTipsAndTricksCommentDtoRequest.getParentCommentId() != 0) {
+        if (addTipsAndTricksCommentDtoRequest.getParentCommentId() != null
+                && addTipsAndTricksCommentDtoRequest.getParentCommentId() != 0) {
             TipsAndTricksComment parentComment =
-                tipsAndTricksCommentRepo.findById(addTipsAndTricksCommentDtoRequest.getParentCommentId()).orElseThrow(
-                    () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+                    tipsAndTricksCommentRepo
+                            .findById(addTipsAndTricksCommentDtoRequest.getParentCommentId()).orElseThrow(() ->
+                            new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
             if (parentComment.isDeleted()) {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_TO_DELETED_COMMENT);
             }
             if (parentComment.getParentComment() == null
-                && parentComment.getTipsAndTricks().getId().equals(tipsandtricksId)) {
+                    && parentComment.getTipsAndTricks().getId().equals(tipsandtricksId)) {
                 tipsAndTricksComment.setParentComment(parentComment);
             } else {
                 if (parentComment.getParentComment() != null) {
@@ -118,7 +120,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     public List<TipsAndTricksCommentDto> findAllReplies(Long parentCommentId) {
         return tipsAndTricksCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(parentCommentId)
             .stream()
-            .map(tipsAndTricksComment -> modelMapper.map(tipsAndTricksComment, TipsAndTricksCommentDto.class))
+            .map(tipsAndTricksComment -> modelMapper
+                    .map(tipsAndTricksComment, TipsAndTricksCommentDto.class))
             .collect(Collectors.toList());
     }
 
