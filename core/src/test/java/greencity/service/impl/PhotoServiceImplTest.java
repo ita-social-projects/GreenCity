@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.entity.Photo;
 import greencity.repository.PhotoRepo;
+import greencity.service.PhotoServiceImpl;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;

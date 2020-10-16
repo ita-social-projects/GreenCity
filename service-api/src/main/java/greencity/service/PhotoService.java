@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.entity.Photo;
+import greencity.dto.photo.PhotoVO;
 import java.util.Optional;
 
 /**
@@ -11,11 +11,11 @@ import java.util.Optional;
  */
 public interface PhotoService {
     /**
-     * Method with return {@link Optional} of {@link Photo} by comment id.
+     * Method with return {@link Optional} of {@link PhotoVO} by comment id.
      *
-     * @param name of {@link Photo}.
-     * @return {@link Optional} of {@link Photo} .
+     * @param name of {@link PhotoVO}.
+     * @return {@link Optional} of {@link PhotoVO} .
      * @author Marian Milian
      */
-    Optional<Photo> findByName(String name);
+    Optional<PhotoVO> findByName(String name);
 }

@@ -1,11 +1,11 @@
-package greencity.service.impl;
+package greencity.service;
 
-import greencity.entity.Photo;
+import greencity.dto.photo.PhotoVO;
 import greencity.repository.PhotoRepo;
-import greencity.service.PhotoService;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,10 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
-    private PhotoRepo photoRepo;
+    private final PhotoRepo photoRepo;
+    private final ModelMapper modelMapper;
 
     @Override
-    public Optional<Photo> findByName(String name) {
-        return photoRepo.findByName(name);
+    public Optional<PhotoVO> findByName(String name) {
+        return Optional.of(modelMapper.map(photoRepo.findByName(name), PhotoVO.class));
     }
 }
