@@ -163,7 +163,7 @@ $(document).ready(function () {
             });
             tipsandtricks.textTranslations.forEach(function(translation){
                 let lang = translation.languageCode;
-                $(`input[name=textContent${lang}]`).val(translation.content);
+                $(`textarea[name=textContent${lang}]`).val(translation.content);
             });
         });
     });
