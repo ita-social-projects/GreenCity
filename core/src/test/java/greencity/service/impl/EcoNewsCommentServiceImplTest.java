@@ -10,7 +10,7 @@ import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.mapping.AddEcoNewsCommentDtoResponseMapper;

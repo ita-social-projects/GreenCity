@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.entity.enums.HabitRate;
+import greencity.enums.HabitRate;
 import java.time.ZonedDateTime;
 import javax.persistence.*;
 import lombok.*;

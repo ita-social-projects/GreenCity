@@ -2,28 +2,27 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitTranslation;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface HabitService {
     /**
-     * Method find {@link HabitTranslation} by {@link Habit} and languageCode.
+     * Method find {@link HabitTranslationDto} by {@link HabitVO} and languageCode.
      *
-     * @return {@link HabitTranslation}
+     * @return {@link HabitTranslationDto}
      * @author Kovaliv Taras
      */
-    HabitTranslationDto getHabitTranslation(Habit habit, String languageCode);
+    HabitTranslationDto getHabitTranslation(HabitVO habit, String languageCode);
 
     /**
-     * Method find {@link Habit} by id.
+     * Method find Habit by id.
      *
-     * @return {@link Habit}
+     * @return {@link HabitVO}
      * @author Kovaliv Taras
      */
-    Habit getById(Long id);
+    HabitVO getById(Long id);
 
     /**
      * Method find all {@link HabitDto}.

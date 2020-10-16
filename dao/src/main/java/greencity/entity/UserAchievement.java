@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.entity.enums.AchievementStatus;
+import greencity.enums.AchievementStatus;
 import java.util.Objects;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;

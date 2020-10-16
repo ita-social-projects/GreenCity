@@ -1,7 +1,7 @@
 package greencity.dto.user;
 
 import greencity.constant.ValidationConstants;
-import greencity.entity.enums.EmailNotification;
+import greencity.enums.EmailNotification;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

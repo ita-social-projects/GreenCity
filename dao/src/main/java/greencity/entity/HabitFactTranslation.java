@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.entity.enums.FactOfDayStatus;
+import greencity.enums.FactOfDayStatus;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,8 +1,8 @@
-package greencity.service.impl;
+package greencity.service;
 
-import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -10,7 +10,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.service.HabitService;
+import greencity.service.constant.ErrorMessage;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -38,9 +38,10 @@ public class HabitServiceImpl implements HabitService {
      * @author Kovaliv Taras
      */
     @Override
-    public HabitTranslationDto getHabitTranslation(Habit habit, String languageCode) {
+    public HabitTranslationDto getHabitTranslation(HabitVO habit, String languageCode) {
+        Habit mappedHabit = modelMapper.map(habit, Habit.class);
         HabitTranslation habitTranslation = habitTranslationRepo
-            .findByHabitAndLanguageCode(habit, languageCode)
+            .findByHabitAndLanguageCode(mappedHabit, languageCode)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND));
         return modelMapper.map(habitTranslation, HabitTranslationDto.class);
     }
@@ -53,9 +54,10 @@ public class HabitServiceImpl implements HabitService {
      * @author Kovaliv Taras
      */
     @Override
-    public Habit getById(Long id) {
-        return habitRepo.findById(id)
+    public HabitVO getById(Long id) {
+        Habit habit = habitRepo.findById(id)
             .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(habit, HabitVO.class);
     }
 
     @Override

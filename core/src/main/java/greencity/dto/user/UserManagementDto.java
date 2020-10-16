@@ -1,8 +1,8 @@
 package greencity.dto.user;
 
 import greencity.constant.ValidationConstants;
-import greencity.entity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.ROLE;
+import greencity.enums.UserStatus;
 import lombok.*;
 
 import javax.validation.constraints.Email;

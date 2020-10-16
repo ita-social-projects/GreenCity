@@ -6,7 +6,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
-import static greencity.entity.enums.FactOfDayStatus.CURRENT;
+import static greencity.enums.FactOfDayStatus.CURRENT;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.service.HabitFactService;
 import greencity.service.HabitFactTranslationService;

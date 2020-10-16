@@ -88,7 +88,7 @@ public class AdviceServiceImpl implements AdviceService {
     public AdviceVO update(AdvicePostDto adviceDto, Long id) {
         Advice advice = adviceRepo.findById(id)
             .map(employee -> {
-                Habit habit = habitService.getById(adviceDto.getHabit().getId());
+                Habit habit = modelMapper.map(habitService.getById(adviceDto.getHabit().getId()), Habit.class);
                 employee.setHabit(habit);
                 return adviceRepo.save(employee);
             })

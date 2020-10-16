@@ -4,7 +4,7 @@ import greencity.entity.Habit;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.HabitFact;
 import greencity.entity.Language;
-import greencity.entity.enums.FactOfDayStatus;
+import greencity.enums.FactOfDayStatus;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
