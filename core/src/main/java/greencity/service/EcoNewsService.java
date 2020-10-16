@@ -1,15 +1,19 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface EcoNewsService {
     /**
@@ -131,7 +135,7 @@ public interface EcoNewsService {
      * Method returns {@link EcoNewsDto} by search query and page.
      *
      * @param paging {@link Pageable}.
-     * @param query query to search.
+     * @param query  query to search.
      * @return list of {@link EcoNewsDto}.
      */
     PageableDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query);
@@ -144,11 +148,19 @@ public interface EcoNewsService {
     void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile multipartFile);
 
     /**
+     * Method for updating {@link EcoNews} instance.
+     *
+     * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
+     * @return instance of {@link EcoNewsDto};=.
+     */
+    EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile);
+
+    /**
      * Find {@link EcoNews} for management.
      *
      * @return a dto of {@link PageableDto}.
      * @author Dovganyuk Taras
      */
     PageableDto<EcoNewsDto> getFilteredDataForManagementByPage(
-            Pageable pageable, EcoNewsViewDto ecoNewsViewDto);
+        Pageable pageable, EcoNewsViewDto ecoNewsViewDto);
 }
