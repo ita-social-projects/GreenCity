@@ -108,7 +108,7 @@ public class EcoNewsController {
     @PutMapping("/update")
     public ResponseEntity<EcoNewsDto> update(
         @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS, required = true)
-        @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
+        @RequestPart @ValidEcoNewsDtoRequest UpdateEcoNewsDto updateEcoNewsDto,
         @ApiParam(value = "Image of eco news")
         @ImageValidation
         @RequestPart(required = false) MultipartFile image,
