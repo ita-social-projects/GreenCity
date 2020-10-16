@@ -1,7 +1,9 @@
 package greencity.dto.habit;
 
 import greencity.dto.habittranslation.HabitTranslationDto;
+import java.io.Serializable;
 import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -13,11 +15,10 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class HabitDto {
-    @NotNull
-    @Min(1)
+public class HabitDto implements Serializable {
     private Long id;
+
     private String image;
-    @NotEmpty
+    @Valid
     private List<HabitTranslationDto> habitTranslations;
 }

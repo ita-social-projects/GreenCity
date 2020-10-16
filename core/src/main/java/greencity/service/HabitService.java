@@ -3,9 +3,12 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
+import greencity.entity.TipsAndTricks;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface HabitService {
     /**
@@ -39,4 +42,21 @@ public interface HabitService {
      * @author Dovganyuk Taras
      */
     PageableDto<HabitTranslationDto> getAllHabitsByLanguageCode(Pageable pageable, String language);
+
+    /**
+     * Method saves {@link Habit} with it's {@link HabitTranslation}'s.
+     *
+     * @param habitDto {@link HabitDto}.
+     * @param image {@link MultipartFile} image for habit.
+     * @return {@link HabitDto}.
+     */
+    HabitDto saveHabitAndTranslations(HabitDto habitDto, MultipartFile image);
+
+    /**
+     * Method updates {@link Habit} instance.
+     *
+     * @param habitDto - instance of {@link HabitDto}.
+     * @param image {@link MultipartFile} image for habit.
+     */
+    void update(HabitDto habitDto, MultipartFile image);
 }

@@ -18,6 +18,7 @@ import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
 import greencity.entity.User;
+import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitAssignService;
 import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
@@ -25,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
@@ -44,6 +46,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class HabitController {
     private final HabitStatisticService habitStatisticService;
     private final HabitAssignService habitAssignService;
+    private final HabitStatisticRepo habitStatisticRepo;
     private final HabitService habitService;
 
     /**
@@ -120,26 +123,10 @@ public class HabitController {
     public ResponseEntity<PageableDto<HabitTranslationDto>> getAll(
         @ApiIgnore Pageable pageable,
         @ApiIgnore @ValidLanguage Locale locale) {
+        System.out.println("\n\n\n\n\n\n " + ZonedDateTime.now());
+        System.out.println(habitStatisticRepo.findHabitAssignStatByDate(ZonedDateTime.now(), 3L).get().getCreateDate());
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
-    }
-
-    /**
-     * Method which return {@link HabitDto} by given id.
-     *
-     * @param id of {@link Habit}
-     * @return {@link HabitDto}
-     */
-    @ApiOperation(value = "Find habit by given id.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @GetMapping("/find")
-    public ResponseEntity<HabitDto> findHabit(@ApiIgnore @AuthenticationPrincipal
-                                                                Principal principal, @RequestParam("id") Long id) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.getById(id));
     }
 
     /**
