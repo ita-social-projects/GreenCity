@@ -153,7 +153,7 @@ public interface EcoNewsService {
      * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
      * @return instance of {@link EcoNewsDto};=.
      */
-    EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile);
+    EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, User user);
 
     /**
      * Find {@link EcoNews} for management.

@@ -17,6 +17,8 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
+import greencity.entity.enums.ROLE;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
@@ -338,8 +340,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image) {
+    public EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, User user) {
         EcoNews toUpdate = findById(updateEcoNewsDto.getId());
+        if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
         toUpdate.setTitle(updateEcoNewsDto.getTitle());
         toUpdate.setText(updateEcoNewsDto.getText());
         toUpdate.setSource(updateEcoNewsDto.getSource());
