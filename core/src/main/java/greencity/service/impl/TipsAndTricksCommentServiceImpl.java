@@ -50,7 +50,7 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class);
         tipsAndTricksComment.setUser(user);
         tipsAndTricksComment.setTipsAndTricks(tipsAndTricks);
-        if (addTipsAndTricksCommentDtoRequest.getParentCommentId() != 0) {
+        if (addTipsAndTricksCommentDtoRequest.getParentCommentId()!=null && addTipsAndTricksCommentDtoRequest.getParentCommentId() != 0) {
             TipsAndTricksComment parentComment =
                 tipsAndTricksCommentRepo.findById(addTipsAndTricksCommentDtoRequest.getParentCommentId()).orElseThrow(
                     () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
