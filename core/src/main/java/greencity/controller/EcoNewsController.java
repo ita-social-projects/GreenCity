@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.constant.HttpStatuses;
@@ -12,6 +13,7 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
@@ -109,9 +111,10 @@ public class EcoNewsController {
         @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
         @ApiParam(value = "Image of eco news")
         @ImageValidation
-        @RequestPart(required = false) MultipartFile image) {
+        @RequestPart(required = false) MultipartFile image,
+        @ApiIgnore @CurrentUser User user) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ecoNewsService.update(updateEcoNewsDto, image)
+            ecoNewsService.update(updateEcoNewsDto, image, user)
         );
     }
 
