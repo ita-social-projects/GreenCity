@@ -1,26 +1,18 @@
 package greencity.entity;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "text_translations")
-@Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true, exclude = "tipsAndTricks")
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class TextTranslation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    private Language language;
-
+public class TextTranslation extends Translation {
+    @Getter
+    @Setter
     @ManyToOne
     private TipsAndTricks tipsAndTricks;
-
-    @Column(nullable = false, unique = true, length = 300)
-    private String content;
 }
