@@ -2,7 +2,7 @@ package greencity.entity;
 
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

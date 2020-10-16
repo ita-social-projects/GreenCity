@@ -1,4 +1,4 @@
-package greencity.entity.enums;
+package greencity.enums;
 
 public enum ROLE {
     ROLE_USER,

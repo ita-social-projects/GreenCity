@@ -7,7 +7,7 @@ import greencity.dto.goal.CustomGoalSaveRequestDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.CustomGoalNotSavedException;
 import greencity.exception.exceptions.NotFoundException;

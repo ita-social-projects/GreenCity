@@ -10,7 +10,7 @@ import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
 import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;

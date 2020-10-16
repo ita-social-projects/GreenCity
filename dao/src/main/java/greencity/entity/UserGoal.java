@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.entity.enums.GoalStatus;
+import greencity.enums.GoalStatus;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.*;

@@ -7,7 +7,7 @@ import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.UserApprovalMessage;

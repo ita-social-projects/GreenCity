@@ -3,7 +3,7 @@ package greencity.security.service.impl;
 import static greencity.constant.ErrorMessage.BAD_FACEBOOK_TOKEN;
 import greencity.entity.User;
 import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.jwt.JwtTool;

@@ -1,6 +1,6 @@
 package greencity.dto.user;
 
-import greencity.entity.enums.GoalStatus;
+import greencity.enums.GoalStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

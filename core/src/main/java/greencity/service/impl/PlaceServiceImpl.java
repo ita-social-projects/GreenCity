@@ -12,7 +12,7 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.entity.enums.PlaceStatus;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;

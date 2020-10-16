@@ -16,6 +16,7 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -27,13 +28,14 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.AuthorDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.*;
 import greencity.entity.*;
-import greencity.entity.enums.*;
+import greencity.entity.enums.CommentStatus;
+import greencity.entity.enums.FactOfDayStatus;
+import greencity.entity.enums.HabitRate;
+import greencity.enums.ROLE;
 import greencity.entity.localization.GoalTranslation;
+import greencity.enums.GoalStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -244,6 +246,25 @@ public class ModelUtils {
                 .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
                 .build();
     }
+
+    public static UserGoalVO getUserGoalVO(){
+        return UserGoalVO.builder()
+                .id(1L)
+                .user(UserVO.builder()
+                        .id(1L)
+                        .email(TestConst.EMAIL)
+                        .name(TestConst.NAME)
+                        .role(ROLE.ROLE_USER)
+                        .build())
+                .status(GoalStatus.DONE)
+                .customGoal(CustomGoalVO.builder()
+                        .id(8L)
+                        .text("Buy electric car")
+                        .build())
+                .build();
+    }
+
+
 
     public static UserGoalResponseDto getPredefinedUserGoalDto() {
         return UserGoalResponseDto.builder()

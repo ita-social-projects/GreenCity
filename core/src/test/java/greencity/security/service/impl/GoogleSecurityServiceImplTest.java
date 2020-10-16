@@ -5,7 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.entity.User;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;

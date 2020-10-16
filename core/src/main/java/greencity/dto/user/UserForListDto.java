@@ -2,7 +2,7 @@ package greencity.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.constant.ValidationConstants;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Email;

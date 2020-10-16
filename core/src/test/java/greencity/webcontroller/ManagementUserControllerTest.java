@@ -5,7 +5,7 @@ import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.entity.enums.UserStatus;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
