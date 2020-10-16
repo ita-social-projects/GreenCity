@@ -334,24 +334,24 @@ class PlaceServiceImplTest {
         verify(placeRepo).findAll(pageable);
     }
 
-    @Test
-    void updateTest() {
-        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
-        placeUpdateDto.setOpeningHoursList(openingHoursList);
-        placeUpdateDto.setDiscountValues(discountValuesDto);
-        placeUpdateDto.setName("new Name");
-        placeUpdateDto.setCategory(categoryDto);
-        when(categoryService.findByName(category.getName())).thenReturn(category);
-        when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
-        when(modelMapper.map(placeUpdateDto.getLocation(), Location.class)).thenReturn(location);
-
-        Place updatedPlace = placeService.update(placeUpdateDto);
-
-        assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
-        assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
-        verify(modelMapper).map(placeUpdateDto.getLocation(), Location.class);
-        verify(locationService).update(place.getLocation().getId(), location);
-    }
+//    @Test
+//    void updateTest() {
+//        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
+//        placeUpdateDto.setOpeningHoursList(openingHoursList);
+//        placeUpdateDto.setDiscountValues(discountValuesDto);
+//        placeUpdateDto.setName("new Name");
+//        placeUpdateDto.setCategory(categoryDto);
+//        when(categoryService.findByName(category.getName())).thenReturn(category);
+//        when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
+//        when(modelMapper.map(placeUpdateDto.getLocation(), Location.class)).thenReturn(location);
+//
+//        Place updatedPlace = placeService.update(placeUpdateDto);
+//
+//        assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
+//        assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
+//        verify(modelMapper).map(placeUpdateDto.getLocation(), Location.class);
+//        verify(locationService).update(place.getLocation().getId(), location);
+//    }
 
     @Test
     void deleteByIdTest() {

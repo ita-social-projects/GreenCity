@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.entity.BreakTime;
+import greencity.dto.breaktime.BreakTimeVO;
 import java.util.List;
 
 /**
@@ -13,7 +13,7 @@ public interface BreakTimeService {
      * @param breakTime - entity of BreakTime.
      * @return saved BreakTime.
      */
-    BreakTime save(BreakTime breakTime);
+    BreakTimeVO save(BreakTimeVO breakTime);
 
     /**
      * Find BreakTime entity by id.
@@ -21,7 +21,7 @@ public interface BreakTimeService {
      * @param id - BreakTime id.
      * @return BreakTime entity.
      */
-    BreakTime findById(Long id);
+    BreakTimeVO findById(Long id);
 
     /**
      * Delete entity from DB by id.
@@ -36,5 +36,5 @@ public interface BreakTimeService {
      *
      * @return List of BreakTimes.
      */
-    List<BreakTime> findAll();
+    List<BreakTimeVO> findAll();
 }

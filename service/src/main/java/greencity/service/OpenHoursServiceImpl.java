@@ -1,18 +1,20 @@
-package greencity.service.impl;
+package greencity.service;
 
-import greencity.constant.ErrorMessage;
-import greencity.constant.LogMessage;
+import greencity.service.constant.ErrorMessage;
+import greencity.service.constant.LogMessage;
+import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.place.PlaceVO;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.OpenHoursRepo;
-import greencity.service.BreakTimeService;
-import greencity.service.OpenHoursService;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,17 +27,20 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     /**
      * Autowired repository.
      */
-    private OpenHoursRepo hoursRepo;
-
-    private BreakTimeService breakTimeService;
+    private final OpenHoursRepo hoursRepo;
+    private final BreakTimeService breakTimeService;
+    private final ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
      *
      * @author Roman Zahorui
      */
-    public List<OpeningHours> getOpenHoursByPlace(Place place) {
-        return hoursRepo.findAllByPlace(place);
+    @Override
+    public List<OpeningHoursVO> getOpenHoursByPlace(PlaceVO place) {
+        List<OpeningHours> openingHours = hoursRepo.findAllByPlace(modelMapper.map(place, Place.class));
+        return modelMapper.map(openingHours, new TypeToken<List<OpeningHoursVO>>() {
+        }.getType());
     }
 
     /**
@@ -44,7 +49,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      * @author Kateryna Horokh
      */
     @Override
-    public OpeningHours save(OpeningHours hours) {
+    public OpeningHoursVO save(OpeningHoursVO hours) {
         log.info(LogMessage.IN_SAVE);
 
         if (hours.getOpenTime().getHour() > hours.getCloseTime().getHour()) {
@@ -59,7 +64,8 @@ public class OpenHoursServiceImpl implements OpenHoursService {
                 throw new BadRequestException(ErrorMessage.WRONG_BREAK_TIME);
             }
         }
-        return hoursRepo.save(hours);
+        OpeningHours save = hoursRepo.save(modelMapper.map(hours, OpeningHours.class));
+        return modelMapper.map(save, OpeningHoursVO.class);
     }
 
     /**
@@ -68,10 +74,11 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      * @author Nazar Vladyka
      */
     @Override
-    public List<OpeningHours> findAll() {
+    public List<OpeningHoursVO> findAll() {
         log.info(LogMessage.IN_FIND_ALL);
 
-        return hoursRepo.findAll();
+        return modelMapper.map(hoursRepo.findAll(), new TypeToken<List<OpeningHoursVO>>() {
+        }.getType());
     }
 
     /**
@@ -80,13 +87,14 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      * @author Nazar Vladyka
      */
     @Override
-    public OpeningHours findById(Long id) {
+    public OpeningHoursVO findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
-        return hoursRepo
+        OpeningHours openingHours = hoursRepo
             .findById(id)
             .orElseThrow(
                 () -> new NotFoundException(ErrorMessage.OPEN_HOURS_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(openingHours, OpeningHoursVO.class);
     }
 
     /**
@@ -95,17 +103,18 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      * @author Nazar Vladyka
      */
     @Override
-    public OpeningHours update(Long id, OpeningHours updatedHours) {
+    public OpeningHoursVO update(Long id, OpeningHoursVO updatedHours) {
         log.info(LogMessage.IN_UPDATE);
 
-        OpeningHours updatable = findById(id);
+        OpeningHoursVO updatable = findById(id);
 
         updatable.setOpenTime(updatedHours.getOpenTime());
         updatable.setCloseTime(updatedHours.getCloseTime());
         updatable.setWeekDay(updatedHours.getWeekDay());
         updatable.setPlace(updatedHours.getPlace());
 
-        return hoursRepo.save(updatable);
+        OpeningHours save = hoursRepo.save(modelMapper.map(updatable, OpeningHours.class));
+        return modelMapper.map(save, OpeningHoursVO.class);
     }
 
     /**
@@ -117,7 +126,7 @@ public class OpenHoursServiceImpl implements OpenHoursService {
     public Long deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
 
-        hoursRepo.delete(findById(id));
+        hoursRepo.delete(modelMapper.map(findById(id), OpeningHours.class));
         return id;
     }
 
@@ -127,8 +136,9 @@ public class OpenHoursServiceImpl implements OpenHoursService {
      * @author Kateryna Horokh
      */
     @Override
-    public Set<OpeningHours> findAllByPlaceId(Long placeId) {
-        return hoursRepo.findAllByPlaceId(placeId);
+    public Set<OpeningHoursVO> findAllByPlaceId(Long placeId) {
+        return modelMapper.map(hoursRepo.findAllByPlaceId(placeId), new TypeToken<Set<OpeningHoursVO>>() {
+        }.getType());
     }
 
     /**

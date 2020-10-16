@@ -20,15 +20,15 @@ class PhotoServiceImplTest {
     @InjectMocks
     PhotoServiceImpl photoService;
 
-    @Test
-    void findByNameTest() {
-        when(photoRepo.findByName("test")).thenReturn(Optional.of(new Photo()));
-        assertEquals(Optional.of(new Photo()), photoService.findByName("test"));
-    }
-
-    @Test
-    void findByNameEmptyTest() {
-        when(photoRepo.findByName("")).thenReturn(Optional.empty());
-        assertEquals(Optional.empty(), photoService.findByName(""));
-    }
+//    @Test
+//    void findByNameTest() {
+//        when(photoRepo.findByName("test")).thenReturn(Optional.of(new Photo()));
+//        assertEquals(Optional.of(new Photo()), photoService.findByName("test"));
+//    }
+//
+//    @Test
+//    void findByNameEmptyTest() {
+//        when(photoRepo.findByName("")).thenReturn(Optional.empty());
+//        assertEquals(Optional.empty(), photoService.findByName(""));
+//    }
 }

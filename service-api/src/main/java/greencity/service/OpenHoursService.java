@@ -1,7 +1,7 @@
 package greencity.service;
 
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
+import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.place.PlaceVO;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +15,7 @@ public interface OpenHoursService {
      * @param hours - entity of OpeningHours.
      * @return saved OpeningHours.
      */
-    OpeningHours save(OpeningHours hours);
+    OpeningHoursVO save(OpeningHoursVO hours);
 
     /**
      * Find OpeningHours entity by id.
@@ -23,7 +23,7 @@ public interface OpenHoursService {
      * @param id - OpeningHours id.
      * @return OpeningHours entity.
      */
-    OpeningHours findById(Long id);
+    OpeningHoursVO findById(Long id);
 
     /**
      * Delete entity from DB by id.
@@ -34,20 +34,19 @@ public interface OpenHoursService {
     Long deleteById(Long id);
 
     /**
-     * Finds all {@code OpeningHours} records related to the specified {@link
-     * greencity.entity.Place}.
+     * Finds all OpeningHours records related to the specified Place.
      *
      * @param place to find by.
      * @return a list of the {@code OpeningHours} for the place.
      */
-    List<OpeningHours> getOpenHoursByPlace(Place place);
+    List<OpeningHoursVO> getOpenHoursByPlace(PlaceVO place);
 
     /**
      * Find all opening hours from DB.
      *
      * @return List of opening hours.
      */
-    List<OpeningHours> findAll();
+    List<OpeningHoursVO> findAll();
 
     /**
      * Update OpeningHours in DB.
@@ -56,7 +55,7 @@ public interface OpenHoursService {
      * @param updatedHours - OpeningHours entity.
      * @return OpeningHours updated entity.
      */
-    OpeningHours update(Long id, OpeningHours updatedHours);
+    OpeningHoursVO update(Long id, OpeningHoursVO updatedHours);
 
     /**
      * Finds all {@code OpeningHours} records related to the specified {@code Place}.
@@ -64,7 +63,7 @@ public interface OpenHoursService {
      * @param placeId to find by.
      * @return a list of the {@code OpeningHours} for the place by id.
      */
-    Set<OpeningHours> findAllByPlaceId(Long placeId);
+    Set<OpeningHoursVO> findAllByPlaceId(Long placeId);
 
     /**
      * Delete all {@code OpeningHours} records related to the specified {@code Place}.
