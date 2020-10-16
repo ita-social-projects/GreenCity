@@ -50,7 +50,7 @@ public class SwaggerConfig {
                 .genericModelSubstitutes(ResponseEntity.class)
                 .ignoredParameterTypes(Pageable.class)
                 .ignoredParameterTypes(java.sql.Date.class)
-                .directModelSubstitute(java.time.LocalDate.class, java.sql.Date.class)
+                .directModelSubstitute(java.time.LocalDate.class, String.class)
                 .directModelSubstitute(java.time.ZonedDateTime.class, Date.class)
                 .directModelSubstitute(java.time.LocalDateTime.class, Date.class)
                 .securityContexts(Lists.newArrayList(securityContext()))

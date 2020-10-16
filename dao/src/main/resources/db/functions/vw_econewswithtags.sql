@@ -1,4 +1,4 @@
-CREATE IF NOT EXISTS MATERIALIZED VIEW public.vw_econewswithtags
+CREATE MATERIALIZED VIEW public.vw_econewswithtags
     TABLESPACE pg_default
 AS
 SELECT en.id,

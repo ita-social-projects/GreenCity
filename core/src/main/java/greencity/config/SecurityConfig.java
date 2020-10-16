@@ -84,11 +84,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/management/**",
-                "/econews/comments",
                 "/econews/comments/replies/{parentCommentId}").hasRole(ADMIN)
             .antMatchers("/css/**",
                 "/img/**"
             ).permitAll()
+            .antMatchers(HttpMethod.GET,
+                "/econews/comments").hasRole(ADMIN)
             .antMatchers(HttpMethod.GET,
                 "/ownSecurity/verifyEmail",
                 "/ownSecurity/updateAccessToken",
@@ -182,9 +183,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/files/image",
                 "/habit/assign/{habitId}",
                 "/habit/statistic/",
-                "/habit/status/enroll/{habitId}",
-                "/habit/status/unenroll/{habitId}/{date}",
-                "/habit/status/enroll/{habitId}/{date}",
+                "/habit/status/enroll/{habitAssignId}",
+                "/habit/status/unenroll/{habitAssignId}/{date}",
+                "/habit/status/enroll/{habitAssignId}/{date}",
                 "/newsSubscriber",
                 "/place/{placeId}/comments",
                 "/place/propose",
