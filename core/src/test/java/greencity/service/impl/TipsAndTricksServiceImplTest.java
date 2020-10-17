@@ -121,7 +121,7 @@ class TipsAndTricksServiceImplTest {
         List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
         PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
-        when(tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc("en",pageRequest)).thenReturn(page);
+        when(tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc("en", pageRequest)).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
 
         PageableDto<TipsAndTricksDtoResponse> actual = tipsAndTricksService.findAll(pageRequest);
@@ -141,7 +141,7 @@ class TipsAndTricksServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
         when(tipsAndTricksRepo.find("en", pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
                 .thenReturn(page);
-        when((tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc("en",pageRequest))).thenReturn(page);
+        when((tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc("en", pageRequest))).thenReturn(page);
 
         PageableDto<TipsAndTricksDtoResponse> actual =
                 tipsAndTricksService.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName()));
@@ -191,8 +191,8 @@ class TipsAndTricksServiceImplTest {
                 .map(t -> modelMapper.map(t, SearchTipsAndTricksDto.class))
                 .collect(Collectors.toList());
         PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
-
-        when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent())).thenReturn(page);
+        when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
+        when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en")).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual = tipsAndTricksService.search(tipsAndTricks.get(0).getTitleTranslations().get(0).getContent());
@@ -258,8 +258,8 @@ class TipsAndTricksServiceImplTest {
                 .map(t -> modelMapper.map(t, SearchTipsAndTricksDto.class))
                 .collect(Collectors.toList());
         PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
-
-        when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent())).thenReturn(page);
+        when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
+        when(tipsAndTricksRepo.searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en")).thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual = tipsAndTricksService.search(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent());

@@ -316,7 +316,7 @@ public class UserServiceImpl implements UserService {
      */
     private UserGoalResponseDto setTextForAnyUserGoal(UserGoalResponseDto dto, Long userId, String language) {
         String text = userGoalRepo.findGoalByUserGoalId(dto.getId()).isPresent()
-            ? goalTranslationRepo.findByUserIdLangAndUserGoalId(userId, language, dto.getId()).getText()
+            ? goalTranslationRepo.findByUserIdLangAndUserGoalId(userId, language, dto.getId()).getContent()
             : customGoalRepo.findByUserGoalIdAndUserId(dto.getId(), userId).getText();
         dto.setText(text);
         return dto;

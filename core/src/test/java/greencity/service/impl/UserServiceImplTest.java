@@ -27,7 +27,6 @@ import java.net.URL;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,12 +116,20 @@ class UserServiceImplTest {
             .build();*/
     private String language = "uk";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
-        new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "TEST",
-            new Goal(1L, Collections.emptyList(), Collections.emptyList())),
-        new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "TEST",
-            new Goal(2L, Collections.emptyList(), Collections.emptyList())));
+            GoalTranslation.builder()
+            .id(1L)
+            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+            .content("TEST")
+            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+            .build(),
+            GoalTranslation.builder()
+                    .id(2L)
+                    .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+                            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    .content("TEST")
+                    .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList()))
+                    .build());
     private Long userId = user.getId();
     private String userEmail = user.getEmail();
 
@@ -426,7 +433,7 @@ class UserServiceImplTest {
 
         assertEquals(GoalStatus.DONE, userGoal.getStatus());
         assertEquals(userGoalResponseDto,
-            new UserGoalResponseDto(2L, goalTranslations.get(0).getText(), GoalStatus.DONE));
+            new UserGoalResponseDto(2L, goalTranslations.get(0).getContent(), GoalStatus.DONE));
         verify(userGoalRepo).save(userGoal);
     }
 

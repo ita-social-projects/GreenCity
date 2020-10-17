@@ -29,12 +29,12 @@ class TipsAndTricksTranslationServiceImplTest {
 
     @Test
     void saveTitleTranslationsTest() {
-        Long id = 1L;
-        TitleTranslation titleTranslation = new TitleTranslation();
-        titleTranslation.setId(id);
-        titleTranslation.setContent("Content");
-        titleTranslation.setLanguage(ModelUtils.getLanguage());
-        titleTranslation.setTipsAndTricks(ModelUtils.getTipsAndTricks());
+        TitleTranslation titleTranslation = TitleTranslation.builder()
+                .id(1L)
+                .content("Content")
+                .language(ModelUtils.getLanguage())
+                .tipsAndTricks(ModelUtils.getTipsAndTricks())
+                .build();
         List<TitleTranslation> titleTranslationList = Collections.singletonList(titleTranslation);
 
         when(titleTranslationRepo.saveAll(titleTranslationList)).thenReturn(titleTranslationList);
@@ -43,12 +43,12 @@ class TipsAndTricksTranslationServiceImplTest {
     }
     @Test
     void saveTextTranslationsTest() {
-        Long id = 1L;
-        TextTranslation textTranslation = new TextTranslation();
-        textTranslation.setId(id);
-        textTranslation.setContent("Content");
-        textTranslation.setLanguage(ModelUtils.getLanguage());
-        textTranslation.setTipsAndTricks(ModelUtils.getTipsAndTricks());
+        TextTranslation textTranslation = TextTranslation.builder()
+                .id(1L)
+                .content("Content")
+                .language(ModelUtils.getLanguage())
+                .tipsAndTricks(ModelUtils.getTipsAndTricks())
+                .build();
         List<TextTranslation> textTranslationList = Collections.singletonList(textTranslation);
 
         when(textTranslationRepo.saveAll(textTranslationList)).thenReturn(textTranslationList);
