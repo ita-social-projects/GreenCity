@@ -1,6 +1,6 @@
-package greencity.service.impl;
+package greencity.service;
 
-import greencity.constant.ErrorMessage;
+import greencity.service.constant.ErrorMessage;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -12,8 +12,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
-import greencity.service.AdviceService;
-import greencity.service.HabitService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;

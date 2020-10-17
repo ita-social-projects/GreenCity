@@ -12,6 +12,11 @@ public final class ErrorMessage {
     public static final String CLOSE_TIME_LATE_THAN_OPEN_TIME = "Close time have to be late than open time";
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
+    public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
+    public static final String ADVICE_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
+    public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
+    public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
+    public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
 
     private ErrorMessage() {
     }
