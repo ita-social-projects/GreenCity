@@ -1,14 +1,12 @@
 package greencity.service;
 
-import greencity.entity.User;
-import java.util.List;
 import java.util.Map;
 
 public interface GraphService {
     /**
      * Get statistic for all users by city.
      *
-     * @return {@link List} of {@link User}.
+     * @return {@link Map} with data for statistics.
      */
     Map<String, Integer> getGeneralStatisticsForAllUsersByCities();
 

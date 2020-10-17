@@ -1,11 +1,14 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.repository.UserRepo;
-import greencity.service.GraphService;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
