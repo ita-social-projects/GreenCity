@@ -103,7 +103,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                                 .map(el -> TitleTranslation.builder()
                                         .content(el.getContent())
                                         .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()),
-                                            Language.class))
+                                                Language.class))
                                         .build())
                                 .collect(Collectors.toList())
                 )
@@ -112,7 +112,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                                 .map(el -> TextTranslation.builder()
                                         .content(el.getContent())
                                         .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()),
-                                            Language.class))
+                                                Language.class))
                                         .build())
                                 .collect(Collectors.toList())
                 )
@@ -158,8 +158,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         toUpdate.getTextTranslations()
                 .forEach(textTranslation ->
                         textTranslation.setContent(tipsAndTricksDtoManagement.getTextTranslations().stream()
-                        .filter(elem -> elem.getLanguageCode().equals(textTranslation.getLanguage().getCode()))
-                        .findFirst().orElseThrow(RuntimeException::new).getContent()));
+                                .filter(elem -> elem.getLanguageCode().equals(textTranslation.getLanguage().getCode()))
+                                .findFirst().orElseThrow(RuntimeException::new).getContent()));
 
         tipsAndTricksRepo.save(toUpdate);
     }
@@ -295,7 +295,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @Override
     public PageableDto<SearchTipsAndTricksDto> search(String searchQuery) {
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(PageRequest.of(0, 3), searchQuery);
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(PageRequest.of(0, 3), searchQuery,
+                languageService.extractLanguageCodeFromRequest());
 
         return getSearchTipsAndTricksDtoPageableDto(page);
     }
@@ -305,7 +306,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @Override
     public PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery) {
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, searchQuery);
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, searchQuery,
+                languageService.extractLanguageCodeFromRequest());
 
         return getSearchTipsAndTricksDtoPageableDto(page);
     }

@@ -1,7 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.User;
-import greencity.entity.enums.EmailNotification;
+import greencity.enums.EmailNotification;
 import greencity.enums.ROLE;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,12 +16,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static greencity.entity.enums.UserStatus.ACTIVATED;
-import static greencity.entity.enums.UserStatus.DEACTIVATED;
+import static greencity.enums.UserStatus.ACTIVATED;
+import static greencity.enums.UserStatus.DEACTIVATED;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)

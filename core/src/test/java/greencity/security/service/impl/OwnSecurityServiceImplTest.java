@@ -7,7 +7,7 @@ import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.UserApprovalMessage;
 import greencity.message.VerifyEmailMessage;
@@ -20,7 +20,6 @@ import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
-
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

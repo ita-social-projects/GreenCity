@@ -2,8 +2,8 @@ package greencity.repository;
 
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.User;
-import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.EmailNotification;
+import greencity.enums.UserStatus;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.persistence.NamedNativeQuery;

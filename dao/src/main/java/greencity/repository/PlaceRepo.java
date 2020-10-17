@@ -1,7 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.Place;
-import greencity.entity.enums.PlaceStatus;
+import greencity.enums.PlaceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;

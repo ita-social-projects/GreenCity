@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.entity.enums.PlaceStatus;
+import greencity.enums.PlaceStatus;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;

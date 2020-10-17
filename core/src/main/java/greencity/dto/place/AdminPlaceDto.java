@@ -5,7 +5,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.user.PlaceAuthorDto;
-import greencity.entity.enums.PlaceStatus;
+import greencity.enums.PlaceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;

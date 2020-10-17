@@ -6,7 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.UserStatus;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;

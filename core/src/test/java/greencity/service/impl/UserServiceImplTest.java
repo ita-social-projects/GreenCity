@@ -11,11 +11,11 @@ import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
-import greencity.entity.enums.EmailNotification;
+import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
-import static greencity.entity.enums.UserStatus.ACTIVATED;
-import static greencity.entity.enums.UserStatus.DEACTIVATED;
+import static greencity.enums.UserStatus.ACTIVATED;
+import static greencity.enums.UserStatus.DEACTIVATED;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
@@ -116,12 +116,20 @@ class UserServiceImplTest {
             .build();*/
     private String language = "uk";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
-        new GoalTranslation(1L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "TEST",
-            new Goal(1L, Collections.emptyList(), Collections.emptyList())),
-        new GoalTranslation(2L, new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "TEST",
-            new Goal(2L, Collections.emptyList(), Collections.emptyList())));
+            GoalTranslation.builder()
+            .id(1L)
+            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+            .content("TEST")
+            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+            .build(),
+            GoalTranslation.builder()
+                    .id(2L)
+                    .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+                            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    .content("TEST")
+                    .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList()))
+                    .build());
     private Long userId = user.getId();
     private String userEmail = user.getEmail();
 
@@ -425,7 +433,7 @@ class UserServiceImplTest {
 
         assertEquals(GoalStatus.DONE, userGoal.getStatus());
         assertEquals(userGoalResponseDto,
-            new UserGoalResponseDto(2L, goalTranslations.get(0).getText(), GoalStatus.DONE));
+            new UserGoalResponseDto(2L, goalTranslations.get(0).getContent(), GoalStatus.DONE));
         verify(userGoalRepo).save(userGoal);
     }
 

@@ -6,7 +6,7 @@ import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.entity.User;
 import greencity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.jwt.JwtTool;

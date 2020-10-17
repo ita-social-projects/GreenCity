@@ -1,6 +1,6 @@
 package greencity.dto.tipsandtrickscomment;
 
-import greencity.entity.enums.CommentStatus;
+import greencity.enums.CommentStatus;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;

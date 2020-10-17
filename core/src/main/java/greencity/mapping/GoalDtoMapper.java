@@ -20,6 +20,6 @@ public class GoalDtoMapper extends AbstractConverter<GoalTranslation, GoalDto> {
      */
     @Override
     protected GoalDto convert(GoalTranslation goalTranslation) {
-        return new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getText());
+        return new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getContent());
     }
 }

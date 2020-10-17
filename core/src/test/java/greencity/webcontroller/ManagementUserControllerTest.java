@@ -6,7 +6,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.UserStatus;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
