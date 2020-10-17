@@ -34,11 +34,9 @@ public class EcoNews {
     private User author;
 
     @Column(nullable = false)
-    @Size(min = 1, max = 170)
     private String title;
 
     @Column(nullable = false)
-    @Size(min = 20, max = 63206)
     private String text;
 
     @OneToMany(mappedBy = "ecoNews", fetch = FetchType.LAZY)
