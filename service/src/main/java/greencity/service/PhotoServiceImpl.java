@@ -23,6 +23,6 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Optional<PhotoVO> findByName(String name) {
-        return Optional.of(modelMapper.map(photoRepo.findByName(name), PhotoVO.class));
+        return photoRepo.findByName(name).map(photo -> modelMapper.map(photo, PhotoVO.class));
     }
 }

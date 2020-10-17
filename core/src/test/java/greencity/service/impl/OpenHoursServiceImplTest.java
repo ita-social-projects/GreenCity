@@ -1,13 +1,15 @@
 package greencity.service.impl;
 
-import greencity.entity.BreakTime;
+import greencity.dto.breaktime.BreakTimeVO;
+import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.place.PlaceVO;
 import greencity.entity.OpeningHours;
-import greencity.entity.Place;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.OpenHoursRepo;
 import greencity.service.BreakTimeService;
 import greencity.service.OpenHoursServiceImpl;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
 import org.junit.jupiter.api.Assertions;
@@ -19,158 +21,181 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class OpenHoursServiceImplTest {
+    @Mock
+    private ModelMapper modelMapper;
     @Mock
     private OpenHoursRepo openHoursRepo;
     @Mock
     private BreakTimeService breakTimeService;
     @InjectMocks
     private OpenHoursServiceImpl openHoursService;
-    private OpeningHours openingHours = OpeningHours.builder()
+    private final OpeningHours openingHours = OpeningHours.builder()
         .openTime(LocalTime.of(9, 0))
         .closeTime(LocalTime.of(20, 0))
         .build();
 
-//    @Test
-//    void saveTestWOBreakTime() {
-//        when(openHoursRepo.save(openingHours)).thenReturn(openingHours);
-//
-//        assertEquals(openingHours, openHoursService.save(openingHours));
-//    }
-//
-//    @Test
-//    void saveTestWithBreakTime() {
-//        BreakTime breakTime = BreakTime.builder()
-//            .startTime(LocalTime.of(13, 0))
-//            .endTime(LocalTime.of(14, 0))
-//            .build();
-//
-//        OpeningHours openingHours = OpeningHours.builder()
-//            .openTime(LocalTime.of(9, 0))
-//            .closeTime(LocalTime.of(20, 0))
-//            .breakTime(breakTime)
-//            .build();
-//
-//        when(openHoursRepo.save(openingHours)).thenReturn(openingHours);
-//        when(breakTimeService.save(any(BreakTime.class))).thenReturn(breakTime);
-//
-//        assertEquals(openingHours, openHoursService.save(openingHours));
-//    }
-//
-//    @Test
-//    void saveTestWithOpeningHoursBiggerThanEndOpeningHours_ThrowException() {
-//        OpeningHours openingHours = OpeningHours.builder()
-//            .openTime(LocalTime.of(20, 0))
-//            .closeTime(LocalTime.of(9, 0))
-//            .build();
-//        Assertions
-//            .assertThrows(BadRequestException.class,
-//                () -> openHoursService.save(openingHours));
-//    }
-//
-//    @Test
-//    void saveTestWithStartBreakTimeBiggerThanEndBreakTime_ThrowException() {
-//        BreakTime breakTime = BreakTime.builder()
-//            .startTime(LocalTime.of(13, 0))
-//            .endTime(LocalTime.of(21, 0))
-//            .build();
-//
-//        OpeningHours openingHours = OpeningHours.builder()
-//            .openTime(LocalTime.of(9, 0))
-//            .closeTime(LocalTime.of(20, 0))
-//            .breakTime(breakTime)
-//            .build();
-//        Assertions
-//            .assertThrows(BadRequestException.class,
-//                () -> openHoursService.save(openingHours));
-//    }
-//
-//    @Test
-//    void findByIdTest() {
-//        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(openingHours));
-//
-//        OpeningHours foundEntity = openHoursService.findById(anyLong());
-//
-//        assertEquals(openingHours, foundEntity);
-//    }
-//
-//    @Test
-//    void findByIdGivenIdNullThenThrowException() {
-//        Assertions
-//            .assertThrows(NotFoundException.class,
-//                () -> openHoursService.findById(null));
-//    }
-//
-//    @Test
-//    void updateTest() {
-//
-//        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(openingHours));
-//        when(openHoursRepo.save(any())).thenReturn(openingHours);
-//
-//        openHoursService.update(anyLong(), openingHours);
-//        OpeningHours foundEntity = openHoursService.findById(anyLong());
-//
-//        assertEquals(openingHours, foundEntity);
-//    }
-//
-//    @Test
-//    void updateGivenIdNullThenThrowException() {
-//        Assertions
-//            .assertThrows(NotFoundException.class,
-//                () -> openHoursService.update(null, openingHours));
-//    }
-//
-//    @Test
-//    void deleteByIdTest() {
-//        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(openingHours));
-//
-//        assertEquals(1L, openHoursService.deleteById(1L));
-//    }
-//
-//    @Test
-//    void deleteByIdGivenIdNullThenThrowException() {
-//        Assertions.assertThrows(NotFoundException.class, () -> openHoursService.deleteById(null));
-//    }
-//
-//    @Test
-//    void findAllTest() {
-//        List<OpeningHours> genericEntities =
-//            new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
-//
-//        when(openHoursRepo.findAll()).thenReturn(genericEntities);
-//
-//        List<OpeningHours> foundEntities = openHoursService.findAll();
-//
-//        assertEquals(genericEntities, foundEntities);
-//    }
-//
-//    @Test
-//    void getOpenHoursByPlaceTest() {
-//        Place place = new Place();
-//        List<OpeningHours> genericOpeningHours = Arrays.asList(new OpeningHours(), new OpeningHours());
-//
-//        when(openHoursRepo.findAllByPlace(any())).thenReturn(genericOpeningHours);
-//
-//        List<OpeningHours> foundOpeningHours = openHoursService.getOpenHoursByPlace(place);
-//        assertEquals(genericOpeningHours, foundOpeningHours);
-//        Mockito.verify(openHoursRepo, times(1)).findAllByPlace(any());
-//    }
-//
-//    @Test
-//    void findAllByPlaceIdTest() {
-//        Set<OpeningHours> genericOpeningHours = new HashSet<>();
-//        genericOpeningHours.add(new OpeningHours());
-//        genericOpeningHours.add(new OpeningHours());
-//
-//        when(openHoursRepo.findAllByPlaceId(anyLong())).thenReturn(genericOpeningHours);
-//
-//        Set<OpeningHours> foundOpeningHours = openHoursService.findAllByPlaceId(anyLong());
-//        assertEquals(foundOpeningHours, genericOpeningHours);
-//        Mockito.verify(openHoursRepo, times(1)).findAllByPlaceId(any());
-//    }
+    private final OpeningHoursVO openingHoursVO = OpeningHoursVO.builder()
+        .openTime(LocalTime.of(9, 0))
+        .closeTime(LocalTime.of(20, 0))
+        .build();
+
+    @Test
+    void saveTestWOBreakTime() {
+        when(modelMapper.map(openingHoursVO, OpeningHours.class)).thenReturn(openingHours);
+        when(openHoursRepo.save(openingHours)).thenReturn(openingHours);
+        when(modelMapper.map(openingHours, OpeningHoursVO.class)).thenReturn(openingHoursVO);
+        OpeningHoursVO save = openHoursService.save(openingHoursVO);
+        assertEquals(openingHours.getOpenTime(), save.getOpenTime());
+    }
+
+    @Test
+    void saveTestWithBreakTime() {
+        BreakTimeVO localBreakTimeVO = BreakTimeVO.builder()
+            .startTime(LocalTime.of(13, 0))
+            .endTime(LocalTime.of(14, 0))
+            .build();
+
+        openingHoursVO.setBreakTime(localBreakTimeVO);
+
+        when(breakTimeService.save(openingHoursVO.getBreakTime())).thenReturn(localBreakTimeVO);
+        when(modelMapper.map(openingHoursVO, OpeningHours.class)).thenReturn(openingHours);
+        when(modelMapper.map(openingHours, OpeningHoursVO.class)).thenReturn(openingHoursVO);
+
+        openHoursService.save(openingHoursVO);
+        assertEquals(openingHoursVO.getBreakTime(), localBreakTimeVO);
+    }
+
+    @Test
+    void saveTestWithOpeningHoursBiggerThanEndOpeningHours_ThrowException() {
+        OpeningHoursVO localOpeningHours = OpeningHoursVO.builder()
+            .openTime(LocalTime.of(20, 0))
+            .closeTime(LocalTime.of(9, 0))
+            .build();
+        Assertions
+            .assertThrows(BadRequestException.class,
+                () -> openHoursService.save(localOpeningHours));
+    }
+
+    @Test
+    void saveTestWithStartBreakTimeBiggerThanEndBreakTime_ThrowException() {
+        BreakTimeVO localBreakTime = BreakTimeVO.builder()
+            .startTime(LocalTime.of(13, 0))
+            .endTime(LocalTime.of(21, 0))
+            .build();
+
+        OpeningHoursVO localOpeningHours = OpeningHoursVO.builder()
+            .openTime(LocalTime.of(9, 0))
+            .closeTime(LocalTime.of(20, 0))
+            .breakTime(localBreakTime)
+            .build();
+        Assertions
+            .assertThrows(BadRequestException.class,
+                () -> openHoursService.save(localOpeningHours));
+    }
+
+    @Test
+    void findByIdTest() {
+        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(openingHours));
+        when(modelMapper.map(openingHours, OpeningHoursVO.class)).thenReturn(openingHoursVO);
+        OpeningHoursVO foundEntity = openHoursService.findById(anyLong());
+        assertEquals(openingHoursVO, foundEntity);
+    }
+
+    @Test
+    void findByIdGivenIdNullThenThrowException() {
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> openHoursService.findById(null));
+    }
+
+    @Test
+    void updateTest() {
+        openingHoursVO.setId(1L);
+        openingHoursVO.setWeekDay(DayOfWeek.FRIDAY);
+        when(openHoursRepo.findById(1L)).thenReturn(Optional.of(openingHours));
+        when(modelMapper.map(openingHoursVO, OpeningHours.class)).thenReturn(openingHours);
+        when(openHoursRepo.save(openingHours)).thenReturn(openingHours);
+        when(modelMapper.map(openingHours, OpeningHoursVO.class)).thenReturn(openingHoursVO);
+        OpeningHoursVO update = openHoursService.update(1L, openingHoursVO);
+        assertEquals(openingHoursVO, update);
+    }
+
+    @Test
+    void updateGivenIdNullThenThrowException() {
+        Assertions
+            .assertThrows(NotFoundException.class,
+                () -> openHoursService.update(null, openingHoursVO));
+    }
+
+    @Test
+    void deleteByIdTest() {
+        when(openHoursRepo.findById(anyLong())).thenReturn(Optional.of(openingHours));
+
+        assertEquals(1L, openHoursService.deleteById(1L));
+    }
+
+    @Test
+    void deleteByIdGivenIdNullThenThrowException() {
+        Assertions.assertThrows(NotFoundException.class, () -> openHoursService.deleteById(null));
+    }
+
+    @Test
+    void findAllTest() {
+        List<OpeningHours> genericEntities =
+            new ArrayList<>(Arrays.asList(new OpeningHours(), new OpeningHours()));
+        List<OpeningHoursVO> genericEntitiesVO =
+            new ArrayList<>(Arrays.asList(new OpeningHoursVO(), new OpeningHoursVO()));
+
+        when(openHoursRepo.findAll()).thenReturn(genericEntities);
+        when(modelMapper.map(genericEntities, new TypeToken<List<OpeningHoursVO>>() {
+        }.getType())).thenReturn(genericEntitiesVO);
+        List<OpeningHoursVO> foundEntities = openHoursService.findAll();
+
+        assertEquals(genericEntitiesVO, foundEntities);
+    }
+
+    @Test
+    void getOpenHoursByPlaceTest() {
+        PlaceVO place = new PlaceVO();
+        List<OpeningHours> genericOpeningHours = Arrays.asList(new OpeningHours(), new OpeningHours());
+        List<OpeningHoursVO> genericOpeningHoursVO = Arrays.asList(new OpeningHoursVO(), new OpeningHoursVO());
+
+        when(openHoursRepo.findAllByPlace(any())).thenReturn(genericOpeningHours);
+        when(modelMapper.map(genericOpeningHours, new TypeToken<List<OpeningHoursVO>>() {
+        }.getType())).thenReturn(genericOpeningHoursVO);
+        List<OpeningHoursVO> foundOpeningHours = openHoursService.getOpenHoursByPlace(place);
+
+        assertEquals(genericOpeningHours.size(), foundOpeningHours.size());
+        Mockito.verify(openHoursRepo).findAllByPlace(any());
+    }
+
+    @Test
+    void findAllByPlaceIdTest() {
+        Set<OpeningHours> genericOpeningHours = new HashSet<>();
+        genericOpeningHours.add(new OpeningHours());
+        genericOpeningHours.add(new OpeningHours());
+
+        Set<OpeningHoursVO> genericOpeningHoursVO = new HashSet<>();
+        genericOpeningHoursVO.add(new OpeningHoursVO());
+        genericOpeningHoursVO.add(new OpeningHoursVO());
+
+        when(openHoursRepo.findAllByPlaceId(anyLong())).thenReturn(genericOpeningHours);
+        when(modelMapper.map(genericOpeningHours, new TypeToken<Set<OpeningHoursVO>>() {
+        }.getType())).thenReturn(genericOpeningHoursVO);
+
+        Set<OpeningHoursVO> foundOpeningHours = openHoursService.findAllByPlaceId(anyLong());
+
+        assertEquals(foundOpeningHours, genericOpeningHoursVO);
+        Mockito.verify(openHoursRepo).findAllByPlaceId(any());
+    }
 }

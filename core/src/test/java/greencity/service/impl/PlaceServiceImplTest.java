@@ -7,6 +7,7 @@ import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.openinghours.OpeningHoursVO;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -84,6 +86,7 @@ class PlaceServiceImplTest {
         .build();
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
     private Set<OpeningHours> openingHoursListEntity = new HashSet<>();
+    private Set<OpeningHoursVO> openingHoursListEntityVO = new HashSet<>();
     private Set<DiscountValue> discountValues = new HashSet<>();
     private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
     private List<PhotoAddDto> photoDtos = new ArrayList<>();
@@ -334,24 +337,26 @@ class PlaceServiceImplTest {
         verify(placeRepo).findAll(pageable);
     }
 
-//    @Test
-//    void updateTest() {
-//        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
-//        placeUpdateDto.setOpeningHoursList(openingHoursList);
-//        placeUpdateDto.setDiscountValues(discountValuesDto);
-//        placeUpdateDto.setName("new Name");
-//        placeUpdateDto.setCategory(categoryDto);
-//        when(categoryService.findByName(category.getName())).thenReturn(category);
-//        when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
-//        when(modelMapper.map(placeUpdateDto.getLocation(), Location.class)).thenReturn(location);
-//
-//        Place updatedPlace = placeService.update(placeUpdateDto);
-//
-//        assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
-//        assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
-//        verify(modelMapper).map(placeUpdateDto.getLocation(), Location.class);
-//        verify(locationService).update(place.getLocation().getId(), location);
-//    }
+    @Test
+    void updateTest() {
+        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
+        placeUpdateDto.setOpeningHoursList(openingHoursList);
+        placeUpdateDto.setDiscountValues(discountValuesDto);
+        placeUpdateDto.setName("new Name");
+        placeUpdateDto.setCategory(categoryDto);
+        when(categoryService.findByName(category.getName())).thenReturn(category);
+        when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
+        when(modelMapper.map(placeUpdateDto.getLocation(), Location.class)).thenReturn(location);
+        when(modelMapper.map(openingHoursListEntityVO, new TypeToken<Set<OpeningHours>>() {
+        }.getType())).thenReturn(openingHoursListEntity);
+
+        Place updatedPlace = placeService.update(placeUpdateDto);
+
+        assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
+        assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
+        verify(modelMapper).map(placeUpdateDto.getLocation(), Location.class);
+        verify(locationService).update(place.getLocation().getId(), location);
+    }
 
     @Test
     void deleteByIdTest() {
