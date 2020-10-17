@@ -54,7 +54,7 @@ class GoalServiceImplTest {
 
         List<GoalDto> goalsDto = goalTranslations
             .stream()
-            .map(goalTranslation -> new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getText()))
+            .map(goalTranslation -> new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getContent()))
             .collect(Collectors.toList());
 
         when(modelMapper.map(goalTranslations.get(0), GoalDto.class)).thenReturn(goalsDto.get(0));

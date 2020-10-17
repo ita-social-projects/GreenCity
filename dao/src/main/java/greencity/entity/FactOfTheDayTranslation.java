@@ -2,25 +2,16 @@ package greencity.entity;
 
 import javax.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "fact_of_the_day_translations")
-@Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true, exclude = "factOfTheDay")
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@EqualsAndHashCode
-public class FactOfTheDayTranslation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    private Language language;
-
+public class FactOfTheDayTranslation extends Translation {
+    @Getter
+    @Setter
     @ManyToOne
     private FactOfTheDay factOfTheDay;
-
-    @Column(nullable = false, unique = true, length = 300)
-    private String content;
 }

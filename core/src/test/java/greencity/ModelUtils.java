@@ -153,12 +153,12 @@ public class ModelUtils {
 
     public static HabitStatistic getHabitStatistic() {
         return HabitStatistic.builder()
-            .id(1L)
-            .habitRate(HabitRate.DEFAULT)
-            .createDate(ZonedDateTime.now())
-            .amountOfItems(5)
-            .habitAssign(HabitAssign.builder().id(13L).build())
-            .build();
+                .id(1L)
+                .habitRate(HabitRate.DEFAULT)
+                .createDate(ZonedDateTime.now())
+                .amountOfItems(5)
+                .habitAssign(HabitAssign.builder().id(13L).build())
+                .build();
     }
 
     /*public static Habit getHabit() {
@@ -215,7 +215,7 @@ public class ModelUtils {
                         new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
-                .text("Buy a bamboo toothbrush")
+                .content("Buy a bamboo toothbrush")
                 .build();
     }
 
@@ -255,14 +255,20 @@ public class ModelUtils {
 
     public static List<GoalTranslation> getGoalTranslations() {
         return Arrays.asList(
-                new GoalTranslation(2L,
-                        new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "Buy a bamboo toothbrush",
-                        new Goal(1L, Collections.emptyList(), Collections.emptyList())),
-                new GoalTranslation(11L,
-                        new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "Start recycling batteries",
-                        new Goal(4L, Collections.emptyList(), Collections.emptyList())));
+                GoalTranslation.builder()
+                        .id(2L)
+                        .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                        .content("Buy a bamboo toothbrush")
+                        .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+                        .build(),
+                GoalTranslation.builder()
+                        .id(11L)
+                        .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                        .content("Start recycling batteries")
+                        .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList()))
+                        .build());
     }
 
     public static Comment getComment() {
@@ -292,7 +298,12 @@ public class ModelUtils {
     }
 */
     public static HabitFactTranslation getFactTranslation() {
-        return new HabitFactTranslation(1L, getLanguage(), FactOfDayStatus.CURRENT, null, "Content");
+        return HabitFactTranslation.builder()
+                .id(1L)
+                .factOfDayStatus(FactOfDayStatus.CURRENT)
+                .habitFact(null)
+                .content("Content")
+                .build();
     }
 
     public static HabitFact getHabitFact() {

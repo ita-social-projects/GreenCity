@@ -30,11 +30,12 @@ class FactOfTheDayTranslationServiceImplTest {
     @Test
     void getFactOfTheDayById() {
         Long id = 1L;
-        FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
-        factOfTheDayTranslation.setId(id);
-        factOfTheDayTranslation.setContent("Content");
-        factOfTheDayTranslation.setLanguage(ModelUtils.getLanguage());
-        factOfTheDayTranslation.setFactOfTheDay(ModelUtils.getFactOfTheDay());
+        FactOfTheDayTranslation factOfTheDayTranslation = FactOfTheDayTranslation.builder()
+                .id(1L)
+                .content("Content")
+                .language(ModelUtils.getLanguage())
+                .factOfTheDay(ModelUtils.getFactOfTheDay())
+                .build();
         Optional<FactOfTheDayTranslation> fact = Optional.of(factOfTheDayTranslation);
         when(factOfTheDayTranslationRepo.findById(id)).thenReturn(fact);
         assertEquals(fact, factOfTheDayTranslationService.getFactOfTheDayById(id));
@@ -42,24 +43,24 @@ class FactOfTheDayTranslationServiceImplTest {
 
     @Test
     void save() {
-        Long id = 1L;
-        FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
-        factOfTheDayTranslation.setId(id);
-        factOfTheDayTranslation.setContent("Content");
-        factOfTheDayTranslation.setLanguage(ModelUtils.getLanguage());
-        factOfTheDayTranslation.setFactOfTheDay(ModelUtils.getFactOfTheDay());
+        FactOfTheDayTranslation factOfTheDayTranslation = FactOfTheDayTranslation.builder()
+                .id(1L)
+                .content("Content")
+                .language(ModelUtils.getLanguage())
+                .factOfTheDay(ModelUtils.getFactOfTheDay())
+                .build();
         when(factOfTheDayTranslationRepo.save(factOfTheDayTranslation)).thenReturn(factOfTheDayTranslation);
         assertEquals(factOfTheDayTranslation, factOfTheDayTranslationService.save(factOfTheDayTranslation));
     }
 
     @Test
     void saveAll() {
-        Long id = 1L;
-        FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
-        factOfTheDayTranslation.setId(id);
-        factOfTheDayTranslation.setContent("Content");
-        factOfTheDayTranslation.setLanguage(ModelUtils.getLanguage());
-        factOfTheDayTranslation.setFactOfTheDay(ModelUtils.getFactOfTheDay());
+        FactOfTheDayTranslation factOfTheDayTranslation = FactOfTheDayTranslation.builder()
+                .id(1L)
+                .content("Content")
+                .language(ModelUtils.getLanguage())
+                .factOfTheDay(ModelUtils.getFactOfTheDay())
+                .build();
         List<FactOfTheDayTranslation> factOfTheDayTranslationList = Collections.singletonList(factOfTheDayTranslation);
         when(factOfTheDayTranslationRepo.saveAll(factOfTheDayTranslationList)).thenReturn(factOfTheDayTranslationList);
         assertEquals(factOfTheDayTranslationList, factOfTheDayTranslationService.saveAll(factOfTheDayTranslationList));
@@ -67,12 +68,12 @@ class FactOfTheDayTranslationServiceImplTest {
 
     @Test
     void deleteAll() {
-        Long id = 1L;
-        FactOfTheDayTranslation factOfTheDayTranslation = new FactOfTheDayTranslation();
-        factOfTheDayTranslation.setId(id);
-        factOfTheDayTranslation.setContent("Content");
-        factOfTheDayTranslation.setLanguage(ModelUtils.getLanguage());
-        factOfTheDayTranslation.setFactOfTheDay(ModelUtils.getFactOfTheDay());
+        FactOfTheDayTranslation factOfTheDayTranslation = FactOfTheDayTranslation.builder()
+                .id(1L)
+                .content("Content")
+                .language(ModelUtils.getLanguage())
+                .factOfTheDay(ModelUtils.getFactOfTheDay())
+                .build();
         List<FactOfTheDayTranslation> factOfTheDayTranslationList = Collections.singletonList(factOfTheDayTranslation);
         factOfTheDayTranslationService.deleteAll(factOfTheDayTranslationList);
         verify(factOfTheDayTranslationRepo).deleteAll(factOfTheDayTranslationList);

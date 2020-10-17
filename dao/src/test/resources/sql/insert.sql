@@ -370,7 +370,7 @@ VALUES ('Forum', 1, 1),
        ('Mountain High Castle', 9, 11),
        ('Ekotel', 10, 12);
 
-INSERT INTO goal_translations (text, goal_id, language_id)
+INSERT INTO goal_translations (content, goal_id, language_id)
 VALUES ('Вибирайте екотранспорт', 1, 1),
        ('Choose eco-transport', 1, 2),
        ('Выбирайте эко-транспорт', 1, 3),

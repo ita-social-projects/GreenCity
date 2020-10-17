@@ -1,32 +1,27 @@
 package greencity.entity;
 
-import greencity.enums.FactOfDayStatus;
-import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import greencity.entity.enums.FactOfDayStatus;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "habit_fact_translations")
-@Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true, exclude = {"factOfDayStatus", "habitFact"})
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class HabitFactTranslation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    private Language language;
-
+public class HabitFactTranslation extends Translation {
+    @Getter
+    @Setter
     @Enumerated(value = EnumType.ORDINAL)
     private FactOfDayStatus factOfDayStatus;
 
+    @Getter
+    @Setter
     @ManyToOne
     private HabitFact habitFact;
-
-    @Column(nullable = false, unique = true, length = 300)
-    private String content;
 }
