@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;

@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -85,6 +86,7 @@ class PlaceServiceImplTest {
         .build();
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
     private Set<OpeningHours> openingHoursListEntity = new HashSet<>();
+    private Set<OpeningHoursVO> openingHoursListEntityVO = new HashSet<>();
     private Set<DiscountValue> discountValues = new HashSet<>();
     private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
     private List<PhotoAddDto> photoDtos = new ArrayList<>();
@@ -345,6 +347,8 @@ class PlaceServiceImplTest {
         when(categoryService.findByName(category.getName())).thenReturn(category);
         when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
         when(modelMapper.map(placeUpdateDto.getLocation(), Location.class)).thenReturn(location);
+        when(modelMapper.map(openingHoursListEntityVO, new TypeToken<Set<OpeningHours>>() {
+        }.getType())).thenReturn(openingHoursListEntity);
 
         Place updatedPlace = placeService.update(placeUpdateDto);
 
