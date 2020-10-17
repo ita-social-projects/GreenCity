@@ -1,11 +1,10 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.breaktime.BreakTimeVO;
 import greencity.entity.BreakTime;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.BreakTimeRepo;
-import greencity.service.BreakTimeServiceImpl;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;

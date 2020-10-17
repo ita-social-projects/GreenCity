@@ -1,12 +1,11 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.constant.AppConstant;
+import greencity.service.constant.AppConstant;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.Language;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.repository.LanguageRepo;
-import greencity.service.LanguageServiceImpl;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +57,7 @@ import org.modelmapper.TypeToken;
     @Test
      void extractNotExistingLanguageCodeFromRequest() {
         when(request.getParameter("language")).thenReturn(null);
-        assertEquals(AppConstant.DEFAULT_LANGUAGE_CODE, languageService.extractLanguageCodeFromRequest());
+        Assertions.assertEquals(AppConstant.DEFAULT_LANGUAGE_CODE, languageService.extractLanguageCodeFromRequest());
     }
 
     @Test

@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.breaktime.BreakTimeVO;
 import greencity.dto.openinghours.OpeningHoursVO;
