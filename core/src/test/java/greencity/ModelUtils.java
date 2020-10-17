@@ -32,7 +32,7 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.entity.*;
-import greencity.entity.enums.*;
+import greencity.enums.*;
 import greencity.entity.localization.GoalTranslation;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;

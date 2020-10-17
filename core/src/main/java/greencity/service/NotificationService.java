@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.entity.enums.EmailNotification;
+import greencity.enums.EmailNotification;
 
 public interface NotificationService {
     /**

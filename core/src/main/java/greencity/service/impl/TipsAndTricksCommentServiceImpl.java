@@ -10,7 +10,7 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.TipsAndTricksCommentRepo;

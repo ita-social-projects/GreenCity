@@ -1,7 +1,7 @@
 package greencity.dto.place;
 
 import greencity.constant.ValidationConstants;
-import greencity.entity.enums.PlaceStatus;
+import greencity.enums.PlaceStatus;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

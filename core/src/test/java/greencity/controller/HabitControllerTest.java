@@ -27,7 +27,7 @@ import java.time.ZonedDateTime;
 import java.util.Locale;
 
 import static greencity.ModelUtils.getPrincipal;
-import static greencity.entity.enums.HabitRate.GOOD;
+import static greencity.enums.HabitRate.GOOD;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;

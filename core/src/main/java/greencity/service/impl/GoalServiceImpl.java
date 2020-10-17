@@ -7,7 +7,7 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
-import greencity.entity.enums.GoalStatus;
+import greencity.enums.GoalStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.GoalNotFoundException;
 import greencity.exception.exceptions.NotFoundException;

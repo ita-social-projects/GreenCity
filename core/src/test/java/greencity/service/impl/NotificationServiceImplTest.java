@@ -7,7 +7,7 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.entity.enums.EmailNotification;
+import greencity.enums.EmailNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
