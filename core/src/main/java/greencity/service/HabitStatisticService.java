@@ -63,6 +63,22 @@ public interface HabitStatisticService {
     List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language);
 
     /**
+     * Method for getting amount of habits in progress by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of habits in progress by user id.
+     */
+    Long getAmountOfHabitsInProgressByUserId(Long id);
+
+    /**
+     * Method for getting amount of acquired habits by user id.
+     *
+     * @param id {@link Long} user id.
+     * @return amount of acquired habits by user id.
+     */
+    Long getAmountOfAcquiredHabitsByUserId(Long id);
+
+    /**
      * Method for deleting all statistics for certain {@link HabitAssign}.
      *
      * @param habitAssign {@link HabitAssign} instance.

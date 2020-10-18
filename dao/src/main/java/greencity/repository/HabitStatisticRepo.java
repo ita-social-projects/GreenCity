@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
+import greencity.entity.User;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -136,4 +137,28 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @param habitAssign {@link HabitAssign} instance.
      */
     void deleteAllByHabitAssign(HabitAssign habitAssign);
+
+    /**
+     * Method for getting amount of {@link Habit} in progress by {@link User} id (not suspended).
+     *
+     * @param id {@link User} id.
+     * @return amount of habits in progress by {@link User} id.
+     * @author Marian Datsko
+     */
+    @Query(value = "SELECT COUNT(ha.acquired) FROM HabitAssign ha "
+        + " WHERE ha.user.id = :userId"
+        + " AND ha.acquired = false AND ha.suspended = false")
+    Long getAmountOfHabitsInProgressByUserId(@Param("userId") Long id);
+
+    /**
+     * Method for getting amount of acquired {@link Habit} by {@link User} id.
+     *
+     * @param id {@link User} id.
+     * @return amount of acquired habits by {@link User} id.
+     * @author Marian Datsko
+     */
+    @Query(value = "SELECT COUNT(ha.acquired) FROM HabitAssign ha "
+        + " WHERE ha.user.id = :userId"
+        + " AND ha.acquired = false AND ha.suspended = true")
+    Long getAmountOfAcquiredHabitsByUserId(@Param("userId") Long id);
 }

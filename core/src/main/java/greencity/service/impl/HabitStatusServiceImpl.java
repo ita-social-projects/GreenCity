@@ -17,7 +17,6 @@ import greencity.service.HabitStatusService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -37,9 +36,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * {@inheritDoc}
      */
     @Override
-    public HabitStatusDto getById(Long habitAssignId) {
-        return modelMapper.map(habitStatusRepo.findById(habitAssignId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
+    public HabitStatusDto getById(Long id) {
+        return modelMapper.map(habitStatusRepo.findById(id)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN)),
             HabitStatusDto.class);
     }
 
@@ -65,26 +64,6 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     public HabitStatusDto findStatusByHabitAssignId(Long habitAssignId) {
         return modelMapper.map(habitStatusRepo.findByHabitAssignId(habitAssignId)
                 .orElseThrow(() -> new WrongIdException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN)),
-            HabitStatusDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public HabitStatusDto findActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
-        return modelMapper.map(habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT)),
-            HabitStatusDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public HabitStatusDto findStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime dateTime) {
-        return modelMapper.map(habitStatusRepo.findByUserIdAndHabitIdAndCreateDate(userId, habitId, dateTime)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT)),
             HabitStatusDto.class);
     }
 
@@ -235,31 +214,6 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
         habitStatusCalendarRepo.deleteAllByHabitStatus(habitStatus);
         habitStatusRepo.delete(habitStatus);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public void deleteActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
-        HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
-            .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
-        habitStatusCalendarRepo.deleteAllByHabitStatus(habitStatus);
-        habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public void deleteStatusByUserIdAndHabitIdAndAssignCreateDate(Long userId, Long habitId,
-                                                                  ZonedDateTime zonedDateTime) {
-        HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
-            .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
-        habitStatusCalendarRepo.deleteAllByHabitStatus(habitStatus);
-        habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
     }
 
     /**

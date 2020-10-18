@@ -91,102 +91,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto findHabitAssignByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId,
-                                                                         ZonedDateTime dateTime) {
-        return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(habitId, userId, dateTime)
-                .orElseThrow(() ->
-                    new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID)),
-            HabitAssignDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<HabitAssignDto> getAllActiveHabitAssignsByUserId(Long userId) {
-        return modelMapper.map(habitAssignRepo.findAllByUserIdAndSuspendedFalse(userId),
-            new TypeToken<List<HabitAssignDto>>() {
-            }.getType());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired) {
         return modelMapper.map(habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired),
             new TypeToken<List<HabitAssignDto>>() {
             }.getType());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public HabitAssignDto suspendHabitAssignByHabitIdAndUserId(Long habitId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_SUSPENDED_STATUS_NOT_UPDATED));
-        habitAssignRepo.suspendByHabitIdAndUserId(habitId, userId);
-
-        return modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public HabitAssignDto suspendHabitAssignById(Long id) {
-        HabitAssign habitAssign = habitAssignRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_UPDATED_BY_ID));
-        habitAssignRepo.suspendById(id);
-
-        return modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public HabitAssignDto updateHabitAssignAcquiredStatusById(Long id, Boolean acquired) {
-        HabitAssign habitAssign = habitAssignRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_UPDATED_BY_ID + id));
-        habitAssignRepo.updateAcquiredById(id, acquired);
-
-        return modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public void deleteHabitAssignByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId,
-                                                                 ZonedDateTime dateTime) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(habitId, userId,
-            ZonedDateTime.now())
-            .orElseThrow(() ->
-                new WrongIdException(
-                    ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE));
-
-        habitStatusService.deleteStatusByHabitAssign(habitAssign);
-        habitStatisticService.deleteAllStatsByHabitAssign(habitAssign);
-        habitAssignRepo.delete(habitAssign);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Long getAmountOfHabitsInProgressByUserId(Long id) {
-        return habitAssignRepo.getAmountOfHabitsInProgressByUserId(id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Long getAmountOfAcquiredHabitsByUserId(Long id) {
-        return habitAssignRepo.getAmountOfAcquiredHabitsByUserId(id);
     }
 
     /**

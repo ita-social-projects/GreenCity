@@ -24,29 +24,10 @@ public interface HabitStatusService {
     /**
      * Find active {@link HabitStatus} by {@link HabitAssign} id.
      *
-     * @param userId  {@link User} id.
-     * @param habitId {@link Habit} id.
-     * @return {@link HabitStatusDto}.
-     */
-    HabitStatusDto findActiveStatusByUserIdAndHabitId(Long userId, Long habitId);
-
-    /**
-     * Find active {@link HabitStatus} by {@link HabitAssign} id.
-     *
      * @param habitAssignId target {@link HabitAssign} id.
      * @return {@link HabitStatusDto}.
      */
     HabitStatusDto findStatusByHabitAssignId(Long habitAssignId);
-
-    /**
-     * Find {@link HabitStatus} by {@link Habit} and {@link User} id's.
-     *
-     * @param userId   {@link User} id.
-     * @param habitId  {@link Habit} id.
-     * @param dateTime {@link ZonedDateTime} dateTime.
-     * @return {@link HabitStatusDto}.
-     */
-    HabitStatusDto findStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
 
     /**
      * Method enroll {@link greencity.entity.Habit}.
@@ -79,24 +60,6 @@ public interface HabitStatusService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     void deleteStatusByHabitAssign(HabitAssign habitAssign);
-
-    /**
-     * Method to delete active {@link HabitStatus} by {@link HabitAssign} id.
-     *
-     * @param userId  {@link User} id.
-     * @param habitId {@link Habit} id.
-     */
-    void deleteActiveStatusByUserIdAndHabitId(Long userId, Long habitId);
-
-    /**
-     * Method to delete {@link HabitStatus} by {@link User}, {@link Habit} id's
-     * and {@link ZonedDateTime} dateTime from {@link HabitAssign}.
-     *
-     * @param userId   {@link User} id.
-     * @param habitId  {@link Habit} id.
-     * @param dateTime {@link ZonedDateTime} dateTime.
-     */
-    void deleteStatusByUserIdAndHabitIdAndAssignCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
 
     /**
      * Method for updating {@link HabitStatus} in database.

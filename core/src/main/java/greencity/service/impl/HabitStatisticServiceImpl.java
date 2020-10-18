@@ -14,7 +14,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitStatisticService;
 import java.time.LocalDate;
@@ -39,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitStatisticRepo habitStatisticRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
     private final DateService dateService;
 
@@ -113,9 +111,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public List<HabitStatisticDto> findAllStatsByHabitAssignId(Long habitAssignId) {
-        habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
-
         return modelMapper.map(habitStatisticRepo.findAllByHabitAssignId(habitAssignId),
             new TypeToken<List<HabitStatisticDto>>() {
             }.getType());
@@ -128,9 +123,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public List<HabitStatisticDto> findAllStatsByHabitId(Long habitId) {
-        habitRepo.findById(habitId).orElseThrow(
-            () -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
-
         return modelMapper.map(habitStatisticRepo.findAllByHabitId(habitId),
             new TypeToken<List<HabitStatisticDto>>() {
             }.getType());
@@ -149,6 +141,22 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
                     .notTakenItems((long) it.get(1))
                     .build()
             ).collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfHabitsInProgressByUserId(Long id) {
+        return habitStatisticRepo.getAmountOfHabitsInProgressByUserId(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfAcquiredHabitsByUserId(Long id) {
+        return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(id);
     }
 
     /**

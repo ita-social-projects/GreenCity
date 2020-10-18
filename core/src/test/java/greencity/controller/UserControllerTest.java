@@ -214,21 +214,21 @@ class UserControllerTest {
     }
 
     @Test
-    void getAvailableUserHabitTranslationsTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habit/available?language=en", 1))
+    void getActiveUserHabitAssigns() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/habit/assign/active", 1))
             .andExpect(status().isOk());
 
-        verify(userService).getAvailableHabitTranslations(
-            eq(1L), eq("en"));
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
+            eq(1L), eq(false));
     }
 
     @Test
-    void getUserHabitAssignsWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habit/assign/active", 1))
-            .andExpect(status().isCreated());
+    void getAcquiredUserHabitAssigns() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/habit/assign/acquired", 1))
+            .andExpect(status().isOk());
 
-        verify(habitAssignService).getAllActiveHabitAssignsByUserId(
-            eq(1L));
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
+            eq(1L), eq(true));
     }
 
     @Test
