@@ -1,14 +1,21 @@
-package greencity.service.impl;
+package greencity.service;
 
 
 import greencity.ModelUtils;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
+import greencity.dto.factoftheday.FactOfTheDayVO;
+import greencity.dto.language.LanguageVO;
+import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
+import greencity.entity.Language;
 import greencity.repository.FactOfTheDayTranslationRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,8 +31,14 @@ class FactOfTheDayTranslationServiceImplTest {
 
     @Mock
     private FactOfTheDayTranslationRepo factOfTheDayTranslationRepo;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private FactOfTheDayTranslationServiceImpl factOfTheDayTranslationService;
+
+    Language language = ModelUtils.getLanguage();
+    FactOfTheDay factOfTheDay = ModelUtils.getFactOfTheDay();
+    FactOfTheDayTranslationVO factOfTheDayTranslationVO =ModelUtils.getFactOfTheDayTranslationVO();
 
     @Test
     void getFactOfTheDayById() {
@@ -37,8 +50,10 @@ class FactOfTheDayTranslationServiceImplTest {
                 .factOfTheDay(ModelUtils.getFactOfTheDay())
                 .build();
         Optional<FactOfTheDayTranslation> fact = Optional.of(factOfTheDayTranslation);
+        Optional<FactOfTheDayTranslationVO> factVO = Optional.of(factOfTheDayTranslationVO);
         when(factOfTheDayTranslationRepo.findById(id)).thenReturn(fact);
-        assertEquals(fact, factOfTheDayTranslationService.getFactOfTheDayById(id));
+        when(modelMapper.map(fact, FactOfTheDayTranslationVO.class)).thenReturn(factOfTheDayTranslationVO);
+        assertEquals(factVO, factOfTheDayTranslationService.getFactOfTheDayById(id));
     }
 
     @Test
@@ -49,8 +64,11 @@ class FactOfTheDayTranslationServiceImplTest {
                 .language(ModelUtils.getLanguage())
                 .factOfTheDay(ModelUtils.getFactOfTheDay())
                 .build();
+        when(modelMapper.map(factOfTheDayTranslationVO, FactOfTheDayTranslation.class)).thenReturn(factOfTheDayTranslation);
         when(factOfTheDayTranslationRepo.save(factOfTheDayTranslation)).thenReturn(factOfTheDayTranslation);
-        assertEquals(factOfTheDayTranslation, factOfTheDayTranslationService.save(factOfTheDayTranslation));
+        when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationVO.class)).thenReturn(factOfTheDayTranslationVO);
+
+        assertEquals(factOfTheDayTranslationVO, factOfTheDayTranslationService.save(factOfTheDayTranslationVO));
     }
 
     @Test
@@ -61,9 +79,13 @@ class FactOfTheDayTranslationServiceImplTest {
                 .language(ModelUtils.getLanguage())
                 .factOfTheDay(ModelUtils.getFactOfTheDay())
                 .build();
+        List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOList = Collections.singletonList(factOfTheDayTranslationVO);
         List<FactOfTheDayTranslation> factOfTheDayTranslationList = Collections.singletonList(factOfTheDayTranslation);
+
+        when(modelMapper.map(factOfTheDayTranslationVO, FactOfTheDayTranslation.class)).thenReturn(factOfTheDayTranslation);
         when(factOfTheDayTranslationRepo.saveAll(factOfTheDayTranslationList)).thenReturn(factOfTheDayTranslationList);
-        assertEquals(factOfTheDayTranslationList, factOfTheDayTranslationService.saveAll(factOfTheDayTranslationList));
+        when(modelMapper.map(factOfTheDayTranslationList, new TypeToken<List<FactOfTheDayTranslationVO>>() {}.getType())).thenReturn(factOfTheDayTranslationVOList);
+        assertEquals(factOfTheDayTranslationVOList, factOfTheDayTranslationService.saveAll(factOfTheDayTranslationVOList));
     }
 
     @Test
@@ -74,8 +96,10 @@ class FactOfTheDayTranslationServiceImplTest {
                 .language(ModelUtils.getLanguage())
                 .factOfTheDay(ModelUtils.getFactOfTheDay())
                 .build();
+        List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOList = Collections.singletonList(factOfTheDayTranslationVO);
         List<FactOfTheDayTranslation> factOfTheDayTranslationList = Collections.singletonList(factOfTheDayTranslation);
-        factOfTheDayTranslationService.deleteAll(factOfTheDayTranslationList);
+        when(modelMapper.map(factOfTheDayTranslationVO, FactOfTheDayTranslation.class)).thenReturn(factOfTheDayTranslation);
+        factOfTheDayTranslationService.deleteAll(factOfTheDayTranslationVOList);
         verify(factOfTheDayTranslationRepo).deleteAll(factOfTheDayTranslationList);
     }
 }

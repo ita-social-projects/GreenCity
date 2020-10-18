@@ -1,24 +1,15 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.factoftheday.FactOfTheDayDTO;
-import greencity.dto.factoftheday.FactOfTheDayPostDTO;
-import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
+import greencity.dto.factoftheday.*;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
-import greencity.service.FactOfTheDayService;
-import greencity.service.FactOfTheDayTranslationService;
-import greencity.service.LanguageService;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,6 +19,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link FactOfTheDayService}.
@@ -43,7 +40,6 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private final ModelMapper modelMapper;
     private final LanguageService languageService;
     private final FactOfTheDayTranslationService factOfTheDayTranslationService;
-    private final PlaceCommentServiceImpl placeCommentServiceImpl;
     @Resource
     private FactOfTheDayService self;
 
@@ -99,7 +95,11 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
-        factOfTheDayTranslationService.saveAll(factOfTheDay.getFactOfTheDayTranslations());
+        List<FactOfTheDayTranslationVO> map = factOfTheDay.getFactOfTheDayTranslations()
+                .stream()
+                .map(fact -> modelMapper.map(fact, FactOfTheDayTranslationVO.class))
+                .collect(Collectors.toList());
+        factOfTheDayTranslationService.saveAll(map);
         return factPost;
     }
 
@@ -111,7 +111,11 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
         FactOfTheDay factOfTheDayFromDB =
             factOfTheDayRepo.findById(factPost.getId()).orElseThrow(() -> new NotUpdatedException(
                 ErrorMessage.FACT_OF_THE_DAY_NOT_UPDATED));
-        factOfTheDayTranslationService.deleteAll(factOfTheDayFromDB.getFactOfTheDayTranslations());
+        List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOList = factOfTheDayFromDB.getFactOfTheDayTranslations()
+                .stream()
+                .map(fact -> modelMapper.map(fact, FactOfTheDayTranslationVO.class))
+                .collect(Collectors.toList());
+        factOfTheDayTranslationService.deleteAll(factOfTheDayTranslationVOList);
         FactOfTheDay factOfTheDay = FactOfTheDay.builder()
             .id(factPost.getId())
             .name(factPost.getName())
@@ -128,7 +132,11 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
-        factOfTheDayTranslationService.saveAll(factOfTheDay.getFactOfTheDayTranslations());
+        List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOS  = factOfTheDay.getFactOfTheDayTranslations()
+                .stream()
+                .map(fact -> modelMapper.map(fact, FactOfTheDayTranslationVO.class))
+                .collect(Collectors.toList());
+        factOfTheDayTranslationService.saveAll(factOfTheDayTranslationVOS);
         return factPost;
     }
 
@@ -136,10 +144,10 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDay update(FactOfTheDayPostDTO fact) {
+    public FactOfTheDayVO update(FactOfTheDayPostDTO fact) {
         FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(fact.getId()).orElseThrow(() -> new NotUpdatedException(
             ErrorMessage.FACT_OF_THE_DAY_NOT_UPDATED));
-        return factOfTheDayRepo.save(factOfTheDay);
+        return modelMapper.map(factOfTheDayRepo.save(factOfTheDay), FactOfTheDayVO.class);
     }
 
     /**
@@ -150,7 +158,11 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
         FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(id).orElseThrow(() -> new NotUpdatedException(
             ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));
         factOfTheDayRepo.deleteById(id);
-        factOfTheDayTranslationService.deleteAll(factOfTheDay.getFactOfTheDayTranslations());
+        List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOS  = factOfTheDay.getFactOfTheDayTranslations()
+                .stream()
+                .map(fact -> modelMapper.map(fact, FactOfTheDayTranslationVO.class))
+                .collect(Collectors.toList());
+        factOfTheDayTranslationService.deleteAll(factOfTheDayTranslationVOS);
         return id;
     }
 
@@ -163,7 +175,11 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(id).orElseThrow(() -> new NotUpdatedException(
                 ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));
             factOfTheDayRepo.deleteById(id);
-            factOfTheDayTranslationService.deleteAll(factOfTheDay.getFactOfTheDayTranslations());
+            List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOS  = factOfTheDay.getFactOfTheDayTranslations()
+                    .stream()
+                    .map(fact -> modelMapper.map(fact, FactOfTheDayTranslationVO.class))
+                    .collect(Collectors.toList());
+            factOfTheDayTranslationService.deleteAll(factOfTheDayTranslationVOS);
         });
         return listId;
     }
@@ -190,9 +206,10 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     @Override
     @Cacheable(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME)
-    public FactOfTheDay getRandomFactOfTheDay() {
-        return factOfTheDayRepo.getRandomFactOfTheDay().orElseThrow(() ->
-            new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
+    public FactOfTheDayVO getRandomFactOfTheDay() {
+        return (modelMapper.map(factOfTheDayRepo.getRandomFactOfTheDay()
+                .orElseThrow(() ->
+            new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND)), FactOfTheDayVO.class));
     }
 
     /**
@@ -200,7 +217,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     @Override
     public FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode) {
-        FactOfTheDay factOfTheDay = self.getRandomFactOfTheDay();
+        FactOfTheDay factOfTheDay = modelMapper.map(self.getRandomFactOfTheDay(), FactOfTheDay.class);
         FactOfTheDayTranslation factOfTheDayTranslation = factOfTheDay.getFactOfTheDayTranslations()
             .stream()
             .filter(fact -> fact.getLanguage().getCode().equals(languageCode))

@@ -1,4 +1,4 @@
-package greencity.service.constant;
+package greencity.constant;
 
 public final class AppConstant {
     public static final String UKRAINE_TIMEZONE = "Europe/Kiev";

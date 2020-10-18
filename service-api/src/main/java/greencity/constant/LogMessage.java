@@ -1,4 +1,4 @@
-package greencity.service.constant;
+package greencity.constant;
 
 public final class LogMessage {
     public static final String IN_SAVE = "in save(), entity: {}";

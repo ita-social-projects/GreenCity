@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.dto.achievement.AchievementDTO;
 import greencity.repository.AchievementRepo;
-import greencity.service.constant.CacheConstants;
+import greencity.constant.CacheConstants;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package greencity.service.constant;
+package greencity.constant;
 
 public final class ErrorMessage {
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
@@ -22,6 +22,9 @@ public final class ErrorMessage {
     public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
+    public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
+    public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
+    public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
 
     private ErrorMessage() {
     }

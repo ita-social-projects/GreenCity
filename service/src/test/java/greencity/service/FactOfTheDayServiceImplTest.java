@@ -1,32 +1,36 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
+import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.entity.FactOfTheDay;
+import greencity.entity.FactOfTheDayTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
-import greencity.service.LanguageService;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FactOfTheDayServiceImplTest {
@@ -91,12 +95,13 @@ class FactOfTheDayServiceImplTest {
     void updateTest() {
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
+        FactOfTheDayVO factOfTheDayVO  = ModelUtils.getFactOfTheDayVO();
 
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
-        when(factOfTheDayService.update(factDtoPost)).thenReturn(fact);
-        factOfTheDayService.update(factDtoPost);
+        when(factOfTheDayRepo.save(fact)).thenReturn(fact);
+        when(modelMapper.map(fact, FactOfTheDayVO.class)).thenReturn(factOfTheDayVO);
 
-        assertEquals(fact, factOfTheDayService.update(factDtoPost));
+        assertEquals(factOfTheDayVO, factOfTheDayService.update(factDtoPost));
     }
 
     @Test
@@ -121,12 +126,16 @@ class FactOfTheDayServiceImplTest {
     @Test
     void updateFactOfTheDayWithTranslationsTest() {
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
+        FactOfTheDayVO factOfTheDayVO  = ModelUtils.getFactOfTheDayVO();
+        FactOfTheDayTranslation factOfTheDayTranslation = ModelUtils.getFactOfTheDayTranslation();
+        FactOfTheDayTranslationVO factOfTheDayTranslationVO = ModelUtils.getFactOfTheDayTranslationVO();
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
 
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
+        when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationVO.class)).thenReturn(factOfTheDayTranslationVO);
         FactOfTheDayPostDTO res = factOfTheDayService.updateFactOfTheDayAndTranslations(factDtoPost);
 
-        verify(factOfTheDayTranslationService, times(1)).deleteAll(fact.getFactOfTheDayTranslations());
+        verify(factOfTheDayTranslationService, times(1)).deleteAll(factOfTheDayVO.getFactOfTheDayTranslations());
         verify(factOfTheDayRepo, times(1)).save(any(FactOfTheDay.class));
         verify(factOfTheDayTranslationService, times(1)).saveAll(anyList());
 
@@ -144,11 +153,15 @@ class FactOfTheDayServiceImplTest {
     @Test
     void deleteFactOfTheDayAndTranslationsTest() {
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
+        FactOfTheDayVO factOfTheDayVO  = ModelUtils.getFactOfTheDayVO();
+        FactOfTheDayTranslation factOfTheDayTranslation = ModelUtils.getFactOfTheDayTranslation();
+        FactOfTheDayTranslationVO factOfTheDayTranslationVO = ModelUtils.getFactOfTheDayTranslationVO();
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
-        assertEquals(fact.getId(), factOfTheDayService.deleteFactOfTheDayAndTranslations(1L));
+        when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationVO.class)).thenReturn(factOfTheDayTranslationVO);
+        assertEquals(factOfTheDayVO.getId(), factOfTheDayService.deleteFactOfTheDayAndTranslations(1L));
 
         verify(factOfTheDayRepo, times(1)).deleteById(anyLong());
-        verify(factOfTheDayTranslationService, times(1)).deleteAll(fact.getFactOfTheDayTranslations());
+        verify(factOfTheDayTranslationService, times(1)).deleteAll(factOfTheDayVO.getFactOfTheDayTranslations());
     }
 
     @Test
