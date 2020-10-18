@@ -2,16 +2,13 @@ package greencity.service;
 
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
-import greencity.entity.NewsSubscriber;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
 /**
  * Provides the interface to manage {@code NewsSubscriber} entity.
  *
  * @author Bogdan Kuzenko
  */
-@Service
 public interface NewsSubscriberService {
     /**
      * Method saves news subscriber in database.
@@ -26,7 +23,7 @@ public interface NewsSubscriberService {
      *
      * @param email subscriber email for deleting.
      * @param unsubscribeToken unsubscribe token for subscriber verification.
-     * @return long id of deleted {@link NewsSubscriber}
+     * @return long id of deleted {@code NewsSubscriber}
      */
     Long unsubscribe(String email, String unsubscribeToken);
 

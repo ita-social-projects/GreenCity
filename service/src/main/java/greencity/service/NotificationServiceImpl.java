@@ -1,8 +1,8 @@
 package greencity.service;
 
 import greencity.constant.RabbitConstants;
-import greencity.service.constant.AppConstant;
-import greencity.service.constant.LogMessage;
+import greencity.constant.AppConstant;
+import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.place.PlaceVO;

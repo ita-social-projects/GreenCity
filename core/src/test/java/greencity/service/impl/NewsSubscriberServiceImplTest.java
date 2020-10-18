@@ -6,6 +6,7 @@ import greencity.entity.NewsSubscriber;
 import greencity.exception.exceptions.InvalidUnsubscribeToken;
 import greencity.exception.exceptions.NewsSubscriberPresentException;
 import greencity.repository.NewsSubscriberRepo;
+import greencity.service.NewsSubscriberServiceImpl;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

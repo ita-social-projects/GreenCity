@@ -9,7 +9,7 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
 import greencity.service.TestConst;
-import greencity.service.constant.AppConstant;
+import greencity.constant.AppConstant;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
