@@ -141,7 +141,7 @@ public class PlaceServiceImpl implements PlaceService {
         place.setAuthor(user);
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(PlaceStatus.APPROVED);
-            notificationService.sendImmediatelyReport(place);
+            notificationService.sendImmediatelyReport(modelMapper.map(place, PlaceVO.class));
         }
         return user;
     }
@@ -290,7 +290,7 @@ public class PlaceServiceImpl implements PlaceService {
         updatable.setStatus(status);
         updatable.setModifiedDate(ZonedDateTime.now(datasourceTimezone));
         if (status.equals(PlaceStatus.APPROVED)) {
-            notificationService.sendImmediatelyReport(updatable);
+            notificationService.sendImmediatelyReport(modelMapper.map(updatable, PlaceVO.class));
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             rabbitTemplate.convertAndSend(sendEmailTopic, CHANGE_PLACE_STATUS_ROUTING_KEY,

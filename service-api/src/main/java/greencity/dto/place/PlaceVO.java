@@ -1,5 +1,6 @@
 package greencity.dto.place;
 
+import greencity.dto.category.CategoryVO;
 import greencity.enums.PlaceStatus;
 import java.time.ZonedDateTime;
 import lombok.*;
@@ -19,6 +20,6 @@ public class PlaceVO {
     private String phone;
     private PlaceStatus status = PlaceStatus.PROPOSED;
     private Long authorId;
-    private Long categoryId;
+    private CategoryVO category;
     private Long locationId;
 }
