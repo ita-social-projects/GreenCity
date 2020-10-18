@@ -3,7 +3,8 @@ package greencity.service.impl;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.habit.HabitManagementDto;
+import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
@@ -46,32 +47,33 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public HabitTranslationDto getHabitTranslation(Habit habit, String languageCode) {
-        HabitTranslation habitTranslation = habitTranslationRepo
-            .findByHabitAndLanguageCode(habit, languageCode)
+    public HabitDto getByIdAndLanguageCode(Long id, String languageCode) {
+        Habit habit = habitRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+        HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, languageCode)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND));
-        return modelMapper.map(habitTranslation, HabitTranslationDto.class);
+        return modelMapper.map(habitTranslation, HabitDto.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public HabitDto getById(Long id) {
-        return modelMapper.map(habitRepo.findById(id)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id)),
-            HabitDto.class);
+    public HabitManagementDto getById(Long id) {
+        Habit habit = habitRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(habit, HabitManagementDto.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllHabitsDto(Pageable pageable) {
+    public PageableDto<HabitManagementDto> getAllHabitsDto(Pageable pageable) {
         Page<Habit> habits = habitRepo.findAll(pageable);
-        List<HabitDto> habitDtos = habitRepo.findAll()
+        List<HabitManagementDto> habitDtos = habitRepo.findAll()
             .stream()
-            .map(habit -> modelMapper.map(habit, HabitDto.class))
+            .map(habit -> modelMapper.map(habit, HabitManagementDto.class))
             .collect(Collectors.toList());
         return new PageableDto<>(
             habitDtos,
@@ -84,12 +86,12 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitTranslationDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
+    public PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
         Page<HabitTranslation> pages =
             habitTranslationRepo.findAllByLanguageCode(pageable, language);
-        List<HabitTranslationDto> habitTranslationDtos =
+        List<HabitDto> habitTranslationDtos =
             pages.stream()
-                .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
+                .map(habitTranslation -> modelMapper.map(habitTranslation, HabitDto.class))
                 .collect(Collectors.toList());
         return new PageableDto<>(habitTranslationDtos, pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
@@ -101,11 +103,11 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     @Transactional
-    public HabitDto saveHabitAndTranslations(HabitDto habitDto, MultipartFile image) {
+    public HabitManagementDto saveHabitAndTranslations(HabitManagementDto habitManagementDto, MultipartFile image) {
         Habit habit = habitRepo.save(Habit.builder()
-            .image(habitDto.getImage())
+            .image(habitManagementDto.getImage())
             .habitTranslations(
-                habitDto.getHabitTranslations().stream()
+                habitManagementDto.getHabitTranslations().stream()
                     .map(translationDto -> HabitTranslation.builder()
                         .description(translationDto.getDescription())
                         .habitItem(translationDto.getHabitItem())
@@ -124,7 +126,7 @@ public class HabitServiceImpl implements HabitService {
             System.out.println(habit.getImage());
         }*/
         habitTranslationRepo.saveAll(habit.getHabitTranslations());
-        return modelMapper.map(habit, HabitDto.class);
+        return modelMapper.map(habit, HabitManagementDto.class);
     }
 
     /**
@@ -132,21 +134,21 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     @Transactional
-    public void update(HabitDto habitDto, MultipartFile image) {
-        Habit habit = habitRepo.findById(habitDto.getId())
+    public void update(HabitManagementDto habitManagementDto, MultipartFile image) {
+        Habit habit = habitRepo.findById(habitManagementDto.getId())
             .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
 
         habit.getHabitTranslations()
             .forEach(ht -> {
-                HabitTranslationDto htd = habitDto.getHabitTranslations().stream()
+                HabitTranslationManagementDto htmd = habitManagementDto.getHabitTranslations().stream()
                     .filter(e -> e.getLanguageCode().equals(ht.getLanguage().getCode())).findFirst()
                     .orElseThrow(RuntimeException::new);
 
-                ht.setDescription(htd.getDescription());
-                ht.setHabitItem(htd.getHabitItem());
-                ht.setName(htd.getName());
+                ht.setDescription(htmd.getDescription());
+                ht.setHabitItem(htmd.getHabitItem());
+                ht.setName(htmd.getName());
             });
-        habit.setImage(habitDto.getImage());
+        habit.setImage(habitManagementDto.getImage());
         if (image != null) {
             habit.setImage(fileService.upload(image).toString());
         }

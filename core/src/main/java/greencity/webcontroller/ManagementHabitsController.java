@@ -5,6 +5,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitManagementDto;
 import greencity.entity.Habit;
 import greencity.service.HabitService;
 import greencity.service.LanguageService;
@@ -40,18 +41,36 @@ public class ManagementHabitsController {
      */
     @GetMapping
     public String findAllHabits(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<HabitDto> allHabits = habitService.getAllHabitsDto(pageable);
+        PageableDto<HabitManagementDto> allHabits = habitService.getAllHabitsDto(pageable);
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_user_habits";
     }
 
     /**
+     * Method finds {@link Habit} with all translations by given id.
+     *
+     * @param id of {@link Habit}.
+     * @return {@link HabitManagementDto}.
+     */
+    @ApiOperation(value = "Find habit by id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitManagementDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/find")
+    public ResponseEntity<HabitManagementDto> getHabitById(@RequestParam("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitService.getById(id));
+    }
+
+    /**
      * Method saves {@link Habit} with translations.
      *
-     * @param habitDto      {@link HabitDto}.
-     * @param bindingResult {@link BindingResult}.
-     * @param file          of {@link MultipartFile}.
+     * @param habitManagementDto {@link HabitManagementDto}.
+     * @param bindingResult      {@link BindingResult}.
+     * @param file               of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with result of operation and errors fields.
      */
     @ApiOperation(value = "Save habit with translations.")
@@ -62,12 +81,12 @@ public class ManagementHabitsController {
     })
     @ResponseBody
     @PostMapping("/save")
-    public GenericResponseDto save(@Valid @RequestPart HabitDto habitDto,
+    public GenericResponseDto save(@Valid @RequestPart HabitManagementDto habitManagementDto,
                                    BindingResult bindingResult,
                                    @ImageValidation
                                    @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
-            habitService.saveHabitAndTranslations(habitDto, file);
+            habitService.saveHabitAndTranslations(habitManagementDto, file);
         }
         return GenericResponseDto.buildGenericResponseDto(bindingResult);
     }
@@ -75,9 +94,9 @@ public class ManagementHabitsController {
     /**
      * Method updates {@link Habit} with translations.
      *
-     * @param habitDto      {@link HabitDto}.
-     * @param bindingResult {@link BindingResult}.
-     * @param file          of {@link MultipartFile}.
+     * @param habitManagementDto {@link HabitManagementDto}.
+     * @param bindingResult      {@link BindingResult}.
+     * @param file               of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with result of operation and errors fields.
      */
     @ApiOperation(value = "Update habit with translations.")
@@ -88,12 +107,12 @@ public class ManagementHabitsController {
     })
     @ResponseBody
     @PutMapping("/update")
-    public GenericResponseDto update(@Valid @RequestPart HabitDto habitDto,
+    public GenericResponseDto update(@Valid @RequestPart HabitManagementDto habitManagementDto,
                                      BindingResult bindingResult,
                                      @ImageValidation
                                      @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
-            habitService.update(habitDto, file);
+            habitService.update(habitManagementDto, file);
         }
         return GenericResponseDto.buildGenericResponseDto(bindingResult);
     }

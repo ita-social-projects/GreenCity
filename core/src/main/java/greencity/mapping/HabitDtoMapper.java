@@ -2,37 +2,34 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.language.LanguageDTO;
-import greencity.entity.Habit;
-import java.util.stream.Collectors;
+import greencity.entity.HabitTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link Habit} into
+ * Class that used by {@link ModelMapper} to map {@link HabitTranslation} into
  * {@link HabitDto}.
  */
 @Component
-public class HabitDtoMapper extends AbstractConverter<Habit, HabitDto> {
+public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto> {
     /**
-     * Method convert {@link Habit} to {@link HabitDto}.
+     * Method convert {@link HabitTranslation} to {@link HabitDto}.
      *
      * @return {@link HabitDto}
      */
     @Override
-    protected HabitDto convert(Habit habit) {
+    protected HabitDto convert(HabitTranslation habitTranslation) {
         return HabitDto.builder()
-            .id(habit.getId())
-            .image(habit.getImage())
-            .habitTranslations(habit.getHabitTranslations()
-                .stream().map(habitTranslation -> HabitTranslationDto.builder()
-                    .id(habitTranslation.getId())
-                    .description(habitTranslation.getDescription())
-                    .habitItem(habitTranslation.getHabitItem())
-                    .name(habitTranslation.getName())
-                    .languageCode(habitTranslation.getLanguage().getCode())
-                    .build()).collect(Collectors.toList()))
+            .id(habitTranslation.getHabit().getId())
+            .image(habitTranslation.getHabit().getImage())
+            .habitTranslation(HabitTranslationDto.builder()
+                .description(habitTranslation.getDescription())
+                .habitItem(habitTranslation.getHabitItem())
+                .name(habitTranslation.getName())
+                .languageCode(habitTranslation.getLanguage().getCode())
+                .build())
             .build();
     }
 }
+

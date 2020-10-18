@@ -1,11 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.language.LanguageDTO;
 import greencity.entity.HabitAssign;
-import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -28,18 +24,7 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
             .acquired(habitAssign.getAcquired())
             .suspended(habitAssign.getSuspended())
             .createDateTime(habitAssign.getCreateDate())
-            .habit(HabitDto.builder()
-                .id(habitAssign.getHabit().getId())
-                .image(habitAssign.getHabit().getImage())
-                .habitTranslations(habitAssign.getHabit().getHabitTranslations()
-                    .stream().map(habitTranslation -> HabitTranslationDto.builder()
-                        .id(habitTranslation.getId())
-                        .description(habitTranslation.getDescription())
-                        .habitItem(habitTranslation.getHabitItem())
-                        .name(habitTranslation.getName())
-                        .languageCode(habitTranslation.getLanguage().getCode())
-                        .build()).collect(Collectors.toList()))
-                .build())
+            .habitId(habitAssign.getHabit().getId())
             .build();
     }
 }

@@ -1,6 +1,7 @@
 package greencity.service.impl;
 
 import greencity.converters.DateService;
+import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -50,7 +51,7 @@ class HabitStatisticServiceImplTest {
 
     private HabitStatisticDto habitStatisticDto =
         HabitStatisticDto.builder().id(1L).amountOfItems(10).habitRate(HabitRate.GOOD)
-            .habitAssignId(1L).createDate(zonedDateTime).build();
+            .habitAssign(HabitAssignDto.builder().id(1L).build()).createDate(zonedDateTime).build();
 
     private HabitStatistic habitStatistic = HabitStatistic.builder()
         .id(1L).habitRate(HabitRate.GOOD).createDate(zonedDateTime)

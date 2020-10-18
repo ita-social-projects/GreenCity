@@ -1,5 +1,6 @@
 package greencity.dto.habitstatistic;
 
+import greencity.dto.habit.HabitAssignDto;
 import greencity.entity.enums.HabitRate;
 import java.time.ZonedDateTime;
 import javax.validation.constraints.Min;
@@ -24,5 +25,5 @@ public class HabitStatisticDto {
     @NotEmpty
     private Integer amountOfItems;
     @NotEmpty
-    private Long habitAssignId;
+    private HabitAssignDto habitAssign;
 }

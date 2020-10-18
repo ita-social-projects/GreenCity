@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -11,62 +12,60 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface HabitService {
     /**
-     * Method find {@link HabitTranslation} by {@link Habit} and languageCode.
-     *
-     * @param habit {@link Habit} instance.
-     * @param languageCode - language code.
-     * @return {@link HabitTranslationDto}.
-     * @author Kovaliv Taras
-     */
-    HabitTranslationDto getHabitTranslation(Habit habit, String languageCode);
-
-    /**
-     * Method find {@link Habit} by id.
+     * Method find {@link Habit} with all translations by id.
      *
      * @param id {@link Habit} id.
-     * @return {@link HabitDto}
-     * @author Kovaliv Taras
+     * @return {@link HabitManagementDto}.
      */
-    HabitDto getById(Long id);
+    HabitManagementDto getById(Long id);
 
     /**
-     * Method find all {@link HabitDto}.
+     * Method find {@link Habit} by id and language code.
+     *
+     * @param id           {@link Habit} id.
+     * @param languageCode - language code.
+     * @return {@link HabitDto}.
+     */
+    HabitDto getByIdAndLanguageCode(Long id, String languageCode);
+
+    /**
+     * Method find all {@link Habit} with all translations.
      *
      * @param pageable - instance of {@link Pageable}.
-     * @return list of {@link HabitDto}
+     * @return list of {@link HabitManagementDto}.
      * @author Dovganyuk Taras
      */
-    PageableDto<HabitDto> getAllHabitsDto(Pageable pageable);
+    PageableDto<HabitManagementDto> getAllHabitsDto(Pageable pageable);
 
     /**
-     * Method returns all habits by language.
+     * Method returns all {@link Habit}'s by language code.
      *
      * @param pageable - instance of {@link Pageable}.
      * @param language - language code.
-     * @return Pageable of {@link HabitTranslationDto}
+     * @return Pageable of {@link HabitTranslationDto}.
      * @author Dovganyuk Taras
      */
-    PageableDto<HabitTranslationDto> getAllHabitsByLanguageCode(Pageable pageable, String language);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language);
 
     /**
      * Method saves {@link Habit} with it's {@link HabitTranslation}'s.
      *
-     * @param habitDto {@link HabitDto}.
-     * @param image {@link MultipartFile} image for habit.
+     * @param habitManagementDto {@link HabitManagementDto}.
+     * @param image              {@link MultipartFile} image for habit.
      * @return {@link HabitDto}.
      */
-    HabitDto saveHabitAndTranslations(HabitDto habitDto, MultipartFile image);
+    HabitManagementDto saveHabitAndTranslations(HabitManagementDto habitManagementDto, MultipartFile image);
 
     /**
      * Method updates {@link Habit} instance.
      *
-     * @param habitDto - instance of {@link HabitDto}.
-     * @param image {@link MultipartFile} image for habit.
+     * @param habitManagementDto - instance of {@link HabitManagementDto}.
+     * @param image              {@link MultipartFile} image for habit.
      */
-    void update(HabitDto habitDto, MultipartFile image);
+    void update(HabitManagementDto habitManagementDto, MultipartFile image);
 
     /**
-     * Method deletes {@link Habit} instance.
+     * Method deletes {@link Habit} instance by it's id.
      *
      * @param id {@link Habit} id.
      */
@@ -74,7 +73,6 @@ public interface HabitService {
 
     /**
      * Method deletes all {@link Habit} instances by list of id's.
-     *
      *
      * @param listId list of {@link Habit} id's.
      */

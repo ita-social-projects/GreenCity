@@ -35,7 +35,7 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage <strong>Habits</strong></h2>
+                            <h2 style="color: white">Manage <strong>Habits</strong> </h2>
                         </div>
                         <div class="col-sm-6">
                                 <span class="search-box-right">
@@ -106,7 +106,7 @@
                                 </table>
                             </td>
                             <td>
-                                <a th:href="@{/habit/{id}(id=${habit.id})}" class="edit eBtn"><i
+                                <a th:href="@{/management/habits/find/(id=${habit.id})}" class="edit eBtn"><i
                                         class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
                                 <a th:href="@{/management/habits/delete/(id=${habit.id})}"
                                    class="delete eDelBtn" data-toggle="modal"><i class="material-icons"

@@ -1,8 +1,3 @@
-var languages;
-$.get('/factoftheday/languages', function (data) {
-    languages = data;
-});
-
 function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
@@ -124,7 +119,7 @@ $(document).ready(function () {
         }
         var result = new FormData();
 
-        result.append("habitDto", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
+        result.append("habitManagementDto", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
         var file = document.getElementById("fileCreate").files[0];
         result.append("file", file);
         //request save in modal add
@@ -212,7 +207,7 @@ $(document).ready(function () {
             }
         }
         var result = new FormData();
-        result.append("habitDto", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
+        result.append("habitManagementDto", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
         var file = document.getElementById("file").files[0];
         result.append("file", file);
 

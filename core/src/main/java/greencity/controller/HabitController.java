@@ -45,7 +45,7 @@ public class HabitController {
     private final HabitService habitService;
 
     /**
-     * Method finds {@link Habit} by given id.
+     * Method finds {@link Habit} by given id with locale translation.
      *
      * @param id of {@link Habit}.
      * @return {@link HabitDto}.
@@ -57,9 +57,10 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id) {
+    public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id,
+                                                 @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.getById(id));
+            .body(habitService.getByIdAndLanguageCode(id, locale.getLanguage()));
     }
 
     /**
@@ -77,7 +78,7 @@ public class HabitController {
     @GetMapping("")
     @ApiPageable
     @ApiLocale
-    public ResponseEntity<PageableDto<HabitTranslationDto>> getAll(
+    public ResponseEntity<PageableDto<HabitDto>> getAll(
         @ApiIgnore Pageable pageable,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
