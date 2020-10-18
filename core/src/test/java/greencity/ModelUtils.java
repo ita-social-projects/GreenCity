@@ -44,10 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -188,6 +185,27 @@ public class ModelUtils {
                 .habitDictionary(ModelUtils.getHabitDictionary())
                 .build();
     }*/
+
+    public static HabitStatus getHabitStatus() {
+        HabitAssign habitAssign = getHabitAssign();
+
+        return HabitStatus.builder()
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitAssign(habitAssign).build();
+
+    }
+
+    public static HabitAssign getHabitAssign() {
+        return HabitAssign.builder()
+                .id(1L)
+                .acquired(true)
+                .suspended(false)
+                .createDate(ZonedDateTime.now())
+                .habit(Habit.builder().id(1L).build()).build();
+    }
 
     public static Category getCategory() {
         return Category.builder()
