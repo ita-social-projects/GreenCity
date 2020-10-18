@@ -62,7 +62,8 @@ public interface FactOfTheDayService {
     Long deleteFactOfTheDayAndTranslations(Long id);
 
     /**
-     * Method deletes all {@link FactOfTheDayVO} {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO} by list of IDs.
+     * Method deletes all {@link FactOfTheDayVO} {@link FactOfTheDayVO}
+     * and {@link FactOfTheDayTranslationVO} by list of IDs.
      *
      * @param listId list of id {@link FactOfTheDayVO}
      * @return listId list of id {@link FactOfTheDayVO}

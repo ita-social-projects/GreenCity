@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 @Builder
 @EqualsAndHashCode(exclude = {"factOfTheDayTranslations","createDate"})
-
 public class FactOfTheDayVO {
     private Long id;
 
@@ -20,5 +19,4 @@ public class FactOfTheDayVO {
     private List<FactOfTheDayTranslationVO> factOfTheDayTranslations;
 
     private ZonedDateTime createDate;
-
 }
