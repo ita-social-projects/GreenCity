@@ -90,7 +90,7 @@ public class HabitController {
      * @param habitId - id of {@link Habit}
      * @return {@link ResponseEntity}
      */
-    @ApiOperation(value = "Assign habit.")
+    @ApiOperation(value = "Assign habit for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -141,13 +141,13 @@ public class HabitController {
     }
 
     /**
-     * Method for creating {@link HabitStatistic} by {@link Habit} id.
+     * Method for creating {@link HabitStatistic} for user {@link HabitAssign}.
      *
      * @param addHabitStatisticDto - dto for {@link HabitStatistic} entity.
      * @return dto {@link AddHabitStatisticDto} instance.
      * @author Yuriy Olkhovskyi.
      */
-    @ApiOperation(value = "Add habit statistic.")
+    @ApiOperation(value = "Add habit statistic for assigned habit.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddHabitStatisticDto.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -160,7 +160,7 @@ public class HabitController {
     }
 
     /**
-     * Method for updating {@link HabitStatistic} by its id.
+     * Method for updating {@link HabitStatistic} by it's id.
      *
      * @param habitStatisticForUpdateDto - {@link UpdateHabitStatisticDto} with habit statistic id and
      *                                   updated rate and amount of items.
