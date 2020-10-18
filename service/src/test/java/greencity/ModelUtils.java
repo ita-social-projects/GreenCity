@@ -122,4 +122,24 @@ public class ModelUtils {
                         .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList()))
                         .build());
     }
+
+    public static Category getCategory() {
+        return Category.builder()
+            .id(12L)
+            .name("category")
+            .build();
+    }
+
+    public static Place getPlace() {
+        Place place = new Place();
+        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", place));
+        place.setId(1L);
+        place.setName("Forum");
+        place.setDescription("Shopping center");
+        place.setPhone("0322 489 850");
+        place.setEmail("forum_lviv@gmail.com");
+        place.setAuthor(getUser());
+        place.setModifiedDate(ZonedDateTime.now());
+        return place;
+    }
 }
