@@ -37,14 +37,14 @@ class ProposePlaceServiceImplTest {
     @Mock
     private LocationService locationService;
 
-    @Test
-    void checkLocationValues() {
-        Location location = ModelUtils.getLocation();
-        LocationAddressAndGeoDto address = ModelUtils.getLocationAddressAndGeoDto();
-
-        when(locationService.findByLatAndLng(12.12d, 12.12d)).thenReturn(Optional.of(location));
-        assertThrows(BadRequestException.class, () -> proposePlaceService.checkLocationValues(address));
-    }
+//    @Test
+//    void checkLocationValues() {
+//        Location location = ModelUtils.getLocation();
+//        LocationAddressAndGeoDto address = ModelUtils.getLocationAddressAndGeoDto();
+//
+//        when(locationService.findByLatAndLng(12.12d, 12.12d)).thenReturn(Optional.of(location));
+//        assertThrows(BadRequestException.class, () -> proposePlaceService.checkLocationValues(address));
+//    }
 
     @Test
     void checkInputTime() {

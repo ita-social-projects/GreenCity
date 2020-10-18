@@ -26,6 +26,7 @@ public final class ErrorMessage {
     public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
         "Subscriber with this email address not found in the database.";
     public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
+    public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
 
     private ErrorMessage() {
     }

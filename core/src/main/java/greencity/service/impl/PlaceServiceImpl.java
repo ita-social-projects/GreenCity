@@ -8,6 +8,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openinghours.OpeningHoursVO;
 import greencity.dto.place.*;
@@ -158,7 +159,8 @@ public class PlaceServiceImpl implements PlaceService {
 
         Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
         Place updatedPlace = findById(dto.getId());
-        locationService.update(updatedPlace.getLocation().getId(), modelMapper.map(dto.getLocation(), Location.class));
+        locationService.update(updatedPlace.getLocation().getId(),
+            modelMapper.map(dto.getLocation(), LocationVO.class));
         updatedPlace.setName(dto.getName());
         updatedPlace.setCategory(updatedCategory);
         placeRepo.save(updatedPlace);
