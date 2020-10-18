@@ -1,9 +1,9 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.constant.AppConstant;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.user.UserGoalResponseDto;
+import greencity.dto.user.UserGoalVO;
 import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
@@ -13,20 +13,22 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
-import greencity.service.LanguageService;
+import greencity.service.constant.AppConstant;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.anyLong;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 @ExtendWith(MockitoExtension.class)
 class GoalServiceImplTest {
@@ -67,48 +69,58 @@ class GoalServiceImplTest {
 
     @Test
     void getUserGoalResponseDtoFromPredefinedGoal() {
+        UserGoalVO map =ModelUtils.getUserGoalVO();
         Goal goal = predefinedUserGoal.getGoal();
         String code = ModelUtils.getLanguage().getCode();
 
+        when(modelMapper.map(map, UserGoal.class)).thenReturn(predefinedUserGoal);
         when(modelMapper.map(predefinedUserGoal, UserGoalResponseDto.class)).thenReturn(predefinedUserGoalDto);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(code);
         when(goalRepo.findById(1L)).thenReturn(Optional.ofNullable(goal));
         when(goalTranslationRepo.findByGoalAndLanguageCode(goal, code))
             .thenReturn(Optional.of(ModelUtils.getGoalTranslation()));
 
-        UserGoalResponseDto actual = goalService.getUserGoalResponseDtoFromPredefinedGoal(predefinedUserGoal);
+        UserGoalResponseDto actual = goalService.getUserGoalResponseDtoFromPredefinedGoal(map);
 
         assertEquals(predefinedUserGoalDto, actual);
     }
 
     @Test
     void getUserGoalResponseDtoFromPredefinedGoalFailed() {
+        UserGoalVO map = ModelUtils.getUserGoalVO();
+
+        when(modelMapper.map(map, UserGoal.class)).thenReturn(predefinedUserGoal);
         when(modelMapper.map(predefinedUserGoal, UserGoalResponseDto.class)).thenReturn(predefinedUserGoalDto);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(ModelUtils.getLanguage().getCode());
         when(goalRepo.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(GoalNotFoundException.class, () ->
-            goalService.getUserGoalResponseDtoFromPredefinedGoal(predefinedUserGoal));
+            goalService.getUserGoalResponseDtoFromPredefinedGoal(map));
     }
 
     @Test
     void getUserGoalResponseDtoFromCustomGoal() {
+        UserGoalVO map = ModelUtils.getUserGoalVO();
         CustomGoal customGoal = customUserGoal.getCustomGoal();
 
+        when(modelMapper.map(map, UserGoal.class)).thenReturn(customUserGoal);
         when(modelMapper.map(customUserGoal, UserGoalResponseDto.class)).thenReturn(customUserGoalDto);
         when(customGoalRepo.findById(8L)).thenReturn(Optional.ofNullable(customGoal));
 
-        UserGoalResponseDto actual = goalService.getUserGoalResponseDtoFromCustomGoal(customUserGoal);
+        UserGoalResponseDto actual = goalService.getUserGoalResponseDtoFromCustomGoal(map);
 
         assertEquals(customUserGoalDto, actual);
     }
 
     @Test
     void getUserGoalResponseDtoFromCustomGoalFailed() {
+        UserGoalVO map = ModelUtils.getUserGoalVO();
+
+        when(modelMapper.map(map, UserGoal.class)).thenReturn(customUserGoal);
         when(modelMapper.map(customUserGoal, UserGoalResponseDto.class)).thenReturn(customUserGoalDto);
         when(customGoalRepo.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () ->
-            goalService.getUserGoalResponseDtoFromCustomGoal(customUserGoal));
+            goalService.getUserGoalResponseDtoFromCustomGoal(map));
     }
 }
