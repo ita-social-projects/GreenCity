@@ -29,43 +29,13 @@
 <body>
 <div id="header" th:insert="core/header"></div>
 <div class="main-content">
-    <!--<table class="table">
-        <tr>
-            <th>ID</th>
-            <th>Description</th>
-            <th>Creation date</th>
-        </tr>
-        <tr th:each="habit: ${habits}">
-            <td th:utext="${habit.id}">...</td>
-
-            &lt;!&ndash;            <td th:utext="${habit.habitDictionary.habitDictionaryTranslations}">&ndash;&gt;
-            <td>
-                <table class="table">
-                    <tr>
-                        <th>Habit name</th>
-                        <th>Habit description</th>
-                        <th>Habit item</th>
-                    </tr>
-                    <tr th:each="habitTranslations: ${habit.habitTranslations}">
-                        <th th:utext="${habitTranslations.name}">...</th>
-                        <th th:utext="${habitTranslations.description}">...</th>
-                        <th th:utext="${habitTranslations.habitItem}">...</th>
-                    </tr>
-                </table>
-
-            </td>
-
-            &lt;!&ndash;<td th:utext="${habit.createDate}">...</td>&ndash;&gt;
-        </tr>
-    </table>
-    <br><br>-->
     <div class="container-xl">
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage <b>Habits</b></h2>
+                            <h2>Manage <strong>Habits</strong></h2>
                         </div>
                         <div class="col-sm-6">
                                 <span class="search-box-right">
@@ -135,11 +105,10 @@
                                     </tbody>
                                 </table>
                             </td>
-                            <!--<td th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd/MM/yyyy HH:mm')}"></td>-->
                             <td>
-                                <a th:href="@{/management/habits/find/(id=${habit.id})}" class="edit eBtn"><i
+                                <a th:href="@{/habit/{id}(id=${habit.id})}" class="edit eBtn"><i
                                         class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a th:href="@{/management/habits/(id=${habit.id})}"
+                                <a th:href="@{/management/habits/delete/(id=${habit.id})}"
                                    class="delete eDelBtn" data-toggle="modal"><i class="material-icons"
                                                                                  data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
@@ -154,14 +123,14 @@
                     </div>
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                th:href="@{factoftheday(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
+                                th:href="@{habit(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
                             th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                                th:href="@{factoftheday(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                                th:href="@{habit(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
                         <li class="page-item"
                             th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
-                                th:href="@{factoftheday(page=${pageable.getCurrentPage()+1})}"
+                                th:href="@{habit(page=${pageable.getCurrentPage()+1})}"
                                 class="page-link">Next</a></li>
                     </ul>
                 </div>
@@ -194,14 +163,17 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Lang</label>
-                                        <input type="text" class="form-control" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required>
+                                        <input type="text" class="form-control" th:name="${language.getCode()}"
+                                               th:value="${language.getCode()}" readonly required>
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input type="text" class="form-control eEdit" th:name="contentName+${language.getCode()}">
-                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].name'" class="errorSpan"></span>
+                                        <input type="text" class="form-control eEdit"
+                                               th:name="contentName+${language.getCode()}">
+                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].name'"
+                                              class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
@@ -209,15 +181,19 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label>Habit item</label>
-                                        <input type="text" class="form-control eEdit" th:name="contentHabItem+${language.getCode()}">
-                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].habitItem'" class="errorSpan"></span>
+                                        <input type="text" class="form-control eEdit"
+                                               th:name="contentHabItem+${language.getCode()}">
+                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].habitItem'"
+                                              class="errorSpan"></span>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label>Description</label>
-                                        <input type="text" class="form-control eEdit" th:name="contentDescr+${language.getCode()}">
-                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].description'" class="errorSpan"></span>
+                                        <input type="text" class="form-control eEdit"
+                                               th:name="contentDescr+${language.getCode()}">
+                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].description'"
+                                              class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
@@ -261,14 +237,19 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Lang</label>
-                                        <input type="text" class="form-control" th:id="${language.getCode()}" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required>
+                                        <input type="text" class="form-control" th:id="${language.getCode()}"
+                                               th:name="${language.getCode()}" th:value="${language.getCode()}" readonly
+                                               required>
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input type="text" class="form-control eEdit" th:id="contentName+${language.getCode()}" th:name="contentName+${language.getCode()}">
-                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].name'" class="errorSpan"></span>
+                                        <input type="text" class="form-control eEdit"
+                                               th:id="contentName+${language.getCode()}"
+                                               th:name="contentName+${language.getCode()}">
+                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].name'"
+                                              class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
@@ -276,15 +257,21 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label>Habit item</label>
-                                        <input type="text" class="form-control eEdit" th:id="contentHabItem+${language.getCode()}" th:name="contentHabItem+${language.getCode()}">
-                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].habitItem'" class="errorSpan"></span>
+                                        <input type="text" class="form-control eEdit"
+                                               th:id="contentHabItem+${language.getCode()}"
+                                               th:name="contentHabItem+${language.getCode()}">
+                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].habitItem'"
+                                              class="errorSpan"></span>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label>Description</label>
-                                            <input type="text" class="form-control eEdit" th:id="contentDescr+${language.getCode()}" th:name="contentDescr+${language.getCode()}">
-                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].description'" class="errorSpan"></span>
+                                        <input type="text" class="form-control eEdit"
+                                               th:id="contentDescr+${language.getCode()}"
+                                               th:name="contentDescr+${language.getCode()}">
+                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].description'"
+                                              class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
@@ -297,6 +284,49 @@
                 </form>
             </div>
         </div>
+    </div>
+    <!-- Delete Modal HTML -->
+    <div id="deleteHabitModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="deleteHabitForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete Habit</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete that Record?</p>
+                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <a href="" id="deleteOneSubmit" class="btn btn-danger">Delete</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Delete all selected Modal HTML -->
+    <div id="deleteAllSelectedModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Delete all selected</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete these Records?</p>
+                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <a href="" id="deleteAllSubmit" class="btn btn-danger">Delete</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
 </body>

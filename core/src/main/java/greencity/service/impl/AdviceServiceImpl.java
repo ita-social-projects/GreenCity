@@ -110,4 +110,8 @@ public class AdviceServiceImpl implements AdviceService {
         }
         return id;
     }
+
+    /*@Override
+    public void deleteAllByHabit(Habit habit) {
+    }*/
 }

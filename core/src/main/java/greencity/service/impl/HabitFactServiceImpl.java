@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link HabitFactService}.
@@ -102,10 +103,24 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     public Long delete(Long id) {
-        if (!(habitFactRepo.findById(id).isPresent())) {
+        if (habitFactRepo.findById(id).isEmpty()) {
             throw new NotDeletedException(ErrorMessage.HABIT_FACT_NOT_DELETED_BY_ID);
         }
         habitFactRepo.deleteById(id);
         return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void deleteAllByHabit(Habit habit) {
+        habitFactRepo.findAllByHabitId(habit.getId())
+            .forEach(habitFact -> {
+                habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
+                habitFactRepo.delete(habitFact);
+            });
+        ;
     }
 }

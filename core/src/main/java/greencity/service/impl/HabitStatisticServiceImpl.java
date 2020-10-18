@@ -155,9 +155,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteAllStatsByHabitAssignId(Long habitAssignId) {
-        habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
-        habitStatisticRepo.deleteAllByHabitAssignId(habitAssignId);
+    public void deleteAllStatsByHabitAssign(HabitAssign habitAssign) {
+        habitStatisticRepo.deleteAllByHabitAssign(habitAssign);
     }
 }

@@ -26,6 +26,15 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllByUserId(Long userId);
 
     /**
+     * Method to find all {@link HabitAssign} by {@link Habit} id
+     * (including suspended).
+     *
+     * @param habitId {@link Habit} id.
+     * @return list of {@link HabitAssign} instances.
+     */
+    List<HabitAssign> findAllByHabitId(Long habitId);
+
+    /**
      * Method to find all {@link HabitAssign} by {@link User} id
      * (with not suspended status).
      *
@@ -119,14 +128,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "UPDATE HabitAssign ha "
         + "SET ha.suspended = true WHERE ha.id = :habitAssignId")
     void suspendById(@Param("habitAssignId") Long habitAssignId);
-
-    /**
-     * Method to delete {@link HabitAssign} by it's id.
-     *
-     *
-     * @param id {@link HabitAssign} id.
-     */
-    void deleteById(Long id);
 
     /**
      * Method to delete {@link HabitAssign} by {@link User} and {@link Habit} id's

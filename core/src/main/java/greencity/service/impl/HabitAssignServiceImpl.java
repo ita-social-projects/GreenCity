@@ -12,7 +12,6 @@ import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.service.HabitAssignService;
-import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
 import greencity.service.HabitStatusService;
 import java.time.ZonedDateTime;
@@ -29,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class HabitAssignServiceImpl implements HabitAssignService {
-    private final HabitService habitService;
     private final HabitRepo habitRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitStatisticService habitStatisticService;
@@ -83,7 +81,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId) {
-        habitService.getById(habitId);
         return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
                 .orElseThrow(() ->
                     new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID)),
@@ -96,7 +93,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public HabitAssignDto findHabitAssignByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId,
                                                                          ZonedDateTime dateTime) {
-        habitService.getById(habitId);
         return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(habitId, userId, dateTime)
                 .orElseThrow(() ->
                     new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID)),
@@ -172,9 +168,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 new WrongIdException(
                     ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE));
 
-        habitStatusService.deleteStatusByHabitAssignId(habitAssign.getId());
-        habitStatisticService.deleteAllStatsByHabitAssignId(habitAssign.getId());
-        habitAssignRepo.deleteById(habitAssign.getId());
+        habitStatusService.deleteStatusByHabitAssign(habitAssign);
+        habitStatisticService.deleteAllStatsByHabitAssign(habitAssign);
+        habitAssignRepo.delete(habitAssign);
     }
 
     /**
@@ -206,5 +202,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         updatable.setSuspended(dto.getSuspended());
 
         return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void deleteAllHabitAssignsByHabit(Habit habit) {
+        habitAssignRepo.findAllByHabitId(habit.getId())
+            .forEach(habitAssign -> {
+                habitStatusService.deleteStatusByHabitAssign(habitAssign);
+                habitStatisticService.deleteAllStatsByHabitAssign(habitAssign);
+                habitAssignRepo.delete(habitAssign);
+            });
     }
 }

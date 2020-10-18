@@ -55,11 +55,4 @@ public interface HabitStatusCalendarService {
      * @return {@link List} of {@link HabitStatusCalendar}.
      */
     List<LocalDate> findEnrolledDatesBefore(LocalDate dateTime, HabitStatus habitStatus);
-
-    /**
-     * Method to delete all {@link HabitStatusCalendar} by {@link HabitStatus} id.
-     *
-     * @param habitStatus {@link HabitStatus} instance.
-     */
-    void deleteAllByHabitStatus(HabitStatus habitStatus);
 }

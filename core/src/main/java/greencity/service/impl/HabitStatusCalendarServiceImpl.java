@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -73,14 +72,5 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
         habitStatusCalendars.forEach(habitStatusCalendar -> dates.add(habitStatusCalendar.getEnrollDate()));
 
         return dates;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public void deleteAllByHabitStatus(HabitStatus habitStatus) {
-        habitStatusCalendarRepo.deleteAllByHabitStatusId(habitStatus.getId());
     }
 }

@@ -9,7 +9,6 @@ import java.util.Optional;
 import javax.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -132,11 +131,9 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     );
 
     /**
-     * Method to delete all {@link HabitStatistic} by {@link HabitAssign} id.
+     * Method deletes all {@link HabitStatistic}'s by {@link HabitAssign} instance.
      *
-     * @param habitAssignId target {@link HabitAssign}
+     * @param habitAssign {@link HabitAssign} instance.
      */
-    @Modifying
-    @Query(value = "DELETE FROM HabitStatistic hs WHERE hs.habitAssign.id = :habitAssignId")
-    void deleteAllByHabitAssignId(@Param("habitAssignId") Long habitAssignId);
+    void deleteAllByHabitAssign(HabitAssign habitAssign);
 }

@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.entity.Habit;
 import greencity.entity.HabitFact;
 import java.util.List;
 
@@ -72,4 +73,11 @@ public interface HabitFactService {
      * @author Vitaliy Dzen
      */
     Long delete(Long id);
+
+    /**
+     * Method deletes all {@link HabitFact}'s by {@link Habit} instance.
+     *
+     * @param habit {@link Habit} instance.
+     */
+    void deleteAllByHabit(Habit habit);
 }

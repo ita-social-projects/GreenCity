@@ -9,11 +9,11 @@ import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.repository.AdviceRepo;
+import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.service.FileService;
-import greencity.service.HabitService;
-import greencity.service.LanguageService;
+import greencity.service.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -37,6 +37,10 @@ public class HabitServiceImpl implements HabitService {
     private final FileService fileService;
     private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
+    private final HabitAssignService habitAssignService;
+    private final HabitFactService habitFactService;
+    private final AdviceRepo adviceRepo;
+    private final AdviceTranslationRepo adviceTranslationRepo;
 
     /**
      * {@inheritDoc}
@@ -147,5 +151,37 @@ public class HabitServiceImpl implements HabitService {
             habit.setImage(fileService.upload(image).toString());
         }
         habitRepo.save(habit);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        Habit habit = habitRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
+
+        habitTranslationRepo.deleteAllByHabit(habit);
+
+        //in future methods will be called from adviceService (after habits service movement)
+        adviceRepo.findAllByHabitId(habit.getId())
+            .forEach(advice -> {
+                adviceTranslationRepo.deleteAllByAdvice(advice);
+                adviceRepo.delete(advice);
+            });
+
+        habitFactService.deleteAllByHabit(habit);
+        habitAssignService.deleteAllHabitAssignsByHabit(habit);
+        habitRepo.delete(habit);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void deleteAll(List<Long> listId) {
+        listId.forEach(this::delete);
     }
 }

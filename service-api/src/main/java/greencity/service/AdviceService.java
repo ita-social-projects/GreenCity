@@ -72,4 +72,11 @@ public interface AdviceService {
      * @author Vitaliy Dzen
      */
     Long delete(Long id);
+
+    /*
+     * Method deletes all {@link Advice}'s by {@link Habit} instance.
+     *
+     * @param habit {@link Habit} instance.
+
+    void deleteAllByHabit(Habit habit);  */
 }

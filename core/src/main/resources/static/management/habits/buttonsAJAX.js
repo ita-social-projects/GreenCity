@@ -8,10 +8,10 @@ function clearAllErrorsSpan() {
 }
 
 $(document).ready(function () {
-    // Activate tooltip
+    //activate tooltip
     $('[data-toggle="tooltip"]').tooltip();
 
-    // Select/Deselect checkboxes
+    //select or deselect checkboxes
     var checkbox = $('table tbody input[type="checkbox"]');
     $("#selectAll").click(function () {
         if (this.checked) {
@@ -29,14 +29,14 @@ $(document).ready(function () {
             $("#selectAll").prop("checked", false);
         }
     });
-    //Кнопка delete справа в таблиці
+    //delete button on right side
     $('td .delete.eDelBtn').on('click', function (event) {
         event.preventDefault();
         $('#deleteHabitModal').modal();
         var href = $(this).attr('href');
         $('#deleteOneSubmit').attr('href', href);
     });
-    //Кнопка delete в deleteFactOfTheDayModal
+    //delete one button in modal
     $('#deleteOneSubmit').on('click', function (event) {
         event.preventDefault();
         var href = $(this).attr('href');
@@ -50,7 +50,7 @@ $(document).ready(function () {
             },
         });
     });
-    //Кнопка delete в deleteAllSelectedModal
+    //all delete button in modal
     $('#deleteAllSubmit').on('click', function (event) {
         event.preventDefault();
         var payload = [];
@@ -59,7 +59,7 @@ $(document).ready(function () {
                 payload.push(this.value);
             }
         })
-        var href = '/management/habit/deleteAll';
+        var href = '/management/habits/deleteAll';
         $.ajax({
             url: href,
             type: 'delete',
@@ -71,16 +71,11 @@ $(document).ready(function () {
             data: JSON.stringify(payload)
         });
     });
-
-
-
-
-
-    //Кнопка addFactOftheDay зверху таблиці
-    $('#addFactOfTheDayModalBtn').on('click', function (event) {
+    //add habit button at the top
+    $('#addHabitModal').on('click', function (event) {
         clearAllErrorsSpan();
     });
-    //Кнопка submit в модальній формі Add
+    //submit button in modal add
     $('#submitAddBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
@@ -95,7 +90,7 @@ $(document).ready(function () {
 
         }
         for (var key in formData) {
-            if(key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem")) {
+            if (key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem")) {
                 var lang, name, description, habitItem;
 
                 lang = key.slice(key.length - 2);
@@ -112,7 +107,7 @@ $(document).ready(function () {
                 if (key.startsWith("contentHabItem")) {
                     habitItem = formData["contentHabItem" + lang]
                 }
-                if(name != null && description != null && habitItem != null) {
+                if (name != null && description != null && habitItem != null) {
                     returnData.habitTranslations.push(
                         {
                             "name": name,
@@ -121,11 +116,14 @@ $(document).ready(function () {
                             "languageCode": lang
                         }
                     );
-                    name = null; description = null; habitItem = null;
+                    name = null;
+                    description = null;
+                    habitItem = null;
                 }
             }
         }
         var result = new FormData();
+
         result.append("habitDto", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
         var file = document.getElementById("fileCreate").files[0];
         result.append("file", file);
@@ -149,12 +147,6 @@ $(document).ready(function () {
             data: result
         });
     });
-
-
-
-
-
-
     //edit button
     $('td .edit.eBtn').on('click', function (event) {
         event.preventDefault();
@@ -164,7 +156,7 @@ $(document).ready(function () {
         clearAllErrorsSpan();
         $('#editHabitModal').modal();
         var href = $(this).attr('href');
-        $.get(href, function (habit, status) {
+        $.get(href, function (habit) {
             $('#id').val(habit.id);
             $('#image').val(habit.image);
             $('#file').val(habit.file);
@@ -190,7 +182,7 @@ $(document).ready(function () {
 
         }
         for (var key in formData) {
-            if(key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem")) {
+            if (key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem")) {
                 var lang, name, description, habitItem;
 
                 lang = key.slice(key.length - 2);
@@ -204,7 +196,7 @@ $(document).ready(function () {
                 if (key.startsWith("contentHabItem")) {
                     habitItem = formData["contentHabItem" + lang]
                 }
-                if(name != null && description != null && habitItem != null) {
+                if (name != null && description != null && habitItem != null) {
                     returnData.habitTranslations.push(
                         {
                             "name": name,
@@ -213,7 +205,9 @@ $(document).ready(function () {
                             "languageCode": lang
                         }
                     );
-                    name = null; description = null; habitItem = null;
+                    name = null;
+                    description = null;
+                    habitItem = null;
                 }
             }
         }
@@ -242,6 +236,5 @@ $(document).ready(function () {
             data: result
         });
     })
-
 
 });

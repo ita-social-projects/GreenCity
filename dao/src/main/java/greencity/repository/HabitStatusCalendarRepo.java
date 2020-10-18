@@ -48,11 +48,11 @@ public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalend
     List<HabitStatusCalendar> findAllByEnrollDateBeforeAndHabitStatus(LocalDate dateTime, HabitStatus habitStatus);
 
     /**
-     * Method to delete all {@link HabitStatusCalendar} by {@link HabitStatus} id.
+     * Method deletes all {@link HabitStatusCalendar} by {@link HabitStatus} instance.
      *
-     * @param habitStatusId target {@link HabitStatus}.
+     * @param habitStatus {@link HabitStatus} instance.
      */
     @Modifying
-    @Query(value = "DELETE FROM HabitStatusCalendar hsc WHERE hsc.habitStatus.id = :habitStatusId")
-    void deleteAllByHabitStatusId(@Param("habitStatusId") Long habitStatusId);
+    @Query("DELETE FROM HabitStatusCalendar hsc WHERE hsc.habitStatus = :hs")
+    void deleteAllByHabitStatus(@Param("hs") HabitStatus habitStatus);
 }

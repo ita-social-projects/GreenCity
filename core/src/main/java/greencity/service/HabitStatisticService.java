@@ -65,7 +65,7 @@ public interface HabitStatisticService {
     /**
      * Method for deleting all statistics for certain {@link HabitAssign}.
      *
-     * @param habitAssignId {@link HabitAssign} id.
+     * @param habitAssign {@link HabitAssign} instance.
      */
-    void deleteAllStatsByHabitAssignId(Long habitAssignId);
+    void deleteAllStatsByHabitAssign(HabitAssign habitAssign);
 }

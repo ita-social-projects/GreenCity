@@ -10,6 +10,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.repository.HabitStatusCalendarRepo;
 import greencity.repository.HabitStatusRepo;
 import greencity.service.HabitStatusCalendarService;
 import greencity.service.HabitStatusService;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitStatusServiceImpl implements HabitStatusService {
     private final HabitStatusRepo habitStatusRepo;
     private final HabitStatusCalendarService habitStatusCalendarService;
+    private final HabitStatusCalendarRepo habitStatusCalendarRepo;
     private final ModelMapper modelMapper;
 
     /**
@@ -108,11 +110,11 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         if ((intervalBetweenDates == 1) || lastEnrollmentDate == null) {
             int habitStreak = habitStatus.getHabitStreak();
             habitStatus.setHabitStreak(++habitStreak);
-            habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
+            habitCalendar = HabitStatusCalendar.builder().enrollDate(todayDate).habitStatus(habitStatus).build();
             habitStatusCalendarService.save(habitCalendar);
         } else if (intervalBetweenDates > 1) {
             habitStatus.setHabitStreak(1);
-            habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
+            habitCalendar = HabitStatusCalendar.builder().enrollDate(todayDate).habitStatus(habitStatus).build();
             habitStatusCalendarService.save(habitCalendar);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
@@ -170,7 +172,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         }
 
         if (habitCalendarOnDate == null) {
-            HabitStatusCalendar habitStatusCalendar = new HabitStatusCalendar(date, habitStatus);
+            HabitStatusCalendar habitStatusCalendar = HabitStatusCalendar.builder()
+                .enrollDate(date).habitStatus(habitStatus).build();
             habitStatusCalendarService.save(habitStatusCalendar);
 
             if (Period.between(date, LocalDate.now()).getDays() == daysStreakAfterDate + 1) {
@@ -227,11 +230,11 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      */
     @Transactional
     @Override
-    public void deleteStatusByHabitAssignId(Long habitAssignId) {
-        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
+    public void deleteStatusByHabitAssign(HabitAssign habitAssign) {
+        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssign.getId())
             .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
-        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
-        habitStatusRepo.deleteByHabitAssignId(habitAssignId);
+        habitStatusCalendarRepo.deleteAllByHabitStatus(habitStatus);
+        habitStatusRepo.delete(habitStatus);
     }
 
     /**
@@ -242,7 +245,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     public void deleteActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
         HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
             .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
-        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
+        habitStatusCalendarRepo.deleteAllByHabitStatus(habitStatus);
         habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
     }
 
@@ -255,7 +258,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
                                                                   ZonedDateTime zonedDateTime) {
         HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
             .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
-        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
+        habitStatusCalendarRepo.deleteAllByHabitStatus(habitStatus);
         habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
     }
 

@@ -3,10 +3,9 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.TipsAndTricks;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +13,9 @@ public interface HabitService {
     /**
      * Method find {@link HabitTranslation} by {@link Habit} and languageCode.
      *
-     * @return {@link HabitTranslationDto}
+     * @param habit {@link Habit} instance.
+     * @param languageCode - language code.
+     * @return {@link HabitTranslationDto}.
      * @author Kovaliv Taras
      */
     HabitTranslationDto getHabitTranslation(Habit habit, String languageCode);
@@ -22,6 +23,7 @@ public interface HabitService {
     /**
      * Method find {@link Habit} by id.
      *
+     * @param id {@link Habit} id.
      * @return {@link HabitDto}
      * @author Kovaliv Taras
      */
@@ -30,6 +32,7 @@ public interface HabitService {
     /**
      * Method find all {@link HabitDto}.
      *
+     * @param pageable - instance of {@link Pageable}.
      * @return list of {@link HabitDto}
      * @author Dovganyuk Taras
      */
@@ -38,6 +41,8 @@ public interface HabitService {
     /**
      * Method returns all habits by language.
      *
+     * @param pageable - instance of {@link Pageable}.
+     * @param language - language code.
      * @return Pageable of {@link HabitTranslationDto}
      * @author Dovganyuk Taras
      */
@@ -59,4 +64,19 @@ public interface HabitService {
      * @param image {@link MultipartFile} image for habit.
      */
     void update(HabitDto habitDto, MultipartFile image);
+
+    /**
+     * Method deletes {@link Habit} instance.
+     *
+     * @param id {@link Habit} id.
+     */
+    void delete(Long id);
+
+    /**
+     * Method deletes all {@link Habit} instances by list of id's.
+     *
+     *
+     * @param listId list of {@link Habit} id's.
+     */
+    void deleteAll(List<Long> listId);
 }

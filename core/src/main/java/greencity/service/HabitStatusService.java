@@ -66,7 +66,8 @@ public interface HabitStatusService {
 
     /**
      * Method to enroll habit for defined date.
-     *  @param habitAssignId - id of {@link HabitAssign}.
+     *
+     * @param habitAssignId - id of {@link HabitAssign}.
      * @param date          - {@link LocalDate} date we want enroll.
      * @return {@link HabitStatusDto}.
      */
@@ -75,9 +76,9 @@ public interface HabitStatusService {
     /**
      * Method to delete {@link HabitStatus} by {@link HabitAssign} id.
      *
-     * @param habitAssignId target {@link HabitAssign} id.
+     * @param habitAssign {@link HabitAssign} instance.
      */
-    void deleteStatusByHabitAssignId(Long habitAssignId);
+    void deleteStatusByHabitAssign(HabitAssign habitAssign);
 
     /**
      * Method to delete active {@link HabitStatus} by {@link HabitAssign} id.
@@ -91,9 +92,9 @@ public interface HabitStatusService {
      * Method to delete {@link HabitStatus} by {@link User}, {@link Habit} id's
      * and {@link ZonedDateTime} dateTime from {@link HabitAssign}.
      *
-     * @param userId  {@link User} id.
-     * @param habitId {@link Habit} id.
-     * @param dateTime  {@link ZonedDateTime} dateTime.
+     * @param userId   {@link User} id.
+     * @param habitId  {@link Habit} id.
+     * @param dateTime {@link ZonedDateTime} dateTime.
      */
     void deleteStatusByUserIdAndHabitIdAndAssignCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
 

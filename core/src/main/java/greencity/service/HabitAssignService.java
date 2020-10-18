@@ -101,6 +101,13 @@ public interface HabitAssignService {
     void deleteHabitAssignByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
 
     /**
+     * Method to delete all {@link HabitAssign}'s by {@link Habit} instance.
+     *
+     * @param habit {@link Habit} instance.
+     */
+    void deleteAllHabitAssignsByHabit(Habit habit);
+
+    /**
      * Method for getting amount of habits in progress by user id.
      *
      * @param id {@link Long} user id.

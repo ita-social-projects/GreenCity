@@ -33,4 +33,11 @@ public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, 
      * @author Vitaliy Dzen
      */
     Optional<AdviceTranslation> findAdviceTranslationByLanguageCodeAndAdvice(String languageCode, String advice);
+
+    /**
+     * Method deletes all {@link AdviceTranslation}'s by {@link Advice} instance.
+     *
+     * @param advice {@link Advice} instance.
+     */
+    void deleteAllByAdvice(Advice advice);
 }

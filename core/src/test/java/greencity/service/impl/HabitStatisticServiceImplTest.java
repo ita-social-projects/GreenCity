@@ -179,7 +179,7 @@ class HabitStatisticServiceImplTest {
     @Test
     void deleteAllStatsByHabitAssignIdTest() {
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-        habitStatisticService.deleteAllStatsByHabitAssignId(1L);
-        verify(habitStatisticRepo, times(1)).deleteAllByHabitAssignId(1L);
+        habitStatisticService.deleteAllStatsByHabitAssign(habitAssign);
+        verify(habitStatisticRepo, times(1)).deleteAllByHabitAssign(habitAssign);
     }
 }

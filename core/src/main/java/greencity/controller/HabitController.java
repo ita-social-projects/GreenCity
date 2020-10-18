@@ -18,15 +18,12 @@ import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
 import greencity.entity.User;
-import greencity.repository.HabitStatisticRepo;
 import greencity.service.HabitAssignService;
 import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
@@ -34,7 +31,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -46,8 +42,47 @@ import springfox.documentation.annotations.ApiIgnore;
 public class HabitController {
     private final HabitStatisticService habitStatisticService;
     private final HabitAssignService habitAssignService;
-    private final HabitStatisticRepo habitStatisticRepo;
     private final HabitService habitService;
+
+    /**
+     * Method finds {@link Habit} by given id.
+     *
+     * @param id of {@link Habit}.
+     * @return {@link HabitDto}.
+     */
+    @ApiOperation(value = "Find habit by id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitService.getById(id));
+    }
+
+    /**
+     * Method finds all habits that available for tracking for specific language.
+     *
+     * @param locale {@link Locale} with needed language code.
+     * @return Pageable of {@link HabitTranslationDto}.
+     */
+    @ApiOperation(value = "Find all habits.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("")
+    @ApiPageable
+    @ApiLocale
+    public ResponseEntity<PageableDto<HabitTranslationDto>> getAll(
+        @ApiIgnore Pageable pageable,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
+    }
 
     /**
      * Method which assign habit for {@link User}.
@@ -103,30 +138,6 @@ public class HabitController {
         @PathVariable Long habitAssignId, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitAssignService
             .updateStatus(habitAssignId, habitAssignStatDto));
-    }
-
-    /**
-     * Method returns all habits, available for tracking for specific language.
-     *
-     * @param locale needed language code
-     * @return Pageable of {@link HabitTranslationDto}
-     */
-    @ApiOperation(value = "Get all habits.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @GetMapping("")
-    @ApiPageable
-    @ApiLocale
-    public ResponseEntity<PageableDto<HabitTranslationDto>> getAll(
-        @ApiIgnore Pageable pageable,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        System.out.println("\n\n\n\n\n\n " + ZonedDateTime.now());
-        System.out.println(habitStatisticRepo.findHabitAssignStatByDate(ZonedDateTime.now(), 3L).get().getCreateDate());
-        return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
     }
 
     /**

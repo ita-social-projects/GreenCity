@@ -54,13 +54,6 @@ class HabitStatusControllerTest {
     }
 
     @Test
-    void deleteHabitStatusByHabitAssign() throws Exception {
-        mockMvc.perform(delete(habitStatusLink + "/{habitAssignId}", 1))
-                .andExpect(status().isOk());
-        verify(habitStatusService).deleteStatusByHabitAssignId(1L);
-    }
-
-    @Test
     void update() throws Exception {
         UpdateHabitStatusDto habitStatusForUpdateDto = new UpdateHabitStatusDto();
         habitStatusForUpdateDto.setHabitStreak(1);
