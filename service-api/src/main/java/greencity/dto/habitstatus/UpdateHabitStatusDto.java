@@ -1,9 +1,6 @@
 package greencity.dto.habitstatus;
 
-import greencity.dto.habit.HabitAssignDto;
 import java.time.LocalDateTime;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.*;
 
