@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import greencity.DaoApplication;
 import greencity.entity.HabitStatistic;
-import greencity.entity.enums.HabitRate;
+import greencity.enums.HabitRate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
