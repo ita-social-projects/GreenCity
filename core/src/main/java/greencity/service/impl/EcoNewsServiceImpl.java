@@ -12,6 +12,7 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
+import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.ROLE;
 import greencity.exception.exceptions.BadRequestException;
@@ -84,7 +85,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         toSave.setTags(modelMapper.map(tagService.findEcoNewsTagsByNames(addEcoNewsDtoRequest.getTags()),
-            new TypeToken<List<TagVO>>() {
+            new TypeToken<List<Tag>>() {
             }.getType()));
         try {
             ecoNewsRepo.save(toSave);
@@ -322,7 +323,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
         toUpdate.setText(ecoNewsDtoManagement.getText());
         toUpdate.setTags(modelMapper
-            .map(tagService.findTipsAndTricksTagsByNames(ecoNewsDtoManagement.getTags()), new TypeToken<List<TagVO>>() {
+            .map(tagService.findTipsAndTricksTagsByNames(ecoNewsDtoManagement.getTags()), new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
             toUpdate.setImagePath(fileService.upload(image).toString());
@@ -344,7 +345,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toUpdate.setText(updateEcoNewsDto.getText());
         toUpdate.setSource(updateEcoNewsDto.getSource());
         toUpdate.setTags(modelMapper.map(tagService.findEcoNewsTagsByNames(updateEcoNewsDto.getTags()),
-            new TypeToken<List<TagVO>>() {
+            new TypeToken<List<Tag>>() {
             }.getType()));
         if (updateEcoNewsDto.getImage() != null) {
             image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
