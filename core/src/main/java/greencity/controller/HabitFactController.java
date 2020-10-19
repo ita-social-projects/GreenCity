@@ -5,6 +5,7 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habittranslation.HabitFactTranslationVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitFactTranslation;
@@ -117,7 +118,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity<List<HabitFactTranslation>> save(@Valid @RequestBody HabitFactPostDto fact) {
+    public ResponseEntity<List<HabitFactTranslationVO>> save(@Valid @RequestBody HabitFactPostDto fact) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             habitFactTranslationService.saveHabitFactAndFactTranslation(fact));
     }

@@ -27,10 +27,7 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.AuthorDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.enums.*;
 import greencity.entity.localization.GoalTranslation;
@@ -65,6 +62,15 @@ public class ModelUtils {
                 .role(ROLE.ROLE_USER)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
+                .build();
+    }
+
+    public static UserVO getUserVO() {
+        return UserVO.builder()
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .role(ROLE.ROLE_USER)
                 .build();
     }
 
