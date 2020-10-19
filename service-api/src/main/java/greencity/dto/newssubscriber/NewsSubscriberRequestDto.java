@@ -1,7 +1,6 @@
 package greencity.dto.newssubscriber;
 
-import static greencity.constant.AppConstant.VALIDATION_EMAIL;
-
+import greencity.constant.AppConstant;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -13,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NewsSubscriberRequestDto {
     @NotBlank
-    @Email(regexp = VALIDATION_EMAIL)
+    @Email(regexp = AppConstant.VALIDATION_EMAIL)
     private String email;
 }

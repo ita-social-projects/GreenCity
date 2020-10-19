@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.ModelUtils;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.entity.*;
 import greencity.exception.exceptions.BadRequestException;
@@ -39,7 +40,11 @@ class ProposePlaceServiceImplTest {
 
     @Test
     void checkLocationValues() {
-        Location location = ModelUtils.getLocation();
+        LocationVO location = LocationVO.builder()
+            .address("address")
+            .lng(12.12d)
+            .lat(12.12d)
+            .build();
         LocationAddressAndGeoDto address = ModelUtils.getLocationAddressAndGeoDto();
 
         when(locationService.findByLatAndLng(12.12d, 12.12d)).thenReturn(Optional.of(location));

@@ -1,8 +1,10 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
@@ -11,8 +13,6 @@ import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitStatusRepo;
-import greencity.service.HabitStatusCalendarService;
-import greencity.service.HabitStatusService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -45,10 +45,10 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * {@inheritDoc}
      */
     @Override
-    public void saveStatusByHabitAssign(HabitAssign habitAssign) {
+    public void saveStatusByHabitAssign(HabitAssignDto habitAssign) {
         HabitStatus habitStatus = HabitStatus.builder()
             .habitStreak(0)
-            .habitAssign(habitAssign)
+            .habitAssign(modelMapper.map(habitAssign, HabitAssign.class))
             .workingDays(0)
             .lastEnrollmentDate(LocalDateTime.now())
             .build();
@@ -98,7 +98,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         LocalDate todayDate = LocalDate.now();
         HabitStatusCalendar habitCalendar;
         LocalDate lastEnrollmentDate =
-            habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatus);
+            habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(
+                modelMapper.map(habitStatus, HabitStatusDto.class));
         long intervalBetweenDates = 0;
 
         if (lastEnrollmentDate != null) {
@@ -109,11 +110,11 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             int habitStreak = habitStatus.getHabitStreak();
             habitStatus.setHabitStreak(++habitStreak);
             habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
-            habitStatusCalendarService.save(habitCalendar);
+            habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
         } else if (intervalBetweenDates > 1) {
             habitStatus.setHabitStreak(1);
             habitCalendar = new HabitStatusCalendar(todayDate, habitStatus);
-            habitStatusCalendarService.save(habitCalendar);
+            habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
@@ -141,9 +142,10 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         }
 
         habitStatusRepo.save(habitStatus);
-        HabitStatusCalendar habitStatusCalendar =
+        HabitStatusCalendarVO habitStatusCalendar =
             habitStatusCalendarService
-                .findHabitStatusCalendarByEnrollDateAndHabitStatus(date, habitStatus);
+                .findHabitStatusCalendarByEnrollDateAndHabitStatus(
+                    date, modelMapper.map(habitStatus, HabitStatusDto.class));
 
         if (habitStatusCalendar != null) {
             habitStatusCalendarService.delete(habitStatusCalendar);
@@ -159,8 +161,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     public HabitStatusDto enrollHabitInDate(Long habitAssignId, LocalDate date) {
         HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_HAS_NO_STATUS_FOR_SUCH_HABIT));
-        HabitStatusCalendar habitCalendarOnDate =
-            habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(date, habitStatus);
+        HabitStatusCalendarVO habitCalendarOnDate =
+            habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(date,
+                modelMapper.map(habitStatus, HabitStatusDto.class));
 
         int daysStreakAfterDate = checkHabitStreakAfterDate(date, habitStatus);
         int daysStreakBeforeDate = checkHabitStreakBeforeDate(date, habitStatus);
@@ -171,7 +174,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
 
         if (habitCalendarOnDate == null) {
             HabitStatusCalendar habitStatusCalendar = new HabitStatusCalendar(date, habitStatus);
-            habitStatusCalendarService.save(habitStatusCalendar);
+            habitStatusCalendarService.save(modelMapper.map(habitStatusCalendar, HabitStatusCalendarVO.class));
 
             if (Period.between(date, LocalDate.now()).getDays() == daysStreakAfterDate + 1) {
                 if ((daysStreakAfterDate + daysStreakBeforeDate) == 1) {
@@ -191,7 +194,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     private int checkHabitStreakAfterDate(LocalDate dateTime, HabitStatus habitStatus) {
         int daysStreak = 0;
 
-        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesAfter(dateTime, habitStatus);
+        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesAfter(dateTime,
+            modelMapper.map(habitStatus, HabitStatusDto.class));
         Collections.sort(enrollDates);
 
         for (int i = 0; i < enrollDates.size() - 1; i++) {
@@ -207,7 +211,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     private int checkHabitStreakBeforeDate(LocalDate dateTime, HabitStatus habitStatus) {
         int daysStreak = 0;
 
-        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesBefore(dateTime, habitStatus);
+        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesBefore(dateTime,
+            modelMapper.map(habitStatus, HabitStatusDto.class));
         Collections.sort(enrollDates);
         Collections.reverse(enrollDates);
 
@@ -230,7 +235,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     public void deleteStatusByHabitAssignId(Long habitAssignId) {
         HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
             .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
-        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
+        habitStatusCalendarService.deleteAllByHabitStatus(modelMapper.map(habitStatus, HabitStatusDto.class));
         habitStatusRepo.deleteByHabitAssignId(habitAssignId);
     }
 
@@ -242,7 +247,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     public void deleteActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
         HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
             .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
-        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
+        habitStatusCalendarService.deleteAllByHabitStatus(modelMapper.map(habitStatus, HabitStatusDto.class));
         habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
     }
 
@@ -255,7 +260,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
                                                                   ZonedDateTime zonedDateTime) {
         HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
             .orElseThrow(() -> new NotDeletedException(ErrorMessage.STATUS_OF_HABIT_ASSIGN_NOT_DELETED));
-        habitStatusCalendarService.deleteAllByHabitStatus(habitStatus);
+        habitStatusCalendarService.deleteAllByHabitStatus(modelMapper.map(habitStatus, HabitStatusDto.class));
         habitStatusRepo.deleteByUserIdAndHabitId(userId, habitId);
     }
 

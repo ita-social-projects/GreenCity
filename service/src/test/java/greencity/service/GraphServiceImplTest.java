@@ -1,9 +1,8 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.repository.UserRepo;
 import java.util.*;
 
-import greencity.service.GraphServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

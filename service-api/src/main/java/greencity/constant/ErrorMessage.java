@@ -1,4 +1,4 @@
-package greencity.service.constant;
+package greencity.constant;
 
 public final class ErrorMessage {
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
@@ -22,6 +22,19 @@ public final class ErrorMessage {
     public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
+    public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
+    public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
+        "Subscriber with this email address not found in the database.";
+    public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
+    public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
+    public static final String NO_STATUS_FOR_SUCH_HABIT_ASSIGN = "There is no status for such habit for current user";
+    public static final String USER_HAS_NO_STATUS_FOR_SUCH_HABIT =
+        "There is no status for such habit for current user";
+    public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
+    public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
+    public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
+    public static final String STATUS_OF_HABIT_ASSIGN_NOT_DELETED = "Status of user habit wasn't deleted by id: ";
+    public static final String STATUS_OF_HABIT_ASSIGN_NOT_UPDATED = "Status of user habit wasn't updated by id: ";
 
     private ErrorMessage() {
     }

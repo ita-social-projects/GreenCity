@@ -1,11 +1,11 @@
-package greencity.service.impl;
+package greencity.service;
 
-import static greencity.constant.RabbitConstants.SEND_REPORT_ROUTING_KEY;
-
+import greencity.constant.RabbitConstants;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
@@ -14,7 +14,6 @@ import greencity.enums.PlaceStatus;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
-import greencity.service.NotificationService;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -53,7 +52,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendImmediatelyReport(Place newPlace) {
+    public void sendImmediatelyReport(PlaceVO newPlace) {
         log.info(LogMessage.IN_SEND_IMMEDIATELY_REPORT, newPlace.getName());
         EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
         List<PlaceAuthorDto> subscribers = getSubscribers(emailNotification);
@@ -69,7 +68,7 @@ public class NotificationServiceImpl implements NotificationService {
             .collect(Collectors.toList());
 
 
-        rabbitTemplate.convertAndSend(sendEmailTopic, SEND_REPORT_ROUTING_KEY,
+        rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.SEND_REPORT_ROUTING_KEY,
             new SendReportEmailMessage(placeAuthorDto, categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
     }
 
@@ -123,7 +122,7 @@ public class NotificationServiceImpl implements NotificationService {
             categoriesDtoWithPlacesDtoMap = getCategoriesDtoWithPlacesDtoMap(places);
         }
         if (!categoriesDtoWithPlacesDtoMap.isEmpty()) {
-            rabbitTemplate.convertAndSend(sendEmailTopic, SEND_REPORT_ROUTING_KEY,
+            rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.SEND_REPORT_ROUTING_KEY,
                 new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
         }
     }

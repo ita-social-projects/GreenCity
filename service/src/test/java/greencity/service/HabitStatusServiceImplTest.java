@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 /*
 import greencity.ModelUtils;
 import greencity.dto.habitstatus.HabitStatusDto;

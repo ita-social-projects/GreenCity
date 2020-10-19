@@ -1,57 +1,57 @@
 package greencity.service;
 
+import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
-import greencity.entity.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 public interface HabitStatusService {
     /**
-     * Method to find {@link HabitStatus} by id.
+     * Method to find {@code HabitStatus} by id.
      *
      * @return {@link HabitStatusDto}.
      */
     HabitStatusDto getById(Long id);
 
     /**
-     * Method save {@link HabitStatus} by {@link HabitAssign}.
+     * Method save {@code HabitStatus} by {@code HabitAssign}.
      *
-     * @param habitAssign target {@link HabitAssign}.
+     * @param habitAssign target {@link HabitAssignDto}.
      */
-    void saveStatusByHabitAssign(HabitAssign habitAssign);
+    void saveStatusByHabitAssign(HabitAssignDto habitAssign);
 
     /**
-     * Find active {@link HabitStatus} by {@link HabitAssign} id.
+     * Find active {@code HabitStatus} by {@code HabitAssign} id.
      *
-     * @param userId  {@link User} id.
-     * @param habitId {@link Habit} id.
+     * @param userId  {@code User} id.
+     * @param habitId {@code Habit} id.
      * @return {@link HabitStatusDto}.
      */
     HabitStatusDto findActiveStatusByUserIdAndHabitId(Long userId, Long habitId);
 
     /**
-     * Find active {@link HabitStatus} by {@link HabitAssign} id.
+     * Find active {@code HabitStatus} by {@code HabitAssign} id.
      *
-     * @param habitAssignId target {@link HabitAssign} id.
+     * @param habitAssignId target {@code HabitAssign} id.
      * @return {@link HabitStatusDto}.
      */
     HabitStatusDto findStatusByHabitAssignId(Long habitAssignId);
 
     /**
-     * Find {@link HabitStatus} by {@link Habit} and {@link User} id's.
+     * Find {@code HabitStatus} by {@code Habit} and {@code User} id's.
      *
-     * @param userId   {@link User} id.
-     * @param habitId  {@link Habit} id.
+     * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
      * @param dateTime {@link ZonedDateTime} dateTime.
      * @return {@link HabitStatusDto}.
      */
     HabitStatusDto findStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
 
     /**
-     * Method enroll {@link greencity.entity.Habit}.
+     * Method enroll {@code Habit}.
      *
-     * @param habitAssignId - id of {@link HabitAssign} which we enroll.
+     * @param habitAssignId - id of {@code HabitAssign} which we enroll.
      * @return {@link HabitStatusDto}.
      */
     HabitStatusDto enrollHabit(Long habitAssignId);
@@ -59,48 +59,48 @@ public interface HabitStatusService {
     /**
      * Method to unenroll Habit in defined date.
      *
-     * @param habitAssignId - id of {@link Habit}.
+     * @param habitAssignId - id of {@code Habit}.
      * @param dateTime      - {@link LocalDate} dateTime we want unenroll.
      */
     void unenrollHabit(LocalDate dateTime, Long habitAssignId);
 
     /**
      * Method to enroll habit for defined date.
-     *  @param habitAssignId - id of {@link HabitAssign}.
+     *  @param habitAssignId - id of {@code HabitAssign}.
      * @param date          - {@link LocalDate} date we want enroll.
      * @return {@link HabitStatusDto}.
      */
     HabitStatusDto enrollHabitInDate(Long habitAssignId, LocalDate date);
 
     /**
-     * Method to delete {@link HabitStatus} by {@link HabitAssign} id.
+     * Method to delete {@code HabitStatus} by {@code HabitAssign} id.
      *
-     * @param habitAssignId target {@link HabitAssign} id.
+     * @param habitAssignId target {@code HabitAssign} id.
      */
     void deleteStatusByHabitAssignId(Long habitAssignId);
 
     /**
-     * Method to delete active {@link HabitStatus} by {@link HabitAssign} id.
+     * Method to delete active {@code HabitStatus} by {@code HabitAssign} id.
      *
-     * @param userId  {@link User} id.
-     * @param habitId {@link Habit} id.
+     * @param userId  {@code User} id.
+     * @param habitId {@code Habit} id.
      */
     void deleteActiveStatusByUserIdAndHabitId(Long userId, Long habitId);
 
     /**
-     * Method to delete {@link HabitStatus} by {@link User}, {@link Habit} id's
-     * and {@link ZonedDateTime} dateTime from {@link HabitAssign}.
+     * Method to delete {@code HabitStatus} by {@code User}, {@code Habit} id's
+     * and {@link ZonedDateTime} dateTime from {@code HabitAssign}.
      *
-     * @param userId  {@link User} id.
-     * @param habitId {@link Habit} id.
+     * @param userId  {@code User} id.
+     * @param habitId {@code Habit} id.
      * @param dateTime  {@link ZonedDateTime} dateTime.
      */
     void deleteStatusByUserIdAndHabitIdAndAssignCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
 
     /**
-     * Method for updating {@link HabitStatus} in database.
+     * Method for updating {@code HabitStatus} in database.
      *
-     * @param dto - dto with {@link HabitStatus} working days, habitStreak, enrollment date.
+     * @param dto - dto with {@code HabitStatus} working days, habitStreak, enrollment date.
      * @return {@link UpdateHabitStatusDto} instance.
      */
     HabitStatusDto update(Long habitAssignId, UpdateHabitStatusDto dto);
