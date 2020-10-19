@@ -6,14 +6,10 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.*;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.tag.TagVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
@@ -25,11 +21,7 @@ import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.EcoNewsService;
-import greencity.service.FileService;
-import greencity.service.NewsSubscriberService;
-import greencity.service.TagsService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,9 +83,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
 
-        toSave.setTags(
-            tagService.findEcoNewsTagsByNames(addEcoNewsDtoRequest.getTags()));
-
+        toSave.setTags(modelMapper.map(tagService.findEcoNewsTagsByNames(addEcoNewsDtoRequest.getTags()),
+            new TypeToken<List<TagVO>>() {
+            }.getType()));
         try {
             ecoNewsRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
@@ -328,7 +321,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNews toUpdate = findById(ecoNewsDtoManagement.getId());
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
         toUpdate.setText(ecoNewsDtoManagement.getText());
-        toUpdate.setTags(tagService.findTipsAndTricksTagsByNames(ecoNewsDtoManagement.getTags()));
+        toUpdate.setTags(modelMapper
+            .map(tagService.findTipsAndTricksTagsByNames(ecoNewsDtoManagement.getTags()), new TypeToken<List<TagVO>>() {
+            }.getType()));
         if (image != null) {
             toUpdate.setImagePath(fileService.upload(image).toString());
         }
@@ -348,7 +343,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toUpdate.setTitle(updateEcoNewsDto.getTitle());
         toUpdate.setText(updateEcoNewsDto.getText());
         toUpdate.setSource(updateEcoNewsDto.getSource());
-        toUpdate.setTags(tagService.findTipsAndTricksTagsByNames(updateEcoNewsDto.getTags()));
+        toUpdate.setTags(modelMapper.map(tagService.findEcoNewsTagsByNames(updateEcoNewsDto.getTags()),
+            new TypeToken<List<TagVO>>() {
+            }.getType()));
         if (updateEcoNewsDto.getImage() != null) {
             image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
         }

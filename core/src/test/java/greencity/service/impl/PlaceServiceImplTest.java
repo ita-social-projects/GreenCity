@@ -6,6 +6,7 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openinghours.OpeningHoursVO;
 import greencity.dto.photo.PhotoAddDto;
@@ -67,15 +68,15 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 class PlaceServiceImplTest {
-    private Category category = Category.builder()
+    private final Category category = Category.builder()
         .id(1L)
         .name("test").build();
 
-    private CategoryDto categoryDto = CategoryDto.builder()
+    private final CategoryDto categoryDto = CategoryDto.builder()
         .name("test")
         .build();
 
-    private User user =
+    private final User user =
         User.builder()
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
@@ -98,12 +99,18 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-    private LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
+    private final LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
         .address("test")
         .lat(45.456)
         .lng(46.456)
         .build();
-    private Location location = Location.builder()
+    private final Location location = Location.builder()
+        .id(1L)
+        .address("test")
+        .lat(45.456)
+        .lng(46.456)
+        .build();
+    private final LocationVO locationVO = LocationVO.builder()
         .id(1L)
         .address("test")
         .lat(45.456)
@@ -372,7 +379,7 @@ class PlaceServiceImplTest {
         placeUpdateDto.setCategory(categoryDto);
         when(modelMapper.map(categoryService.findByName(category.getName()), Category.class)).thenReturn(category);
         when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
-        when(modelMapper.map(placeUpdateDto.getLocation(), Location.class)).thenReturn(location);
+        when(modelMapper.map(placeUpdateDto.getLocation(), LocationVO.class)).thenReturn(locationVO);
         when(modelMapper.map(openingHoursListEntityVO, new TypeToken<Set<OpeningHours>>() {
         }.getType())).thenReturn(openingHoursListEntity);
 
@@ -380,8 +387,8 @@ class PlaceServiceImplTest {
 
         assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
         assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
-        verify(modelMapper).map(placeUpdateDto.getLocation(), Location.class);
-        verify(locationService).update(place.getLocation().getId(), location);
+        verify(modelMapper).map(placeUpdateDto.getLocation(), LocationVO.class);
+        verify(locationService).update(place.getLocation().getId(), locationVO);
     }
 
     @Test

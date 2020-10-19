@@ -14,7 +14,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
-import greencity.service.constant.ErrorMessage;
+import greencity.constant.ErrorMessage;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

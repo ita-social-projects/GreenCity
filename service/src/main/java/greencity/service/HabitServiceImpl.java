@@ -10,7 +10,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.service.constant.ErrorMessage;
+import greencity.constant.ErrorMessage;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;

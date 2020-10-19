@@ -8,7 +8,6 @@ import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.service.TagsService;
 import greencity.service.TipsAndTricksService;
@@ -136,7 +135,7 @@ public class TipsAndTricksController {
     }
 
     /**
-     * The method which returns all Tips & Tricks {@link Tag}s.
+     * The method which returns all Tips & Tricks Tags.
      *
      * @return list of {@link String} (tag's names).
      */

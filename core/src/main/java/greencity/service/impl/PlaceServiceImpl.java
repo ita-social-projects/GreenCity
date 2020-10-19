@@ -6,6 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openinghours.OpeningHoursVO;
 import greencity.dto.place.AdminPlaceDto;
@@ -166,7 +167,7 @@ public class PlaceServiceImpl implements PlaceService {
         place.setAuthor(user);
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(PlaceStatus.APPROVED);
-            notificationService.sendImmediatelyReport(place);
+            notificationService.sendImmediatelyReport(modelMapper.map(place, PlaceVO.class));
         }
         return user;
     }
@@ -184,7 +185,8 @@ public class PlaceServiceImpl implements PlaceService {
         Category updatedCategory = modelMapper.map(
             categoryService.findByName(dto.getCategory().getName()), Category.class);
         Place updatedPlace = findById(dto.getId());
-        locationService.update(updatedPlace.getLocation().getId(), modelMapper.map(dto.getLocation(), Location.class));
+        locationService.update(updatedPlace.getLocation().getId(),
+            modelMapper.map(dto.getLocation(), LocationVO.class));
         updatedPlace.setName(dto.getName());
         updatedPlace.setCategory(updatedCategory);
         placeRepo.save(updatedPlace);
@@ -316,7 +318,7 @@ public class PlaceServiceImpl implements PlaceService {
         updatable.setStatus(status);
         updatable.setModifiedDate(ZonedDateTime.now(datasourceTimezone));
         if (status.equals(PlaceStatus.APPROVED)) {
-            notificationService.sendImmediatelyReport(updatable);
+            notificationService.sendImmediatelyReport(modelMapper.map(updatable, PlaceVO.class));
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             rabbitTemplate.convertAndSend(sendEmailTopic, CHANGE_PLACE_STATUS_ROUTING_KEY,
