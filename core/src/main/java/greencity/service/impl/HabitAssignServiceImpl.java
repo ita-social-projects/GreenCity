@@ -50,7 +50,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignDto assignHabitForUser(Long habitId, User user) {
-        Habit habit = habitService.getById(habitId);
+        Habit habit = modelMapper.map(habitService.getById(habitId), Habit.class);
 
         if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
@@ -70,7 +70,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     .user(user)
                     .build());
 
-            habitStatusService.saveStatusByHabitAssign(habitAssign);
+            habitStatusService.saveStatusByHabitAssign(modelMapper.map(habitAssign, HabitAssignDto.class));
             return modelMapper.map(habitAssign, HabitAssignDto.class);
         }
     }

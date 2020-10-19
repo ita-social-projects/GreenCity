@@ -19,4 +19,4 @@ VALUES (1, 1, 1, 'DONE'),
 
 INSERT INTO languages(id, code) VALUES (1, 'en');
 
-INSERT INTO goal_translations(id, text, goal_id, language_id) VALUES (1, 'goal translation', 1, 1);
+INSERT INTO goal_translations(id, content, goal_id, language_id) VALUES (1, 'goal translation', 1, 1);

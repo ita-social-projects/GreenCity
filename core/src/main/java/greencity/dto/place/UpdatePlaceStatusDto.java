@@ -1,7 +1,7 @@
 package greencity.dto.place;
 
 import greencity.constant.ValidationConstants;
-import greencity.entity.enums.PlaceStatus;
+import greencity.enums.PlaceStatus;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import lombok.AllArgsConstructor;

@@ -2,7 +2,7 @@ INSERT INTO goals(id) VALUES (1), (2), (3), (4);
 
 INSERT INTO languages(id, code) VALUES(1,'uk'), (2,'en'), (3,'ru');
 
-INSERT INTO goal_translations(id, text, goal_id, language_id)
+INSERT INTO goal_translations(id, content, goal_id, language_id)
 VALUES(1, 'Купіть бамбукову щітку', 1, 1),
       (2, 'Buy a bamboo brush', 1, 2),
       (3, 'Купите бамбуковую щетку', 1, 3),

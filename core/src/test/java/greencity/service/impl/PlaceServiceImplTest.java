@@ -6,12 +6,14 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.openinghours.OpeningHoursVO;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.place.*;
 import greencity.entity.*;
-import greencity.entity.enums.PlaceStatus;
-import greencity.entity.enums.ROLE;
+import greencity.enums.PlaceStatus;
+import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.repository.PlaceRepo;
@@ -32,6 +34,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,15 +43,15 @@ import org.springframework.data.domain.Pageable;
 
 @Slf4j
 class PlaceServiceImplTest {
-    private Category category = Category.builder()
+    private final Category category = Category.builder()
         .id(1L)
         .name("test").build();
 
-    private CategoryDto categoryDto = CategoryDto.builder()
+    private final CategoryDto categoryDto = CategoryDto.builder()
         .name("test")
         .build();
 
-    private User user =
+    private final User user =
         User.builder()
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
@@ -71,12 +74,18 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-    private LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
+    private final LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
         .address("test")
         .lat(45.456)
         .lng(46.456)
         .build();
-    private Location location = Location.builder()
+    private final Location location = Location.builder()
+        .id(1L)
+        .address("test")
+        .lat(45.456)
+        .lng(46.456)
+        .build();
+    private final LocationVO locationVO = LocationVO.builder()
         .id(1L)
         .address("test")
         .lat(45.456)
@@ -84,6 +93,7 @@ class PlaceServiceImplTest {
         .build();
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
     private Set<OpeningHours> openingHoursListEntity = new HashSet<>();
+    private Set<OpeningHoursVO> openingHoursListEntityVO = new HashSet<>();
     private Set<DiscountValue> discountValues = new HashSet<>();
     private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
     private List<PhotoAddDto> photoDtos = new ArrayList<>();
@@ -343,14 +353,16 @@ class PlaceServiceImplTest {
         placeUpdateDto.setCategory(categoryDto);
         when(categoryService.findByName(category.getName())).thenReturn(category);
         when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
-        when(modelMapper.map(placeUpdateDto.getLocation(), Location.class)).thenReturn(location);
+        when(modelMapper.map(placeUpdateDto.getLocation(), LocationVO.class)).thenReturn(locationVO);
+        when(modelMapper.map(openingHoursListEntityVO, new TypeToken<Set<OpeningHours>>() {
+        }.getType())).thenReturn(openingHoursListEntity);
 
         Place updatedPlace = placeService.update(placeUpdateDto);
 
         assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
         assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
-        verify(modelMapper).map(placeUpdateDto.getLocation(), Location.class);
-        verify(locationService).update(place.getLocation().getId(), location);
+        verify(modelMapper).map(placeUpdateDto.getLocation(), LocationVO.class);
+        verify(locationService).update(place.getLocation().getId(), locationVO);
     }
 
     @Test

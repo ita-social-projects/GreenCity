@@ -88,7 +88,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     public HabitFact update(HabitFactPostDto factDto, Long id) {
         return habitFactRepo.findById(id)
             .map(employee -> {
-                Habit habit = habitService.getById(factDto.getHabit().getId());
+                Habit habit = modelMapper.map(habitService.getById(factDto.getHabit().getId()), Habit.class);
                 employee.setHabit(habit);
                 return habitFactRepo.save(employee);
             })

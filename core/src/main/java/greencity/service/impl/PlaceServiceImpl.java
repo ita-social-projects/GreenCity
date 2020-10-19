@@ -8,11 +8,13 @@ import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.openinghours.OpeningHoursVO;
 import greencity.dto.place.*;
 import greencity.entity.*;
-import greencity.entity.enums.PlaceStatus;
-import greencity.entity.enums.ROLE;
+import greencity.enums.PlaceStatus;
+import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -139,7 +142,7 @@ public class PlaceServiceImpl implements PlaceService {
         place.setAuthor(user);
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(PlaceStatus.APPROVED);
-            notificationService.sendImmediatelyReport(place);
+            notificationService.sendImmediatelyReport(modelMapper.map(place, PlaceVO.class));
         }
         return user;
     }
@@ -156,7 +159,8 @@ public class PlaceServiceImpl implements PlaceService {
 
         Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
         Place updatedPlace = findById(dto.getId());
-        locationService.update(updatedPlace.getLocation().getId(), modelMapper.map(dto.getLocation(), Location.class));
+        locationService.update(updatedPlace.getLocation().getId(),
+            modelMapper.map(dto.getLocation(), LocationVO.class));
         updatedPlace.setName(dto.getName());
         updatedPlace.setCategory(updatedCategory);
         placeRepo.save(updatedPlace);
@@ -201,15 +205,17 @@ public class PlaceServiceImpl implements PlaceService {
      */
     private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
-
-        Set<OpeningHours> openingHoursSetOld = openingHoursService.findAllByPlaceId(updatedPlace.getId());
+        Set<OpeningHoursVO> openingHoursVO = openingHoursService.findAllByPlaceId(updatedPlace.getId());
+        Set<OpeningHours> openingHoursSetOld = modelMapper.map(openingHoursVO,
+            new TypeToken<Set<OpeningHours>>() {
+            }.getType());
         openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> hours = new HashSet<>();
         if (hoursUpdateDtoSet != null) {
             hoursUpdateDtoSet.forEach(h -> {
                 OpeningHours openingHours = modelMapper.map(h, OpeningHours.class);
                 openingHours.setPlace(updatedPlace);
-                openingHoursService.save(openingHours);
+                openingHoursService.save(modelMapper.map(openingHours, OpeningHoursVO.class));
                 hours.add(openingHours);
             });
         }
@@ -286,7 +292,7 @@ public class PlaceServiceImpl implements PlaceService {
         updatable.setStatus(status);
         updatable.setModifiedDate(ZonedDateTime.now(datasourceTimezone));
         if (status.equals(PlaceStatus.APPROVED)) {
-            notificationService.sendImmediatelyReport(updatable);
+            notificationService.sendImmediatelyReport(modelMapper.map(updatable, PlaceVO.class));
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             rabbitTemplate.convertAndSend(sendEmailTopic, CHANGE_PLACE_STATUS_ROUTING_KEY,

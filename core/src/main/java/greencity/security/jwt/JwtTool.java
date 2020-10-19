@@ -2,7 +2,7 @@ package greencity.security.jwt;
 
 import static greencity.constant.AppConstant.AUTHORITIES;
 import greencity.entity.User;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;

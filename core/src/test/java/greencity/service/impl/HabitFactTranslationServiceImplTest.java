@@ -6,7 +6,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
-import greencity.entity.enums.FactOfDayStatus;
+import greencity.enums.FactOfDayStatus;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.service.HabitFactService;
 import org.junit.jupiter.api.Test;

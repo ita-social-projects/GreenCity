@@ -1,6 +1,6 @@
 package greencity.dto.user;
 
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

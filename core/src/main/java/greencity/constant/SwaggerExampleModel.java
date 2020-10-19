@@ -51,6 +51,20 @@ public final class SwaggerExampleModel {
             + "  \"title\": \"string\"\n"
             + "}\n"
             + AFTER_EXAMPLE;
+    public static final String UPDATE_ECO_NEWS =
+        "Update Eco News\n"
+            + BEFORE_EXAMPLE
+            + "{\n"
+            + "  \"id\": 0,\n"
+            + "  \"image\": \"string\",\n"
+            + "  \"source\": \"string\",\n"
+            + "  \"tags\": [\n"
+            + "    \"string\"\n"
+            + "  ],\n"
+            + "  \"text\": \"string\",\n"
+            + "  \"title\": \"string\"\n"
+            + "}\n"
+            + AFTER_EXAMPLE;
 
     private SwaggerExampleModel() {
     }

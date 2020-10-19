@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.entity.EcoNewsComment;
-import greencity.entity.enums.CommentStatus;
+import greencity.enums.CommentStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
