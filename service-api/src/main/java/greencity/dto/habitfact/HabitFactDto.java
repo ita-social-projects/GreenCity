@@ -1,6 +1,6 @@
 package greencity.dto.habitfact;
 
-import greencity.constant.ValidationConstants;
+import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habit.HabitDto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -18,7 +18,7 @@ public class HabitFactDto {
     private Long id;
 
     @NotBlank
-    @Size(min = ValidationConstants.HABIT_FACT_MIN_LENGTH, max = ValidationConstants.HABIT_FACT_MAX_LENGTH)
+    @Size(min = ServiceValidationConstants.HABIT_FACT_MIN_LENGTH, max = ServiceValidationConstants.HABIT_FACT_MAX_LENGTH)
     private String content;
 
     @NotNull
