@@ -57,9 +57,6 @@ class HabitFactTranslationServiceImplTest {
         when(modelMapper.map(habitFactVO, HabitFact.class)).thenReturn(habitFact);
         when(modelMapper.map(habitFactPostDto.getTranslations(), new TypeToken<List<HabitFactTranslation>>() {
         }.getType())).thenReturn(habitFactTranslations);
-//        when(modelMapper.map(ModelUtils.getFactTranslation(), HabitFactTranslationVO.class)).thenReturn(ModelUtils.getFactTranslationVO());
-//        when(habitFactTranslationRepo.saveAll(habitFactTranslations)).thenReturn(habitFactTranslations);
-
         when(modelMapper.map(ModelUtils.getFactTranslationVO(), HabitFactTranslation.class)).thenReturn(ModelUtils.getFactTranslation());
         when(habitFactTranslationRepo.saveAll(habitFactTranslations)).thenReturn(habitFactTranslations);
         when(modelMapper.map(ModelUtils.getFactTranslation(), HabitFactTranslationVO.class)).thenReturn(ModelUtils.getFactTranslationVO());

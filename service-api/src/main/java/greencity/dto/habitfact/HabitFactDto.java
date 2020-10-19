@@ -18,7 +18,8 @@ public class HabitFactDto {
     private Long id;
 
     @NotBlank
-    @Size(min = ServiceValidationConstants.HABIT_FACT_MIN_LENGTH, max = ServiceValidationConstants.HABIT_FACT_MAX_LENGTH)
+    @Size(min = ServiceValidationConstants.HABIT_FACT_MIN_LENGTH,
+            max = ServiceValidationConstants.HABIT_FACT_MAX_LENGTH)
     private String content;
 
     @NotNull
