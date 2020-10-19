@@ -32,6 +32,7 @@ import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import greencity.service.CategoryService;
 import greencity.service.DiscountService;
+import greencity.service.LocationServiceImpl;
 import greencity.service.NotificationService;
 import greencity.service.OpenHoursService;
 import greencity.service.PlaceService;

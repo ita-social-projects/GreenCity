@@ -1,5 +1,7 @@
 package greencity.service;
 
+import greencity.constant.ErrorMessage;
+import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
 import greencity.entity.Category;
@@ -7,8 +9,6 @@ import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CategoryRepo;
-import greencity.service.constant.ErrorMessage;
-import greencity.service.constant.LogMessage;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
