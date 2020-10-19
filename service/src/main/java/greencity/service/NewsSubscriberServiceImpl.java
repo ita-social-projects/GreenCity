@@ -1,13 +1,11 @@
-package greencity.service.impl;
+package greencity.service;
 
-import static greencity.constant.ErrorMessage.*;
-
+import greencity.constant.ErrorMessage;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.NewsSubscriber;
 import greencity.exception.exceptions.*;
 import greencity.repository.NewsSubscriberRepo;
-import greencity.service.NewsSubscriberService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,8 +40,8 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     @Override
     public NewsSubscriberRequestDto save(NewsSubscriberRequestDto dto) {
         if (findByEmail(dto.getEmail()).isPresent()) {
-            log.error(NEWS_SUBSCRIBER_EXIST);
-            throw new NewsSubscriberPresentException(NEWS_SUBSCRIBER_EXIST);
+            log.error(ErrorMessage.NEWS_SUBSCRIBER_EXIST);
+            throw new NewsSubscriberPresentException(ErrorMessage.NEWS_SUBSCRIBER_EXIST);
         }
         NewsSubscriber entity = modelMapper.map(dto, NewsSubscriber.class);
         entity.setUnsubscribeToken(UUID.randomUUID().toString());
@@ -57,11 +55,12 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
      */
     public Long unsubscribe(String email, String unsubscribeToken) {
         NewsSubscriber newsSubscriber = findByEmail(email)
-            .orElseThrow(() -> new NewsSubscriberPresentException(NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND + email));
+            .orElseThrow(() ->
+                new NewsSubscriberPresentException(ErrorMessage.NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND + email));
         if (newsSubscriber.getUnsubscribeToken().equals(unsubscribeToken)) {
             newsSubscriberRepo.delete(newsSubscriber);
         } else {
-            throw new InvalidUnsubscribeToken(INVALID_UNSUBSCRIBE_TOKEN);
+            throw new InvalidUnsubscribeToken(ErrorMessage.INVALID_UNSUBSCRIBE_TOKEN);
         }
         return newsSubscriber.getId();
     }

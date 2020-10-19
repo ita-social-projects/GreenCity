@@ -25,6 +25,19 @@ public final class ErrorMessage {
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
     public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
+    public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
+    public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
+        "Subscriber with this email address not found in the database.";
+    public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
+    public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
+    public static final String NO_STATUS_FOR_SUCH_HABIT_ASSIGN = "There is no status for such habit for current user";
+    public static final String USER_HAS_NO_STATUS_FOR_SUCH_HABIT =
+        "There is no status for such habit for current user";
+    public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
+    public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
+    public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
+    public static final String STATUS_OF_HABIT_ASSIGN_NOT_DELETED = "Status of user habit wasn't deleted by id: ";
+    public static final String STATUS_OF_HABIT_ASSIGN_NOT_UPDATED = "Status of user habit wasn't updated by id: ";
 
     private ErrorMessage() {
     }

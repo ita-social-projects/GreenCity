@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
@@ -13,13 +13,11 @@ import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class NewsSubscriberServiceImplTest {
@@ -54,9 +52,8 @@ class NewsSubscriberServiceImplTest {
     void unsubscribeTest() {
         String email = "test.mail.ua";
         String token = "token";
-        doNothing().when(newsSubscriberRepo).delete(any());
         when(newsSubscriberRepo.findByEmail(email)).thenReturn(Optional.of(entity));
-        assertEquals(new Long(1), newsSubscriberService.unsubscribe(email, token));
+        assertEquals(1L, newsSubscriberService.unsubscribe(email, token));
     }
 
     @Test

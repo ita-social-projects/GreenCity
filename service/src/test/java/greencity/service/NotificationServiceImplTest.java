@@ -1,8 +1,10 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.category.CategoryVO;
 import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
@@ -11,6 +13,7 @@ import greencity.enums.EmailNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
+import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,11 +52,22 @@ class NotificationServiceImplTest {
     @Test
     void sendImmediatelyReportTest() {
         EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
-        Category category = ModelUtils.getCategory();
+        CategoryVO category = CategoryVO.builder()
+            .id(12L)
+            .name("category")
+            .build();
+
         User user = ModelUtils.getUser();
         user.setEmailNotification(emailNotification);
 
-        Place place = ModelUtils.getPlace();
+        PlaceVO place = new PlaceVO();
+        place.setLocationId(1L);
+        place.setId(1L);
+        place.setName("Forum");
+        place.setDescription("Shopping center");
+        place.setPhone("0322 489 850");
+        place.setEmail("forum_lviv@gmail.com");
+        place.setModifiedDate(ZonedDateTime.now());
         place.setCategory(category);
 
 
