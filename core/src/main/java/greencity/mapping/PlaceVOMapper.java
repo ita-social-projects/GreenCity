@@ -1,6 +1,8 @@
 package greencity.mapping;
 
+import greencity.dto.category.CategoryVO;
 import greencity.dto.place.PlaceVO;
+import greencity.entity.Category;
 import greencity.entity.Place;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -21,6 +23,11 @@ public class PlaceVOMapper extends AbstractConverter<Place, PlaceVO> {
      */
     @Override
     protected PlaceVO convert(Place source) {
+        CategoryVO categoryVO = CategoryVO.builder()
+            .id(source.getCategory().getId())
+            .name(source.getCategory().getName())
+            .build();
+
         return PlaceVO.builder()
             .id(source.getId())
             .description(source.getDescription())
@@ -29,7 +36,7 @@ public class PlaceVOMapper extends AbstractConverter<Place, PlaceVO> {
             .name(source.getName())
             .phone(source.getPhone())
             .authorId(source.getAuthor().getId())
-            .categoryId(source.getCategory().getId())
+            .category(categoryVO)
             .locationId(source.getLocation().getId())
             .build();
     }

@@ -1,12 +1,12 @@
 package greencity.service;
 
-import greencity.service.constant.LogMessage;
+import greencity.constant.LogMessage;
 import greencity.dto.breaktime.BreakTimeVO;
 import greencity.entity.BreakTime;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.BreakTimeRepo;
-import greencity.service.constant.ErrorMessage;
+import greencity.constant.ErrorMessage;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

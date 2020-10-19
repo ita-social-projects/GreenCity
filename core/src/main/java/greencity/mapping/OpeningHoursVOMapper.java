@@ -1,6 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.breaktime.BreakTimeVO;
+import greencity.dto.category.CategoryVO;
 import greencity.dto.openinghours.OpeningHoursVO;
 import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.PlaceVO;
@@ -39,7 +40,10 @@ public class OpeningHoursVOMapper extends AbstractConverter<OpeningHours, Openin
             .name(source.getPlace().getName())
             .phone(source.getPlace().getPhone())
             .authorId(source.getPlace().getAuthor().getId())
-            .categoryId(source.getPlace().getCategory().getId())
+            .category(CategoryVO.builder()
+                    .id(source.getPlace().getCategory().getId())
+                    .name(source.getPlace().getCategory().getName())
+                    .build())
             .locationId(source.getPlace().getLocation().getId())
             .build();
 

@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.service.constant.ErrorMessage;
+import greencity.constant.ErrorMessage;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdvicePostDto;
