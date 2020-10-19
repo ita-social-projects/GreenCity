@@ -1,7 +1,7 @@
 package greencity.service;
 
-import greencity.service.constant.AppConstant;
-import greencity.service.constant.ErrorMessage;
+import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.Language;
 import greencity.exception.exceptions.LanguageNotFoundException;

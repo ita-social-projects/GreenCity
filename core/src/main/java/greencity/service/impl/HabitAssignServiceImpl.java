@@ -70,7 +70,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     .user(user)
                     .build());
 
-            habitStatusService.saveStatusByHabitAssign(habitAssign);
+            habitStatusService.saveStatusByHabitAssign(modelMapper.map(habitAssign, HabitAssignDto.class));
             return modelMapper.map(habitAssign, HabitAssignDto.class);
         }
     }

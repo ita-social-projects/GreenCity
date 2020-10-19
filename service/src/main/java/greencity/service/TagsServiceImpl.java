@@ -7,7 +7,7 @@ import greencity.exception.exceptions.DuplicatedTagException;
 import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.repository.TagsRepo;
-import greencity.service.constant.ErrorMessage;
+import greencity.constant.ErrorMessage;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
