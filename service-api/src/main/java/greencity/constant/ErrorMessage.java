@@ -22,6 +22,9 @@ public final class ErrorMessage {
     public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
+    public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
+    public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
+    public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
     public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
     public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
         "Subscriber with this email address not found in the database.";

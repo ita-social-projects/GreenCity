@@ -1,6 +1,8 @@
 package greencity;
 
+import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
@@ -121,6 +123,53 @@ public class ModelUtils {
                         .content("Start recycling batteries")
                         .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList()))
                         .build());
+    }
+
+    public static FactOfTheDay getFactOfTheDay() {
+        return new FactOfTheDay(1L, "Fact of the day",
+                Collections.singletonList(ModelUtils.getFactOfTheDayTranslation()), ZonedDateTime.now());
+    }
+
+    public static FactOfTheDayDTO getFactOfTheDayDto() {
+        return new FactOfTheDayDTO(1L, "name",  null, ZonedDateTime.now());
+    }
+
+    public static FactOfTheDayPostDTO getFactOfTheDayPostDto() {
+        return new FactOfTheDayPostDTO(1L, "name",
+                Collections.singletonList(new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)));
+    }
+
+    public static FactOfTheDayTranslationVO getFactOfTheDayTranslationVO() {
+        return FactOfTheDayTranslationVO.builder()
+                .id(1L)
+                .content("Content")
+                .language(LanguageVO.builder()
+                        .id(ModelUtils.getLanguage().getId())
+                        .code(ModelUtils.getLanguage().getCode())
+                        .build())
+                .factOfTheDay(FactOfTheDayVO.builder()
+                        .id(ModelUtils.getFactOfTheDay().getId())
+                        .name(ModelUtils.getFactOfTheDay().getName())
+                        .createDate(ModelUtils.getFactOfTheDay().getCreateDate())
+                        .build())
+                .build();
+    }
+
+    public static FactOfTheDayVO getFactOfTheDayVO() {
+        return FactOfTheDayVO.builder()
+                .id(1L)
+                .name("name")
+                .factOfTheDayTranslations(Collections.singletonList(ModelUtils.getFactOfTheDayTranslationVO()))
+                .build();
+    }
+
+    public  static FactOfTheDayTranslation getFactOfTheDayTranslation() {
+        return FactOfTheDayTranslation.builder()
+                .id(1L)
+                .content("Content")
+                .language(ModelUtils.getLanguage())
+                .factOfTheDay(null)
+                .build();
     }
 
     public static Category getCategory() {

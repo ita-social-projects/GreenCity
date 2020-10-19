@@ -1,17 +1,14 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.factoftheday.FactOfTheDayDTO;
-import greencity.dto.factoftheday.FactOfTheDayPostDTO;
-import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
-import greencity.entity.FactOfTheDay;
-import greencity.entity.FactOfTheDayTranslation;
-import java.util.List;
+import greencity.dto.factoftheday.*;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface FactOfTheDayService {
     /**
-     * Method finds all {@link FactOfTheDay} with pageable configuration.
+     * Method finds all {@link FactOfTheDayVO} with pageable configuration.
      *
      * @param pageable {@link Pageable}
      * @return {@link PageableDto} with list of all {@link FactOfTheDayDTO}
@@ -20,16 +17,16 @@ public interface FactOfTheDayService {
     PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable);
 
     /**
-     * Method find {@link FactOfTheDay} by id.
+     * Method find {@link FactOfTheDayVO} by id.
      *
-     * @param id of {@link FactOfTheDay}
-     * @return {@link FactOfTheDay}
+     * @param id of {@link FactOfTheDayVO}
+     * @return {@link FactOfTheDayVO}
      * @author Mykola Lehkyi
      */
     FactOfTheDayDTO getFactOfTheDayById(Long id);
 
     /**
-     * Method saves new {@link FactOfTheDay} and {@link FactOfTheDayTranslation}.
+     * Method saves new {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}.
      *
      * @param fact {@link FactOfTheDayPostDTO}
      * @return instance of {@link FactOfTheDayPostDTO}
@@ -38,7 +35,7 @@ public interface FactOfTheDayService {
     FactOfTheDayPostDTO saveFactOfTheDayAndTranslations(FactOfTheDayPostDTO fact);
 
     /**
-     * Method saves new {@link FactOfTheDay} and {@link FactOfTheDayTranslation}.
+     * Method saves new {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}.
      *
      * @param fact {@link FactOfTheDayPostDTO}
      * @return instance of {@link FactOfTheDayPostDTO}
@@ -47,28 +44,29 @@ public interface FactOfTheDayService {
     FactOfTheDayPostDTO updateFactOfTheDayAndTranslations(FactOfTheDayPostDTO fact);
 
     /**
-     * Method updates {@link FactOfTheDay}{@link FactOfTheDay} and {@link FactOfTheDayTranslation}.
+     * Method updates {@link FactOfTheDayVO}{@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}.
      *
-     * @param fact {@link FactOfTheDay}
-     * @return instance of {@link FactOfTheDay}
+     * @param fact {@link FactOfTheDayVO}
+     * @return instance of {@link FactOfTheDayVO}
      * @author Mykola Lehkyi
      */
-    FactOfTheDay update(FactOfTheDayPostDTO fact);
+    FactOfTheDayVO update(FactOfTheDayPostDTO fact);
 
     /**
-     * Method deletes {@link FactOfTheDay} and {@link FactOfTheDayTranslation} by id.
+     * Method deletes {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO} by id.
      *
      * @param id Long
-     * @return id of deleted {@link FactOfTheDay}
+     * @return id of deleted {@link FactOfTheDayVO}
      * @author Mykola Lehkyi
      */
     Long deleteFactOfTheDayAndTranslations(Long id);
 
     /**
-     * Method deletes all {@link FactOfTheDay} {@link FactOfTheDay} and {@link FactOfTheDayTranslation} by list of IDs.
+     * Method deletes all {@link FactOfTheDayVO} {@link FactOfTheDayVO}
+     * and {@link FactOfTheDayTranslationVO} by list of IDs.
      *
-     * @param listId list of id {@link FactOfTheDay}
-     * @return listId list of id {@link FactOfTheDay}
+     * @param listId list of id {@link FactOfTheDayVO}
+     * @return listId list of id {@link FactOfTheDayVO}
      * @author Mykola Lehkyi
      */
     List<Long> deleteAllFactOfTheDayAndTranslations(List<Long> listId);
@@ -81,12 +79,12 @@ public interface FactOfTheDayService {
     PageableDto<FactOfTheDayDTO> searchBy(Pageable pageable, String searchQuery);
 
     /**
-     * Method return random {@link FactOfTheDay} .
+     * Method return random {@link FactOfTheDayVO} .
      *
      * @return FactOfTheDay
      * @author Mykola Lehkyi
      */
-    FactOfTheDay getRandomFactOfTheDay();
+    FactOfTheDayVO getRandomFactOfTheDay();
 
     /**
      * Method return random {@link FactOfTheDayTranslationDTO} by languageCode.
