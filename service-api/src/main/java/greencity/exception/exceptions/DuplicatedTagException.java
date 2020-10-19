@@ -10,4 +10,3 @@ public class DuplicatedTagException extends ConstraintDeclarationException {
         super(message);
     }
 }
-
