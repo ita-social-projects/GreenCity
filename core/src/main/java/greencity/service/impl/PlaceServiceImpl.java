@@ -1,9 +1,7 @@
 package greencity.service.impl;
 
-import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.filter.FilterDistanceDto;
@@ -37,6 +35,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -187,7 +188,8 @@ public class PlaceServiceImpl implements PlaceService {
         if (discounts != null) {
             discounts.forEach(d -> {
                 DiscountValue discount = modelMapper.map(d, DiscountValue.class);
-                discount.setSpecification(specificationService.findByName(d.getSpecification().getName()));
+                discount.setSpecification(modelMapper
+                    .map(specificationService.findByName(d.getSpecification().getName()), Specification.class));
                 discount.setPlace(updatedPlace);
                 discountService.save(discount);
                 newDiscounts.add(discount);
