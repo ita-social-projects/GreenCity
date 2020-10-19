@@ -16,10 +16,7 @@ public final class ErrorMessage {
         "The specification value does not exist by this id: ";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String BREAK_TIME_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
-    public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
-    public static final String CATEGORY_NOT_FOUND_BY_NAME = "The category does not exist by this name: ";
     public static final String OPENING_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
-    public static final String CATEGORY_ALREADY_EXISTS_BY_THIS_NAME = "Category by this name already exists.";
     public static final String SPECIFICATION_ALREADY_EXISTS_BY_THIS_NAME = "Specification by this name already exists.";
     public static final String SPECIFICATION_VALUE_ALREADY_EXISTS_BY_THIS_NAME =
         "Specification value by this name already exists.";
@@ -38,7 +35,6 @@ public final class ErrorMessage {
     public static final String USER_DEACTIVATED = "User is deactivated";
     public static final String BAD_GOOGLE_TOKEN = "Bad google token";
     public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";
-    public static final String NOT_SAVE_DELETION = "This is can't be deleted";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String CLOSE_TIME_LATE_THAN_OPEN_TIME = "Close time have to be late than open time";

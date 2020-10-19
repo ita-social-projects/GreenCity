@@ -1,6 +1,6 @@
 package greencity.dto.category;
 
-import greencity.constant.ValidationConstants;
+import greencity.constant.ServiceValidationConstants;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -14,11 +14,13 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoryDto  implements Serializable {
-    @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ValidationConstants.CATEGORY_NAME_BAD_FORMED)
+public class CategoryDto implements Serializable {
+    @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ServiceValidationConstants.CATEGORY_NAME_BAD_FORMED)
     @Length(
-        min = ValidationConstants.CATEGORY_NAME_MIN_LENGTH,
-        max = ValidationConstants.CATEGORY_NAME_MAX_LENGTH)
+        min = ServiceValidationConstants.CATEGORY_NAME_MIN_LENGTH,
+        max = ServiceValidationConstants.CATEGORY_NAME_MAX_LENGTH)
     @NotBlank
     private String name;
+
+    private Long parentCategoryId;
 }

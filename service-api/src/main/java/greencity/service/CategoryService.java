@@ -1,7 +1,7 @@
 package greencity.service;
 
 import greencity.dto.category.CategoryDto;
-import greencity.entity.Category;
+import greencity.dto.category.CategoryDtoResponse;
 import java.util.List;
 
 /**
@@ -14,24 +14,16 @@ public interface CategoryService {
      * @param dto - dto for Category entity.
      * @return a category.
      */
-    Category save(CategoryDto dto);
-
-    /**
-     * Save Category to DB.
-     *
-     * @param category - entity of Category.
-     * @return saved Category.
-     */
-    Category save(Category category);
+    CategoryDtoResponse save(CategoryDto dto);
 
     /**
      * Method for updating Category.
      *
      * @param id       - category id.
-     * @param category - Category entity.
+     * @param name - Category name.
      * @return a category.
      */
-    Category update(Long id, Category category);
+    CategoryDtoResponse update(Long id, String name);
 
     /**
      * Method for finding Category by id.
@@ -39,14 +31,14 @@ public interface CategoryService {
      * @param id - category's id.
      * @return a category.
      */
-    Category findById(Long id);
+    CategoryDtoResponse findById(Long id);
 
     /**
      * Method for finding all Categories.
      *
      * @return list of Categories.
      */
-    List<Category> findAll();
+    List<CategoryDtoResponse> findAll();
 
     /**
      * Method for deleting Category by id.
@@ -62,7 +54,7 @@ public interface CategoryService {
      * @param name to find by.
      * @return a category by name.
      */
-    Category findByName(String name);
+    CategoryDtoResponse findByName(String name);
 
     /**
      * Method for finding all CategoryDto.

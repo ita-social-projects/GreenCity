@@ -1,19 +1,20 @@
-package greencity.service.impl;
+package greencity.service;
 
-import greencity.constant.ErrorMessage;
-import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.category.CategoryDtoResponse;
 import greencity.entity.Category;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CategoryRepo;
-import greencity.service.CategoryService;
+import greencity.service.constant.ErrorMessage;
+import greencity.service.constant.LogMessage;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,16 +38,27 @@ public class CategoryServiceImpl implements CategoryService {
      * @author Kateryna Horokh
      */
     @Override
-    public Category save(CategoryDto dto) {
+    public CategoryDtoResponse save(CategoryDto dto) {
         log.info(LogMessage.IN_SAVE);
 
-        Category byName = categoryRepo.findByName(dto.getName());
+        Category category = categoryRepo.findByName(dto.getName());
 
-        if (byName != null) {
+        if (category != null) {
             throw new BadCategoryRequestException(
                 ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
         }
-        return categoryRepo.save(Category.builder().name(dto.getName()).build());
+        Category categoryToSave = modelMapper.map(dto, Category.class);
+        if (dto.getParentCategoryId() != 0) {
+            Category parentCategory =
+                modelMapper.map(findById(dto.getParentCategoryId()), Category.class);
+            if (parentCategory.getParentCategory() == null) {
+                categoryToSave.setParentCategory(parentCategory);
+            } else {
+                throw new BadRequestException(ErrorMessage.CANNOT_ADD_PARENT_CATEGORY);
+            }
+        }
+
+        return modelMapper.map(categoryRepo.save(categoryToSave), CategoryDtoResponse.class);
     }
 
     /**
@@ -55,22 +67,11 @@ public class CategoryServiceImpl implements CategoryService {
      * @author Nazar Vladyka
      */
     @Override
-    public Category save(Category category) {
-        log.info(LogMessage.IN_SAVE, category);
-
-        return categoryRepo.save(category);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
-     */
-    @Override
-    public List<Category> findAll() {
+    public List<CategoryDtoResponse> findAll() {
         log.info(LogMessage.IN_FIND_ALL);
 
-        return categoryRepo.findAll();
+        return modelMapper.map(categoryRepo.findAll(), new TypeToken<List<CategoryDtoResponse>>() {
+        }.getType());
     }
 
     /**
@@ -79,13 +80,14 @@ public class CategoryServiceImpl implements CategoryService {
      * @author Nazar Vladyka
      */
     @Override
-    public Category findById(Long id) {
+    public CategoryDtoResponse findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
-        return categoryRepo
+        return modelMapper.map(categoryRepo
             .findById(id)
             .orElseThrow(
-                () -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
+                () -> new NotFoundException(
+                    ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id)), CategoryDtoResponse.class);
     }
 
     /**
@@ -94,17 +96,10 @@ public class CategoryServiceImpl implements CategoryService {
      * @author Nazar Vladyka
      */
     @Override
-    public Category update(Long id, Category category) {
-        log.info(LogMessage.IN_UPDATE, category);
-
-        Category updatable = findById(id);
-
-        updatable.setName(category.getName());
-        updatable.setParentCategory(category.getParentCategory());
-        updatable.setCategories(category.getCategories());
-        updatable.setPlaces(category.getPlaces());
-
-        return categoryRepo.save(category);
+    public CategoryDtoResponse update(Long id, String name) {
+        Category category = modelMapper.map(findById(id), Category.class);
+        category.setName(name);
+        return modelMapper.map(categoryRepo.save(category), CategoryDtoResponse.class);
     }
 
     /**
@@ -115,7 +110,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Long deleteById(Long id) {
         log.info(LogMessage.IN_DELETE_BY_ID, id);
-        Category category = findById(id);
+        Category category = modelMapper.map(findById(id), Category.class);
 
         if (!category.getPlaces().isEmpty()) {
             throw new BadRequestException(ErrorMessage.NOT_SAVE_DELETION);
@@ -131,12 +126,12 @@ public class CategoryServiceImpl implements CategoryService {
      * @author Kateryna Horokh
      */
     @Override
-    public Category findByName(String name) {
+    public CategoryDtoResponse findByName(String name) {
         Category category = categoryRepo.findByName(name);
         if (category == null) {
             throw new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME + name);
         }
-        return categoryRepo.findByName(name);
+        return modelMapper.map(category, CategoryDtoResponse.class);
     }
 
     /**
@@ -146,7 +141,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public List<CategoryDto> findAllCategoryDto() {
-        List<Category> categories = findAll();
+        List<Category> categories = categoryRepo.findAll();
         return categories.stream()
             .map(category -> modelMapper.map(category, CategoryDto.class))
             .collect(Collectors.toList());
