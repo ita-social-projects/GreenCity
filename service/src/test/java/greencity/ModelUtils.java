@@ -2,6 +2,9 @@ package greencity;
 
 import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
@@ -54,6 +57,48 @@ public class ModelUtils {
                 .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
                 .build();
+    }
+
+    public static HabitStatusDto getHabitStatusDto() {
+        HabitAssignDto habitAssignDto = getHabitAssignDto();
+
+        return HabitStatusDto.builder()
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitAssign(habitAssignDto).build();
+
+    }
+
+    public static HabitAssignDto getHabitAssignDto() {
+        return HabitAssignDto.builder()
+                .id(1L)
+                .acquired(true)
+                .suspended(false)
+                .createDateTime(ZonedDateTime.now())
+                .habit(HabitDto.builder().id(1L).build()).build();
+    }
+
+    public static HabitStatus getHabitStatus() {
+        HabitAssign habitAssign = getHabitAssign();
+
+        return HabitStatus.builder()
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitAssign(habitAssign).build();
+
+    }
+
+    public static HabitAssign getHabitAssign() {
+        return HabitAssign.builder()
+                .id(1L)
+                .acquired(true)
+                .suspended(false)
+                .createDate(ZonedDateTime.now())
+                .habit(Habit.builder().id(1L).build()).build();
     }
 
     public static UserGoal getCustomUserGoal() {
