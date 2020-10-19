@@ -1,30 +1,33 @@
-package greencity.service.impl;
+package greencity.service;
 
-import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
+import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.DuplicatedTagException;
 import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.repository.TagsRepo;
-import greencity.service.TagsService;
+import greencity.constant.ErrorMessage;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class TagsServiceImpl implements TagsService {
     private final TagsRepo tagRepo;
+    private final ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Tag> findEcoNewsTagsByNames(List<String> ecoNewsTagNames) {
+    public List<TagVO> findEcoNewsTagsByNames(List<String> ecoNewsTagNames) {
         List<String> lowerCaseTagNames = ecoNewsTagNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
@@ -32,14 +35,16 @@ public class TagsServiceImpl implements TagsService {
         if (tags.isEmpty()) {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
         }
-        return tags;
+        return modelMapper.map(tagRepo.findEcoNewsTagsByNames(lowerCaseTagNames),
+            new TypeToken<List<TagVO>>() {
+            }.getType());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Tag> findTipsAndTricksTagsByNames(List<String> tipsAndTricksTagNames) {
+    public List<TagVO> findTipsAndTricksTagsByNames(List<String> tipsAndTricksTagNames) {
         List<String> lowerCaseTagNames = tipsAndTricksTagNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
@@ -47,7 +52,8 @@ public class TagsServiceImpl implements TagsService {
         if (tags.isEmpty()) {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
         }
-        return tags;
+        return modelMapper.map(tags, new TypeToken<List<TagVO>>() {
+        }.getType());
     }
 
     /**
