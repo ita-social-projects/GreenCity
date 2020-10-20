@@ -4,21 +4,23 @@ import greencity.constant.ServiceValidationConstants;
 import java.io.Serializable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoryDto  implements Serializable {
+public class CategoryDto implements Serializable {
     @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ServiceValidationConstants.CATEGORY_NAME_BAD_FORMED)
-    @Size(
+    @Length(
         min = ServiceValidationConstants.CATEGORY_NAME_MIN_LENGTH,
         max = ServiceValidationConstants.CATEGORY_NAME_MAX_LENGTH)
     @NotBlank
     private String name;
+
+    private Long parentCategoryId;
 }

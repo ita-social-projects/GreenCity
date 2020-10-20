@@ -22,6 +22,13 @@ public final class ErrorMessage {
     public static final String ADVICE_NOT_FOUND_BY_NAME = "The name does not exist by this name: ";
     public static final String ADVICE_NOT_UPDATED = "Advice not updated ";
     public static final String ADVICE_NOT_DELETED = "Advice not deleted ";
+
+    public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
+    public static final String CATEGORY_NOT_FOUND_BY_NAME = "The category does not exist by this name: ";
+    public static final String CATEGORY_ALREADY_EXISTS_BY_THIS_NAME = "Category by this name already exists.";
+    public static final String CANNOT_ADD_PARENT_CATEGORY = "The category cannot be added to no-parent category";
+    public static final String NOT_SAVE_DELETION = "This is can't be deleted";
+
     public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
     public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
     public static final String INVALID_NUM_OF_TAGS =
