@@ -9,8 +9,20 @@ import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openinghours.OpeningHoursVO;
-import greencity.dto.place.*;
-import greencity.entity.*;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
+import greencity.entity.Specification;
+import greencity.entity.User;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
@@ -18,10 +30,23 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.*;
+import greencity.service.CategoryService;
+import greencity.service.DiscountService;
+import greencity.service.LocationService;
+import greencity.service.NotificationService;
+import greencity.service.OpenHoursService;
+import greencity.service.PlaceService;
+import greencity.service.ProposePlaceService;
+import greencity.service.SpecificationService;
+import greencity.service.UserService;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -123,7 +148,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = modelMapper.map(dto, Place.class);
         setUserToPlaceByEmail(email, place);
 
-        place.setCategory(categoryService.findByName(dto.getCategory().getName()));
+        place.setCategory(modelMapper.map(categoryService.findByName(dto.getCategory().getName()), Category.class));
         proposePlaceService.saveDiscountValuesWithPlace(place.getDiscountValues(), place);
         proposePlaceService.savePhotosWithPlace(place.getPhotos(), place);
 
@@ -158,7 +183,8 @@ public class PlaceServiceImpl implements PlaceService {
     public Place update(PlaceUpdateDto dto) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
 
-        Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
+        Category updatedCategory = modelMapper.map(
+            categoryService.findByName(dto.getCategory().getName()), Category.class);
         Place updatedPlace = findById(dto.getId());
         locationService.update(updatedPlace.getLocation().getId(),
             modelMapper.map(dto.getLocation(), LocationVO.class));

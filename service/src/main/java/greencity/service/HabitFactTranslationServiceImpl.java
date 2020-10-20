@@ -1,22 +1,25 @@
-package greencity.service.impl;
+package greencity.service;
 
-import static greencity.constant.CacheConstants.HABIT_FACT_OF_DAY_CACHE;
+import greencity.constant.CacheConstants;
 import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habittranslation.HabitFactTranslationVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
-import static greencity.enums.FactOfDayStatus.CURRENT;
 import greencity.repository.HabitFactTranslationRepo;
-import greencity.service.HabitFactService;
-import greencity.service.HabitFactTranslationService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static greencity.enums.FactOfDayStatus.CURRENT;
 
 /**
  * Implementation of {@link HabitFactTranslationService}.
@@ -36,30 +39,41 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
      * to {@link HabitFact}.
      *
      * @param habitFactPostDTO {@link HabitFactPostDto}.
-     * @return List of {@link HabitFactTranslation}.
+     * @return List of {@link HabitFactTranslationVO}.
      * @author Vitaliy Dzen.
      */
     @Override
-    public List<HabitFactTranslation> saveHabitFactAndFactTranslation(HabitFactPostDto habitFactPostDTO) {
-        HabitFact habitFact = habitFactService.save(habitFactPostDTO);
+    public List<HabitFactTranslationVO> saveHabitFactAndFactTranslation(HabitFactPostDto habitFactPostDTO) {
+        HabitFactVO habitFactVO = habitFactService.save(habitFactPostDTO);
+        HabitFact habitFact = modelMapper.map(habitFactVO, HabitFact.class);
         List<HabitFactTranslation> habitFactTranslations = modelMapper.map(habitFactPostDTO.getTranslations(),
             new TypeToken<List<HabitFactTranslation>>() {
             }.getType());
         habitFactTranslations.forEach(a -> a.setHabitFact(habitFact));
-
-        return saveHabitFactTranslation(habitFactTranslations);
+        List<HabitFactTranslationVO> habitFactTranslationVOS = habitFactTranslations
+                .stream().map(habitFactTranslation -> modelMapper
+                        .map(habitFactTranslation, HabitFactTranslationVO.class))
+                .collect(Collectors.toList());
+        return saveHabitFactTranslation(habitFactTranslationVOS);
     }
 
     /**
      * Method saves new {@link HabitFactTranslation}.
      *
-     * @param habitFactTranslations {@link HabitFactTranslation}.
-     * @return List of {@link HabitFactTranslation}.
+     * @param habitFactTranslationVOS {@link HabitFactTranslationVO}.
+     * @return List of {@link HabitFactTranslationVO}.
      * @author Vitaliy Dzen.
      */
     @Override
-    public List<HabitFactTranslation> saveHabitFactTranslation(List<HabitFactTranslation> habitFactTranslations) {
-        return habitFactTranslationRepo.saveAll(habitFactTranslations);
+    public List<HabitFactTranslationVO> saveHabitFactTranslation(List<HabitFactTranslationVO> habitFactTranslationVOS) {
+        List<HabitFactTranslation> habitFactTranslations = habitFactTranslationVOS
+                .stream().map(habitFactTranslation -> modelMapper.map(
+                        habitFactTranslation, HabitFactTranslation.class))
+                .collect(Collectors.toList());
+        return habitFactTranslationRepo.saveAll(habitFactTranslations)
+                .stream().map(habitFactTranslation -> modelMapper
+                        .map(habitFactTranslation, HabitFactTranslationVO.class))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -68,7 +82,7 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
      * @param languageId id of {@link Language} of the {@link HabitFact}.
      * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of day.
      */
-    @Cacheable(value = HABIT_FACT_OF_DAY_CACHE)
+    @Cacheable(value = CacheConstants.HABIT_FACT_OF_DAY_CACHE)
     @Override
     public LanguageTranslationDTO getHabitFactOfTheDay(Long languageId) {
         return modelMapper.map(

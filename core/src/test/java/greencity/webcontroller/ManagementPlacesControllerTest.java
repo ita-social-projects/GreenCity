@@ -15,11 +15,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -29,9 +26,13 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -65,7 +66,7 @@ class ManagementPlacesControllerTest {
         PageableDto<AdminPlaceDto>
             adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
         when(placeService.findAll(pageable)).thenReturn(adminPlaceDtoPageableDto);
-        when(categoryService.findAllCategoryDto()).thenReturn(Collections.singletonList(new CategoryDto("test")));
+        when(categoryService.findAllCategoryDto()).thenReturn(Collections.singletonList(new CategoryDto("test", null)));
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
@@ -157,7 +158,7 @@ class ManagementPlacesControllerTest {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         placeUpdateDto.setId(1L);
         placeUpdateDto.setName("test");
-        placeUpdateDto.setCategory(new CategoryDto("Food"));
+        placeUpdateDto.setCategory(new CategoryDto("Food", null));
         placeUpdateDto.setLocation(new LocationAddressAndGeoForUpdateDto("address", 111.1, 111.1));
 
         return placeUpdateDto;
