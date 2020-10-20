@@ -1,7 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.Place;
-import greencity.entity.enums.PlaceStatus;
+import greencity.enums.PlaceStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;

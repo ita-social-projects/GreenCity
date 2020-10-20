@@ -48,9 +48,9 @@ class TipsAndTricksRepoTest {
     @Test
     void searchTipsAndTricksTest() {
         Pageable pageable = PageRequest.of(0, 6);
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, "News");
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, "News", "en");
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
-        assertEquals(2, tipsAndTricks.size());
+        assertEquals(1, tipsAndTricks.size());
         assertEquals("News", tipsAndTricks.get(0).getTags().get(0).getName());
     }
 

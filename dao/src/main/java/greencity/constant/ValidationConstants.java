@@ -13,10 +13,6 @@ public final class ValidationConstants {
     public static final int PLACE_ADDRESS_MAX_LENGTH = 120;
     public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
 
-    public static final String CATEGORY_NAME_BAD_FORMED = "{greenCity.validation.bad.formed.category.name}";
-    public static final int CATEGORY_NAME_MAX_LENGTH = 30;
-    public static final int CATEGORY_NAME_MIN_LENGTH = 3;
-
     public static final String EMPTY_VALUE_OF_LATITUDE = "{greenCity.validation.empty.latitude}";
     public static final String EMPTY_VALUE_OF_LONGITUDE = "{greenCity.validation.empty.longitude}";
 

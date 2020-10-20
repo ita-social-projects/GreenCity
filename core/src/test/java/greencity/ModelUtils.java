@@ -27,12 +27,9 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.AuthorDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.*;
 import greencity.entity.*;
-import greencity.entity.enums.*;
+import greencity.enums.*;
 import greencity.entity.localization.GoalTranslation;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,6 +62,15 @@ public class ModelUtils {
                 .role(ROLE.ROLE_USER)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
+                .build();
+    }
+
+    public static UserVO getUserVO() {
+        return UserVO.builder()
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .role(ROLE.ROLE_USER)
                 .build();
     }
 
@@ -153,12 +159,12 @@ public class ModelUtils {
 
     public static HabitStatistic getHabitStatistic() {
         return HabitStatistic.builder()
-            .id(1L)
-            .habitRate(HabitRate.DEFAULT)
-            .createDate(ZonedDateTime.now())
-            .amountOfItems(5)
-            .habitAssign(HabitAssign.builder().id(13L).build())
-            .build();
+                .id(1L)
+                .habitRate(HabitRate.DEFAULT)
+                .createDate(ZonedDateTime.now())
+                .amountOfItems(5)
+                .habitAssign(HabitAssign.builder().id(13L).build())
+                .build();
     }
 
     /*public static Habit getHabit() {
@@ -189,6 +195,18 @@ public class ModelUtils {
                 .build();
     }*/
 
+    public static HabitStatus getHabitStatus() {
+        HabitAssign habitAssign = getHabitAssign();
+
+        return HabitStatus.builder()
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitAssign(habitAssign).build();
+
+    }
+
     public static Category getCategory() {
         return Category.builder()
                 .id(12L)
@@ -215,7 +233,7 @@ public class ModelUtils {
                         new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
-                .text("Buy a bamboo toothbrush")
+                .content("Buy a bamboo toothbrush")
                 .build();
     }
 
@@ -255,14 +273,20 @@ public class ModelUtils {
 
     public static List<GoalTranslation> getGoalTranslations() {
         return Arrays.asList(
-                new GoalTranslation(2L,
-                        new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "Buy a bamboo toothbrush",
-                        new Goal(1L, Collections.emptyList(), Collections.emptyList())),
-                new GoalTranslation(11L,
-                        new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()), "Start recycling batteries",
-                        new Goal(4L, Collections.emptyList(), Collections.emptyList())));
+                GoalTranslation.builder()
+                        .id(2L)
+                        .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                        .content("Buy a bamboo toothbrush")
+                        .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+                        .build(),
+                GoalTranslation.builder()
+                        .id(11L)
+                        .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                        .content("Start recycling batteries")
+                        .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList()))
+                        .build());
     }
 
     public static Comment getComment() {
@@ -292,7 +316,12 @@ public class ModelUtils {
     }
 */
     public static HabitFactTranslation getFactTranslation() {
-        return new HabitFactTranslation(1L, getLanguage(), FactOfDayStatus.CURRENT, null, "Content");
+        return HabitFactTranslation.builder()
+                .id(1L)
+                .factOfDayStatus(FactOfDayStatus.CURRENT)
+                .habitFact(null)
+                .content("Content")
+                .build();
     }
 
     public static HabitFact getHabitFact() {
@@ -511,5 +540,30 @@ public class ModelUtils {
 
     public static ObjectMapper getObjectMapper() {
         return new ObjectMapper();
+    }
+
+    public static HabitAssign getHabitAssign() {
+        return HabitAssign.builder()
+            .id(1L)
+            .acquired(true)
+            .createDate(ZonedDateTime.now())
+            .suspended(false)
+            .habit(Habit.builder()
+                .id(1L)
+                .image("")
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .habit(new Habit())
+                    .build()))
+                .habitAssigns(null)
+                .build())
+            .user(getUser())
+            .habitStatus(new HabitStatus())
+            .habitStatistic(null)
+            .build();
     }
 }

@@ -5,6 +5,7 @@ import greencity.ModelUtils;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.service.HabitAssignService;
 import greencity.service.HabitService;
@@ -27,7 +28,7 @@ import java.time.ZonedDateTime;
 import java.util.Locale;
 
 import static greencity.ModelUtils.getPrincipal;
-import static greencity.entity.enums.HabitRate.GOOD;
+import static greencity.enums.HabitRate.GOOD;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -64,7 +65,7 @@ class HabitControllerTest {
 
     @Test
     void assign() throws Exception {
-        User user = ModelUtils.getUser();
+        UserVO user = ModelUtils.getUserVO();
         mockMvc.perform(post(habitLink + "/assign/{habitId}", 1)
                 .principal(principal))
                 .andExpect(status().isCreated());

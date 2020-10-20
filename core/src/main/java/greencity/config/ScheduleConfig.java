@@ -6,8 +6,8 @@ import static greencity.constant.RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME;
 import static greencity.constant.RabbitConstants.SEND_HABIT_NOTIFICATION_ROUTING_KEY;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
-import static greencity.entity.enums.EmailNotification.*;
-import static greencity.entity.enums.FactOfDayStatus.*;
+import static greencity.enums.EmailNotification.*;
+import static greencity.enums.FactOfDayStatus.*;
 import greencity.message.SendHabitNotification;
 import greencity.repository.*;
 import greencity.service.RatingStatisticsService;
@@ -64,7 +64,7 @@ public class ScheduleConfig {
 
     /**
      * Every day at 19:00 sends notifications about not marked habits to users with field
-     * {@link greencity.entity.enums.EmailNotification} equal to IMMEDIATELY or DAILY.
+     * {@link greencity.enums.EmailNotification} equal to IMMEDIATELY or DAILY.
      */
     @Scheduled(cron = "0 0 19 * * ?")
     void sendHabitNotificationEveryDay() {
@@ -75,7 +75,7 @@ public class ScheduleConfig {
 
     /**
      * Every friday at 19:00 sends notifications about not marked habits to users with field
-     * {@link greencity.entity.enums.EmailNotification} equal to WEEKLY.
+     * {@link greencity.enums.EmailNotification} equal to WEEKLY.
      */
     @Scheduled(cron = "0 0 19 * * FRI")
     void sendHabitNotificationEveryWeek() {
@@ -85,7 +85,7 @@ public class ScheduleConfig {
 
     /**
      * On th 25th of every month at 19:00 sends notifications about not marked habits to users with field
-     * {@link greencity.entity.enums.EmailNotification} equal to MONTHLY.
+     * {@link greencity.enums.EmailNotification} equal to MONTHLY.
      */
     @Scheduled(cron = "0 0 19 25 * ?")
     void sendHabitNotificationEveryMonth() {

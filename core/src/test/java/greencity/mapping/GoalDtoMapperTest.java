@@ -19,7 +19,7 @@ class GoalDtoMapperTest {
     void convertTest() {
         GoalTranslation goalTranslation = ModelUtils.getGoalTranslation();
 
-        GoalDto expected = new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getText());
+        GoalDto expected = new GoalDto(goalTranslation.getGoal().getId(), goalTranslation.getContent());
 
         assertEquals(expected, goalDtoMapper.convert(goalTranslation));
     }

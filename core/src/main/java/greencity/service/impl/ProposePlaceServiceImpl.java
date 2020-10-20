@@ -6,6 +6,7 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.entity.DiscountValue;
 import greencity.entity.Photo;
 import greencity.entity.Place;
+import greencity.entity.Specification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.service.LocationService;
 import greencity.service.PhotoService;
@@ -14,6 +15,7 @@ import greencity.service.SpecificationService;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,6 +29,7 @@ public class ProposePlaceServiceImpl implements ProposePlaceService {
     private final SpecificationService specService;
     private final PhotoService photoService;
     private final LocationService locationService;
+    private final ModelMapper modelMapper;
 
     /**
      * Method check if input location is new.
@@ -77,7 +80,8 @@ public class ProposePlaceServiceImpl implements ProposePlaceService {
     @Override
     public void saveDiscountValuesWithPlace(Set<DiscountValue> discountValues, Place place) {
         discountValues.forEach(disc -> {
-            disc.setSpecification(specService.findByName(disc.getSpecification().getName()));
+            disc.setSpecification(modelMapper.map(specService.findByName(disc.getSpecification().getName()),
+                Specification.class));
             disc.setPlace(place);
         });
     }

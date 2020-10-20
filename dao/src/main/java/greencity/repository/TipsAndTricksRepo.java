@@ -65,11 +65,14 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
     @Query("select distinct tt from TipsAndTricks tt "
             + "left JOIN tt.titleTranslations title "
             + "left JOIN tt.textTranslations textTrans "
-            + "where lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
+            + "where ("
+            + "lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
             + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
             + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
-            + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))")
-    Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery);
+            + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))"
+            + ")"
+            + "and title.language.code = :languageCode")
+    Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery, String languageCode);
 
     /**
      * Method returns {@link TipsAndTricks} by search query and page.

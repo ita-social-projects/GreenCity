@@ -1,29 +1,22 @@
 package greencity.entity.localization;
 
 import greencity.entity.Goal;
-import greencity.entity.Language;
-import javax.persistence.*;
+import greencity.entity.Translation;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "goal_translations")
-@Data
+@EqualsAndHashCode(callSuper = true, exclude = "goal")
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(exclude = "goal")
-@ToString(exclude = "goal")
-@Builder
-public class GoalTranslation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    private Language language;
-
-    @Column(nullable = false)
-    private String text;
-
+public class GoalTranslation extends Translation {
+    @Getter
+    @Setter
     @ManyToOne
     private Goal goal;
 }

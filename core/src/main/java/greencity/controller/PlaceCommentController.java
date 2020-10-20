@@ -8,7 +8,7 @@ import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.PlaceCommentRepo;
 import greencity.service.PlaceCommentService;
