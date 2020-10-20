@@ -9,7 +9,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.*;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
-import greencity.dto.tag.TagVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.Tag;

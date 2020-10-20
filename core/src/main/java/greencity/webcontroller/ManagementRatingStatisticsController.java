@@ -7,7 +7,6 @@ import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.exporter.RatingExcelExporter;
-import greencity.filters.RatingStatisticsSpecification;
 import greencity.service.RatingStatisticsService;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -121,7 +120,7 @@ public class ManagementRatingStatisticsController {
                              RatingStatisticsViewDto ratingStatisticsViewDto) {
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
             ratingStatisticsService.getFilteredDataForManagementByPage(pageable,
-               ratingStatisticsViewDto);
+                ratingStatisticsViewDto);
         model.addAttribute("ratings", pageableDto);
         model.addAttribute("fields", ratingStatisticsViewDto);
         return "core/management_user_rating";

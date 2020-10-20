@@ -4,28 +4,27 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
-import greencity.entity.RatingStatistics;
-import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 /**
- * Provides the interface to manage {@link RatingStatistics} entity.
+ * Provides the interface to manage {@link RatingStatisticsVO}.
  */
 public interface RatingStatisticsService {
     /**
-     * Method for saving proposed {@link RatingStatistics} to database.
+     * Method for saving proposed {@link RatingStatisticsVO} to database.
      *
      * @param ratingStatistics - ratingStatistics entity
-     * @return RatingStatistics {@link RatingStatistics}
+     * @return RatingStatistics {@link RatingStatisticsVO}
      * @author Dovganyuk Taras
      */
-    RatingStatistics save(RatingStatistics ratingStatistics);
+    RatingStatisticsVO save(RatingStatisticsVO ratingStatistics);
 
     /**
-     * Find {@link RatingStatistics} for management by page .
+     * Find {@link RatingStatisticsVO} for management by page .
      *
      * @param pageable a value with pageable configuration.
      * @return a dto of {@link PageableAdvancedDto}.
@@ -34,7 +33,7 @@ public interface RatingStatisticsService {
     PageableAdvancedDto<RatingStatisticsDtoForTables> getRatingStatisticsForManagementByPage(Pageable pageable);
 
     /**
-     * Find {@link RatingStatistics} for management.
+     * Find {@link RatingStatisticsVO} for management.
      *
      * @return a list of {@link RatingStatisticsDto}.
      * @author Dovganyuk Taras
@@ -42,7 +41,7 @@ public interface RatingStatisticsService {
     List<RatingStatisticsDto> getAllRatingStatistics();
 
     /**
-     * Find {@link RatingStatistics} for export to excel file.
+     * Find {@link RatingStatisticsVO} for export to excel file.
      *
      * @return a list of {@link RatingStatisticsDto}.
      * @author Dovganyuk Taras
@@ -50,7 +49,7 @@ public interface RatingStatisticsService {
     List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(RatingStatisticsViewDto ratingStatisticsViewDto);
 
     /**
-     * Find {@link RatingStatistics} for management.
+     * Find {@link RatingStatisticsVO} for management.
      *
      * @return a dto of {@link PageableDto}.
      * @author Dovganyuk Taras
@@ -66,3 +65,4 @@ public interface RatingStatisticsService {
      */
     List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto);
 }
+
