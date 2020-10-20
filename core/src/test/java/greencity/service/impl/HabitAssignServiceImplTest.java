@@ -3,9 +3,12 @@ package greencity.service.impl;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
+import greencity.service.HabitAssignServiceImpl;
 import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
 import greencity.service.HabitStatusService;
@@ -41,18 +44,20 @@ class HabitAssignServiceImplTest {
 
     private ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
-    private HabitDto habitDto =
-        HabitDto.builder().id(1L).build();
+    private HabitDto habitDto = HabitDto.builder().id(1L).build();
 
-    private HabitAssignDto habitAssignDto =
-        HabitAssignDto.builder().id(1L)
-            .createDateTime(zonedDateTime).habit(habitDto).suspended(false).build();
+    private HabitAssignDto habitAssignDto = HabitAssignDto.builder().id(1L)
+        .createDateTime(zonedDateTime).habit(habitDto).suspended(false).build();
 
     private Habit habit =
         Habit.builder().id(1L).image("src/main/resources/static/css/background-image-footer.svg").build();
 
-    private User user =
-        User.builder().id(1L).build();
+    private HabitVO habitVO =
+        HabitVO.builder().id(1L).image("src/main/resources/static/css/background-image-footer.svg").build();
+
+    private UserVO userVO = UserVO.builder().id(1L).build();
+
+    private User user = User.builder().id(1L).build();
 
     private HabitAssign habitAssign = HabitAssign.builder().id(1L)
         .suspended(false).acquired(false).createDate(zonedDateTime).user(user).habit(habit).build();
@@ -83,17 +88,19 @@ class HabitAssignServiceImplTest {
 
     @Test
     void assignHabitForUserTest() {
-        when(habitService.getById(1L)).thenReturn(habit);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitService.getById(1L)).thenReturn(habitVO);
+        when(modelMapper.map(habitVO, Habit.class)).thenReturn(habit);
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
         when(modelMapper.map(null, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        HabitAssignDto actual = habitAssignService.assignHabitForUser(habit.getId(), user);
+        HabitAssignDto actual = habitAssignService.assignHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignDto, actual);
     }
 
     @Test
     void findActiveHabitAssignByUserIdAndHabitIdTest() {
-        when(habitService.getById(1L)).thenReturn(habit);
+        when(habitService.getById(1L)).thenReturn(habitVO);
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
@@ -103,7 +110,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void findHabitAssignByUserIdAndHabitIdAndCreateDateTest() {
-        when(habitService.getById(1L)).thenReturn(habit);
+        when(habitService.getById(1L)).thenReturn(habitVO);
         when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(1L, 1L, zonedDateTime))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
