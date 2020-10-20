@@ -3,16 +3,16 @@ package greencity.repository;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
-import javax.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import javax.persistence.Tuple;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides an interface to manage {@link HabitStatistic} entity.
@@ -26,7 +26,8 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return {@link HabitStatistic} instance, if it doesn't exist returns Optional.
      */
     @Query(value = "SELECT hs FROM HabitStatistic hs "
-        + "WHERE DATE(hs.createDate) = :localDate AND hs.habitAssign.id = :habitAssignId")
+        + "WHERE cast(hs.createDate as date) = cast(:localDate as date) "
+        + "AND hs.habitAssign.id = :habitAssignId")
     Optional<HabitStatistic> findHabitAssignStatByDate(@Param("localDate") ZonedDateTime localDate,
                                                        @Param("habitAssignId") Long habitAssignId);
 
@@ -38,8 +39,8 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return sum of items per month.
      */
     @Query(value = "SELECT SUM(hs.amountOfItems) FROM HabitStatistic hs "
-        + "WHERE hs.habitAssign.habit.id = :habitId AND DATE(hs.createDate) <= CURRENT_DATE "
-        + "AND DATE(hs.createDate) >= :firstDayOfMonth")
+        + "WHERE hs.habitAssign.habit.id = :habitId AND cast(hs.createDate as date) <= CURRENT_DATE "
+        + "AND cast(hs.createDate as date) >= cast(:firstDayOfMonth as date)")
     Optional<Integer> getSumOfAllItemsPerMonth(@Param("habitId") Long habitId,
                                                @Param("firstDayOfMonth") ZonedDateTime firstDay);
 
@@ -70,7 +71,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs "
-        + "WHERE DATE(hs.createDate) = CURRENT_DATE - 1 "
+        + "WHERE cast(hs.createDate as date) = CURRENT_DATE - 1 "
         + "AND hs.habitAssign.id = :habitAssignId")
     Optional<Integer> getAmountOfItemsOfAssignedHabitInPreviousDay(@Param("habitAssignId") Long habitAssignId);
 
@@ -81,7 +82,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs "
-        + "WHERE DATE(hs.createDate) = CURRENT_DATE - 1 AND hs.habitAssign.habit.id = :habitId")
+        + "WHERE cast(hs.createDate as date) = CURRENT_DATE - 1 AND hs.habitAssign.habit.id = :habitId")
     Optional<Integer> getGeneralAmountOfHabitItemsInPreviousDay(@Param("habitId") Long habitId);
 
     /**
@@ -91,7 +92,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs "
-        + "WHERE DATE(hs.createDate) = CURRENT_DATE "
+        + "WHERE cast(hs.createDate as date) = CURRENT_DATE "
         + "AND hs.habitAssign.id = :habitAssignId")
     Optional<Integer> getAmountOfItemsOfAssignedHabitToday(@Param("habitAssignId") Long habitAssignId);
 
@@ -102,7 +103,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of items in Optional in case of absence such info.
      */
     @Query(value = "SELECT hs.amountOfItems FROM HabitStatistic hs "
-        + "WHERE DATE(hs.createDate) = CURRENT_DATE AND hs.habitAssign.habit.id = :habitId")
+        + "WHERE cast(hs.createDate as date) = CURRENT_DATE AND hs.habitAssign.habit.id = :habitId")
     Optional<Integer> getGeneralAmountOfHabitItemsToday(@Param("habitId") Long habitId);
 
     /**
@@ -122,7 +123,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
         + "FROM HabitStatistic hs "
         + "     INNER JOIN HabitTranslation ht ON ht.habit.id = hs.habitAssign.habit.id "
         + "     WHERE hs.habitAssign.suspended = false "
-        + "     AND DATE(hs.createDate) = :statisticCreationDate "
+        + "     AND cast(hs.createDate as date) = cast(:statisticCreationDate as date)"
         + "     AND ht.language.code = :languageCode "
         + "GROUP BY ht.habitItem "
         + "ORDER BY COUNT(hs.habitAssign.habit) DESC")
