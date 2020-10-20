@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.entity.TipsAndTricksComment;
-import greencity.entity.enums.CommentStatus;
+import greencity.enums.CommentStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 

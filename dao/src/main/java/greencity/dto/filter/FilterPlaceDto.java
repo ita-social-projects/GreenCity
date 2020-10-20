@@ -1,7 +1,7 @@
 package greencity.dto.filter;
 
 import greencity.dto.location.MapBoundsDto;
-import greencity.entity.enums.PlaceStatus;
+import greencity.enums.PlaceStatus;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -2,6 +2,7 @@ package greencity.aspects;
 
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
+import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.entity.RatingStatistics;
 import greencity.entity.User;
 import greencity.service.RatingStatisticsService;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Component;
 public class RatingCalculationAspect {
     private UserService userService;
     private RatingStatisticsService ratingStatisticsService;
+    private final ModelMapper modelMapper;
 
     /**
      * This pointcut {@link Pointcut} is used for define annotation to processing.
@@ -65,7 +68,7 @@ public class RatingCalculationAspect {
             .user(user)
             .pointsChanged(rating.getRatingPoints())
             .build();
-        ratingStatisticsService.save(ratingStatistics);
+        ratingStatisticsService.save(modelMapper.map(ratingStatistics, RatingStatisticsVO.class));
 
         log.info("Event {}, UserId {}, points {}, current rating {}",
             rating, user.getId(), rating.getRatingPoints(), user.getRating());

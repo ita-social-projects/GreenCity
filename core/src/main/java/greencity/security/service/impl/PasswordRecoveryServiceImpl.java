@@ -5,7 +5,7 @@ import static greencity.constant.ErrorMessage.*;
 import static greencity.constant.RabbitConstants.PASSWORD_RECOVERY_ROUTING_KEY;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadVerifyEmailTokenException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;

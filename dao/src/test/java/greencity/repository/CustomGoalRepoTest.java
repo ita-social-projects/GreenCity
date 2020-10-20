@@ -2,8 +2,7 @@ package greencity.repository;
 
 import greencity.DaoApplication;
 import greencity.entity.CustomGoal;
-import greencity.entity.Goal;
-import greencity.entity.enums.GoalStatus;
+import greencity.enums.GoalStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;

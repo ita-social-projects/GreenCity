@@ -10,10 +10,10 @@ import greencity.dto.goal.GoalDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
-import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.GoalStatus;
-import greencity.entity.enums.ROLE;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.EmailNotification;
+import greencity.enums.GoalStatus;
+import greencity.enums.ROLE;
+import greencity.enums.UserStatus;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
@@ -522,7 +522,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addDefaultHabit(User user, String language) {
         if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
-            habitAssignService.assignHabitForUser(1L, user);
+            UserVO userVO = modelMapper.map(user, UserVO.class);
+            habitAssignService.assignHabitForUser(1L, userVO);
         }
     }
 

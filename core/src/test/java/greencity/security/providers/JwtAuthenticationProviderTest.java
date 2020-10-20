@@ -1,6 +1,6 @@
 package greencity.security.providers;
 
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import greencity.security.jwt.JwtTool;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

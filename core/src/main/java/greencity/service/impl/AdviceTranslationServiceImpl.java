@@ -5,6 +5,7 @@ import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceTranslationVO;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.repository.AdviceTranslationRepo;
+import greencity.service.AdviceServiceImpl;
 import greencity.service.AdviceTranslationService;
 import java.util.List;
 import org.modelmapper.ModelMapper;

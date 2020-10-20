@@ -198,6 +198,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/userFriend/{friendId}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
+                "/econews/update",
                 "/favorite_place/",
                 "/ownSecurity",
                 "/user/profile"

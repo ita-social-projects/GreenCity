@@ -9,7 +9,7 @@ import greencity.dto.user.HabitDictionaryIdDto;
 import greencity.entity.FactTranslation;
 import greencity.entity.HabitDictionary;
 import greencity.entity.HabitFact;
-import static greencity.entity.enums.FactOfDayStatus.CURRENT;
+import static greencity.enums.FactOfDayStatus.CURRENT;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;

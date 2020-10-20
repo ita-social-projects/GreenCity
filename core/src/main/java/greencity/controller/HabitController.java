@@ -14,6 +14,7 @@ import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
@@ -99,7 +100,7 @@ public class HabitController {
     })
     @PostMapping("/assign/{habitId}")
     public ResponseEntity<Object> assign(@PathVariable Long habitId,
-                                         @ApiIgnore @CurrentUser User user) {
+                                         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignHabitForUser(habitId, user));
     }

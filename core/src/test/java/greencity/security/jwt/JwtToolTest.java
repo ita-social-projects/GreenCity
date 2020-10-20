@@ -1,7 +1,7 @@
 package greencity.security.jwt;
 
 import greencity.entity.User;
-import greencity.entity.enums.ROLE;
+import greencity.enums.ROLE;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import java.util.List;

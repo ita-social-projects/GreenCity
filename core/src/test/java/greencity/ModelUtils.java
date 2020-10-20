@@ -27,12 +27,9 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.AuthorDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.*;
 import greencity.entity.*;
-import greencity.entity.enums.*;
+import greencity.enums.*;
 import greencity.entity.localization.GoalTranslation;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,6 +62,15 @@ public class ModelUtils {
                 .role(ROLE.ROLE_USER)
                 .lastVisit(LocalDateTime.now())
                 .dateOfRegistration(LocalDateTime.now())
+                .build();
+    }
+
+    public static UserVO getUserVO() {
+        return UserVO.builder()
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .role(ROLE.ROLE_USER)
                 .build();
     }
 
@@ -188,6 +194,18 @@ public class ModelUtils {
                 .habitDictionary(ModelUtils.getHabitDictionary())
                 .build();
     }*/
+
+    public static HabitStatus getHabitStatus() {
+        HabitAssign habitAssign = getHabitAssign();
+
+        return HabitStatus.builder()
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitAssign(habitAssign).build();
+
+    }
 
     public static Category getCategory() {
         return Category.builder()
@@ -522,5 +540,30 @@ public class ModelUtils {
 
     public static ObjectMapper getObjectMapper() {
         return new ObjectMapper();
+    }
+
+    public static HabitAssign getHabitAssign() {
+        return HabitAssign.builder()
+            .id(1L)
+            .acquired(true)
+            .createDate(ZonedDateTime.now())
+            .suspended(false)
+            .habit(Habit.builder()
+                .id(1L)
+                .image("")
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .habit(new Habit())
+                    .build()))
+                .habitAssigns(null)
+                .build())
+            .user(getUser())
+            .habitStatus(new HabitStatus())
+            .habitStatistic(null)
+            .build();
     }
 }

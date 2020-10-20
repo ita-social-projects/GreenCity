@@ -1,31 +1,58 @@
 package greencity.service.impl;
 
-import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
+import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.place.*;
-import greencity.entity.*;
-import greencity.entity.enums.PlaceStatus;
-import greencity.entity.enums.ROLE;
+import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
+import greencity.entity.Specification;
+import greencity.entity.User;
+import greencity.enums.PlaceStatus;
+import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.*;
+import greencity.service.CategoryService;
+import greencity.service.DiscountService;
+import greencity.service.LocationService;
+import greencity.service.NotificationService;
+import greencity.service.OpenHoursService;
+import greencity.service.PlaceService;
+import greencity.service.ProposePlaceService;
+import greencity.service.SpecificationService;
+import greencity.service.UserService;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,6 +61,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -119,7 +149,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = modelMapper.map(dto, Place.class);
         setUserToPlaceByEmail(email, place);
 
-        place.setCategory(categoryService.findByName(dto.getCategory().getName()));
+        place.setCategory(modelMapper.map(categoryService.findByName(dto.getCategory().getName()), Category.class));
         proposePlaceService.saveDiscountValuesWithPlace(place.getDiscountValues(), place);
         proposePlaceService.savePhotosWithPlace(place.getPhotos(), place);
 
@@ -139,7 +169,7 @@ public class PlaceServiceImpl implements PlaceService {
         place.setAuthor(user);
         if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(PlaceStatus.APPROVED);
-            notificationService.sendImmediatelyReport(place);
+            notificationService.sendImmediatelyReport(modelMapper.map(place, PlaceVO.class));
         }
         return user;
     }
@@ -154,9 +184,11 @@ public class PlaceServiceImpl implements PlaceService {
     public Place update(PlaceUpdateDto dto) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
 
-        Category updatedCategory = categoryService.findByName(dto.getCategory().getName());
+        Category updatedCategory = modelMapper.map(
+            categoryService.findByName(dto.getCategory().getName()), Category.class);
         Place updatedPlace = findById(dto.getId());
-        locationService.update(updatedPlace.getLocation().getId(), modelMapper.map(dto.getLocation(), Location.class));
+        locationService.update(updatedPlace.getLocation().getId(),
+            modelMapper.map(dto.getLocation(), LocationVO.class));
         updatedPlace.setName(dto.getName());
         updatedPlace.setCategory(updatedCategory);
         placeRepo.save(updatedPlace);
@@ -177,15 +209,19 @@ public class PlaceServiceImpl implements PlaceService {
     private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
-        Set<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
+        Set<DiscountValueVO> discountValuesVO = discountService.findAllByPlaceId(updatedPlace.getId());
+        Set<DiscountValue> discountsOld = modelMapper.map(discountValuesVO,
+            new TypeToken<Set<DiscountValue>>() {
+            }.getType());
         discountService.deleteAllByPlaceId(updatedPlace.getId());
         Set<DiscountValue> newDiscounts = new HashSet<>();
         if (discounts != null) {
             discounts.forEach(d -> {
                 DiscountValue discount = modelMapper.map(d, DiscountValue.class);
-                discount.setSpecification(specificationService.findByName(d.getSpecification().getName()));
+                discount.setSpecification(modelMapper
+                    .map(specificationService.findByName(d.getSpecification().getName()), Specification.class));
                 discount.setPlace(updatedPlace);
-                discountService.save(discount);
+                discountService.save(modelMapper.map(discount, DiscountValueVO.class));
                 newDiscounts.add(discount);
             });
         }
@@ -201,15 +237,17 @@ public class PlaceServiceImpl implements PlaceService {
      */
     private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
-
-        Set<OpeningHours> openingHoursSetOld = openingHoursService.findAllByPlaceId(updatedPlace.getId());
+        Set<OpeningHoursVO> openingHoursVO = openingHoursService.findAllByPlaceId(updatedPlace.getId());
+        Set<OpeningHours> openingHoursSetOld = modelMapper.map(openingHoursVO,
+            new TypeToken<Set<OpeningHours>>() {
+            }.getType());
         openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> hours = new HashSet<>();
         if (hoursUpdateDtoSet != null) {
             hoursUpdateDtoSet.forEach(h -> {
                 OpeningHours openingHours = modelMapper.map(h, OpeningHours.class);
                 openingHours.setPlace(updatedPlace);
-                openingHoursService.save(openingHours);
+                openingHoursService.save(modelMapper.map(openingHours, OpeningHoursVO.class));
                 hours.add(openingHours);
             });
         }
@@ -286,7 +324,7 @@ public class PlaceServiceImpl implements PlaceService {
         updatable.setStatus(status);
         updatable.setModifiedDate(ZonedDateTime.now(datasourceTimezone));
         if (status.equals(PlaceStatus.APPROVED)) {
-            notificationService.sendImmediatelyReport(updatable);
+            notificationService.sendImmediatelyReport(modelMapper.map(updatable, PlaceVO.class));
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             rabbitTemplate.convertAndSend(sendEmailTopic, CHANGE_PLACE_STATUS_ROUTING_KEY,
