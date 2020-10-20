@@ -1,14 +1,16 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.discount.DiscountValueVO;
 import greencity.entity.DiscountValue;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.DiscountValuesRepo;
-import greencity.service.DiscountService;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DiscountServiceImpl implements DiscountService {
     private DiscountValuesRepo repo;
+    private ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
@@ -28,8 +31,9 @@ public class DiscountServiceImpl implements DiscountService {
      * @author Kateryna Horokh
      */
     @Override
-    public DiscountValue save(DiscountValue discountValue) {
-        return repo.save(discountValue);
+    public DiscountValueVO save(DiscountValueVO discountValueVO) {
+        DiscountValue discountValue = repo.save(modelMapper.map(discountValueVO, DiscountValue.class));
+        return modelMapper.map(discountValue, DiscountValueVO.class);
     }
 
     /**
@@ -38,13 +42,13 @@ public class DiscountServiceImpl implements DiscountService {
      * @author Kateryna Horokh
      */
     @Override
-    public DiscountValue findById(Long id) {
+    public DiscountValueVO findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
-
-        return repo
+        DiscountValue discountValue = repo
             .findById(id)
             .orElseThrow(
                 () -> new NotFoundException(ErrorMessage.DISCOUNT_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(discountValue, DiscountValueVO.class);
     }
 
     /**
@@ -53,8 +57,9 @@ public class DiscountServiceImpl implements DiscountService {
      * @author Kateryna Horokh
      */
     @Override
-    public Set<DiscountValue> findAllByPlaceId(Long placeId) {
-        return repo.findAllByPlaceId(placeId);
+    public Set<DiscountValueVO> findAllByPlaceId(Long placeId) {
+        return modelMapper.map(repo.findAllByPlaceId(placeId), new TypeToken<Set<DiscountValueVO>>() {
+        }.getType());
     }
 
     /**

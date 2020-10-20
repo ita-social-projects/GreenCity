@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import greencity.dto.category.CategoryVO;
 import greencity.dto.place.PlaceVO;
-import greencity.entity.Category;
 import greencity.entity.Place;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
