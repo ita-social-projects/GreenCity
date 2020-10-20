@@ -1,22 +1,18 @@
 package greencity.service;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitVO;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.habit.HabitManagementDto;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.repository.AdviceRepo;
-import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.constant.ErrorMessage;
-import greencity.service.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -42,8 +38,7 @@ public class HabitServiceImpl implements HabitService {
     private final ModelMapper modelMapper;
     private final HabitAssignService habitAssignService;
     private final HabitFactService habitFactService;
-    private final AdviceRepo adviceRepo;
-    private final AdviceTranslationRepo adviceTranslationRepo;
+    private final AdviceService adviceService;
 
     /**
      * {@inheritDoc}
@@ -120,13 +115,15 @@ public class HabitServiceImpl implements HabitService {
                     .collect(Collectors.toList())
             ).build());
         habit.getHabitTranslations().forEach(ht -> ht.setHabit(habit));
-        /*if (habitDto.getImage() != null) {
-            image = fileService.convertToMultipartImage(habitDto.getImage());
+
+        /*if (habitManagementDto.getImage() != null) {
+            image = fileService.convertToMultipartImage(habitManagementDto.getImage());
         }
         if (image != null) {
             habit.setImage(fileService.upload(image).toString());
             System.out.println(habit.getImage());
         }*/
+
         habitTranslationRepo.saveAll(habit.getHabitTranslations());
         return modelMapper.map(habit, HabitManagementDto.class);
     }
@@ -165,18 +162,12 @@ public class HabitServiceImpl implements HabitService {
     public void delete(Long id) {
         Habit habit = habitRepo.findById(id)
             .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
+        HabitVO habitVO = modelMapper.map(habit, HabitVO.class);
 
         habitTranslationRepo.deleteAllByHabit(habit);
-
-        //in future methods will be called from adviceService (after habits service movement)
-        adviceRepo.findAllByHabitId(habit.getId())
-            .forEach(advice -> {
-                adviceTranslationRepo.deleteAllByAdvice(advice);
-                adviceRepo.delete(advice);
-            });
-
-        habitFactService.deleteAllByHabit(habit);
-        habitAssignService.deleteAllHabitAssignsByHabit(habit);
+        habitFactService.deleteAllByHabit(habitVO);
+        adviceService.deleteAllByHabit(habitVO);
+        habitAssignService.deleteAllHabitAssignsByHabit(habitVO);
         habitRepo.delete(habit);
     }
 

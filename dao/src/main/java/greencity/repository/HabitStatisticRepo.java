@@ -13,10 +13,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import javax.persistence.Tuple;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Provides an interface to manage {@link HabitStatistic} entity.
@@ -135,13 +131,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
         @Param("statisticCreationDate") ZonedDateTime statisticCreationDate,
         @Param("languageCode") String languageCode
     );
-
-    /**
-     * Method deletes all {@link HabitStatistic}'s by {@link HabitAssign} instance.
-     *
-     * @param habitAssign {@link HabitAssign} instance.
-     */
-    void deleteAllByHabitAssign(HabitAssign habitAssign);
 
     /**
      * Method for getting amount of {@link Habit} in progress by {@link User} id (not suspended).

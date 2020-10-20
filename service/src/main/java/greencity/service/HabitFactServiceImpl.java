@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
@@ -15,11 +16,8 @@ import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitFactRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.HabitRepo;
-import greencity.service.HabitFactService;
-import greencity.service.HabitService;
 import java.util.List;
 import java.util.Optional;
-
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -95,9 +93,8 @@ public class HabitFactServiceImpl implements HabitFactService {
     public HabitFactVO update(HabitFactPostDto factDto, Long id) {
         return Optional.of(modelMapper.map(habitFactRepo.findById(id)
             .map(employee -> {
-                /*                Habit habit = habitRepo.findById(factDto.getHabit().getId())
-                    .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));*/
-                Habit habit = modelMapper.map(habitService.getById(factDto.getHabit().getId()), Habit.class);
+                Habit habit = habitRepo.findById(factDto.getHabit().getId())
+                    .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
                 employee.setHabit(habit);
                 return modelMapper.map(habitFactRepo.save(employee), HabitFactVO.class);
             }), HabitFactVO.class))
@@ -121,12 +118,11 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     @Transactional
-    public void deleteAllByHabit(Habit habit) {
+    public void deleteAllByHabit(HabitVO habit) {
         habitFactRepo.findAllByHabitId(habit.getId())
             .forEach(habitFact -> {
                 habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
                 habitFactRepo.delete(habitFact);
             });
-        ;
     }
 }

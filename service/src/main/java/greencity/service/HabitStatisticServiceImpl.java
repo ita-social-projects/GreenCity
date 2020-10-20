@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.converters.DateService;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -162,7 +163,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteAllStatsByHabitAssign(HabitAssign habitAssign) {
-        habitStatisticRepo.deleteAllByHabitAssign(habitAssign);
+    public void deleteAllStatsByHabitAssign(HabitAssignVO habitAssignVO) {
+        habitStatisticRepo.findAllByHabitAssignId(habitAssignVO.getId())
+            .forEach(habitStatisticRepo::delete);
     }
 }

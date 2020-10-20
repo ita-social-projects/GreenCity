@@ -1,10 +1,9 @@
 package greencity.service;
 
-import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 
 public interface HabitStatusService {
     /**
@@ -17,9 +16,9 @@ public interface HabitStatusService {
     /**
      * Method save {@code HabitStatus} by {@code HabitAssign}.
      *
-     * @param habitAssign target {@link HabitAssignDto}.
+     * @param habitAssign target {@link HabitAssignVO}.
      */
-    void saveStatusByHabitAssign(HabitAssignDto habitAssign);
+    void saveStatusByHabitAssign(HabitAssignVO habitAssign);
 
     /**
      * Find active {@code HabitStatus} by {@code HabitAssign} id.
@@ -39,17 +38,7 @@ public interface HabitStatusService {
     HabitStatusDto findStatusByHabitAssignId(Long habitAssignId);
 
     /**
-     * Find {@code HabitStatus} by {@code Habit} and {@code User} id's.
-     *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
-     * @param dateTime {@link ZonedDateTime} dateTime.
-     * @return {@link HabitStatusDto}.
-     */
-    HabitStatusDto findStatusByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId, ZonedDateTime dateTime);
-
-    /**
-     * Method enroll {@code Habit}.
+     * Method to enroll {@code Habit}.
      *
      * @param habitAssignId - id of {@code HabitAssign} which we enroll.
      * @return {@link HabitStatusDto}.
@@ -67,18 +56,18 @@ public interface HabitStatusService {
     /**
      * Method to enroll habit for defined date.
      *
-     *  @param habitAssignId - id of {@code HabitAssign}.
+     * @param habitAssignId - id of {@code HabitAssign}.
      * @param date          - {@link LocalDate} date we want enroll.
      * @return {@link HabitStatusDto}.
      */
     HabitStatusDto enrollHabitInDate(Long habitAssignId, LocalDate date);
 
     /**
-     * Method to delete {@code HabitStatus} by {@code HabitAssign} id.
+     * Method to delete {@code HabitStatus} by {@code HabitAssign} instance.
      *
-     * @param habitAssign {@link HabitAssign} instance.
+     * @param habitAssign {@link HabitAssignVO} instance.
      */
-    void deleteStatusByHabitAssign(HabitAssign habitAssign);
+    void deleteStatusByHabitAssign(HabitAssignVO habitAssign);
 
     /**
      * Method for updating {@code HabitStatus} in database.

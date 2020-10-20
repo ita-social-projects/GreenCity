@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
@@ -74,9 +75,9 @@ public interface HabitFactService {
     Long delete(Long id);
 
     /**
-     * Method deletes all {@link HabitFact}'s by {@link Habit} instance.
+     * Method deletes all {@code HabitFact}'s by {@code Habit} instance.
      *
-     * @param habit {@link Habit} instance.
+     * @param habit {@link HabitVO} instance.
      */
-    void deleteAllByHabit(Habit habit);
+    void deleteAllByHabit(HabitVO habit);
 }

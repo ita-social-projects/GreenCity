@@ -3,6 +3,8 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
@@ -12,10 +14,6 @@ import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
-import greencity.service.HabitAssignService;
-import greencity.service.HabitService;
-import greencity.service.HabitStatisticService;
-import greencity.service.HabitStatusService;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -51,12 +49,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignDto assignHabitForUser(Long habitId, User user) {
-        Habit habit = modelMapper.map(habitRepo.findById(habitId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID))
-        ,Habit.class);
+    public HabitAssignDto assignHabitForUser(Long habitId, UserVO userVO) {
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
         User user = modelMapper.map(userVO, User.class);
-        //Habit habit = modelMapper.map(habitService.getById(habitId), Habit.class);
 
         if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
@@ -76,7 +72,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     .user(user)
                     .build());
 
-            habitStatusService.saveStatusByHabitAssign(modelMapper.map(habitAssign, HabitAssignDto.class));
+            habitStatusService.saveStatusByHabitAssign(modelMapper.map(habitAssign, HabitAssignVO.class));
             return modelMapper.map(habitAssign, HabitAssignDto.class);
         }
     }
@@ -122,11 +118,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public void deleteAllHabitAssignsByHabit(Habit habit) {
+    public void deleteAllHabitAssignsByHabit(HabitVO habit) {
         habitAssignRepo.findAllByHabitId(habit.getId())
             .forEach(habitAssign -> {
-                habitStatusService.deleteStatusByHabitAssign(habitAssign);
-                habitStatisticService.deleteAllStatsByHabitAssign(habitAssign);
+                HabitAssignVO habitAssignVO = modelMapper.map(habitAssign, HabitAssignVO.class);
+                habitStatusService.deleteStatusByHabitAssign(habitAssignVO);
+                habitStatisticService.deleteAllStatsByHabitAssign(habitAssignVO);
                 habitAssignRepo.delete(habitAssign);
             });
     }
