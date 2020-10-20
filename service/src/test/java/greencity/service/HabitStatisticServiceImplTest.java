@@ -1,7 +1,9 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -160,8 +162,11 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void deleteAllStatsByHabitAssignTest() {
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-        habitStatisticService.deleteAllStatsByHabitAssign(habitAssign);
-        verify(habitStatisticRepo, times(1)).deleteAllByHabitAssign(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        when(habitStatisticRepo.findAllByHabitAssignId(1L)).thenReturn(habitAssign.getHabitStatistic());
+        habitStatisticService.deleteAllStatsByHabitAssign(habitAssignVO);
+        verify(habitStatisticRepo, times(1)).delete(habitAssign.getHabitStatistic().get(0));
     }
 }

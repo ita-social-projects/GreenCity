@@ -1,11 +1,16 @@
 package greencity;
 
+import greencity.constant.AppConstant;
 import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatus.HabitStatusDto;
+import greencity.dto.habitstatus.HabitStatusVO;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitFactTranslationVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -19,8 +24,7 @@ import greencity.enums.FactOfDayStatus;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
 import greencity.service.TestConst;
-import greencity.constant.AppConstant;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -64,16 +68,19 @@ public class ModelUtils {
                 .build();
     }
 
-    public static HabitStatusDto getHabitStatusDto() {
-        HabitAssignDto habitAssignDto = getHabitAssignDto();
+    public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
+        return HabitStatusCalendarDto.builder()
+            .enrollDate(LocalDate.now()).id(1L).build();
+    }
 
-        return HabitStatusDto.builder()
-                .id(1L)
-                .workingDays(10)
-                .habitStreak(5)
-                .lastEnrollmentDate(LocalDateTime.now())
-                .habitAssign(habitAssignDto).build();
+    public static HabitStatusCalendarVO getHabitStatusCalendarVO() {
+        return HabitStatusCalendarVO.builder()
+            .enrollDate(LocalDate.now()).id(1L).build();
+    }
 
+    public static HabitStatusCalendar getHabitStatusCalendar() {
+        return HabitStatusCalendar.builder()
+            .enrollDate(LocalDate.now()).id(1L).build();
     }
 
     public static HabitAssignDto getHabitAssignDto() {
@@ -82,28 +89,62 @@ public class ModelUtils {
                 .acquired(true)
                 .suspended(false)
                 .createDateTime(ZonedDateTime.now())
-                .habit(HabitDto.builder().id(1L).build()).build();
-    }
-
-    public static HabitStatus getHabitStatus() {
-        HabitAssign habitAssign = getHabitAssign();
-
-        return HabitStatus.builder()
-                .id(1L)
-                .workingDays(10)
-                .habitStreak(5)
-                .lastEnrollmentDate(LocalDateTime.now())
-                .habitAssign(habitAssign).build();
-
+                .habitId(1L)
+                .userId(1L).build();
     }
 
     public static HabitAssign getHabitAssign() {
         return HabitAssign.builder()
-                .id(1L)
-                .acquired(true)
-                .suspended(false)
-                .createDate(ZonedDateTime.now())
-                .habit(Habit.builder().id(1L).build()).build();
+            .id(1L)
+            .acquired(true)
+            .suspended(false)
+            .createDate(ZonedDateTime.now())
+            .habitStatus(getHabitStatus())
+            .habit(Habit.builder().id(1L).build()).build();
+    }
+
+    public static HabitAssignVO getHabitAssignVO(){
+        return HabitAssignVO.builder()
+            .id(1L)
+            .habitVO(getHabitVO())
+            .acquired(true)
+            .suspended(false)
+            .createDateTime(ZonedDateTime.now())
+            .userVO(UserVO.builder().id(1L).build()).build();
+    }
+
+    public static HabitStatusDto getHabitStatusDto() {
+        HabitAssignDto habitAssignDto = getHabitAssignDto();
+
+        return HabitStatusDto.builder()
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssignId(habitAssignDto.getId()).build();
+    }
+
+    public static HabitStatus getHabitStatus() {
+        return HabitStatus.builder()
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitStatusCalendars(
+                Collections.singletonList(getHabitStatusCalendar())).build();
+    }
+
+    public static HabitStatusVO getHabitStatusVO() {
+        return HabitStatusVO.builder()
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssignVO(getHabitAssignVO()).build();
+    }
+
+    public static HabitVO getHabitVO(){
+        return HabitVO.builder().id(1L).image("img.png").build();
     }
 
     public static UserGoal getCustomUserGoal() {

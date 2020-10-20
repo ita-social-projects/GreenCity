@@ -1,6 +1,7 @@
 package greencity.mapping;
 
-import greencity.dto.habitstatus.HabitStatusDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.entity.HabitStatus;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -8,23 +9,24 @@ import org.springframework.stereotype.Component;
 
 /**
  * Class that used by {@link ModelMapper} to map {@link HabitStatus} into
- * {@link HabitStatusDto}.
+ * {@link HabitStatusVO}.
  */
 @Component
-public class HabitStatusDtoMapper extends AbstractConverter<HabitStatus, HabitStatusDto> {
+public class HabitStatusVOMapper extends AbstractConverter<HabitStatus, HabitStatusVO> {
     /**
-     * Method convert {@link HabitStatus} to {@link HabitStatusDto}.
+     * Method convert {@link HabitStatus} to {@link HabitStatusVO}.
      *
-     * @return {@link HabitStatusDto}
+     * @return {@link HabitStatusVO}
      */
     @Override
-    protected HabitStatusDto convert(HabitStatus habitStatus) {
-        return HabitStatusDto.builder()
+    protected HabitStatusVO convert(HabitStatus habitStatus) {
+        return HabitStatusVO.builder()
             .id(habitStatus.getId())
             .habitStreak(habitStatus.getHabitStreak())
             .lastEnrollmentDate(habitStatus.getLastEnrollmentDate())
             .workingDays(habitStatus.getWorkingDays())
-            .habitAssignId(habitStatus.getHabitAssign().getId())
+            .habitAssignVO(HabitAssignVO.builder()
+                .id(habitStatus.getHabitAssign().getId()).build())
             .build();
     }
 }

@@ -25,4 +25,7 @@ public class HabitAssignDto {
     @NotNull
     @Min(1)
     private Long habitId;
+    @NotNull
+    @Min(1)
+    private Long userId;
 }
