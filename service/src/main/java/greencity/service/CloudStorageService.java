@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import com.google.cloud.WriteChannel;
 import com.google.cloud.storage.BlobInfo;
@@ -6,36 +6,35 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.mapping.MultipartBase64ImageMapper;
-import greencity.service.FileService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CloudStorageService implements FileService {
     private final String staticUrl;
     private final String bucketName;
     private final Storage storage;
-    private final MultipartBase64ImageMapper imageMapper;
-
+    private final ModelMapper modelMapper;
 
     /**
      * Constructor with parameters.
      */
-    public CloudStorageService(@Value("${bucketName}") final String bucketName,
-                               @Value("${staticUrl}") final String staticUrl,
-                               MultipartBase64ImageMapper imageMapper) {
-        this.bucketName = bucketName;
-        this.staticUrl = staticUrl;
+    public CloudStorageService(@Autowired PropertyResolver propertyResolver,
+                               ModelMapper modelMapper) {
+        this.bucketName = propertyResolver.getProperty("bucketName");
+        this.staticUrl = propertyResolver.getProperty("staticUrl");
         this.storage = StorageOptions.newBuilder().build().getService();
-        this.imageMapper = imageMapper;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -75,6 +74,6 @@ public class CloudStorageService implements FileService {
      * @return MultipartFile.
      **/
     public MultipartFile convertToMultipartImage(String image) {
-        return imageMapper.convert(image);
+        return modelMapper.map(image, MultipartFile.class);
     }
 }

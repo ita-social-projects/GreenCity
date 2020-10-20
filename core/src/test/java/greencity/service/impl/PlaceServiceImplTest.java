@@ -3,6 +3,7 @@ package greencity.service.impl;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
+import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -109,6 +110,7 @@ class PlaceServiceImplTest {
     private Set<OpeningHoursVO> openingHoursListEntityVO = new HashSet<>();
     private Set<DiscountValue> discountValues = new HashSet<>();
     private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
+    private Set<DiscountValueVO> discountValuesVO = new HashSet<>();
     private List<PhotoAddDto> photoDtos = new ArrayList<>();
     private List<Photo> photos = new ArrayList<>();
     private Place place = Place.builder()
@@ -371,6 +373,8 @@ class PlaceServiceImplTest {
         when(modelMapper.map(placeUpdateDto.getLocation(), LocationVO.class)).thenReturn(locationVO);
         when(modelMapper.map(openingHoursListEntityVO, new TypeToken<Set<OpeningHours>>() {
         }.getType())).thenReturn(openingHoursListEntity);
+        when(modelMapper.map(discountValuesVO, new TypeToken<Set<DiscountValue>>() {
+        }.getType())).thenReturn(discountValues);
 
         Place updatedPlace = placeService.update(placeUpdateDto);
 

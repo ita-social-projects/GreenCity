@@ -4,6 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
+import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationVO;
@@ -203,7 +204,10 @@ public class PlaceServiceImpl implements PlaceService {
     private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
-        Set<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
+        Set<DiscountValueVO> discountValuesVO = discountService.findAllByPlaceId(updatedPlace.getId());
+        Set<DiscountValue> discountsOld = modelMapper.map(discountValuesVO,
+            new TypeToken<Set<DiscountValue>>() {
+            }.getType());
         discountService.deleteAllByPlaceId(updatedPlace.getId());
         Set<DiscountValue> newDiscounts = new HashSet<>();
         if (discounts != null) {
@@ -212,7 +216,7 @@ public class PlaceServiceImpl implements PlaceService {
                 discount.setSpecification(modelMapper
                     .map(specificationService.findByName(d.getSpecification().getName()), Specification.class));
                 discount.setPlace(updatedPlace);
-                discountService.save(discount);
+                discountService.save(modelMapper.map(discount, DiscountValueVO.class));
                 newDiscounts.add(discount);
             });
         }
