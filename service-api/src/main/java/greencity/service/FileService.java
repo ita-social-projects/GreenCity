@@ -1,11 +1,9 @@
 package greencity.service;
 
-import java.net.URL;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 
-@Service
 public interface FileService {
     /**
      * Upload file to Google Cloud Storage.
