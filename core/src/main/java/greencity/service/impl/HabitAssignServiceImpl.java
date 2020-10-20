@@ -164,7 +164,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public void deleteHabitAssignByUserIdAndHabitIdAndCreateDate(Long userId, Long habitId,
                                                                  ZonedDateTime dateTime) {
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(habitId, userId,
-            ZonedDateTime.now())
+           dateTime)
             .orElseThrow(() ->
                 new WrongIdException(
                     ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE));
