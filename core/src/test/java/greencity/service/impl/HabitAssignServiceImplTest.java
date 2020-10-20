@@ -69,7 +69,6 @@ class HabitAssignServiceImplTest {
     private List<HabitAssign> habitAssigns = Collections.singletonList(habitAssign);
 
 
-
     @Test
     void getByIdTest() {
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
@@ -84,12 +83,12 @@ class HabitAssignServiceImplTest {
 
     @Test
     void assignHabitForUserTest() {
-        when (habitService.getById(1L)).thenReturn(habit);
-        when (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()))
+        when(habitService.getById(1L)).thenReturn(habit);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
-        when (modelMapper.map(null, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(null, HabitAssignDto.class)).thenReturn(habitAssignDto);
         HabitAssignDto actual = habitAssignService.assignHabitForUser(habit.getId(), user);
-        assertEquals(habitAssignDto, actual );
+        assertEquals(habitAssignDto, actual);
     }
 
     @Test
@@ -105,83 +104,88 @@ class HabitAssignServiceImplTest {
     @Test
     void findHabitAssignByUserIdAndHabitIdAndCreateDateTest() {
         when(habitService.getById(1L)).thenReturn(habit);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(1L, 1L,zonedDateTime))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(1L, 1L, zonedDateTime))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
             HabitAssignDto.class)).thenReturn(habitAssignDto);
         assertEquals(habitAssignDto, habitAssignService
-            .findHabitAssignByUserIdAndHabitIdAndCreateDate(1L, 1L,zonedDateTime));
+            .findHabitAssignByUserIdAndHabitIdAndCreateDate(1L, 1L, zonedDateTime));
     }
 
     @Test
     void getAllActiveHabitAssignsByUserIdTest() {
-        when (habitAssignRepo.findAllByUserIdAndSuspendedFalse(1L)).thenReturn(habitAssigns);
-        when (modelMapper.map(habitAssigns,
-            new TypeToken<List<HabitAssignDto>>(){}.getType())).thenReturn(habitAssignDtos);
+        when(habitAssignRepo.findAllByUserIdAndSuspendedFalse(1L)).thenReturn(habitAssigns);
+        when(modelMapper.map(habitAssigns,
+            new TypeToken<List<HabitAssignDto>>() {
+            }.getType())).thenReturn(habitAssignDtos);
         List<HabitAssignDto> actual = habitAssignService.getAllActiveHabitAssignsByUserId(1L);
-        assertEquals(habitAssignDtos , actual);
+        assertEquals(habitAssignDtos, actual);
     }
 
     @Test
     void getAllHabitAssignsByUserIdAndAcquiredStatusTest() {
-        when (habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(1L,true)).thenReturn(habitAssigns);
-        when (modelMapper.map(habitAssigns,
-            new TypeToken<List<HabitAssignDto>>(){}.getType())).thenReturn(habitAssignDtos);
-        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(1L,true);
-        assertEquals(habitAssignDtos , actual);
+        when(habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(1L, true)).thenReturn(habitAssigns);
+        when(modelMapper.map(habitAssigns,
+            new TypeToken<List<HabitAssignDto>>() {
+            }.getType())).thenReturn(habitAssignDtos);
+        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(1L, true);
+        assertEquals(habitAssignDtos, actual);
     }
 
-   @Test
+    @Test
     void suspendHabitAssignByHabitIdAndUserIdTest() {
-       when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
-           .thenReturn(Optional.of(habitAssign));
-       habitAssignRepo.suspendByHabitIdAndUserId(1L, 1L);
-       when(modelMapper.map(habitAssignRepo.findById(habitAssign.getId()),
-           HabitAssignDto.class)).thenReturn(habitAssignDto);
-       assertEquals(habitAssignDto, habitAssignService.suspendHabitAssignByHabitIdAndUserId(1L, 1L));
-   }
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
+            .thenReturn(Optional.of(habitAssign));
+        habitAssignRepo.suspendByHabitIdAndUserId(1L, 1L);
+        when(modelMapper.map(habitAssignRepo.findById(habitAssign.getId()),
+            HabitAssignDto.class)).thenReturn(habitAssignDto);
+        assertEquals(habitAssignDto, habitAssignService.suspendHabitAssignByHabitIdAndUserId(1L, 1L));
+    }
 
-   @Test
+    @Test
     void suspendHabitAssignByIdTest() {
-       when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-       habitAssignRepo.suspendById(1L);
-       when (modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class)).thenReturn(habitAssignDto);
-       assertEquals(habitAssignDto, habitAssignService.suspendHabitAssignById(1L));
-   }
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
+        habitAssignRepo.suspendById(1L);
+        when(modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class))
+            .thenReturn(habitAssignDto);
+        assertEquals(habitAssignDto, habitAssignService.suspendHabitAssignById(1L));
+    }
 
-   @Test
+    @Test
     void updateHabitAssignAcquiredStatusByIdTest() {
-       when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-       habitAssignRepo.updateAcquiredById(1L,true);
-       when (modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class)).thenReturn(habitAssignDto);
-       assertEquals(habitAssignDto, habitAssignService.updateHabitAssignAcquiredStatusById(1L,true));
-   }
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
+        habitAssignRepo.updateAcquiredById(1L, true);
+        when(modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class))
+            .thenReturn(habitAssignDto);
+        assertEquals(habitAssignDto, habitAssignService.updateHabitAssignAcquiredStatusById(1L, true));
+    }
 
-   @Test
+    @Test
     void deleteHabitAssignByUserIdAndHabitIdAndCreateDateTest() {
-       when (habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(1L, 1L, zonedDateTime))
-           .thenReturn(Optional.of(habitAssign));
-       habitAssignService.deleteHabitAssignByUserIdAndHabitIdAndCreateDate(1L, 1L, zonedDateTime);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(1L, 1L, zonedDateTime))
+            .thenReturn(Optional.of(habitAssign));
+        habitAssignService.deleteHabitAssignByUserIdAndHabitIdAndCreateDate(1L, 1L, zonedDateTime);
         verify(habitStatusService, times(1)).deleteStatusByHabitAssignId(1L);
         verify(habitStatisticService, times(1)).deleteAllStatsByHabitAssignId(1L);
         verify(habitAssignRepo, times(1)).deleteById(1L);
-   }
+    }
 
-   @Test
+    @Test
     void getAmountOfHabitsInProgressByUserIdTest() {
         when(habitAssignRepo.getAmountOfHabitsInProgressByUserId(1L)).thenReturn(4L);
-        assertEquals(4L,habitAssignService.getAmountOfHabitsInProgressByUserId(1L));
-   }
+        assertEquals(4L, habitAssignService.getAmountOfHabitsInProgressByUserId(1L));
+    }
 
-   @Test
+    @Test
     void getAmountOfAcquiredHabitsByUserIdTest() {
-       when(habitAssignRepo.getAmountOfAcquiredHabitsByUserId(1L)).thenReturn(4L);
-       assertEquals(4L,habitAssignService.getAmountOfAcquiredHabitsByUserId(1L));
-   }
-   @Test
+        when(habitAssignRepo.getAmountOfAcquiredHabitsByUserId(1L)).thenReturn(4L);
+        assertEquals(4L, habitAssignService.getAmountOfAcquiredHabitsByUserId(1L));
+    }
+
+    @Test
     void updateStatus() {
-       when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-       when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignDto.class)).thenReturn(habitAssignDto);
-       assertEquals(habitAssignDto, habitAssignService.updateStatus(1L,habitAssignStatDto));
-   }
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignDto.class)).thenReturn(habitAssignDto);
+        assertEquals(habitAssignDto, habitAssignService.updateStatus(1L, habitAssignStatDto));
+    }
 }
