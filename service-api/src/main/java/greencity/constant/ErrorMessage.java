@@ -42,6 +42,10 @@ public final class ErrorMessage {
     public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
     public static final String STATUS_OF_HABIT_ASSIGN_NOT_DELETED = "Status of user habit wasn't deleted by id: ";
     public static final String STATUS_OF_HABIT_ASSIGN_NOT_UPDATED = "Status of user habit wasn't updated by id: ";
+    public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID =
+        "The specification value does not exist by this id: ";
+    public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
+
 
     private ErrorMessage() {
     }
