@@ -30,15 +30,7 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.CategoryService;
-import greencity.service.DiscountService;
-import greencity.service.LocationService;
-import greencity.service.NotificationService;
-import greencity.service.OpenHoursService;
-import greencity.service.PlaceService;
-import greencity.service.ProposePlaceService;
-import greencity.service.SpecificationService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -142,15 +134,18 @@ public class PlaceServiceImpl implements PlaceService {
 
         proposePlaceService.checkLocationValues(dto.getLocation());
         if (dto.getOpeningHoursList() != null) {
-            proposePlaceService.checkInputTime(dto.getOpeningHoursList());
+            //TODO change this when placeService will be moved(not to use mapper just Opening Hours from service modal)
+            proposePlaceService.checkInputTime(modelMapper.map(dto.getOpeningHoursList(),
+                new TypeToken<Set<OpeningHoursDto>>(){}.getType()));
         }
 
         Place place = modelMapper.map(dto, Place.class);
         setUserToPlaceByEmail(email, place);
 
         place.setCategory(modelMapper.map(categoryService.findByName(dto.getCategory().getName()), Category.class));
-        proposePlaceService.saveDiscountValuesWithPlace(place.getDiscountValues(), place);
-        proposePlaceService.savePhotosWithPlace(place.getPhotos(), place);
+        PlaceVO placeVO = modelMapper.map(place, PlaceVO.class);
+        proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
+        proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
 
         return placeRepo.save(place);
     }

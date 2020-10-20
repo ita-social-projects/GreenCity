@@ -1,18 +1,14 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.dto.descountvalue.DiscountValueVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
-import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.openinghours.OpeningHoursDto;
+import greencity.dto.photo.PhotoVO;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.specification.SpecificationVO;
-import greencity.entity.DiscountValue;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.Specification;
 import greencity.exception.exceptions.BadRequestException;
-import greencity.service.LocationService;
-import greencity.service.PhotoService;
-import greencity.service.SpecificationService;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -70,32 +66,27 @@ class ProposePlaceServiceImplTest {
 
     @Test
     void savePhotosWithPlace() {
-        Place place = ModelUtils.getPlace();
-        Photo photo = ModelUtils.getPhoto();
-
-        Photo photoTest = ModelUtils.getPhoto();
-        photoTest.setPlace(place);
-
+        PhotoVO photoVO = new PhotoVO();
+        PlaceVO placeVO = new PlaceVO();
+        placeVO.setId(1L);
         when(photoService.findByName(anyString())).thenReturn(Optional.empty());
-        proposePlaceService.savePhotosWithPlace(Collections.singletonList(photo), place);
-        assertEquals(Collections.singletonList(photoTest), Collections.singletonList(photo));
+        proposePlaceService.savePhotosWithPlace(Collections.singletonList(photoVO), placeVO);
+        assertEquals(placeVO.getId(), photoVO.getPlaceId());
     }
 
     @Test
     void saveDiscountValuesWithPlace() {
-        Place place = ModelUtils.getPlace();
-        SpecificationVO specificationVO = new SpecificationVO(1L, "specification");
-
-
-        DiscountValue discountValue = ModelUtils.getDiscountValue();
-        discountValue.setSpecification(ModelUtils.getSpecification());
-
-        DiscountValue discountValueTest = ModelUtils.getDiscountValue();
-        discountValueTest.setSpecification(modelMapper.map(specificationVO, Specification.class));
-        discountValueTest.setPlace(place);
-
-        when(specService.findByName(discountValue.getSpecification().getName())).thenReturn(specificationVO);
-        proposePlaceService.saveDiscountValuesWithPlace(Collections.singleton(discountValue), place);
-        assertEquals(Collections.singleton(discountValueTest), Collections.singleton(discountValue));
+        SpecificationVO specificationVO = new SpecificationVO();
+        PlaceVO placeVO = new PlaceVO();
+        placeVO.setId(1L);
+        DiscountValueVO discountValueVO = new DiscountValueVO();
+        DiscountValueVO discountValueVOTest = new DiscountValueVO();
+        discountValueVOTest.setPlace(placeVO);
+        discountValueVOTest.setSpecification(specificationVO);
+        discountValueVO.setSpecification(specificationVO);
+        when(specService.findByName(anyString())).thenReturn(specificationVO);
+        proposePlaceService.saveDiscountValuesWithPlace(Collections.singleton(discountValueVO),
+            placeVO);
+        assertEquals(discountValueVO.getPlace().getId(), discountValueVOTest.getPlace().getId());
     }
 }

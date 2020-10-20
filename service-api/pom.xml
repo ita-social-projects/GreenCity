@@ -13,6 +13,9 @@
     <artifactId>service-api</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>service-api</name>
+    <properties>
+        <swagger.version>2.9.2</swagger.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -36,6 +39,16 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swagger.version}</version>
         </dependency>
     </dependencies>
 </project>
