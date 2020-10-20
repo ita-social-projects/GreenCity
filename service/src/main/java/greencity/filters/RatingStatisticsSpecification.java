@@ -1,7 +1,7 @@
 package greencity.filters;
 
-import greencity.annotations.RatingCalculationEnum;
 import greencity.entity.RatingStatistics;
+import greencity.enums.RatingCalculationEnum;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
