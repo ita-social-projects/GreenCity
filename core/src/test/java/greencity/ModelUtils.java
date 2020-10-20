@@ -207,15 +207,6 @@ public class ModelUtils {
 
     }
 
-    public static HabitAssign getHabitAssign() {
-        return HabitAssign.builder()
-                .id(1L)
-                .acquired(true)
-                .suspended(false)
-                .createDate(ZonedDateTime.now())
-                .habit(Habit.builder().id(1L).build()).build();
-    }
-
     public static Category getCategory() {
         return Category.builder()
                 .id(12L)
@@ -549,5 +540,30 @@ public class ModelUtils {
 
     public static ObjectMapper getObjectMapper() {
         return new ObjectMapper();
+    }
+
+    public static HabitAssign getHabitAssign() {
+        return HabitAssign.builder()
+            .id(1L)
+            .acquired(true)
+            .createDate(ZonedDateTime.now())
+            .suspended(false)
+            .habit(Habit.builder()
+                .id(1L)
+                .image("")
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .habit(new Habit())
+                    .build()))
+                .habitAssigns(null)
+                .build())
+            .user(getUser())
+            .habitStatus(new HabitStatus())
+            .habitStatistic(null)
+            .build();
     }
 }

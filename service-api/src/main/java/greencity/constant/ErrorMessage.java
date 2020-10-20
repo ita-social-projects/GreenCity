@@ -56,6 +56,9 @@ public final class ErrorMessage {
     public static final String HABIT_FACT_NOT_FOUND_BY_ID = "The habitfact does not exist by id: ";
     public static final String HABIT_FACT_NOT_UPDATED_BY_ID = "The habitfact does not updated by id: ";
     public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The habitfact does not deleted by id: ";
+    public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID =
+        "The specification value does not exist by this id: ";
+    public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
 
     private ErrorMessage() {
     }
