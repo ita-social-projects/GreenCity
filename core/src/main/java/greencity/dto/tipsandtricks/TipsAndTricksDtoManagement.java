@@ -1,13 +1,11 @@
 package greencity.dto.tipsandtricks;
 
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import static greencity.constant.ValidationConstants.MIN_AMOUNT_OF_TAGS;
 
@@ -17,7 +15,7 @@ import static greencity.constant.ValidationConstants.MIN_AMOUNT_OF_TAGS;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class TipsAndTricksDtoManagement implements Serializable {
+public class TipsAndTricksDtoManagement {
     private Long id;
 
     @Valid

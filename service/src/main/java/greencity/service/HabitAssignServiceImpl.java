@@ -1,8 +1,9 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
@@ -49,7 +50,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignDto assignHabitForUser(Long habitId, User user) {
+    public HabitAssignDto assignHabitForUser(Long habitId, UserVO userVO) {
+        User user = modelMapper.map(userVO, User.class);
         Habit habit = modelMapper.map(habitService.getById(habitId), Habit.class);
 
         if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {

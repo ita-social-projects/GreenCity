@@ -10,6 +10,8 @@ public final class ServiceValidationConstants {
     public static final int CATEGORY_NAME_MAX_LENGTH = 30;
     public static final int PLACE_NAME_MAX_LENGTH = 30;
     public static final int MAX_AMOUNT_OF_TAGS = 3;
+    public static final int HABIT_FACT_MIN_LENGTH = 3;
+    public static final int HABIT_FACT_MAX_LENGTH = 300;
 
     private ServiceValidationConstants() {
     }

@@ -1,11 +1,6 @@
-package greencity.service.impl;
+package greencity.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import greencity.dto.specification.SpecificationVO;
 import greencity.entity.Specification;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SpecificationRepo;
@@ -13,17 +8,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class SpecificationServiceImplTest {
     @Mock
     private SpecificationRepo specificationRepo;
 
+    @Mock
+    private ModelMapper modelMapper;
+
     @InjectMocks
     private SpecificationServiceImpl specificationService;
+
+    SpecificationVO specificationVO = new SpecificationVO(1L, "specification");
 
     @Test
     void saveTest() {
@@ -31,7 +41,7 @@ class SpecificationServiceImplTest {
 
         when(specificationRepo.save(genericEntity)).thenReturn(genericEntity);
 
-        assertEquals(genericEntity, specificationService.save(genericEntity));
+        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationService.save(specificationVO));
     }
 
     @Test
@@ -40,9 +50,9 @@ class SpecificationServiceImplTest {
 
         when(specificationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        Specification foundEntity = specificationService.findById(anyLong());
+        SpecificationVO specificationVO = specificationService.findById(anyLong());
 
-        assertEquals(genericEntity, foundEntity);
+        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationVO);
     }
 
     @Test
@@ -54,14 +64,15 @@ class SpecificationServiceImplTest {
 
     @Test
     void findAllTest() {
-        List<Specification> genericEntities =
-            new ArrayList<>(Arrays.asList(new Specification(), new Specification()));
+        List<Specification> expected = new ArrayList<>(Arrays.asList(
+            new Specification(1L, "spec", null)));
+        List<SpecificationVO> expectedVO = Arrays.asList(new SpecificationVO(1L, "spec"));
 
-        when(specificationRepo.findAll()).thenReturn(genericEntities);
+        when(specificationRepo.findAll()).thenReturn(expected);
+        when(modelMapper.map(expected, new TypeToken<List<SpecificationVO>>() {
+        }.getType())).thenReturn(expectedVO);
 
-        List<Specification> foundEntities = specificationService.findAll();
-
-        assertEquals(genericEntities, foundEntities);
+        assertEquals(expectedVO, specificationService.findAll());
     }
 
     @Test
@@ -84,8 +95,9 @@ class SpecificationServiceImplTest {
 
         when(specificationRepo.findByName(anyString())).thenReturn(Optional.of(genericEntity));
 
-        Specification foundEntity = specificationService.findByName(anyString());
+        SpecificationVO specificationVO = specificationService.findByName(anyString());
 
-        assertEquals(genericEntity, foundEntity);
+        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationVO);
     }
 }
+

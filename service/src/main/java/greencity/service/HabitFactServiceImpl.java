@@ -1,8 +1,9 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitFact;
@@ -15,6 +16,8 @@ import greencity.repository.HabitFactTranslationRepo;
 import greencity.service.HabitFactService;
 import greencity.service.HabitService;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -77,21 +80,22 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
-    public HabitFact save(HabitFactPostDto fact) {
-        return habitFactRepo.save(modelMapper.map(fact, HabitFact.class));
+    public HabitFactVO save(HabitFactPostDto fact) {
+        HabitFact map = modelMapper.map(fact, HabitFact.class);
+        return modelMapper.map(habitFactRepo.save(map), HabitFactVO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public HabitFact update(HabitFactPostDto factDto, Long id) {
-        return habitFactRepo.findById(id)
+    public HabitFactVO update(HabitFactPostDto factDto, Long id) {
+        return Optional.of(modelMapper.map(habitFactRepo.findById(id)
             .map(employee -> {
                 Habit habit = modelMapper.map(habitService.getById(factDto.getHabit().getId()), Habit.class);
                 employee.setHabit(habit);
-                return habitFactRepo.save(employee);
-            })
+                return modelMapper.map(habitFactRepo.save(employee), HabitFactVO.class);
+            }), HabitFactVO.class))
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_FACT_NOT_UPDATED_BY_ID));
     }
 

@@ -105,7 +105,8 @@ public class EcoNewsController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
 
-    @PutMapping("/update")
+    @PutMapping(path = "/update", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
+        MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<EcoNewsDto> update(
         @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS, required = true)
         @RequestPart UpdateEcoNewsDto updateEcoNewsDto,

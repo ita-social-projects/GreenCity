@@ -4,7 +4,11 @@ import greencity.ModelUtils;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.entity.*;
+import greencity.dto.specification.SpecificationVO;
+import greencity.entity.DiscountValue;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.Specification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.service.LocationService;
 import greencity.service.PhotoService;
@@ -16,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,6 +42,9 @@ class ProposePlaceServiceImplTest {
 
     @Mock
     private LocationService locationService;
+
+    @Mock
+    private ModelMapper modelMapper;
 
     @Test
     void checkLocationValues() {
@@ -76,16 +84,17 @@ class ProposePlaceServiceImplTest {
     @Test
     void saveDiscountValuesWithPlace() {
         Place place = ModelUtils.getPlace();
-        Specification specification = ModelUtils.getSpecification();
+        SpecificationVO specificationVO = new SpecificationVO(1L, "specification");
+
 
         DiscountValue discountValue = ModelUtils.getDiscountValue();
         discountValue.setSpecification(ModelUtils.getSpecification());
 
         DiscountValue discountValueTest = ModelUtils.getDiscountValue();
-        discountValueTest.setSpecification(specification);
+        discountValueTest.setSpecification(modelMapper.map(specificationVO, Specification.class));
         discountValueTest.setPlace(place);
 
-        when(specService.findByName(discountValue.getSpecification().getName())).thenReturn(specification);
+        when(specService.findByName(discountValue.getSpecification().getName())).thenReturn(specificationVO);
         proposePlaceService.saveDiscountValuesWithPlace(Collections.singleton(discountValue), place);
         assertEquals(Collections.singleton(discountValueTest), Collections.singleton(discountValue));
     }

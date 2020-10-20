@@ -213,7 +213,8 @@ public class PlaceServiceImpl implements PlaceService {
         if (discounts != null) {
             discounts.forEach(d -> {
                 DiscountValue discount = modelMapper.map(d, DiscountValue.class);
-                discount.setSpecification(specificationService.findByName(d.getSpecification().getName()));
+                discount.setSpecification(modelMapper
+                    .map(specificationService.findByName(d.getSpecification().getName()), Specification.class));
                 discount.setPlace(updatedPlace);
                 discountService.save(discount);
                 newDiscounts.add(discount);
