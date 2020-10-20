@@ -4,13 +4,18 @@ import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatus.HabitStatusDto;
+import greencity.dto.habittranslation.HabitFactTranslationVO;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
+import greencity.enums.FactOfDayStatus;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
 import greencity.service.TestConst;
@@ -235,5 +240,40 @@ public class ModelUtils {
         place.setAuthor(getUser());
         place.setModifiedDate(ZonedDateTime.now());
         return place;
+    }
+
+    public static HabitFactTranslation getFactTranslation() {
+        return HabitFactTranslation.builder()
+                .id(1L)
+                .factOfDayStatus(FactOfDayStatus.CURRENT)
+                .habitFact(null)
+                .content("Content")
+                .build();
+    }
+
+    public static HabitFactTranslationVO getFactTranslationVO() {
+        return HabitFactTranslationVO.builder()
+                .id(1L)
+                .factOfDayStatus(FactOfDayStatus.CURRENT)
+                .habitFact(null)
+                .content("Content")
+                .build();
+    }
+
+
+    public static HabitFact getHabitFact() {
+        return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
+    }
+
+    public static HabitFactVO getHabitFactVO() {
+        return new HabitFactVO(1L, Collections.singletonList(getFactTranslationVO()), null);
+    }
+
+    public static LanguageTranslationDTO getLanguageTranslationDTO() {
+        return new LanguageTranslationDTO(getLanguageDTO(), "content");
+    }
+
+    public static LanguageDTO getLanguageDTO() {
+        return new LanguageDTO(1L, "en");
     }
 }
