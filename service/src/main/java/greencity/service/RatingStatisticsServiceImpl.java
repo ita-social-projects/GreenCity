@@ -1,14 +1,14 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;
-import greencity.service.RatingStatisticsService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,8 +56,9 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
 
     @Transactional
     @Override
-    public RatingStatistics save(RatingStatistics ratingStatistics) {
-        return ratingStatisticsRepo.save(ratingStatistics);
+    public RatingStatisticsVO save(RatingStatisticsVO ratingStatistics) {
+        RatingStatistics saved = ratingStatisticsRepo.save(modelMapper.map(ratingStatistics, RatingStatistics.class));
+        return modelMapper.map(saved, RatingStatisticsVO.class);
     }
 
     @Override
@@ -167,3 +168,4 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         return new RatingStatisticsSpecification(searchCriteria);
     }
 }
+
