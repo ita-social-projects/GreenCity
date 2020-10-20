@@ -21,6 +21,7 @@ import greencity.entity.Category;
 import greencity.entity.DiscountValue;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
+import greencity.entity.Specification;
 import greencity.entity.User;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ROLE;
