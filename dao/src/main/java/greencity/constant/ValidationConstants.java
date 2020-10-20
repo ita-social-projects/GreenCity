@@ -47,11 +47,6 @@ public final class ValidationConstants {
     public static final int HABIT_FACT_MIN_LENGTH = 3;
     public static final int HABIT_FACT_MAX_LENGTH = 300;
 
-    public static final int DISCOUNT_VALUE_MIN = 0;
-    public static final String DISCOUNT_VALUE_DOES_NOT_CORRECT = "{greenCity.validation.invalid.discount.value}";
-    public static final int DISCOUNT_VALUE_MAX = 100;
-
-
     public static final String BAD_PHOTO_LIST_REQUEST = "{greenCity.validation.bad.photo.request}";
     public static final String BAD_OPENING_HOURS_LIST_REQUEST = "{greenCity.validation.bad.openingHoursList}";
     public static final String BAD_DISCOUNT_VALUES_LIST_REQUEST = "{greenCity.validation.bad.discountValues}";
