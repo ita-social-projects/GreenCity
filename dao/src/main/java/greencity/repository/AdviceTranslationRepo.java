@@ -28,11 +28,11 @@ public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, 
      * Method find {@link AdviceTranslation} by content and language code.
      *
      * @param languageCode of {@link Language}
-     * @param advice       of {@link Advice}
+     * @param content       of {@link Advice}
      * @return {@link AdviceTranslation} in Optional
      * @author Vitaliy Dzen
      */
-    Optional<AdviceTranslation> findAdviceTranslationByLanguageCodeAndAdvice(String languageCode, String advice);
+    Optional<AdviceTranslation> findAdviceTranslationByLanguageCodeAndContent(String languageCode, String content);
 
     /**
      * Method deletes all {@link AdviceTranslation}'s by {@link Advice} instance.
