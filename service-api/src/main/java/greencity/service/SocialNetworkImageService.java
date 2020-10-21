@@ -1,15 +1,12 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
-import greencity.dto.socialnetwork.SocialNetworkResponseDTO;
-import greencity.entity.SocialNetworkImage;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 /**
  * SocialNetworkImageService interface.
@@ -18,14 +15,15 @@ import java.util.List;
  */
 public interface SocialNetworkImageService {
     /**
-     * Method creates or returns existed {@link SocialNetworkImage} by given url.
+     * Method creates or returns existed {@link SocialNetworkImageVO} by given url.
+     *
      * @param url a well-formed url
-     * @return {@link SocialNetworkImage}
+     * @return {@link SocialNetworkImageVO}
      */
-    SocialNetworkImage getSocialNetworkImageByUrl(String url);
+    SocialNetworkImageVO getSocialNetworkImageByUrl(String url);
 
     /**
-     * Find {@link SocialNetworkImage} for management by page .
+     * Find {@link SocialNetworkImageResponseDTO} for management by page .
      *
      * @param pageable a value with pageable configuration.
      * @return a dto of {@link PageableDto}.
@@ -38,29 +36,29 @@ public interface SocialNetworkImageService {
      *
      * @param paging {@link Pageable}.
      * @param query  query to search,
-     * @return PageableDto of {@link SocialNetworkResponseDTO} instances.
+     * @return PageableDto of {@link SocialNetworkImageResponseDTO} instances.
      */
     PageableDto<SocialNetworkImageResponseDTO> searchBy(Pageable paging, String query);
 
     /**
-     * Method for deleting the {@link SocialNetworkImage} instance by its id.
+     * Method for deleting the {@link SocialNetworkImageVO} instance by its id.
      *
-     * @param id - {@link SocialNetworkImage} instance id which will be deleted.
+     * @param id - {@link SocialNetworkImageVO} instance id which will be deleted.
      */
     void delete(Long id);
 
     /**
-     * Method deletes all {@link SocialNetworkImage} by list of ids.
+     * Method deletes all {@link SocialNetworkImageVO} by list of ids.
      *
-     * @param listId list of id {@link SocialNetworkImage}
+     * @param listId list of id {@link SocialNetworkImageVO}
      */
     void deleteAll(List<Long> listId);
 
     /**
-     * Method for creating {@link SocialNetworkImage} instance.
+     * Method for creating {@link SocialNetworkImageVO} instance.
      *
-     * @param socialNetworkImageRequestDTO - dto with {@link SocialNetworkImage} title, text, image path.
-     * @return {@link AddEcoNewsDtoResponse} instance.
+     * @param socialNetworkImageRequestDTO - dto with {@link SocialNetworkImageRequestDTO} title, text, image path.
+     * @return {@link SocialNetworkImageResponseDTO} instance.
      */
     SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile image);
 
@@ -73,9 +71,9 @@ public interface SocialNetworkImageService {
     SocialNetworkImageResponseDTO findDtoById(Long id);
 
     /**
-     * Method for updating {@link SocialNetworkImage} instance.
+     * Method for updating {@link SocialNetworkImageVO} instance.
      *
-     * @param socialNetworkImageResponseDTO - instance of {@link SocialNetworkImageResponseDTO}.
+     * @param socialNetworkImageResponseDTO - instance of {@link SocialNetworkImageVO}.
      */
     void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile multipartFile);
 }

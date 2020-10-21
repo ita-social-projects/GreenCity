@@ -68,6 +68,10 @@ public final class ErrorMessage {
     public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
+    public static final String SOCIAL_NETWORK_IMAGE_NOT_SAVED = "Social network image hasn't been saved";
+    public static final String SOCIAL_NETWORK_IMAGE_FOUND_BY_ID = "Social network image doesn't exist by this id: ";
+    public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
+        "Bad default social network image host path (Row in database doesn't exists)";
 
     private ErrorMessage() {
     }
