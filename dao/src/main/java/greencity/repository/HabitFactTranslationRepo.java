@@ -33,12 +33,12 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * Method find {@link HabitFactTranslation} by content and language code.
      *
      * @param languageCode of {@link Language}.
-     * @param habitFact    of {@link HabitFact}.
+     * @param content   of {@link HabitFact}.
      * @return {@link HabitFactTranslation} in Optional.
      * @author Vitaliy Dzen.
      */
-    Optional<HabitFactTranslation> findFactTranslationByLanguage_CodeAndHabitFact(String languageCode,
-                                                                                  String habitFact);
+    Optional<HabitFactTranslation> findFactTranslationByLanguage_CodeAndContent(String languageCode,
+                                                                                  String content);
 
     /**
      * Method finds random {@link HabitFact} in 3 languages between all facts that were not used during this iteration.
