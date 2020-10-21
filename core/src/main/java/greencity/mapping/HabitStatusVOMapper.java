@@ -2,7 +2,9 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatus.HabitStatusVO;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.entity.HabitStatus;
+import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,11 @@ public class HabitStatusVOMapper extends AbstractConverter<HabitStatus, HabitSta
             .workingDays(habitStatus.getWorkingDays())
             .habitAssignVO(HabitAssignVO.builder()
                 .id(habitStatus.getHabitAssign().getId()).build())
+            .habitStatusCalendarVOS(habitStatus.getHabitStatusCalendars().stream()
+                .map(habitStatusCalendar -> HabitStatusCalendarVO.builder()
+                    .id(habitStatusCalendar.getId())
+                    .enrollDate(habitStatusCalendar.getEnrollDate())
+                    .build()).collect(Collectors.toList()))
             .build();
     }
 }

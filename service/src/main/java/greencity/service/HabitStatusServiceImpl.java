@@ -88,9 +88,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         habitStatus.setWorkingDays(++workingDays);
         LocalDate todayDate = LocalDate.now();
         HabitStatusCalendar habitCalendar;
-        LocalDate lastEnrollmentDate =
-            habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(
-                modelMapper.map(habitStatus, HabitStatusVO.class));
+        HabitStatusVO habitStatusVO = modelMapper.map(habitStatus, HabitStatusVO.class);
+        LocalDate lastEnrollmentDate = habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO);
         long intervalBetweenDates = 0;
 
         if (lastEnrollmentDate != null) {
@@ -101,11 +100,11 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             int habitStreak = habitStatus.getHabitStreak();
             habitStatus.setHabitStreak(++habitStreak);
             habitCalendar = HabitStatusCalendar.builder().enrollDate(todayDate).habitStatus(habitStatus).build();
-            habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
+            habitStatus.getHabitStatusCalendars().add(habitCalendar);
         } else if (intervalBetweenDates > 1) {
             habitStatus.setHabitStreak(1);
             habitCalendar = HabitStatusCalendar.builder().enrollDate(todayDate).habitStatus(habitStatus).build();
-            habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
+            habitStatus.getHabitStatusCalendars().add(habitCalendar);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
@@ -133,13 +132,12 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         }
 
         habitStatusRepo.save(habitStatus);
-        HabitStatusCalendarVO habitStatusCalendar =
+        HabitStatusCalendarVO habitStatusCalendarVO =
             habitStatusCalendarService
                 .findHabitStatusCalendarByEnrollDateAndHabitStatus(
                     date, modelMapper.map(habitStatus, HabitStatusVO.class));
-
-        if (habitStatusCalendar != null) {
-            habitStatusCalendarService.delete(habitStatusCalendar);
+        if (habitStatusCalendarVO != null) {
+            habitStatusCalendarService.delete(habitStatusCalendarVO);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_IS_NOT_ENROLLED);
         }
@@ -166,7 +164,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         if (habitCalendarOnDate == null) {
             HabitStatusCalendar habitStatusCalendar = HabitStatusCalendar.builder()
                 .enrollDate(date).habitStatus(habitStatus).build();
-            habitStatusCalendarService.save(modelMapper.map(habitStatusCalendar, HabitStatusCalendarVO.class));
+
+            habitStatus.getHabitStatusCalendars().add(habitStatusCalendar);
 
             if (Period.between(date, LocalDate.now()).getDays() == daysStreakAfterDate + 1) {
                 if ((daysStreakAfterDate + daysStreakBeforeDate) == 1) {

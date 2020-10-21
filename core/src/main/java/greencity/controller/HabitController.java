@@ -58,6 +58,7 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/{id}")
+    @ApiLocale
     public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id,
                                                  @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -80,8 +81,8 @@ public class HabitController {
     @ApiPageable
     @ApiLocale
     public ResponseEntity<PageableDto<HabitDto>> getAll(
-        @ApiIgnore Pageable pageable,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiIgnore @ValidLanguage Locale locale,
+        @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
     }
@@ -187,11 +188,25 @@ public class HabitController {
      * @param habitId {@link Habit} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
-    @ApiOperation(value = "Find statistic by habit id.")
+    @ApiOperation(value = "Find all statistics by habit id.")
     @GetMapping("/statistic/{habitId}")
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(habitId));
+    }
+
+    /**
+     * Method for finding {@link HabitStatisticDto} by {@link HabitAssign id}.
+     *
+     * @param habitAssignId {@link HabitAssign} id.
+     * @return list of {@link HabitStatisticDto} instances.
+     */
+    @ApiOperation(value = "Find all statistics by habit assign id.")
+    @GetMapping("/statistic/assign/{habitAssignId}")
+    public ResponseEntity<List<HabitStatisticDto>> findAllByHabitAssignId(
+        @PathVariable Long habitAssignId) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitStatisticService.findAllStatsByHabitAssignId(habitAssignId));
     }
 
     /**

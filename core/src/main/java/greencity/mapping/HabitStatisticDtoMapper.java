@@ -31,7 +31,8 @@ public class HabitStatisticDtoMapper extends AbstractConverter<HabitStatistic, H
                     .acquired(habitStatistic.getHabitAssign().getAcquired())
                     .createDateTime(habitStatistic.getHabitAssign().getCreateDate())
                     .suspended(habitStatistic.getHabitAssign().getSuspended())
-                    .habitId(habitStatistic.getHabitAssign().getHabit().getId()).build())
+                    .habitId(habitStatistic.getHabitAssign().getHabit().getId())
+                    .userId(habitStatistic.getHabitAssign().getUser().getId()).build())
             .build();
     }
 }

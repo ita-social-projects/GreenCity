@@ -22,28 +22,30 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      * {@inheritDoc}
      */
     @Override
-    public void save(HabitStatusCalendarVO habitStatusCalendar) {
-        habitStatusCalendarRepo.save(modelMapper.map(habitStatusCalendar, HabitStatusCalendar.class));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public HabitStatusCalendarVO findHabitStatusCalendarByEnrollDateAndHabitStatus(LocalDate date,
-                                                                                 HabitStatusVO habitStatusVO) {
+                                                                                   HabitStatusVO habitStatusVO) {
         HabitStatus toFind = modelMapper.map(habitStatusVO, HabitStatus.class);
         HabitStatusCalendar calendar =
             habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitStatus(date, toFind);
-        return modelMapper.map(calendar, HabitStatusCalendarVO.class);
+        return calendar == null ? null : modelMapper.map(calendar, HabitStatusCalendarVO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void delete(HabitStatusCalendarVO habitStatusCalendar) {
-        habitStatusCalendarRepo.delete(modelMapper.map(habitStatusCalendar, HabitStatusCalendar.class));
+    public void save(HabitStatusCalendarVO habitStatusCalendarVO) {
+        HabitStatusCalendar habitStatusCalendar = modelMapper.map(habitStatusCalendarVO, HabitStatusCalendar.class);
+        habitStatusCalendarRepo.save(habitStatusCalendar);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void delete(HabitStatusCalendarVO habitStatusCalendarVO) {
+        HabitStatusCalendar habitStatusCalendar = modelMapper.map(habitStatusCalendarVO, HabitStatusCalendar.class);
+        habitStatusCalendarRepo.delete(habitStatusCalendar);
     }
 
     /**
