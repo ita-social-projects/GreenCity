@@ -13,6 +13,11 @@
     <artifactId>service</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>service</name>
+
+    <properties>
+        <apache.commons.version>3.10</apache.commons.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>greencity</groupId>
@@ -81,6 +86,16 @@
             <artifactId>google-cloud-storage</artifactId>
             <version>1.105.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3</version>
         </dependency>
     </dependencies>
 

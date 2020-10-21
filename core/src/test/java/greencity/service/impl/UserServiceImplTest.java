@@ -9,6 +9,7 @@ import greencity.dto.goal.CustomGoalRequestDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalRequestDto;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.enums.EmailNotification;
@@ -839,8 +840,8 @@ class UserServiceImplTest {
     void saveUserProfileTest() {
         UserProfileDtoRequest request = new UserProfileDtoRequest();
         request.setSocialNetworks(new ArrayList<>());
-        SocialNetworkImage socialNetworkImage = new SocialNetworkImage();
-        socialNetworkImage.builder()
+        SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
+        socialNetworkImageVO.builder()
             .id(1L)
             .imagePath("test")
             .hostPath("test")
@@ -850,11 +851,11 @@ class UserServiceImplTest {
             .id(1L)
             .url("http://test.com")
             .user(user)
-            .socialNetworkImage(socialNetworkImage)
+            .socialNetworkImage(modelMapper.map(socialNetworkImageVO, SocialNetworkImage.class))
             .build();
         request.setSocialNetworks(Collections.singletonList("test"));
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
-        when(socialNetworkImageService.getSocialNetworkImageByUrl(anyString())).thenReturn(socialNetworkImage);
+        when(socialNetworkImageService.getSocialNetworkImageByUrl(anyString())).thenReturn(socialNetworkImageVO);
         userService.saveUserProfile(request, "teststring");
         verify(userRepo).save(user);
         verify(modelMapper).map(user, UserProfileDtoResponse.class);
