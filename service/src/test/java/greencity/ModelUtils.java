@@ -10,6 +10,10 @@ import greencity.dto.habittranslation.HabitFactTranslationVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tipsandtricks.TextTranslationVO;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
@@ -275,5 +279,55 @@ public class ModelUtils {
 
     public static LanguageDTO getLanguageDTO() {
         return new LanguageDTO(1L, "en");
+    }
+
+    public static TipsAndTricksVO getTipsAndTricks() {
+        return TipsAndTricksVO.builder()
+            .id(1L)
+            .titleTranslations(Collections.singletonList(TitleTranslationVO.builder()
+                .content("title content")
+                .language(getLanguageVO())
+                .build()))
+            .textTranslations(Collections.singletonList(TextTranslationVO.builder()
+                .content("text content for tips and tricks")
+                .language(getLanguageVO())
+                .build()))
+            .creationDate(ZonedDateTime.now())
+            .author(getUserVO())
+            .tags(Collections.singletonList(getTagVO()))
+            .imagePath(null)
+            .source(null)
+            .build();
+    }
+    public static LanguageVO getLanguageVO() {
+        return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
+    }
+    public static UserVO getUserVO() {
+        return UserVO.builder()
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(ROLE.ROLE_USER)
+            .build();
+    }
+    public static TagVO getTagVO() {
+        return new TagVO(1L, "tag");
+    }
+    public static TitleTranslationVO getTitleTranslationVO(){
+        return TitleTranslationVO.builder()
+            .id(1L)
+            .content("Content")
+            .language(ModelUtils.getLanguageVO())
+            .tipsAndTricks(ModelUtils.getTipsAndTricks())
+            .build();
+    }
+
+    public static TextTranslationVO getTextTranslationVO(){
+        return TextTranslationVO.builder()
+            .id(1L)
+            .content("Content")
+            .language(ModelUtils.getLanguageVO())
+            .tipsAndTricks(ModelUtils.getTipsAndTricks())
+            .build();
     }
 }
