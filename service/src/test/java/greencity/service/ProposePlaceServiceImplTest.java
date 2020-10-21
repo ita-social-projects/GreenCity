@@ -4,7 +4,7 @@ import greencity.ModelUtils;
 import greencity.dto.descountvalue.DiscountValueVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
-import greencity.dto.openinghours.OpeningHoursDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.specification.SpecificationVO;

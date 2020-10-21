@@ -1,14 +1,12 @@
 package greencity.service;
 
 import greencity.dto.breaktime.BreakTimeVO;
-import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceVO;
 import greencity.entity.OpeningHours;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.OpenHoursRepo;
-import greencity.service.BreakTimeService;
-import greencity.service.OpenHoursServiceImpl;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;

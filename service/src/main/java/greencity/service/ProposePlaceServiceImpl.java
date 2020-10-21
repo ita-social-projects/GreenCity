@@ -3,7 +3,7 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.dto.descountvalue.DiscountValueVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.openinghours.OpeningHoursDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.PlaceVO;
 import greencity.exception.exceptions.BadRequestException;

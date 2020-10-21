@@ -9,7 +9,7 @@ import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.PlaceAddDto;
@@ -135,9 +135,7 @@ public class PlaceServiceImpl implements PlaceService {
 
         proposePlaceService.checkLocationValues(dto.getLocation());
         if (dto.getOpeningHoursList() != null) {
-            //TODO change this when placeService will be moved(not to use mapper just Opening Hours from service modal)
-            proposePlaceService.checkInputTime(modelMapper.map(dto.getOpeningHoursList(),
-                new TypeToken<Set<OpeningHoursDto>>(){}.getType()));
+            proposePlaceService.checkInputTime(dto.getOpeningHoursList());
         }
 
         Place place = modelMapper.map(dto, Place.class);

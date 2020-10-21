@@ -2,14 +2,12 @@ package greencity.service;
 
 import greencity.dto.descountvalue.DiscountValueVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.openinghours.OpeningHoursDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.PlaceVO;
 import java.util.List;
 import java.util.Set;
-import org.springframework.stereotype.Service;
 
-@Service
 public interface ProposePlaceService {
     /**
      * Method check if input location is new.
