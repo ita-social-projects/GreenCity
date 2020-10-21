@@ -5,6 +5,8 @@ import greencity.security.interceptor.UserActivityInterceptor;
 import greencity.service.UserService;
 import java.util.List;
 import java.util.Locale;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,8 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private UserService userService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     /**
      * Method for configuring message source.
@@ -85,7 +89,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new UserArgumentResolver(userService));
+        resolvers.add(new UserArgumentResolver(userService, modelMapper));
     }
 }
 
