@@ -1,25 +1,27 @@
-package greencity.service.impl;
+package greencity.service;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.CustomGoalSaveRequestDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.CustomGoal;
 import greencity.entity.User;
 import greencity.exception.exceptions.CustomGoalNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomGoalRepo;
 import greencity.service.CustomGoalService;
+import greencity.service.UserService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static greencity.constant.ErrorMessage.*;
 
@@ -34,6 +36,7 @@ public class CustomGoalServiceImpl implements CustomGoalService {
      */
     private CustomGoalRepo customGoalRepo;
     private ModelMapper modelMapper;
+    private UserService userService;
 
     /**
      * {@inheritDoc}
@@ -42,11 +45,13 @@ public class CustomGoalServiceImpl implements CustomGoalService {
      */
     @Transactional
     @Override
-    public List<CustomGoalResponseDto> save(BulkSaveCustomGoalDto bulkSave, User user) {
+    public List<CustomGoalResponseDto> save(BulkSaveCustomGoalDto bulkSave, Long userId) {
+        UserVO userVO = userService.findById(userId);
+        User user = modelMapper.map(userVO, User.class);
         List<CustomGoalSaveRequestDto> dto = bulkSave.getCustomGoalSaveRequestDtoList();
         List<String> errorMessages = findDuplicates(dto, user);
         if (!errorMessages.isEmpty()) {
-            throw new CustomGoalNotSavedException(CUSTOM_GOAL_WHERE_NOT_SAVED + errorMessages.toString());
+            throw new CustomGoalNotSavedException(ErrorMessage.CUSTOM_GOAL_WHERE_NOT_SAVED + errorMessages.toString());
         }
         customGoalRepo.saveAll(user.getCustomGoals());
         return user.getCustomGoals().stream()
@@ -132,7 +137,7 @@ public class CustomGoalServiceImpl implements CustomGoalService {
         if (!customGoals.isEmpty()) {
             return customGoals;
         } else {
-            throw new NotFoundException(CUSTOM_GOAL_NOT_FOUND);
+            throw new NotFoundException(ErrorMessage.CUSTOM_GOAL_NOT_FOUND);
         }
     }
 
@@ -198,7 +203,7 @@ public class CustomGoalServiceImpl implements CustomGoalService {
         if (duplicate.isEmpty()) {
             updatable.setText(dto.getText());
         } else {
-            throw new CustomGoalNotSavedException(CUSTOM_GOAL_WHERE_NOT_SAVED + dto.getText());
+            throw new CustomGoalNotSavedException(ErrorMessage.CUSTOM_GOAL_WHERE_NOT_SAVED + dto.getText());
         }
         return modelMapper.map(updatable, CustomGoalResponseDto.class);
     }

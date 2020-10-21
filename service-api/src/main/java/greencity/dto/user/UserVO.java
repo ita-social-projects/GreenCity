@@ -1,5 +1,6 @@
 package greencity.dto.user;
 
+import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.verifyEmail.VerifyEmailVO;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
@@ -30,6 +31,8 @@ public class UserVO {
     private LocalDateTime lastVisit;
 
     private List<UserGoalVO> userGoals = new ArrayList<>();
+
+    private List<CustomGoalVO> customGoals = new ArrayList<>();
 
     private VerifyEmailVO verifyEmail;
 

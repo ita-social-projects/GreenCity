@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
@@ -12,6 +12,7 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.CustomGoalNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomGoalRepo;
+import greencity.service.CustomGoalServiceImpl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +60,7 @@ class CustomGoalServiceImplTest {
     void saveEmptyBulkSaveCustomGoalDtoTest() {
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.emptyList()),
-            user
+            1L
         );
         assertTrue(saveResult.isEmpty());
         assertTrue(user.getCustomGoals().isEmpty());
@@ -73,7 +74,7 @@ class CustomGoalServiceImplTest {
         when(modelMapper.map(customGoal, CustomGoalResponseDto.class)).thenReturn(new CustomGoalResponseDto(1L, "bar"));
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave)),
-            user
+            1L
         );
         assertEquals(user.getCustomGoals().get(0), customGoal);
         assertEquals("bar", saveResult.get(0).getText());
@@ -86,7 +87,7 @@ class CustomGoalServiceImplTest {
         user.setCustomGoals(Collections.singletonList(customGoal));
         when(modelMapper.map(customGoalDtoToSave, CustomGoal.class)).thenReturn(customGoal);
         BulkSaveCustomGoalDto bulkSave = new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave));
-        Assertions.assertThrows(CustomGoalNotSavedException.class, () -> customGoalService.save(bulkSave, user));
+        Assertions.assertThrows(CustomGoalNotSavedException.class, () -> customGoalService.save(bulkSave, 1L));
     }
 
     @Test
