@@ -69,7 +69,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
                                       MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
-        toSave.setAuthor(userService.findByEmail(email));
+        toSave.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
         if (addEcoNewsDtoRequest.getImage() != null) {
             image = fileService.convertToMultipartImage(addEcoNewsDtoRequest.getImage());
         }

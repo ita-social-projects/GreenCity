@@ -17,6 +17,7 @@ import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Category;
 import greencity.entity.DiscountValue;
 import greencity.entity.OpeningHours;
@@ -163,14 +164,14 @@ public class PlaceServiceImpl implements PlaceService {
      * @return user - {@link User}.
      * @author Kateryna Horokh
      */
-    private User setUserToPlaceByEmail(String email, Place place) {
-        User user = userService.findByEmail(email);
-        place.setAuthor(user);
-        if (user.getRole() == ROLE.ROLE_ADMIN || user.getRole() == ROLE.ROLE_MODERATOR) {
+    private UserVO setUserToPlaceByEmail(String email, Place place) {
+        UserVO userVO = modelMapper.map(userService.findByEmail(email), UserVO.class);
+        place.setAuthor(modelMapper.map(userVO, User.class));
+        if (userVO.getRole() == ROLE.ROLE_ADMIN || userVO.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(PlaceStatus.APPROVED);
             notificationService.sendImmediatelyReport(modelMapper.map(place, PlaceVO.class));
         }
-        return user;
+        return userVO;
     }
 
     /**

@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
@@ -10,15 +10,14 @@ import greencity.dto.goal.GoalDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
+import greencity.entity.localization.GoalTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
-import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
-import greencity.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -36,8 +35,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -74,17 +71,18 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User save(User user) {
-        return userRepo.save(user);
+    public UserVO save(UserVO userVO) {
+        User user = modelMapper.map(userVO, User.class);
+        return modelMapper.map(userRepo.save(user), UserVO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public User findById(Long id) {
-        return userRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + id));
+    public UserVO findById(Long id) {
+        return modelMapper.map(userRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id)), UserVO.class);
     }
 
     /**
@@ -131,24 +129,24 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateUser(UserManagementDto dto) {
-        User user = findById(dto.getId());
-        updateUserFromDto(dto, user);
-        userRepo.save(user);
+        UserVO userVO = findById(dto.getId());
+        updateUserFromDto(dto, userVO);
+        userRepo.save(modelMapper.map(userVO, User.class));
     }
 
     /**
-     * Method for setting data from {@link UserManagementDto} to {@link User}.
+     * Method for setting data from {@link UserManagementDto} to {@link UserVO}.
      *
      * @param dto  - dto {@link UserManagementDto} with updated fields.
-     * @param user {@link User} to be updated.
+     * @param userVO {@link UserVO} to be updated.
      * @author Vasyl Zhovnir
      */
-    private void updateUserFromDto(UserManagementDto dto, User user) {
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setRole(dto.getRole());
-        user.setUserCredo(dto.getUserCredo());
-        user.setUserStatus(dto.getUserStatus());
+    private void updateUserFromDto(UserManagementDto dto, UserVO userVO) {
+        userVO.setName(dto.getName());
+        userVO.setEmail(dto.getEmail());
+        userVO.setRole(dto.getRole());
+        userVO.setUserCredo(dto.getUserCredo());
+        userVO.setUserStatus(dto.getUserStatus());
     }
 
     /**
@@ -156,33 +154,33 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void deleteById(Long id) {
-        User user = findById(id);
-        userRepo.delete(user);
+        UserVO userVO = findById(id);
+        userRepo.delete(modelMapper.map(userVO, User.class));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public User findByEmail(String email) {
+    public UserVO findByEmail(String email) {
         Optional<User> optionalUser = userRepo.findByEmail(email);
-        return optionalUser.orElse(null);
+        return modelMapper.map(optionalUser.orElse(null), UserVO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<User> findAll() {
-        return userRepo.findAll();
+    public List<UserVO> findAll() {
+        return modelMapper.map(userRepo.findAll(), new TypeToken<List<UserVO>>(){}.getType());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Optional<User> findNotDeactivatedByEmail(String email) {
-        return userRepo.findNotDeactivatedByEmail(email);
+    public Optional<UserVO> findNotDeactivatedByEmail(String email) {
+        return Optional.of(modelMapper.map(userRepo.findNotDeactivatedByEmail(email), UserVO.class));
     }
 
     /**
@@ -203,9 +201,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserRoleDto updateRole(Long id, ROLE role, String email) {
         checkUpdatableUser(id, email);
-        User user = findById(id);
-        user.setRole(role);
-        return modelMapper.map(userRepo.save(user), UserRoleDto.class);
+        UserVO userVO = findById(id);
+        userVO.setRole(role);
+        User map = modelMapper.map(userVO, User.class);
+        return modelMapper.map(userRepo.save(map), UserRoleDto.class);
     }
 
     /**
@@ -215,9 +214,10 @@ public class UserServiceImpl implements UserService {
     public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
         checkUpdatableUser(id, email);
         accessForUpdateUserStatus(id, email);
-        User user = findById(id);
-        user.setUserStatus(userStatus);
-        return modelMapper.map(userRepo.save(user), UserStatusDto.class);
+        UserVO userVO = findById(id);
+        userVO.setUserStatus(userStatus);
+        User map = modelMapper.map(userVO, User.class);
+        return modelMapper.map(userRepo.save(map), UserStatusDto.class);
     }
 
     /**
@@ -242,11 +242,13 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public User updateLastVisit(User user) {
-        User updatable = findById(user.getId());
-        log.info(updatable.getLastVisit() + "s");
-        updatable.setLastVisit(LocalDateTime.now());
-        return userRepo.save(updatable);
+    public UserVO updateLastVisit(UserVO userVO) {
+        UserVO user = findById(userVO.getId());
+        log.info(user.getLastVisit() + "s");
+        userVO.setLastVisit(LocalDateTime.now());
+        User updatable = modelMapper.map(userVO, User.class);
+        return modelMapper.map(userRepo.save(updatable), UserVO.class);
+
     }
 
     /**
@@ -271,7 +273,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserUpdateDto getUserUpdateDtoByEmail(String email) {
         return modelMapper.map(
-            userRepo.findByEmail(email).orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email)),
+            userRepo.findByEmail(email).orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
             UserUpdateDto.class
         );
     }
@@ -283,7 +285,7 @@ public class UserServiceImpl implements UserService {
     public UserUpdateDto update(UserUpdateDto dto, String email) {
         User user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         user.setName(dto.getName());
         user.setEmailNotification(dto.getEmailNotification());
         userRepo.save(user);
@@ -302,7 +304,7 @@ public class UserServiceImpl implements UserService {
             .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
             .collect(Collectors.toList());
         if (userGoalResponseDtos.isEmpty()) {
-            throw new UserHasNoGoalsException(USER_HAS_NO_GOALS);
+            throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
         }
         userGoalResponseDtos.forEach(el -> setTextForAnyUserGoal(el, userId, language));
         return userGoalResponseDtos;
@@ -331,7 +333,7 @@ public class UserServiceImpl implements UserService {
         List<GoalTranslation> goalTranslations = goalTranslationRepo
             .findAvailableByUserId(userId, language);
         if (goalTranslations.isEmpty()) {
-            throw new UserHasNoAvailableGoalsException(USER_HAS_NO_AVAILABLE_GOALS);
+            throw new UserHasNoAvailableGoalsException(ErrorMessage.USER_HAS_NO_AVAILABLE_GOALS);
         }
         return goalTranslations
             .stream()
@@ -347,8 +349,8 @@ public class UserServiceImpl implements UserService {
     public List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto bulkDto, String language) {
         List<UserGoalDto> goalDtos = bulkDto.getUserGoals();
         List<UserCustomGoalDto> customGoalDtos = bulkDto.getUserCustomGoal();
-        User user = userRepo.findById(userId)
-            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
+        UserVO user = modelMapper.map(userRepo.findById(userId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)), UserVO.class);
         if (goalDtos == null && customGoalDtos != null) {
             saveCustomGoalsForUserGoals(user, customGoalDtos);
         }
@@ -365,11 +367,12 @@ public class UserServiceImpl implements UserService {
     /**
      * Method save user goals with goal dictionary.
      *
-     * @param user  {@link User} current user
+     * @param userVO  {@link UserVO} current user
      * @param goals list {@link UserGoalDto} for saving
      * @author Bogdan Kuzenko
      */
-    private void saveGoalForUserGoal(User user, List<UserGoalDto> goals) {
+    private void saveGoalForUserGoal(UserVO userVO, List<UserGoalDto> goals) {
+        User user = modelMapper.map(userVO, User.class);
         for (UserGoalDto el : goals) {
             UserGoal userGoal = modelMapper.map(el, UserGoal.class);
             userGoal.setUser(user);
@@ -381,11 +384,12 @@ public class UserServiceImpl implements UserService {
     /**
      * Method save user goals with custom goal dictionary.
      *
-     * @param user        {@link User} current user
+     * @param userVO        {@link UserVO} current user
      * @param customGoals list {@link UserCustomGoalDto} for saving
      * @author Bogdan Kuzenko
      */
-    private void saveCustomGoalsForUserGoals(User user, List<UserCustomGoalDto> customGoals) {
+    private void saveCustomGoalsForUserGoals(UserVO userVO, List<UserCustomGoalDto> customGoals) {
+        User user = modelMapper.map(userVO, User.class);
         for (UserCustomGoalDto el1 : customGoals) {
             UserGoal userGoal = modelMapper.map(el1, UserGoal.class);
             userGoal.setUser(user);
@@ -422,7 +426,7 @@ public class UserServiceImpl implements UserService {
      */
     private Long delete(Long id) {
         UserGoal userGoal = userGoalRepo
-            .findById(id).orElseThrow(() -> new NotFoundException(USER_GOAL_NOT_FOUND + id));
+            .findById(id).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_GOAL_NOT_FOUND + id));
         userGoalRepo.delete(userGoal);
         return id;
     }
@@ -435,7 +439,7 @@ public class UserServiceImpl implements UserService {
     public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {
         UserGoal userGoal;
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
             if (userGoal.getStatus().equals(GoalStatus.DONE)) {
@@ -448,7 +452,7 @@ public class UserServiceImpl implements UserService {
                 userGoalRepo.save(userGoal);
             }
         } else {
-            throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);
+            throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_HAS_NO_SUCH_GOAL + goalId);
         }
         UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
         setTextForAnyUserGoal(updatedUserGoal, userId, language);
@@ -471,7 +475,7 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void checkUpdatableUser(Long id, String email) {
-        User user = findByEmail(email);
+        UserVO user = findByEmail(email);
         if (id.equals(user.getId())) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
@@ -485,7 +489,7 @@ public class UserServiceImpl implements UserService {
      * @author Rostyslav Khasanov
      */
     private void accessForUpdateUserStatus(Long id, String email) {
-        User user = findByEmail(email);
+        UserVO user = findByEmail(email);
         if (user.getRole() == ROLE.ROLE_MODERATOR) {
             ROLE role = findById(id).getRole();
             if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
@@ -505,7 +509,7 @@ public class UserServiceImpl implements UserService {
         List<HabitTranslation> availableHabitTranslations = habitTranslationRepo
             .findAvailableHabitTranslationsByUser(userId, language);
         if (availableHabitTranslations.isEmpty()) {
-            throw new UserHasNoAvailableHabitTranslationException(USER_HAS_NO_AVAILABLE_HABITS);
+            throw new UserHasNoAvailableHabitTranslationException(ErrorMessage.USER_HAS_NO_AVAILABLE_HABITS);
         }
         return availableHabitTranslations.stream()
             .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
@@ -519,7 +523,7 @@ public class UserServiceImpl implements UserService {
         List<HabitTranslation> habitTranslations = habitTranslationRepo
             .findHabitTranslationsByUserAndAcquiredStatus(userId, language, acquired);
         if (habitTranslations.isEmpty()) {
-            throw new UserHasNoAvailableHabitTranslationException(USER_HAS_NO_AVAILABLE_HABITS);
+            throw new UserHasNoAvailableHabitTranslationException(ErrorMessage.USER_HAS_NO_AVAILABLE_HABITS);
         }
         return habitTranslations.stream()
             .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
@@ -551,7 +555,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void addDefaultHabit(User user, String language) {
+    public void addDefaultHabit(UserVO user, String language) {
         if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
             UserVO userVO = modelMapper.map(user, UserVO.class);
             habitAssignService.assignHabitForUser(1L, userVO);
@@ -567,37 +571,37 @@ public class UserServiceImpl implements UserService {
     public String getProfilePicturePathByUserId(Long id) {
         return userRepo
             .getProfilePicturePathByUserId(id)
-            .orElseThrow(() -> new NotFoundException(PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString()));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.PROFILE_PICTURE_NOT_FOUND_BY_ID + id.toString()));
     }
 
     /**
-     * Update user profile picture {@link User}.
+     * Update user profile picture {@link UserVO}.
      *
      * @param image                 {@link MultipartFile}
      * @param email                 {@link String} - email of user that need to update.
      * @param userProfilePictureDto {@link UserProfilePictureDto}
-     * @return {@link User}.
+     * @return {@link UserVO}.
      * @author Marian Datsko
      */
     @Override
-    public User updateUserProfilePicture(MultipartFile image, String email,
+    public UserVO updateUserProfilePicture(MultipartFile image, String email,
                                          UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         if (userProfilePictureDto.getProfilePicturePath() != null) {
             image = fileService.convertToMultipartImage(userProfilePictureDto.getProfilePicturePath());
         }
         if (image != null) {
             user.setProfilePicturePath(fileService.upload(image).toString());
         } else {
-            throw new BadRequestException(IMAGE_EXISTS);
+            throw new BadRequestException(ErrorMessage.IMAGE_EXISTS);
         }
-        return userRepo.save(user);
+        return modelMapper.map(userRepo.save(user), UserVO.class);
     }
 
     /**
-     * Delete user profile picture {@link User}.
+     * Delete user profile picture {@link UserVO}.
      *
      * @param email {@link String} - email of user that need to update.
      */
@@ -605,25 +609,25 @@ public class UserServiceImpl implements UserService {
     public void deleteUserProfilePicture(String email) {
         User user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         user.setProfilePicturePath(defaultProfilePicture);
         userRepo.save(user);
     }
 
     /**
-     * Get list user friends by user id {@link User}.
+     * Get list user friends by user id {@link UserVO}.
      *
      * @param userId {@link Long}
-     * @return {@link User}.
+     * @return {@link UserVO}.
      * @author Marian Datsko
      */
     @Override
-    public List<User> getAllUserFriends(Long userId) {
-        return userRepo.getAllUserFriends(userId);
+    public List<UserVO> getAllUserFriends(Long userId) {
+        return modelMapper.map(userRepo.getAllUserFriends(userId), new TypeToken<List<UserVO>>(){}.getType());
     }
 
     /**
-     * Delete user friend by id {@link User}.
+     * Delete user friend by id {@link UserVO}.
      *
      * @param userId   {@link Long}
      * @param friendId {@link Long}
@@ -632,25 +636,25 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUserFriendById(Long userId, Long friendId) {
-        List<User> allUserFriends = getAllUserFriends(userId);
+        List<UserVO> allUserFriends = getAllUserFriends(userId);
         findById(friendId);
         if (userId.equals(friendId)) {
-            throw new CheckRepeatingValueException(OWN_USER_ID + friendId);
+            throw new CheckRepeatingValueException(ErrorMessage.OWN_USER_ID + friendId);
         }
         if (!allUserFriends.isEmpty()) {
-            List<Long> listUserId = allUserFriends.stream().map(User::getId).collect(Collectors.toList());
+            List<Long> listUserId = allUserFriends.stream().map(UserVO::getId).collect(Collectors.toList());
             if (listUserId.contains(friendId)) {
                 userRepo.deleteUserFriendById(userId, friendId);
             } else {
-                throw new NotDeletedException(USER_FRIENDS_LIST + friendId);
+                throw new NotDeletedException(ErrorMessage.USER_FRIENDS_LIST + friendId);
             }
         } else {
-            throw new NotDeletedException(USER_FRIENDS_LIST + friendId);
+            throw new NotDeletedException(ErrorMessage.USER_FRIENDS_LIST + friendId);
         }
     }
 
     /**
-     * Add new user friend {@link User}.
+     * Add new user friend {@link UserVO}.
      *
      * @param userId   {@link Long}
      * @param friendId {@link Long}
@@ -659,15 +663,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addNewFriend(Long userId, Long friendId) {
-        List<User> allUserFriends = getAllUserFriends(userId);
+        List<UserVO> allUserFriends = getAllUserFriends(userId);
         findById(friendId);
         if (userId.equals(friendId)) {
-            throw new CheckRepeatingValueException(OWN_USER_ID + friendId);
+            throw new CheckRepeatingValueException(ErrorMessage.OWN_USER_ID + friendId);
         }
         if (!allUserFriends.isEmpty()) {
             allUserFriends.forEach(user -> {
                 if (user.getId().equals(friendId)) {
-                    throw new CheckRepeatingValueException(FRIEND_EXISTS + friendId);
+                    throw new CheckRepeatingValueException(ErrorMessage.FRIEND_EXISTS + friendId);
                 }
             });
         }
@@ -675,7 +679,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Get six friends with the highest rating {@link User}.
+     * Get six friends with the highest rating {@link UserVO}.
      *
      * @param userId {@link Long}
      * @author Marian Datsko
@@ -687,13 +691,13 @@ public class UserServiceImpl implements UserService {
             .map(user -> modelMapper.map(user, UserProfilePictureDto.class))
             .collect(Collectors.toList());
         if (userProfilePictureDtoList.isEmpty()) {
-            throw new NotFoundException(NOT_FOUND_ANY_FRIENDS + userId.toString());
+            throw new NotFoundException(ErrorMessage.NOT_FOUND_ANY_FRIENDS + userId.toString());
         }
         return userProfilePictureDtoList;
     }
 
     /**
-     * Save user profile information {@link User}.
+     * Save user profile information {@link UserVO}.
      *
      * @author Marian Datsko
      */
@@ -701,7 +705,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, String email) {
         User user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         user.setFirstName(userProfileDtoRequest.getFirstName());
         user.setCity(userProfileDtoRequest.getCity());
         user.setUserCredo(userProfileDtoRequest.getUserCredo());
@@ -723,7 +727,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method return user profile information {@link User}.
+     * Method return user profile information {@link UserVO}.
      *
      * @author Marian Datsko
      */
@@ -731,7 +735,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileDtoResponse getUserProfileInformation(Long userId) {
         User user = userRepo
             .findById(userId)
-            .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         if (user.getFirstName() == null) {
             user.setFirstName(user.getName());
         }
@@ -741,8 +745,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Updates last activity time for a given user.
      *
-     * @param userId               - {@link User}'s id
-     * @param userLastActivityTime - new {@link User}'s last activity time
+     * @param userId               - {@link UserVO}'s id
+     * @param userLastActivityTime - new {@link UserVO}'s last activity time
      * @author Yurii Zhurakovskyi
      */
     @Override
@@ -751,7 +755,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * The method checks by id if a {@link User} is online.
+     * The method checks by id if a {@link UserVO} is online.
      *
      * @param userId {@link Long}
      * @return {@link Boolean}.
@@ -760,7 +764,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean checkIfTheUserIsOnline(Long userId) {
         if (userRepo.findById(userId).isEmpty()) {
-            throw new WrongIdException(USER_NOT_FOUND_BY_ID + userId);
+            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
         Optional<Timestamp> lastActivityTime = userRepo.findLastActivityTimeById(userId);
         if (lastActivityTime.isPresent()) {
@@ -774,9 +778,9 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method return user profile statistics {@link User}.
+     * Method return user profile statistics {@link UserVO}.
      *
-     * @param userId - {@link User}'s id
+     * @param userId - {@link UserVO}'s id
      * @author Marian Datsko
      */
     @Override
@@ -795,7 +799,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Get user and six friends with the online status {@link User}.
+     * Get user and six friends with the online status {@link UserVO}.
      *
      * @param userId {@link Long}
      * @author Yurii Zhurakovskyi
@@ -821,7 +825,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Get user and all friends with the online status {@link User} by page.
+     * Get user and all friends with the online status {@link UserVO} by page.
      *
      * @param userId   {@link Long}
      * @param pageable {@link Pageable }
@@ -855,7 +859,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deactivateUser(Long id) {
-        User foundUser = findById(id);
+        UserVO foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.DEACTIVATED);
     }
 
@@ -875,7 +879,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void setActivatedStatus(Long id) {
-        User foundUser = findById(id);
+        UserVO foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.ACTIVATED);
     }
 
@@ -883,11 +887,12 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public Optional<User> findByIdAndToken(Long userId, String token) {
-        User foundUser = findById(userId);
+    public Optional<UserVO> findByIdAndToken(Long userId, String token) {
+        User foundUser = modelMapper.map(findById(userId), User.class);
+
         VerifyEmail verifyEmail = foundUser.getVerifyEmail();
         if (verifyEmail != null && verifyEmail.getToken().equals(token)) {
-            return Optional.of(foundUser);
+            return Optional.of(modelMapper.map(foundUser, UserVO.class));
         }
         return Optional.empty();
     }

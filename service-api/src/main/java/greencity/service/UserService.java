@@ -7,8 +7,7 @@ import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.*;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.dto.user.UserVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
@@ -20,57 +19,57 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Provides the interface to manage {@link User} entity.
+ * Provides the interface to manage {UserVO} entity.
  *
  * @author Nazar Stasyuk and Rostyslav && Yurii Koval
  * @version 1.0
  */
 public interface UserService {
     /**
-     * Method that allow you to save new {@link User}.
+     * Method that allow you to save new {@link UserVO}.
      *
-     * @param user a value of {@link User}
+     * @param user a value of {@link UserVO}
      * @author Yurii Koval
      */
-    User save(User user);
+    UserVO save(UserVO user);
 
     /**
-     * Method that allow you to find {@link User} by ID.
+     * Method that allow you to find {@link UserVO} by ID.
      *
      * @param id a value of {@link Long}
-     * @return {@link User}
+     * @return {@link UserVO}
      */
-    User findById(Long id);
+    UserVO findById(Long id);
 
     /**
-     * Method that allow you to delete {@link User} by ID.
+     * Method that allow you to delete {@link UserVO} by ID.
      *
      * @param id a value of {@link Long}
      */
     void deleteById(Long id);
 
     /**
-     * Method that allow you to find {@link User} by email.
+     * Method that allow you to find {@link UserVO} by email.
      *
      * @param email a value of {@link String}
-     * @return {@link User} with this email.
+     * @return {@link UserVO} with this email.
      */
-    User findByEmail(String email);
+    UserVO findByEmail(String email);
 
     /**
-     * Method that allow you to find not 'DEACTIVATED' {@link User} by email.
+     * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by email.
      *
-     * @param email - {@link User}'s email
-     * @return {@link Optional} of found {@link User}.
+     * @param email - {@link UserVO}'s email
+     * @return {@link Optional} of found {@link UserVO}.
      * @author Vasyl Zhovnir
      */
-    Optional<User> findNotDeactivatedByEmail(String email);
+    Optional<UserVO> findNotDeactivatedByEmail(String email);
 
     /**
-     * Find User's id by User email.
+     * Find UserVO's id by UserVO email.
      *
-     * @param email - {@link User} email
-     * @return {@link User} id
+     * @param email - {@link UserVO} email
+     * @return {@link UserVO} id
      * @author Zakhar Skaletskyi
      */
     Long findIdByEmail(String email);
@@ -78,7 +77,7 @@ public interface UserService {
     /**
      * Update {@code ROLE} of user.
      *
-     * @param id   {@link User} id.
+     * @param id   {@link UserVO} id.
      * @param role {@link ROLE} for user.
      * @return {@link UserRoleDto}
      * @author Rostyslav Khasanov
@@ -88,7 +87,7 @@ public interface UserService {
     /**
      * Update status of user.
      *
-     * @param id         {@link User} id.
+     * @param id         {@link UserVO} id.
      * @param userStatus {@link UserStatus} for user.
      * @return {@link UserStatusDto}
      * @author Rostyslav Khasanov
@@ -96,7 +95,7 @@ public interface UserService {
     UserStatusDto updateStatus(Long id, UserStatus userStatus, String email);
 
     /**
-     * Find {@link User}-s by page .
+     * Find {@link UserVO}-s by page .
      *
      * @param pageable a value with pageable configuration.
      * @return a dto of {@link PageableDto}.
@@ -105,7 +104,7 @@ public interface UserService {
     PageableDto<UserForListDto> findByPage(Pageable pageable);
 
     /**
-     * Find {@link User} for management by page .
+     * Find {@link UserVO} for management by page .
      *
      * @param pageable a value with pageable configuration.
      * @return a dto of {@link PageableAdvancedDto}.
@@ -114,9 +113,9 @@ public interface UserService {
     PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable);
 
     /**
-     * Method that allows you to update {@link User} by dto.
+     * Method that allows you to update {@link UserVO} by dto.
      *
-     * @param dto - dto {@link UserManagementDto} with updated fields for updating {@link User}.
+     * @param dto - dto {@link UserManagementDto} with updated fields for updating {@link UserVO}.
      * @author Vasyl Zhovnir
      */
     void updateUser(UserManagementDto dto);
@@ -131,7 +130,7 @@ public interface UserService {
     RoleDto getRoles();
 
     /**
-     * Get list of available {@link EmailNotification} statuses for {@link User}.
+     * Get list of available {@link EmailNotification} statuses for {@link UserVO}.
      *
      * @return available {@link EmailNotification}  statuses.
      */
@@ -140,9 +139,9 @@ public interface UserService {
     /**
      * Update last visit of user.
      *
-     * @return {@link User}.
+     * @return {@link UserVO}.
      */
-    User updateLastVisit(User user);
+    UserVO updateLastVisit(UserVO user);
 
     /**
      * Find users by filter.
@@ -155,7 +154,7 @@ public interface UserService {
     PageableDto<UserForListDto> getUsersByFilter(FilterUserDto filterUserDto, Pageable pageable);
 
     /**
-     * Get {@link User} dto by principal (email).
+     * Get {@link UserVO} dto by principal (email).
      *
      * @param email - email of user.
      * @return {@link UserUpdateDto}.
@@ -164,11 +163,11 @@ public interface UserService {
     UserUpdateDto getUserUpdateDtoByEmail(String email);
 
     /**
-     * Update {@link User}.
+     * Update {@link UserVO}.
      *
-     * @param dto   {@link UserUpdateDto} - dto with new {@link User} params.
+     * @param dto   {@link UserUpdateDto} - dto with new {@link UserVO} params.
      * @param email {@link String} - email of user that need to update.
-     * @return {@link User}.
+     * @return {@link UserVO}.
      * @author Nazar Stasyuk
      */
     UserUpdateDto update(UserUpdateDto dto, String email);
@@ -185,7 +184,7 @@ public interface UserService {
     /**
      * Method returns list of user goals for specific language.
      *
-     * @param userId   id of the {@link User} current user.
+     * @param userId   id of the {@link UserVO} current user.
      * @param language needed language code.
      * @return List of {@link UserGoalDto}.
      */
@@ -194,7 +193,7 @@ public interface UserService {
     /**
      * Method returns list of available (not ACTIVE) goals for user for specific language.
      *
-     * @param userId   id of the {@link User} current user.
+     * @param userId   id of the {@link UserVO} current user.
      * @param language needed language code.
      * @return List of {@link GoalDto}.
      */
@@ -203,7 +202,7 @@ public interface UserService {
     /**
      * Method saves list of user goals.
      *
-     * @param userId   id of the {@link User} current user.
+     * @param userId   id of the {@link UserVO} current user.
      * @param language needed language code.
      * @return List of saved {@link UserGoalDto} with specific language.
      */
@@ -213,7 +212,7 @@ public interface UserService {
      * Method for deleted list of user goals.
      *
      * @param ids string with ids object for deleting.
-     * @return list ids of deleted {@link UserGoal}
+     * @return list ids of deleted {@link UserGoalVO}
      * @author Bogdan Kuzenko
      */
     List<Long> deleteUserGoals(String ids);
@@ -221,8 +220,8 @@ public interface UserService {
     /**
      * Method update status of user goal.
      *
-     * @param userId   id of the {@link User} current user.
-     * @param goalId   - {@link UserGoal}'s id that should be updated.
+     * @param userId   id of the {@link UserVO} current user.
+     * @param goalId   - {@link UserGoalVO}'s id that should be updated.
      * @param language needed language code.
      * @return {@link UserGoalDto} with specific language.
      */
@@ -231,7 +230,7 @@ public interface UserService {
     /**
      * Method returns list of available (not ACTIVE) habitTranslations for user.
      *
-     * @param userId   id of the {@link User} current user.
+     * @param userId   id of the {@link UserVO} current user.
      * @param acquired acquired status of habit
      * @param language language code.
      * @return List of {@link HabitTranslationDto}
@@ -241,7 +240,7 @@ public interface UserService {
     /**
      * Method returns list of available (not ACTIVE) habitDictionary for user.
      *
-     * @param userId   id of the {@link User} current user.
+     * @param userId   id of the {@link UserVO} current user.
      * @param language language code.
      * @return List of {@link HabitTranslationDto}
      * @author Bogdan Kuzenko
@@ -251,14 +250,14 @@ public interface UserService {
     /**
      * Method add default habit.
      *
-     * @param user {@link User} instance.
+     * @param user {@link UserVO} instance.
      */
-    void addDefaultHabit(User user, String language);
+    void addDefaultHabit(UserVO user, String language);
 
     /**
      * Method returns list of available (not ACTIVE) customGoals for user.
      *
-     * @param userId id of the {@link User} current user.
+     * @param userId id of the {@link UserVO} current user.
      * @return List of {@link CustomGoalResponseDto}
      * @author Bogdan Kuzenko
      */
@@ -280,35 +279,35 @@ public interface UserService {
     String getProfilePicturePathByUserId(Long id);
 
     /**
-     * Update user profile picture {@link User}.
+     * Update user profile picture {@link UserVO}.
      *
      * @param image                 {@link MultipartFile}
      * @param email                 {@link String} - email of user that need to update.
      * @param userProfilePictureDto {@link UserProfilePictureDto}
-     * @return {@link User}.
+     * @return {@link UserVO}.
      * @author Marian Datsko
      */
-    User updateUserProfilePicture(MultipartFile image, String email,
+    UserVO updateUserProfilePicture(MultipartFile image, String email,
                                   UserProfilePictureDto userProfilePictureDto);
 
     /**
-     * Delete user profile picture {@link User}.
+     * Delete user profile picture {@link UserVO}.
      *
      * @param email {@link String} - email of user that need to update.
      */
     void deleteUserProfilePicture(String email);
 
     /**
-     * Get list user friends by user id {@link User}.
+     * Get list user friends by user id {@link UserVO}.
      *
      * @param userId {@link Long}
-     * @return {@link User}.
+     * @return {@link UserVO}.
      * @author Marian Datsko
      */
-    List<User> getAllUserFriends(Long userId);
+    List<UserVO> getAllUserFriends(Long userId);
 
     /**
-     * Delete user friend by id {@link User}.
+     * Delete user friend by id {@link UserVO}.
      *
      * @param userId   {@link Long}
      * @param friendId {@link Long}
@@ -317,7 +316,7 @@ public interface UserService {
     void deleteUserFriendById(Long userId, Long friendId);
 
     /**
-     * Add new user friend {@link User}.
+     * Add new user friend {@link UserVO}.
      *
      * @param userId   {@link Long}
      * @param friendId {@link Long}
@@ -326,7 +325,7 @@ public interface UserService {
     void addNewFriend(Long userId, Long friendId);
 
     /**
-     * Get six friends with the highest rating {@link User}.
+     * Get six friends with the highest rating {@link UserVO}.
      *
      * @param userId {@link Long}
      * @author Marian Datsko
@@ -334,7 +333,7 @@ public interface UserService {
     List<UserProfilePictureDto> getSixFriendsWithTheHighestRating(Long userId);
 
     /**
-     * Save user profile information {@link User}.
+     * Save user profile information {@link UserVO}.
      *
      * @author Marian Datsko
      */
@@ -343,38 +342,38 @@ public interface UserService {
     /**
      * Updates last activity time for a given user.
      *
-     * @param userId               - {@link User}'s id
-     * @param userLastActivityTime - new {@link User}'s last activity time
+     * @param userId               - {@link UserVO}'s id
+     * @param userLastActivityTime - new {@link UserVO}'s last activity time
      * @author Yurii Zhurakovskyi
      */
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
 
     /**
-     * The method checks by id if a {@link User} is online.
+     * The method checks by id if a {@link UserVO} is online.
      *
-     * @param userId - {@link User}'s id
+     * @param userId - {@link UserVO}'s id
      * @author Yurii Zhurakovskyi
      */
     boolean checkIfTheUserIsOnline(Long userId);
 
     /**
-     * Method return user profile information {@link User}.
+     * Method return user profile information {@link UserVO}.
      *
-     * @param userId - {@link User}'s id
+     * @param userId - {@link UserVO}'s id
      * @author Marian Datsko
      */
     UserProfileDtoResponse getUserProfileInformation(Long userId);
 
     /**
-     * Method return user profile statistics {@link User}.
+     * Method return user profile statistics {@link UserVO}.
      *
-     * @param userId - {@link User}'s id
+     * @param userId - {@link UserVO}'s id
      * @author Marian Datsko
      */
     UserProfileStatisticsDto getUserProfileStatistics(Long userId);
 
     /**
-     * Get user and six friends with the online status {@link User}.
+     * Get user and six friends with the online status {@link UserVO}.
      *
      * @param userId {@link Long}
      * @author Yurii Zhurakovskyi
@@ -382,7 +381,7 @@ public interface UserService {
     UserAndFriendsWithOnlineStatusDto getUserAndSixFriendsWithOnlineStatus(Long userId);
 
     /**
-     * Get user and all friends with the online status {@link User} by page.
+     * Get user and all friends with the online status {@link UserVO} by page.
      *
      * @param userId {@link Long}
      * @author Yurii Zhurakovskyi
@@ -390,41 +389,41 @@ public interface UserService {
     UserAndAllFriendsWithOnlineStatusDto getAllFriendsWithTheOnlineStatus(Long userId, Pageable pageable);
 
     /**
-     * change {@link User}'s status to DEACTIVATED.
+     * change {@link UserVO}'s status to DEACTIVATED.
      *
-     * @param id {@link User}'s id
+     * @param id {@link UserVO}'s id
      * @author Vasyl Zhovnir
      */
     void deactivateUser(Long id);
 
     /**
-     * Method deactivates all the {@link User} by list of IDs.
+     * Method deactivates all the {@link UserVO} by list of IDs.
      *
-     * @param listId {@link List} of {@link User}s` ids to be deactivated
-     * @return {@link List} of {@link User}s` ids
+     * @param listId {@link List} of {@link UserVO}s` ids to be deactivated
+     * @return {@link List} of {@link UserVO}s` ids
      * @author Vasyl Zhovnir
      */
     List<Long> deactivateAllUsers(List<Long> listId);
 
     /**
-     * change {@link User}'s status to ACTIVATED.
+     * change {@link UserVO}'s status to ACTIVATED.
      *
-     * @param id {@link User}'s id
+     * @param id {@link UserVO}'s id
      * @author Vasyl Zhovnir
      */
     void setActivatedStatus(Long id);
 
     /**
-     * Method that allow you to find {@link User} by ID and token.
+     * Method that allow you to find {@link UserVO} by ID and token.
      *
-     * @param userId - {@link User}'s id
-     * @param token  - {@link User}'s token
-     * @return {@link Optional} of {@link User}
+     * @param userId - {@link UserVO}'s id
+     * @param token  - {@link UserVO}'s token
+     * @return {@link Optional} of {@link UserVO}
      */
-    Optional<User> findByIdAndToken(Long userId, String token);
+    Optional<UserVO> findByIdAndToken(Long userId, String token);
 
     /**
-     * Method for getting User by search query.
+     * Method for getting UserVO by search query.
      *
      * @param paging {@link Pageable}.
      * @param query  query to search,
@@ -436,7 +435,7 @@ public interface UserService {
     /**
      * Method for getting all Users.
      *
-     * @return {@link List} of {@link User} instances.
+     * @return {@link List} of {@link UserVO} instances.
      */
-    List<User> findAll();
+    List<UserVO> findAll();
 }
