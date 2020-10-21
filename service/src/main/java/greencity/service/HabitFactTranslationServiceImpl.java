@@ -8,6 +8,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
+import greencity.enums.FactOfDayStatus;
 import greencity.repository.HabitFactTranslationRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -49,7 +50,10 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
         List<HabitFactTranslation> habitFactTranslations = modelMapper.map(habitFactPostDTO.getTranslations(),
             new TypeToken<List<HabitFactTranslation>>() {
             }.getType());
-        habitFactTranslations.forEach(a -> a.setHabitFact(habitFact));
+        habitFactTranslations.forEach(a -> {
+            a.setHabitFact(habitFact);
+            a.setFactOfDayStatus(FactOfDayStatus.POTENTIAL);
+        });
         List<HabitFactTranslationVO> habitFactTranslationVOS = habitFactTranslations
                 .stream().map(habitFactTranslation -> modelMapper
                         .map(habitFactTranslation, HabitFactTranslationVO.class))
