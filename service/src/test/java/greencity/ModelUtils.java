@@ -2,6 +2,7 @@ package greencity;
 
 import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
+import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habitfact.HabitFactVO;
@@ -275,5 +276,18 @@ public class ModelUtils {
 
     public static LanguageDTO getLanguageDTO() {
         return new LanguageDTO(1L, "en");
+    }
+
+    public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
+        return new FactOfTheDayTranslationDTO(1L, "content");
+    }
+
+    public static ShoppingListDtoResponse getShoppingListDtoResponse() {
+        return ShoppingListDtoResponse.builder()
+            .customGoalId(1L)
+            .goalId(1L)
+            .status("ACTIVE")
+            .text("text")
+            .build();
     }
 }
