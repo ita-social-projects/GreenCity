@@ -9,13 +9,6 @@ VALUES (1, '2020-09-10 20:00:00+00', 'majboroda.artur@mail.com', 0, 'artur', '20
        (6, '2020-09-10 20:00:00+00', 'miasnuk.ihor@mail.com', 0, 'ihor', '2020-09-10 21:00:00', 0, 2,'71-9b3xllh-bhf6tyre9kfrwax1p7f1nrbai', 20, '2020-09-10 21:00:00', 'Ihor', 'Kyiv','Шукання цілей в природі має своїм джерелом невігластво.', true, true, true),
        (7, '2020-06-10 20:00:00+00', 'efimov.ivan@mail.com', 0, 'ivan', '2020-09-10 21:00:00', 0, 2,'gfzymgr7smf11pc8ib2g-2xx3w04cc65reqb', 20, '2020-06-10 21:00:00', 'Ivan', 'Dnipro','Основним законом природи є збереження людства.', true, true, true);
 
--- INSERT INTO habit_statistics (id, rate, create_date, amount_of_items, habit_assign_id)
--- VALUES (1, 'GOOD', '2020-10-09 00:00:00+00', 5, 1),
---        (2, 'NORMAL', '2020-10-10 20:00:00+00', 4, 2),
---        (3, 'BAD', '2020-10-11 20:00:00+00', 3, 3),
---        (4, 'GOOD', '2020-10-12 20:00:00+00', 5, 4),
---        (5, 'NORMAL', CURRENT_TIMESTAMP - 1, 4, 5),
---        (6, 'BAD', CURRENT_TIMESTAMP, 3, 6);
 
 INSERT INTO habits (id, image)
 VALUES (1, 'image1'),
@@ -50,14 +43,13 @@ VALUES (1, 'Економити пакети', 'Опис пакетів', 'Пак
 INSERT INTO habit_facts (id, habit_id)
 VALUES (1, 1),
        (2, 2),
-       (3, 3);
---        (4, 3),
---        (5, 3),
---        (6, 5),
---        (7, 5),
---        (8, 4);
+       (3, 3),
+       (4, 4),
+       (5, 3);
 
 INSERT INTO habit_fact_translations (language_id, habit_fact_id, content, fact_of_day_status)
-VALUES (1, 1, 'Тест факт', 0),
+VALUES (1, 1, 'Тест факт', 1),
        (2, 2, 'testFactTranslationsContent', 0),
-       (3, 3, 'Тест факт', 2);
+       (3, 3, 'Тест факт', 2),
+       (1, 4, 'Тест факт2', 1),
+       (2, 5, 'testFactTranslationsContent2', 0);

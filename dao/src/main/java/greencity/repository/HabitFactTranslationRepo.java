@@ -45,8 +45,8 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      *
      * @return optional list of {@link HabitFactTranslation}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM habit_fact_translations where habit_fact_id in "
-        + "(select habit_fact_id from habit_fact_translations where fact_of_day_status = 0 order by RANDOM() LIMIT 1)")
+    @Query(nativeQuery = true, value = "SELECT * FROM  habit_fact_translations "
+        + "where fact_of_day_status = 0 order by RANDOM() LIMIT 1;")
     List<HabitFactTranslation> findRandomHabitFact();
 
     /**
