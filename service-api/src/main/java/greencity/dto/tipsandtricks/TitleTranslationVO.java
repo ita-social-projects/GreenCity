@@ -1,13 +1,12 @@
 package greencity.dto.tipsandtricks;
 
 import greencity.dto.translation.TranslationVO;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Data
-@EqualsAndHashCode
+@Setter
+@Getter
+@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
 public class TitleTranslationVO extends TranslationVO {
