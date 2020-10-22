@@ -116,17 +116,19 @@ public class HabitServiceImpl implements HabitService {
             ).build());
         habit.getHabitTranslations().forEach(ht -> ht.setHabit(habit));
 
+        uploadImageForHabit(habitManagementDto, image, habit);
+
+        habitTranslationRepo.saveAll(habit.getHabitTranslations());
+        return modelMapper.map(habit, HabitManagementDto.class);
+    }
+
+    private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
         if (habitManagementDto.getImage() != null) {
-            try {
-                image = fileService.convertToMultipartImage(habitManagementDto.getImage());
-            } catch (RuntimeException ignored) { }
+            image = fileService.convertToMultipartImage(habitManagementDto.getImage());
         }
         if (image != null) {
             habit.setImage(fileService.upload(image).toString());
         }
-
-        habitTranslationRepo.saveAll(habit.getHabitTranslations());
-        return modelMapper.map(habit, HabitManagementDto.class);
     }
 
     /**
@@ -149,9 +151,9 @@ public class HabitServiceImpl implements HabitService {
                 ht.setName(htmd.getName());
             });
         habit.setImage(habitManagementDto.getImage());
-        if (image != null) {
-            habit.setImage(fileService.upload(image).toString());
-        }
+
+        uploadImageForHabit(habitManagementDto, image, habit);
+
         habitRepo.save(habit);
     }
 
