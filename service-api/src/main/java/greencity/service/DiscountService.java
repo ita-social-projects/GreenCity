@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.entity.DiscountValue;
+import greencity.dto.discount.DiscountValueVO;
 import java.util.Set;
 
 /**
@@ -10,10 +10,10 @@ public interface DiscountService {
     /**
      * Method for saving new Discount to database.
      *
-     * @param discount - Discount entity.
+     * @param discountValueVO - Discount entity.
      * @return a discount.
      */
-    DiscountValue save(DiscountValue discount);
+    DiscountValueVO save(DiscountValueVO discountValueVO);
 
     /**
      * Find Discount entity by id.
@@ -21,7 +21,7 @@ public interface DiscountService {
      * @param id - Discount id.
      * @return Discount entity.
      */
-    DiscountValue findById(Long id);
+    DiscountValueVO findById(Long id);
 
     /**
      * Finds all {@code Discount} records related to the specified {@code Place}.
@@ -29,7 +29,7 @@ public interface DiscountService {
      * @param placeId to find by.
      * @return a set of the {@code Discount} for the place by id.
      */
-    Set<DiscountValue> findAllByPlaceId(Long placeId);
+    Set<DiscountValueVO> findAllByPlaceId(Long placeId);
 
     /**
      * Delete all {@code Discount} records related to the specified {@code Place}.

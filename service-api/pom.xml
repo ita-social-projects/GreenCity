@@ -13,6 +13,9 @@
     <artifactId>service-api</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>service-api</name>
+    <properties>
+        <swagger.version>2.9.2</swagger.version>
+    </properties>
 
     <dependencies>
         <dependency>

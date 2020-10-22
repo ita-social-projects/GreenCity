@@ -3,20 +3,15 @@ package greencity.service.impl;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
+import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.photo.PhotoAddDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.*;
 import greencity.entity.Category;
 import greencity.entity.DiscountValue;
 import greencity.entity.Location;
@@ -30,14 +25,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.CategoryService;
-import greencity.service.DiscountService;
-import greencity.service.LocationServiceImpl;
-import greencity.service.NotificationService;
-import greencity.service.OpenHoursService;
-import greencity.service.PlaceService;
-import greencity.service.SpecificationService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -122,6 +110,7 @@ class PlaceServiceImplTest {
     private Set<OpeningHoursVO> openingHoursListEntityVO = new HashSet<>();
     private Set<DiscountValue> discountValues = new HashSet<>();
     private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
+    private Set<DiscountValueVO> discountValuesVO = new HashSet<>();
     private List<PhotoAddDto> photoDtos = new ArrayList<>();
     private List<Photo> photos = new ArrayList<>();
     private Place place = Place.builder()
@@ -183,6 +172,7 @@ class PlaceServiceImplTest {
         when(userService.findByEmail(anyString())).thenReturn(user);
         when(modelMapper.map(categoryService.findByName(anyString()), Category.class)).thenReturn(category);
         when(placeRepo.save(place)).thenReturn(place);
+        when(modelMapper.map(place, PlaceVO.class)).thenReturn(new PlaceVO());
 
         assertEquals(place, placeService.save(placeAddDto, user.getEmail()));
     }
@@ -383,6 +373,8 @@ class PlaceServiceImplTest {
         when(modelMapper.map(placeUpdateDto.getLocation(), LocationVO.class)).thenReturn(locationVO);
         when(modelMapper.map(openingHoursListEntityVO, new TypeToken<Set<OpeningHours>>() {
         }.getType())).thenReturn(openingHoursListEntity);
+        when(modelMapper.map(discountValuesVO, new TypeToken<Set<DiscountValue>>() {
+        }.getType())).thenReturn(discountValues);
 
         Place updatedPlace = placeService.update(placeUpdateDto);
 

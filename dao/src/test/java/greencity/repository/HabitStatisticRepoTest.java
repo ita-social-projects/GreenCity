@@ -20,7 +20,7 @@ import java.util.Optional;
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = DaoApplication.class)
-@Sql("classpath:sql/habit_statistic.sql")
+@Sql("classpath:sql/habit_statistic_and_translation.sql")
 class HabitStatisticRepoTest {
 
     @Autowired
@@ -28,7 +28,8 @@ class HabitStatisticRepoTest {
 
     @Test
     void findHabitAssignStatByDateTest_shouldReturnCorrectValue() {
-        HabitStatistic habitStatistic = habitStatisticRepo.findHabitAssignStatByDate(ZonedDateTime.parse("2020-10-09T03:00:00+03"), 1L).get();
+        HabitStatistic habitStatistic = habitStatisticRepo
+            .findHabitAssignStatByDate(ZonedDateTime.parse("2020-10-09T03:00:00+03"), 1L).get();
 
         assertEquals(5, habitStatistic.getAmountOfItems());
         assertEquals(HabitRate.GOOD, habitStatistic.getHabitRate());
@@ -36,21 +37,24 @@ class HabitStatisticRepoTest {
 
     @Test
     void findHabitAssignStatByDateTest_shouldReturnEmptyOptional() {
-        Optional<HabitStatistic> habitStatistic = habitStatisticRepo.findHabitAssignStatByDate(ZonedDateTime.parse("2020-09-09T00:00:00+03"), 1L);
+        Optional<HabitStatistic> habitStatistic = habitStatisticRepo
+            .findHabitAssignStatByDate(ZonedDateTime.parse("2020-09-09T00:00:00+03"), 1L);
 
         assertFalse(habitStatistic.isPresent());
     }
 
     @Test
     void getSumOfAllItemsPerMonthTest_shouldReturnCorrectSumOfAllItems() {
-        Integer sum = habitStatisticRepo.getSumOfAllItemsPerMonth(1L, ZonedDateTime.parse("2020-10-01T00:00:00+00")).get();
+        Integer sum = habitStatisticRepo
+            .getSumOfAllItemsPerMonth(1L, ZonedDateTime.parse("2020-10-01T00:00:00+00")).get();
 
         assertEquals(9, sum);
     }
 
     @Test
     void getSumOfAllItemsPerMonthTest_shouldReturnEmptyOptional() {
-        Optional<Integer> sum = habitStatisticRepo.getSumOfAllItemsPerMonth(1L, ZonedDateTime.parse("2020-10-20T00:00:00+00"));
+        Optional<Integer> sum = habitStatisticRepo
+            .getSumOfAllItemsPerMonth(1L, ZonedDateTime.parse("2020-10-20T00:00:00+00"));
 
         assertTrue(sum.isEmpty());
     }
@@ -127,14 +131,16 @@ class HabitStatisticRepoTest {
 
     @Test
     void getStatisticsForAllHabitItemsByDate_shouldReturnCorrectStatistic() {
-        List<Tuple> list = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.parse("2020-10-10T00:00:00+03"), "en");
+        List<Tuple> list = habitStatisticRepo
+            .getStatisticsForAllHabitItemsByDate(ZonedDateTime.parse("2020-10-10T00:00:00+03"), "en");
 
-        assertEquals(2, list.size());
+        assertEquals(1, list.size());
     }
 
     @Test
     void getStatisticsForAllHabitItemsByDate_shouldReturnEmptyList() {
-        List<Tuple> list = habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.parse("2020-09-10T00:00:00+03"), "en");
+        List<Tuple> list = habitStatisticRepo
+            .getStatisticsForAllHabitItemsByDate(ZonedDateTime.parse("2020-09-10T00:00:00+03"), "en");
 
         assertTrue(list.isEmpty());
     }

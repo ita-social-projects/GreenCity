@@ -4,11 +4,12 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.discount.DiscountValueDto;
+import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.PlaceAddDto;
@@ -31,15 +32,7 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.CategoryService;
-import greencity.service.DiscountService;
-import greencity.service.LocationService;
-import greencity.service.NotificationService;
-import greencity.service.OpenHoursService;
-import greencity.service.PlaceService;
-import greencity.service.ProposePlaceService;
-import greencity.service.SpecificationService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -150,8 +143,9 @@ public class PlaceServiceImpl implements PlaceService {
         setUserToPlaceByEmail(email, place);
 
         place.setCategory(modelMapper.map(categoryService.findByName(dto.getCategory().getName()), Category.class));
-        proposePlaceService.saveDiscountValuesWithPlace(place.getDiscountValues(), place);
-        proposePlaceService.savePhotosWithPlace(place.getPhotos(), place);
+        PlaceVO placeVO = modelMapper.map(place, PlaceVO.class);
+        proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
+        proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
 
         return placeRepo.save(place);
     }
@@ -209,7 +203,10 @@ public class PlaceServiceImpl implements PlaceService {
     private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
 
-        Set<DiscountValue> discountsOld = discountService.findAllByPlaceId(updatedPlace.getId());
+        Set<DiscountValueVO> discountValuesVO = discountService.findAllByPlaceId(updatedPlace.getId());
+        Set<DiscountValue> discountsOld = modelMapper.map(discountValuesVO,
+            new TypeToken<Set<DiscountValue>>() {
+            }.getType());
         discountService.deleteAllByPlaceId(updatedPlace.getId());
         Set<DiscountValue> newDiscounts = new HashSet<>();
         if (discounts != null) {
@@ -218,7 +215,7 @@ public class PlaceServiceImpl implements PlaceService {
                 discount.setSpecification(modelMapper
                     .map(specificationService.findByName(d.getSpecification().getName()), Specification.class));
                 discount.setPlace(updatedPlace);
-                discountService.save(discount);
+                discountService.save(modelMapper.map(discount, DiscountValueVO.class));
                 newDiscounts.add(discount);
             });
         }

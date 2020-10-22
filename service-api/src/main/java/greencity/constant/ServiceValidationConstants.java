@@ -17,6 +17,13 @@ public final class ServiceValidationConstants {
     public static final String INVALID_EMAIL = "{greenCity.validation.invalid.email}";
     public static final String MIN_AMOUNT_OF_TAGS = "{greenCity.validation.empty.tags}";
     public static final int MAX_AMOUNT_OF_SOCIAL_NETWORK_LINKS = 5;
+    public static final int PLACE_ADDRESS_MAX_LENGTH = 120;
+    public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
+    public static final String EMPTY_VALUE_OF_LATITUDE = "{greenCity.validation.empty.latitude}";
+    public static final String EMPTY_VALUE_OF_LONGITUDE = "{greenCity.validation.empty.longitude}";
+    public static final int DISCOUNT_VALUE_MIN = 0;
+    public static final String DISCOUNT_VALUE_DOES_NOT_CORRECT = "{greenCity.validation.invalid.discount.value}";
+    public static final int DISCOUNT_VALUE_MAX = 100;
 
     private ServiceValidationConstants() {
     }
