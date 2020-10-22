@@ -712,7 +712,8 @@ public class UserServiceImpl implements UserService {
                 SocialNetwork.builder()
                     .url(url)
                     .user(user)
-                    .socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
+                    .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
+                        SocialNetworkImage.class))
                     .build())
             .collect(Collectors.toList()));
         user.setShowLocation(userProfileDtoRequest.getShowLocation());

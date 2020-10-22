@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.AppConstant;
 import greencity.constant.CacheConstants;
@@ -7,18 +7,27 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.entity.SocialNetworkImage;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.SocialNetworkImageRepo;
-import greencity.service.FileService;
-import greencity.service.SocialNetworkImageService;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -29,25 +38,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static greencity.constant.CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME;
-
 @Service
 @Slf4j
 @AllArgsConstructor
 @EnableCaching
 public class SocialNetworkImageServiceImpl implements SocialNetworkImageService {
-    private  final SocialNetworkImageRepo socialNetworkImageRepo;
-    private  final FileService fileService;
+    private final SocialNetworkImageRepo socialNetworkImageRepo;
+    private final FileService fileService;
     private final ModelMapper modelMapper;
 
     /**
@@ -57,16 +54,13 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      * @return {@link SocialNetworkImage}
      */
     @Override
-    public SocialNetworkImage getSocialNetworkImageByUrl(String url) {
+    public SocialNetworkImageVO getSocialNetworkImageByUrl(String url) {
         try {
             URL checkUrl = new URL(url);
-            Optional<SocialNetworkImage> optionalSocialNetworkImage =
+            Optional<SocialNetworkImageVO> optionalSocialNetworkImageVO =
                 findByHostPath(checkUrl.getHost());
-            if (optionalSocialNetworkImage.isPresent()) {
-                return optionalSocialNetworkImage.get();
-            } else {
-                return saveSocialNetworkImage(checkUrl);
-            }
+            return optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get() :
+                saveSocialNetworkImage(checkUrl);
         } catch (IOException e) {
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
@@ -84,12 +78,12 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
 
         Page<SocialNetworkImage> pages = socialNetworkImageRepo.findAll(pageable);
         List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = pages.stream()
-                .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
-                .collect(Collectors.toList());
+            .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
+            .collect(Collectors.toList());
         return new PageableDto<>(socialNetworkImageResponseDTOS,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber(),
-                pages.getTotalPages());
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages());
     }
 
     /**
@@ -101,13 +95,13 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     public PageableDto<SocialNetworkImageResponseDTO> searchBy(Pageable paging, String query) {
         Page<SocialNetworkImage> page = socialNetworkImageRepo.searchBy(paging, query);
         List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = page.stream()
-                .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
-                .collect(Collectors.toList());
+            .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
+            .collect(Collectors.toList());
         return new PageableDto<>(
-                socialNetworkImageResponseDTOS,
-                page.getTotalElements(),
-                page.getPageable().getPageNumber(),
-                page.getTotalPages()
+            socialNetworkImageResponseDTOS,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages()
         );
     }
 
@@ -157,8 +151,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     private SocialNetworkImage findById(Long id) {
         return socialNetworkImageRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.SOCIAL_NETWORK_IMAGE_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.SOCIAL_NETWORK_IMAGE_FOUND_BY_ID + id));
     }
 
     /**
@@ -197,8 +191,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      * @return optional of {@link SocialNetworkImage}
      */
     @Cacheable(value = CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME)
-    public Optional<SocialNetworkImage> findByHostPath(String hostPath) {
-        return socialNetworkImageRepo.findByHostPath(hostPath);
+    public Optional<SocialNetworkImageVO> findByHostPath(String hostPath) {
+        Optional<SocialNetworkImage> socialNetworkImage = socialNetworkImageRepo.findByHostPath(hostPath);
+        return modelMapper.map(socialNetworkImage, new TypeToken<Optional<SocialNetworkImageVO>>() {
+        }.getType());
     }
 
     /**
@@ -207,14 +203,14 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      * @param url link path
      * @return {@link SocialNetworkImage} result of creation
      */
-    @CacheEvict(value = SOCIAL_NETWORK_IMAGE_CACHE_NAME, allEntries = true)
-    public SocialNetworkImage saveSocialNetworkImage(URL url) throws IOException {
+    @CacheEvict(value = CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME, allEntries = true)
+    public SocialNetworkImageVO saveSocialNetworkImage(URL url) throws IOException {
         String imagePath = uploadImageToCloud(url);
         SocialNetworkImage socialNetworkImage = SocialNetworkImage.builder()
             .hostPath(url.getHost())
             .imagePath(imagePath)
             .build();
-        return socialNetworkImageRepo.save(socialNetworkImage);
+        return modelMapper.map(socialNetworkImageRepo.save(socialNetworkImage), SocialNetworkImageVO.class);
     }
 
     /**
@@ -222,7 +218,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      *
      * @return {@link SocialNetworkImage}
      */
-    public SocialNetworkImage getDefaultSocialNetworkImage() {
+    public SocialNetworkImageVO getDefaultSocialNetworkImage() {
         return findByHostPath(AppConstant.DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH)
             .orElseThrow(() -> new RuntimeException(ErrorMessage.BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH));
     }
@@ -254,7 +250,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
             false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
         try (InputStream inputStream = new FileInputStream(tempFile);
-             OutputStream outputStream = fileItem.getOutputStream();) {
+             OutputStream outputStream = fileItem.getOutputStream()) {
             IOUtils.copy(inputStream, outputStream);
             outputStream.flush();
         }
