@@ -524,6 +524,7 @@ public class ModelUtils {
         return HabitStatusCalendar.builder()
             .id(1L)
             .enrollDate(LocalDate.now()).build();
+    }
 
     public static AdviceTranslation getAdviceTranslation() {
         return AdviceTranslation.builder()
