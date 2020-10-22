@@ -14,6 +14,7 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import org.junit.jupiter.api.Test;
@@ -81,7 +82,7 @@ class UserServiceImplTest {
     @Mock
     HabitService habitService;
 
-    @Mock
+//    @Mock
 //    SocialNetworkImageService socialNetworkImageService;
 
     private User user = User.builder()
@@ -172,20 +173,28 @@ class UserServiceImplTest {
 
     @Test
     void updateUserStatusDeactivatedTest() {
-        when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId2)).thenReturn(Optional.of(user2));
+        when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
+        when(modelMapper.map(Optional.of(user2), UserVO.class)).thenReturn(userVO2);
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userRepo.save(any())).thenReturn(user);
-        ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
-        assertEquals(
-            DEACTIVATED,
-            userService.updateStatus(userId, DEACTIVATED, any()).getUserStatus());
+
+        UserStatusDto value = new UserStatusDto();
+        value.setUserStatus(DEACTIVATED);
+        when(modelMapper.map(user, UserStatusDto.class)).thenReturn(value);
+        assertEquals(DEACTIVATED, userService.updateStatus(userId, DEACTIVATED, any()).getUserStatus());
     }
 
     @Test
     void updateUserStatusLowRoleLevelException() {
         user.setRole(ROLE.ROLE_MODERATOR);
+        userVO.setRole(ROLE.ROLE_MODERATOR);
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
+        when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         assertThrows(LowRoleLevelException.class, () ->
             userService.updateStatus(userId, DEACTIVATED, "email")
         );
@@ -194,9 +203,15 @@ class UserServiceImplTest {
     @Test
     void updateRoleTest() {
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
+        UserRoleDto userRoleDto = new UserRoleDto();
+        userRoleDto.setRole(ROLE.ROLE_MODERATOR);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
+        when(modelMapper.map(Optional.of(user2), UserVO.class)).thenReturn(userVO2);
+        user.setRole(ROLE.ROLE_MODERATOR);
         when(userRepo.save(any())).thenReturn(user);
+        when(modelMapper.map(user, UserRoleDto.class)).thenReturn(userRoleDto);
         assertEquals(
             ROLE.ROLE_MODERATOR,
             userService.updateRole(userId, ROLE.ROLE_MODERATOR, any()).getRole());
@@ -206,6 +221,8 @@ class UserServiceImplTest {
     @Test
     void updateRoleOnTheSameUserTest() {
         when(userRepo.findByEmail(userEmail)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         assertThrows(BadUpdateRequestException.class, () ->
             userService.updateRole(userId, null, userEmail)
         );
@@ -553,7 +570,7 @@ class UserServiceImplTest {
 
     @Test
     void saveUserGoalsWithExistentUserGoalsAndExistentCustomGoalsTest() {
-        user2.setUserGoals(new ArrayList<>());
+        user.setUserGoals(new ArrayList<>());
         UserGoalDto userGoalDto = new UserGoalDto(new GoalRequestDto(2L));
         UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto(new CustomGoalRequestDto(8L));
         BulkSaveUserGoalDto userGoalsAndCustomGoalsDto = new BulkSaveUserGoalDto(
@@ -803,8 +820,12 @@ class UserServiceImplTest {
     @Test
     void deleteUserFriendByIdTest() {
         List<User> list = Collections.singletonList(user2);
+        List<UserVO> listVO = Collections.singletonList(userVO2);
         when(userRepo.getAllUserFriends(anyLong())).thenReturn(list);
+        when(modelMapper.map(list,
+                new TypeToken<List<UserVO>>(){}.getType())).thenReturn(listVO);
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
+        when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
         userService.deleteUserFriendById(userId, user2.getId());
         verify(userRepo).deleteUserFriendById(userId, user2.getId());
     }
@@ -812,7 +833,10 @@ class UserServiceImplTest {
     @Test
     void deleteUserFriendByIdNotDeletedExceptionTest() {
         when(userRepo.getAllUserFriends(1L)).thenReturn(Collections.emptyList());
+        when(modelMapper.map(Collections.emptyList(),
+                new TypeToken<List<UserVO>>(){}.getType())).thenReturn(Collections.emptyList());
         when(userRepo.findById(2L)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
         assertThrows(NotDeletedException.class, () ->
             userService.deleteUserFriendById(1L, 2L));
     }
@@ -820,7 +844,10 @@ class UserServiceImplTest {
     @Test
     void deleteUserFriendByIdNotDeletedExceptionTest2() {
         when(userRepo.getAllUserFriends(any())).thenReturn(Collections.singletonList(user));
+        when(modelMapper.map(Collections.singletonList(user),
+                new TypeToken<List<UserVO>>(){}.getType())).thenReturn(Collections.singletonList(userVO));
         when(userRepo.findById(2L)).thenReturn(Optional.of(user2));
+        when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
         assertThrows(NotDeletedException.class, () ->
             userService.deleteUserFriendById(3L, 2L));
     }
@@ -990,7 +1017,7 @@ class UserServiceImplTest {
         excepted.setUserCredo(userManagementDto.getUserCredo());
         excepted.setUserStatus(userManagementDto.getUserStatus());
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
-        when(modelMapper.map(Optional.of(user), UserVO.class)).thenReturn(userVO2);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         userService.updateUser(userManagementDto);
         assertEquals(excepted, user);
     }
@@ -1081,6 +1108,7 @@ class UserServiceImplTest {
         User expecteduUser = user;
         expecteduUser.setUserStatus(DEACTIVATED);
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         userService.deactivateUser(userId);
         assertEquals(expecteduUser, user);
     }

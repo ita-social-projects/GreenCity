@@ -164,7 +164,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findByEmail(String email) {
         Optional<User> optionalUser = userRepo.findByEmail(email);
-        return modelMapper.map(optionalUser.orElse(null), UserVO.class);
+        UserVO map = modelMapper.map(optionalUser.orElse(null), UserVO.class);
+        return map;
     }
 
     /**
@@ -626,7 +627,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserVO> getAllUserFriends(Long userId) {
-        return modelMapper.map(userRepo.getAllUserFriends(userId), new TypeToken<List<UserVO>>(){}.getType());
+        List<User> allUserFriends = userRepo.getAllUserFriends(userId);
+        return modelMapper.map(allUserFriends, new TypeToken<List<UserVO>>(){}.getType());
     }
 
     /**
