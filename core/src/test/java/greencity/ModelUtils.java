@@ -29,6 +29,7 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.enums.*;
 import greencity.entity.localization.GoalTranslation;
 import org.springframework.mock.web.MockMultipartFile;
@@ -214,17 +215,6 @@ public class ModelUtils {
                 .build();
     }
 
-    /*public static AdviceTranslation getAdviceTranslation() {
-        AdviceTranslation adviceTranslation = new AdviceTranslation();
-        adviceTranslation.setId(5L);
-        adviceTranslation.setLanguage(
-                new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        adviceTranslation.setAdvice(
-                Advice.builder().id(2L).habitDictionary(HabitDictionary.builder().id(2L).image("cup").build()).build());
-        adviceTranslation.setContent("Don't take a cup");
-        return adviceTranslation;
-    }*/
 
     public static GoalTranslation getGoalTranslation() {
         return GoalTranslation.builder()
@@ -564,6 +554,16 @@ public class ModelUtils {
             .user(getUser())
             .habitStatus(new HabitStatus())
             .habitStatistic(null)
+            .build();
+    }
+
+
+    public static AdviceTranslation getAdviceTranslation() {
+        return AdviceTranslation.builder()
+            .id(1L)
+            .language(getLanguage())
+            .content("Text content")
+            .advice(getAdvice())
             .build();
     }
 }
