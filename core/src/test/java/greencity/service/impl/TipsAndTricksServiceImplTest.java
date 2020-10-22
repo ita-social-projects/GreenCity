@@ -80,8 +80,10 @@ class TipsAndTricksServiceImplTest {
 
         assertEquals(tipsAndTricksDtoResponse, actual);
 
-        verify(tipsAndTricksTranslationService).saveTitleTranslations(tipsAndTricks.getTitleTranslations());
-        verify(tipsAndTricksTranslationService).saveTextTranslations(tipsAndTricks.getTextTranslations());
+        verify(tipsAndTricksTranslationService).saveTitleTranslations(modelMapper.map(tipsAndTricks.getTitleTranslations(),
+            new TypeToken<List<TitleTranslationVO>>() {}.getType()));
+        verify(tipsAndTricksTranslationService).saveTextTranslations(modelMapper.map(tipsAndTricks.getTextTranslations(),
+            new TypeToken<List<TextTranslationVO>>() {}.getType()));
     }
 
     @Test
