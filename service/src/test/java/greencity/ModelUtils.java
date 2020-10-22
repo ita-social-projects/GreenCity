@@ -1,5 +1,6 @@
 package greencity;
 
+import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.habit.HabitAssignDto;
@@ -10,6 +11,8 @@ import greencity.dto.habittranslation.HabitFactTranslationVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
+import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tipsandtricks.TextTranslationVO;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
@@ -25,7 +28,9 @@ import greencity.enums.ROLE;
 import greencity.service.TestConst;
 import greencity.constant.AppConstant;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -281,6 +286,41 @@ public class ModelUtils {
         return new LanguageDTO(1L, "en");
     }
 
+    public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
+        return LocationAddressAndGeoDto.builder()
+            .address("address")
+            .lat(12.12d)
+            .lng(12.12d)
+            .build();
+    }
+
+    public static LocalTime getLocalTime() {
+        return LocalTime.of(7, 20, 45, 342123342);
+    }
+
+    public static OpeningHoursDto getOpeningHoursDto() {
+        OpeningHoursDto openingHours = new OpeningHoursDto();
+        openingHours.setOpenTime(getLocalTime());
+        openingHours.setCloseTime(getLocalTime());
+        openingHours.setBreakTime(BreakTimeDto.builder()
+            .startTime(getLocalTime())
+            .endTime(getLocalTime())
+            .build());
+        openingHours.setWeekDay(DayOfWeek.MONDAY);
+        return openingHours;
+    }
+
+    public static Photo getPhoto() {
+        return Photo.builder()
+            .id(1L)
+            .name("photo")
+            .build();
+    }
+
+    public static DiscountValue getDiscountValue() {
+        return new DiscountValue(null, 33, null, null);
+    }
+
     public static TipsAndTricksVO getTipsAndTricks() {
         return TipsAndTricksVO.builder()
             .id(1L)
@@ -331,3 +371,12 @@ public class ModelUtils {
             .build();
     }
 }
+
+    public static Specification getSpecification() {
+        return Specification.builder()
+            .id(1L)
+            .name("specification")
+            .build();
+    }
+}
+

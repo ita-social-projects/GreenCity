@@ -26,14 +26,6 @@ VALUES (1, 1, 1, false, '2020-09-09 20:00:00+00', false),
        (5, 5, 5, false, '2020-09-13 20:00:00+00', false),
        (6, 6, 6, false, '2020-09-14 20:00:00+00', false);
 
-INSERT INTO habit_statistics (id, rate, create_date, amount_of_items, habit_assign_id)
-VALUES (1, 'GOOD', '2020-10-09 00:00:00+00', 5, 1),
-       (2, 'NORMAL', '2020-10-10 20:00:00+00', 4, 2),
-       (3, 'BAD', '2020-10-11 20:00:00+00', 3, 3),
-       (4, 'GOOD', '2020-10-12 20:00:00+00', 5, 4),
-       (5, 'NORMAL', CURRENT_TIMESTAMP - 1, 4, 5),
-       (6, 'BAD', CURRENT_TIMESTAMP, 3, 6);
-
 INSERT INTO languages (id, code)
 VALUES (1, 'ua'),
        (2, 'en'),

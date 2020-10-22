@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceVO;
 import java.util.List;
 import java.util.Set;
