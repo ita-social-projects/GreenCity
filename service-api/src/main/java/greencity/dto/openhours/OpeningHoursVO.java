@@ -1,4 +1,4 @@
-package greencity.dto.openinghours;
+package greencity.dto.openhours;
 
 import greencity.dto.breaktime.BreakTimeVO;
 import greencity.dto.place.PlaceVO;
