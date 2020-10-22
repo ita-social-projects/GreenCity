@@ -9,7 +9,7 @@ import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.PlaceAddDto;
@@ -31,15 +31,7 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.CategoryService;
-import greencity.service.DiscountService;
-import greencity.service.LocationService;
-import greencity.service.NotificationService;
-import greencity.service.OpenHoursService;
-import greencity.service.PlaceService;
-import greencity.service.ProposePlaceService;
-import greencity.service.SpecificationService;
-import greencity.service.UserService;
+import greencity.service.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -150,8 +142,9 @@ public class PlaceServiceImpl implements PlaceService {
         setUserToPlaceByEmail(email, place);
 
         place.setCategory(modelMapper.map(categoryService.findByName(dto.getCategory().getName()), Category.class));
-        proposePlaceService.saveDiscountValuesWithPlace(place.getDiscountValues(), place);
-        proposePlaceService.savePhotosWithPlace(place.getPhotos(), place);
+        PlaceVO placeVO = modelMapper.map(place, PlaceVO.class);
+        proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
+        proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
 
         return placeRepo.save(place);
     }

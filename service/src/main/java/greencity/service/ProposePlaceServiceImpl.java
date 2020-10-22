@@ -1,17 +1,12 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.descountvalue.DiscountValueVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.entity.DiscountValue;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.Specification;
+import greencity.dto.photo.PhotoVO;
+import greencity.dto.place.PlaceVO;
 import greencity.exception.exceptions.BadRequestException;
-import greencity.service.LocationService;
-import greencity.service.PhotoService;
-import greencity.service.ProposePlaceService;
-import greencity.service.SpecificationService;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -65,12 +60,12 @@ public class ProposePlaceServiceImpl implements ProposePlaceService {
      * Method save Photo in object Place.
      */
     @Override
-    public void savePhotosWithPlace(List<Photo> photos, Place place) {
+    public void savePhotosWithPlace(List<PhotoVO> photos, PlaceVO place) {
         photos.forEach(photo -> {
             if (photoService.findByName(photo.getName()).isPresent()) {
                 throw new BadRequestException(ErrorMessage.PHOTO_IS_PRESENT);
             }
-            photo.setPlace(place);
+            photo.setPlaceId(place.getId());
         });
     }
 
@@ -78,10 +73,9 @@ public class ProposePlaceServiceImpl implements ProposePlaceService {
      * Method save DiscountValue in object Place.
      */
     @Override
-    public void saveDiscountValuesWithPlace(Set<DiscountValue> discountValues, Place place) {
+    public void saveDiscountValuesWithPlace(Set<DiscountValueVO> discountValues, PlaceVO place) {
         discountValues.forEach(disc -> {
-            disc.setSpecification(modelMapper.map(specService.findByName(disc.getSpecification().getName()),
-                Specification.class));
+            disc.setSpecification(specService.findByName(disc.getSpecification().getName()));
             disc.setPlace(place);
         });
     }
