@@ -102,14 +102,12 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             int habitStreak = habitStatus.getHabitStreak();
             habitStatus.setHabitStreak(++habitStreak);
             habitCalendar = HabitStatusCalendar.builder().enrollDate(todayDate).habitStatus(habitStatus).build();
-            //habitStatus.getHabitStatusCalendars().add(habitCalendar);
             habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
             habitStatusCalendarDto =
                 modelMapper.map(habitCalendar, HabitStatusCalendarDto.class);
         } else if (intervalBetweenDates > 1) {
             habitStatus.setHabitStreak(1);
             habitCalendar = HabitStatusCalendar.builder().enrollDate(todayDate).habitStatus(habitStatus).build();
-            //habitStatus.getHabitStatusCalendars().add(habitCalendar);
             habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
             habitStatusCalendarDto =
                 modelMapper.map(habitCalendar, HabitStatusCalendarDto.class);
