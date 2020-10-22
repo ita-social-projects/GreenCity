@@ -1,12 +1,13 @@
-/*
+
 package greencity.service.impl;
 
-import static greencity.ModelUtils.*;
+import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceTranslationVO;
+import greencity.dto.advice.AdviceVO;
+import greencity.service.AdviceServiceImpl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import greencity.dto.advice.AdvicePostDTO;
-import greencity.entity.Advice;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.repository.AdviceTranslationRepo;
 import java.util.Collections;
@@ -15,14 +16,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class AdviceTranslationServiceImplTest {
-
     @Mock
     private AdviceTranslationRepo adviceTranslationRepo;
 
@@ -30,31 +31,38 @@ class AdviceTranslationServiceImplTest {
     private ModelMapper modelMapper;
 
     @Mock
-    private AdviceServiceImpl adviceService;
+    private  AdviceServiceImpl adviceService;
 
     @InjectMocks
     private AdviceTranslationServiceImpl adviceTranslationService;
 
+    @Spy
+    @InjectMocks
+    private AdviceTranslationServiceImpl adviceTranslationServiceSpy;
+
+    private List<AdviceTranslationVO> adviceTranslationsVO =
+        Collections.singletonList(AdviceTranslationVO.builder().build());
+
     @Test
-    void saveAdviceTranslation() {
-        List<AdviceTranslation> adviceTranslations = Collections.singletonList(getAdviceTranslation());
+    void saveAdviceTranslationTest() {
+        List<AdviceTranslation> adviceTranslations =
+            Collections.singletonList(AdviceTranslation.builder().build());
+        when(modelMapper.map(adviceTranslationsVO,new TypeToken<List<AdviceTranslation>>() {
+        }.getType())).thenReturn(adviceTranslations);
         when(adviceTranslationRepo.saveAll(adviceTranslations)).thenReturn(adviceTranslations);
-        adviceTranslationService.saveAdviceTranslation(adviceTranslations);
-        verify(adviceTranslationRepo, times(1)).saveAll(adviceTranslations);
+        when(modelMapper.map(adviceTranslations, new TypeToken<List<AdviceTranslationVO>>() {
+        }.getType())).thenReturn(adviceTranslationsVO);
+        assertEquals(adviceTranslationsVO,adviceTranslationService.saveAdviceTranslation(adviceTranslationsVO));
     }
 
     @Test
-    void saveAdviceAndAdviceTranslation() {
-        Advice advice = getAdvice();
-        AdvicePostDTO advicePostDTO = getAdvicePostDTO();
-        List<AdviceTranslation> adviceTranslations = Collections.singletonList(getAdviceTranslation());
-        when(adviceService.save(advicePostDTO)).thenReturn(advice);
-        when(modelMapper.map(advicePostDTO.getTranslations(), new TypeToken<List<AdviceTranslation>>() {
-            }.getType())).thenReturn(adviceTranslations);
-        when(adviceTranslationRepo.saveAll(adviceTranslations)).thenReturn(adviceTranslations);
-
-        adviceTranslationService.saveAdviceAndAdviceTranslation(advicePostDTO);
-        assertEquals(adviceTranslations.get(0).getAdvice(), advice);
-        verify(adviceTranslationRepo, times(1)).saveAll(adviceTranslations);
+    void saveAdviceAndAdviceTranslationTest() {
+        AdviceVO adviceVO = AdviceVO.builder().build();
+        AdvicePostDto advicePostDto = new AdvicePostDto();
+        when(adviceService.save(advicePostDto)).thenReturn(adviceVO);
+        when(modelMapper.map(advicePostDto.getTranslations(), new TypeToken<List<AdviceTranslationVO>>() {
+            }.getType())).thenReturn(adviceTranslationsVO);
+        doReturn(adviceTranslationsVO).when(adviceTranslationServiceSpy).saveAdviceTranslation(adviceTranslationsVO);
+        assertEquals(adviceTranslationsVO, adviceTranslationServiceSpy.saveAdviceAndAdviceTranslation(advicePostDto));
     }
-}*/
+}
