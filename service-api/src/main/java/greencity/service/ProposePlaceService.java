@@ -1,16 +1,13 @@
 package greencity.service;
 
+import greencity.dto.descountvalue.DiscountValueVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.entity.DiscountValue;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import org.springframework.stereotype.Service;
-
+import greencity.dto.photo.PhotoVO;
+import greencity.dto.place.PlaceVO;
 import java.util.List;
 import java.util.Set;
 
-@Service
 public interface ProposePlaceService {
     /**
      * Method check if input location is new.
@@ -25,10 +22,10 @@ public interface ProposePlaceService {
     /**
      * Method save Photo in object Place.
      */
-    void savePhotosWithPlace(List<Photo> photos, Place place);
+    void savePhotosWithPlace(List<PhotoVO> photos, PlaceVO place);
 
     /**
      * Method save DiscountValue in object Place.
      */
-    void saveDiscountValuesWithPlace(Set<DiscountValue> discountValues, Place place);
+    void saveDiscountValuesWithPlace(Set<DiscountValueVO> discountValues, PlaceVO place);
 }
