@@ -116,13 +116,14 @@ public class HabitServiceImpl implements HabitService {
             ).build());
         habit.getHabitTranslations().forEach(ht -> ht.setHabit(habit));
 
-        /*if (habitManagementDto.getImage() != null) {
-            image = fileService.convertToMultipartImage(habitManagementDto.getImage());
+        if (habitManagementDto.getImage() != null) {
+            try {
+                image = fileService.convertToMultipartImage(habitManagementDto.getImage());
+            } catch (RuntimeException ignored) { }
         }
         if (image != null) {
             habit.setImage(fileService.upload(image).toString());
-            System.out.println(habit.getImage());
-        }*/
+        }
 
         habitTranslationRepo.saveAll(habit.getHabitTranslations());
         return modelMapper.map(habit, HabitManagementDto.class);
