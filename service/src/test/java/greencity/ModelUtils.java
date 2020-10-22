@@ -370,7 +370,6 @@ public class ModelUtils {
             .tipsAndTricks(ModelUtils.getTipsAndTricks())
             .build();
     }
-}
 
     public static Specification getSpecification() {
         return Specification.builder()
