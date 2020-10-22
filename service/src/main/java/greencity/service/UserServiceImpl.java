@@ -55,8 +55,7 @@ public class UserServiceImpl implements UserService {
     private final GoalTranslationRepo goalTranslationRepo;
     private final FileService fileService;
     private final TipsAndTricksRepo tipsAndTricksRepo;
-    private final EcoNewsRepo ecoNewsRepo;
-    private final SocialNetworkImageService socialNetworkImageService;
+    private final EcoNewsRepo ecoNewsRepo;//    private final SocialNetworkImageService socialNetworkImageService;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
     @Value("${defaultProfilePicture}")
@@ -81,8 +80,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findById(Long id) {
-        return modelMapper.map(userRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id)), UserVO.class);
+        User source = userRepo.findById(id)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(source, UserVO.class);
     }
 
     /**
@@ -180,7 +180,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        return Optional.of(modelMapper.map(userRepo.findNotDeactivatedByEmail(email), UserVO.class));
+        return Optional.of(modelMapper
+                .map(
+                        userRepo.findNotDeactivatedByEmail(email),
+                        UserVO.class));
     }
 
     /**
@@ -248,7 +251,6 @@ public class UserServiceImpl implements UserService {
         userVO.setLastVisit(LocalDateTime.now());
         User updatable = modelMapper.map(userVO, User.class);
         return modelMapper.map(userRepo.save(updatable), UserVO.class);
-
     }
 
     /**
@@ -273,7 +275,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserUpdateDto getUserUpdateDtoByEmail(String email) {
         return modelMapper.map(
-            userRepo.findByEmail(email).orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
+            userRepo.findByEmail(email).orElseThrow(() ->
+                    new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
             UserUpdateDto.class
         );
     }
@@ -715,8 +718,7 @@ public class UserServiceImpl implements UserService {
             .map(url ->
                 SocialNetwork.builder()
                     .url(url)
-                    .user(user)
-                    .socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
+                    .user(user)//.socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
                     .build())
             .collect(Collectors.toList()));
         user.setShowLocation(userProfileDtoRequest.getShowLocation());

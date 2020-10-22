@@ -1,5 +1,8 @@
 package greencity;
 
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.habit.HabitAssignDto;
@@ -10,9 +13,8 @@ import greencity.dto.habittranslation.HabitFactTranslationVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserGoalVO;
-import greencity.dto.user.UserVO;
+import greencity.dto.tag.TagVO;
+import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.FactOfDayStatus;
@@ -20,7 +22,15 @@ import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
 import greencity.service.TestConst;
 import greencity.constant.AppConstant;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -30,6 +40,10 @@ import java.util.List;
 public class ModelUtils {
     public static Tag getTag() {
         return new Tag(1L, "tag", Collections.emptyList(), Collections.emptyList());
+    }
+
+    public static TagVO getTagVO() {
+        return new TagVO(1L, "tag");
     }
 
     public static User getUser() {
@@ -43,6 +57,18 @@ public class ModelUtils {
                 .build();
     }
 
+    public static UserVO getUserVO() {
+        return UserVO.builder()
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .role(ROLE.ROLE_USER)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
+    }
+
+
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
@@ -51,6 +77,11 @@ public class ModelUtils {
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
                 "title", "text", null, Collections.singletonList(getTag()));
+    }
+
+    public static EcoNewsVO getEcoNewsVO() {
+        return new EcoNewsVO(1L, ZonedDateTime.now(), TestConst.SITE, null, getUserVO(),
+                "title", "text", null, Collections.singletonList(getTagVO()));
     }
 
     public static GoalTranslation getGoalTranslation() {
@@ -275,5 +306,62 @@ public class ModelUtils {
 
     public static LanguageDTO getLanguageDTO() {
         return new LanguageDTO(1L, "en");
+    }
+
+    public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
+        return new AddEcoNewsDtoRequest("title", "text",
+                Collections.singletonList("tag"), null, null);
+    }
+
+    public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
+        return new AddEcoNewsDtoResponse(1L, "title",
+                "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
+                ZonedDateTime.now(), TestConst.SITE, null,
+                Collections.singletonList("tag"));
+    }
+
+    public static MultipartFile getFile() {
+        Path path = Paths.get("src/test/resources/test.jpg");
+        String name = TestConst.IMG_NAME;
+        String contentType = "photo/plain";
+        byte[] content = null;
+        try {
+            content = Files.readAllBytes(path);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+        return new MockMultipartFile(name,
+                name, contentType, content);
+    }
+
+    public static URL getUrl() throws MalformedURLException {
+        return new URL(TestConst.SITE);
+    }
+
+    public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
+        return new EcoNewsAuthorDto(1L, TestConst.NAME);
+    }
+
+    public static TipsAndTricks getTipsAndTricks() {
+        return TipsAndTricks.builder()
+                .id(1L)
+                .titleTranslations(Collections.singletonList(TitleTranslation.builder()
+                        .content("title content")
+                        .language(getLanguage())
+                        .build()))
+                .textTranslations(Collections.singletonList(TextTranslation.builder()
+                        .content("text content for tips and tricks")
+                        .language(getLanguage())
+                        .build()))
+                .creationDate(ZonedDateTime.now())
+                .author(getUser())
+                .tags(Collections.singletonList(getTag()))
+                .imagePath(null)
+                .source(null)
+                .build();
+    }
+
+    public static UserProfilePictureDto getUserProfilePictureDto() {
+        return new UserProfilePictureDto(1L, "image");
     }
 }

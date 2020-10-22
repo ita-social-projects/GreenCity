@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
@@ -7,8 +7,10 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.*;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.Tag;
@@ -21,12 +23,6 @@ import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
-import greencity.service.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -42,6 +38,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @EnableCaching
@@ -183,10 +185,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @Override
-    public EcoNews findById(Long id) {
-        return ecoNewsRepo
-            .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+    public EcoNewsVO findById(Long id) {
+        EcoNews ecoNews = ecoNewsRepo
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+        EcoNewsVO map = modelMapper.map(ecoNews, EcoNewsVO.class);
+        return map;
     }
 
     /**
@@ -196,7 +200,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewsDto findDtoById(Long id) {
-        EcoNews ecoNews = findById(id);
+        EcoNews ecoNews = modelMapper.map(findById(id), EcoNews.class);
 
         return modelMapper.map(ecoNews, EcoNewsDto.class);
     }
@@ -283,7 +287,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
-    public void likeComment(User user, EcoNewsComment comment) {
+    public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
     }
 
@@ -295,7 +299,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
-    public void unlikeComment(User user, EcoNewsComment comment) {
+    public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().remove(user);
     }
 
@@ -318,7 +322,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile image) {
-        EcoNews toUpdate = findById(ecoNewsDtoManagement.getId());
+        EcoNews toUpdate = modelMapper.map(findById(ecoNewsDtoManagement.getId()), EcoNews.class);
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
         toUpdate.setText(ecoNewsDtoManagement.getText());
         toUpdate.setTags(modelMapper
@@ -335,8 +339,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, User user) {
-        EcoNews toUpdate = findById(updateEcoNewsDto.getId());
+    public EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserVO user) {
+        EcoNews toUpdate = modelMapper.map(findById(updateEcoNewsDto.getId()), EcoNews.class);
         if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }

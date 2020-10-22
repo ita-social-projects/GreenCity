@@ -1,4 +1,4 @@
-package greencity.dto.verifyEmail;
+package greencity.dto.verifyemail;
 
 import greencity.dto.user.UserVO;
 import lombok.AllArgsConstructor;

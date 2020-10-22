@@ -1,25 +1,20 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.*;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.search.SearchNewsDto;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import greencity.entity.User;
-import java.util.List;
+import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface EcoNewsService {
     /**
-     * Method for creating {@link EcoNews} instance.
+     * Method for creating {@link EcoNewsVO} instance.
      *
-     * @param addEcoNewsDtoRequest - dto with {@link EcoNews} title, text, image path.
+     * @param addEcoNewsDtoRequest - dto with {@link EcoNewsVO} title, text, image path.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
@@ -29,6 +24,7 @@ public interface EcoNewsService {
      *
      * @return list of {@link EcoNewsDto} instances.
      */
+
     List<EcoNewsDto> getThreeLastEcoNews();
 
     /**
@@ -57,12 +53,12 @@ public interface EcoNewsService {
     PageableDto<EcoNewsDto> find(Pageable page, List<String> tags);
 
     /**
-     * Method for getting the {@link EcoNews} instance by its id.
+     * Method for getting the {@link EcoNewsVO} instance by its id.
      *
-     * @param id {@link EcoNews} instance id.
-     * @return {@link EcoNews} instance.
+     * @param id {@link EcoNewsVO} instance id.
+     * @return {@link EcoNewsVO} instance.
      */
-    EcoNews findById(Long id);
+    EcoNewsVO findById(Long id);
 
     /**
      * Method for getting the {@link EcoNewsDto} instance by its id.
@@ -73,16 +69,16 @@ public interface EcoNewsService {
     EcoNewsDto findDtoById(Long id);
 
     /**
-     * Method for deleting the {@link EcoNews} instance by its id.
+     * Method for deleting the {@link EcoNewsVO} instance by its id.
      *
-     * @param id - {@link EcoNews} instance id which will be deleted.
+     * @param id - {@link EcoNewsVO} instance id which will be deleted.
      */
     void delete(Long id);
 
     /**
-     * Method deletes all {@link EcoNews} by list of ids.
+     * Method deletes all {@link EcoNewsVO} by list of ids.
      *
-     * @param listId list of id {@link EcoNews}
+     * @param listId list of id {@link EcoNewsVO}
      */
     void deleteAll(List<Long> listId);
 
@@ -116,20 +112,20 @@ public interface EcoNewsService {
     /**
      * Method to mark comment as liked by User.
      *
-     * @param user    {@link User}.
-     * @param comment {@link EcoNewsComment}
+     * @param user    {@link UserVO}.
+     * @param comment {@link EcoNewsCommentVO}
      * @author Dovganyuk Taras
      */
-    void likeComment(User user, EcoNewsComment comment);
+    void likeComment(UserVO user, EcoNewsCommentVO comment);
 
     /**
      * Method to mark comment as unliked by User.
      *
-     * @param user    {@link User}.
-     * @param comment {@link EcoNewsComment}
+     * @param user    {@link UserVO}.
+     * @param comment {@link EcoNewsCommentVO}
      * @author Dovganyuk Taras
      */
-    void unlikeComment(User user, EcoNewsComment comment);
+    void unlikeComment(UserVO user, EcoNewsCommentVO comment);
 
     /**
      * Method returns {@link EcoNewsDto} by search query and page.
@@ -141,22 +137,22 @@ public interface EcoNewsService {
     PageableDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query);
 
     /**
-     * Method for updating {@link EcoNews} instance.
+     * Method for updating {@link EcoNewsVO} instance.
      *
      * @param ecoNewsDtoManagement - instance of {@link EcoNewsDtoManagement}.
      */
     void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile multipartFile);
 
     /**
-     * Method for updating {@link EcoNews} instance.
+     * Method for updating {@link EcoNewsVO} instance.
      *
      * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
      * @return instance of {@link EcoNewsDto};=.
      */
-    EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, User user);
+    EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
 
     /**
-     * Find {@link EcoNews} for management.
+     * Find {@link EcoNewsVO} for management.
      *
      * @return a dto of {@link PageableDto}.
      * @author Dovganyuk Taras

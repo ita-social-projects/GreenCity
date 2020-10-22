@@ -1,7 +1,9 @@
 package greencity.dto.user;
 
 import greencity.dto.goal.CustomGoalVO;
-import greencity.dto.verifyEmail.VerifyEmailVO;
+import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.enums.EmailNotification;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
 import lombok.*;
@@ -37,4 +39,12 @@ public class UserVO {
     private VerifyEmailVO verifyEmail;
 
     private Double rating;
+
+    private EmailNotification emailNotification;
+
+    private LocalDateTime dateOfRegistration;
+
+    private List<SocialNetworkVO> socialNetworks;
+
+    private List<UserVO> userFriends = new ArrayList<>();
 }

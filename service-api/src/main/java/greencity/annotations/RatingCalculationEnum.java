@@ -1,4 +1,4 @@
-package greencity.enums;
+package greencity.annotations;
 
 import lombok.Getter;
 

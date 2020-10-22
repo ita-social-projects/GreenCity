@@ -1,21 +1,17 @@
 package greencity.mapping;
 
-import greencity.dto.goal.CustomGoalVO;
-import greencity.dto.goal.GoalVO;
-import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.User;
+import greencity.entity.*;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
-public class UserVOMapper extends AbstractConverter<User, UserVO> {
+public class UserMapper extends AbstractConverter<UserVO, User> {
     @Override
-    protected UserVO convert(User user) {
-        return UserVO.builder()
+    protected User convert(UserVO user) {
+        return User.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
@@ -24,34 +20,34 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                 .userStatus(user.getUserStatus())
                 .lastVisit(user.getLastVisit())
                 .rating(user.getRating())
-                .verifyEmail(VerifyEmailVO.builder()
+                .verifyEmail(VerifyEmail.builder()
                         .id(user.getVerifyEmail().getId())
                         .expiryDate(user.getVerifyEmail().getExpiryDate())
                         .token(user.getVerifyEmail().getToken())
                         .build())
                 .userGoals(user.getUserGoals()
-                        .stream().map(userGoal -> UserGoalVO.builder()
+                        .stream().map(userGoal -> UserGoal.builder()
                                 .id(userGoal.getId())
                                 .dateCompleted(userGoal.getDateCompleted())
                                 .status(userGoal.getStatus())
-                                .goal(GoalVO.builder()
+                                .goal(Goal.builder()
                                         .id(userGoal.getGoal().getId())
                                         .build())
-                                .user(UserVO.builder()
+                                .user(User.builder()
                                         .id(userGoal.getUser().getId())
                                         .build())
-                                .customGoal(CustomGoalVO.builder()
+                                .customGoal(CustomGoal.builder()
                                         .id(userGoal.getCustomGoal().getId())
                                         .build())
                                 .build())
                         .collect(Collectors.toList()))
                 .customGoals(user.getCustomGoals()
-                        .stream().map(customGoal -> CustomGoalVO.builder()
+                        .stream().map(customGoal -> CustomGoal.builder()
                                 .id(customGoal.getId())
                                 .text(customGoal.getText())
                                 .build()).collect(Collectors.toList()))
                 .userFriends(user.getUserFriends()
-                                .stream().map(user1 -> UserVO.builder()
+                        .stream().map(user1 -> User.builder()
                                 .id(user1.getId())
                                 .name(user1.getName())
                                 .build())

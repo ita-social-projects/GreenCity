@@ -1,5 +1,6 @@
 package greencity.dto.econews;
 
+import greencity.constant.ServiceValidationConstants;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -10,8 +11,6 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
-
-import static greencity.constant.ValidationConstants.MIN_AMOUNT_OF_TAGS;
 
 @Builder
 @NoArgsConstructor
@@ -33,7 +32,7 @@ public class EcoNewsDtoManagement implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime creationDate;
 
-    @NotEmpty(message = MIN_AMOUNT_OF_TAGS)
+    @NotEmpty(message = ServiceValidationConstants.MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
 
     private String imagePath;

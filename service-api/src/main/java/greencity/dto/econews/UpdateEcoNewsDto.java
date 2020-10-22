@@ -1,18 +1,13 @@
 package greencity.dto.econews;
 
-import java.util.List;
+import greencity.constant.ServiceValidationConstants;
+import lombok.*;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import static greencity.constant.ValidationConstants.MIN_AMOUNT_OF_TAGS;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,7 +26,7 @@ public class UpdateEcoNewsDto {
     @Size(min = 20, max = 63206)
     private String text;
 
-    @NotEmpty(message = MIN_AMOUNT_OF_TAGS)
+    @NotEmpty(message = ServiceValidationConstants.MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
 
     private String image;
