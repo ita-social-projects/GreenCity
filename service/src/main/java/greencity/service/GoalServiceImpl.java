@@ -94,7 +94,7 @@ public class GoalServiceImpl implements GoalService {
     @Transactional
     public void changeGoalOrCustomGoalStatus(Long userId, boolean status, Long goalId, Long customGoalId) {
         String goalStatus = status ? GoalStatus.DONE.toString() : GoalStatus.ACTIVE.toString();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().withNano(0);
         if ((goalId == null && customGoalId == null) || (goalId != null && customGoalId != null)) {
             throw new BadRequestException(ErrorMessage.WRONG_PARAMETER);
         } else if (goalId != null) {

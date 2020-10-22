@@ -55,7 +55,8 @@ public class UserServiceImpl implements UserService {
     private final GoalTranslationRepo goalTranslationRepo;
     private final FileService fileService;
     private final TipsAndTricksRepo tipsAndTricksRepo;
-    private final EcoNewsRepo ecoNewsRepo;//    private final SocialNetworkImageService socialNetworkImageService;
+    private final EcoNewsRepo ecoNewsRepo;
+    private final SocialNetworkImageService socialNetworkImageService;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
     @Value("${defaultProfilePicture}")
@@ -720,7 +721,11 @@ public class UserServiceImpl implements UserService {
             .map(url ->
                 SocialNetwork.builder()
                     .url(url)
-                    .user(user)//.socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
+                    .user(user)
+                    .socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
+                    .user(user)
+                    .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
+                        SocialNetworkImage.class))
                     .build())
             .collect(Collectors.toList()));
         user.setShowLocation(userProfileDtoRequest.getShowLocation());

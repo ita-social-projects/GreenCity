@@ -98,6 +98,10 @@ public final class ErrorMessage {
     public static final String MALFORMED_URL = "Malformed URL. The string could not be parsed.";
     public static final String USER_CANNOT_ADD_SAME_SOCIAL_NETWORK_LINKS =
             "User cannot add the same social network links";
+    public static final String SOCIAL_NETWORK_IMAGE_NOT_SAVED = "Social network image hasn't been saved";
+    public static final String SOCIAL_NETWORK_IMAGE_FOUND_BY_ID = "Social network image doesn't exist by this id: ";
+    public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
+        "Bad default social network image host path (Row in database doesn't exists)";
 
     private ErrorMessage() {
     }

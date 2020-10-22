@@ -6,11 +6,7 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
-import greencity.dto.tag.TagVO;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
+import greencity.dto.tipsandtricks.*;
 import greencity.entity.*;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -75,7 +71,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             toSave.setImagePath(fileService.upload(image).toString());
         }
         toSave.setTags(modelMapper.map(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()),
-            new TypeToken<List<TagVO>>() {
+            new TypeToken<List<Tag>>() {
             }.getType()));
         toSave.getTitleTranslations().forEach(el -> el.setTipsAndTricks(toSave));
         toSave.getTextTranslations().forEach(el -> el.setTipsAndTricks(toSave));
@@ -84,8 +80,10 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.TIPS_AND_TRICKS_NOT_SAVED);
         }
-        tipsAndTricksTranslationService.saveTitleTranslations(toSave.getTitleTranslations());
-        tipsAndTricksTranslationService.saveTextTranslations(toSave.getTextTranslations());
+        tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(toSave.getTitleTranslations(),
+            new TypeToken<List<TitleTranslationVO>>() {}.getType()));
+        tipsAndTricksTranslationService.saveTextTranslations(modelMapper.map(toSave.getTextTranslations(),
+            new TypeToken<List<TextTranslationVO>>() {}.getType()));
 
         return modelMapper.map(toSave, TipsAndTricksDtoResponse.class);
     }
@@ -132,12 +130,14 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         }
         tipsAndTricks
             .setTags(modelMapper.map(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()),
-                new TypeToken<List<TagVO>>() {
+                new TypeToken<List<Tag>>() {
                 }.getType()));
 
         tipsAndTricksRepo.save(tipsAndTricks);
-        tipsAndTricksTranslationService.saveTitleTranslations(tipsAndTricks.getTitleTranslations());
-        tipsAndTricksTranslationService.saveTextTranslations(tipsAndTricks.getTextTranslations());
+        tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(tipsAndTricks.getTitleTranslations(),
+            new TypeToken<List<TitleTranslationVO>>() {}.getType()));
+        tipsAndTricksTranslationService.saveTextTranslations(modelMapper.map(tipsAndTricks.getTextTranslations(),
+            new TypeToken<List<TextTranslationVO>>() {}.getType()));
 
         return tipsAndTricksDtoManagement;
     }
@@ -152,7 +152,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         TipsAndTricks toUpdate = findById(tipsAndTricksDtoManagement.getId());
         toUpdate.setSource(tipsAndTricksDtoManagement.getSource());
         toUpdate.setTags(modelMapper.map(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()),
-            new TypeToken<List<TagVO>>() {
+            new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
             toUpdate.setImagePath(fileService.upload(image).toString());

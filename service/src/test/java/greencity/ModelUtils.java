@@ -6,6 +6,7 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
+import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habitfact.HabitFactVO;
@@ -18,6 +19,10 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.*;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tipsandtricks.TextTranslationVO;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
@@ -373,6 +378,20 @@ public class ModelUtils {
         return new UserProfilePictureDto(1L, "image");
     }
 
+
+    public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
+        return new FactOfTheDayTranslationDTO(1L, "content");
+    }
+
+    public static ShoppingListDtoResponse getShoppingListDtoResponse() {
+        return ShoppingListDtoResponse.builder()
+            .customGoalId(1L)
+            .goalId(1L)
+            .status("ACTIVE")
+            .text("text")
+            .build();
+    }
+
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
         return LocationAddressAndGeoDto.builder()
             .address("address")
@@ -406,6 +425,56 @@ public class ModelUtils {
 
     public static DiscountValue getDiscountValue() {
         return new DiscountValue(null, 33, null, null);
+    }
+
+    public static TipsAndTricksVO getTipsAndTricks() {
+        return TipsAndTricksVO.builder()
+            .id(1L)
+            .titleTranslations(Collections.singletonList(TitleTranslationVO.builder()
+                .content("title content")
+                .language(getLanguageVO())
+                .build()))
+            .textTranslations(Collections.singletonList(TextTranslationVO.builder()
+                .content("text content for tips and tricks")
+                .language(getLanguageVO())
+                .build()))
+            .creationDate(ZonedDateTime.now())
+            .author(getUserVO())
+            .tags(Collections.singletonList(getTagVO()))
+            .imagePath(null)
+            .source(null)
+            .build();
+    }
+    public static LanguageVO getLanguageVO() {
+        return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
+    }
+    public static UserVO getUserVO() {
+        return UserVO.builder()
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(ROLE.ROLE_USER)
+            .build();
+    }
+    public static TagVO getTagVO() {
+        return new TagVO(1L, "tag");
+    }
+    public static TitleTranslationVO getTitleTranslationVO(){
+        return TitleTranslationVO.builder()
+            .id(1L)
+            .content("Content")
+            .language(ModelUtils.getLanguageVO())
+            .tipsAndTricks(ModelUtils.getTipsAndTricks())
+            .build();
+    }
+
+    public static TextTranslationVO getTextTranslationVO(){
+        return TextTranslationVO.builder()
+            .id(1L)
+            .content("Content")
+            .language(ModelUtils.getLanguageVO())
+            .tipsAndTricks(ModelUtils.getTipsAndTricks())
+            .build();
     }
 
     public static Specification getSpecification() {
