@@ -372,7 +372,6 @@ public class ModelUtils {
     public static UserProfilePictureDto getUserProfilePictureDto() {
         return new UserProfilePictureDto(1L, "image");
     }
-}
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
         return LocationAddressAndGeoDto.builder()

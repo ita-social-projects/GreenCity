@@ -1096,7 +1096,9 @@ class UserServiceImplTest {
         User expecteduUser = user;
         user.setUserStatus(DEACTIVATED);
         expecteduUser.setUserStatus(ACTIVATED);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         userService.setActivatedStatus(userId);
         assertEquals(expecteduUser, user);
     }
