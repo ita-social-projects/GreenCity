@@ -29,7 +29,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterAnnotation(CurrentUser.class) != null
-            && parameter.getParameterType().equals(User.class) || parameter.getParameterType().equals(UserVO.class);
+            && (parameter.getParameterType().equals(User.class) || parameter.getParameterType().equals(UserVO.class));
     }
 
     /**
@@ -41,7 +41,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Principal principal = webRequest.getUserPrincipal();
-        if ((parameter.getParameterType().equals(UserVO.class))) {
+        if (parameter.getParameterType().equals(UserVO.class)) {
             return principal != null ? modelMapper.map(userService.findByEmail(principal.getName()),
                 UserVO.class) : null;
         }
