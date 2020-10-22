@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceVO;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
