@@ -1,21 +1,21 @@
-/*
+
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.dto.advice.AdvicePostDTO;
+import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceTranslationVO;
 import greencity.service.AdviceService;
 import greencity.service.AdviceTranslationService;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class AdviceControllerTest {
     private static final String adviceLink = "/advices";
 
@@ -47,34 +46,42 @@ class AdviceControllerTest {
     @InjectMocks
     AdviceController adviceController;
 
-    public static final String content = "{\n" +
-        "  \"habitDictionary\": {\n" +
-        "    \"id\": 1\n" +
-        "  },\n" +
-        "  \"translations\": [\n" +
-        "    {\n" +
-        "      \"content\": \"Eco\",\n" +
-        "      \"language\": {\n" +
-        "        \"code\": \"en\",\n" +
-        "        \"id\": 1\n" +
-        "      }\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"content\": \"Еко\",\n" +
-        "      \"language\": {\n" +
-        "        \"code\": \"uk\",\n" +
-        "        \"id\": 2\n" +
-        "      }\n" +
-        "    },\n" +
-        "    {\n" +
-        "      \"content\": \"Эко\",\n" +
-        "      \"language\": {\n" +
-        "        \"code\": \"ru\",\n" +
-        "        \"id\": 3\n" +
-        "       }\n" +
-        "     } \n" +
-        "  ]\n" +
-        "}";
+    private List<AdviceTranslationVO> adviceTranslationsVO =
+        Collections.singletonList(AdviceTranslationVO.builder().build());
+
+    private AdvicePostDto advicePostDto = new AdvicePostDto();
+
+    StringBuilder build = new StringBuilder();
+
+    public static final String content =
+            "{\n"
+            + "   \"habit\": {\n"
+            + "       \"id\": 1\n"
+            + "     },\n"
+            + "   \"translations\": [\n"
+            + "    {\n"
+            + "      \"content\": \"Eco\",\n"
+            + "      \"language\": {\n"
+            + "        \"code\": \"en\",\n"
+            + "        \"id\": 2\n"
+            + "      }\n"
+            + "    },\n"
+            + "    {\n"
+            + "      \"content\": \"Еко\",\n"
+            + "      \"language\": {\n"
+            + "        \"code\": \"uk\",\n"
+            + "        \"id\": 1\n"
+            + "      }\n"
+            + "    },\n"
+            + "    {\n"
+            + "      \"content\": \"Эко\",\n"
+            + "      \"language\": {\n"
+            + "        \"code\": \"ru\",\n"
+            + "        \"id\": 3\n"
+            + "       }\n"
+            + "     } \n"
+            + "     ] \n"
+            + "},\n";
 
     @BeforeEach
     void setUp() {
@@ -99,10 +106,22 @@ class AdviceControllerTest {
     }
 
     @Test
+    void updateTest() throws Exception {
+        mockMvc.perform(put(adviceLink + "/{adviceId}", 1)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isOk());
+
+        ObjectMapper mapper = new ObjectMapper();
+        AdvicePostDto advicePostDTO = mapper.readValue(content, AdvicePostDto.class);
+
+        verify(adviceService, times(1)).update(advicePostDTO, 1L);
+    }
+
+    @Test
     void getRandomAdviceHabitWithInvalidIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/{id}?lang=en", "invalidId"))
             .andExpect(status().isBadRequest());
-
         verify(adviceService, times(0)).getRandomAdviceByHabitIdAndLanguage(1L, "en");
     }
 
@@ -112,24 +131,9 @@ class AdviceControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isCreated());
-
         ObjectMapper mapper = new ObjectMapper();
-        AdvicePostDTO advicePostDTO = mapper.readValue(content, AdvicePostDTO.class);
-
+        AdvicePostDto advicePostDTO = mapper.readValue(content, AdvicePostDto.class);
         verify(adviceTranslationService, times(1)).saveAdviceAndAdviceTranslation(advicePostDTO);
-    }
-
-    @Test
-    void updateTest() throws Exception {
-        mockMvc.perform(put(adviceLink + "/{adviceId}", 1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
-            .andExpect(status().isOk());
-
-        ObjectMapper mapper = new ObjectMapper();
-        AdvicePostDTO advicePostDTO = mapper.readValue(content, AdvicePostDTO.class);
-
-        verify(adviceService, times(1)).update(advicePostDTO, 1L);
     }
 
     @Test
@@ -149,4 +153,6 @@ class AdviceControllerTest {
         verify(adviceService, times(0))
             .delete(anyLong());
     }
-}*/
+}
+
+
