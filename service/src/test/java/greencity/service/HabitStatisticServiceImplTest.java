@@ -169,4 +169,16 @@ class HabitStatisticServiceImplTest {
         habitStatisticService.deleteAllStatsByHabitAssign(habitAssignVO);
         verify(habitStatisticRepo, times(1)).delete(habitAssign.getHabitStatistic().get(0));
     }
+
+    @Test
+    void getAmountOfHabitsInProgressByUserIdTest() {
+        when(habitStatisticRepo.getAmountOfHabitsInProgressByUserId(1L)).thenReturn(4L);
+        assertEquals(4L, habitStatisticRepo.getAmountOfHabitsInProgressByUserId(1L));
+    }
+
+    @Test
+    void getAmountOfAcquiredHabitsByUserIdTest() {
+        when(habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(1L)).thenReturn(4L);
+        assertEquals(4L, habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(1L));
+    }
 }

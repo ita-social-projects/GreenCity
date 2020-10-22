@@ -5,6 +5,7 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatus;
@@ -88,6 +89,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
         habitStatus.setWorkingDays(++workingDays);
         LocalDate todayDate = LocalDate.now();
         HabitStatusCalendar habitCalendar;
+        HabitStatusCalendarDto habitStatusCalendarDto;
         HabitStatusVO habitStatusVO = modelMapper.map(habitStatus, HabitStatusVO.class);
         LocalDate lastEnrollmentDate = habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO);
         long intervalBetweenDates = 0;
@@ -100,18 +102,27 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             int habitStreak = habitStatus.getHabitStreak();
             habitStatus.setHabitStreak(++habitStreak);
             habitCalendar = HabitStatusCalendar.builder().enrollDate(todayDate).habitStatus(habitStatus).build();
-            habitStatus.getHabitStatusCalendars().add(habitCalendar);
+            //habitStatus.getHabitStatusCalendars().add(habitCalendar);
+            habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
+            habitStatusCalendarDto =
+                modelMapper.map(habitCalendar, HabitStatusCalendarDto.class);
         } else if (intervalBetweenDates > 1) {
             habitStatus.setHabitStreak(1);
             habitCalendar = HabitStatusCalendar.builder().enrollDate(todayDate).habitStatus(habitStatus).build();
-            habitStatus.getHabitStatusCalendars().add(habitCalendar);
+            //habitStatus.getHabitStatusCalendars().add(habitCalendar);
+            habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
+            habitStatusCalendarDto =
+                modelMapper.map(habitCalendar, HabitStatusCalendarDto.class);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
 
         habitStatus.setLastEnrollmentDate(LocalDateTime.now());
-
-        return modelMapper.map(habitStatusRepo.save(habitStatus), HabitStatusDto.class);
+        HabitStatusDto habitStatusDto = modelMapper.map(habitStatusRepo.save(habitStatus), HabitStatusDto.class);
+        if (habitStatusCalendarDto != null) {
+            habitStatusDto.getHabitStatusCalendarDtos().add(habitStatusCalendarDto);
+        }
+        return habitStatusDto;
     }
 
     /**
