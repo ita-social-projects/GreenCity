@@ -3,7 +3,7 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
-import greencity.dto.habittranslation.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.entity.HabitFact;

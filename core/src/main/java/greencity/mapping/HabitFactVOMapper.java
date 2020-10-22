@@ -2,7 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactVO;
-import greencity.dto.habittranslation.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.language.LanguageVO;
 import greencity.entity.HabitFact;
 import org.modelmapper.AbstractConverter;

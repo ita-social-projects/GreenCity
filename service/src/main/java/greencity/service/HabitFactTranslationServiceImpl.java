@@ -3,7 +3,7 @@ package greencity.service;
 import greencity.constant.CacheConstants;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
-import greencity.dto.habittranslation.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
