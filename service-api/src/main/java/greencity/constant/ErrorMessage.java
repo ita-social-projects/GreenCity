@@ -66,6 +66,8 @@ public final class ErrorMessage {
     public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID =
         "The specification value does not exist by this id: ";
     public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
+    public static final String LOCATION_IS_PRESENT = "Location is present.";
+    public static final String PHOTO_IS_PRESENT = "Photo is present.";
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
 

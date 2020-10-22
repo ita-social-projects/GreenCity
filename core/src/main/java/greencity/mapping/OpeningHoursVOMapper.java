@@ -2,7 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.breaktime.BreakTimeVO;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.openinghours.OpeningHoursVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.PlaceVO;
 import greencity.entity.OpeningHours;
