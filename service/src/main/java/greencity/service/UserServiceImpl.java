@@ -8,6 +8,7 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
@@ -722,7 +723,8 @@ public class UserServiceImpl implements UserService {
                 SocialNetwork.builder()
                     .url(url)
                     .user(user)
-                    .socialNetworkImage(socialNetworkImageService.getSocialNetworkImageByUrl(url))
+                    .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
+                            SocialNetworkImage.class))
                     .user(user)
                     .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
                         SocialNetworkImage.class))

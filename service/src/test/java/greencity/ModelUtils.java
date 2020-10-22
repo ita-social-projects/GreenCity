@@ -55,10 +55,6 @@ public class ModelUtils {
         return new Tag(1L, "tag", Collections.emptyList(), Collections.emptyList());
     }
 
-    public static TagVO getTagVO() {
-        return new TagVO(1L, "tag");
-    }
-
     public static User getUser() {
         return User.builder()
                 .id(1L)
@@ -427,7 +423,7 @@ public class ModelUtils {
         return new DiscountValue(null, 33, null, null);
     }
 
-    public static TipsAndTricksVO getTipsAndTricks() {
+    public static TipsAndTricksVO getTipsAndTricksVO() {
         return TipsAndTricksVO.builder()
             .id(1L)
             .titleTranslations(Collections.singletonList(TitleTranslationVO.builder()
@@ -448,14 +444,7 @@ public class ModelUtils {
     public static LanguageVO getLanguageVO() {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
-    public static UserVO getUserVO() {
-        return UserVO.builder()
-            .id(1L)
-            .email(TestConst.EMAIL)
-            .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
-            .build();
-    }
+
     public static TagVO getTagVO() {
         return new TagVO(1L, "tag");
     }
@@ -464,7 +453,7 @@ public class ModelUtils {
             .id(1L)
             .content("Content")
             .language(ModelUtils.getLanguageVO())
-            .tipsAndTricks(ModelUtils.getTipsAndTricks())
+            .tipsAndTricks(ModelUtils.getTipsAndTricksVO())
             .build();
     }
 
@@ -473,7 +462,7 @@ public class ModelUtils {
             .id(1L)
             .content("Content")
             .language(ModelUtils.getLanguageVO())
-            .tipsAndTricks(ModelUtils.getTipsAndTricks())
+            .tipsAndTricks(ModelUtils.getTipsAndTricksVO())
             .build();
     }
 
