@@ -3,16 +3,16 @@ package greencity.repository;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-import javax.persistence.Tuple;
+import greencity.entity.User;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.Tuple;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * Provides an interface to manage {@link HabitStatistic} entity.
@@ -133,11 +133,26 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     );
 
     /**
-     * Method to delete all {@link HabitStatistic} by {@link HabitAssign} id.
+     * Method for getting amount of {@link Habit} in progress by {@link User} id (not suspended).
      *
-     * @param habitAssignId target {@link HabitAssign}
+     * @param id {@link User} id.
+     * @return amount of habits in progress by {@link User} id.
+     * @author Marian Datsko
      */
-    @Modifying
-    @Query(value = "DELETE FROM HabitStatistic hs WHERE hs.habitAssign.id = :habitAssignId")
-    void deleteAllByHabitAssignId(@Param("habitAssignId") Long habitAssignId);
+    @Query(value = "SELECT COUNT(ha.acquired) FROM HabitAssign ha "
+        + " WHERE ha.user.id = :userId"
+        + " AND ha.acquired = false AND ha.suspended = false")
+    Long getAmountOfHabitsInProgressByUserId(@Param("userId") Long id);
+
+    /**
+     * Method for getting amount of acquired {@link Habit} by {@link User} id.
+     *
+     * @param id {@link User} id.
+     * @return amount of acquired habits by {@link User} id.
+     * @author Marian Datsko
+     */
+    @Query(value = "SELECT COUNT(ha.acquired) FROM HabitAssign ha "
+        + " WHERE ha.user.id = :userId"
+        + " AND ha.acquired = false AND ha.suspended = true")
+    Long getAmountOfAcquiredHabitsByUserId(@Param("userId") Long id);
 }

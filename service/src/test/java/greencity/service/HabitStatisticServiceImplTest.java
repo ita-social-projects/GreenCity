@@ -1,42 +1,39 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.converters.DateService;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
-import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
 import greencity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(SpringExtension.class)
 class HabitStatisticServiceImplTest {
-    @Mock
-    HabitRepo habitRepo;
     @Mock
     HabitAssignRepo habitAssignRepo;
     @Mock
@@ -56,7 +53,7 @@ class HabitStatisticServiceImplTest {
 
     private HabitStatisticDto habitStatisticDto =
         HabitStatisticDto.builder().id(1L).amountOfItems(10).habitRate(HabitRate.GOOD)
-            .habitAssignId(1L).createDate(zonedDateTime).build();
+            .habitAssign(HabitAssignDto.builder().id(1L).build()).createDate(zonedDateTime).build();
 
     private HabitStatistic habitStatistic = HabitStatistic.builder()
         .id(1L).habitRate(HabitRate.GOOD).createDate(zonedDateTime)
@@ -137,7 +134,6 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void findAllStatsByHabitAssignIdTest() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
         when(habitStatisticRepo.findAllByHabitAssignId(1L)).thenReturn(habitStatistics);
         when(modelMapper.map(habitStatistics, new TypeToken<List<HabitStatisticDto>>() {
         }.getType())).thenReturn(habitStatisticDtos);
@@ -148,24 +144,12 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void findAllStatsByHabitId() {
-        Habit habit = new Habit();
-
-        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(habitStatistics);
         when(modelMapper.map(habitStatistics, new TypeToken<List<HabitStatisticDto>>() {
         }.getType())).thenReturn(habitStatisticDtos);
 
         List<HabitStatisticDto> actual = habitStatisticService.findAllStatsByHabitId(1L);
         assertEquals(habitStatisticDtos, actual);
-    }
-
-    @Test
-    void findAllStatsByHabitIdExceptionTest() {
-        when(habitRepo.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(WrongIdException.class, () ->
-            habitStatisticService.findAllStatsByHabitId(1L)
-        );
     }
 
     @Test
@@ -177,9 +161,24 @@ class HabitStatisticServiceImplTest {
     }
 
     @Test
-    void deleteAllStatsByHabitAssignIdTest() {
+    void deleteAllStatsByHabitAssignTest() {
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-        habitStatisticService.deleteAllStatsByHabitAssignId(1L);
-        verify(habitStatisticRepo, times(1)).deleteAllByHabitAssignId(1L);
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        when(habitStatisticRepo.findAllByHabitAssignId(1L)).thenReturn(habitAssign.getHabitStatistic());
+        habitStatisticService.deleteAllStatsByHabitAssign(habitAssignVO);
+        verify(habitStatisticRepo, times(1)).delete(habitAssign.getHabitStatistic().get(0));
+    }
+
+    @Test
+    void getAmountOfHabitsInProgressByUserIdTest() {
+        when(habitStatisticRepo.getAmountOfHabitsInProgressByUserId(1L)).thenReturn(4L);
+        assertEquals(4L, habitStatisticRepo.getAmountOfHabitsInProgressByUserId(1L));
+    }
+
+    @Test
+    void getAmountOfAcquiredHabitsByUserIdTest() {
+        when(habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(1L)).thenReturn(4L);
+        assertEquals(4L, habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(1L));
     }
 }
