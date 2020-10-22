@@ -10,6 +10,6 @@ import lombok.*;
 @Builder
 public class SocialNetworkImageVO {
     private Long id;
-    String imagePath;
-    String hostPath;
+    private String imagePath;
+    private String hostPath;
 }
