@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
@@ -7,13 +7,13 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
+import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.SearchCriteria;
 import greencity.filters.TipsAndTricksSpecification;
 import greencity.repository.TipsAndTricksRepo;
-import greencity.service.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,9 +81,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             throw new NotSavedException(ErrorMessage.TIPS_AND_TRICKS_NOT_SAVED);
         }
         tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(toSave.getTitleTranslations(),
-            new TypeToken<List<TitleTranslationVO>>() {}.getType()));
+            new TypeToken<List<TitleTranslationVO>>() {
+            }.getType()));
         tipsAndTricksTranslationService.saveTextTranslations(modelMapper.map(toSave.getTextTranslations(),
-            new TypeToken<List<TextTranslationVO>>() {}.getType()));
+            new TypeToken<List<TextTranslationVO>>() {
+            }.getType()));
 
         return modelMapper.map(toSave, TipsAndTricksDtoResponse.class);
     }
@@ -135,9 +137,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
         tipsAndTricksRepo.save(tipsAndTricks);
         tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(tipsAndTricks.getTitleTranslations(),
-            new TypeToken<List<TitleTranslationVO>>() {}.getType()));
+            new TypeToken<List<TitleTranslationVO>>() {
+            }.getType()));
         tipsAndTricksTranslationService.saveTextTranslations(modelMapper.map(tipsAndTricks.getTextTranslations(),
-            new TypeToken<List<TextTranslationVO>>() {}.getType()));
+            new TypeToken<List<TextTranslationVO>>() {
+            }.getType()));
 
         return tipsAndTricksDtoManagement;
     }
@@ -149,7 +153,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     public void update(TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
                        MultipartFile image) {
-        TipsAndTricks toUpdate = findById(tipsAndTricksDtoManagement.getId());
+        TipsAndTricks toUpdate = findTipsAndTricksById(tipsAndTricksDtoManagement.getId());
         toUpdate.setSource(tipsAndTricksDtoManagement.getSource());
         toUpdate.setTags(modelMapper.map(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()),
             new TypeToken<List<Tag>>() {
@@ -248,7 +252,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @Override
     public TipsAndTricksDtoResponse findDtoById(Long id) {
-        TipsAndTricks tipsAndTricks = findByIdAndLanguageCode(languageService.extractLanguageCodeFromRequest(), id);
+        TipsAndTricks tipsAndTricks = findTipsAndTricksByIdAndLanguageCode(
+            languageService.extractLanguageCodeFromRequest(), id);
         return modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class);
     }
 
@@ -259,7 +264,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public void delete(Long id) {
-        tipsAndTricksRepo.deleteById(findById(id).getId());
+        tipsAndTricksRepo.deleteById(findTipsAndTricksById(id).getId());
     }
 
     /**
@@ -268,22 +273,26 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public void deleteAll(List<Long> listId) {
-        listId.forEach(id -> tipsAndTricksRepo.deleteById(findById(id).getId()));
+        listId.forEach(id -> tipsAndTricksRepo.deleteById(findTipsAndTricksById(id).getId()));
     }
 
     /**
      * {@inheritDoc}
      */
-    public TipsAndTricks findById(Long id) {
+    @Override
+    public TipsAndTricksVO findById(Long id) {
+        return tipsAndTricksRepo
+            .findById(id).map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksVO.class))
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.TIPS_AND_TRICKS_NOT_FOUND_BY_ID + id));
+    }
+
+    private TipsAndTricks findTipsAndTricksById(Long id) {
         return tipsAndTricksRepo
             .findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TIPS_AND_TRICKS_NOT_FOUND_BY_ID + id));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public TipsAndTricks findByIdAndLanguageCode(String languageCode, Long id) {
+    private TipsAndTricks findTipsAndTricksByIdAndLanguageCode(String languageCode, Long id) {
         return tipsAndTricksRepo
             .findByIdAndTitleTranslationsLanguageCode(id, languageCode)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TIPS_AND_TRICKS_NOT_FOUND_BY_ID + id));
@@ -294,7 +303,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @Override
     public TipsAndTricksDtoManagement findManagementDtoById(Long id) {
-        TipsAndTricks tipsAndTricks = findById(id);
+        TipsAndTricks tipsAndTricks = findTipsAndTricksById(id);
         return modelMapper.map(tipsAndTricks, TipsAndTricksDtoManagement.class);
     }
 
@@ -363,7 +372,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
-    public void likeComment(User user, TipsAndTricksComment comment) {
+    public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
     }
 
@@ -375,7 +384,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
-    public void unlikeComment(User user, TipsAndTricksComment comment) {
+    public void unlikeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().remove(user);
     }
 

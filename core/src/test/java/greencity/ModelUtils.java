@@ -411,26 +411,6 @@ public class ModelUtils {
         return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
     }
 
-    public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
-        return TipsAndTricksDtoResponse.builder()
-                .id(1L)
-                .title("title")
-                .text("text")
-                .creationDate(ZonedDateTime.now())
-                .author(getAuthorDto())
-                .tags(Collections.singletonList("tipsAndTricksTag"))
-                .imagePath(TestConst.SITE)
-                .source(null)
-                .build();
-    }
-
-    private static AuthorDto getAuthorDto() {
-        return AuthorDto.builder()
-                .id(1L)
-                .name("author")
-                .build();
-    }
-
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
                 .id(1L)

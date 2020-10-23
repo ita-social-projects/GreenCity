@@ -104,6 +104,9 @@ public final class ErrorMessage {
         "Bad default social network image host path (Row in database doesn't exists)";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
+    public static final String TIPS_AND_TRICKS_NOT_SAVED =
+        "Tips & tricks advice hasn't been saved due to constraint violation";
+    public static final String TIPS_AND_TRICKS_NOT_FOUND_BY_ID = "Tips & tricks advice doesn't exist by this id: ";
 
     private ErrorMessage() {
     }

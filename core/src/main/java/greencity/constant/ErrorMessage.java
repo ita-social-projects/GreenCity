@@ -141,9 +141,6 @@ public final class ErrorMessage {
     public static final String INVALID_NUM_OF_TAGS =
         "Invalid tags. You must have less than " + ValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
     public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
-    public static final String TIPS_AND_TRICKS_NOT_FOUND_BY_ID = "Tips & tricks advice doesn't exist by this id: ";
-    public static final String TIPS_AND_TRICKS_NOT_SAVED =
-        "Tips & tricks advice hasn't been saved due to constraint violation";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
     public static final String MALFORMED_URL = "Malformed URL. The string could not be parsed.";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
