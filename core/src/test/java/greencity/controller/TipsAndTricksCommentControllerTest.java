@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,8 @@ class TipsAndTricksCommentControllerTest {
     private TipsAndTricksCommentService tipsAndTricksCommentService;
     @Mock
     private UserService userService;
+    @Mock
+    private ModelMapper modelMapper;
 
     private Principal principal = getPrincipal();
 
@@ -51,7 +54,7 @@ class TipsAndTricksCommentControllerTest {
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(tipsAndTricksCommentController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService))
+                new UserArgumentResolver(userService, modelMapper))
             .build();
     }
 

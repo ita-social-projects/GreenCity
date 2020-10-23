@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.converters.DateService;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -12,7 +13,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
@@ -38,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitStatisticRepo habitStatisticRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
     private final DateService dateService;
 
@@ -112,9 +111,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public List<HabitStatisticDto> findAllStatsByHabitAssignId(Long habitAssignId) {
-        habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
-
         return modelMapper.map(habitStatisticRepo.findAllByHabitAssignId(habitAssignId),
             new TypeToken<List<HabitStatisticDto>>() {
             }.getType());
@@ -127,9 +123,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public List<HabitStatisticDto> findAllStatsByHabitId(Long habitId) {
-        habitRepo.findById(habitId).orElseThrow(
-            () -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
-
         return modelMapper.map(habitStatisticRepo.findAllByHabitId(habitId),
             new TypeToken<List<HabitStatisticDto>>() {
             }.getType());
@@ -154,9 +147,24 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteAllStatsByHabitAssignId(Long habitAssignId) {
-        habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
-        habitStatisticRepo.deleteAllByHabitAssignId(habitAssignId);
+    public Long getAmountOfHabitsInProgressByUserId(Long id) {
+        return habitStatisticRepo.getAmountOfHabitsInProgressByUserId(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfAcquiredHabitsByUserId(Long id) {
+        return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAllStatsByHabitAssign(HabitAssignVO habitAssignVO) {
+        habitStatisticRepo.findAllByHabitAssignId(habitAssignVO.getId())
+            .forEach(habitStatisticRepo::delete);
     }
 }

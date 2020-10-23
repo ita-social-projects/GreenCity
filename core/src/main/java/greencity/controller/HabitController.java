@@ -8,6 +8,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -45,14 +46,56 @@ public class HabitController {
     private final HabitService habitService;
 
     /**
+     * Method finds {@link Habit} by given id with locale translation.
+     *
+     * @param id of {@link Habit}.
+     * @return {@link HabitDto}.
+     */
+    @ApiOperation(value = "Find habit by id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/{id}")
+    @ApiLocale
+    public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id,
+                                                 @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitService.getByIdAndLanguageCode(id, locale.getLanguage()));
+    }
+
+    /**
+     * Method finds all habits that available for tracking for specific language.
+     *
+     * @param locale {@link Locale} with needed language code.
+     * @return Pageable of {@link HabitTranslationDto}.
+     */
+    @ApiOperation(value = "Find all habits.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("")
+    @ApiPageable
+    @ApiLocale
+    public ResponseEntity<PageableDto<HabitDto>> getAll(
+        @ApiIgnore @ValidLanguage Locale locale,
+        @ApiIgnore Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
+    }
+
+    /**
      * Method which assign habit for {@link User}.
      *
      * @param habitId - id of {@link Habit}
      * @return {@link ResponseEntity}
      */
-    @ApiOperation(value = "Assign habit.")
+    @ApiOperation(value = "Assign habit for current user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddHabitStatisticDto.class),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
@@ -101,35 +144,13 @@ public class HabitController {
     }
 
     /**
-     * Method returns all habits, available for tracking for specific language.
-     *
-     * @param locale needed language code
-     * @return Pageable of {@link HabitTranslationDto}
-     */
-    @ApiOperation(value = "Get all habits.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @GetMapping("")
-    @ApiPageable
-    @ApiLocale
-    public ResponseEntity<PageableDto<HabitTranslationDto>> getAll(
-        @ApiIgnore Pageable pageable,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
-    }
-
-    /**
-     * Method for creating {@link HabitStatistic} by {@link Habit} id.
+     * Method for creating {@link HabitStatistic} for user {@link HabitAssign}.
      *
      * @param addHabitStatisticDto - dto for {@link HabitStatistic} entity.
      * @return dto {@link AddHabitStatisticDto} instance.
      * @author Yuriy Olkhovskyi.
      */
-    @ApiOperation(value = "Add habit statistic.")
+    @ApiOperation(value = "Add habit statistic for assigned habit.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddHabitStatisticDto.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -142,7 +163,7 @@ public class HabitController {
     }
 
     /**
-     * Method for updating {@link HabitStatistic} by its id.
+     * Method for updating {@link HabitStatistic} by it's id.
      *
      * @param habitStatisticForUpdateDto - {@link UpdateHabitStatisticDto} with habit statistic id and
      *                                   updated rate and amount of items.
@@ -167,11 +188,25 @@ public class HabitController {
      * @param habitId {@link Habit} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
-    @ApiOperation(value = "Find statistic by habit id.")
+    @ApiOperation(value = "Find all statistics by habit id.")
     @GetMapping("/statistic/{habitId}")
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(habitId));
+    }
+
+    /**
+     * Method for finding {@link HabitStatisticDto} by {@link HabitAssign id}.
+     *
+     * @param habitAssignId {@link HabitAssign} id.
+     * @return list of {@link HabitStatisticDto} instances.
+     */
+    @ApiOperation(value = "Find all statistics by habit assign id.")
+    @GetMapping("/statistic/assign/{habitAssignId}")
+    public ResponseEntity<List<HabitStatisticDto>> findAllByHabitAssignId(
+        @PathVariable Long habitAssignId) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitStatisticService.findAllStatsByHabitAssignId(habitAssignId));
     }
 
     /**

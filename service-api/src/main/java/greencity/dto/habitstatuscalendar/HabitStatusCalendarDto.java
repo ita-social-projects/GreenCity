@@ -1,7 +1,9 @@
 package greencity.dto.habitstatuscalendar;
 
-import greencity.dto.habitstatus.HabitStatusVO;
 import java.time.LocalDate;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -10,8 +12,10 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class HabitStatusCalendarVO {
+public class HabitStatusCalendarDto {
+    @NotNull
+    @Min(1)
     private Long id;
+    @NotEmpty
     private LocalDate enrollDate;
-    private HabitStatusVO habitStatusVO;
 }

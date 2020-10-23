@@ -1,36 +1,35 @@
 package greencity.service.impl;
 
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.User;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
 import greencity.service.HabitAssignServiceImpl;
-import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
 import greencity.service.HabitStatusService;
+import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
-
-import java.time.ZonedDateTime;
-import java.util.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.modelmapper.TypeToken;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
     @Mock
-    HabitService habitService;
+    HabitRepo habitRepo;
     @Mock
     HabitAssignRepo habitAssignRepo;
     @Mock
@@ -47,7 +46,7 @@ class HabitAssignServiceImplTest {
     private HabitDto habitDto = HabitDto.builder().id(1L).build();
 
     private HabitAssignDto habitAssignDto = HabitAssignDto.builder().id(1L)
-        .createDateTime(zonedDateTime).habit(habitDto).suspended(false).build();
+        .createDateTime(zonedDateTime).habitId(habitDto.getId()).suspended(false).build();
 
     private Habit habit =
         Habit.builder().id(1L).image("src/main/resources/static/css/background-image-footer.svg").build();
@@ -88,45 +87,26 @@ class HabitAssignServiceImplTest {
 
     @Test
     void assignHabitForUserTest() {
+        HabitAssignVO habitAssignVO = HabitAssignVO.builder().id(habitAssign.getId()).build();
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitService.getById(1L)).thenReturn(habitVO);
-        when(modelMapper.map(habitVO, Habit.class)).thenReturn(habit);
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
-        when(modelMapper.map(null, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         HabitAssignDto actual = habitAssignService.assignHabitForUser(habit.getId(), userVO);
+        verify(habitStatusService, times(1)).saveStatusByHabitAssign(any());
         assertEquals(habitAssignDto, actual);
     }
 
     @Test
     void findActiveHabitAssignByUserIdAndHabitIdTest() {
-        when(habitService.getById(1L)).thenReturn(habitVO);
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
             HabitAssignDto.class)).thenReturn(habitAssignDto);
         assertEquals(habitAssignDto, habitAssignService.findActiveHabitAssignByUserIdAndHabitId(1L, 1L));
-    }
-
-    @Test
-    void findHabitAssignByUserIdAndHabitIdAndCreateDateTest() {
-        when(habitService.getById(1L)).thenReturn(habitVO);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(1L, 1L, zonedDateTime))
-            .thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign,
-            HabitAssignDto.class)).thenReturn(habitAssignDto);
-        assertEquals(habitAssignDto, habitAssignService
-            .findHabitAssignByUserIdAndHabitIdAndCreateDate(1L, 1L, zonedDateTime));
-    }
-
-    @Test
-    void getAllActiveHabitAssignsByUserIdTest() {
-        when(habitAssignRepo.findAllByUserIdAndSuspendedFalse(1L)).thenReturn(habitAssigns);
-        when(modelMapper.map(habitAssigns,
-            new TypeToken<List<HabitAssignDto>>() {
-            }.getType())).thenReturn(habitAssignDtos);
-        List<HabitAssignDto> actual = habitAssignService.getAllActiveHabitAssignsByUserId(1L);
-        assertEquals(habitAssignDtos, actual);
     }
 
     @Test
@@ -139,55 +119,7 @@ class HabitAssignServiceImplTest {
         assertEquals(habitAssignDtos, actual);
     }
 
-    @Test
-    void suspendHabitAssignByHabitIdAndUserIdTest() {
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
-            .thenReturn(Optional.of(habitAssign));
-        habitAssignRepo.suspendByHabitIdAndUserId(1L, 1L);
-        when(modelMapper.map(habitAssignRepo.findById(habitAssign.getId()),
-            HabitAssignDto.class)).thenReturn(habitAssignDto);
-        assertEquals(habitAssignDto, habitAssignService.suspendHabitAssignByHabitIdAndUserId(1L, 1L));
-    }
 
-    @Test
-    void suspendHabitAssignByIdTest() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-        habitAssignRepo.suspendById(1L);
-        when(modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class))
-            .thenReturn(habitAssignDto);
-        assertEquals(habitAssignDto, habitAssignService.suspendHabitAssignById(1L));
-    }
-
-    @Test
-    void updateHabitAssignAcquiredStatusByIdTest() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-        habitAssignRepo.updateAcquiredById(1L, true);
-        when(modelMapper.map(habitAssignRepo.findById(habitAssign.getId()), HabitAssignDto.class))
-            .thenReturn(habitAssignDto);
-        assertEquals(habitAssignDto, habitAssignService.updateHabitAssignAcquiredStatusById(1L, true));
-    }
-
-    @Test
-    void deleteHabitAssignByUserIdAndHabitIdAndCreateDateTest() {
-        when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(1L, 1L, zonedDateTime))
-            .thenReturn(Optional.of(habitAssign));
-        habitAssignService.deleteHabitAssignByUserIdAndHabitIdAndCreateDate(1L, 1L, zonedDateTime);
-        verify(habitStatusService, times(1)).deleteStatusByHabitAssignId(1L);
-        verify(habitStatisticService, times(1)).deleteAllStatsByHabitAssignId(1L);
-        verify(habitAssignRepo, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void getAmountOfHabitsInProgressByUserIdTest() {
-        when(habitAssignRepo.getAmountOfHabitsInProgressByUserId(1L)).thenReturn(4L);
-        assertEquals(4L, habitAssignService.getAmountOfHabitsInProgressByUserId(1L));
-    }
-
-    @Test
-    void getAmountOfAcquiredHabitsByUserIdTest() {
-        when(habitAssignRepo.getAmountOfAcquiredHabitsByUserId(1L)).thenReturn(4L);
-        assertEquals(4L, habitAssignService.getAmountOfAcquiredHabitsByUserId(1L));
-    }
 
     @Test
     void updateStatus() {

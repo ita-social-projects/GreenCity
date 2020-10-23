@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
+import greencity.entity.User;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -35,11 +36,11 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     Optional<HabitTranslation> findByHabitAndLanguageCode(Habit habit, String language);
 
     /**
-     * Method returns available habit translations for specific user.
+     * Method returns available {@link HabitTranslation}'s for specific user.
      *
-     * @param userId   user which we use to filter.
+     * @param userId   {@link User} id which we use to filter.
      * @param language code language.
-     * @param acquired habit acquired status
+     * @param acquired habit acquired status.
      * @return List of available {@link HabitTranslation}`s.
      */
     @Query(value = "SELECT ht FROM HabitTranslation ht "
@@ -51,25 +52,18 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
                                                                         @Param("acquired") boolean acquired);
 
     /**
-     * Method returns available habit translations for specific user.
-     *
-     * @param userId   user which we use to filter.
-     * @param language code language.
-     * @return List of available {@link HabitTranslation}`s.
-     */
-    @Query(value = "SELECT ht FROM HabitTranslation ht, User u "
-        + "WHERE ht.language.code = :language AND u.id = :userId AND ht.habit.id NOT IN "
-        + "(SELECT ha.habit.id FROM HabitAssign ha "
-        + "WHERE ha.user.id = :userId)")
-    List<HabitTranslation> findAvailableHabitTranslationsByUser(@Param("userId") Long userId,
-                                                                @Param("language") String language);
-
-    /**
-     * Method returns all habits by language.
+     * Method returns all {@link Habit}'s by language.
      *
      * @param language code language.
      * @return Pageable of available {@link HabitTranslation}`s.
      * @author Dovganyuk Taras
      */
     Page<HabitTranslation> findAllByLanguageCode(Pageable pageable, String language);
+
+    /**
+     * Method deletes all {@link HabitTranslation}'s by {@link Habit} instance.
+     *
+     * @param habit {@link Habit} instance.
+     */
+    void deleteAllByHabit(Habit habit);
 }

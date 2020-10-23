@@ -1,6 +1,5 @@
-package greencity.dto.habittranslation;
+package greencity.dto.habitfact;
 
-import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.translation.TranslationVO;
 import greencity.enums.FactOfDayStatus;
 import lombok.Getter;

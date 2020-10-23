@@ -6,6 +6,7 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsVO;
+import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
@@ -14,7 +15,10 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatus.HabitStatusDto;
-import greencity.dto.habittranslation.HabitFactTranslationVO;
+import greencity.dto.habitstatus.HabitStatusVO;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
@@ -38,6 +42,7 @@ import greencity.enums.GoalStatus;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ROLE;
 import greencity.service.TestConst;
+import java.time.LocalDate;
 import greencity.constant.AppConstant;
 import java.util.HashSet;
 import org.springframework.mock.web.MockMultipartFile;
@@ -111,6 +116,51 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
+        return HabitStatusCalendarDto.builder()
+            .enrollDate(LocalDate.now()).id(1L).build();
+    }
+
+    public static HabitStatusCalendarVO getHabitStatusCalendarVO() {
+        return HabitStatusCalendarVO.builder()
+            .enrollDate(LocalDate.now()).id(1L).build();
+    }
+
+    public static HabitStatusCalendar getHabitStatusCalendar() {
+        return HabitStatusCalendar.builder()
+            .enrollDate(LocalDate.now()).id(1L).build();
+    }
+
+    public static HabitAssignDto getHabitAssignDto() {
+        return HabitAssignDto.builder()
+                .id(1L)
+                .acquired(true)
+                .suspended(false)
+                .createDateTime(ZonedDateTime.now())
+                .habitId(1L)
+                .userId(1L).build();
+    }
+
+    public static HabitAssign getHabitAssign() {
+        return HabitAssign.builder()
+            .id(1L)
+            .acquired(true)
+            .suspended(false)
+            .createDate(ZonedDateTime.now())
+            .habitStatus(getHabitStatus())
+            .habit(Habit.builder().id(1L).build()).build();
+    }
+
+    public static HabitAssignVO getHabitAssignVO(){
+        return HabitAssignVO.builder()
+            .id(1L)
+            .habitVO(getHabitVO())
+            .acquired(true)
+            .suspended(false)
+            .createDateTime(ZonedDateTime.now())
+            .userVO(UserVO.builder().id(1L).build()).build();
+    }
+
     public static HabitStatusDto getHabitStatusDto() {
         HabitAssignDto habitAssignDto = getHabitAssignDto();
 
@@ -125,11 +175,11 @@ public class ModelUtils {
 
     public static HabitAssignDto getHabitAssignDto() {
         return HabitAssignDto.builder()
-            .id(1L)
-            .acquired(true)
-            .suspended(false)
-            .createDateTime(ZonedDateTime.now())
-            .habit(HabitDto.builder().id(1L).build()).build();
+                .id(1L)
+                .acquired(true)
+                .suspended(false)
+                .createDateTime(ZonedDateTime.now())
+                .habit(HabitDto.builder().id(1L).build()).build();
     }
 
     public static HabitStatus getHabitStatus() {
