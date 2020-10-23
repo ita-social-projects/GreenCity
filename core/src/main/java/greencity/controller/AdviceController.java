@@ -5,6 +5,8 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceTranslationVO;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.localization.AdviceTranslation;
@@ -93,10 +95,8 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity<List<AdviceTranslation>> save(@Valid @RequestBody AdvicePostDto advice) {
-        List<AdviceTranslation> response = mapper.map(adviceTranslationService.saveAdviceAndAdviceTranslation(advice),
-            new TypeToken<List<AdviceTranslation>>() {
-            }.getType());
+    public ResponseEntity<AdviceVO> save(@Valid @RequestBody AdvicePostDto advice) {
+        AdviceVO response = adviceTranslationService.saveAdviceAndAdviceTranslation(advice);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

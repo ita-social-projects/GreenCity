@@ -1,5 +1,5 @@
 
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceTranslationVO;
@@ -12,6 +12,8 @@ import greencity.entity.localization.AdviceTranslation;
 import greencity.repository.AdviceTranslationRepo;
 import java.util.Collections;
 import java.util.List;
+
+import greencity.service.AdviceTranslationServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
