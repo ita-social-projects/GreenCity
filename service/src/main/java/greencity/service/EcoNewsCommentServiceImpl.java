@@ -1,12 +1,15 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
@@ -14,16 +17,15 @@ import greencity.enums.ROLE;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EcoNewsCommentRepo;
-import greencity.service.EcoNewsCommentService;
-import greencity.service.EcoNewsService;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -37,17 +39,17 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      *
      * @param econewsId                   id of {@link greencity.entity.EcoNews} to which we save comment.
      * @param addEcoNewsCommentDtoRequest dto with {@link greencity.entity.EcoNewsComment} text, parentCommentId.
-     * @param user                        {@link User} that saves the comment.
+     * @param userVO                        {@link User} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
-                                             User user) {
-        EcoNews ecoNews = ecoNewsService.findById(econewsId);
+                                             UserVO userVO) {
+        EcoNewsVO ecoNewsVO = ecoNewsService.findById(econewsId);
         EcoNewsComment ecoNewsComment = modelMapper.map(addEcoNewsCommentDtoRequest, EcoNewsComment.class);
-        ecoNewsComment.setUser(user);
-        ecoNewsComment.setEcoNews(ecoNews);
+        ecoNewsComment.setUser(modelMapper.map(userVO, User.class));
+        ecoNewsComment.setEcoNews(modelMapper.map(ecoNewsVO, EcoNews.class));
         if (addEcoNewsCommentDtoRequest.getParentCommentId() != 0) {
             EcoNewsComment parentComment =
                 ecoNewsCommentRepo.findById(addEcoNewsCommentDtoRequest.getParentCommentId()).orElseThrow(
@@ -65,15 +67,16 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method returns all comments to certain ecoNews specified by ecoNewsId.
      *
-     * @param user      current {@link User}
+     * @param userVO      current {@link User}
      * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we search for comments
      * @return all comments to certain ecoNews specified by ecoNewsId.
      */
     @Override
-    public PageableDto<EcoNewsCommentDto> findAllComments(Pageable pageable, User user, Long ecoNewsId) {
+    public PageableDto<EcoNewsCommentDto> findAllComments(Pageable pageable, UserVO userVO, Long ecoNewsId) {
         ecoNewsService.findById(ecoNewsId);
         Page<EcoNewsComment> pages = ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(
             pageable, ecoNewsId);
+        User user = modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
@@ -99,13 +102,14 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * Method returns all replies to certain comment specified by parentCommentId.
      *
      * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to which we search for replies
-     * @param user            current {@link User}
+     * @param userVO            current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      */
     @Override
-    public PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, User user) {
+    public PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId);
+        User user = modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
@@ -127,15 +131,15 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as deleted.
      *
      * @param id   of {@link greencity.entity.EcoNewsComment} to delete.
-     * @param user current {@link User} that wants to delete.
+     * @param userVO current {@link User} that wants to delete.
      */
     @RatingCalculation(rating = RatingCalculationEnum.DELETE_COMMENT)
     @Override
-    public void deleteById(Long id, User user) {
+    public void deleteById(Long id, UserVO userVO) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
-        if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(comment.getUser().getId())) {
+        if (userVO.getRole() != ROLE.ROLE_ADMIN && !userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         if (comment.getComments() != null) {
@@ -150,14 +154,14 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      *
      * @param text new text of {@link greencity.entity.EcoNewsComment}.
      * @param id   to specify {@link greencity.entity.EcoNewsComment} that user wants to change.
-     * @param user current {@link User} that wants to change.
+     * @param userVO current {@link User} that wants to change.
      */
     @Override
     @Transactional
-    public void update(String text, Long id, User user) {
+    public void update(String text, Long id, UserVO userVO) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        if (!user.getId().equals(comment.getUser().getId())) {
+        if (!userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
         comment.setText(text);
@@ -168,16 +172,17 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * Method to like or dislike {@link greencity.entity.EcoNewsComment} specified by id.
      *
      * @param id   of {@link greencity.entity.EcoNewsComment} to like/dislike.
-     * @param user current {@link User} that wants to like/dislike.
+     * @param userVO current {@link User} that wants to like/dislike.
      */
     @Override
-    public void like(Long id, User user) {
+    public void like(Long id, UserVO userVO) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        if (comment.getUsersLiked().contains(user)) {
-            ecoNewsService.unlikeComment(user, comment);
+        EcoNewsCommentVO ecoNewsCommentVO = modelMapper.map(comment, EcoNewsCommentVO.class);
+        if (comment.getUsersLiked().contains(modelMapper.map(userVO, User.class))) {
+            ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
-            ecoNewsService.likeComment(user, comment);
+            ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
         }
         ecoNewsCommentRepo.save(comment);
     }
@@ -231,10 +236,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @author Taras Dovganyuk
      */
     @Override
-    public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, User user, Long ecoNewsId) {
+    public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long ecoNewsId) {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
                 .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId);
+        User user = modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
@@ -260,14 +266,15 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * Method returns all replies to certain comment specified by parentCommentId.
      *
      * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to which we search for replies
-     * @param user            current {@link User}
+     * @param userVO            current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      * @author Taras Dovganyuk
      */
     @Override
-    public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, User user) {
+    public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
+        User user = modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {

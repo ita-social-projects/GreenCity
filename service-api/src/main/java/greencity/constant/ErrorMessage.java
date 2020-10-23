@@ -104,6 +104,9 @@ public final class ErrorMessage {
         "Bad default social network image host path (Row in database doesn't exists)";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
+    public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
+    public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
+    public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
 
     private ErrorMessage() {
     }

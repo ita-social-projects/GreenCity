@@ -342,6 +342,10 @@ public class PlaceServiceImpl implements PlaceService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
         return modelMapper.map(place, PlaceVO.class);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     private Place findPlaceById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
         return placeRepo.findById(id)

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
@@ -11,6 +13,8 @@ import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
 import java.security.Principal;
+
+import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,11 +76,13 @@ class PlaceCommentControllerTest {
     void saveTest() throws Exception {
         Principal principal = ModelUtils.getPrincipal();
         User user = ModelUtils.getUser();
+        UserVO userVO = getUserVO();
         Place place = ModelUtils.getPlace();
+        PlaceVO placeVO = ModelUtils.getPlaceVO();
 
         user.setUserStatus(UserStatus.ACTIVATED);
-        when(userService.findByEmail(anyString())).thenReturn(user);
-        when(placeService.findById(anyLong())).thenReturn(place);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(placeService.findById(anyLong())).thenReturn(placeVO);
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
@@ -107,9 +113,10 @@ class PlaceCommentControllerTest {
     void saveRequestByBlockedUserTest() {
         Principal principal = ModelUtils.getPrincipal();
         User user = ModelUtils.getUser();
+        UserVO userVO = getUserVO();
 
         user.setUserStatus(UserStatus.BLOCKED);
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         Exception exception = assertThrows(
             NestedServletException.class,

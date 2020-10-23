@@ -8,6 +8,7 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.service.EcoNewsCommentService;
 import io.swagger.annotations.ApiOperation;
@@ -49,7 +50,7 @@ public class EcoNewsCommentController {
     @PostMapping("{econewsId}")
     public ResponseEntity<AddEcoNewsCommentDtoResponse> save(@PathVariable Long econewsId,
                                                              @Valid @RequestBody AddEcoNewsCommentDtoRequest request,
-                                                             @ApiIgnore @CurrentUser User user) {
+                                                             @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(ecoNewsCommentService.save(econewsId, request, user));
@@ -70,7 +71,7 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAll(@ApiIgnore Pageable pageable,
                                                                   Long ecoNewsId,
-                                                                  @ApiIgnore @CurrentUser User user) {
+                                                                  @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllComments(pageable, user, ecoNewsId));
@@ -106,7 +107,7 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllReplies(@ApiIgnore Pageable pageable,
                                                                          @PathVariable Long parentCommentId,
-                                                                         @ApiIgnore @CurrentUser User user) {
+                                                                         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllReplies(pageable, parentCommentId, user));
@@ -140,7 +141,7 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @DeleteMapping("")
-    public ResponseEntity<Object> delete(Long id, @ApiIgnore @CurrentUser User user) {
+    public ResponseEntity<Object> delete(Long id, @ApiIgnore @CurrentUser UserVO user) {
         ecoNewsCommentService.deleteById(id, user);
         return ResponseEntity.ok().build();
     }
@@ -158,7 +159,7 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PatchMapping("")
-    public void update(Long id, String text, @ApiIgnore @CurrentUser User user) {
+    public void update(Long id, String text, @ApiIgnore @CurrentUser UserVO user) {
         ecoNewsCommentService.update(text, id, user);
     }
 
@@ -174,7 +175,7 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("like")
-    public void like(Long id, @ApiIgnore @CurrentUser User user) {
+    public void like(Long id, @ApiIgnore @CurrentUser UserVO user) {
         ecoNewsCommentService.like(id, user);
     }
 
@@ -223,7 +224,7 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
                                                                                Long ecoNewsId,
-                                                                               @ApiIgnore @CurrentUser User user) {
+                                                                               @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
@@ -244,7 +245,7 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllActiveReplies(@ApiIgnore Pageable pageable,
                                                                                @PathVariable Long parentCommentId,
-                                                                               @ApiIgnore @CurrentUser User user) {
+                                                                               @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllActiveReplies(pageable, parentCommentId, user));

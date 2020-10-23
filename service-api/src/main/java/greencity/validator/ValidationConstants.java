@@ -22,5 +22,4 @@ public class ValidationConstants {
     public static final String LAT_MAX_VALIDATION = "{greenCity.validation.max.lat}";
     public static final String LNG_MIN_VALIDATION = "{greenCity.validation.min.lng}";
     public static final String LNG_MAX_VALIDATION = "{greenCity.validation.max.lng}";
-
 }
