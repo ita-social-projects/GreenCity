@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
@@ -43,10 +44,11 @@ class GoogleSecurityServiceImplTest {
     @Test
     void authenticateUserNotNullTest() throws GeneralSecurityException, IOException {
         User user = ModelUtils.getUser();
+        UserVO userVO = ModelUtils.getUserVO();
         when(googleIdTokenVerifier.verify("1234")).thenReturn(googleIdToken);
         when(googleIdToken.getPayload()).thenReturn(payload);
         when(payload.getEmail()).thenReturn("test@mail.com");
-        when(userService.findByEmail("test@mail.com")).thenReturn(user);
+        when(userService.findByEmail("test@mail.com")).thenReturn(userVO);
         SuccessSignInDto result = googleSecurityService.authenticate("1234");
         assertEquals(user.getName(), result.getName());
         assertEquals(user.getId(), result.getUserId());
@@ -80,10 +82,19 @@ class GoogleSecurityServiceImplTest {
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
+        UserVO userVO = UserVO.builder()
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .role(ROLE.ROLE_USER)
+                .userStatus(UserStatus.DEACTIVATED)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
         when(googleIdTokenVerifier.verify("1234")).thenReturn(googleIdToken);
         when(googleIdToken.getPayload()).thenReturn(payload);
         when(payload.getEmail()).thenReturn("test@mail.com");
-        when(userService.findByEmail("test@mail.com")).thenReturn(user);
+        when(userService.findByEmail("test@mail.com")).thenReturn(userVO);
         assertThrows(UserDeactivatedException.class,
             () -> googleSecurityService.authenticate("1234"));
     }

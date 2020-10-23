@@ -3,6 +3,7 @@ package greencity.security.service.impl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.constant.AppConstant;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.ROLE;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private final UserService userService;
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
     private final JwtTool jwtTool;
+    private final ModelMapper modelMapper;
 
     /**
      * Constructor.
@@ -44,11 +47,13 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
                                      JwtTool jwtTool,
-                                     GoogleIdTokenVerifier googleIdTokenVerifier
+                                     GoogleIdTokenVerifier googleIdTokenVerifier,
+                                     ModelMapper modelMapper
     ) {
         this.userService = userService;
         this.jwtTool = jwtTool;
         this.googleIdTokenVerifier = googleIdTokenVerifier;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -63,11 +68,11 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
                 String userName = (String) payload.get(GOOGLE_USERNAME);
-                User user = userService.findByEmail(email);
+                UserVO user = userService.findByEmail(email);
                 if (user == null) {
                     log.info(USER_NOT_FOUND_BY_EMAIL + email);
                     String profilePicture = (String) payload.get(GOOGLE_PICTURE);
-                    user = createNewUser(email, userName, profilePicture);
+                    user = modelMapper.map(createNewUser(email, userName, profilePicture), UserVO.class);
                     userService.save(user);
                     log.info("Google sign-up and sign-in user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
@@ -101,7 +106,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             .build();
     }
 
-    private SuccessSignInDto getSuccessSignInDto(User user) {
+    private SuccessSignInDto getSuccessSignInDto(UserVO user) {
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), false);

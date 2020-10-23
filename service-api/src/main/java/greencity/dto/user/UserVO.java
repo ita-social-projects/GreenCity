@@ -1,6 +1,7 @@
 package greencity.dto.user;
 
 import greencity.dto.goal.CustomGoalVO;
+import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
@@ -47,4 +48,8 @@ public class UserVO {
     private List<SocialNetworkVO> socialNetworks;
 
     private List<UserVO> userFriends = new ArrayList<>();
+
+    private String refreshTokenKey;
+
+    private OwnSecurityVO ownSecurity;
 }

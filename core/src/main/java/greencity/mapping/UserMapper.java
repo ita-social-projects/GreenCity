@@ -1,5 +1,6 @@
 package greencity.mapping;
 
+import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import org.modelmapper.AbstractConverter;
@@ -52,6 +53,14 @@ public class UserMapper extends AbstractConverter<UserVO, User> {
                                 .name(user1.getName())
                                 .build())
                         .collect(Collectors.toList()))
+                .refreshTokenKey(user.getRefreshTokenKey())
+                .ownSecurity(OwnSecurity.builder()
+                        .id(user.getOwnSecurity().getId())
+                        .password(user.getOwnSecurity().getPassword())
+                        .user(User.builder()
+                                .id(user.getOwnSecurity().getUser().getId())
+                                .build())
+                        .build())
                 .build();
     }
 }

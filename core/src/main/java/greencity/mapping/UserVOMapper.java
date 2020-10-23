@@ -2,6 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.goal.GoalVO;
+import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -56,6 +57,14 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                                 .name(user1.getName())
                                 .build())
                         .collect(Collectors.toList()))
+                .refreshTokenKey(user.getRefreshTokenKey())
+                .ownSecurity(OwnSecurityVO.builder()
+                        .id(user.getOwnSecurity().getId())
+                        .password(user.getOwnSecurity().getPassword())
+                        .user(UserVO.builder()
+                                .id(user.getOwnSecurity().getUser().getId())
+                                .build())
+                        .build())
                 .build();
     }
 }
