@@ -1,6 +1,5 @@
 package greencity.dto.place;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
@@ -8,11 +7,7 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.enums.PlaceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +22,5 @@ public class AdminPlaceDto {
     private List<OpenHoursDto> openingHoursList;
     private PlaceAuthorDto author;
     private PlaceStatus status;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime modifiedDate;
 }

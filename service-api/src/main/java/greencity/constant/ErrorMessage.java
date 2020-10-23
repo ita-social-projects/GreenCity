@@ -102,6 +102,8 @@ public final class ErrorMessage {
     public static final String SOCIAL_NETWORK_IMAGE_FOUND_BY_ID = "Social network image doesn't exist by this id: ";
     public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
         "Bad default social network image host path (Row in database doesn't exists)";
+    public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
+    public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
 
     private ErrorMessage() {
     }

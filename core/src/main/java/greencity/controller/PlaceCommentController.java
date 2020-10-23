@@ -6,6 +6,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -61,7 +62,7 @@ public class PlaceCommentController {
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
-        Place place = placeService.findById(placeId);
+        PlaceVO place = placeService.findById(placeId);
         return ResponseEntity
             .status(HttpStatus.CREATED).body(placeCommentService.save(place.getId(), addCommentDto, user.getEmail()));
     }

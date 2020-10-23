@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
@@ -10,21 +10,9 @@ import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.*;
 import greencity.dto.user.UserVO;
-import greencity.entity.Category;
-import greencity.entity.DiscountValue;
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
-import greencity.entity.Specification;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
@@ -32,15 +20,9 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import greencity.service.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -131,7 +113,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Transactional
     @Override
-    public Place save(PlaceAddDto dto, String email) {
+    public PlaceVO save(PlaceAddDto dto, String email) {
         log.info(LogMessage.IN_SAVE, dto.getName(), email);
 
         proposePlaceService.checkLocationValues(dto.getLocation());
@@ -147,7 +129,7 @@ public class PlaceServiceImpl implements PlaceService {
         proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
         proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
 
-        return placeRepo.save(place);
+        return modelMapper.map(placeRepo.save(place), PlaceVO.class);
     }
 
     /**
@@ -159,7 +141,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private UserVO setUserToPlaceByEmail(String email, Place place) {
-        UserVO userVO = modelMapper.map(userService.findByEmail(email), UserVO.class);
+        UserVO userVO = userService.findByEmail(email);
         place.setAuthor(modelMapper.map(userVO, User.class));
         if (userVO.getRole() == ROLE.ROLE_ADMIN || userVO.getRole() == ROLE.ROLE_MODERATOR) {
             place.setStatus(PlaceStatus.APPROVED);
@@ -175,12 +157,12 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Transactional
     @Override
-    public Place update(PlaceUpdateDto dto) {
+    public PlaceVO update(PlaceUpdateDto dto) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
 
         Category updatedCategory = modelMapper.map(
             categoryService.findByName(dto.getCategory().getName()), Category.class);
-        Place updatedPlace = findById(dto.getId());
+        Place updatedPlace = findPlaceById(dto.getId());
         locationService.update(updatedPlace.getLocation().getId(),
             modelMapper.map(dto.getLocation(), LocationVO.class));
         updatedPlace.setName(dto.getName());
@@ -190,7 +172,7 @@ public class PlaceServiceImpl implements PlaceService {
         updateOpening(dto.getOpeningHoursList(), updatedPlace);
         updateDiscount(dto.getDiscountValues(), updatedPlace);
 
-        return updatedPlace;
+        return modelMapper.map(updatedPlace, PlaceVO.class);
     }
 
     /**
@@ -282,10 +264,11 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Nazar Vladyka.
      */
     @Override
-    public List<Place> findAll() {
+    public List<PlaceVO> findAll() {
         log.info(LogMessage.IN_FIND_ALL);
 
-        return placeRepo.findAll();
+        return modelMapper.map(placeRepo.findAll(), new TypeToken<List<PlaceVO>>() {
+        }.getType());
     }
 
     /**
@@ -312,7 +295,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status) {
         log.info(LogMessage.IN_UPDATE_PLACE_STATUS, id, status);
-        Place updatable = findById(id);
+        Place updatable = findPlaceById(id);
         PlaceStatus oldStatus = updatable.getStatus();
         checkPlaceStatuses(oldStatus, status, id);
         updatable.setStatus(status);
@@ -353,13 +336,19 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Nazar Vladyka.
      */
     @Override
-    public Place findById(Long id) {
+    public PlaceVO findById(Long id) {
         log.info(LogMessage.IN_FIND_BY_ID, id);
-
-        return placeRepo
-            .findById(id)
+        Place place = placeRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(place, PlaceVO.class);
+    }
+    private Place findPlaceById(Long id) {
+        log.info(LogMessage.IN_FIND_BY_ID, id);
+        return placeRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
+
+
 
     /**
      * {@inheritDoc}
@@ -367,8 +356,8 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Marian Milian
      */
     @Override
-    public Optional<Place> findByIdOptional(Long id) {
-        return placeRepo.findById(id);
+    public Optional<PlaceVO> findByIdOptional(Long id) {
+        return placeRepo.findById(id).map(place -> modelMapper.map(place, PlaceVO.class));
     }
 
     /**

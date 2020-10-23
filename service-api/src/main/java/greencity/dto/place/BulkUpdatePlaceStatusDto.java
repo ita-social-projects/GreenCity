@@ -1,16 +1,12 @@
 package greencity.dto.place;
 
-import greencity.constant.ValidationConstants;
 import greencity.enums.PlaceStatus;
+import greencity.validator.ValidationConstants;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor

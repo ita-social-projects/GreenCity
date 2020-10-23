@@ -17,6 +17,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
+@ToString
 public class PlaceVO {
     private Long id;
     private String description;
