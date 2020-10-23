@@ -92,10 +92,6 @@ $(document).ready(function () {
                 if (key.startsWith("contentName")) {
                     name = formData["contentName" + lang]
                 }
-
-                if (key.startsWith("contentName")) {
-                    name = formData["contentName" + lang]
-                }
                 if (key.startsWith("contentDescr")) {
                     description = formData["contentDescr" + lang]
                 }

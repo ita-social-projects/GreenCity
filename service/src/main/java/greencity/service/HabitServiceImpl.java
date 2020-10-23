@@ -102,7 +102,6 @@ public class HabitServiceImpl implements HabitService {
     @Transactional
     public HabitManagementDto saveHabitAndTranslations(HabitManagementDto habitManagementDto, MultipartFile image) {
         Habit habit = habitRepo.save(Habit.builder()
-            .image(habitManagementDto.getImage())
             .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
                     .map(translationDto -> HabitTranslation.builder()
@@ -123,7 +122,7 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-        if (habitManagementDto.getImage() != null) {
+        if (!habitManagementDto.getImage().isEmpty()) {
             image = fileService.convertToMultipartImage(habitManagementDto.getImage());
         }
         if (image != null) {
