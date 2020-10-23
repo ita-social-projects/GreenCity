@@ -1,8 +1,9 @@
 package greencity.service;
 
 import greencity.dto.advice.AdviceDto;
-import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceVO;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import java.util.List;
 
@@ -72,4 +73,11 @@ public interface AdviceService {
      * @author Vitaliy Dzen
      */
     Long delete(Long id);
+
+    /**
+     * Method deletes all {@code Advice}'s by {@code Habit} instance.
+     *
+     * @param habit {@link HabitVO} instance.
+     */
+    void deleteAllByHabit(HabitVO habit);
 }

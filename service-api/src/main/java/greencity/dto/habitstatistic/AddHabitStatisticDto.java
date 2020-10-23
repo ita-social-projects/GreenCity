@@ -28,7 +28,7 @@ public class AddHabitStatisticDto {
     private HabitRate habitRate;
     @NotNull
     private ZonedDateTime createDate;
-    @Min(0)
+    @Min(1)
     @NotNull
     private Long habitAssignId;
 }

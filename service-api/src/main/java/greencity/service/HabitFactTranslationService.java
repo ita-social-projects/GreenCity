@@ -1,7 +1,7 @@
 package greencity.service;
 
 import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habittranslation.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.language.LanguageTranslationDTO;
 
 import java.util.List;

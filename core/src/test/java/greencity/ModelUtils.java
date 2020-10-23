@@ -32,6 +32,7 @@ import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.enums.*;
 import greencity.entity.localization.GoalTranslation;
+import java.time.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -168,34 +169,6 @@ public class ModelUtils {
                 .build();
     }
 
-    /*public static Habit getHabit() {
-        return Habit.builder()
-                .id(13L)
-                .statusHabit(true)
-                .createDate(ZonedDateTime.now())
-                .habitDictionary(HabitDictionary.builder().id(2L).image("cup").build())
-                .build();
-    }
-
-    public static HabitDictionary getHabitDictionary() {
-        return HabitDictionary.builder()
-                .id(1L)
-                .image("imagePath")
-                .habit(Collections.singletonList(ModelUtils.getHabit()))
-                .build();
-    }
-
-    public static HabitDictionaryTranslation getHabitDictionaryTranslation() {
-        return HabitDictionaryTranslation.builder()
-                .id(1L)
-                .name("habit")
-                .description("description")
-                .habitItem("habitItem")
-                .language(ModelUtils.getLanguage())
-                .habitDictionary(ModelUtils.getHabitDictionary())
-                .build();
-    }*/
-
     public static HabitStatus getHabitStatus() {
         HabitAssign habitAssign = getHabitAssign();
 
@@ -204,7 +177,9 @@ public class ModelUtils {
                 .workingDays(10)
                 .habitStreak(5)
                 .lastEnrollmentDate(LocalDateTime.now())
-                .habitAssign(habitAssign).build();
+                .habitAssign(habitAssign)
+                .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
+            .build();
 
     }
 
@@ -297,14 +272,6 @@ public class ModelUtils {
         return new Advice(1L, null, null);
     }
 
-    /*public static HabitDictionaryIdDto getHabitDictionaryIdDto() {
-        return new HabitDictionaryIdDto(1L);
-    }
-
-    public static AdvicePostDTO getAdvicePostDTO() {
-        return new AdvicePostDTO(null, getHabitDictionaryIdDto());
-    }
-*/
     public static HabitFactTranslation getFactTranslation() {
         return HabitFactTranslation.builder()
                 .id(1L)
@@ -317,10 +284,6 @@ public class ModelUtils {
     public static HabitFact getHabitFact() {
         return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
     }
-
-    /*public static HabitFactPostDTO getHabitFactPostDTO() {
-        return new HabitFactPostDTO(null, getHabitDictionaryIdDto());
-    }*/
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
         return LocationAddressAndGeoDto.builder()
@@ -557,6 +520,11 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitStatusCalendar getHabitStatusCalendar(){
+        return HabitStatusCalendar.builder()
+            .id(1L)
+            .enrollDate(LocalDate.now()).build();
+    }
 
     public static AdviceTranslation getAdviceTranslation() {
         return AdviceTranslation.builder()

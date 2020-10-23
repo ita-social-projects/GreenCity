@@ -17,24 +17,23 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.dao.EmptyResultDataAccessException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-
+import greencity.repository.HabitRepo;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 @ExtendWith(MockitoExtension.class)
 class AdviceServiceImplTest {
@@ -46,6 +45,9 @@ class AdviceServiceImplTest {
 
     @Mock
     private AdviceRepo adviceRepo;
+
+    @Mock
+    private HabitRepo habitRepo;
 
     @Mock
     private AdviceTranslationRepo adviceTranslationRepo;
@@ -172,8 +174,7 @@ class AdviceServiceImplTest {
         HabitVO habitVO = modelMapper.map(habit, HabitVO.class);
 
         when(adviceRepo.findById(adviceId)).thenReturn(Optional.of(advice));
-        when(habitService.getById(habitId)).thenReturn(habitVO);
-        when(modelMapper.map(habitVO, Habit.class)).thenReturn(habit);
+        when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         advice.setHabit(habit);
         when(adviceRepo.save(advice)).thenReturn(advice);
         AdviceVO expected = modelMapper.map(advice, AdviceVO.class);

@@ -80,4 +80,11 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
     @Query("UPDATE HabitFactTranslation f set f.factOfDayStatus = :status WHERE f.habitFact.id = :habitFactId")
     void updateFactOfDayStatusByHabitFactId(@Param("status") FactOfDayStatus status,
                                             @Param("habitFactId") Long habitfactId);
+
+    /**
+     * Method deletes all {@link HabitFactTranslation}'s by {@link Habit} instance.
+     *
+     * @param habitFact {@link HabitFact} instance.
+     */
+    void deleteAllByHabitFact(HabitFact habitFact);
 }

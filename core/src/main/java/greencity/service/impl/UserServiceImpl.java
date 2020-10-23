@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final UserGoalRepo userGoalRepo;
     private final CustomGoalRepo customGoalRepo;
+    private final HabitStatisticRepo habitStatisticRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private final HabitTranslationRepo habitTranslationRepo;
@@ -501,38 +502,6 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<HabitTranslationDto> getAvailableHabitTranslations(Long userId, String language) {
-        List<HabitTranslation> availableHabitTranslations = habitTranslationRepo
-            .findAvailableHabitTranslationsByUser(userId, language);
-        if (availableHabitTranslations.isEmpty()) {
-            throw new UserHasNoAvailableHabitTranslationException(USER_HAS_NO_AVAILABLE_HABITS);
-        }
-        return availableHabitTranslations.stream()
-            .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
-            .collect(Collectors.toList());
-    }
-
-    @Transactional
-    @Override
-    public List<HabitTranslationDto> getHabitTranslationsByAcquiredStatus(Long userId, String language,
-                                                                          boolean acquired) {
-        List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findHabitTranslationsByUserAndAcquiredStatus(userId, language, acquired);
-        if (habitTranslations.isEmpty()) {
-            throw new UserHasNoAvailableHabitTranslationException(USER_HAS_NO_AVAILABLE_HABITS);
-        }
-        return habitTranslations.stream()
-            .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Bogdan Kuzenko
-     */
-    @Transactional
-    @Override
     public List<CustomGoalResponseDto> getAvailableCustomGoals(Long userId) {
         return modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(userId),
             new TypeToken<List<CustomGoalResponseDto>>() {
@@ -784,8 +753,8 @@ public class UserServiceImpl implements UserService {
     public UserProfileStatisticsDto getUserProfileStatistics(Long userId) {
         Long amountOfPublishedNewsByUserId = ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId);
         Long amountOfWrittenTipsAndTrickByUserId = tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(userId);
-        Long amountOfAcquiredHabitsByUserId = habitAssignRepo.getAmountOfAcquiredHabitsByUserId(userId);
-        Long amountOfHabitsInProgressByUserId = habitAssignRepo.getAmountOfHabitsInProgressByUserId(userId);
+        Long amountOfAcquiredHabitsByUserId = habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
+        Long amountOfHabitsInProgressByUserId = habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId);
 
         return UserProfileStatisticsDto.builder()
             .amountWrittenTipsAndTrick(amountOfWrittenTipsAndTrickByUserId)

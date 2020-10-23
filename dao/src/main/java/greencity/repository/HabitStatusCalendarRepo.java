@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 
 public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalendar, Long> {
     /**
@@ -48,11 +49,20 @@ public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalend
     List<HabitStatusCalendar> findAllByEnrollDateBeforeAndHabitStatus(LocalDate dateTime, HabitStatus habitStatus);
 
     /**
-     * Method to delete all {@link HabitStatusCalendar} by {@link HabitStatus} id.
+     * Method deletes all {@link HabitStatusCalendar} by {@link HabitStatus} instance.
      *
-     * @param habitStatusId target {@link HabitStatus}.
+     * @param habitStatus {@link HabitStatus} instance.
      */
     @Modifying
-    @Query(value = "DELETE FROM HabitStatusCalendar hsc WHERE hsc.habitStatus.id = :habitStatusId")
-    void deleteAllByHabitStatusId(@Param("habitStatusId") Long habitStatusId);
+    @Query("DELETE FROM HabitStatusCalendar hsc WHERE hsc.habitStatus = :hs")
+    void deleteAllByHabitStatus(@Param("hs") HabitStatus habitStatus);
+
+    /**
+     * Method deletes {@link HabitStatusCalendar} by it's instance.
+     *
+     * @param habitStatusCalendar {@link HabitStatusCalendar} instance.
+     */
+    @Modifying
+    @Query("DELETE FROM HabitStatusCalendar hsc WHERE hsc = :hs")
+    void delete(@Param("hs") @NonNull HabitStatusCalendar habitStatusCalendar);
 }

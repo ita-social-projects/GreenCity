@@ -3,6 +3,8 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatus;
 import greencity.service.HabitStatusService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -24,10 +26,10 @@ public class HabitStatusController {
     private final HabitStatusService habitStatusService;
 
     /**
-     * Method return {@link greencity.entity.HabitStatus} for user by habit.
+     * Method return {@link HabitStatus} for user by {@link HabitAssign} id.
      *
-     * @param habitAssignId - id of habitAssign
-     * @return {@link HabitStatusDto}
+     * @param habitAssignId - id of {@link HabitAssign}.
+     * @return {@link HabitStatusDto}.
      */
     @ApiOperation(value = "Get habit status for user.")
     @ApiResponses(value = {
@@ -42,12 +44,12 @@ public class HabitStatusController {
     }
 
     /**
-     * Method enroll {@link greencity.entity.Habit}.
+     * Method to enroll {@link HabitStatus}.
      *
-     * @param habitAssignId - id of habitAssign which we enroll
-     * @return {@link HabitStatusDto}
+     * @param habitAssignId -  id of {@link HabitAssign}.
+     * @return {@link HabitStatusDto}.
      */
-    @ApiOperation(value = "Enroll habit.")
+    @ApiOperation(value = "Enroll habit assign.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -59,13 +61,13 @@ public class HabitStatusController {
     }
 
     /**
-     * Method unenroll Habit in defined date.
+     * Method to unenroll {@link HabitStatus} in defined date.
      *
-     * @param habitAssignId - id of habitAssign
-     * @param date          - date we want unenroll
-     * @return {@link ResponseEntity}
+     * @param habitAssignId - id of {@link HabitAssign}.
+     * @param date          - {@link LocalDate} we want to unenroll.
+     * @return {@link ResponseEntity}.
      */
-    @ApiOperation(value = "Unenroll habit.")
+    @ApiOperation(value = "Unenroll habit assign.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -73,18 +75,18 @@ public class HabitStatusController {
     })
     @PostMapping("/unenroll/{habitAssignId}/{date}")
     public ResponseEntity<Object> unenrollHabit(@PathVariable Long habitAssignId,
-                                                        @PathVariable(value = "date")
-                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+                                                @PathVariable(value = "date")
+                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         habitStatusService.unenrollHabit(date, habitAssignId);
         return ResponseEntity.ok().build();
     }
 
     /**
-     * Method enroll habit for defined date.
+     * Method to enroll habit for defined date.
      *
-     * @param habitAssignId - id of habit
-     * @param date          - date we want enroll
-     * @return {@link HabitStatusDto}
+     * @param habitAssignId - id of {@link HabitAssign}.
+     * @param date          - {@link LocalDate} we want to enroll.
+     * @return {@link HabitStatusDto}.
      */
     @ApiOperation(value = "Enroll for a specific day.")
     @ApiResponses(value = {
@@ -96,32 +98,15 @@ public class HabitStatusController {
     public ResponseEntity<HabitStatusDto> enrollHabitInDate(@PathVariable Long habitAssignId,
                                                             @PathVariable(value = "date")
                                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                                                    LocalDate date) {
+                                                                LocalDate date) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatusService.enrollHabitInDate(habitAssignId, date));
     }
 
     /**
-     * Method to delete {@link greencity.entity.HabitStatus} for {@link greencity.entity.HabitAssign} by it's id.
+     * Method to update {@link HabitStatus} for {@link HabitAssign} by it's id.
      *
-     * @param habitAssignId - id of {@link greencity.entity.HabitAssign}
-     */
-    @ApiOperation(value = "Delete status for habit assign.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @DeleteMapping("/{habitAssignId}")
-    public ResponseEntity<Object> deleteHabitStatusByHabitAssign(@PathVariable Long habitAssignId) {
-        habitStatusService.deleteStatusByHabitAssignId(habitAssignId);
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Method to update {@link greencity.entity.HabitStatus} for {@link greencity.entity.HabitAssign} by it's id.
-     *
-     * @param habitAssignId - id of {@link greencity.entity.HabitAssign}
-     * @return {@link HabitStatusDto}
+     * @param habitAssignId - id of {@link HabitAssign}.
+     * @return {@link HabitStatusDto}.
      */
     @ApiOperation(value = "Update status for habit assign.")
     @ApiResponses(value = {

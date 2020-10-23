@@ -1,7 +1,6 @@
 package greencity.dto.habitfact;
 
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habittranslation.HabitFactTranslationVO;
 import lombok.*;
 
 import java.util.List;

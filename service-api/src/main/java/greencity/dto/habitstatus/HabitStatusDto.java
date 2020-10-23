@@ -1,7 +1,8 @@
 package greencity.dto.habitstatus;
 
-import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -23,6 +24,9 @@ public class HabitStatusDto {
     private Integer habitStreak;
     @NotEmpty
     private LocalDateTime lastEnrollmentDate;
+    @NotNull
+    @Min(1)
+    private Long habitAssignId;
     @NotEmpty
-    private HabitAssignDto habitAssign;
+    private List<HabitStatusCalendarDto> habitStatusCalendarDtos;
 }

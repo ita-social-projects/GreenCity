@@ -9,8 +9,8 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class HabitTranslationDto {
-    private Long id;
     private String name;
     private String habitItem;
     private String description;
+    private String languageCode;
 }
