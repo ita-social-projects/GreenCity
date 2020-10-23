@@ -1,12 +1,12 @@
-package greencity.service;
+package greencity.service.impl;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.dto.PageableDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tipsandtricks.*;
-import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
@@ -14,13 +14,20 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
+import greencity.service.FileService;
+import greencity.service.LanguageService;
+import greencity.service.TagsService;
+import greencity.service.TipsAndTricksTranslationService;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -29,9 +36,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class TipsAndTricksServiceImplTest {
@@ -56,15 +60,13 @@ class TipsAndTricksServiceImplTest {
     private TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
     private Tag tipsAndTricksTag = ModelUtils.getTag();
     private TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
-    private TipsAndTricksCommentVO tipsAndTricksCommentVO = ModelUtils.getTipsAndTricksCommentVO();
     private User user = ModelUtils.getUser();
-    private UserVO userVO = ModelUtils.getUserVO();
     private TagVO tagVO = new TagVO(1L, "News");
 
     @Test
     void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(tagVOList);
@@ -78,14 +80,10 @@ class TipsAndTricksServiceImplTest {
 
         assertEquals(tipsAndTricksDtoResponse, actual);
 
-        verify(tipsAndTricksTranslationService)
-            .saveTitleTranslations(modelMapper.map(tipsAndTricks.getTitleTranslations(),
-                new TypeToken<List<TitleTranslationVO>>() {
-                }.getType()));
-        verify(tipsAndTricksTranslationService)
-            .saveTextTranslations(modelMapper.map(tipsAndTricks.getTextTranslations(),
-                new TypeToken<List<TextTranslationVO>>() {
-                }.getType()));
+        verify(tipsAndTricksTranslationService).saveTitleTranslations(modelMapper.map(tipsAndTricks.getTitleTranslations(),
+            new TypeToken<List<TitleTranslationVO>>() {}.getType()));
+        verify(tipsAndTricksTranslationService).saveTextTranslations(modelMapper.map(tipsAndTricks.getTextTranslations(),
+            new TypeToken<List<TextTranslationVO>>() {}.getType()));
     }
 
     @Test
@@ -93,7 +91,7 @@ class TipsAndTricksServiceImplTest {
         String email = ModelUtils.getUser().getEmail();
 
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(tagVOList);
@@ -112,7 +110,7 @@ class TipsAndTricksServiceImplTest {
         tipsAndTricksDtoRequest.setImage(imageToEncode);
 
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
@@ -236,7 +234,7 @@ class TipsAndTricksServiceImplTest {
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(tagVOList);
-        when(userService.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(ModelUtils.getUserVO());
+        when(userService.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(user);
         when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(new LanguageDTO(2L, "en")));
 
         tipsAndTricksService.update(tipsAndTricksDtoManagement, null);
@@ -323,9 +321,12 @@ class TipsAndTricksServiceImplTest {
 
     @Test
     void likeComment() {
-        TipsAndTricksCommentVO initial = tipsAndTricksCommentVO;
-        tipsAndTricksService.likeComment(userVO, initial);
-        assertTrue(initial.getUsersLiked().contains(userVO));
+        TipsAndTricksComment initial = tipsAndTricksComment;
+        Set<User> userSet = new HashSet<>();
+        userSet.add(user);
+        initial.setUsersLiked(userSet);
+        tipsAndTricksService.likeComment(user, tipsAndTricksComment);
+        assertEquals(initial, tipsAndTricksComment);
     }
 
     @Test
@@ -334,7 +335,7 @@ class TipsAndTricksServiceImplTest {
         Set<User> userSet = new HashSet<>();
         userSet.add(user);
         tipsAndTricksComment.setUsersLiked(userSet);
-        tipsAndTricksService.unlikeComment(ModelUtils.getUserVO(), ModelUtils.getTipsAndTricksCommentVO());
+        tipsAndTricksService.unlikeComment(user, tipsAndTricksComment);
         assertEquals(initial, tipsAndTricksComment);
 
     }

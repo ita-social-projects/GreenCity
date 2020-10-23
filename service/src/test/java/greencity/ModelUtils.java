@@ -21,11 +21,13 @@ import greencity.dto.language.LanguageVO;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.tag.TagVO;
-import greencity.dto.tipsandtricks.*;
 import greencity.dto.user.*;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tipsandtricks.TextTranslationVO;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
@@ -519,46 +521,6 @@ public class ModelUtils {
             .id(1L)
             .name("specification")
             .build();
-    }
-    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
-        return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
-    }
-
-    public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
-        return TipsAndTricksDtoResponse.builder()
-            .id(1L)
-            .title("title")
-            .text("text")
-            .creationDate(ZonedDateTime.now())
-            .author(getAuthorDto())
-            .tags(Collections.singletonList("tipsAndTricksTag"))
-            .imagePath(TestConst.SITE)
-            .source(null)
-            .build();
-    }
-
-    private static AuthorDto getAuthorDto() {
-        return AuthorDto.builder()
-            .id(1L)
-            .name("author")
-            .build();
-    }
-
-    public static TipsAndTricksComment getTipsAndTricksComment() {
-        return TipsAndTricksComment.builder()
-            .id(1L)
-            .text("text")
-            .user(getUser())
-            .build();
-    }
-
-    public static TipsAndTricksCommentVO getTipsAndTricksCommentVO() {
-        TipsAndTricksCommentVO tipsAndTricksCommentVO = new TipsAndTricksCommentVO();
-            tipsAndTricksCommentVO.setId(1L);
-            tipsAndTricksCommentVO.setText("text");
-            tipsAndTricksCommentVO.setUser(getUserVO());
-            tipsAndTricksCommentVO.setUsersLiked(new HashSet<>());
-            return tipsAndTricksCommentVO;
     }
 }
 

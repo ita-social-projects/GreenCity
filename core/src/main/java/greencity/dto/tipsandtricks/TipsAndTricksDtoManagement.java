@@ -1,12 +1,13 @@
 package greencity.dto.tipsandtricks;
 
-import greencity.validator.ValidationConstants;
 import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import static greencity.constant.ValidationConstants.MIN_AMOUNT_OF_TAGS;
 
 @Builder
 @NoArgsConstructor
@@ -28,7 +29,7 @@ public class TipsAndTricksDtoManagement {
 
     private String authorName;
 
-    @NotEmpty(message = ValidationConstants.MIN_AMOUNT_OF_TAGS)
+    @NotEmpty(message = MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
 
     private String imagePath;

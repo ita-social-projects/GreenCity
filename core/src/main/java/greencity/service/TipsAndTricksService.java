@@ -2,15 +2,18 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
-import greencity.dto.tipsandtricks.*;
-import greencity.dto.user.UserVO;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
+import greencity.entity.*;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface TipsAndTricksService {
     /**
-     * Method for creating {@link TipsAndTricksDtoResponse} instance.
+     * Method for creating {@link TipsAndTricks} instance.
      *
      * @param tipsAndTricksDtoRequest {@link TipsAndTricksDtoRequest}
      * @return {@link TipsAndTricksDtoResponse} instance.
@@ -19,7 +22,7 @@ public interface TipsAndTricksService {
                                   String email);
 
     /**
-     * Method saves new {@link TipsAndTricksDtoManagement}, {@link TitleTranslationVO}  and {@link TextTranslationVO}.
+     * Method saves new {@link TipsAndTricksDtoManagement}, {@link TitleTranslation}  and {@link TextTranslation}.
      *
      * @param tipsAndTricksDtoManagement {@link TipsAndTricksDtoManagement}
      * @return instance of {@link TipsAndTricksDtoManagement}
@@ -29,7 +32,7 @@ public interface TipsAndTricksService {
                                                                  String name);
 
     /**
-     * Method for updating {@link TipsAndTricksVO} instance.
+     * Method for updating {@link TipsAndTricks} instance.
      *
      * @param tricksDtoManagement - instance of {@link TipsAndTricksDtoManagement}.
      */
@@ -69,12 +72,12 @@ public interface TipsAndTricksService {
     TipsAndTricksDtoResponse findDtoById(Long id);
 
     /**
-     * Method for getting the {@link TipsAndTricksVO} instance by its id.
+     * Method for getting the {@link TipsAndTricks} instance by its id.
      *
-     * @param id {@link TipsAndTricksVO} instance id.
-     * @return {@link TipsAndTricksVO} instance.
+     * @param id {@link TipsAndTricks} instance id.
+     * @return {@link TipsAndTricks} instance.
      */
-    TipsAndTricksVO findById(Long id);
+    TipsAndTricks findById(Long id);
 
     /**
      * Method for getting the {@link TipsAndTricksDtoManagement} instance by its id.
@@ -85,16 +88,16 @@ public interface TipsAndTricksService {
     TipsAndTricksDtoManagement findManagementDtoById(Long id);
 
     /**
-     * Method for deleting the {@link TipsAndTricksVO} instance by its id.
+     * Method for deleting the {@link TipsAndTricks} instance by its id.
      *
-     * @param id - {@link TipsAndTricksVO} instance id which will be deleted.
+     * @param id - {@link TipsAndTricks} instance id which will be deleted.
      */
     void delete(Long id);
 
     /**
-     * Method for deleting all {@link TipsAndTricksVO} instance by list of IDs.
+     * Method for deleting all {@link TipsAndTricks} instance by list of IDs.
      *
-     * @param listId list of id {@link TipsAndTricksVO}
+     * @param listId list of id {@link TipsAndTricks}
      */
     void deleteAll(List<Long> listId);
 
@@ -135,20 +138,20 @@ public interface TipsAndTricksService {
     /**
      * Method to mark comment as liked by User.
      *
-     * @param user    {@link UserVO}.
-     * @param comment {@link TipsAndTricksCommentVO}
+     * @param user    {@link User}.
+     * @param comment {@link TipsAndTricksComment}
      * @author Dovganyuk Taras
      */
-    void likeComment(UserVO user, TipsAndTricksCommentVO comment);
+    void likeComment(User user, TipsAndTricksComment comment);
 
     /**
      * Method to mark comment as unliked by User.
      *
-     * @param user    {@link UserVO}.
-     * @param comment {@link TipsAndTricksCommentVO}
+     * @param user    {@link User}.
+     * @param comment {@link TipsAndTricksComment}
      * @author Dovganyuk Taras
      */
-    void unlikeComment(UserVO user, TipsAndTricksCommentVO comment);
+    void unlikeComment(User user, TipsAndTricksComment comment);
 
     /**
      * Method for finding {@link TipsAndTricksDtoManagement} by specification.

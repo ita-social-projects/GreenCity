@@ -45,8 +45,7 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     public AddTipsAndTricksCommentDtoResponse save(Long tipsandtricksId,
                                                    AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
                                                    User user) {
-        TipsAndTricks tipsAndTricks = modelMapper.map(tipsAndTricksService
-            .findById(tipsandtricksId), TipsAndTricks.class);
+        TipsAndTricks tipsAndTricks = tipsAndTricksService.findById(tipsandtricksId);
         TipsAndTricksComment tipsAndTricksComment =
                 modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class);
         tipsAndTricksComment.setUser(user);
