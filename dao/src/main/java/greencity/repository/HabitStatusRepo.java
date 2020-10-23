@@ -47,7 +47,7 @@ public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
      */
     @Query(value = "SELECT hs FROM HabitStatus hs "
         + "WHERE hs.habitAssign.habit.id = :habitId AND hs.habitAssign.user.id = :userId "
-        + "AND DATE(hs.habitAssign.createDate) = :dateTime")
+        + "AND cast(hs.habitAssign.createDate as date) = cast(:dateTime as date)")
     Optional<HabitStatus> findByUserIdAndHabitIdAndCreateDate(@Param("userId") Long userId,
                                                               @Param("habitId") Long habitId,
                                                               @Param("dateTime") ZonedDateTime dateTime);
@@ -83,7 +83,7 @@ public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
     @Modifying
     @Query(value = "DELETE FROM HabitStatus hs "
         + "WHERE hs.habitAssign.user.id = :userId AND hs.habitAssign.habit.id = :habitId "
-        + "AND DATE(hs.habitAssign.createDate) = :dateTime "
+        + "AND cast(hs.habitAssign.createDate as date) = cast(:dateTime as date) "
         + "AND hs.habitAssign.suspended = false")
     void deleteByUserIdAndHabitIdAndCreateDate(@Param("userId") Long userId,
                                                @Param("habitId") Long habitId,
