@@ -5,9 +5,11 @@ import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.Habit;
+import greencity.entity.Language;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -16,6 +18,8 @@ import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitRepo;
+
+import java.util.Iterator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -81,8 +85,7 @@ public class AdviceServiceImpl implements AdviceService {
     public AdviceVO save(AdvicePostDto advicePostDTO) {
         Advice advice = modelMapper.map(advicePostDTO, Advice.class);
         List<AdviceTranslation> adviceTranslations = modelMapper.map(advicePostDTO.getTranslations(),
-                new TypeToken<List<AdviceTranslation>>() {
-                }.getType());
+                new TypeToken<List<AdviceTranslation>>() {}.getType());
         advice.setTranslations(adviceTranslations);
         adviceTranslations.forEach(adviceTranslation -> adviceTranslation.setAdvice(advice));
         Advice saved = adviceRepo.save(advice);
@@ -96,11 +99,13 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public AdviceVO update(AdvicePostDto adviceDto, Long id) {
         Advice advice = adviceRepo.findById(id)
-            .map(employee -> {
+            .map(updatedAdvice -> {
                 Habit habit = habitRepo.findById(adviceDto.getHabit().getId())
                     .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
-                employee.setHabit(habit);
-                return adviceRepo.save(employee);
+                updatedAdvice.setHabit(habit);
+                updateAdviceTranslations(updatedAdvice.getTranslations(), adviceDto.getTranslations());
+
+                return adviceRepo.save(updatedAdvice);
             })
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_UPDATED));
         return modelMapper.map(advice, AdviceVO.class);
@@ -130,5 +135,17 @@ public class AdviceServiceImpl implements AdviceService {
                 adviceTranslationRepo.deleteAllByAdvice(advice);
                 adviceRepo.delete(advice);
             });
+    }
+
+    private void updateAdviceTranslations(List<AdviceTranslation> adviceTranslations,
+                                          List<LanguageTranslationDTO> languageTranslationDTOS) {
+        Iterator<AdviceTranslation> adviceTranslationIterator = adviceTranslations.iterator();
+        Iterator<LanguageTranslationDTO> languageTranslationDTOIterator = languageTranslationDTOS.iterator();
+        while (adviceTranslationIterator.hasNext() && languageTranslationDTOIterator.hasNext()) {
+            AdviceTranslation adviceTranslation = adviceTranslationIterator.next();
+            LanguageTranslationDTO languageDTO = languageTranslationDTOIterator.next();
+            adviceTranslation.setContent(languageDTO.getContent());
+            adviceTranslation.setLanguage(modelMapper.map(languageDTO.getLanguage(), Language.class));
+        }
     }
 }
