@@ -8,6 +8,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.Habit;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -78,7 +79,14 @@ public class AdviceServiceImpl implements AdviceService {
      */
     @Override
     public AdviceVO save(AdvicePostDto advicePostDTO) {
-        Advice saved = adviceRepo.save(modelMapper.map(advicePostDTO, Advice.class));
+        Advice advice = modelMapper.map(advicePostDTO, Advice.class);
+        List<AdviceTranslation> adviceTranslations = modelMapper.map(advicePostDTO.getTranslations(),
+                new TypeToken<List<AdviceTranslation>>() {
+                }.getType());
+        advice.setTranslations(adviceTranslations);
+        adviceTranslations.forEach(adviceTranslation -> adviceTranslation.setAdvice(advice));
+        Advice saved = adviceRepo.save(advice);
+
         return modelMapper.map(saved, AdviceVO.class);
     }
 

@@ -55,13 +55,6 @@ public class AdviceTranslationServiceImpl implements AdviceTranslationService {
      */
     @Override
     public AdviceVO saveAdviceAndAdviceTranslation(AdvicePostDto advicePostDTO) {
-        AdviceVO save = adviceService.save(advicePostDTO);
-        List<AdviceTranslationVO> list = modelMapper.map(advicePostDTO.getTranslations(),
-            new TypeToken<List<AdviceTranslationVO>>() {
-            }.getType());
-        list.forEach(a -> a.setAdvice(save));
-        saveAdviceTranslation(list);
-
-        return save;
+        return adviceService.save(advicePostDTO);
     }
 }
