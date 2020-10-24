@@ -1,9 +1,11 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.CustomGoalSaveRequestDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.CustomGoal;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
@@ -40,6 +42,9 @@ class CustomGoalServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private CustomGoalServiceImpl customGoalService;
 
@@ -58,6 +63,9 @@ class CustomGoalServiceImplTest {
 
     @Test
     void saveEmptyBulkSaveCustomGoalDtoTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        when(userService.findById(1L)).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.emptyList()),
             1L
@@ -70,6 +78,9 @@ class CustomGoalServiceImplTest {
     void saveNonExistentBulkSaveCustomGoalDtoTest() {
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
         CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null);
+        UserVO userVO = ModelUtils.getUserVO();
+        when(userService.findById(1L)).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(customGoalDtoToSave, CustomGoal.class)).thenReturn(customGoal);
         when(modelMapper.map(customGoal, CustomGoalResponseDto.class)).thenReturn(new CustomGoalResponseDto(1L, "bar"));
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
@@ -85,6 +96,9 @@ class CustomGoalServiceImplTest {
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
         CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null);
         user.setCustomGoals(Collections.singletonList(customGoal));
+        UserVO userVO = ModelUtils.getUserVO();
+        when(userService.findById(1L)).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(customGoalDtoToSave, CustomGoal.class)).thenReturn(customGoal);
         BulkSaveCustomGoalDto bulkSave = new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave));
         Assertions.assertThrows(CustomGoalNotSavedException.class, () -> customGoalService.save(bulkSave, 1L));

@@ -418,12 +418,13 @@ class PlaceServiceImplTest {
     @Test
     void findByIdOptionalTest() {
         Place place = ModelUtils.getPlace();
-        PlaceVO placeVO = modelMapper.map(place, PlaceVO.class);
+        PlaceVO placeVO = ModelUtils.getPlaceVO();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
         Optional<PlaceVO> resultOptional = placeService.findByIdOptional(place.getId());
 
         assertTrue(resultOptional.isPresent());
-        assertEquals(placeVO, resultOptional.get());
+        assertEquals(placeVO.getId(), resultOptional.get().getId());
+        assertEquals(placeVO.getName(), resultOptional.get().getName());
     }
 
     @Test

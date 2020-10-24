@@ -8,11 +8,17 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.factoftheday.*;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
@@ -37,10 +43,7 @@ import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.GoalStatus;
-import greencity.enums.PlaceStatus;
-import greencity.enums.ROLE;
+import greencity.enums.*;
 import greencity.service.TestConst;
 import java.time.LocalDate;
 import greencity.constant.AppConstant;
@@ -143,12 +146,12 @@ public class ModelUtils {
 
     public static HabitAssign getHabitAssign() {
         return HabitAssign.builder()
-            .id(1L)
-            .acquired(true)
-            .suspended(false)
-            .createDate(ZonedDateTime.now())
-            .habitStatus(getHabitStatus())
-            .habit(Habit.builder().id(1L).build()).build();
+                .id(1L)
+                .acquired(true)
+                .suspended(false)
+                .createDate(ZonedDateTime.now())
+                .habitStatus(getHabitStatus())
+                .habit(Habit.builder().id(1L).build()).build();
     }
 
     public static HabitAssignVO getHabitAssignVO(){
@@ -161,46 +164,18 @@ public class ModelUtils {
             .userVO(UserVO.builder().id(1L).build()).build();
     }
 
-    public static HabitStatusDto getHabitStatusDto() {
-        HabitAssignDto habitAssignDto = getHabitAssignDto();
-
-        return HabitStatusDto.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssign(habitAssignDto).build();
-
-    }
-
-    public static HabitAssignDto getHabitAssignDto() {
-        return HabitAssignDto.builder()
-                .id(1L)
-                .acquired(true)
-                .suspended(false)
-                .createDateTime(ZonedDateTime.now())
-                .habit(HabitDto.builder().id(1L).build()).build();
+    public static HabitVO getHabitVO(){
+        return HabitVO.builder().id(1L).image("img.png").build();
     }
 
     public static HabitStatus getHabitStatus() {
-        HabitAssign habitAssign = getHabitAssign();
-
         return HabitStatus.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssign(habitAssign).build();
-
-    }
-
-    public static HabitAssign getHabitAssign() {
-        return HabitAssign.builder()
-            .id(1L)
-            .acquired(true)
-            .suspended(false)
-            .createDate(ZonedDateTime.now())
-            .habit(Habit.builder().id(1L).build()).build();
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitStatusCalendars(
+                        Collections.singletonList(getHabitStatusCalendar())).build();
     }
 
     public static UserGoal getCustomUserGoal() {
@@ -227,6 +202,15 @@ public class ModelUtils {
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
             .build();
+    }
+
+    public static HabitStatusVO getHabitStatusVO() {
+        return HabitStatusVO.builder()
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitAssignVO(getHabitAssignVO()).build();
     }
 
     public static UserGoalVO getUserGoalVO() {
@@ -345,13 +329,13 @@ public class ModelUtils {
 
     public static PlaceVO getPlaceVO() {
         PlaceVO placeVO = new PlaceVO();
-        placeVO.setLocationId(1L);
+//        placeVO.setLocationId(1L);
         placeVO.setId(1L);
         placeVO.setName("Forum");
         placeVO.setDescription("Shopping center");
         placeVO.setPhone("0322 489 850");
         placeVO.setEmail("forum_lviv@gmail.com");
-        placeVO.setAuthorId(1L);
+//        placeVO.setAuthorId(1L);
         placeVO.setModifiedDate(ZonedDateTime.now());
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setName("category");
@@ -571,6 +555,51 @@ public class ModelUtils {
             .id(1L)
             .name("specification")
             .build();
+    }
+
+    public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
+        return AddEcoNewsCommentDtoResponse.builder()
+                .id(getEcoNewsComment().getId())
+                .author(getEcoNewsCommentAuthorDto())
+                .text(getEcoNewsComment().getText())
+                .modifiedDate(getEcoNewsComment().getModifiedDate())
+                .build();
+    }
+
+    public static EcoNewsComment getEcoNewsComment() {
+        return EcoNewsComment.builder()
+                .id(1L)
+                .text("text")
+                .createdDate(LocalDateTime.now())
+                .modifiedDate(LocalDateTime.now())
+                .user(getUser())
+                .ecoNews(getEcoNews())
+                .build();
+    }
+
+    public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
+        return EcoNewsCommentAuthorDto.builder()
+                .id(getUser().getId())
+                .name(getUser().getName().trim())
+                .userProfilePicturePath(getUser().getProfilePicturePath())
+                .build();
+    }
+
+    public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
+        return new AddEcoNewsCommentDtoRequest("text", 0L);
+    }
+
+    public static EcoNewsCommentDto getEcoNewsCommentDto() {
+        return EcoNewsCommentDto.builder()
+                .id(1L)
+                .modifiedDate(LocalDateTime.now())
+                .author(getEcoNewsCommentAuthorDto())
+                .text("text")
+                .replies(0)
+                .likes(0)
+                .currentUserLiked(false)
+                .status(CommentStatus.ORIGINAL)
+                .build();
     }
 }
 

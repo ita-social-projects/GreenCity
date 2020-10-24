@@ -7,8 +7,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
@@ -58,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final TipsAndTricksRepo tipsAndTricksRepo;
     private final EcoNewsRepo ecoNewsRepo;
     private final SocialNetworkImageService socialNetworkImageService;
+    private final HabitStatisticRepo habitStatisticRepo;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
     @Value("${defaultProfilePicture}")
@@ -74,7 +73,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO save(UserVO userVO) {
         User user = modelMapper.map(userVO, User.class);
-        return modelMapper.map(userRepo.save(user), UserVO.class);
+        User save = userRepo.save(user);
+        return modelMapper.map(save, UserVO.class);
     }
 
     /**
@@ -508,38 +508,6 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<HabitTranslationDto> getAvailableHabitTranslations(Long userId, String language) {
-        List<HabitTranslation> availableHabitTranslations = habitTranslationRepo
-            .findAvailableHabitTranslationsByUser(userId, language);
-        if (availableHabitTranslations.isEmpty()) {
-            throw new UserHasNoAvailableHabitTranslationException(ErrorMessage.USER_HAS_NO_AVAILABLE_HABITS);
-        }
-        return availableHabitTranslations.stream()
-            .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
-            .collect(Collectors.toList());
-    }
-
-    @Transactional
-    @Override
-    public List<HabitTranslationDto> getHabitTranslationsByAcquiredStatus(Long userId, String language,
-                                                                          boolean acquired) {
-        List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findHabitTranslationsByUserAndAcquiredStatus(userId, language, acquired);
-        if (habitTranslations.isEmpty()) {
-            throw new UserHasNoAvailableHabitTranslationException(ErrorMessage.USER_HAS_NO_AVAILABLE_HABITS);
-        }
-        return habitTranslations.stream()
-            .map(habit -> modelMapper.map(habit, HabitTranslationDto.class))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Bogdan Kuzenko
-     */
-    @Transactional
-    @Override
     public List<CustomGoalResponseDto> getAvailableCustomGoals(Long userId) {
         return modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(userId),
             new TypeToken<List<CustomGoalResponseDto>>() {
@@ -633,7 +601,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Delete user friend by id {@link UserVO}.
      *
-     * @param userId   {@link Long}
+     * @param userId   {@link Long}g
      * @param friendId {@link Long}
      * @author Marian Datsko
      */
@@ -795,8 +763,8 @@ public class UserServiceImpl implements UserService {
     public UserProfileStatisticsDto getUserProfileStatistics(Long userId) {
         Long amountOfPublishedNewsByUserId = ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId);
         Long amountOfWrittenTipsAndTrickByUserId = tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(userId);
-        Long amountOfAcquiredHabitsByUserId = habitAssignRepo.getAmountOfAcquiredHabitsByUserId(userId);
-        Long amountOfHabitsInProgressByUserId = habitAssignRepo.getAmountOfHabitsInProgressByUserId(userId);
+        Long amountOfAcquiredHabitsByUserId = habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
+        Long amountOfHabitsInProgressByUserId = habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId);
 
         return UserProfileStatisticsDto.builder()
             .amountWrittenTipsAndTrick(amountOfWrittenTipsAndTrickByUserId)

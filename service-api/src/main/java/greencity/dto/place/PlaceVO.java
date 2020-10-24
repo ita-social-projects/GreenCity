@@ -31,9 +31,7 @@ public class PlaceVO {
     private String name;
     private String phone;
     private PlaceStatus status = PlaceStatus.PROPOSED;
-    private Long authorId;
     private CategoryVO category;
-    private Long locationId;
     private List<PhotoVO> photos = new ArrayList<>();
     private Set<DiscountValueVO> discountValues = new HashSet<>();
     private LocationVO location;

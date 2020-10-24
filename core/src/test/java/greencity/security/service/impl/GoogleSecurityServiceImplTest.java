@@ -4,8 +4,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.constant.AppConstant;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.EmailNotification;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
@@ -21,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -35,11 +38,16 @@ class GoogleSecurityServiceImplTest {
     private JwtTool jwtTool;
     @Mock
     GoogleIdToken googleIdToken;
+    @Mock
+    ModelMapper modelMapper;
     @Spy
     GoogleIdToken.Payload payload;
 
     @InjectMocks
     GoogleSecurityServiceImpl googleSecurityService;
+
+
+
 
     @Test
     void authenticateUserNotNullTest() throws GeneralSecurityException, IOException {
@@ -56,10 +64,14 @@ class GoogleSecurityServiceImplTest {
 
     @Test
     void authenticateNullUserTest() throws GeneralSecurityException, IOException {
+        UserVO userVO = ModelUtils.getUserVO();
+        userVO.setId(null);
+        userVO.setName(null);
         when(googleIdTokenVerifier.verify("1234")).thenReturn(googleIdToken);
         when(googleIdToken.getPayload()).thenReturn(payload);
         when(payload.getEmail()).thenReturn("test@mail.com");
         when(userService.findByEmail("test@mail.com")).thenReturn(null);
+        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(userVO);
         SuccessSignInDto result = googleSecurityService.authenticate("1234");
         assertNull(result.getUserId());
         assertNull(result.getName());

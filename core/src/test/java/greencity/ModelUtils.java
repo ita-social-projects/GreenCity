@@ -3,6 +3,7 @@ package greencity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
+import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -20,8 +21,10 @@ import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
@@ -329,6 +332,14 @@ public class ModelUtils {
                 .build();
     }
 
+    public static LocationVO getLocationVO() {
+        return LocationVO.builder()
+                .address("address")
+                .lng(12.12d)
+                .lat(12.12d)
+                .build();
+    }
+
     public static Specification getSpecification() {
         return Specification.builder()
                 .id(1L)
@@ -534,4 +545,21 @@ public class ModelUtils {
             .advice(getAdvice())
             .build();
     }
+
+    public static PlaceVO getPlaceVO() {
+        PlaceVO placeVO = new PlaceVO();
+        placeVO.setLocation(getLocationVO());
+        placeVO.setId(1L);
+        placeVO.setName("Forum");
+        placeVO.setDescription("Shopping center");
+        placeVO.setPhone("0322 489 850");
+        placeVO.setEmail("forum_lviv@gmail.com");
+        placeVO.setAuthor(getUserVO());
+        placeVO.setModifiedDate(ZonedDateTime.now());
+        CategoryVO categoryVO = new CategoryVO();
+        categoryVO.setName("category");
+        placeVO.setCategory(categoryVO);
+        return placeVO;
+    }
+
 }

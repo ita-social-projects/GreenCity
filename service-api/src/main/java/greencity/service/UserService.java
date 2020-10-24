@@ -228,26 +228,6 @@ public interface UserService {
     UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language);
 
     /**
-     * Method returns list of available (not ACTIVE) habitTranslations for user.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param acquired acquired status of habit
-     * @param language language code.
-     * @return List of {@link HabitTranslationDto}
-     */
-    List<HabitTranslationDto> getHabitTranslationsByAcquiredStatus(Long userId, String language, boolean acquired);
-
-    /**
-     * Method returns list of available (not ACTIVE) habitDictionary for user.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param language language code.
-     * @return List of {@link HabitTranslationDto}
-     * @author Bogdan Kuzenko
-     */
-    List<HabitTranslationDto> getAvailableHabitTranslations(Long userId, String language);
-
-    /**
      * Method add default habit.
      *
      * @param user {@link UserVO} instance.

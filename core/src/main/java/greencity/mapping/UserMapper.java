@@ -23,6 +23,10 @@ public class UserMapper extends AbstractConverter<UserVO, User> {
                 .rating(user.getRating())
                 .verifyEmail(VerifyEmail.builder()
                         .id(user.getVerifyEmail().getId())
+                        .user(User.builder()
+                                .id(user.getVerifyEmail().getUser().getId())
+                                .name(user.getVerifyEmail().getUser().getName())
+                                .build())
                         .expiryDate(user.getVerifyEmail().getExpiryDate())
                         .token(user.getVerifyEmail().getToken())
                         .build())
@@ -61,6 +65,7 @@ public class UserMapper extends AbstractConverter<UserVO, User> {
                                 .id(user.getOwnSecurity().getUser().getId())
                                 .build())
                         .build())
+                .dateOfRegistration(user.getDateOfRegistration())
                 .build();
     }
 }

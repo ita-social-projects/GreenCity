@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.service.TipsAndTricksCommentService;
 import greencity.service.UserService;
@@ -26,8 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,7 +61,9 @@ class TipsAndTricksCommentControllerTest {
     @Test
     void saveTest() throws Exception {
         User user = getUser();
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         String content = "{\n" +
             "  \"parentCommentId\": 0,\n" +
@@ -93,7 +95,9 @@ class TipsAndTricksCommentControllerTest {
     @Test
     void findAllTest() throws Exception {
         User user = getUser();
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -126,7 +130,9 @@ class TipsAndTricksCommentControllerTest {
     @Test
     void deleteTest() throws Exception {
         User user = getUser();
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(delete(tipsAndTricksCommentLink + "?id=1")
             .principal(principal))
@@ -139,7 +145,9 @@ class TipsAndTricksCommentControllerTest {
     @Test
     void updateTest() throws Exception {
         User user = getUser();
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(patch(tipsAndTricksCommentLink + "?id=1&text=text")
             .principal(principal))
@@ -152,7 +160,9 @@ class TipsAndTricksCommentControllerTest {
     @Test
     void likeTest() throws Exception {
         User user = getUser();
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(post(tipsAndTricksCommentLink + "/like?id=1")
             .principal(principal))

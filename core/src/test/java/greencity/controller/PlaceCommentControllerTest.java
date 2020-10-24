@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
@@ -14,6 +15,7 @@ import greencity.service.PlaceService;
 import greencity.service.UserService;
 import java.security.Principal;
 
+import static greencity.ModelUtils.getAddCommentDto;
 import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,6 +27,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -47,6 +50,8 @@ class PlaceCommentControllerTest {
     private UserService userService;
     @Mock
     private PlaceService placeService;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private PlaceCommentController placeCommentController;
 
@@ -65,6 +70,19 @@ class PlaceCommentControllerTest {
         "  \"text\": \"string\"\n" +
         "}";
 
+
+    private static final String getContent = "{\n" +
+            "  \"estimate\": {\n" +
+            "    \"rate\": 1\n" +
+            "  },\n" +
+            "  \"photos\": [\n" +
+            "    {\n" +
+            "      \"name\": \"test\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"text\": \"test\"\n" +
+            "}";
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(placeCommentController)
@@ -77,25 +95,25 @@ class PlaceCommentControllerTest {
         Principal principal = ModelUtils.getPrincipal();
         User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
-        Place place = ModelUtils.getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
 
         user.setUserStatus(UserStatus.ACTIVATED);
+        userVO.setUserStatus(UserStatus.ACTIVATED);
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(placeService.findById(anyLong())).thenReturn(placeVO);
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         AddCommentDto addCommentDto = mapper.readValue(content, AddCommentDto.class);
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(placeCommentService).save(eq(1L), eq(addCommentDto), eq(user.getEmail()));
+        verify(placeCommentService).save(eq(1L), eq(addCommentDto), eq(userVO.getEmail()));
     }
 
     @Test
@@ -116,6 +134,7 @@ class PlaceCommentControllerTest {
         UserVO userVO = getUserVO();
 
         user.setUserStatus(UserStatus.BLOCKED);
+        userVO.setUserStatus(UserStatus.BLOCKED);
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         Exception exception = assertThrows(
