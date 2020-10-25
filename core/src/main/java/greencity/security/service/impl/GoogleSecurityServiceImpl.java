@@ -73,7 +73,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                     log.info(USER_NOT_FOUND_BY_EMAIL + email);
                     String profilePicture = (String) payload.get(GOOGLE_PICTURE);
                     user = modelMapper.map(createNewUser(email, userName, profilePicture), UserVO.class);
-                    userService.save(user);
+                    user = userService.save(user);
                     log.info("Google sign-up and sign-in user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 } else {

@@ -73,8 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO save(UserVO userVO) {
         User user = modelMapper.map(userVO, User.class);
-        User save = userRepo.save(user);
-        return modelMapper.map(save, UserVO.class);
+        return modelMapper.map(userRepo.save(user), UserVO.class);
     }
 
     /**
@@ -166,8 +165,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findByEmail(String email) {
         Optional<User> optionalUser = userRepo.findByEmail(email);
-        UserVO map = modelMapper.map(optionalUser.orElse(null), UserVO.class);
-        return map;
+        return optionalUser.isEmpty() ? null : modelMapper.map(optionalUser.get(), UserVO.class);
     }
 
     /**
