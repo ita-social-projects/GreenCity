@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -109,7 +110,7 @@ public class EcoNewsController {
         MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<EcoNewsDto> update(
         @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS, required = true)
-        @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
+        @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
         @ApiParam(value = "Image of eco news")
         @ImageValidation
         @RequestPart(required = false) MultipartFile image,
