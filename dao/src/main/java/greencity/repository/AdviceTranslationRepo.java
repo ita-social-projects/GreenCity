@@ -3,6 +3,8 @@ package greencity.repository;
 import greencity.entity.Advice;
 import greencity.entity.Language;
 import greencity.entity.localization.AdviceTranslation;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +12,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, Long> {
+
+    @Query(value = "select at from AdviceTranslation at join fetch at.advice join fetch at.language")
+    List<AdviceTranslation> findAll();
+
     /**
      * Method for getting random content by habit id and language code.
      * This method use native SQL query to reduce the load on the backend

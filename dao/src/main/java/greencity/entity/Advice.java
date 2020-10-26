@@ -21,6 +21,6 @@ public class Advice {
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.PERSIST}, mappedBy = "advice", fetch = FetchType.LAZY)
     private List<AdviceTranslation> translations;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;
 }
