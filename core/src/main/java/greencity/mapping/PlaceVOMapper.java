@@ -1,8 +1,12 @@
 package greencity.mapping;
 
 import greencity.dto.category.CategoryVO;
+import greencity.dto.location.LocationVO;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.user.UserVO;
+import greencity.entity.Location;
 import greencity.entity.Place;
+import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -26,7 +30,15 @@ public class PlaceVOMapper extends AbstractConverter<Place, PlaceVO> {
             .id(source.getCategory().getId())
             .name(source.getCategory().getName())
             .build();
-
+        UserVO userVO = UserVO.builder()
+                .id(source.getAuthor().getId())
+                .build();
+        LocationVO localionVO = LocationVO.builder()
+                .id(source.getLocation().getId())
+                .address(source.getLocation().getAddress())
+                .lat(source.getLocation().getLat())
+                .lng(source.getLocation().getLng())
+                .build();
         return PlaceVO.builder()
             .id(source.getId())
             .description(source.getDescription())
@@ -34,9 +46,9 @@ public class PlaceVOMapper extends AbstractConverter<Place, PlaceVO> {
             .modifiedDate(source.getModifiedDate())
             .name(source.getName())
             .phone(source.getPhone())
-            .authorId(source.getAuthor().getId())
+            .author(userVO)
             .category(categoryVO)
-            .locationId(source.getLocation().getId())
+            .location(localionVO)
             .build();
     }
 }
