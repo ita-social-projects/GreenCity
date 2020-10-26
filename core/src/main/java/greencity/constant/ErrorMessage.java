@@ -86,7 +86,7 @@ public final class ErrorMessage {
         "There is no habit assign for such habit and user";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE =
         "There is no habit assign for such habit, user and date";
-    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'uk' or 'ru'";
+    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'ua' or 'ru'";
     public static final String USER_HAS_NO_AVAILABLE_CUSTOM_GOALS = "This user is tracking all available custom goals";
     public static final String USER_GOAL_WHERE_NOT_SAVED = "This UserGoal(s) already exist(s): ";
     public static final String USER_GOAL_NOT_FOUND = "UserGoal(s) with this id not found: ";
