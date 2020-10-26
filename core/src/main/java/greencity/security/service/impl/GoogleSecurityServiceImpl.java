@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static greencity.constant.AppConstant.GOOGLE_PICTURE;
-import static greencity.constant.AppConstant.GOOGLE_USERNAME;
+import static greencity.constant.AppConstant.USERNAME;
 import static greencity.constant.ErrorMessage.*;
 
 /**
@@ -67,7 +67,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             if (googleIdToken != null) {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
-                String userName = (String) payload.get(GOOGLE_USERNAME);
+                String userName = (String) payload.get(USERNAME);
                 UserVO user = userService.findByEmail(email);
                 if (user == null) {
                     log.info(USER_NOT_FOUND_BY_EMAIL + email);

@@ -15,6 +15,8 @@ public class SocialNetworkVO {
 
     @Size(min = 1, max = 500)
     String url;
-    //    SocialNetworkImageVO socialNetworkImage;
+
+    SocialNetworkImageVO socialNetworkImage;
+
     UserVO user;
 }

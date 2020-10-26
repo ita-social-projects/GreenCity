@@ -83,8 +83,8 @@ class UserServiceImplTest {
     @Mock
     HabitService habitService;
 
-//    @Mock
-//    SocialNetworkImageService socialNetworkImageService;
+    @Mock
+    SocialNetworkImageService socialNetworkImageService;
 
     private User user = User.builder()
             .id(1L)
@@ -899,7 +899,7 @@ class UserServiceImplTest {
         assertEquals(list, userService.getSixFriendsWithTheHighestRating(1L));
     }
 
-   /* @Test
+    @Test
     void saveUserProfileTest() {
         UserProfileDtoRequest request = new UserProfileDtoRequest();
         request.setSocialNetworks(new ArrayList<>());
@@ -922,7 +922,7 @@ class UserServiceImplTest {
         userService.saveUserProfile(request, "teststring");
         verify(userRepo).save(user);
         verify(modelMapper).map(user, UserProfileDtoResponse.class);
-    }*/
+    }
 
     @Test
     void getUserProfileInformationTest() {

@@ -1,5 +1,6 @@
 package greencity.security.service.impl;
 
+import static greencity.constant.AppConstant.*;
 import static greencity.constant.ErrorMessage.BAD_FACEBOOK_TOKEN;
 
 import greencity.dto.user.UserVO;
@@ -91,7 +92,8 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
             .getAccessToken();
         if (accessToken != null) {
             Facebook facebook = new FacebookTemplate(accessToken);
-            UserVO byEmail = facebook.fetchObject("me", UserVO.class, "name", "email");
+            UserVO byEmail = facebook.fetchObject(FACEBOOK_OBJECT_ID, UserVO.class, USERNAME,
+                    REGISTRATION_EMAIL_FIELD_NAME);
             String email = byEmail.getEmail();
             log.info(email);
             String name = byEmail.getName();
