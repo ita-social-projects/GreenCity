@@ -20,9 +20,11 @@ public class UpdateEcoNewsDto {
     @Min(1)
     private Long id;
 
+    @NotEmpty
     @Size(min = 1, max = 170)
     private String title;
 
+    @NotEmpty
     @Size(min = 20, max = 63206)
     private String text;
 
