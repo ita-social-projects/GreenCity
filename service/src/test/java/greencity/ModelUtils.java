@@ -14,7 +14,6 @@ import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
@@ -33,13 +32,8 @@ import greencity.enums.FactOfDayStatus;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
 import greencity.service.TestConst;
-import java.time.LocalDate;
-import greencity.constant.AppConstant;
-
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -134,7 +128,9 @@ public class ModelUtils {
             .workingDays(10)
             .habitStreak(5)
             .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssignId(habitAssignDto.getId()).build();
+            .habitAssignId(habitAssignDto.getId())
+            .habitStatusCalendarDtos(new ArrayList<>(Collections.singletonList(getHabitStatusCalendarDto())))
+            .build();
     }
 
     public static HabitStatus getHabitStatus() {
