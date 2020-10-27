@@ -174,10 +174,6 @@ public class ModelUtils {
             .habitAssignVO(getHabitAssignVO()).build();
     }
 
-    public static HabitVO getHabitVO(){
-        return HabitVO.builder().id(1L).image("img.png").build();
-    }
-
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
                 .id(1L)
