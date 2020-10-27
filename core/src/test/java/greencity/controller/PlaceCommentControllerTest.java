@@ -1,31 +1,22 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
 import java.security.Principal;
-
-import static greencity.ModelUtils.getAddCommentDto;
-import static greencity.ModelUtils.getUserVO;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -33,10 +24,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.NestedServletException;
+
+import static greencity.ModelUtils.getUserVO;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -72,16 +69,16 @@ class PlaceCommentControllerTest {
 
 
     private static final String getContent = "{\n" +
-            "  \"estimate\": {\n" +
-            "    \"rate\": 1\n" +
-            "  },\n" +
-            "  \"photos\": [\n" +
-            "    {\n" +
-            "      \"name\": \"test\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"text\": \"test\"\n" +
-            "}";
+        "  \"estimate\": {\n" +
+        "    \"rate\": 1\n" +
+        "  },\n" +
+        "  \"photos\": [\n" +
+        "    {\n" +
+        "      \"name\": \"test\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"text\": \"test\"\n" +
+        "}";
 
     @BeforeEach
     void setup() {

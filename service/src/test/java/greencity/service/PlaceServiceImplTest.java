@@ -21,6 +21,7 @@ import greencity.enums.PlaceStatus;
 import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
+import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import java.time.LocalDateTime;
@@ -145,6 +146,8 @@ class PlaceServiceImplTest {
     private NotificationService notificationService;
     @Mock
     private RabbitTemplate rabbitTemplate;
+    @Mock
+    private CategoryRepo categoryRepo;
     private ZoneId zoneId = ZoneId.of("Europe/Kiev");
     private PlaceService placeService;
 
@@ -153,7 +156,7 @@ class PlaceServiceImplTest {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
             locationService, specificationService, userService, openingHoursService, discountService,
-            notificationService, zoneId, rabbitTemplate, proposePlaceMapper);
+            notificationService, zoneId, rabbitTemplate, proposePlaceMapper, categoryRepo);
     }
 
     @Test
@@ -163,7 +166,7 @@ class PlaceServiceImplTest {
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
         when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
         when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(categoryService.findByName(anyString())).thenReturn(new CategoryDtoResponse());
+        when(categoryRepo.findByName(anyString())).thenReturn(new Category());
         when(placeRepo.save(place)).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
 

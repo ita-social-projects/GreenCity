@@ -31,17 +31,15 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.tag.TagVO;
-import greencity.dto.tipsandtricks.TextTranslationVO;
-import greencity.dto.tipsandtricks.TipsAndTricksVO;
-import greencity.dto.tipsandtricks.TitleTranslationVO;
+import greencity.dto.tipsandtricks.*;
+import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
+import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
+import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
+import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
-import greencity.service.TestConst;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -53,6 +51,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -125,25 +125,25 @@ public class ModelUtils {
 
     public static HabitAssignDto getHabitAssignDto() {
         return HabitAssignDto.builder()
-                .id(1L)
-                .acquired(true)
-                .suspended(false)
-                .createDateTime(ZonedDateTime.now())
-                .habitId(1L)
-                .userId(1L).build();
+            .id(1L)
+            .acquired(true)
+            .suspended(false)
+            .createDateTime(ZonedDateTime.now())
+            .habitId(1L)
+            .userId(1L).build();
     }
 
     public static HabitAssign getHabitAssign() {
         return HabitAssign.builder()
-                .id(1L)
-                .acquired(true)
-                .suspended(false)
-                .createDate(ZonedDateTime.now())
-                .habitStatus(getHabitStatus())
-                .habit(Habit.builder().id(1L).build()).build();
+            .id(1L)
+            .acquired(true)
+            .suspended(false)
+            .createDate(ZonedDateTime.now())
+            .habitStatus(getHabitStatus())
+            .habit(Habit.builder().id(1L).build()).build();
     }
 
-    public static HabitAssignVO getHabitAssignVO(){
+    public static HabitAssignVO getHabitAssignVO() {
         return HabitAssignVO.builder()
             .id(1L)
             .habitVO(getHabitVO())
@@ -153,18 +153,18 @@ public class ModelUtils {
             .userVO(UserVO.builder().id(1L).build()).build();
     }
 
-    public static HabitVO getHabitVO(){
+    public static HabitVO getHabitVO() {
         return HabitVO.builder().id(1L).image("img.png").build();
     }
 
     public static HabitStatus getHabitStatus() {
         return HabitStatus.builder()
-                .id(1L)
-                .workingDays(10)
-                .habitStreak(5)
-                .lastEnrollmentDate(LocalDateTime.now())
-                .habitStatusCalendars(
-                        Collections.singletonList(getHabitStatusCalendar())).build();
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitStatusCalendars(
+                Collections.singletonList(getHabitStatusCalendar())).build();
     }
 
     public static UserGoal getCustomUserGoal() {
@@ -195,11 +195,11 @@ public class ModelUtils {
 
     public static HabitStatusVO getHabitStatusVO() {
         return HabitStatusVO.builder()
-                .id(1L)
-                .workingDays(10)
-                .habitStreak(5)
-                .lastEnrollmentDate(LocalDateTime.now())
-                .habitAssignVO(getHabitAssignVO()).build();
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssignVO(getHabitAssignVO()).build();
     }
 
     public static UserGoalVO getUserGoalVO() {
@@ -548,30 +548,30 @@ public class ModelUtils {
 
     public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
         return AddEcoNewsCommentDtoResponse.builder()
-                .id(getEcoNewsComment().getId())
-                .author(getEcoNewsCommentAuthorDto())
-                .text(getEcoNewsComment().getText())
-                .modifiedDate(getEcoNewsComment().getModifiedDate())
-                .build();
+            .id(getEcoNewsComment().getId())
+            .author(getEcoNewsCommentAuthorDto())
+            .text(getEcoNewsComment().getText())
+            .modifiedDate(getEcoNewsComment().getModifiedDate())
+            .build();
     }
 
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
-                .id(1L)
-                .text("text")
-                .createdDate(LocalDateTime.now())
-                .modifiedDate(LocalDateTime.now())
-                .user(getUser())
-                .ecoNews(getEcoNews())
-                .build();
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .user(getUser())
+            .ecoNews(getEcoNews())
+            .build();
     }
 
     public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
-                .id(getUser().getId())
-                .name(getUser().getName().trim())
-                .userProfilePicturePath(getUser().getProfilePicturePath())
-                .build();
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .userProfilePicturePath(getUser().getProfilePicturePath())
+            .build();
     }
 
     public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
@@ -580,15 +580,77 @@ public class ModelUtils {
 
     public static EcoNewsCommentDto getEcoNewsCommentDto() {
         return EcoNewsCommentDto.builder()
-                .id(1L)
-                .modifiedDate(LocalDateTime.now())
-                .author(getEcoNewsCommentAuthorDto())
-                .text("text")
-                .replies(0)
-                .likes(0)
-                .currentUserLiked(false)
-                .status(CommentStatus.ORIGINAL)
-                .build();
+            .id(1L)
+            .modifiedDate(LocalDateTime.now())
+            .author(getEcoNewsCommentAuthorDto())
+            .text("text")
+            .replies(0)
+            .likes(0)
+            .currentUserLiked(false)
+            .status(CommentStatus.ORIGINAL)
+            .build();
     }
+
+    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
+        return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
+    }
+
+    public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
+        return TipsAndTricksDtoResponse.builder()
+            .id(1L)
+            .title("title")
+            .text("text")
+            .creationDate(ZonedDateTime.now())
+            .author(getAuthorDto())
+            .tags(Collections.singletonList("tipsAndTricksTag"))
+            .imagePath(TestConst.SITE)
+            .source(null)
+            .build();
+    }
+
+    private static AuthorDto getAuthorDto() {
+        return AuthorDto.builder()
+            .id(1L)
+            .name("author")
+            .build();
+    }
+
+    public static TipsAndTricksComment getTipsAndTricksComment() {
+        return TipsAndTricksComment.builder()
+            .id(1L)
+            .text("TipsAndTricksComment")
+            .tipsAndTricks(getTipsAndTricks())
+            .user(getUser())
+            .build();
+    }
+
+    public static TipsAndTricksCommentVO getTipsAndTricksCommentVO() {
+        TipsAndTricksCommentVO tipsAndTricksCommentVO = new TipsAndTricksCommentVO();
+        tipsAndTricksCommentVO.setId(1L);
+        tipsAndTricksCommentVO.setText("text");
+        tipsAndTricksCommentVO.setUser(getUserVO());
+        tipsAndTricksCommentVO.setUsersLiked(new HashSet<>());
+        return tipsAndTricksCommentVO;
+    }
+
+    public static AddTipsAndTricksCommentDtoRequest getAddTipsAndTricksCommentDtoRequest() {
+        return AddTipsAndTricksCommentDtoRequest.builder()
+            .text(getTipsAndTricksComment().getText().intern())
+            .parentCommentId(getTipsAndTricksComment().getId())
+            .build();
+    }
+
+    public static AddTipsAndTricksCommentDtoResponse getAddTipsAndTricksCommentDtoResponse() {
+        return AddTipsAndTricksCommentDtoResponse.builder()
+            .id(getTipsAndTricksComment().getId())
+            .text(getTipsAndTricksComment().getText())
+            .author(TipsAndTricksCommentAuthorDto.builder()
+                .id(getUser().getId())
+                .name(getUser().getName())
+                .userProfilePicturePath(getUser().getProfilePicturePath())
+                .build())
+            .build();
+    }
+
 }
 

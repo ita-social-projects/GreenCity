@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
@@ -7,6 +7,8 @@ import greencity.dto.PageableDto;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
+import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
@@ -14,8 +16,6 @@ import greencity.enums.ROLE;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.TipsAndTricksCommentRepo;
-import greencity.service.TipsAndTricksCommentService;
-import greencity.service.TipsAndTricksService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -37,30 +37,31 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
      * @param tipsandtricksId                   id of {@link greencity.entity.TipsAndTricks} to which we save comment.
      * @param addTipsAndTricksCommentDtoRequest dto with {@link greencity.entity.TipsAndTricksComment} text,
      *                                          parentCommentId.
-     * @param user                              {@link User} that saves the comment.
+     * @param userVO                            {@link UserVO} that saves the comment.
      * @return {@link AddTipsAndTricksCommentDtoRequest} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public AddTipsAndTricksCommentDtoResponse save(Long tipsandtricksId,
                                                    AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
-                                                   User user) {
-        TipsAndTricks tipsAndTricks = tipsAndTricksService.findById(tipsandtricksId);
+                                                   UserVO userVO) {
+        TipsAndTricks tipsAndTricks = modelMapper.map(tipsAndTricksService
+            .findById(tipsandtricksId), TipsAndTricks.class);
         TipsAndTricksComment tipsAndTricksComment =
-                modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class);
-        tipsAndTricksComment.setUser(user);
+            modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class);
+        tipsAndTricksComment.setUser(modelMapper.map(userVO, User.class));
         tipsAndTricksComment.setTipsAndTricks(tipsAndTricks);
         if (addTipsAndTricksCommentDtoRequest.getParentCommentId() != null
-                && addTipsAndTricksCommentDtoRequest.getParentCommentId() != 0) {
+            && addTipsAndTricksCommentDtoRequest.getParentCommentId() != 0) {
             TipsAndTricksComment parentComment =
-                    tipsAndTricksCommentRepo
-                            .findById(addTipsAndTricksCommentDtoRequest.getParentCommentId()).orElseThrow(() ->
-                            new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+                tipsAndTricksCommentRepo
+                    .findById(addTipsAndTricksCommentDtoRequest.getParentCommentId()).orElseThrow(() ->
+                    new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
             if (parentComment.isDeleted()) {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_TO_DELETED_COMMENT);
             }
             if (parentComment.getParentComment() == null
-                    && parentComment.getTipsAndTricks().getId().equals(tipsandtricksId)) {
+                && parentComment.getTipsAndTricks().getId().equals(tipsandtricksId)) {
                 tipsAndTricksComment.setParentComment(parentComment);
             } else {
                 if (parentComment.getParentComment() != null) {
@@ -78,19 +79,20 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     /**
      * Method returns all comments to certain tipsAndTricks specified by tipsAndTricksId.
      *
-     * @param user            current {@link User}
+     * @param userVO          current {@link UserVO}
      * @param tipsAndTricksId specifies {@link greencity.entity.TipsAndTricks} to which we search for comments
      * @return all comments to certain tipsAndTricksId specified by tipsAndTricksId.
      */
     @Override
-    public PageableDto<TipsAndTricksCommentDto> findAllComments(Pageable pageable, User user, Long tipsAndTricksId) {
+    public PageableDto<TipsAndTricksCommentDto> findAllComments(Pageable pageable, UserVO userVO,
+                                                                Long tipsAndTricksId) {
         Page<TipsAndTricksComment> pages =
             tipsAndTricksCommentRepo.findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(
                 pageable, tipsAndTricksId);
         List<TipsAndTricksCommentDto> tipsAndTricksCommentDtos = pages
             .stream()
             .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                comment.setCurrentUserLiked(comment.getUsersLiked().contains(modelMapper.map(userVO, User.class)));
                 return comment;
             })
             .map(tipsAndTricksComment -> modelMapper.map(tipsAndTricksComment, TipsAndTricksCommentDto.class))
@@ -121,23 +123,23 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
         return tipsAndTricksCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(parentCommentId)
             .stream()
             .map(tipsAndTricksComment -> modelMapper
-                    .map(tipsAndTricksComment, TipsAndTricksCommentDto.class))
+                .map(tipsAndTricksComment, TipsAndTricksCommentDto.class))
             .collect(Collectors.toList());
     }
 
     /**
      * Method to mark {@link greencity.entity.TipsAndTricksComment} specified by id as deleted.
      *
-     * @param id   of {@link greencity.entity.TipsAndTricksComment} to delete.
-     * @param user current {@link User} that wants to delete.
+     * @param id     of {@link greencity.entity.TipsAndTricksComment} to delete.
+     * @param userVO current {@link UserVO} that wants to delete.
      */
     @RatingCalculation(rating = RatingCalculationEnum.DELETE_COMMENT)
     @Override
-    public void deleteById(Long id, User user) {
+    public void deleteById(Long id, UserVO userVO) {
         TipsAndTricksComment comment = tipsAndTricksCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
-        if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(comment.getUser().getId())) {
+        if (userVO.getRole() != ROLE.ROLE_ADMIN && !userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         if (comment.getComments() != null) {
@@ -150,15 +152,15 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     /**
      * Method to change the existing {@link greencity.entity.TipsAndTricksComment}.
      *
-     * @param text new text of {@link greencity.entity.TipsAndTricksComment}.
-     * @param id   to specify {@link greencity.entity.TipsAndTricksComment} that user wants to change.
-     * @param user current {@link User} that wants to change.
+     * @param text   new text of {@link greencity.entity.TipsAndTricksComment}.
+     * @param id     to specify {@link greencity.entity.TipsAndTricksComment} that user wants to change.
+     * @param userVO current {@link UserVO} that wants to change.
      */
     @Override
-    public void update(String text, Long id, User user) {
+    public void update(String text, Long id, UserVO userVO) {
         TipsAndTricksComment comment = tipsAndTricksCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        if (!user.getId().equals(comment.getUser().getId())) {
+        if (!userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
         comment.setText(text);
@@ -168,17 +170,18 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     /**
      * Method to like or dislike {@link greencity.entity.TipsAndTricksComment} specified by id.
      *
-     * @param id   of {@link greencity.entity.TipsAndTricksComment} to like/dislike.
-     * @param user current {@link User} that wants to like/dislike.
+     * @param id     of {@link greencity.entity.TipsAndTricksComment} to like/dislike.
+     * @param userVO current {@link UserVO} that wants to like/dislike.
      */
     @Override
-    public void like(Long id, User user) {
+    public void like(Long id, UserVO userVO) {
         TipsAndTricksComment comment = tipsAndTricksCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        if (comment.getUsersLiked().contains(user)) {
-            tipsAndTricksService.unlikeComment(user, comment);
+        TipsAndTricksCommentVO commentVO = modelMapper.map(comment, TipsAndTricksCommentVO.class);
+        if (comment.getUsersLiked().contains(userVO)) {
+            tipsAndTricksService.unlikeComment(userVO, commentVO);
         } else {
-            tipsAndTricksService.likeComment(user, comment);
+            tipsAndTricksService.likeComment(userVO, commentVO);
         }
         tipsAndTricksCommentRepo.save(comment);
     }

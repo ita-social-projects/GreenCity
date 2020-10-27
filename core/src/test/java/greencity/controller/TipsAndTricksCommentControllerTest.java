@@ -81,7 +81,7 @@ class TipsAndTricksCommentControllerTest {
             mapper.readValue(content, AddTipsAndTricksCommentDtoRequest.class);
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).save(eq(1L), eq(addTipsAndTricksCommentDtoRequest), eq(user));
+        verify(tipsAndTricksCommentService).save(eq(1L), eq(addTipsAndTricksCommentDtoRequest), eq(userVO));
     }
 
     @Test
@@ -108,7 +108,7 @@ class TipsAndTricksCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).findAllComments(eq(pageable), eq(user), eq(1L));
+        verify(tipsAndTricksCommentService).findAllComments(eq(pageable), eq(userVO), eq(1L));
     }
 
     @Test
@@ -139,7 +139,7 @@ class TipsAndTricksCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).deleteById(eq(1L), eq(user));
+        verify(tipsAndTricksCommentService).deleteById(eq(1L), eq(userVO));
     }
 
     @Test
@@ -154,7 +154,7 @@ class TipsAndTricksCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).update(eq("text"), eq(1L), eq(user));
+        verify(tipsAndTricksCommentService).update(eq("text"), eq(1L), eq(userVO));
     }
 
     @Test
@@ -169,7 +169,7 @@ class TipsAndTricksCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).like(eq(1L), eq(user));
+        verify(tipsAndTricksCommentService).like(eq(1L), eq(userVO));
     }
 
     @Test

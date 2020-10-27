@@ -7,6 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.service.TipsAndTricksCommentService;
 import io.swagger.annotations.ApiOperation;
@@ -54,10 +55,10 @@ public class TipsAndTricksCommentController {
     public ResponseEntity<AddTipsAndTricksCommentDtoResponse> save(@PathVariable Long tipsAndTricksId,
                                                                    @Valid @RequestBody
                                                                        AddTipsAndTricksCommentDtoRequest request,
-                                                                   @ApiIgnore @CurrentUser User user) {
+                                                                   @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(tipsAndTricksCommentService.save(tipsAndTricksId, request, user));
+            .body(tipsAndTricksCommentService.save(tipsAndTricksId, request, userVO));
     }
 
     /**
@@ -75,10 +76,10 @@ public class TipsAndTricksCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<TipsAndTricksCommentDto>> findAll(@ApiIgnore Pageable pageable,
                                                                         Long tipsAndTricksId,
-                                                                        @ApiIgnore @CurrentUser User user) {
+                                                                        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(tipsAndTricksCommentService.findAllComments(pageable, user, tipsAndTricksId));
+            .body(tipsAndTricksCommentService.findAllComments(pageable, userVO, tipsAndTricksId));
     }
 
     /**
@@ -126,8 +127,8 @@ public class TipsAndTricksCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @DeleteMapping("")
-    public ResponseEntity<Object> delete(Long id, @ApiIgnore @CurrentUser User user) {
-        tipsAndTricksCommentService.deleteById(id, user);
+    public ResponseEntity<Object> delete(Long id, @ApiIgnore @CurrentUser UserVO userVO) {
+        tipsAndTricksCommentService.deleteById(id, userVO);
         return ResponseEntity.ok().build();
     }
 
@@ -144,8 +145,8 @@ public class TipsAndTricksCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PatchMapping("")
-    public void update(Long id, String text, @ApiIgnore @CurrentUser User user) {
-        tipsAndTricksCommentService.update(text, id, user);
+    public void update(Long id, String text, @ApiIgnore @CurrentUser UserVO userVO) {
+        tipsAndTricksCommentService.update(text, id, userVO);
     }
 
     /**
@@ -160,8 +161,8 @@ public class TipsAndTricksCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("like")
-    public void like(Long id, @ApiIgnore @CurrentUser User user) {
-        tipsAndTricksCommentService.like(id, user);
+    public void like(Long id, @ApiIgnore @CurrentUser UserVO userVO) {
+        tipsAndTricksCommentService.like(id, userVO);
     }
 
     /**

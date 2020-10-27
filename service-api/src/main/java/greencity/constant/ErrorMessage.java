@@ -107,6 +107,12 @@ public final class ErrorMessage {
     public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
+    public static final String TIPS_AND_TRICKS_NOT_SAVED =
+        "Tips & tricks advice hasn't been saved due to constraint violation";
+    public static final String TIPS_AND_TRICKS_NOT_FOUND_BY_ID = "Tips & tricks advice doesn't exist by this id: ";
+    public static final String CANNOT_REPLY_TO_DELETED_COMMENT = "Can not reply to deleted comment";
+    public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
+        + "different TipsAndTricks Id";
 
     private ErrorMessage() {
     }

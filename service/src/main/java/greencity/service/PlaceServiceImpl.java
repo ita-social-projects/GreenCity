@@ -18,6 +18,7 @@ import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import java.time.ZoneId;
@@ -60,6 +61,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final ProposePlaceService proposePlaceService;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
+    private CategoryRepo categoryRepo;
 
     /**
      * Constructor.
@@ -76,7 +78,8 @@ public class PlaceServiceImpl implements PlaceService {
                             NotificationService notificationService,
                             @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
                             RabbitTemplate rabbitTemplate,
-                            ProposePlaceServiceImpl proposePlaceService) {
+                            ProposePlaceServiceImpl proposePlaceService,
+                            CategoryRepo categoryRepo) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.categoryService = categoryService;
@@ -89,6 +92,7 @@ public class PlaceServiceImpl implements PlaceService {
         this.datasourceTimezone = datasourceTimezone;
         this.rabbitTemplate = rabbitTemplate;
         this.proposePlaceService = proposePlaceService;
+        this.categoryRepo = categoryRepo;
     }
 
     /**
@@ -124,10 +128,14 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = modelMapper.map(dto, Place.class);
         setUserToPlaceByEmail(email, place);
 
-        place.setCategory(modelMapper.map(categoryService.findByName(dto.getCategory().getName()), Category.class));
+        place.setCategory(categoryRepo.findByName(dto.getCategory().getName()));
         PlaceVO placeVO = modelMapper.map(place, PlaceVO.class);
-        proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
-        proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
+        if (placeVO.getDiscountValues() != null) {
+            proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
+        }
+        if (placeVO.getPhotos() != null) {
+            proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
+        }
 
         return modelMapper.map(placeRepo.save(place), PlaceVO.class);
     }
