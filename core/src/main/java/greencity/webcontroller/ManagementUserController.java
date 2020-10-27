@@ -4,7 +4,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
@@ -91,7 +90,7 @@ public class ManagementUserController {
     @GetMapping("/findById")
     @ResponseBody
     public UserManagementDto findById(@RequestParam("id") Long id) {
-        UserVO byId = userService.findById(id);
+        User byId = userService.findById(id);
         return modelMapper.map(byId, UserManagementDto.class);
     }
 

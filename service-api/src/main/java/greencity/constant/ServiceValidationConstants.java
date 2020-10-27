@@ -12,11 +12,6 @@ public final class ServiceValidationConstants {
     public static final int MAX_AMOUNT_OF_TAGS = 3;
     public static final int HABIT_FACT_MIN_LENGTH = 3;
     public static final int HABIT_FACT_MAX_LENGTH = 300;
-    public static final int USERNAME_MIN_LENGTH = 6;
-    public static final int USERNAME_MAX_LENGTH = 30;
-    public static final String INVALID_EMAIL = "{greenCity.validation.invalid.email}";
-    public static final String MIN_AMOUNT_OF_TAGS = "{greenCity.validation.empty.tags}";
-    public static final int MAX_AMOUNT_OF_SOCIAL_NETWORK_LINKS = 5;
     public static final int PLACE_ADDRESS_MAX_LENGTH = 120;
     public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
     public static final String EMPTY_VALUE_OF_LATITUDE = "{greenCity.validation.empty.latitude}";

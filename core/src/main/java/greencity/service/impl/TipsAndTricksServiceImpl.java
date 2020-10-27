@@ -63,7 +63,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
                                          String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
-        toSave.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
+        toSave.setAuthor(userService.findByEmail(email));
         if (tipsAndTricksDtoRequest.getImage() != null) {
             image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
         }
@@ -119,7 +119,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                     .collect(Collectors.toList())
             )
             .build();
-        tipsAndTricks.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
+        tipsAndTricks.setAuthor(userService.findByEmail(email));
         tipsAndTricks.getTitleTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
         tipsAndTricks.getTextTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
         if (tipsAndTricksDtoManagement.getImagePath() != null) {

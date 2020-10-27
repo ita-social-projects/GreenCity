@@ -1,7 +1,6 @@
 package greencity.security.eventlisteners;
 
 import greencity.ModelUtils;
-import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.security.events.SignInEvent;
 import greencity.service.UserService;
@@ -10,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SignInEventListenerTest {
@@ -20,23 +19,16 @@ class SignInEventListenerTest {
     @Mock
     UserService userService;
 
-    @Mock
-    ModelMapper modelMapper;
-
     @InjectMocks
     private SignInEventListener signInEventListener;
 
     @Test
     void testOnApplicationEvent() {
         User user = ModelUtils.getUser();
-        UserVO userVO = ModelUtils.getUserVO();
         SignInEvent event = new SignInEvent(user);
-
-        User user1 = event.getUser();
-        when(modelMapper.map(event.getUser(), UserVO.class)).thenReturn(userVO);
-        doNothing().when(userService).addDefaultHabit(userVO, "en");
+        doNothing().when(userService).addDefaultHabit(event.getUser(), "en");
         signInEventListener.onApplicationEvent(event);
-        verify(userService).addDefaultHabit(userVO, "en");
+        verify(userService).addDefaultHabit(event.getUser(), "en");
     }
 }
 
