@@ -9,7 +9,6 @@ import greencity.dto.user.BulkSaveUserGoalDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.ROLE;
 import greencity.service.*;
@@ -256,7 +255,7 @@ class UserControllerTest {
 
     @Test
     void saveUserCustomGoalsTest() throws Exception {
-        UserVO user = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
         when(userService.findById(1L)).thenReturn(user);
 
         String content = "{\n"
@@ -275,7 +274,7 @@ class UserControllerTest {
             .content(content))
             .andExpect(status().isCreated());
 
-        verify(customGoalService).save(eq(dto), eq(user.getId()));
+        verify(customGoalService).save(eq(dto), eq(user));
     }
 
     @Test
@@ -436,7 +435,7 @@ class UserControllerTest {
 
     @Test
     void updateUserProfilePictureTest() throws Exception {
-        UserVO user = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
         Principal principal = mock(Principal.class);
 
         String json = "{\n"

@@ -2,11 +2,7 @@ package greencity.security.service.impl;
 
 import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
 import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
-
-import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserVO;
-import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
@@ -35,7 +31,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -63,14 +58,11 @@ class OwnSecurityServiceImplTest {
     @Mock
     RestorePasswordEmailRepo restorePasswordEmailRepo;
 
-    @Mock
-    ModelMapper modelMapper;
-
     private OwnSecurityService ownSecurityService;
 
-    private UserVO verifiedUser;
+    private User verifiedUser;
     private OwnSignInDto ownSignInDto;
-    private UserVO notVerifiedUser;
+    private User notVerifiedUser;
     private UpdatePasswordDto updatePasswordDto;
     private UserManagementDto userManagementDto;
 
@@ -83,25 +75,25 @@ class OwnSecurityServiceImplTest {
     public void init() {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
-            jwtTool, 1, rabbitTemplate, defaultProfilePicture, restorePasswordEmailRepo, modelMapper);
+            jwtTool, 1, rabbitTemplate, defaultProfilePicture, restorePasswordEmailRepo);
 
-        verifiedUser = UserVO.builder()
+        verifiedUser = User.builder()
             .email("test@gmail.com")
             .id(1L)
             .userStatus(UserStatus.ACTIVATED)
-            .ownSecurity(OwnSecurityVO.builder().password("password").build())
+            .ownSecurity(OwnSecurity.builder().password("password").build())
             .role(ROLE.ROLE_USER)
             .build();
         ownSignInDto = OwnSignInDto.builder()
             .email("test@gmail.com")
             .password("password")
             .build();
-        notVerifiedUser = UserVO.builder()
+        notVerifiedUser = User.builder()
             .email("test@gmail.com")
             .id(1L)
             .userStatus(UserStatus.ACTIVATED)
-            .verifyEmail(new VerifyEmailVO())
-            .ownSecurity(OwnSecurityVO.builder().password("password").build())
+            .verifyEmail(new VerifyEmail())
+            .ownSecurity(OwnSecurity.builder().password("password").build())
             .role(ROLE.ROLE_USER)
             .build();
         updatePasswordDto = UpdatePasswordDto.builder()
@@ -120,14 +112,12 @@ class OwnSecurityServiceImplTest {
     @Test
     void signUp() {
         User user = User.builder().verifyEmail(new VerifyEmail()).build();
-        UserVO userVO = UserVO.builder().verifyEmail(new VerifyEmailVO()).build();
-        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
-        when(userService.save(any(UserVO.class))).thenReturn(userVO);
+        when(userService.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
 
         ownSecurityService.signUp(new OwnSignUpDto());
 
-        verify(userService, times(1)).save(any(UserVO.class));
+        verify(userService, times(1)).save(any(User.class));
         verify(rabbitTemplate, times(1)).convertAndSend(
             refEq(sendEmailTopic),
             refEq(VERIFY_EMAIL_ROUTING_KEY),
@@ -145,10 +135,8 @@ class OwnSecurityServiceImplTest {
     @Test
     void signUpThrowsUserAlreadyRegisteredExceptionTest() {
         User user = User.builder().verifyEmail(new VerifyEmail()).build();
-        UserVO userVO = UserVO.builder().verifyEmail(new VerifyEmailVO()).build();
-        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
-        when(userService.save(any(UserVO.class))).thenThrow(DataIntegrityViolationException.class);
+        when(userService.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
         assertThrows(UserAlreadyRegisteredException.class,
             () -> ownSecurityService.signUp(new OwnSignUpDto()));
     }
@@ -158,14 +146,14 @@ class OwnSecurityServiceImplTest {
         when(userService.findByEmail(anyString())).thenReturn(verifiedUser);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtTool.createAccessToken(anyString(), any(ROLE.class))).thenReturn("new-access-token");
-        when(jwtTool.createRefreshToken(any(UserVO.class))).thenReturn("new-refresh-token");
+        when(jwtTool.createRefreshToken(any(User.class))).thenReturn("new-refresh-token");
 
         ownSecurityService.signIn(ownSignInDto);
 
         verify(userService, times(1)).findByEmail(anyString());
         verify(passwordEncoder, times(1)).matches(anyString(), anyString());
         verify(jwtTool, times(1)).createAccessToken(anyString(), any(ROLE.class));
-        verify(jwtTool, times(1)).createRefreshToken(any(UserVO.class));
+        verify(jwtTool, times(1)).createRefreshToken(any(User.class));
     }
 
     @Test
@@ -173,7 +161,7 @@ class OwnSecurityServiceImplTest {
         when(userService.findByEmail(anyString())).thenReturn(notVerifiedUser);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtTool.createAccessToken(anyString(), any(ROLE.class))).thenReturn("new-access-token");
-        when(jwtTool.createRefreshToken(any(UserVO.class))).thenReturn("new-refresh-token");
+        when(jwtTool.createRefreshToken(any(User.class))).thenReturn("new-refresh-token");
         assertThrows(EmailNotVerified.class,
             () -> ownSecurityService.signIn(ownSignInDto));
     }
@@ -186,7 +174,7 @@ class OwnSecurityServiceImplTest {
 
     @Test
     void signInWrongPasswordTest() {
-        UserVO user = UserVO.builder()
+        User user = User.builder()
             .email("test@gmail.com")
             .id(1L)
             .userStatus(UserStatus.ACTIVATED)
@@ -199,11 +187,11 @@ class OwnSecurityServiceImplTest {
 
     @Test
     void signInDeactivatedUserTest() {
-        UserVO user = UserVO.builder()
+        User user = User.builder()
             .email("test@gmail.com")
             .id(1L)
             .userStatus(UserStatus.DEACTIVATED)
-            .ownSecurity(OwnSecurityVO.builder().password("password").build())
+            .ownSecurity(OwnSecurity.builder().password("password").build())
             .role(ROLE.ROLE_USER)
             .build();
         when(userService.findByEmail("test@gmail.com")).thenReturn(user);

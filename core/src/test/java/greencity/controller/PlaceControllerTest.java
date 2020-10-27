@@ -14,7 +14,6 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.place.*;
 import greencity.dto.specification.SpecificationNameDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
@@ -125,12 +124,12 @@ class PlaceControllerTest {
                 .photos(photoAddDtoList)
                 .build();
 
-        UserVO user = UserVO.builder()
+        User user = User.builder()
                 .name("Orest")
                 .userStatus(UserStatus.ACTIVATED)
                 .build();
 
-        PlaceVO place = PlaceVO.builder()
+        Place place = Place.builder()
                 .id(1L)
                 .status(APPROVED)
                 .build();
