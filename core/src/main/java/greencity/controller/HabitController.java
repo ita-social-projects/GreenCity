@@ -1,9 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiLocale;
-import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUser;
-import greencity.annotations.ValidLanguage;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitAssignDto;
@@ -78,8 +75,7 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
-    @ApiPageable
-    @ApiLocale
+    @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAll(
         @ApiIgnore @ValidLanguage Locale locale,
         @ApiIgnore Pageable pageable) {
