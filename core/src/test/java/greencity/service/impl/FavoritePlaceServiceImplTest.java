@@ -5,6 +5,7 @@ import greencity.TestConst;
 import greencity.constant.ErrorMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceVO;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Place;
 import greencity.exception.exceptions.WrongIdException;
@@ -201,8 +202,8 @@ class FavoritePlaceServiceImplTest {
         placeInfoDto.setName("name");
 
         when(repo.findByPlaceId(anyLong())).thenReturn(fp);
-        when(modelMapper.map(any(Place.class), eq(PlaceInfoDto.class))).thenReturn(placeInfoDto);
-        when(placeService.findById(anyLong())).thenReturn(new Place());
+        when(modelMapper.map(any(PlaceVO.class), eq(PlaceInfoDto.class))).thenReturn(placeInfoDto);
+        when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlaceVO());
         when(placeService.averageRate(anyLong())).thenReturn(2.0);
 
         assertEquals(placeInfoDto, favoritePlaceService.getInfoFavoritePlace(favoritePlaceId));

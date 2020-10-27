@@ -7,6 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.place.PlaceVO;
 import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -61,8 +62,8 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
-        Place place = placeService.findById(placeId);
-        User user = userService.findByEmail(email);
+        Place place = modelMapper.map(placeService.findById(placeId), Place.class);
+        User user = modelMapper.map(userService.findByEmail(email), User.class);
         Comment comment = modelMapper.map(addCommentDto, Comment.class);
         comment.setPlace(place);
         comment.setUser(user);

@@ -2,6 +2,7 @@ package greencity.security.service.impl;
 
 import greencity.constant.AppConstant;
 import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.OwnSecurity;
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,6 +61,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final RestorePasswordEmailRepo restorePasswordEmailRepo;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
+    private final ModelMapper modelMapper;
     private static final String VALID_PW_CHARS =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
 
@@ -73,7 +76,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   @Value("${verifyEmailTimeHour}") Integer expirationTime,
                                   RabbitTemplate rabbitTemplate,
                                   @Value("${defaultProfilePicture}") String defaultProfilePicture,
-                                  RestorePasswordEmailRepo restorePasswordEmailRepo) {
+                                  RestorePasswordEmailRepo restorePasswordEmailRepo,
+                                  ModelMapper modelMapper) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -82,6 +86,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         this.rabbitTemplate = rabbitTemplate;
         this.defaultProfilePicture = defaultProfilePicture;
         this.restorePasswordEmailRepo = restorePasswordEmailRepo;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -97,8 +102,9 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
         user.setOwnSecurity(ownSecurity);
         user.setVerifyEmail(verifyEmail);
+        UserVO userVO = modelMapper.map(user, UserVO.class);
         try {
-            User savedUser = userService.save(user);
+            UserVO savedUser = userService.save(userVO);
             rabbitTemplate.convertAndSend(
                 sendEmailTopic,
                 VERIFY_EMAIL_ROUTING_KEY,
@@ -152,7 +158,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Override
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
-        User user = userService.findByEmail(dto.getEmail());
+        UserVO user = userService.findByEmail(dto.getEmail());
         if (user == null) {
             throw new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
@@ -170,7 +176,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), true);
     }
 
-    private boolean isPasswordCorrect(OwnSignInDto signInDto, User user) {
+    private boolean isPasswordCorrect(OwnSignInDto signInDto, UserVO user) {
         if (user.getOwnSecurity() == null) {
             return false;
         }
@@ -189,7 +195,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         } catch (ExpiredJwtException e) {
             throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
         }
-        User user = userService.findByEmail(email);
+        UserVO user = userService.findByEmail(email);
         checkUserStatus(user);
         String newRefreshTokenKey = jwtTool.generateTokenKey();
         userService.updateUserRefreshToken(newRefreshTokenKey, user.getId());
@@ -203,7 +209,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
     }
 
-    private void checkUserStatus(User user) {
+    private void checkUserStatus(UserVO user) {
         UserStatus status = user.getUserStatus();
         if (status == UserStatus.BLOCKED) {
             throw new UserBlockedException(USER_DEACTIVATED);
@@ -230,7 +236,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     @Transactional
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
-        User user = userService.findByEmail(email);
+        UserVO user = userService.findByEmail(email);
         if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
             throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
         }
@@ -319,7 +325,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                 .expiryDate(calculateExpirationDate(expirationTime))
                 .build();
         restorePasswordEmailRepo.save(restorePasswordEmail);
-        userService.save(user);
+        userService.save(modelMapper.map(user, UserVO.class));
         rabbitTemplate.convertAndSend(
             sendEmailTopic,
             SEND_USER_APPROVAL_ROUTING_KEY,

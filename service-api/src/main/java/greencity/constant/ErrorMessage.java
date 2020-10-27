@@ -70,10 +70,43 @@ public final class ErrorMessage {
     public static final String PHOTO_IS_PRESENT = "Photo is present.";
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
+    public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
+    public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
+    public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
+    public static final String USER_HAS_NO_AVAILABLE_GOALS = "This user is tracking all available goals";
+    public static final String USER_GOAL_NOT_FOUND = "UserGoal(s) with this id not found: ";
+    public static final String USER_HAS_NO_SUCH_GOAL = "This user has no goal with id: ";
+    public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
+    public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
+    public static final String USER_HAS_NO_AVAILABLE_HABITS =
+            "This user is tracking all available habits";
+    public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
+    public static final String IMAGE_EXISTS = "Image should be download, PNG or JPEG ";
+    public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
+    public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
+    public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
+    public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
+    public static final String CUSTOM_GOAL_WHERE_NOT_SAVED = "This CustomGoal(s) already exist(s): ";
+    public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
+    public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
+    public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
+    public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
+    public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved because of constraint violation";
+    public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
+            "User cannot add more than 5 social network links";
+    public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
+    public static final String MALFORMED_URL = "Malformed URL. The string could not be parsed.";
+    public static final String USER_CANNOT_ADD_SAME_SOCIAL_NETWORK_LINKS =
+            "User cannot add the same social network links";
     public static final String SOCIAL_NETWORK_IMAGE_NOT_SAVED = "Social network image hasn't been saved";
     public static final String SOCIAL_NETWORK_IMAGE_FOUND_BY_ID = "Social network image doesn't exist by this id: ";
     public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
         "Bad default social network image host path (Row in database doesn't exists)";
+    public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
+    public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
+    public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
+    public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
+    public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
 
     private ErrorMessage() {
     }
