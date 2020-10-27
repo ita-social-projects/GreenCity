@@ -1,6 +1,5 @@
 package greencity.security.jwt;
 
-import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.ROLE;
 import io.jsonwebtoken.Jwts;
@@ -16,7 +15,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static greencity.ModelUtils.getUserVO;
 import static org.mockito.Mockito.when;
 import static greencity.constant.AppConstant.AUTHORITIES;
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,21 +62,20 @@ class JwtToolTest {
     @Test
     void createRefreshToken() {
         String s = "secret-refresh-token-key";
-        User userf = new User();
-        UserVO userVO = new UserVO();
-        userVO.setEmail(expectedEmail);
-        userVO.setRole(expectedRole);
-        userVO.setRefreshTokenKey(s);
-        String refreshToken = jwtTool.createRefreshToken(userVO);
+        User user = new User();
+        user.setEmail(expectedEmail);
+        user.setRole(expectedRole);
+        user.setRefreshTokenKey(s);
+        String refreshToken = jwtTool.createRefreshToken(user);
         String actualEmail = Jwts.parser()
-            .setSigningKey(userVO.getRefreshTokenKey())
+            .setSigningKey(user.getRefreshTokenKey())
             .parseClaimsJws(refreshToken)
             .getBody()
             .getSubject();
         assertEquals(expectedEmail, actualEmail);
         @SuppressWarnings({"unchecked, rawtype"})
         List<String> authorities = (List<String>) Jwts.parser()
-            .setSigningKey(userVO.getRefreshTokenKey())
+            .setSigningKey(user.getRefreshTokenKey())
             .parseClaimsJws(refreshToken)
             .getBody()
             .get(AUTHORITIES);

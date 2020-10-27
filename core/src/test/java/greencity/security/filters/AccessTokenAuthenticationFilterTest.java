@@ -1,6 +1,5 @@
 package greencity.security.filters;
 
-import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
@@ -70,7 +69,7 @@ class AccessTokenAuthenticationFilterTest {
         when(authenticationManager.authenticate(any()))
             .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
         when(userService.findNotDeactivatedByEmail("test@mail.com"))
-            .thenReturn(Optional.of(UserVO.builder().id(1L).build()));
+            .thenReturn(Optional.of(User.builder().id(1L).build()));
         doNothing().when(chain).doFilter(request, response);
 
         authenticationFilter.doFilterInternal(request, response, chain);

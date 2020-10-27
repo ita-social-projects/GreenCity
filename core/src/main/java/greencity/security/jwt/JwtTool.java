@@ -1,8 +1,6 @@
 package greencity.security.jwt;
 
 import static greencity.constant.AppConstant.AUTHORITIES;
-
-import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.ROLE;
 import io.jsonwebtoken.Claims;
@@ -68,7 +66,7 @@ public class JwtTool {
      *
      * @param user - entity {@link User}
      */
-    public String createRefreshToken(UserVO user) {
+    public String createRefreshToken(User user) {
         Claims claims = Jwts.claims().setSubject(user.getEmail());
         claims.put(AUTHORITIES, Collections.singleton(user.getRole().name()));
         Date now = new Date();
