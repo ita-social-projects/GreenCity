@@ -5,13 +5,10 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
-import greencity.dto.advice.AdviceTranslationVO;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
-import greencity.entity.localization.AdviceTranslation;
 import greencity.service.AdviceService;
-import greencity.service.AdviceTranslationService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -20,7 +17,6 @@ import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -42,7 +38,6 @@ import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 @Validated
 public class AdviceController {
     private final AdviceService adviceService;
-    private final AdviceTranslationService adviceTranslationService;
     private final ModelMapper mapper;
 
     /**
@@ -98,7 +93,7 @@ public class AdviceController {
     })
     @PostMapping
     public ResponseEntity<AdviceVO> save(@Valid @RequestBody AdvicePostDto advice) {
-        AdviceVO response = adviceTranslationService.saveAdviceAndAdviceTranslation(advice);
+        AdviceVO response = adviceService.save(advice);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
