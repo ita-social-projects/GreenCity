@@ -20,6 +20,7 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
@@ -166,6 +167,7 @@ public class ModelUtils {
             .habitAssignId(habitAssignDto.getId())
             .habitStatusCalendarDtos(new ArrayList<>(Collections.singletonList(getHabitStatusCalendarDto())))
             .build();
+    }
       
     public static HabitVO getHabitVO(){
         return HabitVO.builder().id(1L).image("img.png").build();
