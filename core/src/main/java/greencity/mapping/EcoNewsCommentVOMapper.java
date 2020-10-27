@@ -5,7 +5,9 @@ import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNewsComment;
 import org.modelmapper.AbstractConverter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EcoNewsCommentVOMapper extends AbstractConverter<EcoNewsComment, EcoNewsCommentVO> {
     @Override
     protected EcoNewsCommentVO convert(EcoNewsComment ecoNewsComment) {
