@@ -1,17 +1,16 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.TestConst;
 import greencity.constant.ErrorMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.favoriteplace.FavoritePlaceVO;
+import greencity.dto.location.LocationDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.PlaceVO;
 import greencity.entity.FavoritePlace;
-import greencity.entity.Place;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.FavoritePlaceRepo;
-import greencity.service.PlaceService;
-import greencity.service.UserService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +35,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 class FavoritePlaceServiceImplTest {
     @Mock
-    private FavoritePlaceRepo repo;
+    private FavoritePlaceRepo favoritePlaceRepo;
     @Mock
     private UserService userService;
     @Mock
@@ -47,15 +46,16 @@ class FavoritePlaceServiceImplTest {
     private FavoritePlaceServiceImpl favoritePlaceService;
 
     private FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
-    private FavoritePlace fp = ModelUtils.getFavoritePlace();
-    private String userEmail = fp.getUser().getEmail();
-    private Long favoritePlaceId = fp.getId();
+    private FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
+    private FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
+    private String userEmail = favoritePlace.getUser().getEmail();
+    private Long favoritePlaceId = favoritePlace.getId();
 
     @Test
     void saveFavoritePlaceAlreadyExistTest() {
         when(placeService.existsById(any())).thenReturn(true);
-        when(repo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(new FavoritePlace());
-        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(new FavoritePlace());
+        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
 
         Exception exception = assertThrows(
             WrongIdException.class,
@@ -73,7 +73,7 @@ class FavoritePlaceServiceImplTest {
     void saveBadUserEmailTest() {
         String userEmail = "email";
 
-        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
 
         Exception exception = assertThrows(
             WrongIdException.class,
@@ -88,7 +88,7 @@ class FavoritePlaceServiceImplTest {
     @Test
     void saveBadPlaceIdTest() {
         dto.setPlaceId(1L);
-        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
         when(placeService.existsById(any())).thenReturn(false);
 
         Exception exception = assertThrows(
@@ -105,17 +105,17 @@ class FavoritePlaceServiceImplTest {
     @Test
     void saveTest() {
         when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class))).thenReturn(dto);
-        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(fp);
+        when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
         when(placeService.existsById(any())).thenReturn(true);
-        when(repo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
-        when(repo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
+        when(favoritePlaceRepo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
         FavoritePlaceDto actual = favoritePlaceService.save(dto, userEmail);
 
         verify(userService, times(1)).findIdByEmail(userEmail);
         verify(placeService, times(1)).existsById(any());
-        verify(repo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
-        verify(repo, times(1)).save(any(FavoritePlace.class));
+        verify(favoritePlaceRepo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
+        verify(favoritePlaceRepo, times(1)).save(any(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlaceDto.class), eq(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlace.class), eq(FavoritePlaceDto.class));
         verify(userService, times(1)).findIdByEmail(anyString());
@@ -125,17 +125,17 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void deleteByIdAndUserEmail() {
-        when(repo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(fp);
+        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(favoritePlace);
 
         assertEquals(favoritePlaceId, favoritePlaceService.deleteByUserEmailAndPlaceId(favoritePlaceId, userEmail));
 
-        verify(repo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
-        verify(repo, times(1)).delete(any());
+        verify(favoritePlaceRepo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
+        verify(favoritePlaceRepo, times(1)).delete(any());
     }
 
     @Test
     void deleteByIdAndUserEmail_FavoritePlaceNotExist() {
-        when(repo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
+        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
 
         Exception exception = assertThrows(
             WrongIdException.class,
@@ -148,9 +148,9 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void updateTest() {
-        when(repo.findByPlaceIdAndUserEmail(any(), any())).thenReturn(fp);
-        when(repo.save(any(FavoritePlace.class))).thenReturn(fp);
-        when(modelMapper.map(fp, FavoritePlaceDto.class)).thenReturn(dto);
+        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(any(), any())).thenReturn(favoritePlace);
+        when(favoritePlaceRepo.save(any(FavoritePlace.class))).thenReturn(favoritePlace);
+        when(modelMapper.map(favoritePlace, FavoritePlaceDto.class)).thenReturn(dto);
 
         FavoritePlaceDto actual = favoritePlaceService.update(dto, userEmail);
 
@@ -159,7 +159,7 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void updateFavoritePlaceNotExistTest() {
-        when(repo.findByPlaceIdAndUserEmail(any(), any())).thenReturn(null);
+        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(any(), any())).thenReturn(null);
 
         Exception exception = assertThrows(
             WrongIdException.class,
@@ -176,11 +176,11 @@ class FavoritePlaceServiceImplTest {
         List<FavoritePlace> favoritePlaces = new ArrayList<>();
         List<FavoritePlaceDto> favoritePlaceDtos = new ArrayList<>();
         for (long i = 0; i < 5; i++) {
-            favoritePlaces.add(fp);
+            favoritePlaces.add(favoritePlace);
             favoritePlaceDtos.add(dto);
         }
 
-        when(repo.findAllByUserEmail(anyString())).thenReturn(favoritePlaces);
+        when(favoritePlaceRepo.findAllByUserEmail(anyString())).thenReturn(favoritePlaces);
         when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class))).thenReturn(dto);
 
         assertEquals(favoritePlaceDtos, favoritePlaceService.findAllByUserEmail(TestConst.EMAIL));
@@ -188,7 +188,7 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void findAllWhenNotRecords() {
-        when(repo.findAllByUserEmail(anyString())).thenReturn(Collections.emptyList());
+        when(favoritePlaceRepo.findAllByUserEmail(anyString())).thenReturn(Collections.emptyList());
 
         boolean isNoRecords = favoritePlaceService.findAllByUserEmail(TestConst.EMAIL).isEmpty();
 
@@ -201,7 +201,8 @@ class FavoritePlaceServiceImplTest {
         placeInfoDto.setRate(2.0);
         placeInfoDto.setName("name");
 
-        when(repo.findByPlaceId(anyLong())).thenReturn(fp);
+        when(favoritePlaceRepo.findByPlaceId(anyLong())).thenReturn(favoritePlace);
+        when(modelMapper.map(favoritePlace, FavoritePlaceVO.class)).thenReturn(favoritePlaceVO);
         when(modelMapper.map(any(PlaceVO.class), eq(PlaceInfoDto.class))).thenReturn(placeInfoDto);
         when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlaceVO());
         when(placeService.averageRate(anyLong())).thenReturn(2.0);
@@ -222,7 +223,7 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void getFavoritePlaceInfo_PlaceNotExist() {
-        when(repo.findByPlaceId(2L)).thenReturn(null);
+        when(favoritePlaceRepo.findByPlaceId(2L)).thenReturn(null);
 
         Exception exception = assertThrows(WrongIdException.class,
             () -> favoritePlaceService.getInfoFavoritePlace(2L));
@@ -232,4 +233,28 @@ class FavoritePlaceServiceImplTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
+
+    @Test
+    void getFavoritePlaceWithLocation() {
+        LocationDto location = new LocationDto();
+        location.setId(favoritePlaceVO.getPlace().getLocation().getId());
+        location.setLng(favoritePlaceVO.getPlace().getLocation().getLng());
+        location.setLat(favoritePlaceVO.getPlace().getLocation().getLat());
+        location.setAddress(favoritePlaceVO.getPlace().getLocation().getAddress());
+        PlaceByBoundsDto placeByBoundsDto =
+                new PlaceByBoundsDto(favoritePlaceVO.getId(), favoritePlaceVO.getName(), location);
+        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(favoritePlace);
+        when(modelMapper.map(favoritePlace, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
+
+        assertEquals(placeByBoundsDto,
+                favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
+    }
+
+    @Test
+    void getFavoritePlaceWithLocationWrongIdException() {
+        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(null);
+        assertThrows(WrongIdException.class,
+                () -> favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
+    }
+
 }

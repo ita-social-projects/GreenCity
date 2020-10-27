@@ -1,19 +1,19 @@
 package greencity.service;
 
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
-import greencity.entity.FavoritePlace;
-import greencity.entity.Place;
-import greencity.entity.User;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.user.UserVO;
+
 import java.util.List;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface FavoritePlaceService {
     /**
-     * Save {@link Place} as {@link FavoritePlace} for user.
+     * Save {@link PlaceVO} as {@link FavoritePlaceVO} for user.
      *
-     * @param favoritePlaceDto - dto with {@link FavoritePlace} name, {@link Place} id and {@link User} email
+     * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name, {@link PlaceVO} id and {@link UserVO} email
      * @param userEmail        - User email
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
@@ -23,8 +23,8 @@ public interface FavoritePlaceService {
     /**
      * Update favorite place name for user.
      *
-     * @param favoritePlaceDto - dto with {@link FavoritePlace} name, {@link Place} id and {@link User} email
-     * @param userEmail        - {@link User} email
+     * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name, {@link PlaceVO} id and {@link UserVO} email
+     * @param userEmail        - {@link UserVO} email
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
@@ -32,48 +32,47 @@ public interface FavoritePlaceService {
     FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, String userEmail);
 
     /**
-     * Find all {@link FavoritePlace} by {@link User} email.
+     * Find all {@link FavoritePlaceVO} by {@link UserVO} email.
      *
-     * @param email - {@link User} email
+     * @param email - {@link UserVO} email
      * @return list of {@link FavoritePlaceDto}
      * @author Zakhar Skaletskyi
      */
     List<FavoritePlaceDto> findAllByUserEmail(String email);
 
     /**
-     * Delete {@link FavoritePlace} by {@link User} email and {@link Place} id .
+     * Delete {@link FavoritePlaceVO} by {@link UserVO} email and {@link PlaceVO} id .
      *
-     * @param placeId   - {@link Place} id
-     * @param userEmail - {@link User} email
-     * @return -  id of deleted {@link FavoritePlace}
+     * @param placeId   - {@link PlaceVO} id
+     * @param userEmail - {@link UserVO} email
+     * @return -  id of deleted {@link FavoritePlaceVO}
      * @author Zakhar Skaletskyi
      */
-    @Transactional
     Long deleteByUserEmailAndPlaceId(Long placeId, String userEmail);
 
     /**
-     * FInd {@link FavoritePlace} by id.
+     * FInd {@link FavoritePlaceVO} by id.
      *
-     * @param placeId - {@link Place} id
-     * @return {@link FavoritePlace} entity
+     * @param placeId - {@link PlaceVO} id
+     * @return {@link FavoritePlaceVO} entity
      * @author Zakhar Skaletskyi
      */
-    FavoritePlace findByPlaceId(Long placeId);
+    FavoritePlaceVO findByPlaceId(Long placeId);
 
     /**
-     * Method for getting {@link FavoritePlace} as {@link Place} information.
+     * Method for getting {@link FavoritePlaceVO} as {@link PlaceVO} information.
      *
-     * @param favoritePlaceId - {@link FavoritePlace} id
-     * @return info about place with name from {@link FavoritePlace}
+     * @param favoritePlaceId - {@link FavoritePlaceVO} id
+     * @return info about place with name from {@link FavoritePlaceVO}
      * @author Zakhar Skaletskyi
      */
     PlaceInfoDto getInfoFavoritePlace(Long favoritePlaceId);
 
     /**
-     * Get {@link FavoritePlace} coordinates, id and name.
+     * Get {@link FavoritePlaceVO} coordinates, id and name.
      *
-     * @param id    {@link FavoritePlace}
-     * @param email - {@link User} email
+     * @param id    {@link FavoritePlaceVO}
+     * @param email - {@link UserVO} email
      * @return {@link PlaceByBoundsDto} with name from favorite place
      * @author Zakhar Skaletskyi
      */
