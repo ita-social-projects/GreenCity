@@ -102,7 +102,6 @@ class HabitStatusServiceImplTest {
             habitStatusService.findStatusByHabitAssignId(habitAssignId);
         });
     }
-
     @Test
     void enrollHabit() {
         Long habitAssignId = 1L;
@@ -164,7 +163,7 @@ class HabitStatusServiceImplTest {
         when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
 
         when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
-            .thenReturn(null);
+                .thenReturn(null);
 
         when(habitStatusCalendarRepo.save(any())).thenReturn(habitStatusCalendar);
         when(modelMapper.map(habitStatusCalendar, HabitStatusCalendarDto.class)).thenReturn(habitStatusCalendarDto);
@@ -203,7 +202,6 @@ class HabitStatusServiceImplTest {
             habitStatusService.enrollHabitInDate(habitAssignId, enrollDate);
         });
     }
-
     @Test
     void unenrollHabit() {
         Long habitAssignId = 1L;
