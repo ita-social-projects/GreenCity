@@ -1,5 +1,4 @@
-
-package greencity.controller;
+/*package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.advice.AdvicePostDto;
@@ -153,6 +152,6 @@ class AdviceControllerTest {
         verify(adviceService, times(0))
             .delete(anyLong());
     }
-}
+}*/
 
 
