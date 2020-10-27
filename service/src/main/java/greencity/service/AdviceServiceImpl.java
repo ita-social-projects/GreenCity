@@ -86,8 +86,8 @@ public class AdviceServiceImpl implements AdviceService {
         Advice advice = modelMapper.map(advicePostDTO, Advice.class);
         List<AdviceTranslation> adviceTranslations = modelMapper.map(advicePostDTO.getTranslations(),
                 new TypeToken<List<AdviceTranslation>>() {}.getType());
-        advice.setTranslations(adviceTranslations);
-        adviceTranslations.forEach(adviceTranslation -> adviceTranslation.setAdvice(advice));
+        advice.getTranslations().clear();
+        adviceTranslations.forEach(advice::addAdviceTranslation);
         Advice saved = adviceRepo.save(advice);
 
         return modelMapper.map(saved, AdviceVO.class);

@@ -18,9 +18,20 @@ public class Advice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.PERSIST}, mappedBy = "advice", fetch = FetchType.LAZY)
+    @Setter(value = AccessLevel.PRIVATE)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "advice", fetch = FetchType.LAZY)
     private List<AdviceTranslation> translations;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;
+
+    public void addAdviceTranslation(AdviceTranslation adviceTranslation) {
+        translations.add(adviceTranslation);
+        adviceTranslation.setAdvice(this);
+    }
+
+    public void removeAdviceTranslation(AdviceTranslation adviceTranslation) {
+        translations.remove(adviceTranslation);
+        adviceTranslation.setAdvice(null);
+    }
 }

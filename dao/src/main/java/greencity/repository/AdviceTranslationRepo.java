@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, Long> {
 
-    @Query(value = "select at from AdviceTranslation at join fetch at.advice join fetch at.language")
+    @Query(value = "select at from AdviceTranslation at join fetch at.advice join fetch at.language order by at.id")
     List<AdviceTranslation> findAll();
 
     /**
