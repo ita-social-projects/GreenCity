@@ -7,7 +7,6 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tipsandtricks.*;
-import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
@@ -15,11 +14,20 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
-import greencity.service.*;
+import greencity.service.FileService;
+import greencity.service.LanguageService;
+import greencity.service.TagsService;
+import greencity.service.TipsAndTricksTranslationService;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,14 +36,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class TipsAndTricksServiceImplTest {
@@ -61,13 +61,12 @@ class TipsAndTricksServiceImplTest {
     private Tag tipsAndTricksTag = ModelUtils.getTag();
     private TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
     private User user = ModelUtils.getUser();
-    private UserVO userVO = ModelUtils.getUserVO();
     private TagVO tagVO = new TagVO(1L, "News");
 
     @Test
     void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(tagVOList);
@@ -92,7 +91,7 @@ class TipsAndTricksServiceImplTest {
         String email = ModelUtils.getUser().getEmail();
 
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(tagVOList);
@@ -111,7 +110,7 @@ class TipsAndTricksServiceImplTest {
         tipsAndTricksDtoRequest.setImage(imageToEncode);
 
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUser());
         when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
@@ -235,7 +234,7 @@ class TipsAndTricksServiceImplTest {
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTipsAndTricksTagsByNames(anyList()))
             .thenReturn(tagVOList);
-        when(userService.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(userVO);
+        when(userService.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(user);
         when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(new LanguageDTO(2L, "en")));
 
         tipsAndTricksService.update(tipsAndTricksDtoManagement, null);
