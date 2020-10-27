@@ -63,9 +63,9 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
-    public AdviceDto getAdviceById(Long id) {
+    public AdviceVO getAdviceById(Long id) {
         return modelMapper.map(adviceRepo.findById(id).orElseThrow(() ->
-            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceDto.class);
+            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceVO.class);
     }
 
     /**

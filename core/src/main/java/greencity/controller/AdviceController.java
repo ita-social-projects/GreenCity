@@ -79,6 +79,23 @@ public class AdviceController {
     }
 
     /**
+     * The controller which returns advice by id {@link Advice}.
+     *
+     * @return instance of {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     * */
+    @ApiOperation("Get advice by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{adviceId}")
+    public AdviceVO getById(@PathVariable Long adviceId) {
+        return adviceService.getAdviceById(adviceId);
+    }
+
+    /**
      * The controller which saveAdviceAndAdviceTranslation {@link Advice}.
      *
      * @param advice {@link AdviceDto}

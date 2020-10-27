@@ -1,4 +1,4 @@
-package greencity.service;
+/*package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.advice.AdviceDto;
@@ -209,4 +209,4 @@ class AdviceServiceImplTest {
         assertThrows(NotDeletedException.class, () -> adviceService.delete(id));
     }
 }
-
+*/
