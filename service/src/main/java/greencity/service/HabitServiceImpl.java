@@ -146,13 +146,9 @@ public class HabitServiceImpl implements HabitService {
      * @param habit              {@link Habit} instance.
      */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-        if (!habitManagementDto.getImage().isEmpty()) {
-            image = fileService.convertToMultipartImage(habitManagementDto.getImage());
-        }
+        habit.setImage(habitManagementDto.getImage());
         if (image != null) {
             habit.setImage(fileService.upload(image).toString());
-        } else {
-            habit.setImage("");
         }
     }
 
