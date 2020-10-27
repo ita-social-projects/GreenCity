@@ -60,7 +60,7 @@ class NotificationServiceImplTest {
         user.setEmailNotification(emailNotification);
 
         PlaceVO place = new PlaceVO();
-//        place.setLocationId(1L);
+        place.setLocationId(1L);
         place.setId(1L);
         place.setName("Forum");
         place.setDescription("Shopping center");
