@@ -518,7 +518,7 @@ public class ModelUtils {
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, "tag");
+        return new TagVO(1L, "tag", null, null);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {
