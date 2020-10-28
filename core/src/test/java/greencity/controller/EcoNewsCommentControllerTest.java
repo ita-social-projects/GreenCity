@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
