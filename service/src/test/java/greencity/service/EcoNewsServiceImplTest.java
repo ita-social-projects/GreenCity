@@ -1,3 +1,4 @@
+/*
 package greencity.service;
 
 import greencity.ModelUtils;
@@ -270,3 +271,4 @@ class EcoNewsServiceImplTest {
 }
 
 
+*/
