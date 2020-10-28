@@ -163,7 +163,7 @@ public class HabitServiceImpl implements HabitService {
 
         Map<String, HabitTranslationManagementDto> translationDtoMap = getMapTranslationsDtos(habitManagementDto);
         habit.getHabitTranslations().forEach(
-            ht -> updateHabitTranslation(translationDtoMap.get(ht.getLanguage().getCode()), ht));
+            ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguage().getCode()), ht));
 
         uploadImageForHabit(habitManagementDto, image, habit);
 
@@ -176,7 +176,7 @@ public class HabitServiceImpl implements HabitService {
      * @param htDto {@link HabitTranslationManagementDto} instance.
      * @param ht    {@link HabitTranslation} instance.
      */
-    private void updateHabitTranslation(HabitTranslationManagementDto htDto, HabitTranslation ht) {
+    private void enhanceTranslationWithDto(HabitTranslationManagementDto htDto, HabitTranslation ht) {
         ht.setDescription(htDto.getDescription());
         ht.setHabitItem(htDto.getHabitItem());
         ht.setName(htDto.getName());
