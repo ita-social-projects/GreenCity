@@ -1,4 +1,4 @@
-/*package greencity.service;
+package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.advice.AdviceDto;
@@ -19,10 +19,8 @@ import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitRepo;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -52,15 +50,12 @@ class AdviceServiceImplTest {
     @Mock
     private AdviceTranslationRepo adviceTranslationRepo;
 
-    @Mock
-    private HabitService habitService;
-
     private Language defaultLanguage = ModelUtils.getLanguage();
 
-    private List<AdviceTranslation> adviceTranslations = Arrays.asList(
+    private List<AdviceTranslation> adviceTranslations = new ArrayList<>(Arrays.asList(
             AdviceTranslation.builder().id(1L).language(defaultLanguage).content("hello").build(),
             AdviceTranslation.builder().id(2L).language(defaultLanguage).content("text").build(),
-            AdviceTranslation.builder().id(3L).language(defaultLanguage).content("smile").build());
+            AdviceTranslation.builder().id(3L).language(defaultLanguage).content("smile").build()));
 
     private List<LanguageTranslationDTO> languageTranslationDTOs = Arrays.asList(
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
@@ -68,10 +63,17 @@ class AdviceServiceImplTest {
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile")
     );
 
+    private List<Advice> advices = new ArrayList<>(Arrays.asList(
+            Advice.builder().id(1L).habit(Habit.builder().id(1L).build()).build(),
+            Advice.builder().id(2L).habit(Habit.builder().id(1L).build()).build(),
+            Advice.builder().id(3L).habit(Habit.builder().id(1L).build()).build()));
+
     private Habit habit = Habit.builder().id(1L).image("image.png").build();
 
+    private HabitVO habitVO = HabitVO.builder().id(1L).image("image_png").build();
+
     private Advice advice = Advice.builder().id(1L)
-            .translations(Collections.emptyList())
+            .translations(adviceTranslations)
             .habit(habit)
             .build();
 
@@ -119,10 +121,10 @@ class AdviceServiceImplTest {
     @Test
     void getAdviceById() {
         Long id = 1L;
-        AdviceDto expected = getAdviceDto();
+        AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
         when(adviceRepo.findById(id)).thenReturn(Optional.of(advice));
-        when(modelMapper.map(advice, AdviceDto.class)).thenReturn(expected);
-        AdviceDto actual = adviceService.getAdviceById(id);
+        when(modelMapper.map(advice, AdviceVO.class)).thenReturn(expected);
+        AdviceVO actual = adviceService.getAdviceById(id);
 
         assertEquals(expected, actual);
     }
@@ -156,14 +158,19 @@ class AdviceServiceImplTest {
 
     @Test
     void save() {
+        Type type = new TypeToken<List<AdviceTranslation>>() {
+        }.getType();
         AdvicePostDto advicePostDto = getAdvicePostDto();
-        AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
         when(modelMapper.map(advicePostDto, Advice.class)).thenReturn(advice);
+        when(modelMapper.map(advicePostDto.getTranslations(), type)).thenReturn(adviceTranslations);
         when(adviceRepo.save(advice)).thenReturn(advice);
+        AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(expected);
         AdviceVO actual = adviceService.save(advicePostDto);
+        Advice mockAdvice = mock(Advice.class);
 
         assertEquals(expected, actual);
+        verify(mockAdvice, times(adviceTranslations.size())).addAdviceTranslation(any(AdviceTranslation.class));
     }
 
     @Test
@@ -171,11 +178,11 @@ class AdviceServiceImplTest {
         AdvicePostDto advicePostDto = getAdvicePostDto();
         Long adviceId = 1L;
         Long habitId = advicePostDto.getHabit().getId();
-        HabitVO habitVO = modelMapper.map(habit, HabitVO.class);
 
         when(adviceRepo.findById(adviceId)).thenReturn(Optional.of(advice));
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         advice.setHabit(habit);
+        when(modelMapper.map(any(LanguageDTO.class), eq(Language.class))).thenReturn(defaultLanguage);
         when(adviceRepo.save(advice)).thenReturn(advice);
         AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(expected);
@@ -208,5 +215,28 @@ class AdviceServiceImplTest {
 
         assertThrows(NotDeletedException.class, () -> adviceService.delete(id));
     }
+
+    @Test
+    void deleteAllByHabit() {
+        Long habitId = habit.getId();
+        when(modelMapper.map(habitVO, Habit.class)).thenReturn(habit);
+        when(adviceRepo.findAllByHabitId(habitId)).thenReturn(advices);
+        adviceService.deleteAllByHabit(habitVO);
+        int numberOfAdvices = advices.size();
+
+        verify(adviceTranslationRepo, times(numberOfAdvices)).deleteAllByAdvice(any(Advice.class));
+        verify(adviceRepo, times(numberOfAdvices)).delete(any(Advice.class));
+    }
+
+    @Test
+    void deleteAllByHabitReturnEmptyList() {
+        Long habitId = habit.getId();
+        when(modelMapper.map(habitVO, Habit.class)).thenReturn(habit);
+        when(adviceRepo.findAllByHabitId(habitId)).thenReturn(Collections.emptyList());
+        adviceService.deleteAllByHabit(habitVO);
+
+        verify(adviceTranslationRepo, never()).deleteAllByAdvice(any(Advice.class));
+        verify(adviceRepo, never()).delete(any(Advice.class));
+    }
 }
-*/
+
