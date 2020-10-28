@@ -25,11 +25,23 @@ public class Advice {
     @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;
 
+    /**
+     * Method that adds AdviceTranslation to Advice and also sets up a two-way relationship.
+     *
+     * @param adviceTranslation {@link AdviceTranslation}
+     * @author Markiyan Derevetskyi
+     */
     public void addAdviceTranslation(AdviceTranslation adviceTranslation) {
         translations.add(adviceTranslation);
         adviceTranslation.setAdvice(this);
     }
 
+    /**
+     * Method that removes AdviceTranslation from Advice and also sets up a two-way relationship.
+     *
+     * @param adviceTranslation {@link AdviceTranslation}
+     * @author Markiyan Derevetskyi
+     */
     public void removeAdviceTranslation(AdviceTranslation adviceTranslation) {
         translations.remove(adviceTranslation);
         adviceTranslation.setAdvice(null);

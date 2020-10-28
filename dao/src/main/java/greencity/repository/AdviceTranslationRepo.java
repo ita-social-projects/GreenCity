@@ -12,6 +12,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, Long> {
+    /**
+     * Method that returns list of {@link AdviceTranslation} and also fetches {@link Advice} and {@link Language}.
+     *
+     * @return list of {@link AdviceTranslation}
+     * @author Markiyan Derevetskyi
+     * */
     @Query(value = "select at from AdviceTranslation at join fetch at.advice join fetch at.language order by at.id")
     List<AdviceTranslation> findAll();
 
