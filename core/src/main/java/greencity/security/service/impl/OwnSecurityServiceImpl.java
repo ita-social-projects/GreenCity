@@ -109,7 +109,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         user.setVerifyEmail(verifyEmail);
         UserVO userVO = modelMapper.map(user, UserVO.class);
         try {
-            UserVO savedUser = userService.save(userVO);
+            User savedUser = userRepo.save(user);
             user.setId(savedUser.getId());
             rabbitTemplate.convertAndSend(
                 sendEmailTopic,
