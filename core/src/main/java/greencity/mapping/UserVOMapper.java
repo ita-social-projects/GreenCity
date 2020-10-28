@@ -1,9 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.goal.CustomGoalVO;
-import greencity.dto.goal.GoalVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
-import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.User;
@@ -19,7 +16,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
     @Override
     protected UserVO convert(User user) {
         VerifyEmailVO verifyEmailVO = null;
-        if(user.getVerifyEmail()!= null) {
+        if (user.getVerifyEmail() != null) {
             verifyEmailVO = VerifyEmailVO.builder()
                     .id(user.getVerifyEmail().getId())
                     .user(UserVO.builder()
@@ -31,7 +28,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                     .build();
         }
         List<UserVO> userFriends = new ArrayList<>();
-        if(user.getUserGoals()!= null) {
+        if (user.getUserGoals() != null) {
             userFriends = user.getUserFriends()
                     .stream().map(user1 -> UserVO.builder()
                             .id(user1.getId())
@@ -40,7 +37,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                     .collect(Collectors.toList());
         }
         OwnSecurityVO ownSecurityVO = null;
-        if(user.getOwnSecurity()!= null) {
+        if (user.getOwnSecurity() != null) {
             ownSecurityVO = OwnSecurityVO.builder()
                     .id(user.getOwnSecurity().getId())
                     .password(user.getOwnSecurity().getPassword())
