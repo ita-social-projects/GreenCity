@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.service.UserService;
 import java.security.Principal;
@@ -26,7 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static greencity.ModelUtils.*;
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUser;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -67,9 +67,8 @@ class EcoNewsCommentControllerTest {
     @Test
     void save() throws Exception {
         User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(user);
+
         String content = "{\n"
             + "  \"parentCommentId\": 0,\n"
             + "  \"text\": \"string\"\n"
@@ -86,7 +85,7 @@ class EcoNewsCommentControllerTest {
             mapper.readValue(content, AddEcoNewsCommentDtoRequest.class);
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).save(eq(1L), eq(addEcoNewsCommentDtoRequest), eq(userVO));
+        verify(ecoNewsCommentService).save(eq(1L), eq(addEcoNewsCommentDtoRequest), eq(user));
     }
 
     @Test
@@ -100,8 +99,7 @@ class EcoNewsCommentControllerTest {
     @Test
     void findAll() throws Exception {
         User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(user);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -112,14 +110,13 @@ class EcoNewsCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).findAllComments(eq(pageable), eq(userVO), eq(1L));
+        verify(ecoNewsCommentService).findAllComments(eq(pageable), eq(user), eq(1L));
     }
 
     @Test
     void getAllActiveComments() throws Exception {
         User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(user);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -129,7 +126,7 @@ class EcoNewsCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).getAllActiveComments(eq(pageable), eq(userVO), eq(1L));
+        verify(ecoNewsCommentService).getAllActiveComments(eq(pageable), eq(user), eq(1L));
     }
 
     @Test
@@ -143,8 +140,7 @@ class EcoNewsCommentControllerTest {
     @Test
     void findAllReplies() throws Exception {
         User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(user);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -155,14 +151,13 @@ class EcoNewsCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).findAllReplies(eq(pageable), eq(1L), eq(userVO));
+        verify(ecoNewsCommentService).findAllReplies(eq(pageable), eq(1L), eq(user));
     }
 
     @Test
     void findAllActiveReplies() throws Exception {
         User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(user);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -173,7 +168,7 @@ class EcoNewsCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).findAllActiveReplies(eq(pageable), eq(1L), eq(userVO));
+        verify(ecoNewsCommentService).findAllActiveReplies(eq(pageable), eq(1L), eq(user));
     }
 
     @Test
@@ -187,43 +182,40 @@ class EcoNewsCommentControllerTest {
     @Test
     void deleteTest() throws Exception {
         User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(user);
 
         mockMvc.perform(delete(ecoNewsCommentControllerLink + "?id=1")
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).deleteById(eq(1L), eq(userVO));
+        verify(ecoNewsCommentService).deleteById(eq(1L), eq(user));
     }
 
     @Test
     void update() throws Exception {
         User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(user);
 
         mockMvc.perform(patch(ecoNewsCommentControllerLink + "?id=1&text=text")
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).update(eq("text"), eq(1L), eq(userVO));
+        verify(ecoNewsCommentService).update(eq("text"), eq(1L), eq(user));
     }
 
     @Test
     void like() throws Exception {
         User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(user);
 
         mockMvc.perform(post(ecoNewsCommentControllerLink + "/like?id=1")
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).like(eq(1L), eq(userVO));
+        verify(ecoNewsCommentService).like(eq(1L), eq(user));
     }
 
     @Test

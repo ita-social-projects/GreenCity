@@ -2,10 +2,8 @@ package greencity.mapping;
 
 import greencity.dto.category.CategoryVO;
 import greencity.dto.discount.DiscountValueVO;
-import greencity.dto.location.LocationVO;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.specification.SpecificationVO;
-import greencity.dto.user.UserVO;
 import greencity.entity.DiscountValue;
 import greencity.entity.Place;
 import org.modelmapper.AbstractConverter;
@@ -34,13 +32,9 @@ public class DiscountValueVOMapper extends AbstractConverter<DiscountValue, Disc
             .modifiedDate(place.getModifiedDate())
             .name(place.getName())
             .phone(place.getPhone())
-            .author(UserVO.builder()
-                    .id(place.getAuthor().getId())
-                    .build())
+            .authorId(place.getAuthor().getId())
             .category(categoryVO)
-            .location(LocationVO.builder()
-                    .id(place.getLocation().getId())
-                    .build()).build();
+            .locationId(place.getLocation().getId()).build();
 
         SpecificationVO specificationVO = SpecificationVO.builder()
             .id(source.getSpecification().getId())

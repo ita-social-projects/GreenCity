@@ -223,7 +223,7 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
                                                                                Long ecoNewsId,
-                                                                               @ApiIgnore @CurrentUser UserVO user) {
+                                                                               @ApiIgnore @CurrentUser User user) {
         ResponseEntity<PageableDto<EcoNewsCommentDto>> body = ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
@@ -245,7 +245,7 @@ public class EcoNewsCommentController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllActiveReplies(@ApiIgnore Pageable pageable,
                                                                                @PathVariable Long parentCommentId,
-                                                                               @ApiIgnore @CurrentUser UserVO user) {
+                                                                               @ApiIgnore @CurrentUser User user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllActiveReplies(pageable, parentCommentId, user));

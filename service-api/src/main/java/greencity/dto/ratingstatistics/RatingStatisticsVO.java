@@ -1,7 +1,7 @@
 package greencity.dto.ratingstatistics;
 
 import greencity.dto.user.UserVO;
-import greencity.annotations.RatingCalculationEnum;
+import greencity.enums.RatingCalculationEnum;
 import java.time.ZonedDateTime;
 import lombok.*;
 
