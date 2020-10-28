@@ -72,8 +72,7 @@ public class OwnSecurityController {
     })
     @PostMapping("/signUp")
     public ResponseEntity<SuccessSignUpDto> singUp(@Valid @RequestBody OwnSignUpDto dto) {
-        ResponseEntity<SuccessSignUpDto> body = ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto));
-        return body;
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto));
     }
 
     /**
