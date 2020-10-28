@@ -2,15 +2,19 @@ package greencity.dto.econewscomment;
 
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.user.UserVO;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Setter
@@ -41,5 +45,5 @@ public class EcoNewsCommentVO {
 
     private boolean currentUserLiked = false;
 
-    private Set<UserVO> usersLiked;
+    private Set<UserVO> usersLiked = new HashSet<>();
 }

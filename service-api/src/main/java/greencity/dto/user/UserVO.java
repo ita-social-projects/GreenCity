@@ -33,11 +33,11 @@ import lombok.ToString;
 @EqualsAndHashCode(
     exclude = {"lastVisit", "places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
         "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews",
-        "addedTipsAndTricks"})
+        "addedTipsAndTricks", "userGoals", "customGoals"})
 @ToString(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
-        "refreshTokenKey",
-        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks"})
+        "refreshTokenKey", "customGoals",
+        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks", "userGoals"})
 public class UserVO {
     private Long id;
 

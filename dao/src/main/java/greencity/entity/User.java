@@ -9,7 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -38,10 +44,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"lastVisit", "places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
-        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks"})
+        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks",
+        "userGoals", "customGoals"})
 @ToString(
     exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks"})
+        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks", "userGoals",
+        "customGoals"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

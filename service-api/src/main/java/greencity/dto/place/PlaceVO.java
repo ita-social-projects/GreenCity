@@ -17,7 +17,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"discountValues", "author", "photos",
+    "location", "category", "status", "discountValues"})
 @Builder
 @ToString(
         exclude = {"discountValues", "author", "photos",
