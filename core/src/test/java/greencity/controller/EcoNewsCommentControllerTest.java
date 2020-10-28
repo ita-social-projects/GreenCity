@@ -1,13 +1,11 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.service.EcoNewsCommentService;
 import greencity.service.UserService;
 import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
