@@ -13,12 +13,17 @@ import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,11 +31,13 @@ import java.util.Set;
 @Setter
 @Builder
 @EqualsAndHashCode(
-        exclude = {"lastVisit", "places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
-                "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks"})
+    exclude = {"lastVisit", "places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
+        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews",
+        "addedTipsAndTricks"})
 @ToString(
-        exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-                "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks"})
+    exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
+        "refreshTokenKey",
+        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks"})
 public class UserVO {
     private Long id;
 
