@@ -1,6 +1,7 @@
 package greencity.security.service.impl;
 
 import greencity.constant.AppConstant;
+import greencity.dto.user.UserGoalRequestDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.OwnSecurity;
@@ -13,6 +14,7 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.UserApprovalMessage;
 import greencity.message.VerifyEmailMessage;
+import greencity.repository.UserRepo;
 import greencity.security.dto.AccessRefreshTokensDto;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
@@ -62,6 +64,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
     private final ModelMapper modelMapper;
+    private final UserRepo userRepo;
     private static final String VALID_PW_CHARS =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
 
@@ -77,7 +80,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                                   RabbitTemplate rabbitTemplate,
                                   @Value("${defaultProfilePicture}") String defaultProfilePicture,
                                   RestorePasswordEmailRepo restorePasswordEmailRepo,
-                                  ModelMapper modelMapper) {
+                                  ModelMapper modelMapper,
+                                  UserRepo userRepo) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -87,6 +91,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         this.defaultProfilePicture = defaultProfilePicture;
         this.restorePasswordEmailRepo = restorePasswordEmailRepo;
         this.modelMapper = modelMapper;
+        this.userRepo = userRepo;
     }
 
     /**
@@ -104,7 +109,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         user.setVerifyEmail(verifyEmail);
         UserVO userVO = modelMapper.map(user, UserVO.class);
         try {
-            UserVO savedUser = userService.save(userVO);
+            User savedUser = userRepo.save(user);
+            user.setId(savedUser.getId());
             rabbitTemplate.convertAndSend(
                 sendEmailTopic,
                 VERIFY_EMAIL_ROUTING_KEY,

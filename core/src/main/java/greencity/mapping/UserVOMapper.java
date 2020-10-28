@@ -43,6 +43,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                     .password(user.getOwnSecurity().getPassword())
                     .user(UserVO.builder()
                             .id(user.getOwnSecurity().getUser().getId())
+                            .email(user.getOwnSecurity().getUser().getEmail())
                             .build())
                     .build();
         }
