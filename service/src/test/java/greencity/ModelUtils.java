@@ -33,6 +33,18 @@ import greencity.enums.FactOfDayStatus;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
 import greencity.service.TestConst;
+import java.time.*;
+import java.util.ArrayList;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.*;
 import java.time.LocalDate;
 import greencity.constant.AppConstant;
 
@@ -134,7 +146,13 @@ public class ModelUtils {
             .workingDays(10)
             .habitStreak(5)
             .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssignId(habitAssignDto.getId()).build();
+            .habitAssignId(habitAssignDto.getId())
+            .habitStatusCalendarDtos(new ArrayList<>(Collections.singletonList(getHabitStatusCalendarDto())))
+            .build();
+    }
+      
+    public static HabitVO getHabitVO(){
+        return HabitVO.builder().id(1L).image("img.png").build();
     }
 
     public static HabitStatus getHabitStatus() {
@@ -154,10 +172,6 @@ public class ModelUtils {
             .habitStreak(5)
             .lastEnrollmentDate(LocalDateTime.now())
             .habitAssignVO(getHabitAssignVO()).build();
-    }
-
-    public static HabitVO getHabitVO(){
-        return HabitVO.builder().id(1L).image("img.png").build();
     }
 
     public static UserGoal getCustomUserGoal() {
