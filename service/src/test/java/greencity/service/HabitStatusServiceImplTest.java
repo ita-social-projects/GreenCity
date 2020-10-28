@@ -17,6 +17,7 @@ import greencity.repository.HabitStatusRepo;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.dom4j.rule.Mode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -102,31 +103,18 @@ class HabitStatusServiceImplTest {
             habitStatusService.findStatusByHabitAssignId(habitAssignId);
         });
     }
-
     @Test
     void enrollHabit() {
         Long habitAssignId = 1L;
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
-        HabitStatusDto habitStatusDto = ModelUtils.getHabitStatusDto();
-        HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
-        HabitStatusCalendarDto habitStatusCalendarDto = ModelUtils.getHabitStatusCalendarDto();
         HabitStatusVO habitStatusVO = modelMapper.map(habitStatus, HabitStatusVO.class);
-
         when(habitStatusRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitStatus));
         when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
                 .thenReturn(LocalDate.of(2020, 10, 15));
-        when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
-
-
-        when(habitStatusCalendarRepo.save(any())).thenReturn(habitStatusCalendar);
-        when(modelMapper.map(habitStatusCalendar, HabitStatusCalendarDto.class)).thenReturn(habitStatusCalendarDto);
-
-        when(habitStatusRepo.save(any())).thenReturn(habitStatus);
-        when(modelMapper.map(habitStatus, HabitStatusDto.class)).thenReturn(habitStatusDto);
-
         habitStatusService.enrollHabit(habitAssignId);
+
+        verify(habitStatusCalendarService).save(any());
         verify(habitStatusRepo).save(habitStatus);
-        verify(habitStatusCalendarRepo).save(any());
     }
 
     @Test
@@ -157,25 +145,16 @@ class HabitStatusServiceImplTest {
         Long habitAssignId = 1L;
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
         HabitStatusVO habitStatusVO = ModelUtils.getHabitStatusVO();
-        HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
-        HabitStatusCalendarDto habitStatusCalendarDto = ModelUtils.getHabitStatusCalendarDto();
-        HabitStatusDto habitStatusDto = ModelUtils.getHabitStatusDto();
         when(habitStatusRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitStatus));
         when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
 
         when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
-            .thenReturn(null);
-
-        when(habitStatusCalendarRepo.save(any())).thenReturn(habitStatusCalendar);
-        when(modelMapper.map(habitStatusCalendar, HabitStatusCalendarDto.class)).thenReturn(habitStatusCalendarDto);
-
-        when(habitStatusRepo.save(any())).thenReturn(habitStatus);
-        when(modelMapper.map(habitStatus, HabitStatusDto.class)).thenReturn(habitStatusDto);
+                .thenReturn(null);
 
         habitStatusService.enrollHabit(habitAssignId);
 
+        verify(habitStatusCalendarService).save(any());
         verify(habitStatusRepo).save(habitStatus);
-        verify(habitStatusCalendarRepo).save(any());
     }
 
     @Test
@@ -203,7 +182,6 @@ class HabitStatusServiceImplTest {
             habitStatusService.enrollHabitInDate(habitAssignId, enrollDate);
         });
     }
-
     @Test
     void unenrollHabit() {
         Long habitAssignId = 1L;

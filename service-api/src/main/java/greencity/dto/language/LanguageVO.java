@@ -6,7 +6,6 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @Builder
 public class LanguageVO {
     private Long id;

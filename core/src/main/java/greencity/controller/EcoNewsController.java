@@ -11,6 +11,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -114,7 +115,7 @@ public class EcoNewsController {
         @ApiParam(value = "Image of eco news")
         @ImageValidation
         @RequestPart(required = false) MultipartFile image,
-        @ApiIgnore @CurrentUser User user) {
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsService.update(updateEcoNewsDto, image, user)
         );

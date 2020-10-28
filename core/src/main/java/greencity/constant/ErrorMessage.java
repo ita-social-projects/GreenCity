@@ -8,7 +8,6 @@ public final class ErrorMessage {
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
-    public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String SPECIFICATION_NOT_FOUND_BY_ID = "The specification does not exist by this id: ";

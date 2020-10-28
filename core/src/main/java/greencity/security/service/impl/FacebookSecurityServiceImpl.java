@@ -1,6 +1,9 @@
 package greencity.security.service.impl;
 
+import static greencity.constant.AppConstant.*;
 import static greencity.constant.ErrorMessage.BAD_FACEBOOK_TOKEN;
+
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.ROLE;
@@ -11,6 +14,7 @@ import greencity.security.service.FacebookSecurityService;
 import greencity.service.UserService;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.facebook.api.Facebook;
@@ -35,6 +39,7 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
 
     private final UserService userService;
     private final JwtTool jwtTool;
+    private final ModelMapper modelMapper;
 
     /**
      * Constructor.
@@ -44,9 +49,11 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
      */
     @Autowired
     public FacebookSecurityServiceImpl(UserService userService,
-                                       JwtTool jwtTool) {
+                                       JwtTool jwtTool,
+                                       ModelMapper modelMapper) {
         this.userService = userService;
         this.jwtTool = jwtTool;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -85,15 +92,16 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
             .getAccessToken();
         if (accessToken != null) {
             Facebook facebook = new FacebookTemplate(accessToken);
-            User byEmail = facebook.fetchObject("me", User.class, "name", "email");
+            UserVO byEmail = facebook.fetchObject(FACEBOOK_OBJECT_ID, UserVO.class, USERNAME,
+                    REGISTRATION_EMAIL_FIELD_NAME);
             String email = byEmail.getEmail();
             log.info(email);
             String name = byEmail.getName();
             log.info(name);
             byEmail = userService.findByEmail(email);
-            User user = byEmail;
+            UserVO user = byEmail;
             if (user == null) {
-                user = createNewUser(email, name);
+                user = modelMapper.map(createNewUser(email, name), UserVO.class);
                 log.info("Facebook sign-up and sign-in user - {}", user.getEmail());
                 return getSuccessSignInDto(user);
             } else {
@@ -118,7 +126,7 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
             .build();
     }
 
-    private SuccessSignInDto getSuccessSignInDto(User user) {
+    private SuccessSignInDto getSuccessSignInDto(UserVO user) {
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), false);

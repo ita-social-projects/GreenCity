@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true, exclude = "factOfTheDay")
 @NoArgsConstructor
 public class FactOfTheDayTranslationVO extends TranslationVO {
     private FactOfTheDayVO factOfTheDay;

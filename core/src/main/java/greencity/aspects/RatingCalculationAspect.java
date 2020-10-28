@@ -3,6 +3,7 @@ package greencity.aspects;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
 import greencity.entity.User;
 import greencity.service.RatingStatisticsService;
@@ -55,11 +56,11 @@ public class RatingCalculationAspect {
         argNames = "ratingCalculation")
     private void ratingCalculation(RatingCalculation ratingCalculation) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findByEmail(authentication.getName());
+        User user = modelMapper.map(userService.findByEmail(authentication.getName()), User.class);
         RatingCalculationEnum rating = ratingCalculation.rating();
 
         user.setRating(user.getRating() + rating.getRatingPoints());
-        userService.save(user);
+        userService.save(modelMapper.map(user, UserVO.class));
 
         RatingStatistics ratingStatistics = RatingStatistics
             .builder()

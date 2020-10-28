@@ -7,6 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
+import greencity.dto.user.UserVO;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.PlaceStatus;
@@ -61,7 +62,7 @@ public class PlaceController {
     @PostMapping("/propose")
     public ResponseEntity<PlaceWithUserDto> proposePlace(
         @Valid @RequestBody PlaceAddDto dto, Principal principal) {
-        User user = userService.findByEmail(principal.getName());
+        UserVO user = userService.findByEmail(principal.getName());
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }

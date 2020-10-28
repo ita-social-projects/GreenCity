@@ -3,15 +3,17 @@ package greencity.dto.user;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.goal.GoalVO;
 import greencity.enums.GoalStatus;
-import lombok.*;
-
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @Builder
 public class UserGoalVO {
     private Long id;
