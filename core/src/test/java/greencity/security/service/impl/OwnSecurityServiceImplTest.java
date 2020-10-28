@@ -15,6 +15,7 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.UserApprovalMessage;
 import greencity.message.VerifyEmailMessage;
+import greencity.repository.UserRepo;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
 import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
@@ -66,6 +67,9 @@ class OwnSecurityServiceImplTest {
     @Mock
     ModelMapper modelMapper;
 
+    @Mock
+    UserRepo userRepo;
+
     private OwnSecurityService ownSecurityService;
 
     private UserVO verifiedUser;
@@ -83,7 +87,8 @@ class OwnSecurityServiceImplTest {
     public void init() {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
-            jwtTool, 1, rabbitTemplate, defaultProfilePicture, restorePasswordEmailRepo, modelMapper);
+            jwtTool, 1, rabbitTemplate, defaultProfilePicture, restorePasswordEmailRepo, modelMapper,
+                userRepo);
 
         verifiedUser = UserVO.builder()
             .email("test@gmail.com")
