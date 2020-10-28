@@ -225,9 +225,10 @@ public class EcoNewsCommentController {
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
                                                                                Long ecoNewsId,
                                                                                @ApiIgnore @CurrentUser UserVO user) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
+        ResponseEntity<PageableDto<EcoNewsCommentDto>> body = ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
+        return body;
     }
 
     /**
