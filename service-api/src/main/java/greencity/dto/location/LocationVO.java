@@ -7,7 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @Builder
 public class LocationVO {
     private Long id;

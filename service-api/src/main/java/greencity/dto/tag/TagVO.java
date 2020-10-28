@@ -15,8 +15,6 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "ecoNews")
-@EqualsAndHashCode(exclude = "ecoNews")
 @Builder
 public class TagVO {
     private Long id;

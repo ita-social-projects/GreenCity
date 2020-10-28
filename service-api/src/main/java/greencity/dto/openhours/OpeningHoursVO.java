@@ -10,7 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @Builder
 public class OpeningHoursVO {
     private Long id;

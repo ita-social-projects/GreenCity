@@ -7,6 +7,8 @@ import greencity.entity.EcoNewsComment;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
 public class EcoNewsCommentVOMapper extends AbstractConverter<EcoNewsComment, EcoNewsCommentVO> {
     @Override
@@ -23,6 +25,10 @@ public class EcoNewsCommentVOMapper extends AbstractConverter<EcoNewsComment, Ec
                 .deleted(ecoNewsComment.isDeleted())
                 .currentUserLiked(ecoNewsComment.isCurrentUserLiked())
                 .createdDate(ecoNewsComment.getCreatedDate())
+                .usersLiked(ecoNewsComment.getUsersLiked().stream().map(user -> UserVO.builder()
+                        .id(user.getId())
+                        .build())
+                .collect(Collectors.toSet()))
                 .ecoNews(EcoNewsVO.builder()
                         .id(ecoNewsComment.getEcoNews().getId())
                         .build())

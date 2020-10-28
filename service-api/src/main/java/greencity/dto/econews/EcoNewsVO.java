@@ -9,8 +9,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@ToString(exclude = {"author", "tags"})
-@EqualsAndHashCode(exclude = {"author", "tags"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

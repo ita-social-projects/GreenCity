@@ -1,6 +1,5 @@
 package greencity.dto.goal;
 
-import greencity.dto.user.UserGoalDto;
 import greencity.dto.user.UserGoalVO;
 import lombok.*;
 
@@ -10,7 +9,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @Builder
 public class GoalVO {
     private Long id;

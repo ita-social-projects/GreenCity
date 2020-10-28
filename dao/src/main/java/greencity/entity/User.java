@@ -43,13 +43,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"lastVisit", "places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity",
-        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks",
-        "userGoals", "customGoals"})
+    exclude = {"lastVisit", "verifyEmail", "ownSecurity",
+        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
 @ToString(
-    exclude = {"places", "comments", "verifyEmail", "addedPlaces", "favoritePlaces", "ownSecurity", "refreshTokenKey",
-        "verifyEmail", "estimates", "restorePasswordEmail", "addedEcoNews", "addedTipsAndTricks", "userGoals",
-        "customGoals"})
+    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey",
+        "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,27 +72,6 @@ public class User {
 
     @Column(nullable = false)
     private LocalDateTime dateOfRegistration;
-
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-    private List<Place> places = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<EcoNewsComment> ecoNewsComments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<FavoritePlace> favoritePlaces = new ArrayList<>();
-
-    @OneToMany(mappedBy = "author")
-    private List<Place> addedPlaces = new ArrayList<>();
-
-    @OneToMany(mappedBy = "author")
-    private List<EcoNews> addedEcoNews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "author")
-    private List<TipsAndTricks> addedTipsAndTricks = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private OwnSecurity ownSecurity;
@@ -143,7 +120,7 @@ public class User {
     @Column(name = "user_credo")
     private String userCredo;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Column(name = "social_networks")
     private List<SocialNetwork> socialNetworks;
 
@@ -158,10 +135,4 @@ public class User {
 
     @Column(name = "last_activity_time")
     private LocalDateTime lastActivityTime;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<HabitAssign> habitAssigns = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<RatingStatistics> ratingStatistics = new ArrayList<>();
 }

@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = "user")
 public class OwnSecurityVO {
     private Long id;
 
