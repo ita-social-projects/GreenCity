@@ -37,13 +37,6 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.tag.TagVO;
-import greencity.dto.tipsandtricks.TextTranslationVO;
-import greencity.dto.tipsandtricks.TipsAndTricksVO;
-import greencity.dto.tipsandtricks.TitleTranslationVO;
-import greencity.dto.user.HabitIdRequestDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserGoalVO;
-import greencity.dto.user.UserVO;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -52,12 +45,9 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.GoalStatus;
-import greencity.enums.ROLE;
-import greencity.service.TestConst;
-import java.time.*;
 import greencity.enums.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -69,8 +59,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -342,8 +330,8 @@ public class ModelUtils {
         placeVO.setPhone("0322 489 850");
         placeVO.setEmail("forum_lviv@gmail.com");
         placeVO.setLocation(LocationVO.builder()
-                .id(1L)
-                .build());
+            .id(1L)
+            .build());
         placeVO.setModifiedDate(ZonedDateTime.now());
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setName("category");
