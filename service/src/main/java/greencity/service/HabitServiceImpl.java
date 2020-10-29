@@ -13,8 +13,10 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -101,8 +103,22 @@ public class HabitServiceImpl implements HabitService {
     @Override
     @Transactional
     public HabitManagementDto saveHabitAndTranslations(HabitManagementDto habitManagementDto, MultipartFile image) {
-        Habit habit = habitRepo.save(Habit.builder()
-            .image(habitManagementDto.getImage())
+        Habit habit = buildHabitWithTranslations(habitManagementDto);
+        uploadImageForHabit(habitManagementDto, image, habit);
+
+        habitRepo.save(habit);
+        habitTranslationRepo.saveAll(habit.getHabitTranslations());
+        return modelMapper.map(habit, HabitManagementDto.class);
+    }
+
+    /**
+     * Method builds {@link Habit} with {@link HabitManagementDto} fields.
+     *
+     * @param habitManagementDto {@link HabitManagementDto} instance.
+     * @return {@link Habit}.
+     */
+    private Habit buildHabitWithTranslations(HabitManagementDto habitManagementDto) {
+        Habit habit = Habit.builder()
             .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
                     .map(translationDto -> HabitTranslation.builder()
@@ -113,21 +129,28 @@ public class HabitServiceImpl implements HabitService {
                             languageService.findByCode(translationDto.getLanguageCode()),
                             Language.class)).build())
                     .collect(Collectors.toList())
-            ).build());
-        habit.getHabitTranslations().forEach(ht -> ht.setHabit(habit));
-
-        uploadImageForHabit(habitManagementDto, image, habit);
-
-        habitTranslationRepo.saveAll(habit.getHabitTranslations());
-        return modelMapper.map(habit, HabitManagementDto.class);
+            ).build();
+        habit.getHabitTranslations().forEach(habitTranslation -> {
+            habitTranslation.setHabit(habit);
+        });
+        return habit;
     }
 
+    /**
+     * Method sets new image path for {@link Habit}.
+     *
+     * @param habitManagementDto {@link HabitManagementDto} instance.
+     * @param image              {@link MultipartFile} image.
+     * @param habit              {@link Habit} instance.
+     */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-        if (habitManagementDto.getImage() != null) {
+        if (!habitManagementDto.getImage().isEmpty()) {
             image = fileService.convertToMultipartImage(habitManagementDto.getImage());
         }
         if (image != null) {
             habit.setImage(fileService.upload(image).toString());
+        } else {
+            habit.setImage("");
         }
     }
 

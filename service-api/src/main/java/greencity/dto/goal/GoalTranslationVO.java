@@ -1,21 +1,17 @@
 package greencity.dto.goal;
 
-import greencity.dto.advice.AdviceVO;
-import greencity.dto.language.LanguageVO;
-import lombok.*;
+import greencity.dto.translation.TranslationVO;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
+@EqualsAndHashCode(callSuper = true, exclude = "goal")
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
-@Builder
-public class GoalTranslationVO {
-    private Long id;
-
-    private LanguageVO language;
-
+public class GoalTranslationVO extends TranslationVO {
     private GoalVO goal;
-
-    private String content;
 }

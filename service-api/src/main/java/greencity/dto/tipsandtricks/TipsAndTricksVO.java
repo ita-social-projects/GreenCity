@@ -1,6 +1,7 @@
 package greencity.dto.tipsandtricks;
 
 import greencity.dto.tag.TagVO;
+import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

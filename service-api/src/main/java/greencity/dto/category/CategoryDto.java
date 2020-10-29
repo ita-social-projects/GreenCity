@@ -15,6 +15,17 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @Builder
 public class CategoryDto implements Serializable {
+    /**
+     * Constructor.
+     */
+    public CategoryDto(
+        @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ServiceValidationConstants.CATEGORY_NAME_BAD_FORMED)
+        @Length(
+            min = ServiceValidationConstants.CATEGORY_NAME_MIN_LENGTH,
+            max = ServiceValidationConstants.CATEGORY_NAME_MAX_LENGTH) @NotBlank String name) {
+        this.name = name;
+    }
+
     @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ServiceValidationConstants.CATEGORY_NAME_BAD_FORMED)
     @Length(
         min = ServiceValidationConstants.CATEGORY_NAME_MIN_LENGTH,
