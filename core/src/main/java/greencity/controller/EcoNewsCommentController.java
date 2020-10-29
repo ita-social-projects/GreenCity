@@ -9,7 +9,6 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.User;
 import greencity.service.EcoNewsCommentService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -225,9 +224,10 @@ public class EcoNewsCommentController {
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
                                                                                Long ecoNewsId,
                                                                                @ApiIgnore @CurrentUser UserVO user) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
+        ResponseEntity<PageableDto<EcoNewsCommentDto>> body = ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
+        return body;
     }
 
     /**

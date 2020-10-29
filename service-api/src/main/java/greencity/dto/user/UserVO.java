@@ -1,24 +1,22 @@
 package greencity.dto.user;
 
-import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.goal.CustomGoalVO;
-import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
-import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -60,16 +58,6 @@ public class UserVO {
 
     private OwnSecurityVO ownSecurity;
 
-    private List<PlaceVO> places = new ArrayList<>();
-
-    private List<EcoNewsCommentVO> ecoNewsComments = new ArrayList<>();
-
-    private List<PlaceVO> addedPlaces = new ArrayList<>();
-
-    private List<EcoNewsVO> addedEcoNews = new ArrayList<>();
-
-    private List<TipsAndTricksVO> addedTipsAndTricks = new ArrayList<>();
-
     private String profilePicturePath;
 
     private Set<EcoNewsCommentVO> ecoNewsCommentsLiked;
@@ -85,8 +73,4 @@ public class UserVO {
     private Boolean showShoppingList;
 
     private LocalDateTime lastActivityTime;
-
-    private List<HabitAssignVO> habitAssigns = new ArrayList<>();
-
-    private List<RatingStatisticsVO> ratingStatistics = new ArrayList<>();
 }

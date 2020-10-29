@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public UserVO save(UserVO userVO) {
         User user = modelMapper.map(userVO, User.class);

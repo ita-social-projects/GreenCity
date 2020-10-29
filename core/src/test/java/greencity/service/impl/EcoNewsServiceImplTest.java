@@ -2,7 +2,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.TestConst;
 import greencity.constant.AppConstant;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
