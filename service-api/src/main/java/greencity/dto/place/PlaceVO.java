@@ -18,6 +18,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(
+    exclude = {"discountValues", "author", "openingHoursList", "photos",
+        "location", "category", "status", "discountValues"})
 @Builder
 public class PlaceVO {
     private Long id;

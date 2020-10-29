@@ -64,7 +64,7 @@ class TipsAndTricksServiceImplTest {
     private TipsAndTricksCommentVO tipsAndTricksCommentVO = ModelUtils.getTipsAndTricksCommentVO();
     private User user = ModelUtils.getUser();
     private UserVO userVO = ModelUtils.getUserVO();
-    private TagVO tagVO = new TagVO(1L, "News");
+    private TagVO tagVO = new TagVO(1L, "News", null, null);
 
     @Test
     void saveTest() {

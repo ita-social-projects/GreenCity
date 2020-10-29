@@ -124,18 +124,17 @@ public class PlaceServiceImpl implements PlaceService {
         if (dto.getOpeningHoursList() != null) {
             proposePlaceService.checkInputTime(dto.getOpeningHoursList());
         }
-
-        Place place = modelMapper.map(dto, Place.class);
-        setUserToPlaceByEmail(email, place);
-
-        place.setCategory(categoryRepo.findByName(dto.getCategory().getName()));
-        PlaceVO placeVO = modelMapper.map(place, PlaceVO.class);
+        PlaceVO placeVO = modelMapper.map(dto, PlaceVO.class);
+        setUserToPlaceByEmail(email,placeVO);
         if (placeVO.getDiscountValues() != null) {
             proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
         }
         if (placeVO.getPhotos() != null) {
             proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
         }
+        Place place = modelMapper.map(placeVO, Place.class);
+        place.setCategory(categoryRepo.findByName(dto.getCategory().getName()));
+        place.getOpeningHoursList().forEach(openingHours -> openingHours.setPlace(place));
 
         return modelMapper.map(placeRepo.save(place), PlaceVO.class);
     }
@@ -144,16 +143,16 @@ public class PlaceServiceImpl implements PlaceService {
      * Method for getting {@link User} and set this {@link User} to place.
      *
      * @param email - String, user's email.
-     * @param place - {@link Place} entity.
+     * @param placeVO - {@link Place} entity.
      * @return user - {@link User}.
      * @author Kateryna Horokh
      */
-    private UserVO setUserToPlaceByEmail(String email, Place place) {
+    private UserVO setUserToPlaceByEmail(String email, PlaceVO placeVO) {
         UserVO userVO = userService.findByEmail(email);
-        place.setAuthor(modelMapper.map(userVO, User.class));
+        placeVO.setAuthor(userVO);
         if (userVO.getRole() == ROLE.ROLE_ADMIN || userVO.getRole() == ROLE.ROLE_MODERATOR) {
-            place.setStatus(PlaceStatus.APPROVED);
-            notificationService.sendImmediatelyReport(modelMapper.map(place, PlaceVO.class));
+            placeVO.setStatus(PlaceStatus.APPROVED);
+            notificationService.sendImmediatelyReport(placeVO);
         }
         return userVO;
     }
@@ -225,6 +224,7 @@ public class PlaceServiceImpl implements PlaceService {
         Set<OpeningHours> openingHoursSetOld = modelMapper.map(openingHoursVO,
             new TypeToken<Set<OpeningHours>>() {
             }.getType());
+        updatedPlace.setOpeningHoursList(null);
         openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> hours = new HashSet<>();
         if (hoursUpdateDtoSet != null) {

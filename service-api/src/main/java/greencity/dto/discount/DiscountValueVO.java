@@ -17,6 +17,6 @@ import lombok.Setter;
 public class DiscountValueVO {
     private Long id;
     private Integer value;
-    private PlaceVO placeVO;
-    private SpecificationVO specificationVO;
+    private PlaceVO place;
+    private SpecificationVO specification;
 }
