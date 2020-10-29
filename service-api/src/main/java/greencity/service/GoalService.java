@@ -16,30 +16,25 @@ public interface GoalService {
     List<GoalDto> findAll(String language);
 
     /**
-     * Method for getting {@link UserGoalResponseDto} from {@link UserGoalVO}.
+     * Method for saving goal from {@link GoalPostDto}.
      *
-     * @param userGoal needed text from GoalTranslation
-     * @return userGoalResponseDto.
-     */
-    UserGoalResponseDto getUserGoalResponseDtoFromPredefinedGoal(UserGoalVO userGoal);
-
-    /**
-     * Method save goal.
-     *
+     * @param goalPostDto needed text
      * @author Dmytro Khonko
      */
-    List<GoalTranslationVO> saveGoal(GoalPostDto goal);
+    List<GoalTranslationVO> saveGoal(GoalPostDto goalPostDto);
 
     /**
-     * Method to update goal .
+     * Method to update goal translations from {@link GoalPostDto}.
      *
+     * @param goalPostDto new text
      * @author Dmytro Khonko
      */
-    List<GoalTranslationVO> update(GoalPostDto dto, Long goalId);
+    List<GoalTranslationVO> update(GoalPostDto goalPostDto);
 
     /**
      * Method delete goal.
      *
+     * @param goalId id of goal you need to delete
      * @author Dmytro Khonko
      */
     void delete(Long goalId);

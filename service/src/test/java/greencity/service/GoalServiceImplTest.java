@@ -70,7 +70,7 @@ class GoalServiceImplTest {
         assertEquals(goalService.findAll(AppConstant.DEFAULT_LANGUAGE_CODE), goalsDto);
     }
 
-    @Test
+    /*@Test
     void getUserGoalResponseDtoFromPredefinedGoal() {
         UserGoalVO map = ModelUtils.getUserGoalVO();
         Goal goal = predefinedUserGoal.getGoal();

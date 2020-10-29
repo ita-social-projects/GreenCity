@@ -165,7 +165,7 @@ public class ModelUtils {
                 .id(1L)
                 .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
                 .status(GoalStatus.DONE)
-                .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
+                //.customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
                 .build();
     }
 
@@ -196,10 +196,6 @@ public class ModelUtils {
                         .role(ROLE.ROLE_USER)
                         .build())
                 .status(GoalStatus.DONE)
-                .customGoal(CustomGoalVO.builder()
-                        .id(8L)
-                        .text("Buy electric car")
-                        .build())
                 .build();
     }
 

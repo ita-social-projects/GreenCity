@@ -5,8 +5,6 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalPostDto;
-import greencity.dto.goal.GoalTranslationVO;
-import greencity.dto.goal.GoalVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.localization.GoalTranslation;
 import greencity.entity.Goal;
@@ -62,7 +60,7 @@ public class GoalController {
     /**
      * The controller which saveGoal {@link Goal}.
      *
-     * @param goal {@link GoalDto}
+     * @param goalPostDto {@link GoalDto}
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Save goal")
@@ -72,17 +70,17 @@ public class GoalController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity<List<LanguageTranslationDTO>> save(@Valid @RequestBody GoalPostDto goal) {
-        List<LanguageTranslationDTO> response = mapper.map(goalService.saveGoal(goal),
+    public ResponseEntity<List<LanguageTranslationDTO>> save(@Valid @RequestBody GoalPostDto goalPostDto) {
+        List<LanguageTranslationDTO> response = mapper.map(goalService.saveGoal(goalPostDto),
             new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
-     * The controller which update {@link Goal}.
+     * The controller which update {@link GoalTranslation}.
      *
-     * @param dto {@link GoalDto}
+     * @param goalPostDto {@link GoalPostDto}
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Update goal")
@@ -91,10 +89,10 @@ public class GoalController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PutMapping("/{goalId}")
+    @PutMapping("/{Id}")
     public ResponseEntity<List<LanguageTranslationDTO>> update(
-        @Valid @RequestBody GoalPostDto dto, @PathVariable Long goalId) {
-        List<LanguageTranslationDTO> response = mapper.map(goalService.update(dto,goalId),
+        @Valid @RequestBody GoalPostDto goalPostDto) {
+        List<LanguageTranslationDTO> response = mapper.map(goalService.update(goalPostDto),
             new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType());
         return ResponseEntity.status(HttpStatus.OK).body(response);
