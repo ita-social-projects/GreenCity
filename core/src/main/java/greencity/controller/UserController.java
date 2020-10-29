@@ -11,7 +11,6 @@ import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.*;
 import greencity.entity.EcoNews;
 import greencity.entity.User;
@@ -24,11 +23,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,6 +35,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/user")
@@ -213,7 +212,7 @@ public class UserController {
     })
     @PatchMapping
     public ResponseEntity<UserUpdateDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
-                                     @ApiIgnore @AuthenticationPrincipal Principal principal) {
+                                                    @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
     }
@@ -543,14 +542,14 @@ public class UserController {
      */
     @ApiOperation(value = "Delete user profile picture")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping(path = "/deleteProfilePicture")
     public ResponseEntity<HttpStatus> deleteUserProfilePicture(@ApiIgnore
-                                                               @AuthenticationPrincipal Principal principal)  {
+                                                               @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.deleteUserProfilePicture(email);
         return ResponseEntity.status(HttpStatus.OK).build();

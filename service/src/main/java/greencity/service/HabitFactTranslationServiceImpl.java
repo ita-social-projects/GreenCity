@@ -1,9 +1,12 @@
 package greencity.service;
 
+import static greencity.enums.FactOfDayStatus.CURRENT;
+
 import greencity.constant.CacheConstants;
+import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
@@ -16,11 +19,8 @@ import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static greencity.enums.FactOfDayStatus.CURRENT;
 
 /**
  * Implementation of {@link HabitFactTranslationService}.
@@ -44,7 +44,7 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
      * @author Vitaliy Dzen.
      */
     @Override
-    public List<HabitFactTranslationVO> saveHabitFactAndFactTranslation(HabitFactPostDto habitFactPostDTO) {
+    public HabitFactDtoResponse saveHabitFactAndFactTranslation(HabitFactPostDto habitFactPostDTO) {
         HabitFactVO habitFactVO = habitFactService.save(habitFactPostDTO);
         HabitFact habitFact = modelMapper.map(habitFactVO, HabitFact.class);
         List<HabitFactTranslation> habitFactTranslations = modelMapper.map(habitFactPostDTO.getTranslations(),
@@ -55,10 +55,11 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
             a.setFactOfDayStatus(FactOfDayStatus.POTENTIAL);
         });
         List<HabitFactTranslationVO> habitFactTranslationVOS = habitFactTranslations
-                .stream().map(habitFactTranslation -> modelMapper
-                        .map(habitFactTranslation, HabitFactTranslationVO.class))
-                .collect(Collectors.toList());
-        return saveHabitFactTranslation(habitFactTranslationVOS);
+            .stream().map(habitFactTranslation -> modelMapper
+                .map(habitFactTranslation, HabitFactTranslationVO.class))
+            .collect(Collectors.toList());
+        habitFactVO.setTranslations(saveHabitFactTranslation(habitFactTranslationVOS));
+        return modelMapper.map(habitFactVO, HabitFactDtoResponse.class);
     }
 
     /**
@@ -71,13 +72,13 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
     @Override
     public List<HabitFactTranslationVO> saveHabitFactTranslation(List<HabitFactTranslationVO> habitFactTranslationVOS) {
         List<HabitFactTranslation> habitFactTranslations = habitFactTranslationVOS
-                .stream().map(habitFactTranslation -> modelMapper.map(
-                        habitFactTranslation, HabitFactTranslation.class))
-                .collect(Collectors.toList());
+            .stream().map(habitFactTranslation -> modelMapper.map(
+                habitFactTranslation, HabitFactTranslation.class))
+            .collect(Collectors.toList());
         return habitFactTranslationRepo.saveAll(habitFactTranslations)
-                .stream().map(habitFactTranslation -> modelMapper
-                        .map(habitFactTranslation, HabitFactTranslationVO.class))
-                .collect(Collectors.toList());
+            .stream().map(habitFactTranslation -> modelMapper
+                .map(habitFactTranslation, HabitFactTranslationVO.class))
+            .collect(Collectors.toList());
     }
 
     /**

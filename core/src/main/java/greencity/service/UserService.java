@@ -5,7 +5,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
@@ -14,7 +13,6 @@ import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

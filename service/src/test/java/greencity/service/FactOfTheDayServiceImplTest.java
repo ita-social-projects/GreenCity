@@ -208,8 +208,9 @@ class FactOfTheDayServiceImplTest {
 
     @Test
     void deleteAllFactOfTheDayAndTranslationsTestFailed() {
+        List<Long> longs = List.of(anyLong());
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotUpdatedException.class);
-        assertThrows(NotUpdatedException.class, () -> factOfTheDayService.deleteAllFactOfTheDayAndTranslations(List.of(anyLong())));
+        assertThrows(NotUpdatedException.class, () -> factOfTheDayService.deleteAllFactOfTheDayAndTranslations(longs));
     }
 
     @Test

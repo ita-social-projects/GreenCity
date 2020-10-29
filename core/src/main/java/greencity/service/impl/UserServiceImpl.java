@@ -1,5 +1,7 @@
 package greencity.service.impl;
 
+import static greencity.constant.ErrorMessage.*;
+
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -7,18 +9,20 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
+import greencity.entity.localization.GoalTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
-import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import greencity.repository.options.UserFilter;
-import greencity.service.*;
+import greencity.service.FileService;
+import greencity.service.HabitAssignService;
+import greencity.service.SocialNetworkImageService;
+import greencity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,15 +33,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static greencity.constant.ErrorMessage.*;
 
 /**
  * The class provides implementation of the {@code UserService}.

@@ -1,9 +1,10 @@
 package greencity.service;
 
+import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
-
 import java.util.List;
 
 /**
@@ -26,10 +27,10 @@ public interface HabitFactTranslationService {
      * to {HabitFact}.
      *
      * @param habitFactPostDTO {@link greencity.dto.habitfact.HabitFactDto}.
-     * @return List of {@link HabitFactTranslationVO}.
+     * @return {@link HabitFactVO}.
      * @author Vitaliy Dzen.
      */
-    List<HabitFactTranslationVO> saveHabitFactAndFactTranslation(HabitFactPostDto habitFactPostDTO);
+    HabitFactDtoResponse saveHabitFactAndFactTranslation(HabitFactPostDto habitFactPostDTO);
 
     /**
      * Method to get today's {HabitFact} of day by language id.

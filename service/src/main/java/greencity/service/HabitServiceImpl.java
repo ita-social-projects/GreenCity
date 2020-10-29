@@ -13,10 +13,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -24,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link HabitService}.
@@ -130,9 +128,7 @@ public class HabitServiceImpl implements HabitService {
                             Language.class)).build())
                     .collect(Collectors.toList())
             ).build();
-        habit.getHabitTranslations().forEach(habitTranslation -> {
-            habitTranslation.setHabit(habit);
-        });
+        habit.getHabitTranslations().forEach(habitTranslation -> habitTranslation.setHabit(habit));
         return habit;
     }
 
