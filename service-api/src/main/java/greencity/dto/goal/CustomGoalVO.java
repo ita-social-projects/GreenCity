@@ -10,8 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString(exclude = {"userGoals"})
 @Builder
 public class CustomGoalVO {
     private Long id;

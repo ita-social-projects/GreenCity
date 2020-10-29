@@ -280,7 +280,7 @@ public class UserController {
         @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(customGoalService.save(dto, userService.findById(userId)));
+            .body(customGoalService.save(dto, userId));
     }
 
     /**

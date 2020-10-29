@@ -7,7 +7,7 @@ import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
-import greencity.enums.RatingCalculationEnum;
+import greencity.annotations.RatingCalculationEnum;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;

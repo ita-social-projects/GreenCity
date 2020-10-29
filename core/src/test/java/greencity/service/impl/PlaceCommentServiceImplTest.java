@@ -64,8 +64,8 @@ class PlaceCommentServiceImplTest {
     void saveTest() {
         AddCommentDto addCommentDto = ModelUtils.getAddCommentDto();
         Comment comment = ModelUtils.getComment();
-        when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlace());
-        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUser());
+        when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlaceVO());
+        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(addCommentDto, Comment.class)).thenReturn(comment);
         when(modelMapper.map(comment, CommentReturnDto.class))
             .thenReturn(ModelUtils.getCommentReturnDto());
