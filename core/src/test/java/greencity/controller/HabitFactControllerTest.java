@@ -138,14 +138,6 @@ class HabitFactControllerTest {
     }
 
     @Test
-    void saveBadRequestTest() throws Exception {
-        mockMvc.perform(post(factLink)
-            .content("{}")
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void updateTest() throws Exception {
         Long factId = 1L;
         mockMvc.perform(put(factLink + "/{factId}", factId)
