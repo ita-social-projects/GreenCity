@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = {"value"})
 @Builder
 public class DiscountValueVO {
     private Long id;

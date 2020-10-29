@@ -18,6 +18,7 @@ import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
 import java.time.ZoneId;
@@ -60,6 +61,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final ProposePlaceService proposePlaceService;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
+    private CategoryRepo categoryRepo;
 
     /**
      * Constructor.
@@ -76,7 +78,8 @@ public class PlaceServiceImpl implements PlaceService {
                             NotificationService notificationService,
                             @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
                             RabbitTemplate rabbitTemplate,
-                            ProposePlaceServiceImpl proposePlaceService) {
+                            ProposePlaceServiceImpl proposePlaceService,
+                            CategoryRepo categoryRepo) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.categoryService = categoryService;
@@ -89,6 +92,7 @@ public class PlaceServiceImpl implements PlaceService {
         this.datasourceTimezone = datasourceTimezone;
         this.rabbitTemplate = rabbitTemplate;
         this.proposePlaceService = proposePlaceService;
+        this.categoryRepo = categoryRepo;
     }
 
     /**
@@ -120,14 +124,17 @@ public class PlaceServiceImpl implements PlaceService {
         if (dto.getOpeningHoursList() != null) {
             proposePlaceService.checkInputTime(dto.getOpeningHoursList());
         }
-
-        Place place = modelMapper.map(dto, Place.class);
-        setUserToPlaceByEmail(email, place);
-
-        place.setCategory(modelMapper.map(categoryService.findByName(dto.getCategory().getName()), Category.class));
-        PlaceVO placeVO = modelMapper.map(place, PlaceVO.class);
-        proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
-        proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
+        PlaceVO placeVO = modelMapper.map(dto, PlaceVO.class);
+        setUserToPlaceByEmail(email,placeVO);
+        if (placeVO.getDiscountValues() != null) {
+            proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
+        }
+        if (placeVO.getPhotos() != null) {
+            proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
+        }
+        Place place = modelMapper.map(placeVO, Place.class);
+        place.setCategory(categoryRepo.findByName(dto.getCategory().getName()));
+        place.getOpeningHoursList().forEach(openingHours -> openingHours.setPlace(place));
 
         return modelMapper.map(placeRepo.save(place), PlaceVO.class);
     }
@@ -136,16 +143,16 @@ public class PlaceServiceImpl implements PlaceService {
      * Method for getting {@link User} and set this {@link User} to place.
      *
      * @param email - String, user's email.
-     * @param place - {@link Place} entity.
+     * @param placeVO - {@link Place} entity.
      * @return user - {@link User}.
      * @author Kateryna Horokh
      */
-    private UserVO setUserToPlaceByEmail(String email, Place place) {
+    private UserVO setUserToPlaceByEmail(String email, PlaceVO placeVO) {
         UserVO userVO = userService.findByEmail(email);
-        place.setAuthor(modelMapper.map(userVO, User.class));
+        placeVO.setAuthor(userVO);
         if (userVO.getRole() == ROLE.ROLE_ADMIN || userVO.getRole() == ROLE.ROLE_MODERATOR) {
-            place.setStatus(PlaceStatus.APPROVED);
-            notificationService.sendImmediatelyReport(modelMapper.map(place, PlaceVO.class));
+            placeVO.setStatus(PlaceStatus.APPROVED);
+            notificationService.sendImmediatelyReport(placeVO);
         }
         return userVO;
     }
@@ -213,6 +220,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
+        updatedPlace.setOpeningHoursList(null);
         Set<OpeningHoursVO> openingHoursVO = openingHoursService.findAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> openingHoursSetOld = modelMapper.map(openingHoursVO,
             new TypeToken<Set<OpeningHours>>() {

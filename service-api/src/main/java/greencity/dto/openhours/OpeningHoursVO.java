@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = {"openTime", "closeTime", "breakTime"})
 @Builder
 public class OpeningHoursVO {
     private Long id;

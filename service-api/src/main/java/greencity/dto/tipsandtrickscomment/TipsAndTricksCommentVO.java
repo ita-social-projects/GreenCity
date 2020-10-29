@@ -1,15 +1,19 @@
-package greencity.dto.tipsandtricks;
+package greencity.dto.tipsandtrickscomment;
 
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.dto.user.UserVO;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@Builder
 public class TipsAndTricksCommentVO {
     private Long id;
     private String text;

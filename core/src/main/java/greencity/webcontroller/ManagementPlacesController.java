@@ -9,6 +9,7 @@ import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.specification.SpecificationNameDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.service.CategoryService;
