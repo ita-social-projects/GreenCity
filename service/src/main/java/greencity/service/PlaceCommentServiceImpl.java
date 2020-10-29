@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
@@ -13,10 +13,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
-import greencity.service.PhotoService;
-import greencity.service.PlaceCommentService;
-import greencity.service.PlaceService;
-import greencity.service.UserService;
+import greencity.repository.PlaceRepo;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -41,6 +38,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private PlaceService placeService;
     private PhotoService photoService;
     private ModelMapper modelMapper;
+    private PlaceRepo placeRepo;
 
     /**
      * {@inheritDoc}
@@ -76,6 +74,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             }
             photo.setUser(user);
             photo.setComment(comment);
+            photo.setPlace(place);
         });
 
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);

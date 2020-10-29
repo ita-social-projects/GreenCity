@@ -1,8 +1,8 @@
 package greencity.dto.comment;
 
-import greencity.constant.ValidationConstants;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.rate.EstimateAddDto;
+import greencity.validator.ValidationConstants;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;

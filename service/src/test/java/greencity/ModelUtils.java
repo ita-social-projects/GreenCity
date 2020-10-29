@@ -4,6 +4,8 @@ import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
+import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -667,5 +669,18 @@ public class ModelUtils {
     public static FavoritePlaceVO getFavoritePlaceVO() {
         return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
+    public static Comment getComment() {
+        return new Comment(1L, "text", getUser(),
+            getPlace(), null, null, Collections.emptyList(), null, null, null);
+    }
+
+    public static CommentReturnDto getCommentReturnDto() {
+        return new CommentReturnDto(1L, "text", null, null, null);
+    }
+
+    public static AddCommentDto getAddCommentDto() {
+        return new AddCommentDto("comment", null, null);
+    }
+
 }
 

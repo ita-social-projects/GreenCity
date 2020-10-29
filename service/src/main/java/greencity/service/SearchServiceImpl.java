@@ -1,12 +1,9 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
-import greencity.service.EcoNewsService;
-import greencity.service.SearchService;
-import greencity.service.TipsAndTricksService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

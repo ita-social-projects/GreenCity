@@ -23,4 +23,8 @@ public class ValidationConstants {
     public static final String LNG_MIN_VALIDATION = "{greenCity.validation.min.lng}";
     public static final String LNG_MAX_VALIDATION = "{greenCity.validation.max.lng}";
     public static final String MIN_AMOUNT_OF_TAGS = "{greenCity.validation.empty.tags}";
+    public static final String RATE_MIN_VALUE = "{greenCity.validation.min.rate}";
+    public static final String RATE_MAX_VALUE = "{greenCity.validation.max.rate}";
+    public static final int COMMENT_MIN_LENGTH = 5;
+    public static final int COMMENT_MAX_LENGTH = 300;
 }
