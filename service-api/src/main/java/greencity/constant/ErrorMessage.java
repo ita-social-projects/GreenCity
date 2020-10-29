@@ -107,6 +107,9 @@ public final class ErrorMessage {
     public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
+    public static final String FAVORITE_PLACE_ALREADY_EXISTS =
+            "Favorite place already exist for this placeId: %d and user with email: %s";
+    public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
 
     private ErrorMessage() {
     }

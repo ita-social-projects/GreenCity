@@ -1,7 +1,6 @@
 package greencity.security.service.impl;
 
 import greencity.constant.AppConstant;
-import greencity.dto.user.UserGoalRequestDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.OwnSecurity;
@@ -107,7 +106,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
         user.setOwnSecurity(ownSecurity);
         user.setVerifyEmail(verifyEmail);
-        UserVO userVO = modelMapper.map(user, UserVO.class);
         try {
             User savedUser = userRepo.save(user);
             user.setId(savedUser.getId());

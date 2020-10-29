@@ -13,6 +13,8 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.factoftheday.*;
+import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
@@ -27,6 +29,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
@@ -318,13 +321,14 @@ public class ModelUtils {
 
     public static PlaceVO getPlaceVO() {
         PlaceVO placeVO = new PlaceVO();
-//        placeVO.setLocationId(1L);
         placeVO.setId(1L);
         placeVO.setName("Forum");
         placeVO.setDescription("Shopping center");
         placeVO.setPhone("0322 489 850");
         placeVO.setEmail("forum_lviv@gmail.com");
-//        placeVO.setAuthorId(1L);
+        placeVO.setLocation(LocationVO.builder()
+                .id(1L)
+                .build());
         placeVO.setModifiedDate(ZonedDateTime.now());
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setName("category");
@@ -589,6 +593,18 @@ public class ModelUtils {
                 .currentUserLiked(false)
                 .status(CommentStatus.ORIGINAL)
                 .build();
+    }
+
+    public static FavoritePlaceDto getFavoritePlaceDto() {
+        return new FavoritePlaceDto("name", 3L);
+    }
+
+    public static FavoritePlace getFavoritePlace() {
+        return new FavoritePlace(3L, "name", getUser(), getPlace());
+    }
+
+    public static FavoritePlaceVO getFavoritePlaceVO() {
+        return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
 }
 

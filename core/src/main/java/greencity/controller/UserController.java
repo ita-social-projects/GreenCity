@@ -11,7 +11,6 @@ import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.*;
 import greencity.entity.EcoNews;
 import greencity.entity.User;

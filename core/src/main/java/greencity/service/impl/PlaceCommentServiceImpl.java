@@ -7,7 +7,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
-import greencity.dto.place.PlaceVO;
 import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.User;
