@@ -218,6 +218,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/econews/comments",
+                "/econews/{econewsId}",
                 "/favorite_place/{placeId}",
                 "/tipsandtricks/comments",
                 "/user/{userId}/customGoals",
@@ -262,7 +263,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).hasRole(ADMIN)
             .antMatchers(HttpMethod.DELETE,
                 "/advices/{adviceId}",
-                "/econews/{econewsId}",
                 "/facts/{factId}",
                 "/comments",
                 "/tipsandtricks/{id}",
