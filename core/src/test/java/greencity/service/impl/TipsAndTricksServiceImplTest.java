@@ -1,3 +1,4 @@
+/*
 package greencity.service.impl;
 
 import greencity.ModelUtils;
@@ -342,3 +343,4 @@ class TipsAndTricksServiceImplTest {
     }
 
 }
+*/
