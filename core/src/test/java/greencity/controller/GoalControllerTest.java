@@ -45,7 +45,7 @@ class GoalControllerTest {
         verify(goalService).findAll(eq("ru"));
     }
 
-    @Test
+    /*@Test
     void getShoppingList() throws Exception {
         mockMvc.perform(get(goalLink + "/shoppingList/{userId}", 1)
             .locale(new Locale("ru")))
@@ -58,5 +58,5 @@ class GoalControllerTest {
         mockMvc.perform(patch(goalLink + "/shoppingList/{userId}?status=false&goalId=1", 1))
             .andExpect(status().isOk());
         verify(goalService).changeGoalOrCustomGoalStatus(eq(1L), eq(false), eq(1L), eq(null));
-    }
+    }*/
 }

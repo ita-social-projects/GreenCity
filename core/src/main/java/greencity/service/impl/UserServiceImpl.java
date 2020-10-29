@@ -347,18 +347,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto bulkDto, String language) {
         List<UserGoalDto> goalDtos = bulkDto.getUserGoals();
-        List<UserCustomGoalDto> customGoalDtos = bulkDto.getUserCustomGoal();
         User user = userRepo.findById(userId)
             .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
-        if (goalDtos == null && customGoalDtos != null) {
-            saveCustomGoalsForUserGoals(user, customGoalDtos);
-        }
-        if (goalDtos != null && customGoalDtos == null) {
+        if (goalDtos != null) {
             saveGoalForUserGoal(user, goalDtos);
-        }
-        if (goalDtos != null && customGoalDtos != null) {
-            saveGoalForUserGoal(user, goalDtos);
-            saveCustomGoalsForUserGoals(user, customGoalDtos);
         }
         return getUserGoals(userId, language);
     }
@@ -377,22 +369,6 @@ public class UserServiceImpl implements UserService {
             user.getUserGoals().add(userGoal);
             userGoalRepo.saveAll(user.getUserGoals());
         }
-    }
-
-    /**
-     * Method save user goals with custom goal dictionary.
-     *
-     * @param user        {@link User} current user
-     * @param customGoals list {@link UserCustomGoalDto} for saving
-     * @author Bogdan Kuzenko
-     */
-    private void saveCustomGoalsForUserGoals(User user, List<UserCustomGoalDto> customGoals) {
-        for (UserCustomGoalDto el1 : customGoals) {
-            UserGoal userGoal = modelMapper.map(el1, UserGoal.class);
-            userGoal.setUser(user);
-            user.getUserGoals().add(userGoal);
-        }
-        userGoalRepo.saveAll(user.getUserGoals());
     }
 
     /**
@@ -439,14 +415,12 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new WrongIdException(USER_NOT_FOUND_BY_ID + userId));
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
-            if (userGoal.getStatus().equals(GoalStatus.DONE)) {
-                userGoal.setStatus(GoalStatus.ACTIVE);
-                userGoal.setDateCompleted(null);
-                userGoalRepo.save(userGoal);
-            } else if (userGoal.getStatus().equals(GoalStatus.ACTIVE)) {
+            if (userGoal.getStatus().equals(GoalStatus.ACTIVE)) {
                 userGoal.setStatus(GoalStatus.DONE);
                 userGoal.setDateCompleted(LocalDateTime.now());
                 userGoalRepo.save(userGoal);
+            } else {
+                throw new UserGoalStatusNotUpdatedException(USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
             }
         } else {
             throw new UserGoalStatusNotUpdatedException(USER_HAS_NO_SUCH_GOAL + goalId);

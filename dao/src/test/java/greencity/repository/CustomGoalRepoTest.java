@@ -45,6 +45,6 @@ class CustomGoalRepoTest {
     void changeCustomGoalStatus() {
         List<CustomGoal> goals = customGoalRepo.findAllByUserId(1L);
         customGoalRepo.changeCustomGoalStatus(1L, 1L, "DISABLED", LocalDateTime.now());
-        assertEquals(GoalStatus.DISABLED, goals.get(0).getUserGoals().get(0).getStatus());
+        assertEquals(GoalStatus.DISABLED, goals.get(0).getStatus());
     }
 }

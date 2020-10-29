@@ -40,6 +40,19 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
     GoalTranslation findByUserIdLangAndUserGoalId(Long userId, String languageCode, Long userGoalId);
 
     /**
+     * Method updates goal translation for particular selected goal for specific language code.
+     *
+     * @param goalId       target goal id
+     * @param languageCode code of needed language
+     * @param content new content
+     * @return {@link GoalTranslation}
+     */
+    @Query("UPDATE GoalTranslation SET content=?3"
+        + "WHERE id = ?1 AND language.code = ?2")
+    GoalTranslation updateTranslationContent(Long goalId, String languageCode, String content);
+
+
+    /**
      * Method returns goal translations for specific goal and language code.
      *
      * @param goal         goal to get translation

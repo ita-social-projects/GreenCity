@@ -1,8 +1,6 @@
 package greencity.service;
 
-import greencity.dto.goal.GoalDto;
-import greencity.dto.goal.ShoppingListDtoResponse;
-import greencity.dto.goal.CustomGoalVO;
+import greencity.dto.goal.*;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 
@@ -26,25 +24,23 @@ public interface GoalService {
     UserGoalResponseDto getUserGoalResponseDtoFromPredefinedGoal(UserGoalVO userGoal);
 
     /**
-     * Method for getting {@link UserGoalResponseDto} from {@link UserGoalVO} if there was set a {@link CustomGoalVO}.
+     * Method save goal.
      *
-     * @param userGoal needed text from CustomGoal
-     * @return userGoalResponseDto.
+     * @author Dmytro Khonko
      */
-    UserGoalResponseDto getUserGoalResponseDtoFromCustomGoal(UserGoalVO userGoal);
+    List<GoalTranslationVO> saveGoal(GoalPostDto goal);
 
     /**
-     * Method returns shopping list by user id.
+     * Method to update goal .
      *
-     * @return shopping list {@link ShoppingListDtoResponse}.
-     * @author Marian Datsko
+     * @author Dmytro Khonko
      */
-    List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode);
+    List<GoalTranslationVO> update(GoalPostDto dto, Long goalId);
 
     /**
-     * Method change goal or custom goal status.
+     * Method delete goal.
      *
-     * @author Marian Datsko
+     * @author Dmytro Khonko
      */
-    void changeGoalOrCustomGoalStatus(Long userId, boolean status, Long goalId, Long customGoalId);
+    void delete(Long goalId);
 }

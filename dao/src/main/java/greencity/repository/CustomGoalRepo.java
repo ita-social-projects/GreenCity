@@ -21,9 +21,8 @@ public interface CustomGoalRepo extends JpaRepository<CustomGoal, Long> {
      * @param userId id of the {@link User} current user
      * @return list of {@link CustomGoal}
      */
-    @Query("SELECT cg FROM CustomGoal cg WHERE cg.id NOT IN"
-        + "(SELECT ug.customGoal FROM UserGoal ug WHERE ug.user.id=:userId "
-        + "AND ug.status='ACTIVE') AND cg.user.id=:userId")
+    @Query("SELECT cg FROM CustomGoal cg WHERE "
+        + " cg.status<>'ACTIVE' AND cg.user.id=:userId")
     List<CustomGoal> findAllAvailableCustomGoalsForUserId(@Param("userId") Long userId);
 
     /**
@@ -32,9 +31,8 @@ public interface CustomGoalRepo extends JpaRepository<CustomGoal, Long> {
      * @param userId id of the {@link User} current user
      * @return {@link CustomGoal}
      */
-    @Query("SELECT cg FROM CustomGoal cg WHERE cg.id IN"
-        + "(SELECT ug.customGoal FROM UserGoal ug WHERE ug.user.id=:userId AND ug.id=:userGoalId) "
-        + "AND cg.user.id=:userId")
+    @Query("SELECT cg FROM CustomGoal cg WHERE cg.id = :userGoalId "
+        + " AND cg.user.id=:userId")
     CustomGoal findByUserGoalIdAndUserId(@Param("userGoalId") Long userGoalId, @Param("userId") Long userId);
 
     /**

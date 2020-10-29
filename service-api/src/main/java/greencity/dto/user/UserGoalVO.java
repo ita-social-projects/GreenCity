@@ -20,8 +20,6 @@ public class UserGoalVO {
 
     private GoalVO goal;
 
-    private CustomGoalVO customGoal;
-
     private GoalStatus status = GoalStatus.ACTIVE;
 
     private LocalDateTime dateCompleted;
