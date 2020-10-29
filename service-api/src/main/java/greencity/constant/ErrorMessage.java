@@ -113,6 +113,9 @@ public final class ErrorMessage {
     public static final String CANNOT_REPLY_TO_DELETED_COMMENT = "Can not reply to deleted comment";
     public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
         + "different TipsAndTricks Id";
+    public static final String FAVORITE_PLACE_ALREADY_EXISTS =
+            "Favorite place already exist for this placeId: %d and user with email: %s";
+    public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
 
     private ErrorMessage() {
     }

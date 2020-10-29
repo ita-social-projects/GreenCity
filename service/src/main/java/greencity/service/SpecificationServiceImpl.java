@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.breaktime.BreakTimeVO;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.specification.SpecificationVO;
 import greencity.entity.Specification;

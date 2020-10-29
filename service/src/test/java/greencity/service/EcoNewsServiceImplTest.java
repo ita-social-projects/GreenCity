@@ -1,4 +1,4 @@
-/*
+
 package greencity.service;
 
 import greencity.ModelUtils;
@@ -84,7 +84,7 @@ class EcoNewsServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
-        List<TagVO>tagVOList=Collections.singletonList(new TagVO(1L, "News"));
+        List<TagVO>tagVOList=Collections.singletonList(new TagVO(1L, "News", null, null));
         when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(tagVOList);
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(dto);
@@ -110,7 +110,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
-        List<TagVO>tagVOList=Collections.singletonList(new TagVO(1L, "News"));
+        List<TagVO>tagVOList=Collections.singletonList(new TagVO(1L, "News", null, null));
         when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(tagVOList);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
@@ -270,6 +270,3 @@ class EcoNewsServiceImplTest {
         assertEquals(dtoList, actual);
     }
 }
-
-
-*/

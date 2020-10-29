@@ -14,7 +14,6 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.CustomGoalNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomGoalRepo;
-import greencity.service.CustomGoalServiceImpl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;

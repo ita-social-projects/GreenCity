@@ -189,8 +189,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNews ecoNews = ecoNewsRepo
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
-        EcoNewsVO map = modelMapper.map(ecoNews, EcoNewsVO.class);
-        return map;
+        return modelMapper.map(ecoNews, EcoNewsVO.class);
     }
 
     /**

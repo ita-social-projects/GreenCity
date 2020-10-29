@@ -2,8 +2,6 @@ package greencity.dto.econews;
 
 import lombok.*;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
