@@ -167,7 +167,7 @@ class PlaceServiceImplTest {
         when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(categoryRepo.findByName(anyString())).thenReturn(new Category());
-        when(placeRepo.save(place)).thenReturn(place);
+        when(placeRepo.save(any())).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
 
         PlaceVO saved = placeService.save(placeAddDto, user.getEmail());

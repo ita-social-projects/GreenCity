@@ -220,11 +220,11 @@ public class PlaceServiceImpl implements PlaceService {
      */
     private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
+        updatedPlace.setOpeningHoursList(null);
         Set<OpeningHoursVO> openingHoursVO = openingHoursService.findAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> openingHoursSetOld = modelMapper.map(openingHoursVO,
             new TypeToken<Set<OpeningHours>>() {
             }.getType());
-        updatedPlace.setOpeningHoursList(null);
         openingHoursService.deleteAllByPlaceId(updatedPlace.getId());
         Set<OpeningHours> hours = new HashSet<>();
         if (hoursUpdateDtoSet != null) {

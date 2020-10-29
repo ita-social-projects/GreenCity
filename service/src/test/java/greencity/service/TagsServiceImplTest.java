@@ -1,4 +1,3 @@
-/*
 package greencity.service;
 
 import greencity.ModelUtils;
@@ -49,14 +48,14 @@ class TagsServiceImplTest {
         assertEquals(expected, tagService.findAllEcoNewsTags());
     }
 
-//    @Test
-//    void findAllTest() {
-//        Tag tipsAndTricksTag = ModelUtils.getTag();
-//        tipsAndTricksTag.setTipsAndTricks(Collections.singletonList(ModelUtils.getTipsAndTricks()));
-//        when(tagRepo.findAllTipsAndTricksTags()).thenReturn(Collections.singletonList(tipsAndTricksTag.getName()));
-//        List<String> expected = Collections.singletonList(tipsAndTricksTag.getName());
-//        assertEquals(expected, tagService.findAllTipsAndTricksTags());
-//    }
+    @Test
+    void findAllTest() {
+        Tag tipsAndTricksTag = ModelUtils.getTag();
+        tipsAndTricksTag.setTipsAndTricks(Collections.singletonList(ModelUtils.getTipsAndTricks()));
+        when(tagRepo.findAllTipsAndTricksTags()).thenReturn(Collections.singletonList(tipsAndTricksTag.getName()));
+        List<String> expected = Collections.singletonList(tipsAndTricksTag.getName());
+        assertEquals(expected, tagService.findAllTipsAndTricksTags());
+    }
 
     @Test
     void findAllWithoutTipsAndTricksTest() {
@@ -71,7 +70,7 @@ class TagsServiceImplTest {
         List<Tag> expected = Collections.singletonList(tipsAndTricksTag);
         when(tagRepo.findTipsAndTricksTagsByNames(Collections.singletonList(tipsAndTricksTag.getName())))
             .thenReturn(expected);
-        List<TagVO>tagVOList = Collections.singletonList(new TagVO(1L, "tag"));
+        List<TagVO>tagVOList = Collections.singletonList(new TagVO(1L, "tag", null, null));
         when(modelMapper.map(expected, new TypeToken<List<TagVO>>() {}.getType())).thenReturn(tagVOList);
         assertEquals(tagVOList,
             tagService.findTipsAndTricksTagsByNames(Collections.singletonList(tipsAndTricksTag.getName())));
@@ -122,6 +121,3 @@ class TagsServiceImplTest {
         assertThrows(InvalidNumOfTagsException.class, () -> tagService.isValidNumOfUniqueTags(tipsAndTricksTagsNames));
     }
 }
-
-
-*/
