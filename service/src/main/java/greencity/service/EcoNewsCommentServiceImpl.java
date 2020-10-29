@@ -240,7 +240,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
                 .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId);
-        User user = modelMapper.map(userVO, User.class);
+        User user = userVO == null ? modelMapper.map(UserVO.builder().build(), User.class)
+                : modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
@@ -274,7 +275,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
-        User user = modelMapper.map(userVO, User.class);
+        User user = userVO == null ? modelMapper.map(UserVO.builder().build(), User.class)
+                : modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
