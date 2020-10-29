@@ -8,8 +8,6 @@ import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Place;
-import greencity.entity.User;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.PlaceCommentRepo;
@@ -28,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
 
 @RestController
 @AllArgsConstructor
