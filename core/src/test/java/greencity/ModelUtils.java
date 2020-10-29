@@ -253,20 +253,6 @@ public class ModelUtils {
                         .build());
     }
 
-    public static Comment getComment() {
-        return new Comment(1L, "text", getUser(),
-                getPlace(), null, null, Collections.emptyList(), null, null, null);
-    }
-
-    public static CommentReturnDto getCommentReturnDto() {
-        return new CommentReturnDto(1L, "text", null, null, null);
-    }
-
-    public static AddCommentDto getAddCommentDto() {
-        return new AddCommentDto("comment", null, null);
-    }
-
-
     public static Advice getAdvice() {
         return new Advice(1L, null, null);
     }

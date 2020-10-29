@@ -1,11 +1,9 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.user.AuthorDto;
-import greencity.service.EcoNewsService;
-import greencity.service.TipsAndTricksService;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

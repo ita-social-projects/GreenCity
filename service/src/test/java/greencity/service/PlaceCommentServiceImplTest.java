@@ -1,4 +1,4 @@
-package greencity.service.impl;
+package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.PageableDto;
@@ -7,8 +7,6 @@ import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.entity.Comment;
 import greencity.repository.PlaceCommentRepo;
-import greencity.service.PlaceService;
-import greencity.service.UserService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

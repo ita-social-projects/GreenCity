@@ -4,9 +4,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
-import greencity.entity.Comment;
-import greencity.entity.Place;
-import greencity.entity.User;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -19,13 +16,13 @@ public interface PlaceCommentService {
     /**
      * Method witch return  comment by id.
      *
-     * @param id of search {@link Comment}
+     * @param id of search Comment
      * @return {@link CommentReturnDto}.
      */
     CommentReturnDto findById(Long id);
 
     /**
-     * Save Comment  by {@link Place} id.
+     * Save Comment  by Place id.
      *
      * @param placeId       Place id to witch  related.
      * @param addCommentDto DTO witch contain  data of.
@@ -36,7 +33,7 @@ public interface PlaceCommentService {
     CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email);
 
     /**
-     * Method witch delete {@link Comment} by Id.
+     * Method witch delete Comment by Id.
      *
      * @param id of delete comment.
      * @author Rostyslav Khasanov.

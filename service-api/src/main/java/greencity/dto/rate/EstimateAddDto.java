@@ -1,7 +1,6 @@
 package greencity.dto.rate;
 
-import greencity.constant.ValidationConstants;
-import greencity.entity.Estimate;
+import greencity.validator.ValidationConstants;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The data transfer object of the {@link Estimate}.
+ * The data transfer object of the Estimate.
  *
  * @author Marian Milian
  * @version 1.0
