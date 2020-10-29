@@ -13,6 +13,7 @@ import greencity.service.EcoNewsCommentService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -158,7 +159,7 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PatchMapping("")
-    public void update(Long id, String text, @ApiIgnore @CurrentUser UserVO user) {
+    public void update(Long id, @NotBlank String text, @ApiIgnore @CurrentUser UserVO user) {
         ecoNewsCommentService.update(text, id, user);
     }
 
