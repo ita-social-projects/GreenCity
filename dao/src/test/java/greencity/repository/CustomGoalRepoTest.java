@@ -30,21 +30,14 @@ class CustomGoalRepoTest {
     }
 
     @Test
-    void findByUserGoalIdAndUserIdTest() {
-        CustomGoal customGoal = customGoalRepo.findByUserGoalIdAndUserId(4L, 2L);
-        assertEquals(5L, customGoal.getId());
+    void findByUserIdTest() {
+        CustomGoal customGoal = customGoalRepo.findByUserId(2L);
+        assertEquals(6L, customGoal.getId());
     }
 
     @Test
     void findAllTest() {
         List<CustomGoal> customGoals = customGoalRepo.findAllByUserId(1L);
-        assertEquals(4, customGoals.size());
-    }
-
-    @Test
-    void changeCustomGoalStatus() {
-        List<CustomGoal> goals = customGoalRepo.findAllByUserId(1L);
-        customGoalRepo.changeCustomGoalStatus(1L, 1L, "DISABLED", LocalDateTime.now());
-        assertEquals(GoalStatus.DISABLED, goals.get(0).getStatus());
+        assertEquals(5, customGoals.size());
     }
 }

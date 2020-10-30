@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="dmytrokhonko1" author="Dmytro Khonko">
         <addColumn tableName="custom_goals">
-            <column name="status" type="varchar(12)">
+            <column name="status" type="varchar(12)" defaultValue="ACTIVE">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

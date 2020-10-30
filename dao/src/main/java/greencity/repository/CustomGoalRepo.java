@@ -31,9 +31,9 @@ public interface CustomGoalRepo extends JpaRepository<CustomGoal, Long> {
      * @param userId id of the {@link User} current user
      * @return {@link CustomGoal}
      */
-    @Query("SELECT cg FROM CustomGoal cg WHERE cg.id = :userGoalId "
-        + " AND cg.user.id=:userId")
-    CustomGoal findByUserGoalIdAndUserId(@Param("userGoalId") Long userGoalId, @Param("userId") Long userId);
+    @Query("SELECT cg FROM CustomGoal cg WHERE"
+        + " cg.user.id=:userId")
+    CustomGoal findByUserId(@Param("userId") Long userId);
 
     /**
      * Method find all custom goals by user.
@@ -43,16 +43,4 @@ public interface CustomGoalRepo extends JpaRepository<CustomGoal, Long> {
      */
     List<CustomGoal> findAllByUserId(Long id);
 
-    /**
-     * Method change custom goal status.
-     *
-     * @author Marian Datsko
-     */
-    @Modifying
-    @Query(nativeQuery = true, value = " UPDATE user_goals "
-        + " SET status = :status, date_completed = :date WHERE custom_goal_id = :id AND user_id = :userId ")
-    void changeCustomGoalStatus(@Param(value = "userId") Long userId,
-                                @Param(value = "id") Long id,
-                                @Param(value = "status") String status,
-                                @Param(value = "date") LocalDateTime date);
 }

@@ -416,7 +416,7 @@ class UserServiceImplTest {
             .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
         when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
             .thenReturn(goalTranslations.get(0));
-        when(customGoalRepo.findByUserGoalIdAndUserId(anyLong(), anyLong())).thenReturn(customGoal);
+        when(customGoalRepo.findByUserId(anyLong())).thenReturn(customGoal);
 
         assertEquals(userService.getUserGoals(userId, "en"), userGoalDtos);
     }
