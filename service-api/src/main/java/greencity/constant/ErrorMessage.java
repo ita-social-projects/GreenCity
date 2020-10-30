@@ -119,6 +119,8 @@ public final class ErrorMessage {
     public static final String USER_DEACTIVATED = "User is deactivated";
     public static final String BAD_GOOGLE_TOKEN = "Bad google token";
     public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";
+    public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No any email to verify by this token";
+    public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
 
     private ErrorMessage() {
     }

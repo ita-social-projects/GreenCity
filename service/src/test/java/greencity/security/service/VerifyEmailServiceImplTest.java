@@ -1,4 +1,4 @@
-package greencity.security.service.impl;
+package greencity.security.service;
 
 
 import greencity.entity.VerifyEmail;
@@ -6,6 +6,7 @@ import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
