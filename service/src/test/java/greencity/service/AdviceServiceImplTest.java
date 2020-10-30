@@ -158,19 +158,14 @@ class AdviceServiceImplTest {
 
     @Test
     void save() {
-        Type type = new TypeToken<List<AdviceTranslation>>() {
-        }.getType();
         AdvicePostDto advicePostDto = getAdvicePostDto();
         when(modelMapper.map(advicePostDto, Advice.class)).thenReturn(advice);
-        when(modelMapper.map(advicePostDto.getTranslations(), type)).thenReturn(adviceTranslations);
         when(adviceRepo.save(advice)).thenReturn(advice);
         AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(expected);
         AdviceVO actual = adviceService.save(advicePostDto);
-        Advice mockAdvice = mock(Advice.class);
 
         assertEquals(expected, actual);
-        verify(mockAdvice, times(adviceTranslations.size())).addAdviceTranslation(any(AdviceTranslation.class));
     }
 
     @Test
@@ -182,13 +177,17 @@ class AdviceServiceImplTest {
         when(adviceRepo.findById(adviceId)).thenReturn(Optional.of(advice));
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         advice.setHabit(habit);
-        when(modelMapper.map(any(LanguageDTO.class), eq(Language.class))).thenReturn(defaultLanguage);
+        Type type = new TypeToken<List<AdviceTranslation>>() {
+        }.getType();
+        when(modelMapper.map(advicePostDto.getTranslations(), type)).thenReturn(adviceTranslations);
+        advice.setTranslations(adviceTranslations);
         when(adviceRepo.save(advice)).thenReturn(advice);
         AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(expected);
         AdviceVO actual = adviceService.update(advicePostDto, adviceId);
 
         assertEquals(expected, actual);
+        verify(adviceTranslationRepo, times(1)).deleteAllByAdvice(advice);
     }
 
     @Test

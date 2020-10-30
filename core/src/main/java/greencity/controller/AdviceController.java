@@ -90,9 +90,9 @@ public class AdviceController {
             @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @GetMapping("/{adviceId}")
-    public AdviceVO getById(@PathVariable Long adviceId) {
-        return adviceService.getAdviceById(adviceId);
+    @GetMapping("/{id}")
+    public AdviceVO getById(@PathVariable Long id) {
+        return adviceService.getAdviceById(id);
     }
 
     /**

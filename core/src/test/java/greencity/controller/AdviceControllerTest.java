@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,9 +34,6 @@ class AdviceControllerTest {
 
     @Mock
     private Validator mockValidator;
-
-    @Mock
-    private ModelMapper modelMapper;
 
     public static final String content = "{\n"
             + "  \"habit\": {\n"

@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, Long> {
@@ -50,5 +51,6 @@ public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, 
      *
      * @param advice {@link Advice} instance.
      */
+    @Transactional
     void deleteAllByAdvice(Advice advice);
 }
