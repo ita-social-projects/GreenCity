@@ -149,13 +149,14 @@ class OwnSecurityServiceImplTest {
 
     @Test
     void signUpThrowsUserAlreadyRegisteredExceptionTest() {
+        OwnSignUpDto ownSignUpDto = new OwnSignUpDto();
         User user = User.builder().verifyEmail(new VerifyEmail()).build();
         UserVO userVO = UserVO.builder().verifyEmail(new VerifyEmailVO()).build();
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
         when(userRepo.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
         assertThrows(UserAlreadyRegisteredException.class,
-            () -> ownSecurityService.signUp(new OwnSignUpDto()));
+            () -> ownSecurityService.signUp(ownSignUpDto));
     }
 
     @Test

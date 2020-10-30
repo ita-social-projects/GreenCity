@@ -17,9 +17,13 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
@@ -505,6 +509,36 @@ public class ModelUtils {
             .language(getLanguage())
             .content("Text content")
             .advice(getAdvice())
+            .build();
+    }
+
+    public static HabitFactTranslation getHabitFactTranslation() {
+        return HabitFactTranslation.builder()
+            .id(1L)
+            .content("content")
+            .language(getLanguage())
+            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
+            .habitFact(getHabitFact())
+            .build();
+    }
+
+    public static HabitFactVO getHabitFactVO() {
+        return HabitFactVO.builder()
+            .id(1L)
+            .habit(HabitVO.builder()
+                .id(1L)
+                .image("string")
+                .build())
+            .translations(Collections.singletonList(HabitFactTranslationVO.builder()
+                .id(1L)
+                .content("content")
+                .factOfDayStatus(FactOfDayStatus.POTENTIAL)
+                .habitFact(null)
+                .language(LanguageVO.builder()
+                    .id(1L)
+                    .code("ua")
+                    .build())
+                .build()))
             .build();
     }
 

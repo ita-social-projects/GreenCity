@@ -51,5 +51,5 @@ INSERT INTO habit_fact_translations (language_id, habit_fact_id, content, fact_o
 VALUES (1, 1, 'Тест факт', 1),
        (2, 2, 'testFactTranslationsContent', 0),
        (3, 3, 'Тест факт', 2),
-       (1, 4, 'Тест факт2', 1),
+       (1, 4, 'Тест факт2', 0),
        (2, 5, 'testFactTranslationsContent2', 0);

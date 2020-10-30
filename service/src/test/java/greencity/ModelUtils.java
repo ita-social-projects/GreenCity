@@ -21,7 +21,10 @@ import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.habitfact.HabitFactDto;
+import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatus.HabitStatusVO;
@@ -45,6 +48,8 @@ import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,8 +61,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -329,8 +332,8 @@ public class ModelUtils {
         placeVO.setPhone("0322 489 850");
         placeVO.setEmail("forum_lviv@gmail.com");
         placeVO.setLocation(LocationVO.builder()
-                .id(1L)
-                .build());
+            .id(1L)
+            .build());
         placeVO.setModifiedDate(ZonedDateTime.now());
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setName("category");
@@ -523,6 +526,7 @@ public class ModelUtils {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
 
+
     public static TagVO getTagVO() {
         return new TagVO(1L, "tag", null, null);
     }
@@ -549,6 +553,37 @@ public class ModelUtils {
         return Specification.builder()
             .id(1L)
             .name("specification")
+            .build();
+    }
+
+    public static HabitFactTranslation getHabitFactTranslation() {
+        return HabitFactTranslation.builder()
+            .id(1L)
+            .habitFact(getHabitFact())
+            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
+            .language(getLanguage())
+            .content("content")
+            .build();
+    }
+
+    public static HabitFactDto getHabitFactDto() {
+        return HabitFactDto.builder()
+            .id(1L)
+            .habit(HabitDto.builder()
+                .id(1L)
+                .image("")
+                .habitTranslation(null)
+                .build())
+            .content("content")
+            .build();
+    }
+
+    public static HabitFactPostDto getHabitFactPostDto() {
+        return HabitFactPostDto.builder()
+            .habit(HabitIdRequestDto.builder()
+                .id(1L)
+                .build())
+            .translations(Collections.singletonList(getLanguageTranslationDTO()))
             .build();
     }
 
