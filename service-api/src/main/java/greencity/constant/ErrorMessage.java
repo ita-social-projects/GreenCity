@@ -121,6 +121,8 @@ public final class ErrorMessage {
     public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";
     public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No any email to verify by this token";
     public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
+    public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT =
+            "Password restore link already sent, please check your email: ";
 
     private ErrorMessage() {
     }
