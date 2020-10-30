@@ -21,7 +21,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     ModelMapper modelMapper;
 
     /**
-     * Method checks if parameter is {@link User} and is annotated with {@link CurrentUser}.
+     * Method checks if parameter is {@link UserVO} and is annotated with {@link CurrentUser}.
      *
      * @param parameter method parameter
      * @return boolean
@@ -29,7 +29,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterAnnotation(CurrentUser.class) != null
-            && (parameter.getParameterType().equals(User.class) || parameter.getParameterType().equals(UserVO.class));
+            && parameter.getParameterType().equals(UserVO.class);
     }
 
     /**
@@ -41,9 +41,6 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Principal principal = webRequest.getUserPrincipal();
-        if (parameter.getParameterType().equals(UserVO.class)) {
             return principal != null ? userService.findByEmail(principal.getName()) : null;
-        }
-        return principal != null ? modelMapper.map(userService.findByEmail(principal.getName()), User.class) : null;
     }
 }
