@@ -1,5 +1,8 @@
 package greencity.service;
 
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
+
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -12,6 +15,8 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.*;
 import greencity.dto.user.UserVO;
+import greencity.entity.*;
+import greencity.dto.place.*;
 import greencity.entity.*;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ROLE;
@@ -26,6 +31,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import greencity.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -37,9 +43,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
-import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
+import javax.validation.Valid;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
