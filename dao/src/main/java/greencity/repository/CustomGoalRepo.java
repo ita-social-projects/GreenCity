@@ -42,5 +42,4 @@ public interface CustomGoalRepo extends JpaRepository<CustomGoal, Long> {
      * @return list of {@link CustomGoal}
      */
     List<CustomGoal> findAllByUserId(Long id);
-
 }

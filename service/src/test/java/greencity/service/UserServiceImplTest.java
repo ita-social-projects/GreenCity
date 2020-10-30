@@ -149,7 +149,8 @@ class UserServiceImplTest {
             GoalTranslation.builder()
                     .id(2L)
                     .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList()))
                     .content("TEST")
                     .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList()))
                     .build());
@@ -333,11 +334,12 @@ class UserServiceImplTest {
 
     @Test
     void updateLastVisit() {
-        LocalDateTime localDateTime = user.getLastVisit().minusHours(1);
+
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userRepo.save(any())).thenReturn(user);
+        LocalDateTime localDateTime = user.getLastVisit().minusHours(1);
         assertNotEquals(localDateTime, userService.updateLastVisit(userVO).getLastVisit());
     }
 
@@ -347,7 +349,7 @@ class UserServiceImplTest {
         int pageNumber = 0;
         int pageSize = 1;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        FilterUserDto filterUserDto = new FilterUserDto();
+
 
         User user = new User();
         user.setName("Roman Bezos");
@@ -365,7 +367,7 @@ class UserServiceImplTest {
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
 
         when(userRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(usersPage);
-
+        FilterUserDto filterUserDto = new FilterUserDto();
         assertEquals(userPageableDto, userService.getUsersByFilter(filterUserDto, pageable));
     }
 
@@ -404,7 +406,6 @@ class UserServiceImplTest {
             UserGoalResponseDto.builder().id(2L).status(GoalStatus.ACTIVE).build();
         UserGoalResponseDto customUserGoalDto = ModelUtils.getCustomUserGoalDto();
         UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
-        List<UserGoalResponseDto> userGoalDtos = Arrays.asList(customUserGoalDto, predefinedUserGoalDto);
         List<GoalTranslation> goalTranslations = ModelUtils.getGoalTranslations();
         CustomGoal customGoal = CustomGoal.builder().id(8L).text("Buy electric car").build();
 
@@ -417,7 +418,7 @@ class UserServiceImplTest {
         when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
             .thenReturn(goalTranslations.get(0));
         when(customGoalRepo.findByUserId(anyLong())).thenReturn(customGoal);
-
+        List<UserGoalResponseDto> userGoalDtos = Arrays.asList(customUserGoalDto, predefinedUserGoalDto);
         assertEquals(userService.getUserGoals(userId, "en"), userGoalDtos);
     }
 
@@ -446,7 +447,8 @@ class UserServiceImplTest {
         verifyNoInteractions(userGoalRepo);
     }
 
-   /* @Test
+    /*
+    @Test
     void updateUserGoalStatusWithDisabledGoalStateTest() {
         CustomGoal customgoal = CustomGoal.builder().id(3L).text("foo").build();
         UserGoal userGoal = new UserGoal(1L, null, null, customgoal, GoalStatus.DISABLED, null);
@@ -513,7 +515,8 @@ class UserServiceImplTest {
         assertEquals(goalDto, userService.getAvailableGoals(userId, language));
     }
 
- /*   @Test
+    /*
+    @Test
     void saveUserGoalsWithNullUserGoalsAndExistentCustomGoalsTest() {
         user.setUserGoals(new ArrayList<>());
         UserCustomGoalDto userCustomGoalDto = new UserCustomGoalDto(new CustomGoalRequestDto(8L));
@@ -1050,6 +1053,12 @@ class UserServiceImplTest {
 
     @Test
     void getUserAndSixFriendsWithOnlineStatus() {
+
+        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
+        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+        when(userRepo.getSixFriendsWithTheHighestRating(userId)).thenReturn(Collections.singletonList(user));
         UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
             .id(userId)
             .onlineStatus(true)
@@ -1059,23 +1068,23 @@ class UserServiceImplTest {
             .stream()
             .map(u -> new UserWithOnlineStatusDto(u.getId(), true))
             .collect(Collectors.toList());
-        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
-        UserAndFriendsWithOnlineStatusDto userAndFriendsWithOnlineStatusDto = UserAndFriendsWithOnlineStatusDto.builder()
-            .user(userWithOnlineStatusDto)
-            .friends(sixFriendsWithOnlineStatusDtos)
-            .build();
-
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
-        when(userRepo.getSixFriendsWithTheHighestRating(userId)).thenReturn(Collections.singletonList(user));
+        UserAndFriendsWithOnlineStatusDto userAndFriendsWithOnlineStatusDto =
+            UserAndFriendsWithOnlineStatusDto.builder()
+                .user(userWithOnlineStatusDto)
+                .friends(sixFriendsWithOnlineStatusDtos)
+                .build();
         assertEquals(userAndFriendsWithOnlineStatusDto, userService.getUserAndSixFriendsWithOnlineStatus(userId));
     }
 
     @Test
     void getAllFriendsWithTheOnlineStatus() {
         Pageable pageable = PageRequest.of(0, 1);
+        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
+        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
         Page<User> usersPage = new PageImpl<>(Collections.singletonList(user), pageable, 1);
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+        when(userRepo.getAllUserFriends(userId, pageable)).thenReturn(usersPage);
         UserWithOnlineStatusDto userWithOnlineStatusDto = UserWithOnlineStatusDto.builder()
             .id(userId)
             .onlineStatus(true)
@@ -1086,22 +1095,13 @@ class UserServiceImplTest {
             .stream()
             .map(u -> new UserWithOnlineStatusDto(u.getId(), true))
             .collect(Collectors.toList());
-
-        UserAndAllFriendsWithOnlineStatusDto userAndAllFriendsWithOnlineStatusDto = new UserAndAllFriendsWithOnlineStatusDto().builder()
+        UserAndAllFriendsWithOnlineStatusDto userAndAllFriendsWithOnlineStatusDto =
+            new UserAndAllFriendsWithOnlineStatusDto().builder()
             .user(userWithOnlineStatusDto)
             .friends(new PageableDto<>(friendsWithOnlineStatusDtos, usersPage.getTotalElements(),
-                usersPage.getPageable().getPageNumber(), usersPage.getTotalPages()))
-            .build();
-
-        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
-
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
-        when(userRepo.getAllUserFriends(userId, pageable)).thenReturn(usersPage);
-
-
-        assertEquals(userAndAllFriendsWithOnlineStatusDto, userService.getAllFriendsWithTheOnlineStatus(userId, pageable));
+                usersPage.getPageable().getPageNumber(), usersPage.getTotalPages())).build();
+        assertEquals(userAndAllFriendsWithOnlineStatusDto, userService
+            .getAllFriendsWithTheOnlineStatus(userId, pageable));
     }
 
     @Test
@@ -1187,9 +1187,11 @@ class UserServiceImplTest {
     }
 
 
-    /*@Test
+    /*
+    @Test
     void createUserHabitTest2() {
-        greencity.dto.habitstatistic.HabitDictionaryDto habitDictionaryDto = new greencity.dto.habitstatistic.HabitDictionaryDto();
+        greencity.dto.habitstatistic.HabitDictionaryDto habitDictionaryDto =
+        new greencity.dto.habitstatistic.HabitDictionaryDto();
         habitDictionaryDto.setId(1L);
         habitDictionaryDto.setImage("test");
         habitDictionaryDto.setDescription("test");
@@ -1205,7 +1207,8 @@ class UserServiceImplTest {
         HabitDictionary habitDictionaries = new HabitDictionary();
         habitDictionaries.setId(1L);
         habitDictionaries.setHabit(Collections.singletonList(habit));
-        habitDictionaries.setHabitDictionaryTranslations(Collections.singletonList(ModelUtils.getHabitDictionaryTranslation()));
+        habitDictionaries.setHabitDictionaryTranslations(Collections
+        .singletonList(ModelUtils.getHabitDictionaryTranslation()));
         habitDictionaries.setImage("test");
 
         HabitDictionaryTranslation habitDictionaryTranslation = ModelUtils.getHabitDictionaryTranslation();
@@ -1220,7 +1223,7 @@ class UserServiceImplTest {
         when(habitService.getHabitDictionaryTranslation(habit, language)).thenReturn(habitDictionaryTranslation);
 
 
-        assertEquals(Collections.singletonList(habitCreateDto), userService.createUserHabit(userId, habitIdDtoList, language));
+        assertEquals(Collections.singletonList(habitCreateDto), userService
+        .createUserHabit(userId, habitIdDtoList, language));
     }*/
-
 }
