@@ -3,7 +3,7 @@ package greencity.controller;
 import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
 import greencity.annotations.ApiLocale;
-import greencity.annotations.ApiPageable;
+import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -93,8 +93,7 @@ public class HabitFactController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    @ApiPageable
-    @ApiLocale
+    @ApiPageableWithLocale
     public ResponseEntity<PageableDto<LanguageTranslationDTO>> getAll(@ApiIgnore Pageable page,
                                                                       @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(habitFactService.getAllHabitFacts(page, locale.getLanguage()));
