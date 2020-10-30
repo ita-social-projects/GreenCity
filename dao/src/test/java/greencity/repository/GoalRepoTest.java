@@ -48,13 +48,6 @@ class GoalRepoTest {
     }
 
     @Test
-    void getShoppingListTest() {
-        List<ShoppingListDtoResponse> shoppingListDtoResponses = goalRepo.getShoppingList(1L, "en");
-        assertEquals(1, shoppingListDtoResponses.size());
-        assertEquals("goal translation", shoppingListDtoResponses.get(0).getText());
-    }
-
-    @Test
     void changeGoalStatusTest() {
         List<Goal> goals = goalRepo.findAvailableGoalsByUser(testUser);
         goalRepo.changeGoalStatus(1L, 1L, "DISABLED", LocalDateTime.now());
