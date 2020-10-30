@@ -2,6 +2,10 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceVO;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.user.HabitIdRequestDto;
 import greencity.service.AdviceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,6 +24,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
+
+import java.util.Arrays;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class AdviceControllerTest {
@@ -34,6 +42,9 @@ class AdviceControllerTest {
 
     @Mock
     private Validator mockValidator;
+
+    @Mock
+    private ModelMapper modelMapper;
 
     public static final String content = "{\n"
             + "  \"habit\": {\n"
@@ -89,13 +100,21 @@ class AdviceControllerTest {
 
     @Test
     void updateTest() throws Exception {
+        List<LanguageTranslationDTO> languageTranslationDTOs = Arrays.asList(
+                new LanguageTranslationDTO(new LanguageDTO(1L, "ua"), "hello"),
+                new LanguageTranslationDTO(new LanguageDTO(2L, "en"), "привіт"),
+                new LanguageTranslationDTO(new LanguageDTO(3L, "ru"), "привет"));
+        AdvicePostDto advicePostDto = new AdvicePostDto(languageTranslationDTOs, new HabitIdRequestDto(1L));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String advicePostDtoJson = objectMapper.writeValueAsString(advicePostDto);
+
         Long adviceId = 1L;
         mockMvc.perform(put(adviceLink + "/{adviceId}", adviceId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
+                .content(advicePostDtoJson))
                 .andExpect(status().isOk());
 
-        verify(adviceService).update(any(AdvicePostDto.class), eq(adviceId));
+        verify(adviceService).update(advicePostDto, adviceId);
     }
 
     @Test
