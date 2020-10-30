@@ -1,28 +1,23 @@
 package greencity.security.service.impl;
 
 import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
-import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.OwnSecurity;
-import greencity.entity.User;
-import greencity.entity.VerifyEmail;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.UserApprovalMessage;
-import greencity.message.VerifyEmailMessage;
 import greencity.repository.UserRepo;
 import greencity.security.dto.ownsecurity.OwnSignInDto;
-import greencity.security.dto.ownsecurity.OwnSignUpDto;
 import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.repository.RestorePasswordEmailRepo;
 import greencity.security.service.OwnSecurityService;
+import greencity.security.service.OwnSecurityServiceImpl;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +34,6 @@ import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)

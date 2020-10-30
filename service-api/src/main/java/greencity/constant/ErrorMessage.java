@@ -123,6 +123,21 @@ public final class ErrorMessage {
     public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
     public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT =
             "Password restore link already sent, please check your email: ";
+    public static final String REFRESH_TOKEN_NOT_VALID = "Refresh token not valid!";
+    public static final String BAD_PASSWORD = "Bad password";
+    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email is already registered";
+    public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
+    public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
+    public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
+    public static final String WRONG_DATE_TIME_FORMAT =
+            "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
+    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'uk' or 'ru'";
+    public static final String INVALID_HABIT_ID = "Invalid habit id ";
+    public static final String CAN_NOT_CREATE_EVENT_INSTANCE =
+            "Can not create instance of events, used constructor that differ from events superclass.";
+    public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =
+            "Count of tags should be at least one but not more three";
+    public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
 
     private ErrorMessage() {
     }

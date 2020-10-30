@@ -1,6 +1,6 @@
 package greencity.dto.tipsandtricks;
 
-import greencity.validator.ValidationConstants;
+import greencity.constant.ServiceValidationConstants;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -17,7 +17,7 @@ public class TipsAndTricksDtoRequest {
 
     @Valid
     private TextTranslationDTO textTranslation;
-    @NotEmpty(message = ValidationConstants.MIN_AMOUNT_OF_TAGS)
+    @NotEmpty(message = ServiceValidationConstants.MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
 
     private String image;
