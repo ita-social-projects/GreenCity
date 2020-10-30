@@ -32,6 +32,7 @@ public class CustomGoal {
     @Enumerated(value = EnumType.STRING)
     private GoalStatus status = GoalStatus.ACTIVE;
 
+    @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd-HH-mm-ss.zzz")
     private LocalDateTime dateCompleted;
 }
