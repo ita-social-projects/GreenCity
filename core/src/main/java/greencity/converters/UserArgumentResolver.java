@@ -41,6 +41,6 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Principal principal = webRequest.getUserPrincipal();
-            return principal != null ? userService.findByEmail(principal.getName()) : null;
+        return principal != null ? userService.findByEmail(principal.getName()) : null;
     }
 }
