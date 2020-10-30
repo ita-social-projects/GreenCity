@@ -65,7 +65,7 @@ class HabitFactServiceImplTest {
             pageable, habitFactTranslation.size());
         when(modelMapper.map(habitFactTranslation.get(0), LanguageTranslationDTO.class))
             .thenReturn(languageTranslationDTO);
-        when(habitFactTranslationRepo.findByHabitFactTranslationsLanguageCodeOrderByIdAsc(language, pageable))
+        when(habitFactTranslationRepo.findAllByLanguageCode(pageable, language))
             .thenReturn(pageFacts);
 
         PageableDto<LanguageTranslationDTO> actual = habitFactService.getAllHabitFacts(pageable, language);

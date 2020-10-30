@@ -1,11 +1,12 @@
 package greencity.dto.habitfact;
 
 import greencity.dto.habit.HabitVO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import java.util.List;
 
+@EqualsAndHashCode
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -47,7 +47,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public PageableDto<LanguageTranslationDTO> getAllHabitFacts(Pageable page, String language) {
         Page<HabitFactTranslation> habitFactTranslation = habitFactTranslationRepo
-            .findByHabitFactTranslationsLanguageCodeOrderByIdAsc(language, page);
+            .findAllByLanguageCode(page, language);
         return getPagesWithLanguageTranslationDTO(habitFactTranslation);
     }
 

@@ -99,5 +99,5 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @param languageCode of titleTranslation.
      * @return all {@link HabitFactTranslation} by languageCode and page.
      */
-    Page<HabitFactTranslation> findByHabitFactTranslationsLanguageCodeOrderByIdAsc(String languageCode, Pageable page);
+    Page<HabitFactTranslation> findAllByLanguageCode(Pageable page, String languageCode);
 }

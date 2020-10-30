@@ -2,10 +2,11 @@ package greencity.dto.habitfact;
 
 import greencity.dto.language.LanguageDTO;
 import greencity.enums.FactOfDayStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@EqualsAndHashCode
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
