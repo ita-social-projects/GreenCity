@@ -1,8 +1,9 @@
-package greencity.security.service.impl;
+package greencity.security.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
@@ -11,7 +12,6 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.jwt.JwtTool;
-import greencity.security.service.GoogleSecurityService;
 import greencity.service.UserService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -78,16 +78,16 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                     return getSuccessSignInDto(user);
                 } else {
                     if (user.getUserStatus() == UserStatus.DEACTIVATED) {
-                        throw new UserDeactivatedException(USER_DEACTIVATED);
+                        throw new UserDeactivatedException(ErrorMessage.USER_DEACTIVATED);
                     }
                     log.info("Google sign-in exist user - {}", user.getEmail());
                     return getSuccessSignInDto(user);
                 }
             } else {
-                throw new IllegalArgumentException(BAD_GOOGLE_TOKEN);
+                throw new IllegalArgumentException(ErrorMessage.BAD_GOOGLE_TOKEN);
             }
         } catch (GeneralSecurityException | IOException e) {
-            throw new IllegalArgumentException(BAD_GOOGLE_TOKEN + ". " + e.getMessage());
+            throw new IllegalArgumentException(ErrorMessage.BAD_GOOGLE_TOKEN + ". " + e.getMessage());
         }
     }
 
