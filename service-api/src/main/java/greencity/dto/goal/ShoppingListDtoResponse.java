@@ -12,4 +12,5 @@ public class ShoppingListDtoResponse {
     private String status;
     private String text;
     private Long goalId;
+    private Long customGoalId;
 }
