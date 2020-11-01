@@ -2,10 +2,13 @@ package greencity.service;
 
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitManagementDto;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
 import greencity.exception.exceptions.BadRequestException;
@@ -13,6 +16,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
@@ -38,8 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitStatisticRepo habitStatisticRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final ModelMapper modelMapper;
+    private final HabitRepo habitRepo;
     private final DateService dateService;
+    private final ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
@@ -62,7 +67,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         if (proceed) {
             HabitStatistic habitStatistic = modelMapper.map(dto, HabitStatistic.class);
             HabitAssign habitAssign = habitAssignRepo.findById(dto.getHabitAssignId())
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
+                .orElseThrow(
+                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + dto.getHabitAssignId()));
             habitStatistic.setHabitAssign(habitAssign);
             return modelMapper.map(habitStatisticRepo.save(habitStatistic), HabitStatisticDto.class);
         }
@@ -85,7 +91,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Override
     public UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto) {
         HabitStatistic updatable = habitStatisticRepo.findById(habitStatisticId)
-            .orElseThrow();
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_STATISTIC_NOT_FOUND_BY_ID + habitStatisticId));
 
         updatable.setAmountOfItems(dto.getAmountOfItems());
         updatable.setHabitRate(dto.getHabitRate());
@@ -111,7 +117,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public List<HabitStatisticDto> findAllStatsByHabitAssignId(Long habitAssignId) {
-        return modelMapper.map(habitStatisticRepo.findAllByHabitAssignId(habitAssignId),
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+        return modelMapper.map(habitStatisticRepo.findAllByHabitAssignId(habitAssign.getId()),
             new TypeToken<List<HabitStatisticDto>>() {
             }.getType());
     }
@@ -123,7 +131,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public List<HabitStatisticDto> findAllStatsByHabitId(Long habitId) {
-        return modelMapper.map(habitStatisticRepo.findAllByHabitId(habitId),
+        Habit habit = habitRepo.findById(habitId).orElseThrow(
+            () -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        return modelMapper.map(habitStatisticRepo.findAllByHabitId(habit.getId()),
             new TypeToken<List<HabitStatisticDto>>() {
             }.getType());
     }
@@ -147,16 +157,16 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * {@inheritDoc}
      */
     @Override
-    public Long getAmountOfHabitsInProgressByUserId(Long id) {
-        return habitStatisticRepo.getAmountOfHabitsInProgressByUserId(id);
+    public Long getAmountOfHabitsInProgressByUserId(Long userId) {
+        return habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Long getAmountOfAcquiredHabitsByUserId(Long id) {
-        return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(id);
+    public Long getAmountOfAcquiredHabitsByUserId(Long userId) {
+        return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
     }
 
     /**

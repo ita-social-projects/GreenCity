@@ -33,14 +33,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @AllArgsConstructor
 public class HabitServiceImpl implements HabitService {
+    private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final LanguageService languageService;
     private final FileService fileService;
-    private final HabitRepo habitRepo;
-    private final ModelMapper modelMapper;
     private final HabitAssignService habitAssignService;
     private final HabitFactService habitFactService;
     private final AdviceService adviceService;
+    private final ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
@@ -48,9 +48,9 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public HabitDto getByIdAndLanguageCode(Long id, String languageCode) {
         Habit habit = habitRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, languageCode)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + id));
         return modelMapper.map(habitTranslation, HabitDto.class);
     }
 
@@ -60,7 +60,7 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public HabitManagementDto getById(Long id) {
         Habit habit = habitRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         return modelMapper.map(habit, HabitManagementDto.class);
     }
 

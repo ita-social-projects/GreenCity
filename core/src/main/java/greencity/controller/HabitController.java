@@ -1,6 +1,9 @@
 package greencity.controller;
 
-import greencity.annotations.*;
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageableWithLocale;
+import greencity.annotations.CurrentUser;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitAssignDto;
@@ -52,7 +55,7 @@ public class HabitController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
     @GetMapping("/{id}")
     @ApiLocale
@@ -72,7 +75,6 @@ public class HabitController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
     @ApiPageableWithLocale
@@ -91,12 +93,13 @@ public class HabitController {
      */
     @ApiOperation(value = "Assign habit for current user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitAssignDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/assign/{habitId}")
-    public ResponseEntity<Object> assign(@PathVariable Long habitId,
+    public ResponseEntity<HabitAssignDto> assign(@PathVariable Long habitId,
                                          @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignHabitForUser(habitId, user));
@@ -112,7 +115,7 @@ public class HabitController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/assign/{habitAssignId}")
     public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long habitAssignId) {
@@ -128,9 +131,10 @@ public class HabitController {
      */
     @ApiOperation(value = "Update habit assign acquired or suspended status.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("assign/{habitAssignId}")
     public ResponseEntity<HabitAssignDto> updateAssign(
@@ -148,12 +152,13 @@ public class HabitController {
      */
     @ApiOperation(value = "Add habit statistic for assigned habit.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddHabitStatisticDto.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitStatisticDto.class),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/statistic/")
-    public ResponseEntity<Object> save(@Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto) {
+    public ResponseEntity<HabitStatisticDto> save(@Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitStatisticService.save(addHabitStatisticDto));
     }
@@ -167,9 +172,10 @@ public class HabitController {
      */
     @ApiOperation(value = "Update habit statistic.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatisticDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("/statistic/{habitStatisticId}")
     public ResponseEntity<UpdateHabitStatisticDto> updateStatistic(
@@ -186,6 +192,11 @@ public class HabitController {
      */
     @ApiOperation(value = "Find all statistics by habit id.")
     @GetMapping("/statistic/{habitId}")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(habitId));
@@ -199,6 +210,11 @@ public class HabitController {
      */
     @ApiOperation(value = "Find all statistics by habit assign id.")
     @GetMapping("/statistic/assign/{habitAssignId}")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitAssignId(
         @PathVariable Long habitAssignId) {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -217,9 +233,7 @@ public class HabitController {
     @ApiOperation(value = "Get today's statistic for all habit items.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/statistic/todayStatisticsForAllHabitItems")
     @ApiLocale

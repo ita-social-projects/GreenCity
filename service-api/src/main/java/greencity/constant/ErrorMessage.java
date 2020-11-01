@@ -8,10 +8,10 @@ public final class ErrorMessage {
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
-    public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "The Habit statistic does not exist by this id : ";
-    public static final String HABIT_NOT_FOUND_BY_ID = "The Habit does not exist by this id : ";
+    public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "Habit statistic does not exist by this id : ";
+    public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
-    public static final String HABIT_TRANSLATION_NOT_FOUND = "HabitTranslation not found";
+    public static final String HABIT_TRANSLATION_NOT_FOUND = "Habit translation not found for habit with id : ";
     public static final String END_TIME_LATE_THAN_START_TIME = "End time have to be late than start time";
     public static final String BREAK_TIME_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String CLOSE_TIME_LATE_THAN_OPEN_TIME = "Close time have to be late than open time";
@@ -49,9 +49,8 @@ public final class ErrorMessage {
     public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
     public static final String STATUS_OF_HABIT_ASSIGN_NOT_DELETED = "Status of user habit wasn't deleted by id: ";
     public static final String STATUS_OF_HABIT_ASSIGN_NOT_UPDATED = "Status of user habit wasn't updated by id: ";
-    public static final String HABIT_ASSIGN_NOT_UPDATED_BY_ID = "Habit assign does not exist by this id : ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE =
-        "There is no habit assign for such habit, user and date";
+        "There is no habit assign for such habit, user and date : ";
     public static final String HABIT_ASSIGN_SUSPENDED_STATUS_NOT_UPDATED =
         "Habit assign suspended status wasn't updated because there is no habit assign with such user "
             + "and habit with id : ";
