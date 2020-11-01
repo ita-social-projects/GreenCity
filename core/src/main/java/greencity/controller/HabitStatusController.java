@@ -33,9 +33,10 @@ public class HabitStatusController {
      */
     @ApiOperation(value = "Get habit status for user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatusDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 403, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/{habitAssignId}")
     public ResponseEntity<HabitStatusDto> getHabitStatusForUser(@PathVariable Long habitAssignId) {
@@ -51,9 +52,10 @@ public class HabitStatusController {
      */
     @ApiOperation(value = "Enroll habit assign.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatusDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/enroll/{habitAssignId}")
     public ResponseEntity<HabitStatusDto> enrollHabit(@PathVariable Long habitAssignId) {
@@ -69,12 +71,13 @@ public class HabitStatusController {
      */
     @ApiOperation(value = "Unenroll habit assign.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatusDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/unenroll/{habitAssignId}/{date}")
-    public ResponseEntity<Object> unenrollHabit(@PathVariable Long habitAssignId,
+    public ResponseEntity<HabitStatusDto> unenrollHabit(@PathVariable Long habitAssignId,
                                                 @PathVariable(value = "date")
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         habitStatusService.unenrollHabit(date, habitAssignId);
@@ -90,9 +93,10 @@ public class HabitStatusController {
      */
     @ApiOperation(value = "Enroll for a specific day.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatusDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/enroll/{habitAssignId}/{date}")
     public ResponseEntity<HabitStatusDto> enrollHabitInDate(@PathVariable Long habitAssignId,
@@ -110,9 +114,10 @@ public class HabitStatusController {
      */
     @ApiOperation(value = "Update status for habit assign.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatusDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("/{habitAssignId}")
     public ResponseEntity<HabitStatusDto> update(

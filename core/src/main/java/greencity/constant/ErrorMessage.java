@@ -75,12 +75,10 @@ public final class ErrorMessage {
     public static final String HABIT_ASSIGN_NOT_DELETED_BY_ID = "Habit assign does not exist by this id : ";
     public static final String USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY =
         "User already assigned and suspended this habit for today with id: ";
-    public static final String USER_HAS_NO_HABITS_WITH_SUCH_STATUS =
-        "There is no active habits for such user with such status ";
     public static final String NO_STATUS_FOR_SUCH_HABIT_ASSIGN = "There is no status for such habit for current user";
     public static final String NO_HABIT_STATUS = "There is no habit status with id: ";
     public static final String USER_HAS_NO_STATUS_FOR_SUCH_HABIT =
-        "There is no status for such habit for current user";
+        "There is no status for current user and such habit with id: ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
         "There is no habit assign for such habit and user";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE =
