@@ -1,9 +1,9 @@
 package greencity.service;
 
+import greencity.constant.CacheConstants;
+import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habit.HabitManagementDto;
-import greencity.dto.habit.HabitVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -14,12 +14,9 @@ import greencity.entity.HabitStatistic;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
-import greencity.constant.CacheConstants;
-import greencity.constant.ErrorMessage;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZonedDateTime;
