@@ -109,6 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit",
                 "/habit/{id}",
                 "/habit/assign/{habitAssignId}",
+                "/assign/{habitId}/{acquired}",
                 "/habit/statistic/{habitId}",
                 "/habit/statistic/assign/{habitAssignId}",
                 "/habit/statistic/todayStatisticsForAllHabitItems",

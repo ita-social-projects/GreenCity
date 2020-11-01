@@ -1,13 +1,15 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.habit.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
@@ -94,6 +96,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired) {
         return modelMapper.map(habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired),
+            new TypeToken<List<HabitAssignDto>>() {
+            }.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired) {
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        return modelMapper.map(habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habit.getId(), acquired),
             new TypeToken<List<HabitAssignDto>>() {
             }.getType());
     }

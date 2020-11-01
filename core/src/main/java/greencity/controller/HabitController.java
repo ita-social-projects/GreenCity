@@ -88,8 +88,8 @@ public class HabitController {
     /**
      * Method which assign habit for {@link User}.
      *
-     * @param habitId - id of {@link Habit}
-     * @return {@link ResponseEntity}
+     * @param habitId - id of {@link Habit}.
+     * @return {@link ResponseEntity}.
      */
     @ApiOperation(value = "Assign habit for current user.")
     @ApiResponses(value = {
@@ -106,10 +106,10 @@ public class HabitController {
     }
 
     /**
-     * Method return {@link HabitAssign} by it's id.
+     * Method returns {@link HabitAssign} by it's id.
      *
-     * @param habitAssignId - id of {@link HabitAssign}
-     * @return {@link HabitAssignDto}
+     * @param habitAssignId - id of {@link HabitAssign}.
+     * @return {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get habit assign.")
     @ApiResponses(value = {
@@ -121,6 +121,25 @@ public class HabitController {
     public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long habitAssignId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getById(habitAssignId));
+    }
+
+    /**
+     * Method to return all {@link HabitAssign} by it's {@link Habit} id.
+     *
+     * @param habitId - id of {@link Habit}.
+     * @return {@link List} of {@link HabitAssignDto}.
+     */
+    @ApiOperation(value = "Get all user assigns from certain habit.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/assign/{habitId}/{acquired}")
+    public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignByHabitIdAndAcquired(@PathVariable Long habitId,
+                                                                                      @PathVariable Boolean acquired) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(habitId, acquired));
     }
 
     /**
