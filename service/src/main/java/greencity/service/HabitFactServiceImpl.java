@@ -55,6 +55,23 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
+    public PageableDto<HabitFactVO> getAllHabitFactsVO(Pageable pageable) {
+        Page<HabitFact> habitFacts = habitFactRepo.findAll(pageable);
+        List<HabitFactVO> habitFactVOS = habitFactRepo.findAll()
+            .stream()
+            .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            habitFactVOS,
+            habitFacts.getTotalElements(),
+            habitFacts.getPageable().getPageNumber(),
+            habitFacts.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public LanguageTranslationDTO getRandomHabitFactByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(habitFactTranslationRepo.getRandomHabitFactTranslationByHabitIdAndLanguage(language, id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
@@ -129,6 +146,20 @@ public class HabitFactServiceImpl implements HabitFactService {
                 habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
                 habitFactRepo.delete(habitFact);
             });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public List<Long> deleteAllHabitFactsByListOfId(List<Long> listId) {
+        listId.forEach(id ->  habitFactRepo.findAllByHabitId(id)
+            .forEach(habitFact -> {
+                habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
+                habitFactRepo.delete(habitFact);
+            }));
+        return listId;
     }
 
     private PageableDto<LanguageTranslationDTO> getPagesWithLanguageTranslationDTO(Page<HabitFactTranslation> pages) {

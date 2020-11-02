@@ -96,7 +96,8 @@ public class HabitFactController {
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<LanguageTranslationDTO>> getAll(@ApiIgnore Pageable page,
                                                                       @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitFactService.getAllHabitFacts(page, locale.getLanguage()));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitFactService.getAllHabitFacts(page, locale.getLanguage()));
     }
 
     /**

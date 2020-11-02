@@ -7,6 +7,7 @@ import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 /**
  * HabitFactService interface.
@@ -21,6 +22,15 @@ public interface HabitFactService {
      * @author Vitaliy Dzen
      */
     PageableDto<LanguageTranslationDTO> getAllHabitFacts(Pageable page, String language);
+
+    /**
+     * Method finds all {@code HabitFact} with all {@code HabitFactTranslation}'s.
+     *
+     * @param pageable - instance of {@link Pageable}.
+     * @return list of {@link HabitFactVO}.
+     * @author Ivan Behar
+     */
+    PageableDto<HabitFactVO> getAllHabitFactsVO(Pageable pageable);
 
     /**
      * Method finds random {HabitFact}.
@@ -74,6 +84,16 @@ public interface HabitFactService {
      * @author Vitaliy Dzen
      */
     Long delete(Long id);
+
+    /**
+     * Method deletes all HabitFact
+     * and HabitFactTranslation by list of IDs.
+     *
+     * @param listId list of id
+     * @return listId list of id
+     * @author Ivan Behar
+     */
+    List<Long> deleteAllHabitFactsByListOfId(List<Long> listId);
 
     /**
      * Method deletes all {@code HabitFact}'s by {@code Habit} instance.

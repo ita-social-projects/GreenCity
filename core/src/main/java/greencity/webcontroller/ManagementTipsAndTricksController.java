@@ -1,5 +1,7 @@
 package greencity.webcontroller;
 
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
+
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -24,12 +26,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
-
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
-
-import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
 @AllArgsConstructor
@@ -61,12 +60,12 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Get tips & tricks by id.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = TipsAndTricksDtoManagement.class),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = TipsAndTricksDtoManagement.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/find")
     public ResponseEntity<TipsAndTricksDtoManagement> getTipsAndTricksById(
-            @RequestParam("id") Long id) {
+        @RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.findManagementDtoById(id));
     }
 
@@ -78,8 +77,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Delete tips & tricks.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/")
     public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
@@ -95,8 +94,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Delete all tips & tricks by given IDs.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
@@ -113,8 +112,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Update tips & tricks.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")
@@ -138,8 +137,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Save tips & tricks.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
     @PostMapping("/")
@@ -151,7 +150,7 @@ public class ManagementTipsAndTricksController {
                                    @ApiIgnore Principal principal) {
         if (!bindingResult.hasErrors()) {
             tipsAndTricksService
-                    .saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, file, principal.getName());
+                .saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, file, principal.getName());
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -167,9 +166,9 @@ public class ManagementTipsAndTricksController {
                              @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
                              TipsAndTricksViewDto tipsAndTricksViewDto) {
         PageableDto<TipsAndTricksDtoManagement> pageableDto =
-                tipsAndTricksService.getFilteredDataForManagementByPage(
-                        pageable,
-                        tipsAndTricksViewDto);
+            tipsAndTricksService.getFilteredDataForManagementByPage(
+                pageable,
+                tipsAndTricksViewDto);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("fields", tipsAndTricksViewDto);
         return "core/management_tips_and_tricks";
