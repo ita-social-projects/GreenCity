@@ -1,17 +1,26 @@
 package greencity.webcontroller;
 
+import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceVO;
+import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.entity.Advice;
 import greencity.service.AdviceService;
 import greencity.service.LanguageService;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
 
 @Controller
 @AllArgsConstructor
@@ -27,6 +36,11 @@ public class ManagementAdvicesController {
      * @return name of template {@link String}
      * @author Markiyan Derevetskyi
      * */
+    @ApiOperation(value = "Get all advices")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @GetMapping
     public String findAllAdvices(Model model, @ApiIgnore Pageable pageable) {
         PageableDto<AdviceVO> allAdvices = adviceService.getAllAdvices(pageable);
@@ -34,5 +48,27 @@ public class ManagementAdvicesController {
         model.addAttribute("languages", languageService.getAllLanguages());
 
         return "core/management_advices";
+    }
+
+    /**
+     * Method that saves new {@link Advice}.
+     * @param advice {@link AdvicePostDto} - advice that will be saved in DB.
+     * @return saved advice {@link GenericResponseDto}
+     * @author Markiyan Derevetskyi
+     * */
+    @ApiOperation(value = "Save advice")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @ResponseBody
+    @PostMapping
+    public GenericResponseDto saveAdvice(@Valid @RequestBody AdvicePostDto advice,
+                             BindingResult bindingResult) {
+        if(!bindingResult.hasErrors()) {
+            adviceService.save(advice);
+        }
+
+        return buildGenericResponseDto(bindingResult);
     }
 }

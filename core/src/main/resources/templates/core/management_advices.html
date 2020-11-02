@@ -21,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-    <script th:src="@{/management/factoftheday/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/advices/buttonsAJAX.js}"></script>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
@@ -41,7 +41,7 @@
                                         <input type="text" name="query" class="form-control" placeholder="Search…">
                                     </form>
                                 </span>
-                            <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Fact of the day</span></a>
+                            <a href="#addAdviceModal" id="addAdviceModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add Advice</span></a>
                             <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>
                         </div>
                     </div>
@@ -112,23 +112,28 @@
         </div>
     </div>
     <!-- Add Modal HTML -->
-    <div id="addFactOfTheDayModal" class="modal fade">
+    <div id="addAdviceModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form th:action="@{/advice}" method="post" id="addFactOfTheDayForm">
+                <form th:action="" method="get" id="addAdviceForm">
                     <div class="modal-header">
                         <h4 class="modal-title">Add Advice</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
-                            <label>Fact of the day name</label>
-                            <input type="text" class="form-control" name="name" required>
+                            <label>Habit Id</label>
+                            <input type="number" class="form-control" name="habit" required>
                             <span th:id="errorModalSavename" class="errorSpan"></span>
                         </div>
                         <th:block th:each="language, iterInfo : ${languages}">
                             <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>Language ID</label>
+                                        <input type="text" class="form-control" th:name="${language.getId()}" th:value="${language.getId()}" readonly required>
+                                    </div>
+                                </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Language code</label>
@@ -138,8 +143,8 @@
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Content</label>
-                                        <input type="text" class="form-control" th:name="content+${language.getCode()}">
-                                        <span th:id="'errorModalSavefactOfTheDayTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
+                                        <input type="text" class="form-control" th:name="content+${' ' + language.getId()+' '}+${language.getCode()}">
+                                        <span th:id="'errorModalSaveAdviceTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
