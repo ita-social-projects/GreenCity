@@ -21,13 +21,13 @@ public interface HabitStatusService {
     void saveStatusByHabitAssign(HabitAssignVO habitAssign);
 
     /**
-     * Find active {@code HabitStatus} by {@code HabitAssign} id.
+     * Find active {@code HabitStatus} by {@code Habit} and {@code User} id's.
      *
-     * @param userId  {@code User} id.
      * @param habitId {@code Habit} id.
+     * @param userId  {@code User} id.
      * @return {@link HabitStatusDto}.
      */
-    HabitStatusDto findActiveStatusByUserIdAndHabitId(Long userId, Long habitId);
+    HabitStatusDto findActiveStatusByHabitIdAndUserId(Long habitId, Long userId);
 
     /**
      * Find active {@code HabitStatus} by {@code HabitAssign} id.
@@ -40,27 +40,30 @@ public interface HabitStatusService {
     /**
      * Method to enroll {@code Habit}.
      *
-     * @param habitAssignId - id of {@code HabitAssign} which we enroll.
+     * @param habitId {@code Habit} id to enroll.
+     * @param userId  {@code User} id.
      * @return {@link HabitStatusDto}.
      */
-    HabitStatusDto enrollHabit(Long habitAssignId);
+    HabitStatusDto enrollHabit(Long habitId, Long userId);
 
     /**
      * Method to unenroll Habit in defined date.
      *
-     * @param habitAssignId - id of {@code Habit}.
-     * @param dateTime      - {@link LocalDate} dateTime we want unenroll.
+     * @param habitId  {@code Habit} id to unenroll.
+     * @param userId   {@code User} id.
+     * @param dateTime {@link LocalDate} dateTime we want unenroll.
      */
-    void unenrollHabit(LocalDate dateTime, Long habitAssignId);
+    void unenrollHabit(Long habitId, Long userId, LocalDate dateTime);
 
     /**
      * Method to enroll habit for defined date.
      *
-     * @param habitAssignId - id of {@code HabitAssign}.
-     * @param date          - {@link LocalDate} date we want enroll.
+     * @param habitId {@code Habit} id to enroll.
+     * @param userId  {@code User} id.
+     * @param date    {@link LocalDate} date we want enroll.
      * @return {@link HabitStatusDto}.
      */
-    HabitStatusDto enrollHabitInDate(Long habitAssignId, LocalDate date);
+    HabitStatusDto enrollHabitInDate(Long habitId, Long userId, LocalDate date);
 
     /**
      * Method to delete {@code HabitStatus} by {@code HabitAssign} instance.
@@ -72,8 +75,10 @@ public interface HabitStatusService {
     /**
      * Method for updating {@code HabitStatus} in database.
      *
-     * @param dto - dto with {@code HabitStatus} working days, habitStreak, enrollment date.
+     * @param habitId {@code Habit} id to update.
+     * @param userId  {@code User} id.
+     * @param dto     dto with {@code HabitStatus} working days, habitStreak, enrollment date.
      * @return {@link UpdateHabitStatusDto} instance.
      */
-    HabitStatusDto update(Long habitAssignId, UpdateHabitStatusDto dto);
+    HabitStatusDto update(Long habitId, Long userId, UpdateHabitStatusDto dto);
 }

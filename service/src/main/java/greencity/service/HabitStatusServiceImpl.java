@@ -57,8 +57,8 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * {@inheritDoc}
      */
     @Override
-    public HabitStatusDto findActiveStatusByUserIdAndHabitId(Long userId, Long habitId) {
-        return modelMapper.map(habitStatusRepo.findByUserIdAndHabitId(userId, habitId)
+    public HabitStatusDto findActiveStatusByHabitIdAndUserId(Long habitId, Long userId) {
+        return modelMapper.map(habitStatusRepo.findByHabitIdAndUserId(habitId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId)),
             HabitStatusDto.class);
     }
@@ -77,9 +77,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * {@inheritDoc}
      */
     @Override
-    public HabitStatusDto enrollHabit(Long habitAssignId) {
-        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN + habitAssignId));
+    public HabitStatusDto enrollHabit(Long habitId, Long userId) {
+        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId));
         LocalDate todayDate = LocalDate.now();
 
         updateHabitStatus(habitStatus, todayDate);
@@ -121,9 +121,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * {@inheritDoc}
      */
     @Override
-    public void unenrollHabit(LocalDate date, Long habitAssignId) {
-        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitAssignId));
+    public void unenrollHabit(Long habitId, Long userId, LocalDate date) {
+        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId));
         int daysStreak = checkHabitStreakAfterDate(date, habitStatus);
         habitStatus.setHabitStreak(daysStreak + 1);
         int workingDays = habitStatus.getWorkingDays();
@@ -150,9 +150,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * {@inheritDoc}
      */
     @Override
-    public HabitStatusDto enrollHabitInDate(Long habitAssignId, LocalDate date) {
-        HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitAssignId));
+    public HabitStatusDto enrollHabitInDate(Long habitId, Long userId, LocalDate date) {
+        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId));
         HabitStatusCalendarVO habitCalendarOnDate =
             habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(date,
                 modelMapper.map(habitStatus, HabitStatusVO.class));
@@ -239,9 +239,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      */
     @Transactional
     @Override
-    public HabitStatusDto update(Long habitAssignId, UpdateHabitStatusDto dto) {
-        HabitStatus updatable = habitStatusRepo.findByHabitAssignId(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN + habitAssignId));
+    public HabitStatusDto update(Long habitId, Long userId, UpdateHabitStatusDto dto) {
+        HabitStatus updatable = habitStatusRepo.findByHabitIdAndUserId(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId));
 
         updatable.setHabitStreak(dto.getHabitStreak());
         updatable.setLastEnrollmentDate(dto.getLastEnrollmentDate());
