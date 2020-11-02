@@ -1,11 +1,12 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 /**
  * HabitFactService interface.
@@ -16,10 +17,10 @@ public interface HabitFactService {
     /**
      * Method finds all {HabitFact}.
      *
-     * @return List of all {@link LanguageTranslationDTO}
+     * @return PageableDto of all {@link LanguageTranslationDTO}
      * @author Vitaliy Dzen
      */
-    List<LanguageTranslationDTO> getAllHabitFacts();
+    PageableDto<LanguageTranslationDTO> getAllHabitFacts(Pageable page, String language);
 
     /**
      * Method finds random {HabitFact}.

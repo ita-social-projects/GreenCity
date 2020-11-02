@@ -204,6 +204,6 @@ class RatingStatisticsServiceImplTest {
 
         List<SearchCriteria> expected = ratingStatisticsService.buildSearchCriteria(ratingStatisticsViewDto);
 
-        assertEquals(expected.size(), 0);
+        assertEquals(0, expected.size());
     }
 }

@@ -20,7 +20,7 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = DaoApplication.class)
 @Sql("classpath:sql/habit_statistic_and_translation.sql")
-public class HabitTranslationRepoTest {
+class HabitTranslationRepoTest {
 
     @Autowired
     private HabitTranslationRepo habitTranslationRepo;

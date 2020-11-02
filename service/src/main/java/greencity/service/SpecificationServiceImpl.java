@@ -7,13 +7,13 @@ import greencity.dto.specification.SpecificationVO;
 import greencity.entity.Specification;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SpecificationRepo;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The class provides implementation of the {@code SpecificationService}.
@@ -62,7 +62,8 @@ public class SpecificationServiceImpl implements SpecificationService {
     @Override
     public List<SpecificationVO> findAll() {
         log.info(LogMessage.IN_FIND_ALL);
-        return modelMapper.map(specificationRepo.findAll(), new TypeToken<List<SpecificationVO>>() {}.getType());
+        return modelMapper.map(specificationRepo.findAll(), new TypeToken<List<SpecificationVO>>() {
+        }.getType());
     }
 
     /**

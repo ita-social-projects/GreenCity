@@ -4,15 +4,16 @@ import greencity.dto.habit.HabitVO;
 import lombok.*;
 import java.util.List;
 
+@EqualsAndHashCode
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 @Builder
-public class HabitFactVO {
+public class HabitFactDtoResponse {
     private Long id;
 
-    private List<HabitFactTranslationVO> translations;
+    private List<HabitFactTranslationDto> translations;
 
     private HabitVO habit;
 }

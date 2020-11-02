@@ -24,7 +24,7 @@ public abstract class CustomApplicationEvent<M> extends ApplicationEvent {
      * @param source the object on which the events initially occurred (never {@code null}).
      * @param body   events additional data.
      */
-    public CustomApplicationEvent(Object source, M body) {
+    protected CustomApplicationEvent(Object source, M body) {
         super(source);
         this.body = body;
     }
@@ -34,7 +34,7 @@ public abstract class CustomApplicationEvent<M> extends ApplicationEvent {
      *
      * @param source the object on which the events initially occurred (never {@code null}).
      */
-    public CustomApplicationEvent(Object source) {
+    protected CustomApplicationEvent(Object source) {
         super(source);
     }
 }
