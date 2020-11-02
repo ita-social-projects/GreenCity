@@ -1,4 +1,4 @@
-package greencity.security.service.impl;
+package greencity.security.service;
 
 import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;

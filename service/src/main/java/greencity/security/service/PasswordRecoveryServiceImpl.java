@@ -1,4 +1,4 @@
-package greencity.security.service.impl;
+package greencity.security.service;
 
 import greencity.constant.ErrorMessage;
 import static greencity.constant.ErrorMessage.*;
@@ -15,7 +15,6 @@ import greencity.repository.UserRepo;
 import greencity.security.events.UpdatePasswordEvent;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.RestorePasswordEmailRepo;
-import greencity.security.service.PasswordRecoveryService;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -78,7 +77,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         RestorePasswordEmail restorePasswordEmail = user.getRestorePasswordEmail();
         if (restorePasswordEmail != null) {
-            throw new WrongEmailException(PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
+            throw new WrongEmailException(ErrorMessage.PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
         }
         savePasswordRestorationTokenForUser(user, jwtTool.generateTokenKey());
     }

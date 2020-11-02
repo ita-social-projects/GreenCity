@@ -1,6 +1,7 @@
-package greencity.security.service.impl;
+package greencity.security.service;
 
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.OwnSecurity;
@@ -23,7 +24,6 @@ import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.repository.RestorePasswordEmailRepo;
-import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.security.SecureRandom;
@@ -116,7 +116,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                     savedUser.getVerifyEmail().getToken())
             );
         } catch (DataIntegrityViolationException e) {
-            throw new UserAlreadyRegisteredException(USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
+            throw new UserAlreadyRegisteredException(ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
         return new SuccessSignUpDto(user.getId(), user.getName(), user.getEmail(), true);
     }
@@ -167,7 +167,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             throw new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
         if (!isPasswordCorrect(dto, user)) {
-            throw new WrongPasswordException(BAD_PASSWORD);
+            throw new WrongPasswordException(ErrorMessage.BAD_PASSWORD);
         }
         if (user.getVerifyEmail() != null) {
             throw new EmailNotVerified("You should verify the email first, check your email box!");
@@ -197,7 +197,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         try {
             email = jwtTool.getEmailOutOfAccessToken(refreshToken);
         } catch (ExpiredJwtException e) {
-            throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
+            throw new BadRefreshTokenException(ErrorMessage.REFRESH_TOKEN_NOT_VALID);
         }
         UserVO user = userService.findByEmail(email);
         checkUserStatus(user);
@@ -210,7 +210,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                 jwtTool.createRefreshToken(user)
             );
         }
-        throw new BadRefreshTokenException(REFRESH_TOKEN_NOT_VALID);
+        throw new BadRefreshTokenException(ErrorMessage.REFRESH_TOKEN_NOT_VALID);
     }
 
     private void checkUserStatus(UserVO user) {
@@ -242,10 +242,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     public void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email) {
         UserVO user = userService.findByEmail(email);
         if (!updatePasswordDto.getPassword().equals(updatePasswordDto.getConfirmPassword())) {
-            throw new PasswordsDoNotMatchesException(PASSWORDS_DO_NOT_MATCHES);
+            throw new PasswordsDoNotMatchesException(ErrorMessage.PASSWORDS_DO_NOT_MATCHES);
         }
         if (!passwordEncoder.matches(updatePasswordDto.getCurrentPassword(), user.getOwnSecurity().getPassword())) {
-            throw new PasswordsDoNotMatchesException(PASSWORD_DOES_NOT_MATCH);
+            throw new PasswordsDoNotMatchesException(ErrorMessage.PASSWORD_DOES_NOT_MATCH);
         }
         updatePassword(updatePasswordDto.getPassword(), user.getId());
     }

@@ -1,6 +1,6 @@
 package greencity.dto.rate;
 
-import greencity.validator.ValidationConstants;
+import greencity.constant.ServiceValidationConstants;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EstimateAddDto {
-    @Min(value = 1, message = ValidationConstants.RATE_MIN_VALUE)
-    @Max(value = 5, message = ValidationConstants.RATE_MAX_VALUE)
+    @Min(value = 1, message = ServiceValidationConstants.RATE_MIN_VALUE)
+    @Max(value = 5, message = ServiceValidationConstants.RATE_MAX_VALUE)
     private Byte rate;
 }
