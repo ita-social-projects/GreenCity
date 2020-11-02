@@ -2,6 +2,7 @@ package greencity.security.service;
 
 import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
 
+import greencity.ModelUtils;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
@@ -123,12 +124,8 @@ class OwnSecurityServiceImplTest {
 
     @Test
     void signUp() {
-        User user = User.builder()
-                .id(1L)
-                .verifyEmail(new VerifyEmail()).build();
-        UserVO userVO = UserVO.builder()
-                .id(1L)
-                .verifyEmail(new VerifyEmailVO()).build();
+        User user = ModelUtils.getUser();
+        UserVO userVO = ModelUtils.getUserVO();
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(userRepo.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");

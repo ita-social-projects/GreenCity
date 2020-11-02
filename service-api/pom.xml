@@ -15,6 +15,7 @@
     <name>service-api</name>
     <properties>
         <swagger.version>2.9.2</swagger.version>
+        <io.jsonwebtoken.version>0.9.1</io.jsonwebtoken.version>
     </properties>
 
     <dependencies>
@@ -51,7 +52,7 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
+            <version>${io.jsonwebtoken.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
