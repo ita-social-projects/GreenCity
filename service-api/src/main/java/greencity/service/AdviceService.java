@@ -83,4 +83,12 @@ public interface AdviceService {
      * @param habit {@link HabitVO} instance.
      */
     void deleteAllByHabit(HabitVO habit);
+
+    /**
+     * Method that deletes all advices by given ids.
+     *
+     * @param ids - list of {@link Long}
+     * @author Markiyan Derevetskyi
+     * */
+    void deleteAllByIds(List<Long> ids);
 }

@@ -14,6 +14,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -65,10 +68,45 @@ public class ManagementAdvicesController {
     @PostMapping
     public GenericResponseDto saveAdvice(@Valid @RequestBody AdvicePostDto advice,
                              BindingResult bindingResult) {
-        if(!bindingResult.hasErrors()) {
+        if (!bindingResult.hasErrors()) {
             adviceService.save(advice);
         }
 
         return buildGenericResponseDto(bindingResult);
+    }
+
+    /**
+     * Method that deletes {@link Advice} by id.
+     *
+     * @param id {@link Long}
+     * @return  {@link org.springframework.http.ResponseEntity}
+     * @author Markiyan Derevetskyi
+     * */
+    @ApiOperation(value = "Delete advice by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteAdviceById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adviceService.delete(id));
+    }
+
+    /**
+     * Method that deletes all {@link Advice}'s by given id's.
+     *
+     * @param ids - list of  {@link Long}
+     * @return  {@link org.springframework.http.ResponseEntity}
+     * @author Markiyan Derevetskyi
+     * */
+    @ApiOperation(value = "Delete advice by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<List<Long>> deleteAllAdvices(@RequestBody List<Long> ids) {
+        return ResponseEntity.status(HttpStatus.OK).body(ids);
     }
 }

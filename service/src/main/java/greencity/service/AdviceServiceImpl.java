@@ -141,4 +141,12 @@ public class AdviceServiceImpl implements AdviceService {
                 adviceRepo.delete(advice);
             });
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAllByIds(List<Long> ids) {
+        ids.forEach(adviceRepo::deleteById);
+    }
 }
