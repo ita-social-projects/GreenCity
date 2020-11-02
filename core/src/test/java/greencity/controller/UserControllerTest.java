@@ -214,7 +214,7 @@ class UserControllerTest {
 
     @Test
     void getActiveUserHabitAssigns() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habit/assign/active", 1))
+        mockMvc.perform(get(userLink + "/{userId}/habit/assign/{acquired}", 1, false))
             .andExpect(status().isOk());
 
         verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
@@ -223,7 +223,7 @@ class UserControllerTest {
 
     @Test
     void getAcquiredUserHabitAssigns() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habit/assign/acquired", 1))
+        mockMvc.perform(get(userLink + "/{userId}/habit/assign/{acquired}", 1, true))
             .andExpect(status().isOk());
 
         verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
