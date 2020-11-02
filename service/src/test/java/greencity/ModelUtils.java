@@ -24,6 +24,7 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
@@ -52,10 +53,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -158,6 +156,19 @@ public class ModelUtils {
             .userVO(UserVO.builder().id(1L).build()).build();
     }
 
+    public static HabitStatusDto getHabitStatusDto() {
+        HabitAssignDto habitAssignDto = getHabitAssignDto();
+
+        return HabitStatusDto.builder()
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssignId(habitAssignDto.getId())
+            .habitStatusCalendarDtos(Collections.singletonList(getHabitStatusCalendarDto()))
+            .build();
+    }
+
     public static HabitVO getHabitVO() {
         return HabitVO.builder().id(1L).image("img.png").build();
     }
@@ -170,6 +181,15 @@ public class ModelUtils {
             .lastEnrollmentDate(LocalDateTime.now())
             .habitStatusCalendars(
                 Collections.singletonList(getHabitStatusCalendar())).build();
+    }
+
+    public static HabitStatusVO getHabitStatusVO() {
+        return HabitStatusVO.builder()
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssignVO(getHabitAssignVO()).build();
     }
 
     public static UserGoal getCustomUserGoal() {
@@ -196,15 +216,6 @@ public class ModelUtils {
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
             .build();
-    }
-
-    public static HabitStatusVO getHabitStatusVO() {
-        return HabitStatusVO.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssignVO(getHabitAssignVO()).build();
     }
 
     public static UserGoalVO getUserGoalVO() {
