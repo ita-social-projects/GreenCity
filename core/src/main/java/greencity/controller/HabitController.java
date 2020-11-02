@@ -176,7 +176,7 @@ public class HabitController {
      * @return list of {@link HabitStatisticDto} instances.
      */
     @ApiOperation(value = "Find all statistics by habit id.")
-    @GetMapping("{id}/statistic/")
+    @GetMapping("{id}/statistic")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -194,7 +194,7 @@ public class HabitController {
      * @return list of {@link HabitStatisticDto} instances.
      */
     @ApiOperation(value = "Find all statistics by habit assign id.")
-    @GetMapping("/assign/{id}/statistic/")
+    @GetMapping("/assign/{id}/statistic")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -222,7 +222,7 @@ public class HabitController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/{id}/statistic/")
+    @PostMapping("/{id}/statistic")
     public ResponseEntity<HabitStatisticDto> saveHabitStatistic(
         @Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto,
         @ApiIgnore @CurrentUser UserVO userVO,
