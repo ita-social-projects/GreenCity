@@ -12,6 +12,14 @@ public final class SwaggerExampleModel {
         + "\t</ul>\n"
         + "\t<pre>\n";
 
+    private static final String EXAMPLE = "  \"image\": \"string\",\n"
+        + "  \"source\": \"string\",\n"
+        + "  \"tags\": [\n"
+        + "    \"string\"\n"
+        + "  ],\n"
+        + "  \"text\": \"string\",\n"
+        + "  \"title\": \"string\"\n";
+
     private static final String AFTER_EXAMPLE = "\t</pre>\n"
         + "</div>";
 
@@ -28,13 +36,7 @@ public final class SwaggerExampleModel {
         "Add tips & tricks request\n"
             + BEFORE_EXAMPLE
             + "{\n"
-            + "  \"image\": \"string\",\n"
-            + "  \"source\": \"string\",\n"
-            + "  \"tags\": [\n"
-            + "    \"string\"\n"
-            + "  ],\n"
-            + "  \"text\": \"string\",\n"
-            + "  \"title\": \"string\"\n"
+            + EXAMPLE
             + "}"
             + AFTER_EXAMPLE;
 
@@ -42,13 +44,7 @@ public final class SwaggerExampleModel {
         "Add Eco News Request\n"
             + BEFORE_EXAMPLE
             + "{\n"
-            + "  \"image\": \"string\",\n"
-            + "  \"source\": \"string\",\n"
-            + "  \"tags\": [\n"
-            + "    \"string\"\n"
-            + "  ],\n"
-            + "  \"text\": \"string\",\n"
-            + "  \"title\": \"string\"\n"
+            + EXAMPLE
             + "}\n"
             + AFTER_EXAMPLE;
     public static final String UPDATE_ECO_NEWS =
@@ -56,13 +52,7 @@ public final class SwaggerExampleModel {
             + BEFORE_EXAMPLE
             + "{\n"
             + "  \"id\": 0,\n"
-            + "  \"image\": \"string\",\n"
-            + "  \"source\": \"string\",\n"
-            + "  \"tags\": [\n"
-            + "    \"string\"\n"
-            + "  ],\n"
-            + "  \"text\": \"string\",\n"
-            + "  \"title\": \"string\"\n"
+            + EXAMPLE
             + "}\n"
             + AFTER_EXAMPLE;
 

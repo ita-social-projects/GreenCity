@@ -20,10 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
@@ -75,6 +74,8 @@ class HabitStatusServiceImplTest {
         when(habitStatusRepo.save(any())).thenReturn(habitStatus);
         when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
         habitStatusService.saveStatusByHabitAssign(habitAssignVO);
+
+        verify(habitStatusRepo).save(any(HabitStatus.class));
     }
 
     @Test

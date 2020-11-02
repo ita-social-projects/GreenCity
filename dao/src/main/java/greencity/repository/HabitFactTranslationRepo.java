@@ -1,17 +1,19 @@
 package greencity.repository;
 
 import greencity.entity.Habit;
-import greencity.entity.HabitFactTranslation;
 import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
 import greencity.enums.FactOfDayStatus;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTranslation, Long> {
@@ -24,21 +26,21 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @author Vitaliy Dzen.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM habit_fact_translations WHERE language_id = "
-        + "(SELECT id FROM languages WHERE code = ?1)"
+        + "(SELECT id FROM languages WHERE code = :languageCode)"
         + " AND habit_fact_id = "
-        + "(SELECT id FROM habit_facts WHERE habit_id = ?2 ORDER BY RANDOM() LIMIT 1);")
+        + "(SELECT id FROM habit_facts WHERE habit_id = :habitId ORDER BY RANDOM() LIMIT 1);")
     Optional<HabitFactTranslation> getRandomHabitFactTranslationByHabitIdAndLanguage(String languageCode, Long habitId);
 
     /**
      * Method find {@link HabitFactTranslation} by content and language code.
      *
      * @param languageCode of {@link Language}.
-     * @param content   of {@link HabitFact}.
+     * @param content      of {@link HabitFact}.
      * @return {@link HabitFactTranslation} in Optional.
      * @author Vitaliy Dzen.
      */
-    Optional<HabitFactTranslation> findFactTranslationByLanguage_CodeAndContent(String languageCode,
-                                                                                  String content);
+    Optional<HabitFactTranslation> findFactTranslationByLanguageCodeAndContent(String languageCode,
+                                                                               String content);
 
     /**
      * Method finds random {@link HabitFact} in 3 languages between all facts that were not used during this iteration.
@@ -46,7 +48,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @return optional list of {@link HabitFactTranslation}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM  habit_fact_translations "
-        + "where fact_of_day_status = 0 order by RANDOM() LIMIT 1;")
+        + "WHERE fact_of_day_status = 0 ORDER BY RANDOM() LIMIT 1;")
     List<HabitFactTranslation> findRandomHabitFact();
 
     /**
@@ -57,8 +59,10 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @param languageId      of {@link Language}.
      * @return list of {@link HabitFactTranslation} that satisfy the conditions.
      */
-    List<HabitFactTranslation> findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus factOfDayStatus,
-                                                                               Long languageId);
+    @Query("SELECT ht FROM HabitFactTranslation ht"
+        + " WHERE ht.factOfDayStatus = :factOfDayStatus AND ht.language.id = :languageId")
+    HabitFactTranslation findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus factOfDayStatus,
+                                                               Long languageId);
 
     /**
      * Method to replace all outdated {@link FactOfDayStatus} by updated.
@@ -67,7 +71,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @param updated  new {@link FactOfDayStatus}.
      */
     @Modifying
-    @Query("UPDATE HabitFactTranslation f set f.factOfDayStatus = :updated where f.factOfDayStatus = :outdated")
+    @Query("UPDATE HabitFactTranslation f SET f.factOfDayStatus = :updated WHERE f.factOfDayStatus = :outdated")
     void updateFactOfDayStatus(@Param("outdated") FactOfDayStatus outdated, @Param("updated") FactOfDayStatus updated);
 
     /**
@@ -77,7 +81,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @param habitfactId {@link HabitFact} id of group of facts which changes {@link HabitFact} of day status.
      */
     @Modifying
-    @Query("UPDATE HabitFactTranslation f set f.factOfDayStatus = :status WHERE f.habitFact.id = :habitFactId")
+    @Query("UPDATE HabitFactTranslation f SET f.factOfDayStatus = :status WHERE f.habitFact.id = :habitFactId")
     void updateFactOfDayStatusByHabitFactId(@Param("status") FactOfDayStatus status,
                                             @Param("habitFactId") Long habitfactId);
 
@@ -87,4 +91,13 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @param habitFact {@link HabitFact} instance.
      */
     void deleteAllByHabitFact(HabitFact habitFact);
+
+    /**
+     * Method returns all {@link HabitFactTranslation} by languageCode and page.
+     *
+     * @param page         of tips & tricks.
+     * @param languageCode of titleTranslation.
+     * @return all {@link HabitFactTranslation} by languageCode and page.
+     */
+    Page<HabitFactTranslation> findAllByLanguageCode(Pageable page, String languageCode);
 }

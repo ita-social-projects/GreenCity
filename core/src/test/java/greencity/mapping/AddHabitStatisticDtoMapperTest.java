@@ -1,6 +1,8 @@
 
 package greencity.mapping;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import greencity.ModelUtils;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.entity.HabitStatistic;
@@ -8,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 class AddHabitStatisticDtoMapperTest {
