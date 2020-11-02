@@ -3,7 +3,7 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet author="Dmytro Khonko"
-               id="dmytrokhonko3">
+               id="dmytrokhonko4">
         <sql>
             ALTER TABLE user_goals DROP CONSTRAINT id_check;
         </sql>
