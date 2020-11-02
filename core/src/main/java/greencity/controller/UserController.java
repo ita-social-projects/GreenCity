@@ -11,13 +11,16 @@ import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.user.*;
-import greencity.entity.EcoNews;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.UserStatus;
 import greencity.service.CustomGoalService;
 import greencity.service.HabitAssignService;
+import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -49,6 +52,7 @@ public class UserController {
     private final UserService userService;
     private final CustomGoalService customGoalService;
     private final HabitAssignService habitAssignService;
+    private final HabitStatisticService habitStatisticService;
 
     /**
      * The method which update user status.
@@ -428,39 +432,42 @@ public class UserController {
     /**
      * Method for finding all active {@link User} habit assigns.
      *
-     * @param userId {@link User} instance.
+     * @param id       {@link User} id.
+     * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get all active habit assigns for current user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/{userId}/habit/assign/active")
-    public ResponseEntity<List<HabitAssignDto>> getActiveUserHabitAssigns(
-        @PathVariable @CurrentUserId Long userId) {
+    @GetMapping("/{id}/habit/assign/{acquired}")
+    public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
+        @PathVariable Long id, @PathVariable Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, false));
+            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(id, acquired));
     }
 
     /**
-     * Method for finding all acquired {@link User} habit assigns.
+     * Method to update {@link HabitAssign} for it's id.
      *
-     * @param userId {@link User} instance.
-     * @return list of {@link HabitAssignDto}.
+     * @param id {@link HabitAssign} id.
+     * @return {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get all acquired habits for current user.")
+    @ApiOperation(value = "Update habit assign acquired or suspended status.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/{userId}/habit/assign/acquired")
-    public ResponseEntity<List<HabitAssignDto>> getAcquiredUserHabitAssigns(
-        @PathVariable @CurrentUserId Long userId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, true));
+    @PatchMapping("/habit/assign/{id}")
+    public ResponseEntity<HabitAssignDto> updateHabitAssignById(
+        @PathVariable Long id, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService
+            .updateStatusByHabitAssignId(id, habitAssignStatDto));
     }
 
     /**

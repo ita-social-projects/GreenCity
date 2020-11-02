@@ -45,7 +45,7 @@ public interface HabitAssignService {
     /**
      * Method to find all active (not suspended) {@code HabitAssign}'s by {@code Habit} id and acquired status.
      *
-     * @param habitId   {@code Habit} id.
+     * @param habitId  {@code Habit} id.
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssignDto}.
      */
@@ -54,15 +54,26 @@ public interface HabitAssignService {
     /**
      * Method to delete all {@code HabitAssign}'s by {@code Habit} instance.
      *
-     * @param habit HabitVO instance.
+     * @param habit {@link HabitVO} instance.
      */
     void deleteAllHabitAssignsByHabit(HabitVO habit);
 
     /**
-     * Method for updating {@code HabitAssign} in database.
+     * Method for updating {@code HabitAssign} in database by it's id.
      *
-     * @param dto - dto with {@code HabitAssign} suspended and acquired status.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param dto           {@link HabitAssignStatDto} dto with new suspended and acquired status.
      * @return {@link HabitAssignDto} instance.
      */
-    HabitAssignDto updateStatus(Long habitAssignId, HabitAssignStatDto dto);
+    HabitAssignDto updateStatusByHabitAssignId(Long habitAssignId, HabitAssignStatDto dto);
+
+    /**
+     * Method for updating {@code HabitAssign} in database by {@code Habit} and {@code User} id's.
+     *
+     * @param habitId {@code Habit} id.
+     * @param userId  {@code User} id.
+     * @param dto     {@link HabitAssignStatDto} dto with new suspended and acquired status.
+     * @return {@link HabitAssignDto} instance.
+     */
+    HabitAssignDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto);
 }

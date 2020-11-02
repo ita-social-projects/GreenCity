@@ -57,7 +57,7 @@ public final class ErrorMessage {
         "Habit assign suspended status wasn't updated because there is no habit assign with such user "
             + "and habit with id : ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
-        "There is no habit assign for such habit and user";
+        "There is no habit assign for current user and such habit with id: ";
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";
     public static final String USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY =
         "User already assigned and suspended this habit for today with id: ";

@@ -39,7 +39,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public HabitAssignDto getById(Long habitAssignId) {
         return modelMapper.map(habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
             HabitAssignDto.class);
     }
 
@@ -86,7 +86,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), userId)
                 .orElseThrow(() ->
                     new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID
-                    + userId + ", " + habitId)),
+                        + userId + ", " + habitId)),
             HabitAssignDto.class);
     }
 
@@ -117,14 +117,39 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignDto updateStatus(Long habitAssignId, HabitAssignStatDto dto) {
+    public HabitAssignDto updateStatusByHabitAssignId(Long habitAssignId, HabitAssignStatDto dto) {
         HabitAssign updatable = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
-        updatable.setAcquired(dto.getAcquired());
-        updatable.setSuspended(dto.getSuspended());
+        enhanceStatusesWithDto(dto, updatable);
 
         return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public HabitAssignDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto) {
+        HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID + habitId));
+
+        enhanceStatusesWithDto(dto, updatable);
+
+        return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignDto.class);
+    }
+
+    /**
+     * Method updates {@link HabitAssign} with {@link HabitAssignStatDto} fields.
+     *
+     * @param dto       {@link HabitAssignStatDto} instance.
+     * @param updatable {@link HabitAssign} instance.
+     */
+    private void enhanceStatusesWithDto(HabitAssignStatDto dto, HabitAssign updatable) {
+        updatable.setAcquired(dto.getAcquired());
+        updatable.setSuspended(dto.getSuspended());
     }
 
     /**
