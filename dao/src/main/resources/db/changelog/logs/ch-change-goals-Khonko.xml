@@ -3,8 +3,8 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="dmytrokhonko3" author="Dmytro Khonko">
-        <dropColumn tableName="custom_goals">
-            <column name="status" />
+        <dropColumn tableName="user_goals">
+            <column name="custom_goal_id" />
         </dropColumn>
     </changeSet>
 </databaseChangeLog>
