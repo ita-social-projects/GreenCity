@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
@@ -12,11 +13,11 @@ import greencity.service.AdviceService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -69,13 +70,13 @@ public class AdviceController {
      */
     @ApiOperation("Get all advices")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
-    public List<LanguageTranslationDTO> getAll() {
-        return adviceService.getAllAdvices();
+    public PageableDto<AdviceVO> getAll(@ApiIgnore Pageable pageable) {
+        return adviceService.getAllAdvices(pageable);
     }
 
     /**

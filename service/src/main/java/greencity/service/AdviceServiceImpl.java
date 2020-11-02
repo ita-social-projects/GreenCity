@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
@@ -18,11 +19,14 @@ import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitRepo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -42,9 +46,13 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationDTO> getAllAdvices() {
-        return modelMapper.map(adviceTranslationRepo.findAll(), new TypeToken<List<LanguageTranslationDTO>>() {
-        }.getType());
+    public PageableDto<AdviceVO> getAllAdvices(Pageable pageable) {
+        Page<Advice> advices = adviceRepo.findAll(pageable);
+        List<AdviceVO> adviceVOs = advices.getContent().stream()
+                .map(advice -> modelMapper.map(advice, AdviceVO.class)).collect(Collectors.toList());
+
+        return new PageableDto<>(adviceVOs, advices.getTotalElements(),
+                advices.getPageable().getPageNumber(), advices.getTotalPages());
     }
 
     /**

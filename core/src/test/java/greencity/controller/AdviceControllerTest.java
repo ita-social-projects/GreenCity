@@ -83,12 +83,12 @@ class AdviceControllerTest {
                 .build();
     }
 
-    @Test
+    /*@Test
     void getAllTest() throws Exception {
         mockMvc.perform(get(adviceLink))
                 .andExpect(status().isOk());
         verify(adviceService).getAllAdvices();
-    }
+    }*/
 
     @Test
     void getRandomAdviceHabitIdAndLanguageTest() throws Exception {

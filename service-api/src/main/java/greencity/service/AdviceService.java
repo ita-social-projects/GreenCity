@@ -1,10 +1,13 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 /**
@@ -19,7 +22,7 @@ public interface AdviceService {
      * @return List of all {@link AdviceDto}
      * @author Vitaliy Dzen
      */
-    List<LanguageTranslationDTO> getAllAdvices();
+    PageableDto<AdviceVO> getAllAdvices(Pageable pageable);
 
     /**
      * Method finds random {@link AdviceDto}.
