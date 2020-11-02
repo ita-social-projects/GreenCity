@@ -11,11 +11,9 @@ import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.user.*;
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.UserStatus;
 import greencity.service.CustomGoalService;
@@ -436,7 +434,7 @@ public class UserController {
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get all active habit assigns for current user.")
+    @ApiOperation(value = "Get habit assigns for certain user by acquired status.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -448,26 +446,6 @@ public class UserController {
         @PathVariable Long id, @PathVariable Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(id, acquired));
-    }
-
-    /**
-     * Method to update {@link HabitAssign} for it's id.
-     *
-     * @param id {@link HabitAssign} id.
-     * @return {@link HabitAssignDto}.
-     */
-    @ApiOperation(value = "Update habit assign acquired or suspended status.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
-    @PatchMapping("/habit/assign/{id}")
-    public ResponseEntity<HabitAssignDto> updateHabitAssignById(
-        @PathVariable Long id, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService
-            .updateStatusByHabitAssignId(id, habitAssignStatDto));
     }
 
     /**

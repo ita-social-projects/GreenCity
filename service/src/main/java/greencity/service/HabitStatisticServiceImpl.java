@@ -45,38 +45,39 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Yuriy Olkhovskyi && Yurii Koval
      */
     @Transactional
     @CacheEvict(value = CacheConstants.HABIT_ITEM_STATISTIC_CACHE, allEntries = true)
     @Override
-    public HabitStatisticDto save(AddHabitStatisticDto dto) {
-        if (habitStatisticRepo.findHabitAssignStatByDate(dto.getCreateDate(), dto.getHabitAssignId()).isPresent()) {
+    public HabitStatisticDto saveByHabitIdAndUserId(Long habitId, Long userId, AddHabitStatisticDto dto) {
+        if (habitStatisticRepo.findStatByDateAndHabitIdAndUserId(dto.getCreateDate(), habitId, userId).isPresent()) {
             throw new NotSavedException(ErrorMessage.HABIT_STATISTIC_ALREADY_EXISTS);
         }
 
-        boolean proceed = isTodayOrYesterday(
-            dateService
-                .convertToDatasourceTimezone(dto.getCreateDate())
-                .toLocalDate()
-        );
-        if (proceed) {
+        if (isProceed(dto)) {
             HabitStatistic habitStatistic = modelMapper.map(dto, HabitStatistic.class);
-            HabitAssign habitAssign = habitAssignRepo.findById(dto.getHabitAssignId())
+            HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
                 .orElseThrow(
-                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + dto.getHabitAssignId()));
+                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID
+                        + userId + ", " + habitId));
             habitStatistic.setHabitAssign(habitAssign);
             return modelMapper.map(habitStatisticRepo.save(habitStatistic), HabitStatisticDto.class);
         }
         throw new BadRequestException(ErrorMessage.WRONG_DATE);
     }
 
+    private boolean isProceed(AddHabitStatisticDto dto) {
+        return isTodayOrYesterday(
+            dateService
+                .convertToDatasourceTimezone(dto.getCreateDate())
+                .toLocalDate()
+        );
+    }
+
     private boolean isTodayOrYesterday(LocalDate date) {
         int diff = Period.between(LocalDate.now(), date).getDays();
         return diff == 0 || diff == -1;
     }
-
 
     /**
      * {@inheritDoc}
@@ -86,15 +87,24 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Transactional
     @CacheEvict(value = CacheConstants.HABIT_ITEM_STATISTIC_CACHE, allEntries = true)
     @Override
-    public UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto) {
+    public UpdateHabitStatisticDto update(Long habitStatisticId, Long userId, UpdateHabitStatisticDto dto) {
         HabitStatistic updatable = habitStatisticRepo.findById(habitStatisticId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_STATISTIC_NOT_FOUND_BY_ID + habitStatisticId));
 
+        if (updatable.getHabitAssign().getUser().getId().equals(userId)) {
+            enhanceHabitStatWithDto(dto, updatable);
+            return modelMapper.map(habitStatisticRepo.save(updatable),
+                UpdateHabitStatisticDto.class);
+        } else {
+            throw new BadRequestException(ErrorMessage.HABIT_STATISTIC_NOT_BELONGS_TO_USER + habitStatisticId);
+        }
+    }
+
+    private void enhanceHabitStatWithDto(UpdateHabitStatisticDto dto, HabitStatistic updatable) {
         updatable.setAmountOfItems(dto.getAmountOfItems());
         updatable.setHabitRate(dto.getHabitRate());
-        return modelMapper.map(habitStatisticRepo.save(updatable),
-            UpdateHabitStatisticDto.class);
     }
+
 
     /**
      * {@inheritDoc}

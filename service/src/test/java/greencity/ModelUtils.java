@@ -143,7 +143,9 @@ public class ModelUtils {
             .suspended(false)
             .createDate(ZonedDateTime.now())
             .habitStatus(getHabitStatus())
-            .habit(Habit.builder().id(1L).build()).build();
+            .habit(Habit.builder().id(1L).build())
+            .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .user(User.builder().id(1L).build()).build();
     }
 
     public static HabitAssignVO getHabitAssignVO() {
@@ -154,6 +156,12 @@ public class ModelUtils {
             .suspended(false)
             .createDateTime(ZonedDateTime.now())
             .userVO(UserVO.builder().id(1L).build()).build();
+    }
+
+    public static HabitStatistic getHabitStatistic() {
+        return HabitStatistic.builder()
+            .id(1L).habitRate(HabitRate.GOOD).createDate(ZonedDateTime.now())
+            .amountOfItems(10).build();
     }
 
     public static HabitStatusDto getHabitStatusDto() {
@@ -171,6 +179,10 @@ public class ModelUtils {
 
     public static HabitVO getHabitVO() {
         return HabitVO.builder().id(1L).image("img.png").build();
+    }
+
+    public static Habit getHabit() {
+        return Habit.builder().id(1L).image("img.png").build();
     }
 
     public static HabitStatus getHabitStatus() {

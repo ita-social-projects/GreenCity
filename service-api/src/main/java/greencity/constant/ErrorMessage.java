@@ -6,7 +6,7 @@ public final class ErrorMessage {
     public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
-    public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
+    public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists with such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "Habit statistic does not exist by this id : ";
     public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
@@ -58,6 +58,8 @@ public final class ErrorMessage {
             + "and habit with id : ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
         "There is no habit assign for current user and such habit with id: ";
+    public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
+        "Current user does not have habit statistic with id: ";
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";
     public static final String USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY =
         "User already assigned and suspended this habit for today with id: ";
@@ -117,6 +119,7 @@ public final class ErrorMessage {
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
             "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
+
 
     private ErrorMessage() {
     }

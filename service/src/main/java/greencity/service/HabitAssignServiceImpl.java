@@ -117,20 +117,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignDto updateStatusByHabitAssignId(Long habitAssignId, HabitAssignStatDto dto) {
-        HabitAssign updatable = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
-        enhanceStatusesWithDto(dto, updatable);
-
-        return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
     public HabitAssignDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto) {
         HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(() -> new NotFoundException(

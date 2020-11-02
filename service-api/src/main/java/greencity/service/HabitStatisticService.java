@@ -9,20 +9,25 @@ import java.util.List;
 
 public interface HabitStatisticService {
     /**
-     * Method for creating {@code HabitStatistic} to database.
+     * Method for creating {@code HabitStatistic} by {@code Habit}, {@code User} id's and
+     * {@link AddHabitStatisticDto} instance.
      *
-     * @param addHabitStatisticDto - dto with {@code HabitStatistic} rate, amount of items, date and Habit id.
+     * @param habitId              {@code Habit} id.
+     * @param userId               {@code User} id.
+     * @param addHabitStatisticDto - dto with {@code HabitStatistic} rate, amount of items, date.
      * @return {@link AddHabitStatisticDto} instance.
      */
-    HabitStatisticDto save(AddHabitStatisticDto addHabitStatisticDto);
+    HabitStatisticDto saveByHabitIdAndUserId(Long habitId, Long userId, AddHabitStatisticDto addHabitStatisticDto);
 
     /**
-     * Method for updating {@code HabitStatistic} in database.
+     * Method for updating {@code HabitStatistic} by it's id.
      *
-     * @param dto - dto with HabitStatistic rate and amount of items.
+     * @param habitStatisticId {@code HabitStatistic} id.
+     * @param userId           {@code User} current id.
+     * @param dto              - dto with {@code HabitStatistic} rate and amount of items.
      * @return {@link UpdateHabitStatisticDto} instance.
      */
-    UpdateHabitStatisticDto update(Long habitStatisticId, UpdateHabitStatisticDto dto);
+    UpdateHabitStatisticDto update(Long habitStatisticId, Long userId, UpdateHabitStatisticDto dto);
 
     /**
      * Method for finding {@code HabitStatistic} by it's id.

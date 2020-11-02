@@ -24,7 +24,6 @@ class AddHabitStatisticDtoMapperTest {
             .amountOfItems(habitStatistic.getAmountOfItems())
             .createDate(habitStatistic.getCreateDate())
             .habitRate(habitStatistic.getHabitRate())
-            .habitAssignId(habitStatistic.getHabitAssign().getId())
             .build();
 
         assertEquals(expected, addHabitStatisticDtoMapper.convert(habitStatistic));

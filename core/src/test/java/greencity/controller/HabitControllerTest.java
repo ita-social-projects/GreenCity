@@ -2,38 +2,35 @@ package greencity.controller;
 
 import com.google.gson.Gson;
 import greencity.ModelUtils;
+import static greencity.ModelUtils.getPrincipal;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.User;
+import static greencity.enums.HabitRate.GOOD;
 import greencity.service.HabitAssignService;
 import greencity.service.HabitService;
 import greencity.service.HabitStatisticService;
+import java.security.Principal;
+import java.time.ZonedDateTime;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.security.Principal;
-import java.time.ZonedDateTime;
-import java.util.Locale;
-
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.enums.HabitRate.GOOD;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 class HabitControllerTest {
@@ -81,17 +78,17 @@ class HabitControllerTest {
     }
 
     @Test
-    void updateAssign() throws Exception {
+    void updateAssignByHabitId() throws Exception {
        HabitAssignStatDto habitAssignStatDto = new HabitAssignStatDto();
        habitAssignStatDto.setAcquired(true);
        habitAssignStatDto.setSuspended(true);
         Gson gson = new Gson();
         String json = gson.toJson(habitAssignStatDto);
-        mockMvc.perform(patch(habitLink + "/assign/{habitAssignId}", 1)
+        mockMvc.perform(patch(habitLink + "/{id}/assign", 1)
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        verify(habitAssignService).updateStatus(1L, habitAssignStatDto);
+        verify(habitAssignService).updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto);
     }
 
     @Test
@@ -114,20 +111,16 @@ class HabitControllerTest {
         AddHabitStatisticDto addHabitStatisticDto = new AddHabitStatisticDto();
         addHabitStatisticDto.setAmountOfItems(1);
         addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z[UTC]"));
-        addHabitStatisticDto.setHabitAssignId(1L);
         addHabitStatisticDto.setHabitRate(GOOD);
-        Gson gson = new Gson();
-        String json = gson.toJson(addHabitStatisticDto);
-        mockMvc.perform(post(habitLink + "/statistic/")
+        mockMvc.perform(post(habitLink + "/{id}/statistic/", 1L)
                 .content("{\n" +
                         "  \"amountOfItems\": 1,\n" +
                         "  \"createDate\": \"2020-10-09T16:49:01.020Z\",\n" +
-                        "  \"habitAssignId\": 1,\n" +
                         "  \"habitRate\": \"GOOD\"\n" +
                         "}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        verify(habitStatisticService).save(addHabitStatisticDto);
+        verify(habitStatisticService).saveByHabitIdAndUserId(1L, 1L, addHabitStatisticDto);
     }
 
     @Test
@@ -141,12 +134,12 @@ class HabitControllerTest {
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        verify(habitStatisticService).update(1L, habitStatisticForUpdateDto);
+        verify(habitStatisticService).update(1L, 1L, habitStatisticForUpdateDto);
     }
 
     @Test
     void findAllByHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/statistic/{habitId}", 1))
+        mockMvc.perform(get(habitLink + "/{id}/statistic/", 1))
                 .andExpect(status().isOk());
         verify(habitStatisticService).findAllStatsByHabitId(1L);
     }

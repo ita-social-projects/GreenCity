@@ -48,7 +48,8 @@ public class HabitController {
     /**
      * Method finds {@link Habit} by given id with locale translation.
      *
-     * @param id of {@link Habit}.
+     * @param id     of {@link Habit}.
+     * @param locale {@link Locale} with needed language code.
      * @return {@link HabitDto}.
      */
     @ApiOperation(value = "Find habit by id.")
@@ -68,7 +69,8 @@ public class HabitController {
     /**
      * Method finds all habits that available for tracking for specific language.
      *
-     * @param locale {@link Locale} with needed language code.
+     * @param locale   {@link Locale} with needed language code.
+     * @param pageable {@link Pageable} instance.
      * @return Pageable of {@link HabitTranslationDto}.
      */
     @ApiOperation(value = "Find all habits.")
@@ -86,9 +88,10 @@ public class HabitController {
     }
 
     /**
-     * Method which assign habit for {@link User}.
+     * Method which assigns habit for {@link User}.
      *
-     * @param habitId - id of {@link Habit}.
+     * @param id     {@link Habit} id.
+     * @param userVO {@link UserVO} instance.
      * @return {@link ResponseEntity}.
      */
     @ApiOperation(value = "Assign habit for current user.")
@@ -98,17 +101,17 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/assign/{habitId}")
-    public ResponseEntity<HabitAssignDto> assign(@PathVariable Long habitId,
-                                         @ApiIgnore @CurrentUser UserVO user) {
+    @PostMapping("/assign/{id}")
+    public ResponseEntity<HabitAssignDto> assign(@PathVariable Long id,
+                                                 @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitAssignService.assignHabitForUser(habitId, user));
+            .body(habitAssignService.assignHabitForUser(id, userVO));
     }
 
     /**
      * Method returns {@link HabitAssign} by it's id.
      *
-     * @param habitAssignId - id of {@link HabitAssign}.
+     * @param id {@link HabitAssign} id.
      * @return {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get habit assign.")
@@ -117,16 +120,17 @@ public class HabitController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/assign/{habitAssignId}")
-    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long habitAssignId) {
+    @GetMapping("/assign/{id}")
+    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getById(habitAssignId));
+            .body(habitAssignService.getById(id));
     }
 
     /**
      * Method to return all {@link HabitAssign} by it's {@link Habit} id.
      *
-     * @param habitId - id of {@link Habit}.
+     * @param id       {@link Habit} id.
+     * @param acquired {@link Boolean} status.
      * @return {@link List} of {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get all user assigns from certain habit.")
@@ -135,57 +139,103 @@ public class HabitController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/assign/{habitId}/{acquired}")
-    public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignByHabitIdAndAcquired(@PathVariable Long habitId,
-                                                                                      @PathVariable Boolean acquired) {
+    @GetMapping("/{id}/assign/{acquired}")
+    public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long id,
+                                                                                       @PathVariable Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(habitId, acquired));
+            .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(id, acquired));
     }
 
     /**
-     * Method to update {@link HabitAssign} for it's id.
+     * Method to update active {@link HabitAssign} for it's {@link Habit} id and current user.
      *
-     * @param habitAssignId - id of {@link HabitAssign}.
+     * @param userVO             {@link UserVO} instance.
+     * @param id                 {@link Habit} id.
+     * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
      * @return {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Update habit assign acquired or suspended status.")
+    @ApiOperation(value = "Update active user habit assign acquired or suspended status.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping("assign/{habitAssignId}")
-    public ResponseEntity<HabitAssignDto> updateAssign(
-        @PathVariable Long habitAssignId, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
+    @PatchMapping("/{id}/assign")
+    public ResponseEntity<HabitAssignDto> updateAssignByHabitId(
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable Long id, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitAssignService
-            .updateStatus(habitAssignId, habitAssignStatDto));
+            .updateStatusByHabitIdAndUserId(id, userVO.getId(), habitAssignStatDto));
     }
 
     /**
-     * Method for creating {@link HabitStatistic} for user {@link HabitAssign}.
+     * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
      *
-     * @param addHabitStatisticDto - dto for {@link HabitStatistic} entity.
+     * @param id {@link Habit} id.
+     * @return list of {@link HabitStatisticDto} instances.
+     */
+    @ApiOperation(value = "Find all statistics by habit id.")
+    @GetMapping("{id}/statistic/")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
+        @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(id));
+    }
+
+    /**
+     * Method for finding {@link HabitStatisticDto} by {@link HabitAssign id}.
+     *
+     * @param id {@link HabitAssign} id.
+     * @return list of {@link HabitStatisticDto} instances.
+     */
+    @ApiOperation(value = "Find all statistics by habit assign id.")
+    @GetMapping("/assign/{id}/statistic/")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    public ResponseEntity<List<HabitStatisticDto>> findAllStatsByHabitAssignId(
+        @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitStatisticService.findAllStatsByHabitAssignId(id));
+    }
+
+    /**
+     * Method for creating {@link HabitStatistic} by {@link Habit} id that is assigned for current user.
+     *
+     * @param addHabitStatisticDto dto for {@link HabitStatistic} entity.
+     * @param userVO               {@link UserVO} instance.
+     * @param id                   {@link Habit} id.
      * @return dto {@link AddHabitStatisticDto} instance.
      * @author Yuriy Olkhovskyi.
      */
-    @ApiOperation(value = "Add habit statistic for assigned habit.")
+    @ApiOperation(value = "add statistic by habit id that is assigned for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitStatisticDto.class),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/statistic/")
-    public ResponseEntity<HabitStatisticDto> save(@Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto) {
+    @PostMapping("/{id}/statistic/")
+    public ResponseEntity<HabitStatisticDto> saveHabitStatistic(
+        @Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticService.save(addHabitStatisticDto));
+            .body(habitStatisticService.saveByHabitIdAndUserId(id, userVO.getId(), addHabitStatisticDto));
     }
 
     /**
      * Method for updating {@link HabitStatistic} by it's id.
      *
-     * @param habitStatisticForUpdateDto - {@link UpdateHabitStatisticDto} with habit statistic id and
+     * @param id                         {@link HabitStatistic} id.
+     * @param habitStatisticForUpdateDto {@link UpdateHabitStatisticDto} with habit statistic id and
      *                                   updated rate and amount of items.
      * @return {@link UpdateHabitStatisticDto} instance.
      */
@@ -196,48 +246,13 @@ public class HabitController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping("/statistic/{habitStatisticId}")
+    @PatchMapping("/statistic/{id}")
     public ResponseEntity<UpdateHabitStatisticDto> updateStatistic(
-        @PathVariable Long habitStatisticId, @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
+        @PathVariable Long id,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService
-            .update(habitStatisticId, habitStatisticForUpdateDto));
-    }
-
-    /**
-     * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
-     *
-     * @param habitId {@link Habit} id.
-     * @return list of {@link HabitStatisticDto} instances.
-     */
-    @ApiOperation(value = "Find all statistics by habit id.")
-    @GetMapping("/statistic/{habitId}")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
-    public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
-        @PathVariable Long habitId) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(habitId));
-    }
-
-    /**
-     * Method for finding {@link HabitStatisticDto} by {@link HabitAssign id}.
-     *
-     * @param habitAssignId {@link HabitAssign} id.
-     * @return list of {@link HabitStatisticDto} instances.
-     */
-    @ApiOperation(value = "Find all statistics by habit assign id.")
-    @GetMapping("/statistic/assign/{habitAssignId}")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
-    public ResponseEntity<List<HabitStatisticDto>> findAllByHabitAssignId(
-        @PathVariable Long habitAssignId) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            habitStatisticService.findAllStatsByHabitAssignId(habitAssignId));
+            .update(id, userVO.getId(), habitStatisticForUpdateDto));
     }
 
     /**

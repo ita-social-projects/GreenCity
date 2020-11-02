@@ -59,15 +59,6 @@ public interface HabitAssignService {
     void deleteAllHabitAssignsByHabit(HabitVO habit);
 
     /**
-     * Method for updating {@code HabitAssign} in database by it's id.
-     *
-     * @param habitAssignId {@code HabitAssign} id.
-     * @param dto           {@link HabitAssignStatDto} dto with new suspended and acquired status.
-     * @return {@link HabitAssignDto} instance.
-     */
-    HabitAssignDto updateStatusByHabitAssignId(Long habitAssignId, HabitAssignStatDto dto);
-
-    /**
      * Method for updating {@code HabitAssign} in database by {@code Habit} and {@code User} id's.
      *
      * @param habitId {@code Habit} id.
