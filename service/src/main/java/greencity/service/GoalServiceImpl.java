@@ -1,11 +1,14 @@
 package greencity.service;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.goal.*;
 import greencity.entity.Goal;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.GoalNotFoundException;
+import greencity.exception.exceptions.UserHasNoGoalsException;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -54,10 +57,15 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     public List<GoalTranslationVO> update(GoalPostDto goalPostDto) {
-        Goal updated = goalRepo.findById(goalPostDto.getGoal().getId()).get();
-        goalTranslationRepo.deleteAll(updated.getTranslations());
-        return modelMapper.map(saveTranslations(goalPostDto, updated), new TypeToken<List<GoalTranslationVO>>() {
-        }.getType());
+        Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getGoal().getId());
+        if (optionalGoal.isPresent()) {
+            Goal updated = optionalGoal.get();
+            goalTranslationRepo.deleteAll(updated.getTranslations());
+            return modelMapper.map(saveTranslations(goalPostDto, updated), new TypeToken<List<GoalTranslationVO>>() {
+            }.getType());
+        } else {
+            throw new UserHasNoGoalsException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
+        }
     }
 
     @Override

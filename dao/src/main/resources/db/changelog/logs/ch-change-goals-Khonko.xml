@@ -6,6 +6,7 @@
                id="dmytrokhonko4">
         <sql>
             ALTER TABLE user_goals DROP CONSTRAINT id_check;
+            DELETE FROM user_goals WHERE goal_id IS NULL;
         </sql>
     </changeSet>
     <changeSet id="dmytrokhonko3" author="Dmytro Khonko">
