@@ -1,8 +1,3 @@
-var languages;
-$.get('/advice/languages',function (data){
-    languages=data;
-});
-
 function clearAllErrorsSpan(){
     $('.errorSpan').text('');
 }
@@ -70,10 +65,10 @@ $(document).ready(function(){
         var payload=[];
         checkbox.each(function (){
             if(this.checked){
-                payload.push(this.value);
+                payload.push(parseInt(this.value));
             }
-        })
-        var href = '/management/advice/deleteAll';
+        });
+        var href = '/management/advices/deleteAll';
         $.ajax({
             url: href,
             type: 'delete',
@@ -92,12 +87,10 @@ $(document).ready(function(){
             obj[item.name] = item.value;
             return obj;
         }, {});
-        console.log(formData);
-        var habit = {
-            id: formData.habit
-        };
         var payload = {
-            "habit": habit,
+            "habit": {
+                id: formData.habit
+            },
             "translations": []
         };
         for (var key in formData) {
@@ -115,9 +108,8 @@ $(document).ready(function(){
                 });
             }
         }
-        console.log(payload);
         $.ajax({
-            url: 'management/advice/',
+            url: '/management/advices/',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',

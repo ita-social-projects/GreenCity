@@ -27,7 +27,7 @@ import java.util.List;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/management/advice")
+@RequestMapping("/management/advices")
 public class ManagementAdvicesController {
     private final AdviceService adviceService;
     private final LanguageService languageService;
@@ -100,13 +100,14 @@ public class ManagementAdvicesController {
      * @return  {@link org.springframework.http.ResponseEntity}
      * @author Markiyan Derevetskyi
      * */
-    @ApiOperation(value = "Delete advice by id")
+    @ApiOperation(value = "Delete all advices by given id's")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAllAdvices(@RequestBody List<Long> ids) {
+        adviceService.deleteAllByIds(ids);
         return ResponseEntity.status(HttpStatus.OK).body(ids);
     }
 }
