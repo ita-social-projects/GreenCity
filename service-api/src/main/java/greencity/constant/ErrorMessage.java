@@ -48,14 +48,6 @@ public final class ErrorMessage {
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
     public static final String HABIT_HAS_BEEN_ALREADY_ON_THAT_DAY = "Habit has been enrolled";
-    public static final String USER_HAS_NO_HABITS_WITH_SUCH_STATUS =
-        "There is no active habits for such user with such status ";
-    public static final String STATUS_OF_HABIT_ASSIGN_NOT_UPDATED = "Status of user habit wasn't updated by id: ";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE =
-        "There is no habit assign for such habit, user and date : ";
-    public static final String HABIT_ASSIGN_SUSPENDED_STATUS_NOT_UPDATED =
-        "Habit assign suspended status wasn't updated because there is no habit assign with such user "
-            + "and habit with id : ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
         "There is no habit assign for current user and such habit with id: ";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
