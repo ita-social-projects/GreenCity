@@ -97,7 +97,6 @@ $(document).ready(function(){
         for (var key in formData) {
             if (key.startsWith("content")) {
                 var contentAndLanguage = key.split("_");
-                console.log(contentAndLanguage);
                 var langId = contentAndLanguage[1];
                 var langCode = contentAndLanguage[2];
                 var content = formData["content_" + langId + "_" + langCode];
@@ -118,6 +117,7 @@ $(document).ready(function(){
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
+                        console.log(el.fieldName);
                         $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
                     })
                 } else {
@@ -136,7 +136,6 @@ $(document).ready(function(){
             obj[item.name] = item.value;
             return obj;
         }, {});
-        console.log(formData);
         var adviceId = formData.id;
         var payload = {
             "habit": {
@@ -159,7 +158,6 @@ $(document).ready(function(){
                 });
             }
         }
-        console.log(payload);
         //запит save у модальній формі update
         $.ajax({
             url: `/management/advices/${adviceId}`,
@@ -169,6 +167,7 @@ $(document).ready(function(){
             success: function (data) {
                 if(Array.isArray(data.errors) && data.errors.length){
                     data.errors.forEach(function(el){
+                        console.log(el.fieldName);
                         $(document.getElementById('errorModalUpdate'+el.fieldName)).text(el.fieldError);
                     })
                 }

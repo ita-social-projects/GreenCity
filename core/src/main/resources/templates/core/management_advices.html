@@ -124,7 +124,7 @@
                         <div class="form-group">
                             <label>Habit Id</label>
                             <input type="number" class="form-control" name="habit" required>
-                            <span th:id="errorModalSavename" class="errorSpan"></span>
+                            <span th:id="errorModalSavehabit.id" class="errorSpan"></span>
                         </div>
                         <th:block th:each="language, iterInfo : ${languages}">
                             <div class="row">
@@ -144,7 +144,7 @@
                                     <div class="form-group">
                                         <label>Content</label>
                                         <input type="text" class="form-control" th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}" />
-                                        <span th:id="'errorModalSaveAdviceTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
+                                        <span th:id="'errorModalSavetranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
@@ -171,12 +171,11 @@
                         <div class="form-group">
                             <label>ID</label>
                             <input type="text" class="form-control" id="id" name="id" readonly required>
-                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
                             <label>Habit ID</label>
                             <input type="text" class="form-control" id="habit" name="habit" required>
-                            <span th:id="errorModalUpdatename" class="errorSpan"></span>
+                            <span th:id="errorModalUpdatehabit.id" class="errorSpan"></span>
                         </div>
                         <th:block th:each="language, iterInfo : ${languages}">
                             <div class="row">
@@ -198,7 +197,7 @@
                                             <input type="text" class="form-control"
                                                    th:id="content+${'_' + language.getId()+'_'}+${language.getCode()}"
                                                    th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}" />
-                                        <span th:id="'errorModalSaveAdviceTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
+                                        <span th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>

@@ -35,12 +35,12 @@ public class ManagementAdvicesController {
     /**
      * Method that returns management page with all {@link Advice}'s that satisfy query.
      *
-     * @param query {@link String} - string query
-     * @param model {@link Model} - for passing data between controller and view
+     * @param query    {@link String} - string query
+     * @param model    {@link Model} - for passing data between controller and view
      * @param pageable {@link Pageable}
      * @return name of template {@link String}
      * @author Markiyan Derevetskyi
-     * */
+     */
     @ApiOperation(value = "Get all advices")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -63,7 +63,7 @@ public class ManagementAdvicesController {
      * @param id {@link Long} - advice id
      * @return found advice {@link AdviceVO}
      * @author Markiyan Derevetskyi
-     * */
+     */
     @ApiOperation(value = "Get advice by id")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -77,10 +77,11 @@ public class ManagementAdvicesController {
 
     /**
      * Method that saves new {@link Advice}.
+     *
      * @param advice {@link AdvicePostDto} - advice that will be saved in DB.
      * @return saved advice {@link GenericResponseDto}
      * @author Markiyan Derevetskyi
-     * */
+     */
     @ApiOperation(value = "Save advice")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
@@ -89,7 +90,7 @@ public class ManagementAdvicesController {
     @ResponseBody
     @PostMapping
     public GenericResponseDto saveAdvice(@Valid @RequestBody AdvicePostDto advice,
-                             BindingResult bindingResult) {
+                                         BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             adviceService.save(advice);
         }
@@ -101,9 +102,9 @@ public class ManagementAdvicesController {
      * Method that deletes {@link Advice} by id.
      *
      * @param id {@link Long}
-     * @return  {@link org.springframework.http.ResponseEntity}
+     * @return {@link org.springframework.http.ResponseEntity}
      * @author Markiyan Derevetskyi
-     * */
+     */
     @ApiOperation(value = "Delete advice by id")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -119,9 +120,9 @@ public class ManagementAdvicesController {
      * Method that deletes all {@link Advice}'s by given id's.
      *
      * @param ids - list of  {@link Long}
-     * @return  {@link org.springframework.http.ResponseEntity}
+     * @return {@link org.springframework.http.ResponseEntity}
      * @author Markiyan Derevetskyi
-     * */
+     */
     @ApiOperation(value = "Delete all advices by given id's")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -138,19 +139,23 @@ public class ManagementAdvicesController {
      * Method that updates {@link Advice} by id.
      *
      * @param advicePostDto {@link AdvicePostDto} - new advice
-     * @param id {@link Long} - advice id
-     * @return {@link AdviceVO} - updated advice
+     * @param id            {@link Long} - advice id
+     * @return updated advice {@link GenericResponseDto}
      * @author Markiyan Derevetskyi
-     * */
+     */
     @ApiOperation(value = "Update advice by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
+    @ResponseBody
     @PutMapping("/{id}")
-    public ResponseEntity<AdviceVO> updateAdvice(@Valid @RequestBody AdvicePostDto advicePostDto,
-                                                      @PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(adviceService.update(advicePostDto, id));
+    public GenericResponseDto updateAdvice(@Valid @RequestBody AdvicePostDto advicePostDto, BindingResult bindingResult,
+                                           @PathVariable Long id) {
+        if (!bindingResult.hasErrors()) {
+            adviceService.update(advicePostDto, id);
+        }
+
+        return buildGenericResponseDto(bindingResult);
     }
 }

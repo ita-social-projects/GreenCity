@@ -4,7 +4,9 @@ import greencity.annotations.LanguageTranslationConstraint;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import lombok.*;
 
 
@@ -14,9 +16,10 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 public class AdvicePostDto {
+    @Valid
     @LanguageTranslationConstraint
     private List<LanguageTranslationDTO> translations;
 
-    @NotNull
+    @Valid
     private HabitIdRequestDto habit;
 }
