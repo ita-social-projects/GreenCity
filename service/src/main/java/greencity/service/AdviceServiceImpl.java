@@ -47,12 +47,7 @@ public class AdviceServiceImpl implements AdviceService {
      */
     @Override
     public PageableDto<AdviceVO> getAllAdvices(Pageable pageable) {
-        Page<Advice> advices = adviceRepo.findAll(pageable);
-        List<AdviceVO> adviceVOs = advices.getContent().stream()
-                .map(advice -> modelMapper.map(advice, AdviceVO.class)).collect(Collectors.toList());
-
-        return new PageableDto<>(adviceVOs, advices.getTotalElements(),
-                advices.getPageable().getPageNumber(), advices.getTotalPages());
+        return buildPageableDto(adviceRepo.findAll(pageable));
     }
 
     /**
@@ -63,6 +58,11 @@ public class AdviceServiceImpl implements AdviceService {
         return modelMapper.map(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id)
             .orElseThrow(() ->
                 new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), LanguageTranslationDTO.class);
+    }
+
+    @Override
+    public PageableDto<AdviceVO> searchBy(Pageable pageable, String query) {
+        return buildPageableDto(adviceRepo.searchBy(pageable, query));
     }
 
     /**
@@ -148,5 +148,13 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public void deleteAllByIds(List<Long> ids) {
         ids.forEach(adviceRepo::deleteById);
+    }
+
+    private PageableDto<AdviceVO> buildPageableDto(Page<Advice> advices) {
+        List<AdviceVO> adviceVOs = advices.getContent().stream()
+                .map(advice -> modelMapper.map(advice, AdviceVO.class)).collect(Collectors.toList());
+
+        return new PageableDto<>(adviceVOs, advices.getTotalElements(),
+                advices.getPageable().getPageNumber(), advices.getTotalPages());
     }
 }

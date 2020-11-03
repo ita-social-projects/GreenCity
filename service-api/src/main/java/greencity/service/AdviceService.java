@@ -33,6 +33,16 @@ public interface AdviceService {
     LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language);
 
     /**
+     * Method finds all {@link AdviceVO} by query.
+     *
+     * @param query {@link String} - string query
+     * @param pageable {@link Pageable}
+     * @return list of found {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     * */
+    PageableDto<AdviceVO> searchBy(Pageable pageable, String query);
+
+    /**
      * Method find {@link AdviceVO} by id.
      *
      * @param id of {@link AdviceDto}

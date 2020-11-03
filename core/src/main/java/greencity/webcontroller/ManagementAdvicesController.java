@@ -33,8 +33,9 @@ public class ManagementAdvicesController {
     private final LanguageService languageService;
 
     /**
-     * Method that returns management page with all {@link Advice}'s.
+     * Method that returns management page with all {@link Advice}'s that satisfy query.
      *
+     * @param query {@link String} - string query
      * @param model {@link Model} - for passing data between controller and view
      * @param pageable {@link Pageable}
      * @return name of template {@link String}
@@ -46,8 +47,10 @@ public class ManagementAdvicesController {
             @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping
-    public String findAllAdvices(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<AdviceVO> allAdvices = adviceService.getAllAdvices(pageable);
+    public String findAllAdvices(@RequestParam(required = false) String query,
+                                 Model model, @ApiIgnore Pageable pageable) {
+        PageableDto<AdviceVO> allAdvices = query == null || query.isEmpty()
+                ? adviceService.getAllAdvices(pageable) : adviceService.searchBy(pageable, query);
         model.addAttribute("pageable", allAdvices);
         model.addAttribute("languages", languageService.getAllLanguages());
 
