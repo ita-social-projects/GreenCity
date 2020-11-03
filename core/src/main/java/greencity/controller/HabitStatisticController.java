@@ -110,7 +110,7 @@ public class HabitStatisticController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping("/statistic/{id}")
+    @PutMapping("/statistic/{id}")
     public ResponseEntity<UpdateHabitStatisticDto> updateStatistic(
         @PathVariable Long id,
         @ApiIgnore @CurrentUser UserVO userVO,

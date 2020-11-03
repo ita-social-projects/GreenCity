@@ -441,9 +441,9 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/{id}/habit/assign/{acquired}")
+    @GetMapping("/{id}/habit/assign")
     public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
-        @PathVariable Long id, @PathVariable Boolean acquired) {
+        @PathVariable Long id, @RequestParam Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(id, acquired));
     }

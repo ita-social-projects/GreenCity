@@ -126,17 +126,38 @@ public class HabitController {
      * @param acquired {@link Boolean} status.
      * @return {@link List} of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get all user assigns from certain habit.")
+    @ApiOperation(value = "Get all users assigns from certain habit.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/{id}/assign/{acquired}")
+    @GetMapping("/{id}/assign/all")
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long id,
-                                                                                       @PathVariable Boolean acquired) {
+                                                                                       @RequestParam Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(id, acquired));
+    }
+
+    /**
+     * Method to return {@link HabitAssign} by it's {@link Habit} id.
+     *
+     * @param id     {@link Habit} id.
+     * @param userVO {@link UserVO} user.
+     * @return {@link HabitAssignDto} instance.
+     */
+    @ApiOperation(value = "Get active assign by habit id for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/{id}/assign")
+    public ResponseEntity<HabitAssignDto> getHabitAssignByHabitId(
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.findActiveHabitAssignByUserIdAndHabitId(userVO.getId(), id));
     }
 
     /**

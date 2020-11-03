@@ -148,7 +148,7 @@ public class HabitStatusController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     public ResponseEntity<HabitStatusDto> update(
         @PathVariable Long id,
         @ApiIgnore @CurrentUser UserVO userVO,
