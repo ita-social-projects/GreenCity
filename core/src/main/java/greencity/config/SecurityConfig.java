@@ -108,11 +108,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses",
                 "/habit",
                 "/habit/{id}",
-                "/habit/assign/{habitAssignId}",
-                "/habit/statistic/{habitId}",
-                "/habit/statistic/assign/{habitAssignId}",
+                "/habit/assign/{id}",
+                "/habit/{id}/assign/all",
+                "/habit/{id}/statistic",
+                "/habit/assign/{id}/statistic",
                 "/habit/statistic/todayStatisticsForAllHabitItems",
-                "/habit/status/{habitAssignId}",
+                "/habit/assign/{id}/status",
                 "/place/about/{id}",
                 "/specification",
                 "/econews",
@@ -140,6 +141,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/search/tipsandtricks",
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
+                "/user/{id}/habit/assign",
                 "/socket/**"
             ).permitAll()
             .antMatchers(HttpMethod.POST,
@@ -156,6 +158,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/",
                 "/goals",
                 "/goals/shoppingList/{userId}",
+                "/habit/{id}/status",
+                "/habit/{id}/assign",
                 "/facts",
                 "/facts/random/{habitId}",
                 "/facts/dayFact/{languageId}",
@@ -166,8 +170,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals",
                 "/user/{userId}/goals/available",
                 "/user/{userId}/customGoals/available",
-                "/user/{userId}/habit/assign/active",
-                "/user/{userId}/habit/assign/acquired",
                 "/user/{userId}/sixUserFriends/",
                 "/user/{userId}/profile/",
                 "/user/isOnline/{userId}/",
@@ -181,11 +183,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
                 "/files/image",
-                "/habit/assign/{habitId}",
-                "/habit/statistic/",
-                "/habit/status/enroll/{habitAssignId}",
-                "/habit/status/unenroll/{habitAssignId}/{date}",
-                "/habit/status/enroll/{habitAssignId}/{date}",
+                "/habit/assign/{id}",
+                "/habit/{id}/statistic",
+                "/habit/{id}/status/enroll",
+                "/habit/{id}/status/unenroll/{date}",
+                "/habit/{id}/status/enroll/{date}",
                 "/newsSubscriber",
                 "/place/{placeId}/comments",
                 "/place/propose",
@@ -202,14 +204,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/update",
                 "/favorite_place/",
                 "/ownSecurity",
-                "/user/profile"
+                "/user/profile",
+                "/habit/{id}/status",
+                "/habit/statistic/{id}"
             ).hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/econews/comments",
                 "/goals/shoppingList/{userId}",
-                "/habit/statistic/{habitStatisticId}",
-                "/habit/assign/{habitAssignId}",
-                "/habit/status/{habitAssignId}",
+                "/habit/{id}/assign",
                 "/tipsandtricks/comments",
                 "/user/{userId}/customGoals",
                 "/user/{userId}/goals/{goalId}",
@@ -265,8 +267,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/advices/{adviceId}",
                 "/facts/{factId}",
                 "/comments",
-                "/tipsandtricks/{id}",
-                "/habit/status/{habitAssignId}"
+                "/tipsandtricks/{id}"
             ).hasRole(ADMIN)
             .anyRequest().hasAnyRole(ADMIN);
     }

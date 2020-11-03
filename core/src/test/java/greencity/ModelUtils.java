@@ -157,8 +157,6 @@ public class ModelUtils {
                 .amountOfItems(5)
                 .habitRate(HabitRate.DEFAULT)
                 .createDate(ZonedDateTime.now())
-                .habitAssignId(10L)
-
                 .build();
     }
 

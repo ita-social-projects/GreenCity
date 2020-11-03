@@ -28,8 +28,22 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     @Query(value = "SELECT hs FROM HabitStatistic hs "
         + "WHERE cast(hs.createDate as date) = cast(:localDate as date) "
         + "AND hs.habitAssign.id = :habitAssignId")
-    Optional<HabitStatistic> findHabitAssignStatByDate(@Param("localDate") ZonedDateTime localDate,
-                                                       @Param("habitAssignId") Long habitAssignId);
+    Optional<HabitStatistic> findStatByDateAndId(@Param("localDate") ZonedDateTime localDate,
+                                                 @Param("habitAssignId") Long habitAssignId);
+
+    /**
+     * Method for finding {@link HabitStatistic} for certain {@link java.time.LocalDate}
+     * and {@link Habit} with {@link User} id's.
+     *
+     * @return {@link HabitStatistic} instance, if it doesn't exist returns Optional.
+     */
+    @Query(value = "SELECT hs FROM HabitStatistic hs "
+        + "WHERE cast(hs.createDate as date) = cast(:localDate as date) "
+        + "AND hs.habitAssign.habit.id = :habitId "
+        + "AND hs.habitAssign.user.id = :userId ")
+    Optional<HabitStatistic> findStatByDateAndHabitIdAndUserId(@Param("localDate") ZonedDateTime localDate,
+                                                               @Param("habitId") Long habitId,
+                                                               @Param("userId") Long userId);
 
     /**
      * Method for finding the sum of all untaken items of one {@link Habit} for current month.

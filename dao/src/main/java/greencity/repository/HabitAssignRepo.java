@@ -50,7 +50,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
                                                               @Param("dateTime") ZonedDateTime dateTime);
 
     /**
-     * Method to find all {@link HabitAssign} by {@link User} id and acquired status
+     * Method to find all {@link HabitAssign}'s by {@link User} id and acquired status
      * (with not suspended status).
      *
      * @param userId   {@link User} id.
@@ -58,6 +58,16 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return list of {@link HabitAssign} instances.
      */
     List<HabitAssign> findAllByUserIdAndAcquiredAndSuspendedFalse(Long userId, Boolean acquired);
+
+    /**
+     * Method to find all {@link HabitAssign}'s by {@link Habit} id and acquired status
+     * (with not suspended status).
+     *
+     * @param habitId  {@link Habit} id.
+     * @param acquired {@link Boolean} status.
+     * @return list of {@link HabitAssign} instances.
+     */
+    List<HabitAssign> findAllByHabitIdAndAcquiredAndSuspendedFalse(Long habitId, Boolean acquired);
 
     /**
      * Method to find {@link HabitAssign} by {@link User} id and {@link Habit} id
@@ -68,6 +78,15 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
      */
     Optional<HabitAssign> findByHabitIdAndUserIdAndSuspendedFalse(Long habitId, Long userId);
+
+    /**
+     * Method to find {@link HabitAssign} by it's id
+     * (with not suspended status).
+     *
+     * @param id {@link HabitAssign} id.
+     * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
+     */
+    Optional<HabitAssign> findByIdAndSuspendedFalse(Long id);
 
     /**
      * Method for counting all {@link HabitAssign} by {@link User} id

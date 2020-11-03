@@ -18,6 +18,7 @@ import greencity.enums.EmailNotification;
 import greencity.enums.UserStatus;
 import greencity.service.CustomGoalService;
 import greencity.service.HabitAssignService;
+import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -49,6 +50,7 @@ public class UserController {
     private final UserService userService;
     private final CustomGoalService customGoalService;
     private final HabitAssignService habitAssignService;
+    private final HabitStatisticService habitStatisticService;
 
     /**
      * The method which update user status.
@@ -428,39 +430,22 @@ public class UserController {
     /**
      * Method for finding all active {@link User} habit assigns.
      *
-     * @param userId {@link User} instance.
+     * @param id       {@link User} id.
+     * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get all active habit assigns for current user.")
+    @ApiOperation(value = "Get habit assigns for certain user by acquired status.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/{userId}/habit/assign/active")
-    public ResponseEntity<List<HabitAssignDto>> getActiveUserHabitAssigns(
-        @PathVariable @CurrentUserId Long userId) {
+    @GetMapping("/{id}/habit/assign")
+    public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
+        @PathVariable Long id, @RequestParam Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, false));
-    }
-
-    /**
-     * Method for finding all acquired {@link User} habit assigns.
-     *
-     * @param userId {@link User} instance.
-     * @return list of {@link HabitAssignDto}.
-     */
-    @ApiOperation(value = "Get all acquired habits for current user.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @GetMapping("/{userId}/habit/assign/acquired")
-    public ResponseEntity<List<HabitAssignDto>> getAcquiredUserHabitAssigns(
-        @PathVariable @CurrentUserId Long userId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, true));
+            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(id, acquired));
     }
 
     /**
