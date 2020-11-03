@@ -1,27 +1,28 @@
 package greencity.dto.comment;
 
+import greencity.constant.ServiceValidationConstants;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.rate.EstimateAddDto;
-import greencity.validator.ValidationConstants;
-import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddCommentDto {
     @NotBlank
-    @Length(min = ValidationConstants.COMMENT_MIN_LENGTH, max = ValidationConstants.COMMENT_MAX_LENGTH)
+    @Length(min = ServiceValidationConstants.COMMENT_MIN_LENGTH, max = ServiceValidationConstants.COMMENT_MAX_LENGTH)
     private String text;
     @Valid
     private EstimateAddDto estimate;
     @Valid
-    @Size(max = 3, message = ValidationConstants.BAD_PHOTO_LIST_REQUEST)
+    @Size(max = 3, message = ServiceValidationConstants.BAD_PHOTO_LIST_REQUEST)
     private List<PhotoAddDto> photos;
 }

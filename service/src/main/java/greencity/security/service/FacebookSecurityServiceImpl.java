@@ -1,8 +1,7 @@
-package greencity.security.service.impl;
+package greencity.security.service;
 
-import static greencity.constant.AppConstant.*;
-import static greencity.constant.ErrorMessage.BAD_FACEBOOK_TOKEN;
-
+import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
@@ -10,9 +9,7 @@ import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.jwt.JwtTool;
-import greencity.security.service.FacebookSecurityService;
 import greencity.service.UserService;
-import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +20,10 @@ import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+import static greencity.constant.AppConstant.REGISTRATION_EMAIL_FIELD_NAME;
 
 /**
  * {@inheritDoc}
@@ -92,7 +93,7 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
             .getAccessToken();
         if (accessToken != null) {
             Facebook facebook = new FacebookTemplate(accessToken);
-            UserVO byEmail = facebook.fetchObject(FACEBOOK_OBJECT_ID, UserVO.class, USERNAME,
+            UserVO byEmail = facebook.fetchObject(AppConstant.FACEBOOK_OBJECT_ID, UserVO.class, AppConstant.USERNAME,
                     REGISTRATION_EMAIL_FIELD_NAME);
             String email = byEmail.getEmail();
             log.info(email);
@@ -109,7 +110,7 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
                 return getSuccessSignInDto(user);
             }
         } else {
-            throw new IllegalArgumentException(BAD_FACEBOOK_TOKEN);
+            throw new IllegalArgumentException(ErrorMessage.BAD_FACEBOOK_TOKEN);
         }
     }
 

@@ -1,13 +1,12 @@
-package greencity.security.service.impl;
+package greencity.security.service;
 
 import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
-import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 
+import greencity.ModelUtils;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.enums.ROLE;
@@ -22,9 +21,10 @@ import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.repository.RestorePasswordEmailRepo;
-import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
+
+import static greencity.constant.RabbitConstants.VERIFY_EMAIL_ROUTING_KEY;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -121,18 +121,15 @@ class OwnSecurityServiceImplTest {
             .userStatus(UserStatus.ACTIVATED)
             .build();
     }
-/*
+
     @Test
     void signUp() {
-        User user = User.builder().verifyEmail(new VerifyEmail()).build();
-        UserVO userVO = UserVO.builder().verifyEmail(new VerifyEmailVO()).build();
+        User user = ModelUtils.getUser();
+        UserVO userVO = ModelUtils.getUserVO();
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
-        when(userService.save(any(UserVO.class))).thenReturn(userVO);
+        when(userRepo.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
-
         ownSecurityService.signUp(new OwnSignUpDto());
-
-        verify(userService, times(1)).save(any(UserVO.class));
         verify(rabbitTemplate, times(1)).convertAndSend(
             refEq(sendEmailTopic),
             refEq(VERIFY_EMAIL_ROUTING_KEY),
@@ -154,11 +151,11 @@ class OwnSecurityServiceImplTest {
         UserVO userVO = UserVO.builder().verifyEmail(new VerifyEmailVO()).build();
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
-        when(userService.save(any(UserVO.class))).thenThrow(DataIntegrityViolationException.class);
+        when(userRepo.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
         assertThrows(UserAlreadyRegisteredException.class,
             () -> ownSecurityService.signUp(ownSignUpDto));
     }
-*/
+
     @Test
     void signIn() {
         when(userService.findByEmail(anyString())).thenReturn(verifiedUser);

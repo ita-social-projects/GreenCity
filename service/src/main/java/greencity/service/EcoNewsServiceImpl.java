@@ -308,7 +308,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
     public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
-        comment.getUsersLiked().remove(user);
+        comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
     }
 
     @Override

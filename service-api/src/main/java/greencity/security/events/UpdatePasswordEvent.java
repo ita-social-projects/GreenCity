@@ -13,7 +13,7 @@ public class UpdatePasswordEvent extends ApplicationEvent {
      */
     private final String newPassword;
     /**
-     * {@link greencity.entity.User} id whose password will be updated.
+     * {@link greencity.dto.user.UserVO} id whose password will be updated.
      */
     private final Long userId;
 

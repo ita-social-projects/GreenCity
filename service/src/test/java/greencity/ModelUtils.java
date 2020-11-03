@@ -46,6 +46,7 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.*;
+import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
@@ -78,6 +79,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
+            .verifyEmail(new VerifyEmail())
             .dateOfRegistration(LocalDateTime.now())
             .build();
     }
@@ -89,6 +91,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
+            .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(LocalDateTime.now())
             .build();
     }

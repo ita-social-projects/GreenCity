@@ -179,12 +179,13 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         EcoNewsCommentVO ecoNewsCommentVO = modelMapper.map(comment, EcoNewsCommentVO.class);
-        if (comment.getUsersLiked().contains(modelMapper.map(userVO, User.class))) {
+        if (comment.getUsersLiked().stream()
+                .anyMatch(user -> user.getId().equals(userVO.getId()))) {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
         }
-        ecoNewsCommentRepo.save(comment);
+        ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }
 
     /**
