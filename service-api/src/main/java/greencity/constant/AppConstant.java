@@ -17,6 +17,7 @@ public final class AppConstant {
     public static final String DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH = "img/default_social_network_icon.png";
     public static final String USERNAME = "name";
     public static final String FACEBOOK_OBJECT_ID = "me";
+    public static final Integer MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER = 6;
 
     private AppConstant() {
     }

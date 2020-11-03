@@ -89,13 +89,22 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     Optional<HabitAssign> findByIdAndSuspendedFalse(Long id);
 
     /**
-     * Method for counting all {@link HabitAssign} by {@link User} id
+     * Method for counting all {@link HabitAssign}'s by {@link User} id
      * (with not suspended status).
      *
      * @param userId {@link User} id.
      * @return amount of items in Optional in case of absence such info.
      */
     int countHabitAssignsByUserIdAndSuspendedFalse(Long userId);
+
+    /**
+     * Method for counting all active {@link HabitAssign}'s by {@link User} id
+     * (with not suspended and not acquired status).
+     *
+     * @param userId {@link User} id.
+     * @return amount of items in Optional in case of absence such info.
+     */
+    int countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(Long userId);
 
     /**
      * Method for counting {@link HabitAssign} by {@link User} id and period between start/end {@link ZonedDateTime}
