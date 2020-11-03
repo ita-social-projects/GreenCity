@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignStatDto;
@@ -11,6 +12,7 @@ import greencity.entity.HabitAssign;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import java.time.ZonedDateTime;
@@ -57,6 +59,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserAlreadyHasHabitAssignedException(
                 ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
         }
+
+        if (habitAssignRepo.countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(user.getId())
+            >= AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER) {
+            throw new UserAlreadyHasMaxNumberOfActiveHabitAssigns(
+                ErrorMessage.USER_ALREADY_HAS_MAX_NUMBER_OF_HABIT_ASSIGNS
+                    + AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER);
+        }
+
         if (habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(
             habitId, user.getId(), ZonedDateTime.now()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
