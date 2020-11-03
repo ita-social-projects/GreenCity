@@ -34,6 +34,7 @@ public class ManagementAdvicesController {
 
     /**
      * Method that returns management page with all {@link Advice}'s.
+     *
      * @param model {@link Model} - for passing data between controller and view
      * @param pageable {@link Pageable}
      * @return name of template {@link String}
@@ -51,6 +52,24 @@ public class ManagementAdvicesController {
         model.addAttribute("languages", languageService.getAllLanguages());
 
         return "core/management_advices";
+    }
+
+    /**
+     * Method that finds {@link Advice} by id.
+     *
+     * @param id {@link Long} - advice id
+     * @return found advice {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     * */
+    @ApiOperation(value = "Get advice by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<AdviceVO> findAdviceById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adviceService.getAdviceById(id));
     }
 
     /**
@@ -108,6 +127,27 @@ public class ManagementAdvicesController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAllAdvices(@RequestBody List<Long> ids) {
         adviceService.deleteAllByIds(ids);
-        return ResponseEntity.status(HttpStatus.OK).body(ids);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ids);
+    }
+
+    /**
+     * Method that updates {@link Advice} by id.
+     *
+     * @param advicePostDto {@link AdvicePostDto} - new advice
+     * @param id {@link Long} - advice id
+     * @return {@link AdviceVO} - updated advice
+     * @author Markiyan Derevetskyi
+     * */
+    @ApiOperation(value = "Update advice by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<AdviceVO> updateAdvice(@Valid @RequestBody AdvicePostDto advicePostDto,
+                                                      @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(adviceService.update(advicePostDto, id));
     }
 }

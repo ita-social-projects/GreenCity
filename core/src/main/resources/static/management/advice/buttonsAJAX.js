@@ -32,9 +32,10 @@ $(document).ready(function(){
         var href = $(this).attr('href');
         $.get(href, function (advice,status){
             $('#id').val(advice.id);
-            $('#habit').val(advice.habit);
-            advice.adviceTranslations.forEach(function (translation,index){
-                $('#content'+translation.language.code).val(translation.content);
+            $('#habit').val(advice.habit.id);
+            advice.translations.forEach(function (translation, index){
+                $(`#content_${translation.language.id}_${translation.language.code}`)
+                    .val(translation.content);
             })
         });
     });
@@ -95,10 +96,11 @@ $(document).ready(function(){
         };
         for (var key in formData) {
             if (key.startsWith("content")) {
-                var contentAndLanguage = key.split(" ");
+                var contentAndLanguage = key.split("_");
+                console.log(contentAndLanguage);
                 var langId = contentAndLanguage[1];
                 var langCode = contentAndLanguage[2];
-                var content = formData["content " + langId + " " + langCode];
+                var content = formData["content_" + langId + "_" + langCode];
                 payload.translations.push({
                    "content": content,
                     "language": {
@@ -134,28 +136,33 @@ $(document).ready(function(){
             obj[item.name] = item.value;
             return obj;
         }, {});
-        var returnData={
-            "id" : formData.id,
-            "habit" : formData.habit,
-            "adviceTranslations" : [
-            ]
-
-        }
+        console.log(formData);
+        var adviceId = formData.id;
+        var payload = {
+            "habit": {
+                id: formData.habit
+            },
+            "translations": []
+        };
         for (var key in formData) {
             if (key.startsWith("content")) {
-                var lang = key.split("content").pop();
-                // console.log(lang + " -> " + formData["content"+lang]);
-                returnData.factOfTheDayTranslations.push(
-                    {
-                        "content" : formData["content"+lang],
-                        "code": lang
+                var contentAndLanguage = key.split("_");
+                var langId = contentAndLanguage[1];
+                var langCode = contentAndLanguage[2];
+                var content = formData["content_" + langId + "_" + langCode];
+                payload.translations.push({
+                    "content": content,
+                    "language": {
+                        "code": langCode,
+                        "id": langId
                     }
-                );
+                });
             }
         }
+        console.log(payload);
         //запит save у модальній формі update
         $.ajax({
-            url: '/management/factoftheday/',
+            url: `/management/advices/${adviceId}`,
             type: 'put',
             dataType: 'json',
             contentType: 'application/json',
@@ -169,7 +176,7 @@ $(document).ready(function(){
                     location.reload();
                 }
             },
-            data: JSON.stringify(returnData)
+            data: JSON.stringify(payload)
         });
     })
 });

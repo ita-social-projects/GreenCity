@@ -93,7 +93,7 @@
                                 </table>
                             </td>
                             <td>
-                                <a th:href="@{/advices/find/(id=${advice.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                <a th:href="@{/management/advices/{id}(id=${advice.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
                                 <a th:href="@{/management/advices/{id}(id=${advice.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>
@@ -131,19 +131,19 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Language ID</label>
-                                        <input type="text" class="form-control" th:name="${language.getId()}" th:value="${language.getId()}" readonly required>
+                                        <input type="text" class="form-control" th:name="${language.getId()}" th:value="${language.getId()}" readonly required />
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Language code</label>
-                                        <input type="text" class="form-control" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required>
+                                        <input type="text" class="form-control" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required />
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Content</label>
-                                        <input type="text" class="form-control" th:name="content+${' ' + language.getId()+' '}+${language.getCode()}">
+                                        <input type="text" class="form-control" th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}" />
                                         <span th:id="'errorModalSaveAdviceTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
                                     </div>
                                 </div>
@@ -159,12 +159,12 @@
         </div>
     </div>
     <!-- Edit Modal HTML -->
-    <div id="editFactOfTheDayModal" class="modal fade">
+    <div id="editAdviceModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="editFactOfTheDayForm">
+                <form id="editAdviceForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Edit Fact of the day</h4>
+                        <h4 class="modal-title">Edit Advice</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -174,23 +174,31 @@
                             <span th:id="errorModalUpdateid" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label>Fact of the day name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                            <label>Habit ID</label>
+                            <input type="text" class="form-control" id="habit" name="habit" required>
                             <span th:id="errorModalUpdatename" class="errorSpan"></span>
                         </div>
                         <th:block th:each="language, iterInfo : ${languages}">
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
+                                        <label>Language ID</label>
+                                        <input type="text" class="form-control" th:name="${language.getId()}" th:value="${language.getId()}" readonly required />
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
                                         <label>Language code</label>
-                                        <input type="text" class="form-control" th:id="${language.getCode()}" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required>
+                                        <input type="text" class="form-control" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required />
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Content</label>
-                                        <input type="text" class="form-control eEdit" th:id="content+${language.getCode()}" th:name="content+${language.getCode()}">
-                                        <span th:id="'errorModalUpdatefactOfTheDayTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
+                                            <input type="text" class="form-control"
+                                                   th:id="content+${'_' + language.getId()+'_'}+${language.getCode()}"
+                                                   th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}" />
+                                        <span th:id="'errorModalSaveAdviceTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
