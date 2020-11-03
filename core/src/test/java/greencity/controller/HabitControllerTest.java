@@ -4,15 +4,10 @@ import com.google.gson.Gson;
 import greencity.ModelUtils;
 import static greencity.ModelUtils.getPrincipal;
 import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.UserVO;
-import static greencity.enums.HabitRate.GOOD;
 import greencity.service.HabitAssignService;
 import greencity.service.HabitService;
-import greencity.service.HabitStatisticService;
 import java.security.Principal;
-import java.time.ZonedDateTime;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,13 +33,10 @@ class HabitControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    HabitStatisticService habitStatisticService;
-
-    @Mock
     HabitAssignService habitAssignService;
 
     @Mock
-    HabitService habitService;;
+    HabitService habitService;
 
     @InjectMocks
     HabitController habitController;
@@ -56,38 +48,38 @@ class HabitControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
     void assign() throws Exception {
         UserVO user = ModelUtils.getUserVO();
         mockMvc.perform(post(habitLink + "/assign/{habitId}", 1)
-                .principal(principal))
-                .andExpect(status().isCreated());
+            .principal(principal))
+            .andExpect(status().isCreated());
         Long id = 1L;
-        verify(habitAssignService, never()).assignHabitForUser(eq(id) , eq(user));
+        verify(habitAssignService, never()).assignHabitForUser(eq(id), eq(user));
     }
 
     @Test
     void getHabitAssign() throws Exception {
         mockMvc.perform(get(habitLink + "/assign/{habitAssignId}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
         verify(habitAssignService).getById(1L);
     }
 
     @Test
     void updateAssignByHabitId() throws Exception {
-       HabitAssignStatDto habitAssignStatDto = new HabitAssignStatDto();
-       habitAssignStatDto.setAcquired(true);
-       habitAssignStatDto.setSuspended(true);
+        HabitAssignStatDto habitAssignStatDto = new HabitAssignStatDto();
+        habitAssignStatDto.setAcquired(true);
+        habitAssignStatDto.setSuspended(true);
         Gson gson = new Gson();
         String json = gson.toJson(habitAssignStatDto);
         mockMvc.perform(patch(habitLink + "/{id}/assign", 1)
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
         verify(habitAssignService).updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto);
     }
 
@@ -100,58 +92,9 @@ class HabitControllerTest {
         Gson gson = new Gson();
         String json = gson.toJson(locale);
         mockMvc.perform(get(habitLink + "?page=1")
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
         verify(habitService).getAllHabitsByLanguageCode(pageable, locale.getLanguage());
-    }
-
-    @Test
-    void save() throws Exception {
-        AddHabitStatisticDto addHabitStatisticDto = new AddHabitStatisticDto();
-        addHabitStatisticDto.setAmountOfItems(1);
-        addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z[UTC]"));
-        addHabitStatisticDto.setHabitRate(GOOD);
-        mockMvc.perform(post(habitLink + "/{id}/statistic/", 1L)
-                .content("{\n" +
-                        "  \"amountOfItems\": 1,\n" +
-                        "  \"createDate\": \"2020-10-09T16:49:01.020Z\",\n" +
-                        "  \"habitRate\": \"GOOD\"\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-        verify(habitStatisticService).saveByHabitIdAndUserId(1L, 1L, addHabitStatisticDto);
-    }
-
-    @Test
-    void updateStatistic() throws Exception {
-        UpdateHabitStatisticDto habitStatisticForUpdateDto = new UpdateHabitStatisticDto();
-        habitStatisticForUpdateDto.setAmountOfItems(1);
-        habitStatisticForUpdateDto.setHabitRate(GOOD);
-        Gson gson = new Gson();
-        String json = gson.toJson(habitStatisticForUpdateDto);
-        mockMvc.perform(patch(habitLink + "/statistic/{habitStatisticId}", 1)
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        verify(habitStatisticService).update(1L, 1L, habitStatisticForUpdateDto);
-    }
-
-    @Test
-    void findAllByHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/{id}/statistic/", 1))
-                .andExpect(status().isOk());
-        verify(habitStatisticService).findAllStatsByHabitId(1L);
-    }
-
-    @Test
-    void getTodayStatisticsForAllHabitItems() throws Exception {
-        Locale locale = new Locale("en");
-        Gson gson = new Gson();
-        String json = gson.toJson(locale);
-        mockMvc.perform(get(habitLink + "/statistic/todayStatisticsForAllHabitItems")
-                .content(json))
-                .andExpect(status().isOk());
-        verify(habitStatisticService).getTodayStatisticsForAllHabitItems(locale.getLanguage());
     }
 }
