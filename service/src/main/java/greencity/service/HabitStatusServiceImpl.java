@@ -98,7 +98,9 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      * @param todayDate   {@link LocalDate} date.
      */
     private void updateHabitStatus(HabitStatus habitStatus, LocalDate todayDate) {
-        habitStatus.setWorkingDays(habitStatus.getWorkingDays() + 1);
+        int workingDays = habitStatus.getWorkingDays();
+        int habitStreak = habitStatus.getHabitStreak();
+        habitStatus.setWorkingDays(++workingDays);
         habitStatus.setLastEnrollmentDate(LocalDateTime.now());
 
         LocalDate lastEnrollmentDate = habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(
@@ -109,9 +111,10 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             intervalBetweenDates = Period.between(lastEnrollmentDate, todayDate).getDays();
         }
         if ((intervalBetweenDates == 1) || lastEnrollmentDate == null) {
-            habitStatus.setHabitStreak(habitStatus.getHabitStreak() + 1);
+            habitStatus.setHabitStreak(++habitStreak);
         } else if (intervalBetweenDates > 1) {
-            habitStatus.setHabitStreak(1);
+            habitStreak = 1;
+            habitStatus.setHabitStreak(habitStreak);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
