@@ -69,7 +69,7 @@ class HabitStatisticControllerTest {
         habitStatisticForUpdateDto.setHabitRate(GOOD);
         Gson gson = new Gson();
         String json = gson.toJson(habitStatisticForUpdateDto);
-        mockMvc.perform(patch(habitLink + "/statistic/{habitStatisticId}", 1)
+        mockMvc.perform(put(habitLink + "/statistic/{id}", 1)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());

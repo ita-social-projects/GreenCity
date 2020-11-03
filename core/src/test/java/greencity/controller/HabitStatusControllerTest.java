@@ -66,7 +66,7 @@ class HabitStatusControllerTest {
         habitStatusForUpdateDto.setHabitStreak(1);
         habitStatusForUpdateDto.setWorkingDays(5);
         habitStatusForUpdateDto.setLastEnrollmentDate(LocalDateTime.parse("2020-10-10T16:03:01.652"));
-        mockMvc.perform(patch(habitStatusLink + "/{id}/status", 1)
+        mockMvc.perform(put(habitStatusLink + "/{id}/status", 1)
                 .content("{\n" +
                         "  \"habitStreak\": 1,\n" +
                         "  \"lastEnrollmentDate\": \"2020-10-10T16:03:01.652\",\n" +
