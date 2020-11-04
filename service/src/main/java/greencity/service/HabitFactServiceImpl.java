@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
@@ -11,17 +12,17 @@ import greencity.entity.HabitFactTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitFactRepo;
 import greencity.repository.HabitFactTranslationRepo;
-import greencity.service.HabitFactService;
-import greencity.service.HabitService;
+import greencity.repository.HabitRepo;
 import java.util.List;
 import java.util.Optional;
-
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link HabitFactService}.
@@ -32,7 +33,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class HabitFactServiceImpl implements HabitFactService {
     private final HabitFactRepo habitFactRepo;
-    private final HabitService habitService;
+    private final HabitRepo habitRepo;
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final ModelMapper modelMapper;
 
@@ -71,7 +72,7 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     public HabitFactDto getHabitFactByName(String language, String name) {
-        return modelMapper.map(habitFactTranslationRepo.findFactTranslationByLanguage_CodeAndHabitFact(language, name)
+        return modelMapper.map(habitFactTranslationRepo.findFactTranslationByLanguage_CodeAndContent(language, name)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
             HabitFactDto.class);
     }
@@ -92,7 +93,8 @@ public class HabitFactServiceImpl implements HabitFactService {
     public HabitFactVO update(HabitFactPostDto factDto, Long id) {
         return Optional.of(modelMapper.map(habitFactRepo.findById(id)
             .map(employee -> {
-                Habit habit = modelMapper.map(habitService.getById(factDto.getHabit().getId()), Habit.class);
+                Habit habit = habitRepo.findById(factDto.getHabit().getId())
+                    .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
                 employee.setHabit(habit);
                 return modelMapper.map(habitFactRepo.save(employee), HabitFactVO.class);
             }), HabitFactVO.class))
@@ -104,10 +106,23 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     public Long delete(Long id) {
-        if (!(habitFactRepo.findById(id).isPresent())) {
+        if (habitFactRepo.findById(id).isEmpty()) {
             throw new NotDeletedException(ErrorMessage.HABIT_FACT_NOT_DELETED_BY_ID);
         }
         habitFactRepo.deleteById(id);
         return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void deleteAllByHabit(HabitVO habit) {
+        habitFactRepo.findAllByHabitId(habit.getId())
+            .forEach(habitFact -> {
+                habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
+                habitFactRepo.delete(habitFact);
+            });
     }
 }

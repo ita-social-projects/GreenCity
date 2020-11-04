@@ -1,7 +1,6 @@
 package greencity.dto.habitfact;
 
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habittranslation.HabitFactTranslationVO;
 import lombok.*;
 
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode
 public class HabitFactVO {
     private Long id;
 

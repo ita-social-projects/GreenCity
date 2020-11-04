@@ -1,29 +1,34 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatus.HabitStatusDto;
+import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.entity.*;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatus;
+import greencity.entity.HabitStatusCalendar;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.repository.HabitStatusCalendarRepo;
 import greencity.repository.HabitStatusRepo;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
+import org.dom4j.rule.Mode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 @ExtendWith(MockitoExtension.class)
 class HabitStatusServiceImplTest {
@@ -31,6 +36,8 @@ class HabitStatusServiceImplTest {
     private HabitStatusRepo habitStatusRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
+    @Mock
+    private HabitStatusCalendarRepo habitStatusCalendarRepo;
     @Mock
     private ModelMapper modelMapper;
 
@@ -68,11 +75,11 @@ class HabitStatusServiceImplTest {
         habitStatus.setWorkingDays(0);
         habitStatus.setHabitAssign(habitAssign);
         habitStatus.setLastEnrollmentDate(LocalDateTime.now());
-        HabitAssignDto habitAssignDto = ModelUtils.getHabitAssignDto();
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
         when(habitStatusRepo.save(any())).thenReturn(habitStatus);
-        when(modelMapper.map(habitAssignDto, HabitAssign.class)).thenReturn(habitAssign);
-        habitStatusService.saveStatusByHabitAssign(habitAssignDto);
+        when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
+        habitStatusService.saveStatusByHabitAssign(habitAssignVO);
     }
 
     @Test
@@ -96,20 +103,17 @@ class HabitStatusServiceImplTest {
             habitStatusService.findStatusByHabitAssignId(habitAssignId);
         });
     }
-
     @Test
     void enrollHabit() {
         Long habitAssignId = 1L;
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
-        HabitStatusCalendar habitStatusCalendar = new HabitStatusCalendar(LocalDate.now(), habitStatus);
-        HabitStatusDto habitStatusDto = modelMapper.map(habitStatus, HabitStatusDto.class);
+        HabitStatusVO habitStatusVO = modelMapper.map(habitStatus, HabitStatusVO.class);
         when(habitStatusRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitStatus));
-        when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusDto))
+        when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
                 .thenReturn(LocalDate.of(2020, 10, 15));
-        HabitStatusCalendarVO habitStatusCalendarVO = modelMapper.map(habitStatusCalendar, HabitStatusCalendarVO.class);
         habitStatusService.enrollHabit(habitAssignId);
 
-        verify(habitStatusCalendarService).save(habitStatusCalendarVO);
+        verify(habitStatusCalendarService).save(any());
         verify(habitStatusRepo).save(habitStatus);
     }
 
@@ -125,10 +129,10 @@ class HabitStatusServiceImplTest {
     void enrollHabitThrowBadRequestException() {
         Long habitAssignId = 1L;
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
-        HabitStatusDto habitStatusDto = ModelUtils.getHabitStatusDto();
-        when(modelMapper.map(habitStatus, HabitStatusDto.class)).thenReturn(habitStatusDto);
+        HabitStatusVO habitStatusVO = ModelUtils.getHabitStatusVO();
+        when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
         when(habitStatusRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitStatus));
-        when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusDto))
+        when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
                 .thenReturn(LocalDate.of(2100, 10, 16));
 
         assertThrows(BadRequestException.class, () -> {
@@ -140,15 +144,16 @@ class HabitStatusServiceImplTest {
     void enrollHabitInDate() {
         Long habitAssignId = 1L;
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
-        HabitStatusCalendar habitStatusCalendar = new HabitStatusCalendar(LocalDate.now(), habitStatus);
-        HabitStatusDto habitStatusDto = modelMapper.map(habitStatus, HabitStatusDto.class);
+        HabitStatusVO habitStatusVO = ModelUtils.getHabitStatusVO();
         when(habitStatusRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitStatus));
-        when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusDto))
+        when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
+
+        when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
                 .thenReturn(null);
-        HabitStatusCalendarVO habitStatusCalendarVO = modelMapper.map(habitStatusCalendar, HabitStatusCalendarVO.class);
+
         habitStatusService.enrollHabit(habitAssignId);
 
-        verify(habitStatusCalendarService).save(habitStatusCalendarVO);
+        verify(habitStatusCalendarService).save(any());
         verify(habitStatusRepo).save(habitStatus);
     }
 
@@ -157,11 +162,11 @@ class HabitStatusServiceImplTest {
         Long habitAssignId = 1L;
         LocalDate enrollDate = LocalDate.now();
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
-        HabitStatusDto habitStatusDto = ModelUtils.getHabitStatusDto();
+        HabitStatusVO habitStatusVO = ModelUtils.getHabitStatusVO();
         when(habitStatusRepo.findByHabitAssignId(habitAssignId))
                 .thenReturn(Optional.of(habitStatus));
-        when(modelMapper.map(habitStatus, HabitStatusDto.class)).thenReturn(habitStatusDto);
-        when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(enrollDate, habitStatusDto))
+        when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
+        when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(enrollDate, habitStatusVO))
                 .thenReturn(new HabitStatusCalendarVO());
 
         assertThrows(BadRequestException.class, () -> habitStatusService.enrollHabitInDate(habitAssignId, enrollDate));
@@ -177,23 +182,22 @@ class HabitStatusServiceImplTest {
             habitStatusService.enrollHabitInDate(habitAssignId, enrollDate);
         });
     }
-
     @Test
     void unenrollHabit() {
         Long habitAssignId = 1L;
         LocalDate enrollDate = LocalDate.now();
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
-        HabitStatusDto habitStatusDto = ModelUtils.getHabitStatusDto();
+        HabitStatusVO habitStatusVO = ModelUtils.getHabitStatusVO();
         HabitStatusCalendarVO habitStatusCalendarVO = HabitStatusCalendarVO.builder()
-                .habitStatus(habitStatusDto).enrollDate(enrollDate).build();
+                .enrollDate(enrollDate).build();
         when(habitStatusRepo.findByHabitAssignId(habitAssignId))
                 .thenReturn(Optional.of(habitStatus));
-        when(modelMapper.map(habitStatus, HabitStatusDto.class)).thenReturn(habitStatusDto);
+        when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
         when(habitStatusRepo.save(habitStatus)).thenReturn(habitStatus);
-        when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(enrollDate, habitStatusDto))
+        when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(enrollDate, habitStatusVO))
                 .thenReturn(habitStatusCalendarVO);
-        habitStatusService.unenrollHabit(enrollDate, habitAssignId);
 
+        habitStatusService.unenrollHabit(enrollDate, habitAssignId);
         verify(habitStatusCalendarService).delete(habitStatusCalendarVO);
     }
 
@@ -202,12 +206,12 @@ class HabitStatusServiceImplTest {
         Long habitAssignId = 1L;
         LocalDate enrollDate = LocalDate.now();
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
-        HabitStatusDto habitStatusDto = ModelUtils.getHabitStatusDto();
+        HabitStatusVO habitStatusVO = ModelUtils.getHabitStatusVO();
         when(habitStatusRepo.findByHabitAssignId(habitAssignId))
                 .thenReturn(Optional.of(habitStatus));
-        when(modelMapper.map(habitStatus, HabitStatusDto.class)).thenReturn(habitStatusDto);
+        when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
         when(habitStatusRepo.save(habitStatus)).thenReturn(habitStatus);
-        when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(enrollDate, habitStatusDto))
+        when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(enrollDate, habitStatusVO))
                 .thenReturn(null);
 
         assertThrows(BadRequestException.class, () -> {

@@ -11,7 +11,6 @@ import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.*;
 import greencity.entity.EcoNews;
 import greencity.entity.User;
@@ -281,7 +280,7 @@ public class UserController {
         @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(customGoalService.save(dto, userService.findById(userId)));
+            .body(customGoalService.save(dto, userId));
     }
 
     /**
@@ -427,31 +426,6 @@ public class UserController {
     }
 
     /**
-     * Method returns list of available (not assigned) habit translations for user.
-     *
-     * @param userId {@link User} id.
-     * @param locale {@link Locale} instance.
-     *
-     * @return {@link ResponseEntity}.
-     * @author Kuzenko Bogdan
-     */
-    @ApiOperation(value = "Get available habit translations for current user.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @GetMapping("/{userId}/habit/available")
-    @ApiLocale
-    public ResponseEntity<List<HabitTranslationDto>> getAvailableHabitTranslations(
-        @PathVariable @CurrentUserId Long userId,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(userService.getAvailableHabitTranslations(userId, locale.getLanguage()));
-    }
-
-    /**
      * Method for finding all active {@link User} habit assigns.
      *
      * @param userId {@link User} instance.
@@ -464,10 +438,29 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/habit/assign/active")
-    public ResponseEntity<List<HabitAssignDto>> getUserHabitAssigns(
+    public ResponseEntity<List<HabitAssignDto>> getActiveUserHabitAssigns(
         @PathVariable @CurrentUserId Long userId) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitAssignService.getAllActiveHabitAssignsByUserId(userId));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, false));
+    }
+
+    /**
+     * Method for finding all acquired {@link User} habit assigns.
+     *
+     * @param userId {@link User} instance.
+     * @return list of {@link HabitAssignDto}.
+     */
+    @ApiOperation(value = "Get all acquired habits for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/habit/assign/acquired")
+    public ResponseEntity<List<HabitAssignDto>> getAcquiredUserHabitAssigns(
+        @PathVariable @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, true));
     }
 
     /**

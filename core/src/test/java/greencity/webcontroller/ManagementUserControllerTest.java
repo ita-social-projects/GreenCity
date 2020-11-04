@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.ROLE;
 import greencity.enums.UserStatus;
@@ -30,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static greencity.ModelUtils.getUserVO;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -104,7 +106,8 @@ class ManagementUserControllerTest {
     @Test
     void findById() throws Exception {
         User user = ModelUtils.getUser();
-        when(userService.findById(1L)).thenReturn(user);
+        UserVO userVO = getUserVO();
+        when(userService.findById(1L)).thenReturn(userVO);
         when(modelMapper.map(user, UserManagementDto.class)).thenReturn(new UserManagementDto());
 
         this.mockMvc.perform(get(managementUserControllerLink + "/findById?id=1"))

@@ -9,6 +9,7 @@ import greencity.dto.user.BulkSaveUserGoalDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.ROLE;
 import greencity.service.*;
@@ -212,21 +213,21 @@ class UserControllerTest {
     }
 
     @Test
-    void getAvailableUserHabitTranslationsTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habit/available?language=en", 1))
+    void getActiveUserHabitAssigns() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/habit/assign/active", 1))
             .andExpect(status().isOk());
 
-        verify(userService).getAvailableHabitTranslations(
-            eq(1L), eq("en"));
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
+            eq(1L), eq(false));
     }
 
     @Test
-    void getUserHabitAssignsWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habit/assign/active", 1))
-            .andExpect(status().isCreated());
+    void getAcquiredUserHabitAssigns() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/habit/assign/acquired", 1))
+            .andExpect(status().isOk());
 
-        verify(habitAssignService).getAllActiveHabitAssignsByUserId(
-            eq(1L));
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
+            eq(1L), eq(true));
     }
 
     @Test
@@ -255,7 +256,7 @@ class UserControllerTest {
 
     @Test
     void saveUserCustomGoalsTest() throws Exception {
-        User user = ModelUtils.getUser();
+        UserVO user = ModelUtils.getUserVO();
         when(userService.findById(1L)).thenReturn(user);
 
         String content = "{\n"
@@ -274,7 +275,7 @@ class UserControllerTest {
             .content(content))
             .andExpect(status().isCreated());
 
-        verify(customGoalService).save(eq(dto), eq(user));
+        verify(customGoalService).save(eq(dto), eq(user.getId()));
     }
 
     @Test
@@ -435,7 +436,7 @@ class UserControllerTest {
 
     @Test
     void updateUserProfilePictureTest() throws Exception {
-        User user = ModelUtils.getUser();
+        UserVO user = ModelUtils.getUserVO();
         Principal principal = mock(Principal.class);
 
         String json = "{\n"

@@ -2,7 +2,10 @@ package greencity.dto.place;
 
 import greencity.dto.category.CategoryVO;
 import greencity.dto.descountvalue.DiscountValueVO;
+import greencity.dto.location.LocationVO;
+import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.photo.PhotoVO;
+import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -15,7 +18,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(
+    exclude = {"discountValues", "author", "openingHoursList", "photos",
+        "location", "category", "status", "discountValues"})
 @Builder
 public class PlaceVO {
     private Long id;
@@ -25,9 +30,10 @@ public class PlaceVO {
     private String name;
     private String phone;
     private PlaceStatus status = PlaceStatus.PROPOSED;
-    private Long authorId;
     private CategoryVO category;
-    private Long locationId;
     private List<PhotoVO> photos = new ArrayList<>();
     private Set<DiscountValueVO> discountValues = new HashSet<>();
+    private Set<OpeningHoursVO> openingHoursList = new HashSet<>();
+    private LocationVO location;
+    private UserVO author;
 }

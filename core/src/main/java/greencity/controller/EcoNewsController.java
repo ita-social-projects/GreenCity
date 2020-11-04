@@ -11,9 +11,9 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
-import greencity.entity.User;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -109,11 +110,11 @@ public class EcoNewsController {
         MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<EcoNewsDto> update(
         @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS, required = true)
-        @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
+        @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
         @ApiParam(value = "Image of eco news")
         @ImageValidation
         @RequestPart(required = false) MultipartFile image,
-        @ApiIgnore @CurrentUser User user) {
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsService.update(updateEcoNewsDto, image, user)
         );

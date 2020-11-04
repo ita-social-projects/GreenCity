@@ -22,6 +22,10 @@ public class HabitAssignDto {
     private Boolean suspended;
     @NotEmpty
     private ZonedDateTime createDateTime;
-    @NotEmpty
-    private HabitDto habit;
+    @NotNull
+    @Min(1)
+    private Long habitId;
+    @NotNull
+    @Min(1)
+    private Long userId;
 }

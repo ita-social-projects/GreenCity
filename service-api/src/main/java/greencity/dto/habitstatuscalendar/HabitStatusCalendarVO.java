@@ -1,6 +1,6 @@
 package greencity.dto.habitstatuscalendar;
 
-import greencity.dto.habitstatus.HabitStatusDto;
+import greencity.dto.habitstatus.HabitStatusVO;
 import java.time.LocalDate;
 import lombok.*;
 
@@ -8,10 +8,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Builder
 public class HabitStatusCalendarVO {
     private Long id;
     private LocalDate enrollDate;
-    private HabitStatusDto habitStatus;
+    private HabitStatusVO habitStatusVO;
 }

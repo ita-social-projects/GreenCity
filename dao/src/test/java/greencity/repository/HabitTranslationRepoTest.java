@@ -87,23 +87,6 @@ public class HabitTranslationRepoTest {
     }
 
     @Test
-    void findAvailableHabitTranslationsByUserTest_shouldReturnShouldReturnCorrectTranslationsList() {
-        List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findAvailableHabitTranslationsByUser(3L, "ua");
-
-        assertEquals(2, habitTranslations.size());
-        assertEquals("Економити пакети", habitTranslations.get(0).getName());
-    }
-
-    @Test
-    void findAvailableHabitTranslationsByUserTest_shouldReturnShouldReturnEmptyTranslationsListWhenWrongId() {
-        List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findAvailableHabitTranslationsByUser(8L, "ru");
-
-        assertTrue(habitTranslations.isEmpty());
-    }
-
-    @Test
     void findAllByLanguageCodeTest_shouldReturnCorrectTranslationsList() {
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<HabitTranslation> habitTranslations = habitTranslationRepo

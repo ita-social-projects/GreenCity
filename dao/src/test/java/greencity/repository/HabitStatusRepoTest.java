@@ -39,33 +39,4 @@ class HabitStatusRepoTest {
         HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(2L,1L).get();
         assertEquals(2L,habitStatus.getId());
     }
-
-    @Test
-    void findByUserIdAndHabitIdAndCreateDate() {
-        HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitIdAndCreateDate(2L,1L,
-            ZonedDateTime.parse("2020-09-10T03:00:00+00")).get();
-        assertEquals(2L,habitStatus.getId());
-    }
-
-    @Test
-    void deleteByHabitAssignIdTest() {
-        habitStatusRepo.deleteByHabitAssignId(2L);
-        Optional<HabitStatus> habitStatus = habitStatusRepo.findByHabitAssignId(2L);
-        assertEquals(Optional.empty(),habitStatus);
-    }
-
-    @Test
-    void deleteByUserIdAndHabitIdTest() {
-        habitStatusRepo.deleteByUserIdAndHabitId(2L, 1L);
-        Optional<HabitStatus> habitStatus =  habitStatusRepo.findByUserIdAndHabitId(2L,1L);
-        assertEquals(Optional.empty(),habitStatus);
-    }
-
-    @Test
-    void deleteByUserIdAndHabitIdAndCreateDateTest() {
-        habitStatusRepo.deleteByUserIdAndHabitIdAndCreateDate(2L, 1L,
-            ZonedDateTime.parse("2020-09-10T03:00:00+00"));
-        Optional<HabitStatus> habitStatus =  habitStatusRepo.findByUserIdAndHabitId(2L,1L);
-        assertEquals(Optional.empty(),habitStatus);
-    }
 }
