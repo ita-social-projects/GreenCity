@@ -70,7 +70,6 @@ class UserControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
-
         String content = "{\n"
             + "  \"id\": 0,\n"
             + "  \"userStatus\": \"BLOCKED\"\n"
@@ -382,42 +381,36 @@ class UserControllerTest {
         verify(userService).saveUserGoals(eq(1L), eq(dto), eq("en"));
     }
 
-    /*@Test
-    void getAvailableHabitDictionaryTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habit-dictionary/available?language=en", 1))
-            .andExpect(status().isOk());
+    /*
+     * @Test void getAvailableHabitDictionaryTest() throws Exception {
+     * mockMvc.perform(get(userLink +
+     * "/{userId}/habit-dictionary/available?language=en", 1))
+     * .andExpect(status().isOk());
+     * 
+     * verify(userService).getAvailableHabitDictionary(eq(1L), eq("en")); }
+     */
 
-        verify(userService).getAvailableHabitDictionary(eq(1L), eq("en"));
-    }*/
+    /*
+     * @Test void saveUserHabitsTest() throws Exception { String content = "[\n" +
+     * "  {\n" + "    \"habitDictionaryId\": 0\n" + "  }\n" + "]";
+     * 
+     * mockMvc.perform(post(userLink + "/{userId}/habit?language=en", 1)
+     * .contentType(MediaType.APPLICATION_JSON) .content(content))
+     * .andExpect(status().isCreated());
+     * 
+     * ObjectMapper mapper = new ObjectMapper(); List<HabitIdDto> dto =
+     * mapper.readValue(content, new TypeReference<List<HabitIdDto>>() { });
+     * 
+     * verify(userService).createUserHabit(eq(1L), eq(dto), eq("en")); }
+     */
 
-    /*@Test
-    void saveUserHabitsTest() throws Exception {
-        String content = "[\n"
-            + "  {\n"
-            + "    \"habitDictionaryId\": 0\n"
-            + "  }\n"
-            + "]";
-
-        mockMvc.perform(post(userLink + "/{userId}/habit?language=en", 1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
-            .andExpect(status().isCreated());
-
-        ObjectMapper mapper = new ObjectMapper();
-        List<HabitIdDto> dto = mapper.readValue(content, new TypeReference<List<HabitIdDto>>() {
-        });
-
-        verify(userService).createUserHabit(eq(1L), eq(dto), eq("en"));
-    }*/
-
-   /* @Test
-    void deleteHabitTest() throws Exception {
-        mockMvc.perform(delete(userLink + "/{userId}/habit/{habitId}", 1, 1))
-            .andExpect(status().isOk());
-
-        verify(userService).deleteHabitByUserIdAndHabitDictionary(eq(1L), eq(1L));
-    }
-*/
+    /*
+     * @Test void deleteHabitTest() throws Exception {
+     * mockMvc.perform(delete(userLink + "/{userId}/habit/{habitId}", 1, 1))
+     * .andExpect(status().isOk());
+     * 
+     * verify(userService).deleteHabitByUserIdAndHabitDictionary(eq(1L), eq(1L)); }
+     */
     @Test
     void bulkDeleteUserGoalsTest() throws Exception {
         mockMvc.perform(delete(userLink + "/{userId}/userGoals?ids=1,2", 1))

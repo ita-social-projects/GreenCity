@@ -25,4 +25,3 @@ public class SearchNewsDto {
     @NotEmpty
     private List<String> tags;
 }
-

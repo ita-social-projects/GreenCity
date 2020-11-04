@@ -30,7 +30,7 @@ public class EventPublishingAspect {
      */
     @Autowired
     public EventPublishingAspect(ApplicationEventPublisher publisher,
-                                 RabbitTemplate rabbitTemplate) {
+        RabbitTemplate rabbitTemplate) {
         this.publisher = publisher;
         this.rabbitTemplate = rabbitTemplate;
     }
@@ -40,13 +40,15 @@ public class EventPublishingAspect {
      */
     @Pointcut("@annotation(eventAnnotation)")
     public void myAnnotationPointcut(EventPublishing eventAnnotation) {
-        // This method is empty because method with @Pointcut annotation should be empty.
+        // This method is empty because method with @Pointcut annotation should be
+        // empty.
     }
 
     /**
      * advice, that builds and publishes events and messages.
      *
-     * @param eventAnnotation annotation, that is over method, that triggered events and message publishing.
+     * @param eventAnnotation annotation, that is over method, that triggered events
+     *                        and message publishing.
      * @param body            object, that triggered events(message) method returns.
      */
     @AfterReturning(pointcut = "myAnnotationPointcut(eventAnnotation)", returning = "body")
@@ -68,7 +70,8 @@ public class EventPublishingAspect {
      *
      * @param eventClass class of needed event.
      * @param body       data, that will be put into event.
-     * @param source     the object on which the event initially occurred (never {@code null}).
+     * @param source     the object on which the event initially occurred (never
+     *                   {@code null}).
      * @return instance instance of event.
      */
     private ApplicationEvent buildEvent(

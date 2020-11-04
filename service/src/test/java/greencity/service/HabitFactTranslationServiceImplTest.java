@@ -49,29 +49,37 @@ class HabitFactTranslationServiceImplTest {
         habitFactPostDto.setHabit(habitIdRequestDto);
         habitFactPostDto.setTranslations(Collections.singletonList(ModelUtils.getLanguageTranslationDTO()));
         List<HabitFactTranslation> habitFactTranslations = Collections.singletonList(ModelUtils.getFactTranslation());
-        List<HabitFactTranslationVO> habitFactTranslationVOS = Collections.singletonList(ModelUtils.getFactTranslationVO());
+        List<HabitFactTranslationVO> habitFactTranslationVOS =
+            Collections.singletonList(ModelUtils.getFactTranslationVO());
         when(habitFactService.save(habitFactPostDto)).thenReturn(habitFactVO);
         when(modelMapper.map(habitFactVO, HabitFact.class)).thenReturn(habitFact);
         when(modelMapper.map(habitFactPostDto.getTranslations(), new TypeToken<List<HabitFactTranslation>>() {
         }.getType())).thenReturn(habitFactTranslations);
-        when(modelMapper.map(ModelUtils.getFactTranslationVO(), HabitFactTranslation.class)).thenReturn(ModelUtils.getFactTranslation());
+        when(modelMapper.map(ModelUtils.getFactTranslationVO(), HabitFactTranslation.class))
+            .thenReturn(ModelUtils.getFactTranslation());
         when(habitFactTranslationRepo.saveAll(habitFactTranslations)).thenReturn(habitFactTranslations);
-        when(modelMapper.map(ModelUtils.getFactTranslation(), HabitFactTranslationVO.class)).thenReturn(ModelUtils.getFactTranslationVO());
+        when(modelMapper.map(ModelUtils.getFactTranslation(), HabitFactTranslationVO.class))
+            .thenReturn(ModelUtils.getFactTranslationVO());
         when(modelMapper.map(habitFactVO, HabitFactDtoResponse.class)).thenReturn(habitFactDtoResponse);
         habitFactVO.setTranslations(habitFactTranslationService.saveHabitFactTranslation(habitFactTranslationVOS));
 
-        assertEquals(habitFactDtoResponse, habitFactTranslationService.saveHabitFactAndFactTranslation(habitFactPostDto));
+        assertEquals(habitFactDtoResponse,
+            habitFactTranslationService.saveHabitFactAndFactTranslation(habitFactPostDto));
     }
 
     @Test
     void saveHabitFactTranslation() {
         List<HabitFactTranslation> habitFactTranslations = Collections.singletonList(ModelUtils.getFactTranslation());
-        List<HabitFactTranslationVO> habitFactTranslationVOS = Collections.singletonList(ModelUtils.getFactTranslationVO());
-        when(modelMapper.map(ModelUtils.getFactTranslationVO(), HabitFactTranslation.class)).thenReturn(ModelUtils.getFactTranslation());
+        List<HabitFactTranslationVO> habitFactTranslationVOS =
+            Collections.singletonList(ModelUtils.getFactTranslationVO());
+        when(modelMapper.map(ModelUtils.getFactTranslationVO(), HabitFactTranslation.class))
+            .thenReturn(ModelUtils.getFactTranslation());
         when(habitFactTranslationRepo.saveAll(habitFactTranslations)).thenReturn(habitFactTranslations);
-        when(modelMapper.map(ModelUtils.getFactTranslation(), HabitFactTranslationVO.class)).thenReturn(ModelUtils.getFactTranslationVO());
+        when(modelMapper.map(ModelUtils.getFactTranslation(), HabitFactTranslationVO.class))
+            .thenReturn(ModelUtils.getFactTranslationVO());
 
-        assertEquals(habitFactTranslationVOS, habitFactTranslationService.saveHabitFactTranslation(habitFactTranslationVOS));
+        assertEquals(habitFactTranslationVOS,
+            habitFactTranslationService.saveHabitFactTranslation(habitFactTranslationVOS));
     }
 
     @Test

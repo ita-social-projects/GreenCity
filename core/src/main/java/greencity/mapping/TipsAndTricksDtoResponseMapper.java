@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 @Component
 public class TipsAndTricksDtoResponseMapper extends AbstractConverter<TipsAndTricks, TipsAndTricksDtoResponse> {
     /**
-     * Method for converting {@link TipsAndTricks} into {@link AddEcoNewsDtoResponse}.
+     * Method for converting {@link TipsAndTricks} into
+     * {@link AddEcoNewsDtoResponse}.
      *
      * @param tipsAndTricks object to convert.
      * @return converted object.
@@ -29,30 +30,30 @@ public class TipsAndTricksDtoResponseMapper extends AbstractConverter<TipsAndTri
     protected TipsAndTricksDtoResponse convert(TipsAndTricks tipsAndTricks) {
         String language = LocaleContextHolder.getLocale().getLanguage();
         return TipsAndTricksDtoResponse.builder()
-                .id(tipsAndTricks.getId())
-                .title(tipsAndTricks.getTitleTranslations()
-                        .stream()
-                        .filter(elem -> elem.getLanguage().getCode().equals(language))
-                        .findFirst()
-                        .orElseThrow(() ->
-                                new RuntimeException("Not found tipsAndTricks with language " + language)).getContent())
-                .text(tipsAndTricks.getTextTranslations()
-                        .stream()
-                        .filter(elem -> elem.getLanguage().getCode().equals(language))
-                        .findFirst()
-                        .orElseThrow(() ->
-                                new RuntimeException("Not found tipsAndTricks with language " + language)).getContent())
-                .source(tipsAndTricks.getSource())
-                .imagePath(tipsAndTricks.getImagePath())
-                .creationDate(tipsAndTricks.getCreationDate())
-                .author(AuthorDto.builder()
-                        .id(tipsAndTricks.getAuthor().getId())
-                        .name(tipsAndTricks.getAuthor().getName())
-                        .build())
-                .tags(tipsAndTricks.getTags()
-                        .stream()
-                        .map(Tag::getName)
-                        .collect(Collectors.toList()))
-                .build();
+            .id(tipsAndTricks.getId())
+            .title(tipsAndTricks.getTitleTranslations()
+                .stream()
+                .filter(elem -> elem.getLanguage().getCode().equals(language))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Not found tipsAndTricks with language " + language))
+                .getContent())
+            .text(tipsAndTricks.getTextTranslations()
+                .stream()
+                .filter(elem -> elem.getLanguage().getCode().equals(language))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Not found tipsAndTricks with language " + language))
+                .getContent())
+            .source(tipsAndTricks.getSource())
+            .imagePath(tipsAndTricks.getImagePath())
+            .creationDate(tipsAndTricks.getCreationDate())
+            .author(AuthorDto.builder()
+                .id(tipsAndTricks.getAuthor().getId())
+                .name(tipsAndTricks.getAuthor().getName())
+                .build())
+            .tags(tipsAndTricks.getTags()
+                .stream()
+                .map(Tag::getName)
+                .collect(Collectors.toList()))
+            .build();
     }
 }

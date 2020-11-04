@@ -70,8 +70,9 @@ class TagsServiceImplTest {
         List<Tag> expected = Collections.singletonList(tipsAndTricksTag);
         when(tagRepo.findTipsAndTricksTagsByNames(Collections.singletonList(tipsAndTricksTag.getName())))
             .thenReturn(expected);
-        List<TagVO>tagVOList = Collections.singletonList(new TagVO(1L, "tag", null, null));
-        when(modelMapper.map(expected, new TypeToken<List<TagVO>>() {}.getType())).thenReturn(tagVOList);
+        List<TagVO> tagVOList = Collections.singletonList(new TagVO(1L, "tag", null, null));
+        when(modelMapper.map(expected, new TypeToken<List<TagVO>>() {
+        }.getType())).thenReturn(tagVOList);
         assertEquals(tagVOList,
             tagService.findTipsAndTricksTagsByNames(Collections.singletonList(tipsAndTricksTag.getName())));
     }

@@ -58,7 +58,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         log.info(LogMessage.IN_UPDATE, favoritePlaceDto);
 
         FavoritePlace favoritePlace =
-                favoritePlaceRepo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail);
+            favoritePlaceRepo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail);
         if (favoritePlace == null) {
             throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceDto.getPlaceId());
         }
@@ -75,7 +75,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     public List<FavoritePlaceDto> findAllByUserEmail(String email) {
         log.info(LogMessage.IN_FIND_ALL);
         return favoritePlaceRepo.findAllByUserEmail(email).stream()
-                .map(fp -> modelMapper.map(fp, FavoritePlaceDto.class))
+            .map(fp -> modelMapper.map(fp, FavoritePlaceDto.class))
             .collect(Collectors.toList());
     }
 

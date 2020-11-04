@@ -24,25 +24,28 @@ public class CurrentUserIdValidationAspect {
     private final UserService userService;
 
     /**
-     * Constructor with UserService dependency declaration.
-     * UserService is used for current user id acquisition.
+     * Constructor with UserService dependency declaration. UserService is used for
+     * current user id acquisition.
      *
-     * @param userService {@link UserService} is used for current user id acquisition.
+     * @param userService {@link UserService} is used for current user id
+     *                    acquisition.
      */
     public CurrentUserIdValidationAspect(UserService userService) {
         this.userService = userService;
     }
 
     /**
-     * Validates method parameter which is meant to represent currently authenticated
-     * user id.
-     * Pointcut matches every public method that is located in the controller classes
-     * under greencity.controller package and has at least one {@link Long}-typed
-     * parameter at an arbitrary position.
+     * Validates method parameter which is meant to represent currently
+     * authenticated user id. Pointcut matches every public method that is located
+     * in the controller classes under greencity.controller package and has at least
+     * one {@link Long}-typed parameter at an arbitrary position.
      *
-     * @param joinPoint {@link JoinPoint} that is used for annotated parameter observation.
-     * @throws NoSuchMethodException    if the method pointed by joinPoint cannot be found.
-     * @throws IllegalArgumentException if the supplied user id does not match real authenticated users id.
+     * @param joinPoint {@link JoinPoint} that is used for annotated parameter
+     *                  observation.
+     * @throws NoSuchMethodException    if the method pointed by joinPoint cannot be
+     *                                  found.
+     * @throws IllegalArgumentException if the supplied user id does not match real
+     *                                  authenticated users id.
      */
     @Before("execution(public * greencity.controller..*.*(..,java.lang.Long,..))")
     public void validateCurrentUserIdParameter(JoinPoint joinPoint) throws NoSuchMethodException {
@@ -56,12 +59,14 @@ public class CurrentUserIdValidationAspect {
     }
 
     /**
-     * Returns method parameter of type {@link Long} that is annotated with {@link CurrentUserId}.
-     * The position of such a parameter can be arbitrary.
+     * Returns method parameter of type {@link Long} that is annotated with
+     * {@link CurrentUserId}. The position of such a parameter can be arbitrary.
      *
      * @param joinPoint is used for annotated parameter observation.
-     * @return {@link Optional} containing supplied user id or empty Optional if the parameter cannot be found.
-     * @throws NoSuchMethodException if the method pointed by joinPoint cannot be found.
+     * @return {@link Optional} containing supplied user id or empty Optional if the
+     *         parameter cannot be found.
+     * @throws NoSuchMethodException if the method pointed by joinPoint cannot be
+     *                               found.
      */
     private Optional<Long> getAnnotatedArgument(JoinPoint joinPoint) throws NoSuchMethodException {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();

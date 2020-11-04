@@ -53,8 +53,8 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id)
-            .orElseThrow(() ->
-                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), LanguageTranslationDTO.class);
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)),
+            LanguageTranslationDTO.class);
     }
 
     /**
@@ -62,8 +62,9 @@ public class AdviceServiceImpl implements AdviceService {
      */
     @Override
     public AdviceVO getAdviceById(Long id) {
-        return modelMapper.map(adviceRepo.findById(id).orElseThrow(() ->
-            new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceVO.class);
+        return modelMapper.map(
+            adviceRepo.findById(id).orElseThrow(() -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)),
+            AdviceVO.class);
     }
 
     /**
@@ -72,8 +73,8 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public AdviceDto getAdviceByName(String language, String name) {
         return modelMapper.map(adviceTranslationRepo
-            .findAdviceTranslationByLanguageCodeAndContent(language, name).orElseThrow(() ->
-                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDto.class);
+            .findAdviceTranslationByLanguageCodeAndContent(language, name)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDto.class);
     }
 
     /**
@@ -93,13 +94,14 @@ public class AdviceServiceImpl implements AdviceService {
      */
     @Override
     public AdviceVO update(AdvicePostDto adviceDto, Long id) {
-        Advice advice = adviceRepo.findById(id).orElseThrow(() ->
-                new NotUpdatedException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id));
+        Advice advice = adviceRepo.findById(id)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id));
         Habit habit = habitRepo.findById(adviceDto.getHabit().getId())
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
         advice.setHabit(habit);
         List<AdviceTranslation> adviceTranslations = modelMapper.map(adviceDto.getTranslations(),
-                new TypeToken<List<AdviceTranslation>>() {}.getType());
+            new TypeToken<List<AdviceTranslation>>() {
+            }.getType());
         adviceTranslationRepo.deleteAllByAdvice(advice);
         advice.setTranslations(adviceTranslations);
         adviceTranslations.forEach(adviceTranslation -> adviceTranslation.setAdvice(advice));

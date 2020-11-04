@@ -39,5 +39,3 @@ class SignInEventListenerTest {
         verify(userService).addDefaultHabit(userVO, "en");
     }
 }
-
-

@@ -25,8 +25,8 @@ public interface FactOfTheDayRepo extends JpaRepository<FactOfTheDay, Long> {
     Page<FactOfTheDay> searchBy(Pageable pageable, String searchQuery);
 
     /**
-     * Method for getting random {@link FactOfTheDay} by language code.
-     * This method use native SQL query to reduce the load on the backend
+     * Method for getting random {@link FactOfTheDay} by language code. This method
+     * use native SQL query to reduce the load on the backend
      *
      * @return {@link FactOfTheDay} in Optional
      * @author Mykola Lehkyi

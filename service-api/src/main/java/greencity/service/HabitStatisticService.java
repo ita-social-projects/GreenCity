@@ -9,12 +9,13 @@ import java.util.List;
 
 public interface HabitStatisticService {
     /**
-     * Method for creating {@code HabitStatistic} by {@code Habit}, {@code User} id's and
-     * {@link AddHabitStatisticDto} instance.
+     * Method for creating {@code HabitStatistic} by {@code Habit}, {@code User}
+     * id's and {@link AddHabitStatisticDto} instance.
      *
      * @param habitId              {@code Habit} id.
      * @param userId               {@code User} id.
-     * @param addHabitStatisticDto - dto with {@code HabitStatistic} rate, amount of items, date.
+     * @param addHabitStatisticDto - dto with {@code HabitStatistic} rate, amount of
+     *                             items, date.
      * @return {@link AddHabitStatisticDto} instance.
      */
     HabitStatisticDto saveByHabitIdAndUserId(Long habitId, Long userId, AddHabitStatisticDto addHabitStatisticDto);
@@ -24,7 +25,8 @@ public interface HabitStatisticService {
      *
      * @param habitStatisticId {@code HabitStatistic} id.
      * @param userId           {@code User} current id.
-     * @param dto              - dto with {@code HabitStatistic} rate and amount of items.
+     * @param dto              - dto with {@code HabitStatistic} rate and amount of
+     *                         items.
      * @return {@link UpdateHabitStatisticDto} instance.
      */
     UpdateHabitStatisticDto update(Long habitStatisticId, Long userId, UpdateHabitStatisticDto dto);
@@ -38,8 +40,8 @@ public interface HabitStatisticService {
     HabitStatisticDto findById(Long id);
 
     /**
-     * Method for finding all {@code HabitStatistic} by HabitAssign id
-     * (multiple statistics for one assigned habit for user).
+     * Method for finding all {@code HabitStatistic} by HabitAssign id (multiple
+     * statistics for one assigned habit for user).
      *
      * @param habitAssignId HabitAssign id.
      * @return list of {@link HabitStatisticDto} instances.
@@ -56,12 +58,15 @@ public interface HabitStatisticService {
 
     /**
      * Returns statistics for all not taken habit items in the system for today.
-     * Data is returned as an array of key-value-pairs mapped to {@link HabitItemsAmountStatisticDto},
-     * where key is the name of habit item and value is not taken amount of these items.
-     * Language of habit items is defined by the `language` parameter.
+     * Data is returned as an array of key-value-pairs mapped to
+     * {@link HabitItemsAmountStatisticDto}, where key is the name of habit item and
+     * value is not taken amount of these items. Language of habit items is defined
+     * by the `language` parameter.
      *
-     * @param language - Name of habit item localization language(e.x. "en" or "uk").
-     * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those key-value pairs.
+     * @param language - Name of habit item localization language(e.x. "en" or
+     *                 "uk").
+     * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those
+     *         key-value pairs.
      */
     List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language);
 

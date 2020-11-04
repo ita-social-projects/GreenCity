@@ -14,7 +14,8 @@ public interface TipsAndTricksCommentRepo extends JpaRepository<TipsAndTricksCom
      * Method returns all {@link TipsAndTricksComment} by page.
      *
      * @param pageable        page of news.
-     * @param tipsAndTricksId id of {@link greencity.entity.TipsAndTricks} for which comments we search.
+     * @param tipsAndTricksId id of {@link greencity.entity.TipsAndTricks} for which
+     *                        comments we search.
      * @return all {@link TipsAndTricksComment} by page.
      */
     @Query("SELECT tc "
@@ -24,7 +25,7 @@ public interface TipsAndTricksCommentRepo extends JpaRepository<TipsAndTricksCom
         + "AND tc.deleted=false "
         + "ORDER BY tc.createdDate DESC")
     Page<TipsAndTricksComment> findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(
-                                                                        Pageable pageable, Long tipsAndTricksId);
+        Pageable pageable, Long tipsAndTricksId);
 
     /**
      * Method returns all replies to comment, specified by parentCommentId.
@@ -35,7 +36,8 @@ public interface TipsAndTricksCommentRepo extends JpaRepository<TipsAndTricksCom
     List<TipsAndTricksComment> findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(Long parentCommentId);
 
     /**
-     * Method returns count of comments for TipsAndTrick, specified by tipAndTricksId.
+     * Method returns count of comments for TipsAndTrick, specified by
+     * tipAndTricksId.
      *
      * @param tipAndTricksId id of TipsAndTrick, count of comments to which we get.
      * @return count of comments to TipsAndTrick, specified by tipAndTricksId.

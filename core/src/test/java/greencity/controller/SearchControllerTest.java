@@ -52,7 +52,7 @@ class SearchControllerTest {
     void searchEcoNewsTest() throws Exception {
         mockMvc.perform(get(mainSearchLink +
             ecoNewsSearchLinkPart + "?searchQuery={query}", "Eco news title")
-            .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
 
@@ -60,7 +60,7 @@ class SearchControllerTest {
     void searchTipsAndTricksTest() throws Exception {
         mockMvc.perform(get(mainSearchLink +
             tipsAndTricksLinkPart + "?searchQuery={query}", "Tips and tricks title")
-            .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
 

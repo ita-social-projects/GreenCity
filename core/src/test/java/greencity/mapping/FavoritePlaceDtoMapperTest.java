@@ -23,4 +23,3 @@ class FavoritePlaceDtoMapperTest {
         assertEquals(expected, favoritePlaceDtoMapper.convert(favoritePlace));
     }
 }
-

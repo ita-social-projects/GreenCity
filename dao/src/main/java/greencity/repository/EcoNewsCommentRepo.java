@@ -13,21 +13,23 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * Method returns all {@link EcoNewsComment} by page.
      *
      * @param pageable  page of news.
-     * @param ecoNewsId id of {@link greencity.entity.EcoNews} for which comments we search.
+     * @param ecoNewsId id of {@link greencity.entity.EcoNews} for which comments we
+     *                  search.
      * @return all {@link EcoNewsComment} by page.
      */
     Page<EcoNewsComment> findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(Pageable pageable,
-                                                                                        Long ecoNewsId);
+        Long ecoNewsId);
 
     /**
-     * Method returns all replies to comment, specified by parentCommentId and by page.
+     * Method returns all replies to comment, specified by parentCommentId and by
+     * page.
      *
      * @param pageable        page of news.
      * @param parentCommentId id of comment, replies to which we get.
      * @return all replies to comment, specified by parentCommentId and page.
      */
     Page<EcoNewsComment> findAllByParentCommentIdOrderByCreatedDateDesc(Pageable pageable,
-                                                                        Long parentCommentId);
+        Long parentCommentId);
 
     /**
      * Method returns count of replies to comment, specified by parentCommentId.
@@ -51,7 +53,8 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * Method returns all {@link EcoNewsComment} by page.
      *
      * @param pageable  page of news.
-     * @param ecoNewsId id of {@link greencity.entity.EcoNews} for which comments we search.
+     * @param ecoNewsId id of {@link greencity.entity.EcoNews} for which comments we
+     *                  search.
      * @return all active {@link EcoNewsComment} by page.
      * @author Dovganyuk Taras
      */
@@ -68,5 +71,5 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @author Dovganyuk Taras
      */
     Page<EcoNewsComment> findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(Pageable pageable,
-                                                                                       Long parentCommentId);
+        Long parentCommentId);
 }

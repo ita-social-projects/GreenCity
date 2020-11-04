@@ -59,8 +59,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             URL checkUrl = new URL(url);
             Optional<SocialNetworkImageVO> optionalSocialNetworkImageVO =
                 findByHostPath(checkUrl.getHost());
-            return optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get() :
-                saveSocialNetworkImage(checkUrl);
+            return optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get()
+                : saveSocialNetworkImage(checkUrl);
         } catch (IOException e) {
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
@@ -101,8 +101,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             socialNetworkImageResponseDTOS,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages()
-        );
+            page.getTotalPages());
     }
 
     /**
@@ -127,7 +126,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
 
     @Override
     public SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-                                              MultipartFile image) {
+        MultipartFile image) {
         SocialNetworkImage toSave = modelMapper.map(socialNetworkImageRequestDTO, SocialNetworkImage.class);
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
@@ -143,8 +142,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
-     * {@inheritDoc}
-     * Method for finding {@link SocialNetworkImage} by id
+     * {@inheritDoc} Method for finding {@link SocialNetworkImage} by id
      *
      * @param id {@link SocialNetworkImage} instance id.
      * @return {@link SocialNetworkImage}
@@ -156,8 +154,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
-     * {@inheritDoc}
-     * Method for finding {@link SocialNetworkImageResponseDTO} by id
+     * {@inheritDoc} Method for finding {@link SocialNetworkImageResponseDTO} by id
      *
      * @param id {@link SocialNetworkImageResponseDTO} instance id.
      * @return dto {@link SocialNetworkImageResponseDTO}
@@ -169,10 +166,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
-     * {@inheritDoc}
-     * Method for updating {@link SocialNetworkImage}
+     * {@inheritDoc} Method for updating {@link SocialNetworkImage}
      *
-     * @param socialNetworkImageResponseDTO - instance of {@link SocialNetworkImageResponseDTO}.
+     * @param socialNetworkImageResponseDTO - instance of
+     *                                      {@link SocialNetworkImageResponseDTO}.
      */
     @Override
     public void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile image) {
@@ -214,7 +211,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
-     * Method return default social network image from DB by host key DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH.
+     * Method return default social network image from DB by host key
+     * DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH.
      *
      * @return {@link SocialNetworkImage}
      */
@@ -224,7 +222,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     }
 
     /**
-     * Method downloads icon from URL and transforms it into {@link File}. Calls uploadFileToCloud().
+     * Method downloads icon from URL and transforms it into {@link File}. Calls
+     * uploadFileToCloud().
      *
      * @param url URL of give page
      * @return URL.toString() image file location
@@ -250,7 +249,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
             false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
         try (InputStream inputStream = new FileInputStream(tempFile);
-             OutputStream outputStream = fileItem.getOutputStream()) {
+            OutputStream outputStream = fileItem.getOutputStream()) {
             IOUtils.copy(inputStream, outputStream);
             outputStream.flush();
         }

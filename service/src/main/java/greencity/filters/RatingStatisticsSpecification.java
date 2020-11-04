@@ -24,7 +24,7 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
 
     @Override
     public Predicate toPredicate(Root<RatingStatistics> root, CriteriaQuery<?> criteriaQuery,
-                                 CriteriaBuilder criteriaBuilder) {
+        CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = criteriaBuilder.conjunction();
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             if (searchCriteria.getType().equals("id")) {
@@ -60,7 +60,7 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
     }
 
     private Predicate getEventNamePredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
-                                            SearchCriteria searchCriteria) {
+        SearchCriteria searchCriteria) {
         List<RatingCalculationEnum> enumValues = Arrays.asList(RatingCalculationEnum.values());
         List<RatingCalculationEnum> selectedEnums = enumValues.stream()
             .filter(x -> x.toString().toLowerCase().contains(((String) searchCriteria.getValue()).toLowerCase()))
@@ -75,18 +75,18 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
     }
 
     private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
-                                           SearchCriteria searchCriteria) {
+        SearchCriteria searchCriteria) {
         return criteriaBuilder.like(root.get(searchCriteria.getKey()).get("email"),
             "%" + searchCriteria.getValue() + "%");
     }
 
     private Predicate getUserIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
-                                         SearchCriteria searchCriteria) {
+        SearchCriteria searchCriteria) {
         try {
             return criteriaBuilder.equal(root.get(searchCriteria.getKey()).get("id"), searchCriteria.getValue());
         } catch (NumberFormatException ex) {
-            return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
-                criteriaBuilder.disjunction();
+            return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
+                : criteriaBuilder.disjunction();
         }
     }
 }

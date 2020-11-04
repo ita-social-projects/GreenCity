@@ -27,7 +27,8 @@ class EcoNewsCommentRepoTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<EcoNewsComment> ecoNewsComments = ecoNewsCommentRepo
             .findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(
-                pageRequest, 1L).getContent();
+                pageRequest, 1L)
+            .getContent();
         Long firstActual = ecoNewsComments.get(0).getId();
         Long secondActual = ecoNewsComments.get(1).getId();
 

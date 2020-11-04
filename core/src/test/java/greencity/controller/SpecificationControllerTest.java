@@ -29,7 +29,6 @@ class SpecificationControllerTest {
     @Mock
     private SpecificationService specificationService;
 
-
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(specificationController)

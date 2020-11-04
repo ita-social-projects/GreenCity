@@ -6,7 +6,8 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * Event that is meant for notifying about sending password recovery to the email.
+ * Event that is meant for notifying about sending password recovery to the
+ * email.
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)
@@ -18,8 +19,8 @@ public class SendRestorePasswordEmailEvent extends ApplicationEvent {
     private final String token;
 
     /**
-     * Creates a new {@link SendRestorePasswordEmailEvent} with {@link User}
-     * and {@link String} token which will be sent to the user's email.
+     * Creates a new {@link SendRestorePasswordEmailEvent} with {@link User} and
+     * {@link String} token which will be sent to the user's email.
      *
      * @param source the User whose password is to be recovered
      */

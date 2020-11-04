@@ -8,8 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link HabitStatusCalendar} into
- * {@link HabitStatusCalendarVO}.
+ * Class that used by {@link ModelMapper} to map {@link HabitStatusCalendar}
+ * into {@link HabitStatusCalendarVO}.
  */
 @Component
 public class HabitStatusCalendarVOMapper extends AbstractConverter<HabitStatusCalendar, HabitStatusCalendarVO> {

@@ -17,17 +17,18 @@ public interface TipsAndTricksService {
      * @return {@link TipsAndTricksDtoResponse} instance.
      */
     TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
-                                  String email);
+        String email);
 
     /**
-     * Method saves new {@link TipsAndTricksDtoManagement}, {@link TitleTranslationVO}  and {@link TextTranslationVO}.
+     * Method saves new {@link TipsAndTricksDtoManagement},
+     * {@link TitleTranslationVO} and {@link TextTranslationVO}.
      *
      * @param tipsAndTricksDtoManagement {@link TipsAndTricksDtoManagement}
      * @return instance of {@link TipsAndTricksDtoManagement}
      */
     TipsAndTricksDtoManagement saveTipsAndTricksWithTranslations(TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-                                                                 MultipartFile image,
-                                                                 String name);
+        MultipartFile image,
+        String name);
 
     /**
      * Method for updating {@link TipsAndTricksVO} instance.

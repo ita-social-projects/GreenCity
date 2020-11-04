@@ -26,7 +26,8 @@ public interface GoalService {
     UserGoalResponseDto getUserGoalResponseDtoFromPredefinedGoal(UserGoalVO userGoal);
 
     /**
-     * Method for getting {@link UserGoalResponseDto} from {@link UserGoalVO} if there was set a {@link CustomGoalVO}.
+     * Method for getting {@link UserGoalResponseDto} from {@link UserGoalVO} if
+     * there was set a {@link CustomGoalVO}.
      *
      * @param userGoal needed text from CustomGoal
      * @return userGoalResponseDto.
