@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -8,6 +9,7 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
@@ -63,8 +65,8 @@ public class ManagementEcoNewsController {
      * @return {@link ResponseEntity}
      */
     @DeleteMapping("/delete")
-    public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
-        ecoNewsService.delete(id);
+    public ResponseEntity<Long> delete(@RequestParam("id") Long id, @ApiIgnore @CurrentUser UserVO user) {
+        ecoNewsService.delete(id, user);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 

@@ -170,8 +170,8 @@ public class EcoNewsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{econewsId}")
-    public ResponseEntity<Object> delete(@PathVariable Long econewsId) {
-        ecoNewsService.delete(econewsId);
+    public ResponseEntity<Object> delete(@PathVariable Long econewsId, @ApiIgnore @CurrentUser UserVO user) {
+        ecoNewsService.delete(econewsId, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

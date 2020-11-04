@@ -6,7 +6,13 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
@@ -23,6 +29,11 @@ import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -38,12 +49,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @EnableCaching
@@ -187,8 +192,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsVO findById(Long id) {
         EcoNews ecoNews = ecoNewsRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
         return modelMapper.map(ecoNews, EcoNewsVO.class);
     }
 
@@ -212,8 +217,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @RatingCalculation(rating = RatingCalculationEnum.DELETE_ECO_NEWS)
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public void delete(Long id) {
-        ecoNewsRepo.deleteById(findById(id).getId());
+    public void delete(Long id, UserVO user) {
+        EcoNewsVO ecoNewsVO = findById(id);
+        if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        ecoNewsRepo.deleteById(ecoNewsVO.getId());
     }
 
     @Override
@@ -299,7 +308,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
     public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
-        comment.getUsersLiked().remove(user);
+        comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
     }
 
     @Override

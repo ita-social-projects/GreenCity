@@ -84,4 +84,12 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
 
         return dates;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAllByHabitStatus(HabitStatusVO habitStatusVO) {
+        habitStatusCalendarRepo.deleteAllByHabitStatus(modelMapper.map(habitStatusVO, HabitStatus.class));
+    }
 }

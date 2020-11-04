@@ -29,7 +29,7 @@ class HabitStatisticRepoTest {
     @Test
     void findHabitAssignStatByDateTest_shouldReturnCorrectValue() {
         HabitStatistic habitStatistic = habitStatisticRepo
-            .findHabitAssignStatByDate(ZonedDateTime.parse("2020-10-09T03:00:00+03"), 1L).get();
+            .findStatByDateAndId(ZonedDateTime.parse("2020-10-09T03:00:00+03"), 1L).get();
 
         assertEquals(5, habitStatistic.getAmountOfItems());
         assertEquals(HabitRate.GOOD, habitStatistic.getHabitRate());
@@ -38,7 +38,7 @@ class HabitStatisticRepoTest {
     @Test
     void findHabitAssignStatByDateTest_shouldReturnEmptyOptional() {
         Optional<HabitStatistic> habitStatistic = habitStatisticRepo
-            .findHabitAssignStatByDate(ZonedDateTime.parse("2020-09-09T00:00:00+03"), 1L);
+            .findStatByDateAndId(ZonedDateTime.parse("2020-09-09T00:00:00+03"), 1L);
 
         assertFalse(habitStatistic.isPresent());
     }

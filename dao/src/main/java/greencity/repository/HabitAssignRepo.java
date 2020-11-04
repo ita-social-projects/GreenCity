@@ -50,7 +50,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
                                                               @Param("dateTime") ZonedDateTime dateTime);
 
     /**
-     * Method to find all {@link HabitAssign} by {@link User} id and acquired status
+     * Method to find all {@link HabitAssign}'s by {@link User} id and acquired status
      * (with not suspended status).
      *
      * @param userId   {@link User} id.
@@ -58,6 +58,16 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return list of {@link HabitAssign} instances.
      */
     List<HabitAssign> findAllByUserIdAndAcquiredAndSuspendedFalse(Long userId, Boolean acquired);
+
+    /**
+     * Method to find all {@link HabitAssign}'s by {@link Habit} id and acquired status
+     * (with not suspended status).
+     *
+     * @param habitId  {@link Habit} id.
+     * @param acquired {@link Boolean} status.
+     * @return list of {@link HabitAssign} instances.
+     */
+    List<HabitAssign> findAllByHabitIdAndAcquiredAndSuspendedFalse(Long habitId, Boolean acquired);
 
     /**
      * Method to find {@link HabitAssign} by {@link User} id and {@link Habit} id
@@ -70,13 +80,31 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     Optional<HabitAssign> findByHabitIdAndUserIdAndSuspendedFalse(Long habitId, Long userId);
 
     /**
-     * Method for counting all {@link HabitAssign} by {@link User} id
+     * Method to find {@link HabitAssign} by it's id
+     * (with not suspended status).
+     *
+     * @param id {@link HabitAssign} id.
+     * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
+     */
+    Optional<HabitAssign> findByIdAndSuspendedFalse(Long id);
+
+    /**
+     * Method for counting all {@link HabitAssign}'s by {@link User} id
      * (with not suspended status).
      *
      * @param userId {@link User} id.
      * @return amount of items in Optional in case of absence such info.
      */
     int countHabitAssignsByUserIdAndSuspendedFalse(Long userId);
+
+    /**
+     * Method for counting all active {@link HabitAssign}'s by {@link User} id
+     * (with not suspended and not acquired status).
+     *
+     * @param userId {@link User} id.
+     * @return amount of items in Optional in case of absence such info.
+     */
+    int countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(Long userId);
 
     /**
      * Method for counting {@link HabitAssign} by {@link User} id and period between start/end {@link ZonedDateTime}

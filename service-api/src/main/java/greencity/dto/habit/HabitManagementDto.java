@@ -8,10 +8,8 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
 @Builder
+@Data
 public class HabitManagementDto implements Serializable {
     private Long id;
     private String image;
