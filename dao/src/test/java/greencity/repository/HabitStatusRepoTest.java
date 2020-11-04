@@ -2,8 +2,6 @@ package greencity.repository;
 
 import greencity.containers.TestPostgresContainer;
 import greencity.entity.HabitStatus;
-import java.time.ZonedDateTime;
-import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
