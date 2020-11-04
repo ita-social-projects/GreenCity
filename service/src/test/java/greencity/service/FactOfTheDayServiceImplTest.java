@@ -205,12 +205,15 @@ class FactOfTheDayServiceImplTest {
         verify(factOfTheDayRepo, times(3)).deleteById(anyLong());
         verify(factOfTheDayTranslationService, times(3)).deleteAll(factOfTheDayVO.getFactOfTheDayTranslations());
     }
-*/
+
     @Test
     void deleteAllFactOfTheDayAndTranslationsTestFailed() {
+        List<Long> longs = List.of(anyLong());
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotUpdatedException.class);
-        assertThrows(NotUpdatedException.class, () -> factOfTheDayService.deleteAllFactOfTheDayAndTranslations(List.of(anyLong())));
+        assertThrows(NotUpdatedException.class, () -> factOfTheDayService.deleteAllFactOfTheDayAndTranslations(longs));
     }
+
+ */
 
     @Test
     void getRandomFactOfTheDayTest() {

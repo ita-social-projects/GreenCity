@@ -1,9 +1,15 @@
 package greencity.service;
 
+import static greencity.ModelUtils.getFactTranslation;
+import static greencity.ModelUtils.getLanguageTranslationDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
 import greencity.ModelUtils;
+import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.entity.HabitFact;
@@ -17,22 +23,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-
 import java.util.Collections;
 import java.util.List;
 
-import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class HabitFactTranslationServiceImplTest {
-
     @Mock
     HabitFactTranslationRepo habitFactTranslationRepo;
     @Mock
     HabitFactService habitFactService;
-
     @Mock
     ModelMapper modelMapper;
 
@@ -45,6 +44,7 @@ class HabitFactTranslationServiceImplTest {
         HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
         HabitFactPostDto habitFactPostDto = new HabitFactPostDto();
         HabitIdRequestDto habitIdRequestDto = new HabitIdRequestDto();
+        HabitFactDtoResponse habitFactDtoResponse = new HabitFactDtoResponse();
         habitIdRequestDto.setId(1L);
         habitFactPostDto.setHabit(habitIdRequestDto);
         habitFactPostDto.setTranslations(Collections.singletonList(ModelUtils.getLanguageTranslationDTO()));
@@ -57,9 +57,10 @@ class HabitFactTranslationServiceImplTest {
         when(modelMapper.map(ModelUtils.getFactTranslationVO(), HabitFactTranslation.class)).thenReturn(ModelUtils.getFactTranslation());
         when(habitFactTranslationRepo.saveAll(habitFactTranslations)).thenReturn(habitFactTranslations);
         when(modelMapper.map(ModelUtils.getFactTranslation(), HabitFactTranslationVO.class)).thenReturn(ModelUtils.getFactTranslationVO());
+        when(modelMapper.map(habitFactVO, HabitFactDtoResponse.class)).thenReturn(habitFactDtoResponse);
+        habitFactVO.setTranslations(habitFactTranslationService.saveHabitFactTranslation(habitFactTranslationVOS));
 
-        assertEquals(habitFactTranslationVOS, habitFactTranslationService.saveHabitFactAndFactTranslation(habitFactPostDto));
-
+        assertEquals(habitFactDtoResponse, habitFactTranslationService.saveHabitFactAndFactTranslation(habitFactPostDto));
     }
 
     @Test
@@ -75,10 +76,10 @@ class HabitFactTranslationServiceImplTest {
 
     @Test
     void getHabitFactOfTheDay() {
-        List<HabitFactTranslation> list = Collections.singletonList(getFactTranslation());
+        HabitFactTranslation res = getFactTranslation();
         when(habitFactTranslationRepo.findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus.CURRENT, 1L))
-                .thenReturn(list);
-        when(modelMapper.map(list, LanguageTranslationDTO.class)).thenReturn(getLanguageTranslationDTO());
+            .thenReturn(res);
+        when(modelMapper.map(res, LanguageTranslationDTO.class)).thenReturn(getLanguageTranslationDTO());
         assertEquals(getLanguageTranslationDTO(), habitFactTranslationService.getHabitFactOfTheDay(1L));
     }
 }

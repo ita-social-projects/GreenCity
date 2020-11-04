@@ -5,11 +5,10 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
-import greencity.entity.localization.AdviceTranslation;
 import greencity.service.AdviceService;
-import greencity.service.AdviceTranslationService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -18,9 +17,9 @@ import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,9 +35,9 @@ import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 @RestController
 @RequestMapping("/advices")
 @AllArgsConstructor
+@Validated
 public class AdviceController {
     private final AdviceService adviceService;
-    private final AdviceTranslationService adviceTranslationService;
     private final ModelMapper mapper;
 
     /**
@@ -80,6 +79,23 @@ public class AdviceController {
     }
 
     /**
+     * The controller which returns advice by id {@link Advice}.
+     *
+     * @return instance of {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     * */
+    @ApiOperation("Get advice by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{id}")
+    public AdviceVO getById(@PathVariable Long id) {
+        return adviceService.getAdviceById(id);
+    }
+
+    /**
      * The controller which saveAdviceAndAdviceTranslation {@link Advice}.
      *
      * @param advice {@link AdviceDto}
@@ -93,10 +109,8 @@ public class AdviceController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping
-    public ResponseEntity<List<AdviceTranslation>> save(@Valid @RequestBody AdvicePostDto advice) {
-        List<AdviceTranslation> response = mapper.map(adviceTranslationService.saveAdviceAndAdviceTranslation(advice),
-            new TypeToken<List<AdviceTranslation>>() {
-            }.getType());
+    public ResponseEntity<AdviceVO> save(@Valid @RequestBody AdvicePostDto advice) {
+        AdviceVO response = adviceService.save(advice);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

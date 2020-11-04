@@ -30,13 +30,13 @@ public interface AdviceService {
     LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language);
 
     /**
-     * Method find {@link AdviceDto} by id.
+     * Method find {@link AdviceVO} by id.
      *
      * @param id of {@link AdviceDto}
-     * @return {@link AdviceDto}
+     * @return {@link AdviceVO}
      * @author Vitaliy Dzen
      */
-    AdviceDto getAdviceById(Long id);
+    AdviceVO getAdviceById(Long id);
 
     /**
      * Method find {@link AdviceDto} by content.

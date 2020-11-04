@@ -13,10 +13,10 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -24,6 +24,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link HabitService}.
@@ -33,14 +35,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @AllArgsConstructor
 public class HabitServiceImpl implements HabitService {
+    private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final LanguageService languageService;
     private final FileService fileService;
-    private final HabitRepo habitRepo;
-    private final ModelMapper modelMapper;
     private final HabitAssignService habitAssignService;
     private final HabitFactService habitFactService;
     private final AdviceService adviceService;
+    private final ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
@@ -48,9 +50,9 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public HabitDto getByIdAndLanguageCode(Long id, String languageCode) {
         Habit habit = habitRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, languageCode)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + id));
         return modelMapper.map(habitTranslation, HabitDto.class);
     }
 
@@ -60,7 +62,7 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public HabitManagementDto getById(Long id) {
         Habit habit = habitRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         return modelMapper.map(habit, HabitManagementDto.class);
     }
 
@@ -121,18 +123,16 @@ public class HabitServiceImpl implements HabitService {
         Habit habit = Habit.builder()
             .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
-                    .map(translationDto -> HabitTranslation.builder()
-                        .description(translationDto.getDescription())
-                        .habitItem(translationDto.getHabitItem())
-                        .name(translationDto.getName())
+                    .map(habitTranslationDto -> HabitTranslation.builder()
+                        .description(habitTranslationDto.getDescription())
+                        .habitItem(habitTranslationDto.getHabitItem())
+                        .name(habitTranslationDto.getName())
                         .language(modelMapper.map(
-                            languageService.findByCode(translationDto.getLanguageCode()),
+                            languageService.findByCode(habitTranslationDto.getLanguageCode()),
                             Language.class)).build())
                     .collect(Collectors.toList())
             ).build();
-        habit.getHabitTranslations().forEach(habitTranslation -> {
-            habitTranslation.setHabit(habit);
-        });
+        habit.getHabitTranslations().forEach(habitTranslation -> habitTranslation.setHabit(habit));
         return habit;
     }
 
@@ -144,13 +144,9 @@ public class HabitServiceImpl implements HabitService {
      * @param habit              {@link Habit} instance.
      */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-        if (!habitManagementDto.getImage().isEmpty()) {
-            image = fileService.convertToMultipartImage(habitManagementDto.getImage());
-        }
+        habit.setImage(habitManagementDto.getImage());
         if (image != null) {
             habit.setImage(fileService.upload(image).toString());
-        } else {
-            habit.setImage("");
         }
     }
 
@@ -163,21 +159,38 @@ public class HabitServiceImpl implements HabitService {
         Habit habit = habitRepo.findById(habitManagementDto.getId())
             .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
 
-        habit.getHabitTranslations()
-            .forEach(ht -> {
-                HabitTranslationManagementDto htmd = habitManagementDto.getHabitTranslations().stream()
-                    .filter(e -> e.getLanguageCode().equals(ht.getLanguage().getCode())).findFirst()
-                    .orElseThrow(RuntimeException::new);
-
-                ht.setDescription(htmd.getDescription());
-                ht.setHabitItem(htmd.getHabitItem());
-                ht.setName(htmd.getName());
-            });
-        habit.setImage(habitManagementDto.getImage());
+        Map<String, HabitTranslationManagementDto> translationDtoMap = getMapTranslationsDtos(habitManagementDto);
+        habit.getHabitTranslations().forEach(
+            ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguage().getCode()), ht));
 
         uploadImageForHabit(habitManagementDto, image, habit);
 
         habitRepo.save(habit);
+    }
+
+    /**
+     * Method updates {@link HabitTranslation} with {@link HabitTranslationManagementDto} fields.
+     *
+     * @param htDto {@link HabitTranslationManagementDto} instance.
+     * @param ht    {@link HabitTranslation} instance.
+     */
+    private void enhanceTranslationWithDto(HabitTranslationManagementDto htDto, HabitTranslation ht) {
+        ht.setDescription(htDto.getDescription());
+        ht.setHabitItem(htDto.getHabitItem());
+        ht.setName(htDto.getName());
+    }
+
+    /**
+     * Method returns map with {@link HabitTranslationManagementDto} as a value and it's {@link String}
+     * language code as a key.
+     *
+     * @param habitManagementDto {@link HabitManagementDto} instance.
+     * @return {@link Map} with {@link String} key and {@link HabitTranslationManagementDto} instance value.
+     */
+    private Map<String, HabitTranslationManagementDto> getMapTranslationsDtos(HabitManagementDto habitManagementDto) {
+        return habitManagementDto.getHabitTranslations().stream()
+            .collect(Collectors.toMap(HabitTranslationManagementDto::getLanguageCode,
+                Function.identity()));
     }
 
     /**

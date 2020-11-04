@@ -1,6 +1,8 @@
 package greencity.repository;
 
 import greencity.DaoApplication;
+import greencity.entity.Advice;
+import greencity.entity.Translation;
 import greencity.entity.localization.AdviceTranslation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +12,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.NoSuchElementException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,33 +43,62 @@ class AdviceTranslationRepoTest {
     void getRandomAdviceTranslationByHabitIdAndLanguageNotFound() {
         Long habitId = 1L;
         String languageCode = "en";
-        Optional<AdviceTranslation> expected = Optional.empty();
-        Optional<AdviceTranslation> actual = adviceTranslationRepo
+        Optional<AdviceTranslation> actual = Optional.empty();
+        Optional<AdviceTranslation> expected = adviceTranslationRepo
                 .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId);
 
         assertEquals(expected, actual);
     }
 
     @Test
-    void findAdviceTranslationByLanguageCodeAndAdvice() {
+    void findAdviceTranslationByLanguageCodeAndContent() {
         String languageCode = "en";
         String content = "Hello";
-        AdviceTranslation actual = adviceTranslationRepo
+        AdviceTranslation expected = adviceTranslationRepo
                 .findAdviceTranslationByLanguageCodeAndContent(languageCode, content).get();
 
-        assertEquals(2L, actual.getId());
-        assertEquals(2L, actual.getAdvice().getId());
-        assertEquals(2L, actual.getLanguage().getId());
+        assertEquals(2L, expected.getId());
+        assertEquals(2L, expected.getAdvice().getId());
+        assertEquals(2L, expected.getLanguage().getId());
     }
 
     @Test
-    void findAdviceTranslationByLanguageCodeAndAdviceNotFound() {
+    void findAdviceTranslationByLanguageCodeAndContentNotFound() {
         String languageCode = "en";
         String content = "World";
-        Optional<AdviceTranslation> expected = Optional.empty();
-        Optional<AdviceTranslation> actual = adviceTranslationRepo
+        Optional<AdviceTranslation> actual = Optional.empty();
+        Optional<AdviceTranslation> expected = adviceTranslationRepo
                 .findAdviceTranslationByLanguageCodeAndContent(languageCode, content);
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void findAll() {
+        List<AdviceTranslation> actual = ModelUtils.getAdviceTranslations();
+        List<AdviceTranslation> expected = adviceTranslationRepo.findAll();
+
+        List<Long> actualIds = actual.stream().map(Translation::getId).collect(Collectors.toList());
+        List<Long> expectedIds = expected.stream().map(Translation::getId).collect(Collectors.toList());
+
+        assertEquals(expected.size(), 3);
+        assertEquals(expectedIds, actualIds);
+    }
+
+    @Test
+    void deleteAllByAdvice() {
+        Advice advice = ModelUtils.getAdvice();
+        AdviceTranslation secondAdviceTranslation = ModelUtils.getAdviceTranslationSecond();
+        AdviceTranslation thirdAdviceTranslation = ModelUtils.getAdviceTranslationThird();
+        adviceTranslationRepo.deleteAllByAdvice(advice);
+
+        List<AdviceTranslation> actual = List.of(secondAdviceTranslation, thirdAdviceTranslation);
+        List<AdviceTranslation> expected = adviceTranslationRepo.findAll();
+
+        List<Long> actualIds = actual.stream().map(Translation::getId).collect(Collectors.toList());
+        List<Long> expectedIds = expected.stream().map(Translation::getId).collect(Collectors.toList());
+
+        assertEquals(expected.size(), 2);
+        assertEquals(expectedIds, actualIds);
     }
 }

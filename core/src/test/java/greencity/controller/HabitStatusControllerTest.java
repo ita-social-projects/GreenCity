@@ -30,7 +30,7 @@ class HabitStatusControllerTest {
     @InjectMocks
     HabitStatusController habitStatusController;
 
-    private static final String habitStatusLink = "/habit/status";
+    private static final String habitStatusLink = "/habit";
 
     @BeforeEach
     void setUp() {
@@ -40,17 +40,24 @@ class HabitStatusControllerTest {
     }
 
     @Test
-    void getHabitStatusForUser() throws Exception {
-        mockMvc.perform(get(habitStatusLink + "/{habitAssignId}", 1))
+    void getHabitStatusByHabitAssignId() throws Exception {
+        mockMvc.perform(get(habitStatusLink + "/assign/{id}/status", 1))
                 .andExpect(status().isOk());
         verify(habitStatusService).findStatusByHabitAssignId(1L);
     }
 
     @Test
+    void getHabitStatusByHabitId() throws Exception {
+        mockMvc.perform(get(habitStatusLink + "/{id}/status", 1))
+            .andExpect(status().isOk());
+        verify(habitStatusService).findActiveStatusByHabitIdAndUserId(1L, 1L);
+    }
+
+    @Test
     void enrollHabit() throws Exception {
-        mockMvc.perform(post(habitStatusLink + "/enroll/{habitAssignId}", 1))
+        mockMvc.perform(post(habitStatusLink + "/{id}/status/enroll", 1))
                 .andExpect(status().isOk());
-        verify(habitStatusService).enrollHabit(1L);
+        verify(habitStatusService).enrollHabit(1L, 1L);
     }
 
     @Test
@@ -59,7 +66,7 @@ class HabitStatusControllerTest {
         habitStatusForUpdateDto.setHabitStreak(1);
         habitStatusForUpdateDto.setWorkingDays(5);
         habitStatusForUpdateDto.setLastEnrollmentDate(LocalDateTime.parse("2020-10-10T16:03:01.652"));
-        mockMvc.perform(patch(habitStatusLink + "/{habitAssignId}", 1)
+        mockMvc.perform(put(habitStatusLink + "/{id}/status", 1)
                 .content("{\n" +
                         "  \"habitStreak\": 1,\n" +
                         "  \"lastEnrollmentDate\": \"2020-10-10T16:03:01.652\",\n" +
@@ -67,6 +74,6 @@ class HabitStatusControllerTest {
                         "}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        verify(habitStatusService).update(1L, habitStatusForUpdateDto);
+        verify(habitStatusService).update(1L, 1L, habitStatusForUpdateDto);
     }
 }

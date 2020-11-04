@@ -8,6 +8,7 @@ import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
 import greencity.enums.HabitRate;
@@ -15,6 +16,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -37,6 +39,8 @@ class HabitStatisticServiceImplTest {
     @Mock
     HabitAssignRepo habitAssignRepo;
     @Mock
+    HabitRepo habitRepo;
+    @Mock
     ModelMapper modelMapper;
     @Mock
     DateService dateService;
@@ -49,71 +53,101 @@ class HabitStatisticServiceImplTest {
 
     private AddHabitStatisticDto addhs = AddHabitStatisticDto
         .builder().amountOfItems(10).habitRate(HabitRate.GOOD)
-        .habitAssignId(1L).createDate(ZonedDateTime.now()).build();
+        .createDate(ZonedDateTime.now()).build();
+
+    private Habit habit = ModelUtils.getHabit();
 
     private HabitStatisticDto habitStatisticDto =
         HabitStatisticDto.builder().id(1L).amountOfItems(10).habitRate(HabitRate.GOOD)
             .habitAssign(HabitAssignDto.builder().id(1L).build()).createDate(zonedDateTime).build();
 
-    private HabitStatistic habitStatistic = HabitStatistic.builder()
-        .id(1L).habitRate(HabitRate.GOOD).createDate(zonedDateTime)
-        .amountOfItems(10).habitAssign(null).build();
+    private HabitStatistic habitStatistic = ModelUtils.getHabitStatistic();
 
-    private HabitAssign habitAssign = HabitAssign.builder().id(1L)
-        .acquired(true).createDate(zonedDateTime)
-        .suspended(true).habitStatistic(Collections.singletonList(habitStatistic)).build();
+    private HabitAssign habitAssign = ModelUtils.getHabitAssign();
 
     private List<HabitStatistic> habitStatistics = Collections.singletonList(habitStatistic);
 
     private List<HabitStatisticDto> habitStatisticDtos = Collections.singletonList(habitStatisticDto);
 
     @Test
-    void saveTest() {
-        when(habitStatisticRepo.findHabitAssignStatByDate(addhs.getCreateDate(),
-            addhs.getHabitAssignId())).thenReturn(Optional.empty());
+    void saveByHabitIdAndCorrectUserIdTest() {
+        when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
+            1L, 1L)).thenReturn(Optional.empty());
         when(dateService.convertToDatasourceTimezone(addhs.getCreateDate())).thenReturn(zonedDateTime);
         when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
-        when(habitAssignRepo.findById(addhs.getHabitAssignId())).thenReturn(Optional.of(habitAssign));
+
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(habitStatisticRepo.save(habitStatistic)).thenReturn(habitStatistic);
         when(modelMapper.map(habitStatistic, HabitStatisticDto.class)).thenReturn(habitStatisticDto);
 
-        HabitStatisticDto actual = habitStatisticService.save(addhs);
+        HabitStatisticDto actual = habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs);
         assertEquals(habitStatisticDto, actual);
     }
 
     @Test
     void saveExceptionTest() {
-        when(habitStatisticRepo.findHabitAssignStatByDate(addhs.getCreateDate(),
-            addhs.getHabitAssignId())).thenReturn(Optional.of(new HabitStatistic()));
+        when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
+            1L, 1L)).thenReturn(Optional.of(new HabitStatistic()));
         assertThrows(NotSavedException.class, () ->
-            habitStatisticService.save(addhs)
+            habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs)
         );
     }
 
     @Test
+    void saveExceptionWrongHabitAssignTest() {
+        when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
+            1L, 1L)).thenReturn(Optional.empty());
+        when(dateService.convertToDatasourceTimezone(addhs.getCreateDate())).thenReturn(zonedDateTime);
+        when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
+            .thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () ->
+            habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
+        }
+
+    @Test
     void saveExceptionBadRequestTest() {
-        when(habitStatisticRepo.findHabitAssignStatByDate(addhs.getCreateDate(),
-            addhs.getHabitAssignId())).thenReturn(Optional.empty());
+        when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
+            1L, 1L)).thenReturn(Optional.empty());
         when(dateService.convertToDatasourceTimezone(addhs.getCreateDate()))
             .thenReturn(zonedDateTime.plusDays(2));
 
         assertThrows(BadRequestException.class, () ->
-            habitStatisticService.save(addhs)
+            habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs)
         );
     }
 
     @Test
     void updateTest() {
+        habitStatistic.setHabitAssign(habitAssign);
         UpdateHabitStatisticDto updateHabitStatisticDto = new UpdateHabitStatisticDto();
-
         when(habitStatisticRepo.findById(1L)).thenReturn(Optional.of(habitStatistic));
         when(habitStatisticRepo.save(habitStatistic)).thenReturn(habitStatistic);
         when(modelMapper.map(habitStatistic, UpdateHabitStatisticDto.class))
             .thenReturn(updateHabitStatisticDto);
-
         UpdateHabitStatisticDto actual =
-            habitStatisticService.update(1L, updateHabitStatisticDto);
+            habitStatisticService.update(1L, 1L, updateHabitStatisticDto);
         assertEquals(updateHabitStatisticDto, actual);
+    }
+
+    @Test
+    void updateStatNotFoundExceptionTest() {
+        habitStatistic.setHabitAssign(habitAssign);
+        UpdateHabitStatisticDto updateHabitStatisticDto = new UpdateHabitStatisticDto();
+        when(habitStatisticRepo.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () ->
+            habitStatisticService.update(1L, 1L, updateHabitStatisticDto)
+        );
+    }
+
+    @Test
+    void updateNotPresentForUserStatTest() {
+        habitStatistic.setHabitAssign(habitAssign);
+        habitAssign.getUser().setId(2L);
+        UpdateHabitStatisticDto updateHabitStatisticDto = new UpdateHabitStatisticDto();
+        when(habitStatisticRepo.findById(1L)).thenReturn(Optional.of(habitStatistic));
+        assertThrows(BadRequestException.class,
+            () -> habitStatisticService.update(1L, 1L, updateHabitStatisticDto));
     }
 
     @Test
@@ -126,7 +160,6 @@ class HabitStatisticServiceImplTest {
     @Test
     void findByIdExceptionTest() {
         when(habitStatisticRepo.findById(1L)).thenReturn(Optional.empty());
-
         assertThrows(NotFoundException.class, () ->
             habitStatisticService.findById(1L)
         );
@@ -134,22 +167,37 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void findAllStatsByHabitAssignIdTest() {
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
         when(habitStatisticRepo.findAllByHabitAssignId(1L)).thenReturn(habitStatistics);
         when(modelMapper.map(habitStatistics, new TypeToken<List<HabitStatisticDto>>() {
         }.getType())).thenReturn(habitStatisticDtos);
-
         List<HabitStatisticDto> actual = habitStatisticService.findAllStatsByHabitAssignId(1L);
         assertEquals(habitStatisticDtos, actual);
     }
 
     @Test
+    void findAllStatsByWrongHabitAssignIdTest() {
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () ->
+            habitStatisticService.findAllStatsByHabitAssignId(1L)
+        );
+    }
+
+    @Test
     void findAllStatsByHabitId() {
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(habitStatistics);
         when(modelMapper.map(habitStatistics, new TypeToken<List<HabitStatisticDto>>() {
         }.getType())).thenReturn(habitStatisticDtos);
-
         List<HabitStatisticDto> actual = habitStatisticService.findAllStatsByHabitId(1L);
         assertEquals(habitStatisticDtos, actual);
+    }
+
+    @Test
+    void findAllStatsByWrongHabitId() {
+        when(habitRepo.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () ->
+            habitStatisticService.findAllStatsByHabitId(1L));
     }
 
     @Test
