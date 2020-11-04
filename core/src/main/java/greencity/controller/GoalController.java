@@ -89,7 +89,7 @@ public class GoalController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PutMapping("/{Id}")
+    @PutMapping("/{id}")
     public ResponseEntity<List<LanguageTranslationDTO>> update(
         @Valid @RequestBody GoalPostDto goalPostDto) {
         List<LanguageTranslationDTO> response = mapper.map(goalService.update(goalPostDto),
@@ -110,7 +110,7 @@ public class GoalController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @DeleteMapping("/{goalId}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long goalId) {
         goalService.delete(goalId);
         return ResponseEntity.ok().build();

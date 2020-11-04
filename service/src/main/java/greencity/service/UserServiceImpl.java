@@ -376,26 +376,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-<<<<<<< HEAD:core/src/main/java/greencity/service/impl/UserServiceImpl.java
-=======
-     * Method save user goals with custom goal dictionary.
-     *
-     * @param userVO        {@link UserVO} current user
-     * @param customGoals list {@link UserCustomGoalDto} for saving
-     * @author Bogdan Kuzenko
-     */
-    private void saveCustomGoalsForUserGoals(UserVO userVO, List<UserCustomGoalDto> customGoals) {
-        User user = modelMapper.map(userVO, User.class);
-        for (UserCustomGoalDto el1 : customGoals) {
-            UserGoal userGoal = modelMapper.map(el1, UserGoal.class);
-            userGoal.setUser(user);
-            user.getUserGoals().add(userGoal);
-        }
-        userGoalRepo.saveAll(user.getUserGoals());
-    }
-
-    /**
->>>>>>> dev:service/src/main/java/greencity/service/UserServiceImpl.java
      * {@inheritDoc}
      *
      * @author Bogdan Kuzenko
@@ -439,7 +419,7 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
-            if (userGoal.getStatus().equals(GoalStatus.ACTIVE)) {
+            if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
                 userGoal.setStatus(GoalStatus.DONE);
                 userGoal.setDateCompleted(LocalDateTime.now());
                 userGoalRepo.save(userGoal);

@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.goal.*;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Goal;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.GoalNotFoundException;
@@ -43,16 +44,17 @@ public class GoalServiceImpl implements GoalService {
     }
 
     private List<GoalTranslationVO> saveTranslations(GoalPostDto goalPostDto, Goal goal) {
-        List<GoalTranslationVO> list = modelMapper.map(goalPostDto.getTranslations(),
-            new TypeToken<List<GoalTranslationVO>>() {
-            }.getType());
-        list.forEach(a -> a.setGoal(modelMapper.map(goal, GoalVO.class)));
-        List<GoalTranslation> collect = modelMapper.map(list,
-            new TypeToken<List<GoalTranslation>>() {
-            }.getType());
-        List<GoalTranslation> save = goalTranslationRepo.saveAll(collect);
-        return modelMapper.map(save, new TypeToken<List<GoalTranslationVO>>() {
-        }.getType());
+//        List<GoalTranslationVO> list = modelMapper.map(goalPostDto.getTranslations(),
+//            new TypeToken<List<GoalTranslationVO>>() {
+//            }.getType());
+//        list.forEach(a -> a.setGoal(modelMapper.map(goal, GoalVO.class)));
+//        List<GoalTranslation> collect = modelMapper.map(goalPostDto,
+//            new TypeToken<List<GoalTranslation>>() {
+//            }.getType());
+//        List<GoalTranslation> save = goalTranslationRepo.saveAll(collect);
+//        return modelMapper.map(save, new TypeToken<List<GoalTranslationVO>>() {
+//        }.getType());
+        return null;
     }
 
     @Override
@@ -71,7 +73,6 @@ public class GoalServiceImpl implements GoalService {
     @Override
     public void delete(Long goalId) {
         try {
-            goalRepo.findById(goalId);
             goalRepo.deleteById(goalId);
         } catch (Exception e) {
             throw new GoalNotFoundException("goal doesn`t exist");
