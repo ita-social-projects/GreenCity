@@ -70,8 +70,9 @@ public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
      */
     @Modifying
     @Query(value = "DELETE FROM HabitStatus hs "
-        + "WHERE hs.habitAssign.user.id = :userId AND hs.habitAssign.habit.id = :habitId "
-        + "AND hs.habitAssign.suspended = false")
+        + "WHERE hs.habitAssign.id in (SELECT ha.id FROM HabitAssign ha WHERE ha.user.id = :userId "
+        + "AND ha.habit.id = :habitId "
+        + "AND ha.suspended = false)")
     void deleteByUserIdAndHabitId(@Param("userId") Long userId, @Param("habitId") Long habitId);
 
     /**
@@ -82,9 +83,10 @@ public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
      */
     @Modifying
     @Query(value = "DELETE FROM HabitStatus hs "
-        + "WHERE hs.habitAssign.user.id = :userId AND hs.habitAssign.habit.id = :habitId "
-        + "AND cast(hs.habitAssign.createDate as date) = cast(:dateTime as date) "
-        + "AND hs.habitAssign.suspended = false")
+        + "WHERE hs.habitAssign.id in (SELECT ha.id FROM HabitAssign ha WHERE ha.user.id = :userId "
+        + "AND ha.habit.id = :habitId "
+        + "AND ha.suspended = false "
+        + "AND cast(ha.createDate as date) = cast(:dateTime as date))")
     void deleteByUserIdAndHabitIdAndCreateDate(@Param("userId") Long userId,
                                                @Param("habitId") Long habitId,
                                                @Param("dateTime") ZonedDateTime dateTime);

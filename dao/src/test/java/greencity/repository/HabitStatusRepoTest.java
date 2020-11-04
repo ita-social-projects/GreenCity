@@ -1,24 +1,30 @@
 package greencity.repository;
 
-import greencity.DaoApplication;
+import greencity.containers.TestPostgresContainer;
 import greencity.entity.HabitStatus;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @DataJpaTest
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = DaoApplication.class)
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@TestPropertySource(value = {
+    "classpath:posgresql-test.properties"})
 @Sql("classpath:sql/habit_status.sql")
 class HabitStatusRepoTest {
+    @Container
+    private static final TestPostgresContainer POSTGRE_SQL_CONTAINER =
+         TestPostgresContainer.getInstance();
+
     @Autowired
     HabitStatusRepo habitStatusRepo;
 
