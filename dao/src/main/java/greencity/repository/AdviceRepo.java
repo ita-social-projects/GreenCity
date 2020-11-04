@@ -13,7 +13,6 @@ import  org.springframework.data.domain.Pageable;
 
 @Repository
 public interface AdviceRepo extends JpaRepository<Advice, Long> {
-
     /**
      * Method finds all {@link Advice}'s and also fetches {@link AdviceTranslation} and {@link Habit}.
      *
@@ -34,12 +33,12 @@ public interface AdviceRepo extends JpaRepository<Advice, Long> {
      * @return list of {@link Advice}'s
      * @author Markiyan Derevetskyi
      * */
-    @Query(value = "select distinct a from Advice a join fetch a.translations as at " +
-            "where concat(a.id, '') like lower(concat(:query, '')) " +
-            "or concat(a.habit.id, '') like lower(concat(:query, '')) " +
-            "or concat(at.id, '') like lower(concat(:query, '')) " +
-            "or lower(at.language.code) like lower(concat('%', :query, '%')) " +
-            "or lower(at.content) like lower(concat('%', :query, '%'))",
+    @Query(value = "select distinct a from Advice a join fetch a.translations as at "
+            + "where concat(a.id, '') like lower(concat(:query, '')) "
+            + "or concat(a.habit.id, '') like lower(concat(:query, '')) "
+            + "or concat(at.id, '') like lower(concat(:query, '')) "
+            + "or lower(at.language.code) like lower(concat('%', :query, '%')) "
+            + "or lower(at.content) like lower(concat('%', :query, '%'))",
             countQuery = "select count(a) from Advice a"
     )
     Page<Advice> searchBy(Pageable pageable, String query);

@@ -84,7 +84,7 @@
                                     <tbody>
                                     <th:block th:each="translation : ${pageable.getPage().get(iterStatus.index).getTranslations()}">
                                         <tr>
-                                            <td class="py-1 text-right" th:text="1">1</td>
+                                            <td class="py-1 text-right" th:text="${translation.getId()}"></td>
                                             <td class="py-1" th:text="${translation.getContent()}"></td>
                                             <td class="py-1" th:text="${translation.getLanguage().getCode()}"></td>
                                         </tr>

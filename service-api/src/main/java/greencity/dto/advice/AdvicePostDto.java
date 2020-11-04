@@ -5,7 +5,6 @@ import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import lombok.*;
 
