@@ -72,7 +72,7 @@ public class HabitStatusController {
     /**
      * Method to enroll {@link HabitStatusVO}.
      *
-     * @param id -  id of {@link HabitVO}.
+     * @param id - id of {@link HabitVO}.
      * @return {@link HabitStatusDto}.
      */
     @ApiOperation(value = "Enroll by habit id that is assigned for current user.")
@@ -84,7 +84,7 @@ public class HabitStatusController {
     })
     @PostMapping("/{id}/status/enroll")
     public ResponseEntity<HabitStatusDto> enrollHabit(@PathVariable Long id,
-                                                      @ApiIgnore @CurrentUser UserVO userVO) {
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatusService.enrollHabit(id, userVO.getId()));
     }
 
@@ -104,9 +104,8 @@ public class HabitStatusController {
     })
     @PostMapping("/{id}/status/unenroll/{date}")
     public ResponseEntity<HabitStatusDto> unenrollHabit(@PathVariable Long id,
-                                                        @ApiIgnore @CurrentUser UserVO userVO,
-                                                        @PathVariable(value = "date")
-                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         habitStatusService.unenrollHabit(id, userVO.getId(), date);
         return ResponseEntity.ok().build();
     }
@@ -127,16 +126,15 @@ public class HabitStatusController {
     })
     @PostMapping("/{id}/status/enroll/{date}")
     public ResponseEntity<HabitStatusDto> enrollHabitInDate(@PathVariable Long id,
-                                                            @ApiIgnore @CurrentUser UserVO userVO,
-                                                            @PathVariable(value = "date")
-                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                                                LocalDate date) {
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitStatusService.enrollHabitInDate(id, userVO.getId(), date));
     }
 
     /**
-     * Method to update {@link HabitStatusVO} for {@link HabitAssignVO} by {@link HabitVO}'s id.
+     * Method to update {@link HabitStatusVO} for {@link HabitAssignVO} by
+     * {@link HabitVO}'s id.
      *
      * @param id - id of {@link HabitVO}.
      * @return {@link HabitStatusDto}.

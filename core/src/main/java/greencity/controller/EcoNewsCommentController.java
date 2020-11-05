@@ -47,8 +47,8 @@ public class EcoNewsCommentController {
     })
     @PostMapping("{econewsId}")
     public ResponseEntity<AddEcoNewsCommentDtoResponse> save(@PathVariable Long econewsId,
-                                                             @Valid @RequestBody AddEcoNewsCommentDtoRequest request,
-                                                             @ApiIgnore @CurrentUser UserVO user) {
+        @Valid @RequestBody AddEcoNewsCommentDtoRequest request,
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(ecoNewsCommentService.save(econewsId, request, user));
@@ -68,8 +68,8 @@ public class EcoNewsCommentController {
     @GetMapping("")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAll(@ApiIgnore Pageable pageable,
-                                                                  Long ecoNewsId,
-                                                                  @ApiIgnore @CurrentUser UserVO user) {
+        Long ecoNewsId,
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllComments(pageable, user, ecoNewsId));
@@ -92,7 +92,8 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to get all replies to {@link EcoNewsCommentVO} specified by parentCommentId.
+     * Method to get all replies to {@link EcoNewsCommentVO} specified by
+     * parentCommentId.
      *
      * @param parentCommentId specifies parent comment to all replies
      * @return Pageable of {@link EcoNewsCommentDto} replies
@@ -104,8 +105,8 @@ public class EcoNewsCommentController {
     @GetMapping("replies/{parentCommentId}")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllReplies(@ApiIgnore Pageable pageable,
-                                                                         @PathVariable Long parentCommentId,
-                                                                         @ApiIgnore @CurrentUser UserVO user) {
+        @PathVariable Long parentCommentId,
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllReplies(pageable, parentCommentId, user));
@@ -207,7 +208,8 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to get all active comments to {@link EcoNewsVO} specified by ecoNewsId.
+     * Method to get all active comments to {@link EcoNewsVO} specified by
+     * ecoNewsId.
      *
      * @param ecoNewsId id of {@link EcoNewsVO}
      * @return Pageable of {@link EcoNewsCommentDto}
@@ -221,14 +223,15 @@ public class EcoNewsCommentController {
     @GetMapping("/active")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
-                                                                               Long ecoNewsId,
-                                                                               @ApiIgnore @CurrentUser UserVO user) {
+        Long ecoNewsId,
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
+            .body(ecoNewsCommentService.getAllActiveComments(pageable, user, ecoNewsId));
     }
 
     /**
-     * Method to get all active replies to {@link EcoNewsCommentVO} specified by parentCommentId.
+     * Method to get all active replies to {@link EcoNewsCommentVO} specified by
+     * parentCommentId.
      *
      * @param parentCommentId specifies parent comment to all replies
      * @return Pageable of {@link EcoNewsCommentDto} replies
@@ -241,8 +244,8 @@ public class EcoNewsCommentController {
     @GetMapping("replies/active/{parentCommentId}")
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAllActiveReplies(@ApiIgnore Pageable pageable,
-                                                                               @PathVariable Long parentCommentId,
-                                                                               @ApiIgnore @CurrentUser UserVO user) {
+        @PathVariable Long parentCommentId,
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllActiveReplies(pageable, parentCommentId, user));

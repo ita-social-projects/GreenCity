@@ -22,8 +22,8 @@ public class FavoritePlaceController {
     private final FavoritePlaceService favoritePlaceService;
 
     /**
-     * Update {@link FavoritePlaceVO} name for {@link UserVO}.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * Update {@link FavoritePlaceVO} name for {@link UserVO}. Parameter principal
+     * are ignored because Spring automatically provide the Principal object.
      *
      * @param favoritePlaceDto - dto for {@link FavoritePlaceVO} entity
      * @param principal        - Principal with user email
@@ -32,15 +32,15 @@ public class FavoritePlaceController {
      */
     @PutMapping
     public ResponseEntity<FavoritePlaceDto> update(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
-                                                   @ApiIgnore Principal principal) {
+        @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
             .update(favoritePlaceDto, principal.getName()));
     }
 
     /**
-     * Find all {@link FavoritePlaceVO} by {@link UserVO} email.
-     * Parameter principal are ignored because Spring automatically provide the Principal object
-     * .
+     * Find all {@link FavoritePlaceVO} by {@link UserVO} email. Parameter principal
+     * are ignored because Spring automatically provide the Principal object .
+     * 
      * @param principal - Principal with {@link UserVO} email
      * @return list of {@link FavoritePlaceDto}
      * @author Zakhar Skaletskyi
@@ -51,10 +51,10 @@ public class FavoritePlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(principal.getName()));
     }
 
-
     /**
      * Delete {@link FavoritePlaceVO} by {@link UserVO} email and {@link PlaceVO} id
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * Parameter principal are ignored because Spring automatically provide the
+     * Principal object.
      *
      * @param placeId   - {@link PlaceVO} id
      * @param principal - Principal with {@link UserVO} email
@@ -63,14 +63,15 @@ public class FavoritePlaceController {
      */
     @DeleteMapping("/{placeId}")
     public ResponseEntity<Long> deleteByUserEmailAndPlaceId(@PathVariable Long placeId,
-                                                            @ApiIgnore Principal principal) {
+        @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
             .deleteByUserEmailAndPlaceId(placeId, principal.getName()));
     }
 
     /**
-     * Controller to get {@link FavoritePlaceVO} coordinates, id and name.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * Controller to get {@link FavoritePlaceVO} coordinates, id and name. Parameter
+     * principal are ignored because Spring automatically provide the Principal
+     * object.
      *
      * @param placeId   - {@link PlaceVO} id
      * @param principal - Principal with {@link UserVO} email
@@ -78,8 +79,8 @@ public class FavoritePlaceController {
      * @author Zakhar Skaletskyi
      */
     @GetMapping("/favorite/{placeId}")
-    public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@PathVariable Long placeId, @ApiIgnore
-                                                                           Principal principal) {
+    public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@PathVariable Long placeId,
+        @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
             .getFavoritePlaceWithLocation(placeId, principal.getName()));
     }

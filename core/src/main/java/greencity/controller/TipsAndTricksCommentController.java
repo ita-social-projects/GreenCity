@@ -54,16 +54,16 @@ public class TipsAndTricksCommentController {
     })
     @PostMapping("{tipsAndTricksId}")
     public ResponseEntity<AddTipsAndTricksCommentDtoResponse> save(@PathVariable Long tipsAndTricksId,
-                                                                   @Valid @RequestBody
-                                                                       AddTipsAndTricksCommentDtoRequest request,
-                                                                   @ApiIgnore @CurrentUser UserVO userVO) {
+        @Valid @RequestBody AddTipsAndTricksCommentDtoRequest request,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(tipsAndTricksCommentService.save(tipsAndTricksId, request, userVO));
     }
 
     /**
-     * Method to get all comments to {@link TipsAndTricksVO} specified by tipsAndTricksId.
+     * Method to get all comments to {@link TipsAndTricksVO} specified by
+     * tipsAndTricksId.
      *
      * @param tipsAndTricksId id of {@link TipsAndTricksVO}
      * @return Pageable of {@link TipsAndTricksCommentDto}
@@ -76,8 +76,8 @@ public class TipsAndTricksCommentController {
     @GetMapping("")
     @ApiPageable
     public ResponseEntity<PageableDto<TipsAndTricksCommentDto>> findAll(@ApiIgnore Pageable pageable,
-                                                                        Long tipsAndTricksId,
-                                                                        @ApiIgnore @CurrentUser UserVO userVO) {
+        Long tipsAndTricksId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(tipsAndTricksCommentService.findAllComments(pageable, userVO, tipsAndTricksId));
@@ -100,7 +100,8 @@ public class TipsAndTricksCommentController {
     }
 
     /**
-     * Method to get all replies to {@link TipsAndTricksCommentVO} specified by parentCommentId.
+     * Method to get all replies to {@link TipsAndTricksCommentVO} specified by
+     * parentCommentId.
      *
      * @param parentCommentId specifies parent comment to all replies
      * @return list of {@link TipsAndTricksCommentDto} replies
@@ -151,7 +152,8 @@ public class TipsAndTricksCommentController {
     }
 
     /**
-     * Method to like/dislike certain {@link TipsAndTricksCommentVO} specified by id.
+     * Method to like/dislike certain {@link TipsAndTricksCommentVO} specified by
+     * id.
      *
      * @param id of {@link TipsAndTricksCommentVO} to like/dislike
      */

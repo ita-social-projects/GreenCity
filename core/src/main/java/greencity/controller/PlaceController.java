@@ -109,8 +109,9 @@ public class PlaceController {
     }
 
     /**
-     * The method to get {@code FavoritePlace}. as {@code Place} info.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * The method to get {@code FavoritePlace}. as {@code Place} info. Parameter
+     * principal are ignored because Spring automatically provide the Principal
+     * object.
      *
      * @param placeId - {@code Place} id
      * @return info about {@code Place} with name as in {@code FavoritePlace}
@@ -130,7 +131,8 @@ public class PlaceController {
 
     /**
      * The method to save {@link PlaceVO} to {@link UserVO}'s favorite list.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * Parameter principal are ignored because Spring automatically provide the
+     * Principal object.
      *
      * @param favoritePlaceDto -{@link FavoritePlaceDto}
      * @return principal - user e,ail
@@ -151,8 +153,8 @@ public class PlaceController {
     }
 
     /**
-     * The method which return a list {@code PlaceByBoundsDto} with information about place,
-     * location depends on the map bounds.
+     * The method which return a list {@code PlaceByBoundsDto} with information
+     * about place, location depends on the map bounds.
      *
      * @param filterPlaceDto Contains South-West and North-East bounds of map .
      * @return a list of {@code PlaceByBoundsDto}
@@ -174,13 +176,14 @@ public class PlaceController {
     }
 
     /**
-     * The method parse the string param to PlaceStatus value.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * The method parse the string param to PlaceStatus value. Parameter pageable
+     * ignored because swagger ui shows the wrong params, instead they are explained
+     * in the {@link ApiPageable}.
      *
      * @param status   a string represents {@link PlaceStatus} enum value.
      * @param pageable pageable configuration.
-     * @return response {@link PageableDto} object. Contains a list of {@link AdminPlaceDto}.
+     * @return response {@link PageableDto} object. Contains a list of
+     *         {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
     @ApiOperation(value = "Get places by status(APPROVED, PROPOSED, DECLINED, DELETED).")
@@ -225,8 +228,10 @@ public class PlaceController {
     /**
      * The method which update {@link PlaceVO} status.
      *
-     * @param dto - {@link UpdatePlaceStatusDto} with place id and updated {@link PlaceStatus}.
-     * @return response object with {@link UpdatePlaceStatusDto} and OK status if everything is ok.
+     * @param dto - {@link UpdatePlaceStatusDto} with place id and updated
+     *            {@link PlaceStatus}.
+     * @return response object with {@link UpdatePlaceStatusDto} and OK status if
+     *         everything is ok.
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Update status of place")
@@ -244,9 +249,9 @@ public class PlaceController {
 
     /**
      * The method which return a list {@link PageableDto} filtered by values
-     * contained in the incoming {@link FilterPlaceDto} object.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * contained in the incoming {@link FilterPlaceDto} object. Parameter pageable
+     * ignored because swagger ui shows the wrong params, instead they are explained
+     * in the {@link ApiPageable}.
      *
      * @param filterDto contains all information about the filtering of the list.
      * @param pageable  pageable configuration.
@@ -293,8 +298,10 @@ public class PlaceController {
     /**
      * The method which update array of {@link PlaceVO}'s from DB.
      *
-     * @param dto - {@link BulkUpdatePlaceStatusDto} with {@link PlaceVO}'s id's and updated {@link PlaceStatus}
-     * @return list of {@link UpdatePlaceStatusDto} with updated {@link PlaceVO}'s and {@link PlaceStatus}'s
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with {@link PlaceVO}'s id's and
+     *            updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated {@link PlaceVO}'s
+     *         and {@link PlaceStatus}'s
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Bulk update place statuses")
@@ -330,7 +337,8 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete {@link PlaceVO} from DB(change {@link PlaceStatus} to DELETED).
+     * The method which delete {@link PlaceVO} from DB(change {@link PlaceStatus} to
+     * DELETED).
      *
      * @param id - {@link PlaceVO} id
      * @author Nazar Vladyka
@@ -349,9 +357,11 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete array of {@link PlaceVO}'s from DB(change {@link PlaceStatus} to DELETED).
+     * The method which delete array of {@link PlaceVO}'s from DB(change
+     * {@link PlaceStatus} to DELETED).
      *
-     * @param ids - list of id's of {@link PlaceVO}'s, splited by "," which need to be deleted
+     * @param ids - list of id's of {@link PlaceVO}'s, splited by "," which need to
+     *            be deleted
      * @return count of deleted {@link PlaceVO}'s
      * @author Nazar Vladyka
      */
@@ -364,8 +374,7 @@ public class PlaceController {
     })
     @DeleteMapping
     public ResponseEntity<Long> bulkDelete(
-        @ApiParam(value = "Ids of places separated by a comma \n e.g. 1,2", required = true)
-        @RequestParam String ids) {
+        @ApiParam(value = "Ids of places separated by a comma \n e.g. 1,2", required = true) @RequestParam String ids) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.bulkDelete(Arrays.stream(ids.split(","))
             .map(Long::valueOf)
             .collect(Collectors.toList())));

@@ -43,7 +43,7 @@ public class HabitAssignController {
     })
     @PostMapping("/assign/{id}")
     public ResponseEntity<HabitAssignDto> assign(@PathVariable Long id,
-                                                 @ApiIgnore @CurrentUser UserVO userVO) {
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignHabitForUser(id, userVO));
     }
@@ -81,7 +81,7 @@ public class HabitAssignController {
     })
     @GetMapping("/{id}/assign/all")
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long id,
-                                                                                       @RequestParam Boolean acquired) {
+        @RequestParam Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(id, acquired));
     }
@@ -109,7 +109,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to update active {@link HabitAssignVO} for it's {@link HabitVO} id and current user.
+     * Method to update active {@link HabitAssignVO} for it's {@link HabitVO} id and
+     * current user.
      *
      * @param userVO             {@link UserVO} instance.
      * @param id                 {@link HabitVO} id.

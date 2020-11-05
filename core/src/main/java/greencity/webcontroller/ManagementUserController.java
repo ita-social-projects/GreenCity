@@ -40,10 +40,11 @@ public class ManagementUserController {
      */
     @GetMapping
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
-                              Model model) {
+        Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
         PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
-            ? userService.findUserForManagementByPage(paging) : userService.searchBy(paging, query);
+            ? userService.findUserForManagementByPage(paging)
+            : userService.searchBy(paging, query);
         model.addAttribute("users", pageableDto);
         return "core/management_user";
     }
@@ -95,8 +96,8 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for setting {@link UserVO}'s status to DEACTIVATED,
-     * so the user will not be able to log in into the system.
+     * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
+     * not be able to log in into the system.
      *
      * @param id of the searched {@link UserVO}.
      * @author Vasyl Zhovnir
@@ -120,10 +121,11 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for setting to a list of {@link UserVO} status DEACTIVATED,
-     * so the users will not be able to log in into the system.
+     * Method for setting to a list of {@link UserVO} status DEACTIVATED, so the
+     * users will not be able to log in into the system.
      *
-     * @param listId {@link List} populated with ids of {@link UserVO} to be deleted.
+     * @param listId {@link List} populated with ids of {@link UserVO} to be
+     *               deleted.
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivateAll")

@@ -51,8 +51,8 @@ public class UserController {
     private final HabitStatisticService habitStatisticService;
 
     /**
-     * The method which update user status.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * The method which update user status. Parameter principal are ignored because
+     * Spring automatically provide the Principal object.
      *
      * @param userStatusDto - dto with updated filed.
      * @return {@link UserStatusDto}
@@ -75,8 +75,8 @@ public class UserController {
     }
 
     /**
-     * The method which update user role.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * The method which update user role. Parameter principal are ignored because
+     * Spring automatically provide the Principal object.
      *
      * @param userRoleDto - dto with updated field.
      * @return {@link UserRoleDto}
@@ -99,9 +99,9 @@ public class UserController {
     }
 
     /**
-     * The method which return list of users by page.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * The method which return list of users by page. Parameter pageable ignored
+     * because swagger ui shows the wrong params, instead they are explained in the
+     * {@link ApiPageable}.
      *
      * @param pageable - pageable configuration.
      * @return list of {@link PageableDto}
@@ -155,9 +155,9 @@ public class UserController {
     }
 
     /**
-     * The method which return list of users by filter.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * The method which return list of users by filter. Parameter pageable ignored
+     * because swagger ui shows the wrong params, instead they are explained in the
+     * {@link ApiPageable}.
      *
      * @param filterUserDto dto which contains fields with filter criteria.
      * @param pageable      - pageable configuration.
@@ -212,7 +212,7 @@ public class UserController {
     })
     @PatchMapping
     public ResponseEntity<UserUpdateDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
-                                                    @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
     }
@@ -233,8 +233,7 @@ public class UserController {
     @GetMapping("/{userId}/goals")
     @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -276,8 +275,7 @@ public class UserController {
     @PostMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> saveUserCustomGoals(
         @Valid @RequestBody BulkSaveCustomGoalDto dto,
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(customGoalService.save(dto, userId));
@@ -300,7 +298,7 @@ public class UserController {
     })
     @PatchMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> updateBulk(@PathVariable @CurrentUserId Long userId,
-                                                                  @Valid @RequestBody BulkCustomGoalDto dto) {
+        @Valid @RequestBody BulkCustomGoalDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customGoalService.updateBulk(dto));
     }
@@ -321,8 +319,8 @@ public class UserController {
     })
     @DeleteMapping("/{userId}/customGoals")
     public ResponseEntity<List<Long>> bulkDeleteCustomGoals(
-        @ApiParam(value = "Ids of custom goals separated by a comma \n e.g. 1,2", required = true)
-        @RequestParam String ids,
+        @ApiParam(value = "Ids of custom goals separated by a comma \n e.g. 1,2",
+            required = true) @RequestParam String ids,
         @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(customGoalService.bulkDelete(ids));
     }
@@ -343,8 +341,7 @@ public class UserController {
     @GetMapping("/{userId}/goals/available")
     @ApiLocale
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -365,13 +362,11 @@ public class UserController {
     })
     @GetMapping("/{userId}/customGoals/available")
     public ResponseEntity<List<CustomGoalResponseDto>> getAvailableCustomGoals(
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getAvailableCustomGoals(userId));
     }
-
 
     /**
      * Method updates goal status.
@@ -389,10 +384,8 @@ public class UserController {
     @PatchMapping("/{userId}/goals/{goalId}")
     @ApiLocale
     public ResponseEntity<UserGoalResponseDto> updateUserGoalStatus(
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId,
-        @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
-        @PathVariable Long goalId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.") @PathVariable Long goalId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -417,8 +410,7 @@ public class UserController {
     @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
         @Valid @RequestBody BulkSaveUserGoalDto dto,
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -463,9 +455,9 @@ public class UserController {
     })
     @DeleteMapping("/{userId}/userGoals")
     public ResponseEntity<List<Long>> bulkDeleteUserGoals(
-        @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true)
-        @Pattern(regexp = "^\\d+(,\\d+)*$", message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS)
-        @RequestParam String ids,
+        @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true) @Pattern(
+            regexp = "^\\d+(,\\d+)*$",
+            message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS) @RequestParam String ids,
         @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService
             .deleteUserGoals(ids));
@@ -491,7 +483,7 @@ public class UserController {
     }
 
     /**
-     * Update user profile picture  {@link UserVO}.
+     * Update user profile picture {@link UserVO}.
      *
      * @return {@link ResponseEntity}.
      * @author Datsko Marian
@@ -506,20 +498,17 @@ public class UserController {
     @PatchMapping(path = "/profilePicture",
         consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<HttpStatus> updateUserProfilePicture(
-        @ApiParam(value = SwaggerExampleModel.USER_PROFILE_PICTURE_DTO, required = true)
-        @RequestPart UserProfilePictureDto userProfilePictureDto,
-        @ApiParam(value = "Profile picture")
-        @ImageValidation
-        @RequestPart(required = false) MultipartFile image,
-        @ApiIgnore
-        @AuthenticationPrincipal Principal principal) {
+        @ApiParam(value = SwaggerExampleModel.USER_PROFILE_PICTURE_DTO,
+            required = true) @RequestPart UserProfilePictureDto userProfilePictureDto,
+        @ApiParam(value = "Profile picture") @ImageValidation @RequestPart(required = false) MultipartFile image,
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.updateUserProfilePicture(image, email, userProfilePictureDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
-     * Delete user profile picture  {@link UserVO}.
+     * Delete user profile picture {@link UserVO}.
      *
      * @return {@link ResponseEntity}.
      */
@@ -531,8 +520,8 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping(path = "/deleteProfilePicture")
-    public ResponseEntity<HttpStatus> deleteUserProfilePicture(@ApiIgnore
-                                                               @AuthenticationPrincipal Principal principal) {
+    public ResponseEntity<HttpStatus> deleteUserProfilePicture(
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         userService.deleteUserProfilePicture(email);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -554,10 +543,8 @@ public class UserController {
     })
     @DeleteMapping("/{userId}/userFriend/{friendId}")
     public ResponseEntity<Object> deleteUserFriend(
-        @ApiParam("Id friend of current user. Cannot be empty.")
-        @PathVariable Long friendId,
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         userService.deleteUserFriendById(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -577,10 +564,8 @@ public class UserController {
     })
     @PostMapping("/{userId}/userFriend/{friendId}")
     public ResponseEntity<Object> addNewFriend(
-        @ApiParam("Id friend of current user. Cannot be empty.")
-        @PathVariable Long friendId,
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         userService.addNewFriend(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -599,8 +584,7 @@ public class UserController {
     })
     @GetMapping("/{userId}/sixUserFriends/")
     public ResponseEntity<List<UserProfilePictureDto>> getSixFriendsWithTheHighestRating(
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getSixFriendsWithTheHighestRating(userId));
@@ -622,8 +606,7 @@ public class UserController {
     })
     @PutMapping(path = "/profile")
     public ResponseEntity<UserProfileDtoResponse> save(
-        @ApiParam(required = true)
-        @RequestBody @Valid UserProfileDtoRequest userProfileDtoRequest,
+        @ApiParam(required = true) @RequestBody @Valid UserProfileDtoRequest userProfileDtoRequest,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             userService.saveUserProfile(userProfileDtoRequest, principal.getName()));
@@ -643,8 +626,7 @@ public class UserController {
     })
     @GetMapping("/{userId}/profile/")
     public ResponseEntity<UserProfileDtoResponse> getUserProfileInformation(
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getUserProfileInformation(userId));
@@ -664,8 +646,7 @@ public class UserController {
     })
     @GetMapping("isOnline/{userId}/")
     public ResponseEntity<Boolean> checkIfTheUserIsOnline(
-        @ApiParam("Id of the user. Cannot be empty.")
-        @PathVariable Long userId) {
+        @ApiParam("Id of the user. Cannot be empty.") @PathVariable Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.checkIfTheUserIsOnline(userId));
@@ -685,8 +666,7 @@ public class UserController {
     })
     @GetMapping("/{userId}/profileStatistics/")
     public ResponseEntity<UserProfileStatisticsDto> getUserProfileStatistics(
-        @ApiParam("Id of current user. Cannot be empty.")
-        @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getUserProfileStatistics(userId));
@@ -706,7 +686,8 @@ public class UserController {
     }
 
     /**
-     * The method get all {@link UserVO}s with online status for the current user-id.
+     * The method get all {@link UserVO}s with online status for the current
+     * user-id.
      *
      * @return {@link UserAndAllFriendsWithOnlineStatusDto}.
      * @author Zhurakovskyi Yurii

@@ -46,7 +46,7 @@ public class ManagementPlacesController {
      */
     @GetMapping("")
     public String getAllPlaces(@RequestParam(required = false, name = "query") String query, Model model,
-                               @ApiIgnore Pageable pageable) {
+        @ApiIgnore Pageable pageable) {
         PageableDto<AdminPlaceDto> allPlaces =
             query == null || query.isEmpty() ? placeService.findAll(pageable) : placeService.searchBy(pageable, query);
         model.addAttribute("pageable", allPlaces);
@@ -71,14 +71,14 @@ public class ManagementPlacesController {
      * Method which saves {@link PlaceVO}.
      *
      * @param placeAddDto dto with info for registering place.
-     * @param user  {@link UserVO} is an admin
+     * @param user        {@link UserVO} is an admin
      * @return {@link GenericResponseDto}
      */
     @PostMapping
     @ResponseBody
     public GenericResponseDto savePlace(@Valid @RequestBody PlaceAddDto placeAddDto,
-                                        BindingResult bindingResult,
-                                        @ApiIgnore @CurrentUser UserVO user) {
+        BindingResult bindingResult,
+        @ApiIgnore @CurrentUser UserVO user) {
         if (!bindingResult.hasErrors()) {
             placeService.save(placeAddDto, user.getEmail());
         }
@@ -94,7 +94,7 @@ public class ManagementPlacesController {
     @ResponseBody
     @PutMapping
     public GenericResponseDto updatePlace(@Valid @RequestBody PlaceUpdateDto placeUpdateDto,
-                                          BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             placeService.update(placeUpdateDto);
         }
@@ -126,4 +126,3 @@ public class ManagementPlacesController {
             .body(listId);
     }
 }
-

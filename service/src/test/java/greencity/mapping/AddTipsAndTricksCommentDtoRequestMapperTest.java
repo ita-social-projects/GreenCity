@@ -13,10 +13,11 @@ class AddTipsAndTricksCommentDtoRequestMapperTest {
     @Test
     void convertTest() {
         TipsAndTricksComment expected = TipsAndTricksComment.builder()
-                .id(1L)
-                .text("TipsAndTricksComment")
-                .build();
-        AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest = ModelUtils.getAddTipsAndTricksCommentDtoRequest();
+            .id(1L)
+            .text("TipsAndTricksComment")
+            .build();
+        AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest =
+            ModelUtils.getAddTipsAndTricksCommentDtoRequest();
         TipsAndTricksComment actual = mapper.convert(addTipsAndTricksCommentDtoRequest);
         actual.setId(1L);
         assertEquals(expected, actual);

@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration that is used for managing RabbitMQ-related settings.
- * It is responsible for exchanges and queues declarations as well as
- * binding them together.
+ * Configuration that is used for managing RabbitMQ-related settings. It is
+ * responsible for exchanges and queues declarations as well as binding them
+ * together.
  */
 @Configuration
 @EnableRabbit
@@ -34,10 +34,11 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * Queue that is used for sending password recovery emails.
-     * It is durable since password recovery is security related functionality.
+     * Queue that is used for sending password recovery emails. It is durable since
+     * password recovery is security related functionality.
      *
-     * @return durable queue that is meant for sending password recovery email letters.
+     * @return durable queue that is meant for sending password recovery email
+     *         letters.
      */
     @Bean
     public Queue passwordRecoveryEmailQueue() {
@@ -45,7 +46,8 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * The binding that is used for linking email topic exchange to password recovery email queue.
+     * The binding that is used for linking email topic exchange to password
+     * recovery email queue.
      *
      * @return Binding with topic exchange and password recovery queue linked.
      */
@@ -58,8 +60,8 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * Queue that is used for sending emails for finishing user approval.
-     * It is durable since user approval is security related functionality.
+     * Queue that is used for sending emails for finishing user approval. It is
+     * durable since user approval is security related functionality.
      *
      * @return durable queue that is meant for sending user approval email letters.
      */
@@ -69,7 +71,8 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * The binding that is used for linking email topic exchange to user approval queue.
+     * The binding that is used for linking email topic exchange to user approval
+     * queue.
      *
      * @return Binding with topic exchange and user approval queue linked.
      */
@@ -84,7 +87,8 @@ public class EmailServiceRabbitConfig {
     /**
      * Queue that is used for change place status emails.
      *
-     * @return durable queue that is meant for sending change place status email letters.
+     * @return durable queue that is meant for sending change place status email
+     *         letters.
      */
     @Bean
     public Queue changePlaceStatusEmailQueue() {
@@ -92,7 +96,8 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * The binding that is used for linking email topic exchange to change place status email queue.
+     * The binding that is used for linking email topic exchange to change place
+     * status email queue.
      *
      * @return Binding with topic exchange and change place status queue linked.
      */
@@ -105,7 +110,8 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * Queue, which stores messages for sending notification about adding new {@link EcoNewsVO}.
+     * Queue, which stores messages for sending notification about adding new
+     * {@link EcoNewsVO}.
      *
      * @return Queue, for sending notification about adding new {@link EcoNewsVO}.
      */
@@ -115,11 +121,13 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * Method, that bind {@link this#ecoNewsEmailQueue()} with {@link this#emailTopicExchange()}.
+     * Method, that bind {@link this#ecoNewsEmailQueue()} with
+     * {@link this#emailTopicExchange()}.
      *
      * @param emailTopicExchange exchange to bind queue with.
      * @param ecoNewsEmailQueue  queue to bind exchange with.
-     * @return binding with {@link this#ecoNewsEmailQueue()} and {@link this#emailTopicExchange()}.
+     * @return binding with {@link this#ecoNewsEmailQueue()} and
+     *         {@link this#emailTopicExchange()}.
      */
     @Bean
     public Binding ecoNewsQueueToEmailTopicBinding(TopicExchange emailTopicExchange, Queue ecoNewsEmailQueue) {
@@ -163,7 +171,8 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * The binding that is used for linking email topic exchange to send report email queue.
+     * The binding that is used for linking email topic exchange to send report
+     * email queue.
      *
      * @return Binding with topic exchange and send report queue linked.
      */
@@ -186,7 +195,8 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * The binding that is used for linking email topic exchange to send habit notification email queue.
+     * The binding that is used for linking email topic exchange to send habit
+     * notification email queue.
      *
      * @return Binding with topic exchange and send notification queue linked.
      */

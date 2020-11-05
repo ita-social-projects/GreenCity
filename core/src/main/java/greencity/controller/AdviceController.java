@@ -40,7 +40,8 @@ public class AdviceController {
     private final ModelMapper mapper;
 
     /**
-     * The controller which returns random {@link AdviceVO} by HabitDictionary adviceId.
+     * The controller which returns random {@link AdviceVO} by HabitDictionary
+     * adviceId.
      *
      * @param habitId HabitDictionary
      * @return {@link AdviceDto}
@@ -82,12 +83,12 @@ public class AdviceController {
      *
      * @return instance of {@link AdviceVO}
      * @author Markiyan Derevetskyi
-     * */
+     */
     @ApiOperation("Get advice by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{id}")
     public AdviceVO getById(@PathVariable Long id) {

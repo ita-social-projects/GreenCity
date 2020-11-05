@@ -2,7 +2,7 @@ package greencity.constant;
 
 public class ValidationConstants {
     public static final String BAD_COMMA_SEPARATED_NUMBERS =
-            "Non-empty string can contain numbers separated by a comma only";
+        "Non-empty string can contain numbers separated by a comma only";
     public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
     public static final int PLACE_ADDRESS_MAX_LENGTH = 120;
     public static final String EMPTY_VALUE_OF_LATITUDE = "{greenCity.validation.empty.latitude}";

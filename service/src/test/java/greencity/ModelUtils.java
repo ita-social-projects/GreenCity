@@ -204,8 +204,8 @@ public class ModelUtils {
             .habitStreak(5)
             .lastEnrollmentDate(LocalDateTime.now())
             .habitAssign(HabitAssign.builder()
-                    .id(1L)
-                    .build())
+                .id(1L)
+                .build())
             .habitStatusCalendars(
                 Collections.singletonList(getHabitStatusCalendar()))
             .build();
@@ -754,11 +754,11 @@ public class ModelUtils {
 
     public static AdviceTranslation getAdviceTranslation() {
         return AdviceTranslation.builder()
-                .id(1L)
-                .language(getLanguage())
-                .content("Text content")
-                .advice(getAdvice())
-                .build();
+            .id(1L)
+            .language(getLanguage())
+            .content("Text content")
+            .advice(getAdvice())
+            .build();
     }
 
     public static Advice getAdvice() {
@@ -770,18 +770,18 @@ public class ModelUtils {
         openingHoursTest.setOpenTime(getLocalTime());
         openingHoursTest.setCloseTime(getLocalTime());
         openingHoursTest.setBreakTime(BreakTime.builder()
-                .startTime(getLocalTime())
-                .endTime(getLocalTime())
-                .build());
+            .startTime(getLocalTime())
+            .endTime(getLocalTime())
+            .build());
         openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
         return openingHoursTest;
     }
 
     public static Location getLocation() {
         return Location.builder()
-                .address("address")
-                .lng(12.12d)
-                .lat(12.12d)
-                .build();
+            .address("address")
+            .lng(12.12d)
+            .lat(12.12d)
+            .build();
     }
 }
