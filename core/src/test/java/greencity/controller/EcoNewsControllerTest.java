@@ -1,9 +1,12 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
+import greencity.service.UserService;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -13,19 +16,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUserVO;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -38,12 +45,19 @@ class EcoNewsControllerTest {
     private EcoNewsService ecoNewsService;
     @Mock
     private TagsService tagsService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private ModelMapper modelMapper;
+
+    private Principal principal = getPrincipal();
 
     @BeforeEach
     public void setUp() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(ecoNewsController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
             .build();
     }
 
@@ -114,12 +128,14 @@ class EcoNewsControllerTest {
 
     @Test
     void deleteTest() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
         mockMvc.perform(delete(ecoNewsLink + "/{econewsId}", 1)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+            .principal(principal))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).delete(eq(1L));
+        verify(ecoNewsService).delete(1L, userVO);
     }
 
     @Test

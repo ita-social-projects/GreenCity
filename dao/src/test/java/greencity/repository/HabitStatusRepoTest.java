@@ -34,7 +34,7 @@ class HabitStatusRepoTest {
 
     @Test
     void findByUserIdAndHabitIdTest() {
-        HabitStatus habitStatus = habitStatusRepo.findByUserIdAndHabitId(2L,1L).get();
+        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(1L,2L).get();
         assertEquals(2L,habitStatus.getId());
     }
 }

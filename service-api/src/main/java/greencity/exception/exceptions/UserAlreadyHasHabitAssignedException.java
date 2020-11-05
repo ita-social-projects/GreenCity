@@ -1,6 +1,6 @@
 package greencity.exception.exceptions;
 
-public class UserAlreadyHasHabitAssignedException extends RuntimeException {
+public class UserAlreadyHasHabitAssignedException extends BadRequestException {
     /**
      * Constructor.
      */

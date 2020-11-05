@@ -32,6 +32,6 @@ public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
     @Query(value = "SELECT hs FROM HabitStatus hs "
         + "WHERE hs.habitAssign.user.id = :userId AND hs.habitAssign.habit.id = :habitId "
         + "AND hs.habitAssign.suspended = false")
-    Optional<HabitStatus> findByUserIdAndHabitId(@Param("userId") Long userId,
-                                                 @Param("habitId") Long habitId);
+    Optional<HabitStatus> findByHabitIdAndUserId(@Param("habitId") Long habitId,
+                                                 @Param("userId") Long userId);
 }

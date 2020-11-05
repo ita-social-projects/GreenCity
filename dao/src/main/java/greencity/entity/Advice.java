@@ -18,9 +18,9 @@ public class Advice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "advice", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "advice", fetch = FetchType.LAZY)
     private List<AdviceTranslation> translations;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;
 }

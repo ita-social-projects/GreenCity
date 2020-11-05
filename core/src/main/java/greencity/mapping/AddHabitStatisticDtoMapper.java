@@ -13,7 +13,6 @@ public class AddHabitStatisticDtoMapper extends AbstractConverter<HabitStatistic
             .amountOfItems(habitStatistic.getAmountOfItems())
             .createDate(habitStatistic.getCreateDate())
             .habitRate(habitStatistic.getHabitRate())
-            .habitAssignId(habitStatistic.getHabitAssign().getId())
             .build();
     }
 }

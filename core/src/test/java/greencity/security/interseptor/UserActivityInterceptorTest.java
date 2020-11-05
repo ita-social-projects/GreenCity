@@ -1,18 +1,14 @@
 package greencity.security.interseptor;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
+
 import greencity.security.interceptor.UserActivityInterceptor;
 import greencity.service.UserService;
-import java.security.Principal;
-import java.util.Date;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -22,6 +18,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
+import java.util.Date;
+import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -41,7 +42,6 @@ class UserActivityInterceptorTest {
     UserActivityInterceptor userActivityInterceptor;
 
     @Test
-    @Disabled
     void preHandleTest() throws Exception {
         Principal principal = mock(Principal.class);
         List<GrantedAuthority> authority = List.of(new SimpleGrantedAuthority("ROLE_USER"));
@@ -52,7 +52,6 @@ class UserActivityInterceptorTest {
         when(userService.findIdByEmail("test@mail.com")).thenReturn(1L);
         Date time = new Date();
         doNothing().when(userService).updateUserLastActivityTime(1L, time);
-        userActivityInterceptor.preHandle(request, response, handler);
-        verify(userService).updateUserLastActivityTime(1L, time);
+        assertTrue(userActivityInterceptor.preHandle(request, response, handler));
     }
 }

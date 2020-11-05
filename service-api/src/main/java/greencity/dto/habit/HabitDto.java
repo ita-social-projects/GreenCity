@@ -6,10 +6,8 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
 @Builder
+@Data
 public class HabitDto implements Serializable {
     private Long id;
     private String image;
