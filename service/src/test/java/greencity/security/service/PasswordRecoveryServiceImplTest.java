@@ -58,8 +58,7 @@ class PasswordRecoveryServiceImplTest {
     void sendPasswordRecoveryEmailToUserWithExistentRestorePasswordEmailTest() {
         String email = "foo";
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(
-            User.builder().restorePasswordEmail(new RestorePasswordEmail()).build()
-        ));
+            User.builder().restorePasswordEmail(new RestorePasswordEmail()).build()));
         Assertions
             .assertThrows(WrongEmailException.class, () -> passwordRecoveryService.sendPasswordRecoveryEmailTo(email));
     }
@@ -77,8 +76,8 @@ class PasswordRecoveryServiceImplTest {
             RestorePasswordEmail.builder()
                 .user(user)
                 .token(token)
-                .build(), "expiryDate"
-        ));
+                .build(),
+            "expiryDate"));
         verify(rabbitTemplate).convertAndSend(
             refEq(sendEmailTopic),
             refEq(PASSWORD_RECOVERY_ROUTING_KEY),
@@ -86,9 +85,7 @@ class PasswordRecoveryServiceImplTest {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                token
-            ))
-        );
+                token)));
     }
 
     @Test
@@ -109,8 +106,7 @@ class PasswordRecoveryServiceImplTest {
             RestorePasswordEmail.builder()
                 .expiryDate(LocalDateTime.now().minusHours(1))
                 .user(User.builder().email("foo@bar.com").build())
-                .build()
-        ));
+                .build()));
         Assertions
             .assertThrows(UserActivationEmailTokenExpiredException.class,
                 () -> passwordRecoveryService.updatePasswordUsingToken(token, newPassword));
@@ -126,18 +122,16 @@ class PasswordRecoveryServiceImplTest {
                 .expiryDate(LocalDateTime.now().plusHours(1))
                 .user(user)
                 .token(token)
-                .build()
-        ));
+                .build()));
         passwordRecoveryService.updatePasswordUsingToken(token, newPassword);
         verify(restorePasswordEmailRepo).delete(refEq(
             RestorePasswordEmail.builder()
                 .user(user)
                 .token(token)
-                .build(), "expiryDate"
-        ));
+                .build(),
+            "expiryDate"));
         verify(applicationEventPublisher).publishEvent(refEq(
-            new UpdatePasswordEvent(passwordRecoveryService.getClass(), newPassword, user.getId()), "timestamp"
-        ));
+            new UpdatePasswordEvent(passwordRecoveryService.getClass(), newPassword, user.getId()), "timestamp"));
     }
 
     @Test

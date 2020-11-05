@@ -22,4 +22,3 @@ public class BreakTimeDto {
     @ApiModelProperty(dataType = "java.lang.String")
     private LocalTime endTime;
 }
-

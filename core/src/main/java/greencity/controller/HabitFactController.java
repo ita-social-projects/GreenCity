@@ -62,7 +62,8 @@ public class HabitFactController {
      * The controller which return today's {@link HabitFact} of the day.
      *
      * @param languageId id of language to display the {@link HabitFact}.
-     * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of the day.
+     * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of the
+     *         day.
      */
     @ApiOperation("Get habit fact of the day")
     @ApiResponses(value = {
@@ -73,11 +74,9 @@ public class HabitFactController {
     })
     @GetMapping("/dayFact/{languageId}")
     public LanguageTranslationDTO getHabitFactOfTheDay(
-        @PathVariable Long languageId
-    ) {
+        @PathVariable Long languageId) {
         return habitFactTranslationService.getHabitFactOfTheDay(languageId);
     }
-
 
     /**
      * The controller which returns all {@link HabitFact}.
@@ -95,7 +94,7 @@ public class HabitFactController {
     @GetMapping
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<LanguageTranslationDTO>> getAll(@ApiIgnore Pageable page,
-                                                                      @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(habitFactService.getAllHabitFacts(page, locale.getLanguage()));
     }
 

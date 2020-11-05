@@ -87,72 +87,70 @@ class UserServiceImplTest {
     SocialNetworkImageService socialNetworkImageService;
 
     private User user = User.builder()
-            .id(1L)
-            .name("Test Testing")
-            .email("test@gmail.com")
-            .role(ROLE.ROLE_USER)
-            .userStatus(ACTIVATED)
-            .emailNotification(EmailNotification.DISABLED)
-            .lastVisit(LocalDateTime.of(2020, 10, 10, 20,10,10))
-            .dateOfRegistration(LocalDateTime.now())
-            .socialNetworks(new ArrayList<>())
-            .build();
+        .id(1L)
+        .name("Test Testing")
+        .email("test@gmail.com")
+        .role(ROLE.ROLE_USER)
+        .userStatus(ACTIVATED)
+        .emailNotification(EmailNotification.DISABLED)
+        .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
+        .dateOfRegistration(LocalDateTime.now())
+        .socialNetworks(new ArrayList<>())
+        .build();
 
     private UserVO userVO = UserVO.builder()
-                    .id(1L)
-                    .name("Test Testing")
-                    .email("test@gmail.com")
-                    .role(ROLE.ROLE_USER)
-                    .userStatus(ACTIVATED)
-                    .emailNotification(EmailNotification.DISABLED)
-                    .lastVisit(LocalDateTime.of(2020, 10, 10, 20,10,10))
-                    .dateOfRegistration(LocalDateTime.now())
-                    .socialNetworks(new ArrayList<>())
-                    .build();
+        .id(1L)
+        .name("Test Testing")
+        .email("test@gmail.com")
+        .role(ROLE.ROLE_USER)
+        .userStatus(ACTIVATED)
+        .emailNotification(EmailNotification.DISABLED)
+        .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
+        .dateOfRegistration(LocalDateTime.now())
+        .socialNetworks(new ArrayList<>())
+        .build();
     private User user2 = User.builder()
+        .id(2L)
+        .name("Test Testing")
+        .email("test@gmail.com")
+        .role(ROLE.ROLE_MODERATOR)
+        .userStatus(ACTIVATED)
+        .emailNotification(EmailNotification.DISABLED)
+        .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
+        .dateOfRegistration(LocalDateTime.now())
+        .build();
+    private UserVO userVO2 =
+        UserVO.builder()
             .id(2L)
             .name("Test Testing")
             .email("test@gmail.com")
             .role(ROLE.ROLE_MODERATOR)
             .userStatus(ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
-            .lastVisit(LocalDateTime.of(2020, 10, 10, 20,10,10))
+            .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
             .dateOfRegistration(LocalDateTime.now())
             .build();
-    private UserVO userVO2 =
-            UserVO.builder()
-                    .id(2L)
-                    .name("Test Testing")
-                    .email("test@gmail.com")
-                    .role(ROLE.ROLE_MODERATOR)
-                    .userStatus(ACTIVATED)
-                    .emailNotification(EmailNotification.DISABLED)
-                    .lastVisit(LocalDateTime.of(2020, 10, 10, 20,10,10))
-                    .dateOfRegistration(LocalDateTime.now())
-                    .build();
-    /*private Habit habit =
-        Habit.builder()
-            .id(1L)
-            .habitDictionary(new HabitDictionary())
-            .statusHabit(true)
-            .createDate(ZonedDateTime.now())
-            .build();*/
+    /*
+     * private Habit habit = Habit.builder() .id(1L) .habitDictionary(new
+     * HabitDictionary()) .statusHabit(true) .createDate(ZonedDateTime.now())
+     * .build();
+     */
     private String language = "uk";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
-            GoalTranslation.builder()
+        GoalTranslation.builder()
             .id(1L)
             .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
             .content("TEST")
             .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
             .build(),
-            GoalTranslation.builder()
-                    .id(2L)
-                    .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-                    .content("TEST")
-                    .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList()))
-                    .build());
+        GoalTranslation.builder()
+            .id(2L)
+            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+            .content("TEST")
+            .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList()))
+            .build());
     private Long userId = user.getId();
     private Long userId2 = user2.getId();
     private String userEmail = user.getEmail();
@@ -196,9 +194,7 @@ class UserServiceImplTest {
         when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        assertThrows(LowRoleLevelException.class, () ->
-            userService.updateStatus(userId, DEACTIVATED, "email")
-        );
+        assertThrows(LowRoleLevelException.class, () -> userService.updateStatus(userId, DEACTIVATED, "email"));
     }
 
     @Test
@@ -224,9 +220,7 @@ class UserServiceImplTest {
         when(userRepo.findByEmail(userEmail)).thenReturn(Optional.of(user));
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        assertThrows(BadUpdateRequestException.class, () ->
-            userService.updateRole(userId, null, userEmail)
-        );
+        assertThrows(BadUpdateRequestException.class, () -> userService.updateRole(userId, null, userEmail));
     }
 
     @Test
@@ -245,24 +239,18 @@ class UserServiceImplTest {
     @Test
     void findByIdBadIdTest() {
         when(userRepo.findById(any())).thenThrow(WrongIdException.class);
-        assertThrows(WrongIdException.class, () ->
-            userService.findById(1L)
-        );
+        assertThrows(WrongIdException.class, () -> userService.findById(1L));
     }
 
     @Test
     void deleteByIdExceptionBadIdTest() {
-        assertThrows(WrongIdException.class, () ->
-            userService.deleteById(1L)
-        );
+        assertThrows(WrongIdException.class, () -> userService.deleteById(1L));
     }
 
     @Test
     void deleteByNullIdExceptionTest() {
         when(userRepo.findById(1L)).thenThrow(new WrongIdException(""));
-        assertThrows(WrongIdException.class, () ->
-            userService.deleteById(1L)
-        );
+        assertThrows(WrongIdException.class, () -> userService.deleteById(1L));
     }
 
     @Test
@@ -285,9 +273,7 @@ class UserServiceImplTest {
     void findIdByEmailNotFound() {
         String email = "email";
 
-        assertThrows(WrongEmailException.class, () ->
-            userService.findIdByEmail(email)
-        );
+        assertThrows(WrongEmailException.class, () -> userService.findIdByEmail(email));
     }
 
     @Test
@@ -341,7 +327,6 @@ class UserServiceImplTest {
         assertNotEquals(localDateTime, userService.updateLastVisit(userVO).getLastVisit());
     }
 
-
     @Test
     void getUsersByFilter() {
         int pageNumber = 0;
@@ -368,7 +353,6 @@ class UserServiceImplTest {
 
         assertEquals(userPageableDto, userService.getUsersByFilter(filterUserDto, pageable));
     }
-
 
     @Test
     void getUserUpdateDtoByEmail() {
@@ -424,9 +408,7 @@ class UserServiceImplTest {
     @Test
     void getUserGoalsUserHasNoGoalTest() {
         when(userGoalRepo.findAllByUserId(userId)).thenReturn(Collections.emptyList());
-        assertThrows(UserHasNoGoalsException.class, () ->
-            userService.getUserGoals(userId, "en")
-        );
+        assertThrows(UserHasNoGoalsException.class, () -> userService.getUserGoals(userId, "en"));
     }
 
     @Test
@@ -440,9 +422,7 @@ class UserServiceImplTest {
     void updateUserGoalStatusWithNonExistentGoalIdTest() {
         user.setUserGoals(Collections.singletonList(new UserGoal(1L, null, null, null, null, null)));
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        assertThrows(UserGoalStatusNotUpdatedException.class, () ->
-            userService.updateUserGoalStatus(userId, 2L, "en")
-        );
+        assertThrows(UserGoalStatusNotUpdatedException.class, () -> userService.updateUserGoalStatus(userId, 2L, "en"));
         verifyNoInteractions(userGoalRepo);
     }
 
@@ -607,92 +587,78 @@ class UserServiceImplTest {
         verify(modelMapper).map(userCustomGoalDto, UserGoal.class);
     }
 
-    /*@Test
-    void deleteUserGoalsWithValidInputIdsTest() {
-        UserServiceImpl userServiceSpy = PowerMockito.spy(userService);
-        UserGoal userGoalToDelete = new UserGoal(1L, null, null, null, null, null);
-        when(userGoalRepo.findById(anyLong())).thenReturn(Optional.of(userGoalToDelete));
-        PowerMockito.doNothing().when(userGoalRepo).delete(userGoalToDelete);
-        List<Long> deletedGoals = userServiceSpy.deleteUserGoals("1,2,3");
-        ArrayList<Long> expectedDeletedGoals = new ArrayList<>(3);
-        expectedDeletedGoals.add(1L);
-        expectedDeletedGoals.add(2L);
-        expectedDeletedGoals.add(3L);
-        assertEquals(deletedGoals, expectedDeletedGoals);
-    }*/
+    /*
+     * @Test void deleteUserGoalsWithValidInputIdsTest() { UserServiceImpl
+     * userServiceSpy = PowerMockito.spy(userService); UserGoal userGoalToDelete =
+     * new UserGoal(1L, null, null, null, null, null);
+     * when(userGoalRepo.findById(anyLong())).thenReturn(Optional.of(
+     * userGoalToDelete));
+     * PowerMockito.doNothing().when(userGoalRepo).delete(userGoalToDelete);
+     * List<Long> deletedGoals = userServiceSpy.deleteUserGoals("1,2,3");
+     * ArrayList<Long> expectedDeletedGoals = new ArrayList<>(3);
+     * expectedDeletedGoals.add(1L); expectedDeletedGoals.add(2L);
+     * expectedDeletedGoals.add(3L); assertEquals(deletedGoals,
+     * expectedDeletedGoals); }
+     */
 
     @Test
     void getAvailableGoalsNoAvailableGoalsTest() {
         when(goalTranslationRepo.findAvailableByUserId(userId, language)).thenReturn(Collections.emptyList());
-        assertThrows(UserHasNoAvailableGoalsException.class, () ->
-            userService.getAvailableGoals(userId, language)
-        );
+        assertThrows(UserHasNoAvailableGoalsException.class, () -> userService.getAvailableGoals(userId, language));
     }
 
-    /*@Test
-    void getAvailableHabitDictionaryNoAvailable() {
-        when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L, "en"))
-            .thenReturn(Collections.emptyList());
-        assertThrows(UserHasNoAvailableHabitDictionaryException.class, () ->
-            userService.getAvailableHabitDictionary(userId, "en")
-        );
-    }
-
-    @Test
-    void createUserHabitTest() {
-        when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.emptyList());
-        when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.emptyList());
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        assertEquals(Collections.emptyList(),
-            userService.createUserHabit(userId, Collections.emptyList(), anyString()));
-    }
-
-    @Test
-    void createUserHabitWithEmptyDtoIdListAndNotEmptyUserHabitsTest() {
-        when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.singletonList(new Habit()));
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        assertEquals(Collections.emptyList(), userService.createUserHabit(userId, Collections.emptyList(), "en"));
-    }
-
-    @Test
-    void createUserHabitWithExistentHabitIdsNotMatchingTest() {
-        when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections
-            .singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null, null)));
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(habitDictionaryService.findById(1L)).thenReturn(new HabitDictionary(1L, null, null, null));
-        when(modelMapper.map(user, Habit.class))
-            .thenReturn(new Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null, null));
-        assertEquals(Collections.emptyList(),
-            userService.createUserHabit(userId, Collections.singletonList(new HabitIdDto(2L)), "en"));
-    }
-
-    @Test
-    void createUserHabitWithExistentHabitTest() {
-        when(habitRepo.findByUserIdAndStatusHabit(userId))
-            .thenReturn(
-                Collections.singletonList(
-                    Habit.builder()
-                        .habitDictionary(HabitDictionary.builder().id(1L).build())
-                        .build()
-                )
-            );
-
-        List<HabitIdDto> dto = Collections.singletonList(new HabitIdDto(1L));
-
-        assertThrows(WrongIdException.class, () ->
-            userService.createUserHabit(userId, dto, "en")
-        );
-        verify(habitRepo, times(0)).saveAll(any());
-    }
-
-    @Test
-    void addDefaultHabitTest() {
-        when(modelMapper.map(user, Habit.class)).thenReturn(new Habit());
-        when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.emptyList());
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        userService.addDefaultHabit(userId, "en");
-        verify(habitRepo, times(1)).saveAll(Collections.singletonList(new Habit()));
-    }*/
+    /*
+     * @Test void getAvailableHabitDictionaryNoAvailable() {
+     * when(habitDictionaryTranslationRepo.findAvailableHabitDictionaryByUser(1L,
+     * "en")) .thenReturn(Collections.emptyList());
+     * assertThrows(UserHasNoAvailableHabitDictionaryException.class, () ->
+     * userService.getAvailableHabitDictionary(userId, "en") ); }
+     * 
+     * @Test void createUserHabitTest() {
+     * when(habitRepo.saveAll(Collections.emptyList())).thenReturn(Collections.
+     * emptyList());
+     * when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.
+     * emptyList()); when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+     * assertEquals(Collections.emptyList(), userService.createUserHabit(userId,
+     * Collections.emptyList(), anyString())); }
+     * 
+     * @Test void createUserHabitWithEmptyDtoIdListAndNotEmptyUserHabitsTest() {
+     * when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.
+     * singletonList(new Habit()));
+     * when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+     * assertEquals(Collections.emptyList(), userService.createUserHabit(userId,
+     * Collections.emptyList(), "en")); }
+     * 
+     * @Test void createUserHabitWithExistentHabitIdsNotMatchingTest() {
+     * when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections
+     * .singletonList(new Habit(1L, new HabitDictionary(1L, null, null, null), null,
+     * null, null, null, null)));
+     * when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+     * when(habitDictionaryService.findById(1L)).thenReturn(new HabitDictionary(1L,
+     * null, null, null)); when(modelMapper.map(user, Habit.class)) .thenReturn(new
+     * Habit(1L, new HabitDictionary(1L, null, null, null), null, null, null, null,
+     * null)); assertEquals(Collections.emptyList(),
+     * userService.createUserHabit(userId, Collections.singletonList(new
+     * HabitIdDto(2L)), "en")); }
+     * 
+     * @Test void createUserHabitWithExistentHabitTest() {
+     * when(habitRepo.findByUserIdAndStatusHabit(userId)) .thenReturn(
+     * Collections.singletonList( Habit.builder()
+     * .habitDictionary(HabitDictionary.builder().id(1L).build()) .build() ) );
+     * 
+     * List<HabitIdDto> dto = Collections.singletonList(new HabitIdDto(1L));
+     * 
+     * assertThrows(WrongIdException.class, () ->
+     * userService.createUserHabit(userId, dto, "en") ); verify(habitRepo,
+     * times(0)).saveAll(any()); }
+     * 
+     * @Test void addDefaultHabitTest() { when(modelMapper.map(user,
+     * Habit.class)).thenReturn(new Habit());
+     * when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.
+     * emptyList()); when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+     * userService.addDefaultHabit(userId, "en"); verify(habitRepo,
+     * times(1)).saveAll(Collections.singletonList(new Habit())); }
+     */
 
     @Test
     void getAvailableCustomGoalsForUserWithNoGoalsTest() {
@@ -706,66 +672,50 @@ class UserServiceImplTest {
         when(modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(userId),
             new TypeToken<List<CustomGoalResponseDto>>() {
             }.getType()))
-            .thenReturn(customGoalsDtos);
+                .thenReturn(customGoalsDtos);
         assertNotNull(userService.getAvailableCustomGoals(userId));
         assertEquals(userService.getAvailableCustomGoals(userId), customGoalsDtos);
     }
 
-    /*@Test
-    void deleteHabitByUserIdAndHabitDictionaryEmptyHabitTest() {
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(WrongIdException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L)
-        );
-    }
-
-    @Test
-    void deleteHabitByUserIdAndHabitDictionaryNotDeletedExceptionTest() {
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(new Habit()));
-        when(habitRepo.countHabitByUserId(userId)).thenReturn(1);
-        assertThrows(NotDeletedException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L)
-        );
-    }
-
-    @Test
-    void deleteHabitByUserIdAndHabitDictionaryExceptionTest() {
-        assertThrows(WrongIdException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(null, 1L)
-        );
-    }
-
-    @Test
-    void deleteHabitByUserIdAndHabitDictionaryTest() {
-        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
-        when(habitRepo.countHabitByUserId(1L)).thenReturn(2);
-        when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(Collections.emptyList());
-        userService.deleteHabitByUserIdAndHabitDictionary(userId, habit.getId());
-        verify(habitRepo, times(1)).deleteById(habit.getId());
-    }
-
-    @Test
-    void deleteHabitByUserAndNullHabit() {
-        assertThrows(NotDeletedException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(userId, null)
-        );
-    }
-
-    @Test
-    void deleteHabitByNullUserAndNullHabit() {
-        assertThrows(NotDeletedException.class, () ->
-            userService.deleteHabitByUserIdAndHabitDictionary(null, null)
-        );
-    }
-
-    @Test
-    void deleteHabitByUserWithExistentHabits() {
-        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(habitStatisticRepo.findAllByHabitId(habit.getId())).thenReturn(Collections.singletonList(null));
-        when(habitRepo.countHabitByUserId(userId)).thenReturn(2);
-        userService.deleteHabitByUserIdAndHabitDictionary(userId, habit.getId());
-        verify(habitRepo).updateHabitStatusById(habit.getId(), false);
-    }*/
+    /*
+     * @Test void deleteHabitByUserIdAndHabitDictionaryEmptyHabitTest() {
+     * when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
+     * assertThrows(WrongIdException.class, () ->
+     * userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L) ); }
+     * 
+     * @Test void deleteHabitByUserIdAndHabitDictionaryNotDeletedExceptionTest() {
+     * when(habitRepo.findById(anyLong())).thenReturn(Optional.of(new Habit()));
+     * when(habitRepo.countHabitByUserId(userId)).thenReturn(1);
+     * assertThrows(NotDeletedException.class, () ->
+     * userService.deleteHabitByUserIdAndHabitDictionary(1L, 1L) ); }
+     * 
+     * @Test void deleteHabitByUserIdAndHabitDictionaryExceptionTest() {
+     * assertThrows(WrongIdException.class, () ->
+     * userService.deleteHabitByUserIdAndHabitDictionary(null, 1L) ); }
+     * 
+     * @Test void deleteHabitByUserIdAndHabitDictionaryTest() {
+     * when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+     * when(habitRepo.countHabitByUserId(1L)).thenReturn(2);
+     * when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(Collections.
+     * emptyList()); userService.deleteHabitByUserIdAndHabitDictionary(userId,
+     * habit.getId()); verify(habitRepo, times(1)).deleteById(habit.getId()); }
+     * 
+     * @Test void deleteHabitByUserAndNullHabit() {
+     * assertThrows(NotDeletedException.class, () ->
+     * userService.deleteHabitByUserIdAndHabitDictionary(userId, null) ); }
+     * 
+     * @Test void deleteHabitByNullUserAndNullHabit() {
+     * assertThrows(NotDeletedException.class, () ->
+     * userService.deleteHabitByUserIdAndHabitDictionary(null, null) ); }
+     * 
+     * @Test void deleteHabitByUserWithExistentHabits() {
+     * when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+     * when(habitStatisticRepo.findAllByHabitId(habit.getId())).thenReturn(
+     * Collections.singletonList(null));
+     * when(habitRepo.countHabitByUserId(userId)).thenReturn(2);
+     * userService.deleteHabitByUserIdAndHabitDictionary(userId, habit.getId());
+     * verify(habitRepo).updateHabitStatusById(habit.getId(), false); }
+     */
 
     @Test
     void getActivatedUsersAmountTest() {
@@ -776,9 +726,7 @@ class UserServiceImplTest {
 
     @Test
     void getProfilePicturePathByUserIdNotFoundExceptionTest() {
-        assertThrows(NotFoundException.class, () ->
-            userService.getProfilePicturePathByUserId(1L)
-        );
+        assertThrows(NotFoundException.class, () -> userService.getProfilePicturePathByUserId(1L));
     }
 
     @Test
@@ -806,16 +754,14 @@ class UserServiceImplTest {
     void updateUserProfilePictureNotUpdatedExceptionTest() {
         UserProfilePictureDto userProfilePictureDto = ModelUtils.getUserProfilePictureDto();
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
-        assertThrows(BadRequestException.class, () ->
-            userService.updateUserProfilePicture(null, "testmail@gmail.com", userProfilePictureDto)
-        );
+        assertThrows(BadRequestException.class,
+            () -> userService.updateUserProfilePicture(null, "testmail@gmail.com", userProfilePictureDto));
     }
 
     @Test
     void deleteUserFriendByIdCheckRepeatingValueExceptionTest() {
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
-        assertThrows(CheckRepeatingValueException.class, () ->
-            userService.deleteUserFriendById(1L, 1L));
+        assertThrows(CheckRepeatingValueException.class, () -> userService.deleteUserFriendById(1L, 1L));
     }
 
     @Test
@@ -824,7 +770,8 @@ class UserServiceImplTest {
         List<UserVO> listVO = Collections.singletonList(userVO2);
         when(userRepo.getAllUserFriends(anyLong())).thenReturn(list);
         when(modelMapper.map(list,
-                new TypeToken<List<UserVO>>(){}.getType())).thenReturn(listVO);
+            new TypeToken<List<UserVO>>() {
+            }.getType())).thenReturn(listVO);
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user2));
         when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
         userService.deleteUserFriendById(userId, user2.getId());
@@ -835,49 +782,46 @@ class UserServiceImplTest {
     void deleteUserFriendByIdNotDeletedExceptionTest() {
         when(userRepo.getAllUserFriends(1L)).thenReturn(Collections.emptyList());
         when(modelMapper.map(Collections.emptyList(),
-                new TypeToken<List<UserVO>>(){}.getType())).thenReturn(Collections.emptyList());
+            new TypeToken<List<UserVO>>() {
+            }.getType())).thenReturn(Collections.emptyList());
         when(userRepo.findById(2L)).thenReturn(Optional.of(user));
         when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
-        assertThrows(NotDeletedException.class, () ->
-            userService.deleteUserFriendById(1L, 2L));
+        assertThrows(NotDeletedException.class, () -> userService.deleteUserFriendById(1L, 2L));
     }
 
     @Test
     void deleteUserFriendByIdNotDeletedExceptionTest2() {
         when(userRepo.getAllUserFriends(any())).thenReturn(Collections.singletonList(user));
         when(modelMapper.map(Collections.singletonList(user),
-                new TypeToken<List<UserVO>>(){}.getType())).thenReturn(Collections.singletonList(userVO));
+            new TypeToken<List<UserVO>>() {
+            }.getType())).thenReturn(Collections.singletonList(userVO));
         when(userRepo.findById(2L)).thenReturn(Optional.of(user2));
         when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
-        assertThrows(NotDeletedException.class, () ->
-            userService.deleteUserFriendById(3L, 2L));
+        assertThrows(NotDeletedException.class, () -> userService.deleteUserFriendById(3L, 2L));
     }
-
 
     @Test
     void addNewFriendCheckRepeatingValueExceptionWithSameIdTest() {
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        assertThrows(CheckRepeatingValueException.class, () ->
-            userService.addNewFriend(1L, 1L)
-        );
+        assertThrows(CheckRepeatingValueException.class, () -> userService.addNewFriend(1L, 1L));
     }
 
     @Test
     void addNewFriendCheckRepeatingValueExceptionWithSameIdTest2() {
         when(userRepo.getAllUserFriends(any())).thenReturn(Collections.singletonList(user2));
         when(modelMapper.map(Collections.singletonList(user2),
-                new TypeToken<List<UserVO>>(){}.getType())).thenReturn(Collections.singletonList(userVO2));
+            new TypeToken<List<UserVO>>() {
+            }.getType())).thenReturn(Collections.singletonList(userVO2));
         when(userRepo.findById(2L)).thenReturn(Optional.of(user));
-        assertThrows(CheckRepeatingValueException.class, () ->
-            userService.addNewFriend(1L, 2L)
-        );
+        assertThrows(CheckRepeatingValueException.class, () -> userService.addNewFriend(1L, 2L));
     }
 
     @Test
     void addNewFriendTest() {
         when(userRepo.getAllUserFriends(any())).thenReturn(Collections.emptyList());
         when(modelMapper.map(Collections.emptyList(),
-                new TypeToken<List<UserVO>>(){}.getType())).thenReturn(Collections.emptyList());
+            new TypeToken<List<UserVO>>() {
+            }.getType())).thenReturn(Collections.emptyList());
         when(userRepo.findById(2L)).thenReturn(Optional.of(user2));
         userService.addNewFriend(1L, 2L);
         verify(userRepo).addNewFriend(1L, 2L);
@@ -885,9 +829,7 @@ class UserServiceImplTest {
 
     @Test
     void getSixFriendsWithTheHighestRatingExceptionTest() {
-        assertThrows(NotFoundException.class, () ->
-            userService.getSixFriendsWithTheHighestRating(1L)
-        );
+        assertThrows(NotFoundException.class, () -> userService.getSixFriendsWithTheHighestRating(1L));
     }
 
     @Test
@@ -946,9 +888,7 @@ class UserServiceImplTest {
 
     @Test
     void checkIfTheUserIsOnlineExceptionTest() {
-        assertThrows(WrongIdException.class, () ->
-            userService.checkIfTheUserIsOnline(null)
-        );
+        assertThrows(WrongIdException.class, () -> userService.checkIfTheUserIsOnline(null));
     }
 
     @Test
@@ -1032,21 +972,20 @@ class UserServiceImplTest {
         assertEquals(Optional.of(userVO), userService.findNotDeactivatedByEmail(email));
     }
 
-    /*@Test
-    void getUserProfileStatistics() {
-        UserProfileStatisticsDto userProfileStatisticsDto = UserProfileStatisticsDto.builder()
-            .amountWrittenTipsAndTrick(1L)
-            .amountPublishedNews(1L)
-            .amountHabitsAcquired(1L)
-            .amountHabitsInProgress(1L)
-            .build();
-
-        when(ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId)).thenReturn(1L);
-        when(tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(userId)).thenReturn(1L);
-        when(habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId)).thenReturn(1L);
-        when(habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId)).thenReturn(1L);
-        assertEquals(userProfileStatisticsDto, userService.getUserProfileStatistics(userId));
-    }*/
+    /*
+     * @Test void getUserProfileStatistics() { UserProfileStatisticsDto
+     * userProfileStatisticsDto = UserProfileStatisticsDto.builder()
+     * .amountWrittenTipsAndTrick(1L) .amountPublishedNews(1L)
+     * .amountHabitsAcquired(1L) .amountHabitsInProgress(1L) .build();
+     * 
+     * when(ecoNewsRepo.getAmountOfPublishedNewsByUserId(userId)).thenReturn(1L);
+     * when(tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(userId)).
+     * thenReturn(1L);
+     * when(habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId)).thenReturn
+     * (1L); when(habitStatisticRepo.getAmountOfHabitsInProgressByUserId(userId)).
+     * thenReturn(1L); assertEquals(userProfileStatisticsDto,
+     * userService.getUserProfileStatistics(userId)); }
+     */
 
     @Test
     void getUserAndSixFriendsWithOnlineStatus() {
@@ -1061,10 +1000,11 @@ class UserServiceImplTest {
             .collect(Collectors.toList());
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
-        UserAndFriendsWithOnlineStatusDto userAndFriendsWithOnlineStatusDto = UserAndFriendsWithOnlineStatusDto.builder()
-            .user(userWithOnlineStatusDto)
-            .friends(sixFriendsWithOnlineStatusDtos)
-            .build();
+        UserAndFriendsWithOnlineStatusDto userAndFriendsWithOnlineStatusDto =
+            UserAndFriendsWithOnlineStatusDto.builder()
+                .user(userWithOnlineStatusDto)
+                .friends(sixFriendsWithOnlineStatusDtos)
+                .build();
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
@@ -1087,11 +1027,12 @@ class UserServiceImplTest {
             .map(u -> new UserWithOnlineStatusDto(u.getId(), true))
             .collect(Collectors.toList());
 
-        UserAndAllFriendsWithOnlineStatusDto userAndAllFriendsWithOnlineStatusDto = new UserAndAllFriendsWithOnlineStatusDto().builder()
-            .user(userWithOnlineStatusDto)
-            .friends(new PageableDto<>(friendsWithOnlineStatusDtos, usersPage.getTotalElements(),
-                usersPage.getPageable().getPageNumber(), usersPage.getTotalPages()))
-            .build();
+        UserAndAllFriendsWithOnlineStatusDto userAndAllFriendsWithOnlineStatusDto =
+            new UserAndAllFriendsWithOnlineStatusDto().builder()
+                .user(userWithOnlineStatusDto)
+                .friends(new PageableDto<>(friendsWithOnlineStatusDtos, usersPage.getTotalElements(),
+                    usersPage.getPageable().getPageNumber(), usersPage.getTotalPages()))
+                .build();
 
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
@@ -1100,8 +1041,8 @@ class UserServiceImplTest {
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
         when(userRepo.getAllUserFriends(userId, pageable)).thenReturn(usersPage);
 
-
-        assertEquals(userAndAllFriendsWithOnlineStatusDto, userService.getAllFriendsWithTheOnlineStatus(userId, pageable));
+        assertEquals(userAndAllFriendsWithOnlineStatusDto,
+            userService.getAllFriendsWithTheOnlineStatus(userId, pageable));
     }
 
     @Test
@@ -1182,45 +1123,47 @@ class UserServiceImplTest {
 
         when(userRepo.searchBy(pageable, userList.get(0).getName())).thenReturn(usersPage);
 
-
         assertEquals(pageableDto, userService.searchBy(pageable, userList.get(0).getName()));
     }
 
-
-    /*@Test
-    void createUserHabitTest2() {
-        greencity.dto.habitstatistic.HabitDictionaryDto habitDictionaryDto = new greencity.dto.habitstatistic.HabitDictionaryDto();
-        habitDictionaryDto.setId(1L);
-        habitDictionaryDto.setImage("test");
-        habitDictionaryDto.setDescription("test");
-        habitDictionaryDto.setName("test");
-        HabitCreateDto habitCreateDto = new HabitCreateDto();
-        habitCreateDto.setId(1L);
-        habitCreateDto.setStatus(true);
-        habitCreateDto.setHabitDictionary(habitDictionaryDto);
-
-        HabitIdDto habitIdDto = new HabitIdDto();
-        habitIdDto.setHabitDictionaryId(1L);
-        List<HabitIdDto> habitIdDtoList = Collections.singletonList(habitIdDto);
-        HabitDictionary habitDictionaries = new HabitDictionary();
-        habitDictionaries.setId(1L);
-        habitDictionaries.setHabit(Collections.singletonList(habit));
-        habitDictionaries.setHabitDictionaryTranslations(Collections.singletonList(ModelUtils.getHabitDictionaryTranslation()));
-        habitDictionaries.setImage("test");
-
-        HabitDictionaryTranslation habitDictionaryTranslation = ModelUtils.getHabitDictionaryTranslation();
-
-        when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.singletonList(habit));
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(habitDictionaryService.findById(1L)).thenReturn(habitDictionaries);
-        when(modelMapper.map(user, Habit.class)).thenReturn(habit);
-        when(habitRepo.saveAll(Collections.singletonList(habit))).thenReturn(Collections.singletonList(habit));
-        when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.singletonList(habit));
-        when(modelMapper.map(habit, HabitCreateDto.class)).thenReturn(habitCreateDto);
-        when(habitService.getHabitDictionaryTranslation(habit, language)).thenReturn(habitDictionaryTranslation);
-
-
-        assertEquals(Collections.singletonList(habitCreateDto), userService.createUserHabit(userId, habitIdDtoList, language));
-    }*/
+    /*
+     * @Test void createUserHabitTest2() {
+     * greencity.dto.habitstatistic.HabitDictionaryDto habitDictionaryDto = new
+     * greencity.dto.habitstatistic.HabitDictionaryDto();
+     * habitDictionaryDto.setId(1L); habitDictionaryDto.setImage("test");
+     * habitDictionaryDto.setDescription("test");
+     * habitDictionaryDto.setName("test"); HabitCreateDto habitCreateDto = new
+     * HabitCreateDto(); habitCreateDto.setId(1L); habitCreateDto.setStatus(true);
+     * habitCreateDto.setHabitDictionary(habitDictionaryDto);
+     * 
+     * HabitIdDto habitIdDto = new HabitIdDto();
+     * habitIdDto.setHabitDictionaryId(1L); List<HabitIdDto> habitIdDtoList =
+     * Collections.singletonList(habitIdDto); HabitDictionary habitDictionaries =
+     * new HabitDictionary(); habitDictionaries.setId(1L);
+     * habitDictionaries.setHabit(Collections.singletonList(habit));
+     * habitDictionaries.setHabitDictionaryTranslations(Collections.singletonList(
+     * ModelUtils.getHabitDictionaryTranslation()));
+     * habitDictionaries.setImage("test");
+     * 
+     * HabitDictionaryTranslation habitDictionaryTranslation =
+     * ModelUtils.getHabitDictionaryTranslation();
+     * 
+     * when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.
+     * singletonList(habit));
+     * when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+     * when(habitDictionaryService.findById(1L)).thenReturn(habitDictionaries);
+     * when(modelMapper.map(user, Habit.class)).thenReturn(habit);
+     * when(habitRepo.saveAll(Collections.singletonList(habit))).thenReturn(
+     * Collections.singletonList(habit));
+     * when(habitRepo.findByUserIdAndStatusHabit(userId)).thenReturn(Collections.
+     * singletonList(habit)); when(modelMapper.map(habit,
+     * HabitCreateDto.class)).thenReturn(habitCreateDto);
+     * when(habitService.getHabitDictionaryTranslation(habit,
+     * language)).thenReturn(habitDictionaryTranslation);
+     * 
+     * 
+     * assertEquals(Collections.singletonList(habitCreateDto),
+     * userService.createUserHabit(userId, habitIdDtoList, language)); }
+     */
 
 }

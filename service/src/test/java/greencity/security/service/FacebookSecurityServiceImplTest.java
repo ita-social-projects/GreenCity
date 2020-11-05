@@ -40,5 +40,3 @@ class FacebookSecurityServiceImplTest {
         assertEquals(expected, actual);
     }
 }
-
-

@@ -87,8 +87,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                     .map(el -> FactOfTheDayTranslation.builder()
                         .content(el.getContent())
                         .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
-                        .build()
-                    ).collect(Collectors.toList()))
+                        .build())
+                    .collect(Collectors.toList()))
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
@@ -118,12 +118,11 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             .name(factPost.getName())
             .factOfTheDayTranslations(
                 factPost.getFactOfTheDayTranslations().stream()
-                    .map(el ->
-                        FactOfTheDayTranslation.builder()
-                            .content(el.getContent())
-                            .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
-                            .build()
-                    ).collect(Collectors.toList()))
+                    .map(el -> FactOfTheDayTranslation.builder()
+                        .content(el.getContent())
+                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
+                        .build())
+                    .collect(Collectors.toList()))
             .createDate(ZonedDateTime.now())
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));

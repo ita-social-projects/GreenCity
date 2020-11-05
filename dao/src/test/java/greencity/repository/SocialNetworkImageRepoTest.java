@@ -28,10 +28,10 @@ class SocialNetworkImageRepoTest {
     @Test
     void searchBy() {
         Pageable pageable = PageRequest.of(0, 2);
-         SocialNetworkImage socialNetworkImage = socialNetworkImageRepo.searchBy(pageable, "second")
-             .get()
-             .findFirst()
-             .get();
-         assertEquals("second_host_path", socialNetworkImage.getHostPath());
+        SocialNetworkImage socialNetworkImage = socialNetworkImageRepo.searchBy(pageable, "second")
+            .get()
+            .findFirst()
+            .get();
+        assertEquals("second_host_path", socialNetworkImage.getHostPath());
     }
 }

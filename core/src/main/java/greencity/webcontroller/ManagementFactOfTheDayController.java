@@ -61,9 +61,10 @@ public class ManagementFactOfTheDayController {
     @ApiOperation(value = "Get management page with facts of the day that satisfy query.")
     @GetMapping("/findAll")
     public String findAll(@RequestParam(required = false, name = "query") String query,
-                          Model model, @ApiIgnore Pageable pageable) {
+        Model model, @ApiIgnore Pageable pageable) {
         PageableDto<FactOfTheDayDTO> pageableDto = query == null || query.isEmpty()
-            ? factOfTheDayService.getAllFactsOfTheDay(pageable) : factOfTheDayService.searchBy(pageable, query);
+            ? factOfTheDayService.getAllFactsOfTheDay(pageable)
+            : factOfTheDayService.searchBy(pageable, query);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_fact_of_the_day";
@@ -83,7 +84,7 @@ public class ManagementFactOfTheDayController {
     @ResponseBody
     @PostMapping("/")
     public GenericResponseDto saveFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
-                                               BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         }
@@ -104,7 +105,7 @@ public class ManagementFactOfTheDayController {
     @ResponseBody
     @PutMapping("/")
     public GenericResponseDto updateFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
-                                                 BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         }
@@ -112,7 +113,8 @@ public class ManagementFactOfTheDayController {
     }
 
     /**
-     * Method which deteles {@link FactOfTheDay} and {@link greencity.entity.FactOfTheDayTranslation} by given id.
+     * Method which deteles {@link FactOfTheDay} and
+     * {@link greencity.entity.FactOfTheDayTranslation} by given id.
      *
      * @param id of Fact of the day
      * @return {@link ResponseEntity}
@@ -129,7 +131,8 @@ public class ManagementFactOfTheDayController {
     }
 
     /**
-     * Method which deteles {@link FactOfTheDay} and {@link greencity.entity.FactOfTheDayTranslation} by given id.
+     * Method which deteles {@link FactOfTheDay} and
+     * {@link greencity.entity.FactOfTheDayTranslation} by given id.
      *
      * @param listId list of IDs
      * @return {@link ResponseEntity}

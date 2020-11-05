@@ -77,7 +77,6 @@ class HabitFactControllerTest {
         + "  ]\n"
         + "}";
 
-
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitFactController)
@@ -115,7 +114,6 @@ class HabitFactControllerTest {
             .andExpect(status().isOk());
         verify(habitFactService).getAllHabitFacts(pageable, locale.getLanguage());
     }
-
 
     @Test
     void deleteTest() throws Exception {

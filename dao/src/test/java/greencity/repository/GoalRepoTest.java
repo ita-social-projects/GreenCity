@@ -39,7 +39,6 @@ class GoalRepoTest {
             .city("New York")
             .build();
 
-
     @Test
     void findAvailableGoalsByUserTest() {
         List<Goal> goals = goalRepo.findAvailableGoalsByUser(testUser);

@@ -80,6 +80,7 @@ public class BreakTimeServiceImpl implements BreakTimeService {
     public List<BreakTimeVO> findAll() {
         log.info(LogMessage.IN_FIND_ALL);
 
-        return modelMapper.map(repo.findAll(), new TypeToken<List<BreakTimeVO>>() {}.getType());
+        return modelMapper.map(repo.findAll(), new TypeToken<List<BreakTimeVO>>() {
+        }.getType());
     }
 }

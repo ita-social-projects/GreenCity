@@ -12,8 +12,6 @@ public final class CacheConstants {
     public static final String SOCIAL_NETWORK_IMAGE_CACHE_NAME = "social_network_image_cache";
     public static final String TIPS_AND_TRICKS_CACHE_NAME = "tips_and_tricks_cache";
 
-
-
     private CacheConstants() {
     }
 }

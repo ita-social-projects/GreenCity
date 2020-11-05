@@ -20,16 +20,16 @@ public @interface ValidSocialNetworkLinks {
     String message() default "Invalid social network links";
 
     /**
-     * Let you select to split the annotations into different groups
-     * to apply different validations to each group.
+     * Let you select to split the annotations into different groups to apply
+     * different validations to each group.
      *
      * @return groups
      */
     Class<?>[] groups() default {};
 
     /**
-     * Payloads are typically used to carry metadata information
-     * consumed by a validation client.
+     * Payloads are typically used to carry metadata information consumed by a
+     * validation client.
      *
      * @return payload
      */

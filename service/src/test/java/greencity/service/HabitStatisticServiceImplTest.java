@@ -88,9 +88,7 @@ class HabitStatisticServiceImplTest {
     void saveExceptionTest() {
         when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
             1L, 1L)).thenReturn(Optional.of(new HabitStatistic()));
-        assertThrows(NotSavedException.class, () ->
-            habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs)
-        );
+        assertThrows(NotSavedException.class, () -> habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
     }
 
     @Test
@@ -101,9 +99,8 @@ class HabitStatisticServiceImplTest {
         when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
             .thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () ->
-            habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
-        }
+        assertThrows(NotFoundException.class, () -> habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
+    }
 
     @Test
     void saveExceptionBadRequestTest() {
@@ -112,9 +109,7 @@ class HabitStatisticServiceImplTest {
         when(dateService.convertToDatasourceTimezone(addhs.getCreateDate()))
             .thenReturn(zonedDateTime.plusDays(2));
 
-        assertThrows(BadRequestException.class, () ->
-            habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs)
-        );
+        assertThrows(BadRequestException.class, () -> habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
     }
 
     @Test
@@ -135,9 +130,7 @@ class HabitStatisticServiceImplTest {
         habitStatistic.setHabitAssign(habitAssign);
         UpdateHabitStatisticDto updateHabitStatisticDto = new UpdateHabitStatisticDto();
         when(habitStatisticRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () ->
-            habitStatisticService.update(1L, 1L, updateHabitStatisticDto)
-        );
+        assertThrows(NotFoundException.class, () -> habitStatisticService.update(1L, 1L, updateHabitStatisticDto));
     }
 
     @Test
@@ -160,9 +153,7 @@ class HabitStatisticServiceImplTest {
     @Test
     void findByIdExceptionTest() {
         when(habitStatisticRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () ->
-            habitStatisticService.findById(1L)
-        );
+        assertThrows(NotFoundException.class, () -> habitStatisticService.findById(1L));
     }
 
     @Test
@@ -178,9 +169,7 @@ class HabitStatisticServiceImplTest {
     @Test
     void findAllStatsByWrongHabitAssignIdTest() {
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () ->
-            habitStatisticService.findAllStatsByHabitAssignId(1L)
-        );
+        assertThrows(NotFoundException.class, () -> habitStatisticService.findAllStatsByHabitAssignId(1L));
     }
 
     @Test
@@ -196,8 +185,7 @@ class HabitStatisticServiceImplTest {
     @Test
     void findAllStatsByWrongHabitId() {
         when(habitRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () ->
-            habitStatisticService.findAllStatsByHabitId(1L));
+        assertThrows(NotFoundException.class, () -> habitStatisticService.findAllStatsByHabitId(1L));
     }
 
     @Test

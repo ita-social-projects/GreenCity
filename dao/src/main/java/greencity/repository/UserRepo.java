@@ -53,7 +53,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query("SELECT id FROM User WHERE email=:email")
     Optional<Long> findIdByEmail(String email);
 
-
     /**
      * Find not 'DEACTIVATED' {@link User} by email.
      *
@@ -167,8 +166,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Optional<Timestamp> findLastActivityTimeById(Long userId);
 
     /**
-     * Delete from the database users that have status 'DEACTIVATED'
-     * and last visited the site 2 years ago.
+     * Delete from the database users that have status 'DEACTIVATED' and last
+     * visited the site 2 years ago.
      *
      * @return number of deleted rows
      * @author Vasyl Zhovnir
@@ -202,8 +201,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> searchBy(Pageable paging, String query);
 
     /**
-     * Delete from the database users that have status 'CREATED'
-     * and have not activated the account within 24 hours.
+     * Delete from the database users that have status 'CREATED' and have not
+     * activated the account within 24 hours.
      *
      * @return number of deleted rows
      * @author Vasyl Zhovnir
@@ -222,9 +221,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<String> findAllUsersCities();
 
     /**
-     * Find and return all registration months.
-     * Runs an SQL Query which is described in {@link User} under {@link NamedNativeQuery} annotation.
-     * Spring Data JPA can run a named native query that follows the naming convention
+     * Find and return all registration months. Runs an SQL Query which is described
+     * in {@link User} under {@link NamedNativeQuery} annotation. Spring Data JPA
+     * can run a named native query that follows the naming convention
      * {entityClass.repositoryMethodName}.
      *
      * @return {@link List} of {@link RegistrationStatisticsDtoResponse}

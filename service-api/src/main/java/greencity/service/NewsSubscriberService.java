@@ -21,7 +21,7 @@ public interface NewsSubscriberService {
     /**
      * Method for deleted newsSubscriber.
      *
-     * @param email subscriber email for deleting.
+     * @param email            subscriber email for deleting.
      * @param unsubscribeToken unsubscribe token for subscriber verification.
      * @return long id of deleted {@code NewsSubscriber}
      */

@@ -70,8 +70,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         return isTodayOrYesterday(
             dateService
                 .convertToDatasourceTimezone(dto.getCreateDate())
-                .toLocalDate()
-        );
+                .toLocalDate());
     }
 
     private boolean isTodayOrYesterday(LocalDate date) {
@@ -105,7 +104,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
         updatable.setHabitRate(dto.getHabitRate());
     }
 
-
     /**
      * {@inheritDoc}
      *
@@ -115,8 +113,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public HabitStatisticDto findById(Long id) {
         return modelMapper.map(habitStatisticRepo
             .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage
-                .HABIT_STATISTIC_NOT_FOUND_BY_ID + id)), HabitStatisticDto.class);
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_STATISTIC_NOT_FOUND_BY_ID + id)),
+            HabitStatisticDto.class);
     }
 
     /**
@@ -152,12 +150,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Override
     public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language) {
         return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), language).stream()
-            .map(it ->
-                HabitItemsAmountStatisticDto.builder()
-                    .habitItem((String) it.get(0))
-                    .notTakenItems((long) it.get(1))
-                    .build()
-            ).collect(Collectors.toList());
+            .map(it -> HabitItemsAmountStatisticDto.builder()
+                .habitItem((String) it.get(0))
+                .notTakenItems((long) it.get(1))
+                .build())
+            .collect(Collectors.toList());
     }
 
     /**

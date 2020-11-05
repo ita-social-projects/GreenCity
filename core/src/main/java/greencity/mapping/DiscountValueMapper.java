@@ -7,8 +7,9 @@ import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
 /**
- * The class uses other {@code Autowired} mappers to convert {@link DiscountValue} entity objects to {@link
- * DiscountValueDto} dto objects and vise versa.
+ * The class uses other {@code Autowired} mappers to convert
+ * {@link DiscountValue} entity objects to {@link DiscountValueDto} dto objects
+ * and vise versa.
  *
  * @author Kateryna Horokh
  */

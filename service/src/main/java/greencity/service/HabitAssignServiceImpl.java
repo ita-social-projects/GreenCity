@@ -41,7 +41,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public HabitAssignDto getById(Long habitAssignId) {
         return modelMapper.map(habitAssignRepo.findById(habitAssignId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
             HabitAssignDto.class);
     }
 
@@ -60,8 +60,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
         }
 
-        if (habitAssignRepo.countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(user.getId())
-            >= AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER) {
+        if (habitAssignRepo.countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(
+            user.getId()) >= AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER) {
             throw new UserAlreadyHasMaxNumberOfActiveHabitAssigns(
                 ErrorMessage.USER_ALREADY_HAS_MAX_NUMBER_OF_HABIT_ASSIGNS
                     + AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER);
@@ -94,9 +94,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), userId)
-                .orElseThrow(() ->
-                    new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID
-                        + userId + ", " + habitId)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID
+                + userId + ", " + habitId)),
             HabitAssignDto.class);
     }
 

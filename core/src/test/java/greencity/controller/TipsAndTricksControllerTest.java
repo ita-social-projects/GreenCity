@@ -55,18 +55,18 @@ class TipsAndTricksControllerTest {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn("Jane.Smith@gmail.com");
         String json = "{\n" +
-                "    \"titleTranslation\":{\n" +
-                "        \"content\":\"title\",\n" +
-                "        \"languageCode\":\"en\"\n" +
-                "    },\n" +
-                "    \"textTranslation\":{\n" +
-                "        \"content\":\"content content content\",\n" +
-                "        \"languageCode\":\"en\"\n" +
-                "    },\n" +
-                "    \"tags\":[\"news\"],\n" +
-                "    \"source\":\",\",\n" +
-                "    \"image\":null\n" +
-                "}";
+            "    \"titleTranslation\":{\n" +
+            "        \"content\":\"title\",\n" +
+            "        \"languageCode\":\"en\"\n" +
+            "    },\n" +
+            "    \"textTranslation\":{\n" +
+            "        \"content\":\"content content content\",\n" +
+            "        \"languageCode\":\"en\"\n" +
+            "    },\n" +
+            "    \"tags\":[\"news\"],\n" +
+            "    \"source\":\",\",\n" +
+            "    \"image\":null\n" +
+            "}";
         MockMultipartFile jsonFile =
             new MockMultipartFile("tipsAndTricksDtoRequest", "", "application/json", json.getBytes());
 

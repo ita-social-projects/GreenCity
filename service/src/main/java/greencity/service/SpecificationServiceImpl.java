@@ -48,9 +48,9 @@ public class SpecificationServiceImpl implements SpecificationService {
         log.info(LogMessage.IN_FIND_BY_ID, id);
 
         return modelMapper.map(specificationRepo
-                .findById(id)
-                .orElseThrow(
-                    () -> new NotFoundException(ErrorMessage.SPECIFICATION_VALUE_NOT_FOUND_BY_ID + id)),
+            .findById(id)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.SPECIFICATION_VALUE_NOT_FOUND_BY_ID + id)),
             SpecificationVO.class);
     }
 
@@ -87,8 +87,8 @@ public class SpecificationServiceImpl implements SpecificationService {
     @Override
     public SpecificationVO findByName(String specificationName) {
         return modelMapper.map(specificationRepo
-                .findByName(specificationName)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME)),
+            .findByName(specificationName)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.SPECIFICATION_NOT_FOUND_BY_NAME)),
             SpecificationVO.class);
     }
 
@@ -106,4 +106,3 @@ public class SpecificationServiceImpl implements SpecificationService {
             .collect(Collectors.toList());
     }
 }
-

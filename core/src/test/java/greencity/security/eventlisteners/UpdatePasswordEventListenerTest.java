@@ -20,8 +20,7 @@ class UpdatePasswordEventListenerTest {
 
     @Test
     void onApplicationEventTest() {
-        UpdatePasswordEvent event = new
-            UpdatePasswordEvent(User.builder().id(1L).build(), "Qwerty123=", 1L);
+        UpdatePasswordEvent event = new UpdatePasswordEvent(User.builder().id(1L).build(), "Qwerty123=", 1L);
         updatePasswordEventListener.onApplicationEvent(event);
         verify(ownSecurityService).updatePassword(event.getNewPassword(), event.getUserId());
     }

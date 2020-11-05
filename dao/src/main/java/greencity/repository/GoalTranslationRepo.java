@@ -12,12 +12,14 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
      * Method for getting all goal translations for given language.
      *
      * @param languageCode code of needed language
-     * @return List of {@link GoalTranslation}, that contains all goal translations for needed language.
+     * @return List of {@link GoalTranslation}, that contains all goal translations
+     *         for needed language.
      */
     List<GoalTranslation> findAllByLanguageCode(String languageCode);
 
     /**
-     * Method returns available goal translations for specific user and language code.
+     * Method returns available goal translations for specific user and language
+     * code.
      *
      * @param userId       target user id
      * @param languageCode code of needed language
@@ -29,7 +31,8 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
     List<GoalTranslation> findAvailableByUserId(Long userId, String languageCode);
 
     /**
-     * Method returns goal translation for particular selected goal for specific user and language code.
+     * Method returns goal translation for particular selected goal for specific
+     * user and language code.
      *
      * @param userId       target user id
      * @param languageCode code of needed language
