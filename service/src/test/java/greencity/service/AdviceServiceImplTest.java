@@ -53,29 +53,28 @@ class AdviceServiceImplTest {
     private Language defaultLanguage = ModelUtils.getLanguage();
 
     private List<AdviceTranslation> adviceTranslations = new ArrayList<>(Arrays.asList(
-            AdviceTranslation.builder().id(1L).language(defaultLanguage).content("hello").build(),
-            AdviceTranslation.builder().id(2L).language(defaultLanguage).content("text").build(),
-            AdviceTranslation.builder().id(3L).language(defaultLanguage).content("smile").build()));
+        AdviceTranslation.builder().id(1L).language(defaultLanguage).content("hello").build(),
+        AdviceTranslation.builder().id(2L).language(defaultLanguage).content("text").build(),
+        AdviceTranslation.builder().id(3L).language(defaultLanguage).content("smile").build()));
 
     private List<LanguageTranslationDTO> languageTranslationDTOs = Arrays.asList(
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile")
-    );
+        new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
+        new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
+        new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
 
     private List<Advice> advices = new ArrayList<>(Arrays.asList(
-            Advice.builder().id(1L).habit(Habit.builder().id(1L).build()).build(),
-            Advice.builder().id(2L).habit(Habit.builder().id(1L).build()).build(),
-            Advice.builder().id(3L).habit(Habit.builder().id(1L).build()).build()));
+        Advice.builder().id(1L).habit(Habit.builder().id(1L).build()).build(),
+        Advice.builder().id(2L).habit(Habit.builder().id(1L).build()).build(),
+        Advice.builder().id(3L).habit(Habit.builder().id(1L).build()).build()));
 
     private Habit habit = Habit.builder().id(1L).image("image.png").build();
 
     private HabitVO habitVO = HabitVO.builder().id(1L).image("image_png").build();
 
     private Advice advice = Advice.builder().id(1L)
-            .translations(adviceTranslations)
-            .habit(habit)
-            .build();
+        .translations(adviceTranslations)
+        .habit(habit)
+        .build();
 
     private AdviceDto getAdviceDto() {
         return modelMapper.map(advice, AdviceDto.class);
@@ -103,7 +102,7 @@ class AdviceServiceImplTest {
         AdviceTranslation adviceTranslation = adviceTranslations.get(0);
         LanguageTranslationDTO expected = languageTranslationDTOs.get(0);
         when(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id))
-                .thenReturn(Optional.of(adviceTranslation));
+            .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, LanguageTranslationDTO.class)).thenReturn(expected);
         LanguageTranslationDTO actual = adviceService.getRandomAdviceByHabitIdAndLanguage(id, language);
 
@@ -141,7 +140,7 @@ class AdviceServiceImplTest {
         AdviceTranslation adviceTranslation = adviceTranslations.get(0);
         AdviceDto expected = getAdviceDto();
         when(adviceTranslationRepo.findAdviceTranslationByLanguageCodeAndContent(language, name))
-                .thenReturn(Optional.of(adviceTranslation));
+            .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, AdviceDto.class)).thenReturn(expected);
         AdviceDto actual = adviceService.getAdviceByName(language, name);
 
@@ -238,4 +237,3 @@ class AdviceServiceImplTest {
         verify(adviceRepo, never()).delete(any(Advice.class));
     }
 }
-

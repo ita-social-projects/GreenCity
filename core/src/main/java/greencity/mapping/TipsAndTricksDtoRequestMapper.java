@@ -17,8 +17,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link TipsAndTricksDtoRequest} into
- * {@link TipsAndTricks}.
+ * Class that used by {@link ModelMapper} to map {@link TipsAndTricksDtoRequest}
+ * into {@link TipsAndTricks}.
  */
 @Component
 @RequiredArgsConstructor
@@ -26,7 +26,8 @@ public class TipsAndTricksDtoRequestMapper extends AbstractConverter<TipsAndTric
     private final LanguageService languageService;
 
     /**
-     * Method for converting {@link TipsAndTricksDtoRequest} into {@link TipsAndTricks}.
+     * Method for converting {@link TipsAndTricksDtoRequest} into
+     * {@link TipsAndTricks}.
      *
      * @param tipsAndTricksDtoRequest object to convert.
      * @return converted object.
@@ -38,22 +39,22 @@ public class TipsAndTricksDtoRequestMapper extends AbstractConverter<TipsAndTric
         LanguageDTO textTranslation = languageService.findByCode(tipsAndTricksDtoRequest
             .getTextTranslation().getLanguageCode());
         return TipsAndTricks.builder()
-                .source(tipsAndTricksDtoRequest.getSource())
-                .titleTranslations(Collections.singletonList(TitleTranslation.builder()
-                        .content(tipsAndTricksDtoRequest.getTitleTranslation().getContent())
-                        .language(Language.builder()
-                                .id(titleTranslation.getId())
-                                .code(titleTranslation.getCode())
-                                .build())
-                        .build()))
-                .textTranslations(Collections.singletonList(TextTranslation.builder()
-                        .content(tipsAndTricksDtoRequest.getTextTranslation().getContent())
-                        .language(Language.builder()
-                                .id(textTranslation.getId())
-                                .code(textTranslation.getCode())
-                                .build())
-                        .build()))
-                .creationDate(ZonedDateTime.now())
-                .build();
+            .source(tipsAndTricksDtoRequest.getSource())
+            .titleTranslations(Collections.singletonList(TitleTranslation.builder()
+                .content(tipsAndTricksDtoRequest.getTitleTranslation().getContent())
+                .language(Language.builder()
+                    .id(titleTranslation.getId())
+                    .code(titleTranslation.getCode())
+                    .build())
+                .build()))
+            .textTranslations(Collections.singletonList(TextTranslation.builder()
+                .content(tipsAndTricksDtoRequest.getTextTranslation().getContent())
+                .language(Language.builder()
+                    .id(textTranslation.getId())
+                    .code(textTranslation.getCode())
+                    .build())
+                .build()))
+            .creationDate(ZonedDateTime.now())
+            .build();
     }
 }

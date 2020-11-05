@@ -76,20 +76,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .addFilterBefore(
                 new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
-                UsernamePasswordAuthenticationFilter.class
-            )
+                UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling()
             .authenticationEntryPoint((req, resp, exc) -> resp.sendError(SC_UNAUTHORIZED, "Authorize first."))
             .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
             .and()
             .authorizeRequests()
             .antMatchers("/management/**",
-                "/econews/comments/replies/{parentCommentId}").hasRole(ADMIN)
+                "/econews/comments/replies/{parentCommentId}")
+            .hasRole(ADMIN)
             .antMatchers("/css/**",
-                "/img/**"
-            ).permitAll()
+                "/img/**")
+            .permitAll()
             .antMatchers(HttpMethod.GET,
-                "/econews/comments").hasRole(ADMIN)
+                "/econews/comments")
+            .hasRole(ADMIN)
             .antMatchers(HttpMethod.GET,
                 "/ownSecurity/verifyEmail",
                 "/ownSecurity/updateAccessToken",
@@ -142,15 +143,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{id}/habit/assign",
-                "/socket/**"
-            ).permitAll()
+                "/socket/**")
+            .permitAll()
             .antMatchers(HttpMethod.POST,
                 "/ownSecurity/signUp",
                 "/ownSecurity/signIn",
                 "/ownSecurity/changePassword",
                 "/place/getListPlaceLocationByMapsBounds",
-                "/place/filter"
-            ).permitAll()
+                "/place/filter")
+            .permitAll()
             .antMatchers(HttpMethod.GET,
                 "/achievements",
                 "/advices/random/{habitId}",
@@ -175,8 +176,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/isOnline/{userId}/",
                 "/user/{userId}/profileStatistics/",
                 "/user/userAndSixFriendsWithOnlineStatus",
-                "/user/userAndAllFriendsWithOnlineStatus"
-            ).hasAnyRole(USER, ADMIN, MODERATOR)
+                "/user/userAndAllFriendsWithOnlineStatus")
+            .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category",
                 "/econews",
@@ -198,16 +199,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals",
                 "/user/{userId}/goals",
                 "/user/{userId}/habit",
-                "/user/{userId}/userFriend/{friendId}"
-            ).hasAnyRole(USER, ADMIN, MODERATOR)
+                "/user/{userId}/userFriend/{friendId}")
+            .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/econews/update",
                 "/favorite_place/",
                 "/ownSecurity",
                 "/user/profile",
                 "/habit/{id}/status",
-                "/habit/statistic/{id}"
-            ).hasAnyRole(USER, ADMIN, MODERATOR)
+                "/habit/statistic/{id}")
+            .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/econews/comments",
                 "/goals/shoppingList/{userId}",
@@ -216,8 +217,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/customGoals",
                 "/user/{userId}/goals/{goalId}",
                 "/user/profilePicture",
-                "/user/deleteProfilePicture"
-            ).hasAnyRole(USER, ADMIN, MODERATOR)
+                "/user/deleteProfilePicture")
+            .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/econews/comments",
                 "/econews/{econewsId}",
@@ -225,50 +226,50 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments",
                 "/user/{userId}/customGoals",
                 "/user/{userId}/userGoals",
-                "/user/{userId}/userFriend/{friendId}"
-            ).hasAnyRole(USER, ADMIN, MODERATOR)
+                "/user/{userId}/userFriend/{friendId}")
+            .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",
                 "/comments",
                 "/comments/{id}",
                 "/user/all",
-                "/user/roles"
-            ).hasAnyRole(ADMIN, MODERATOR)
+                "/user/roles")
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
-                "/place/filter/predicate"
-            ).hasAnyRole(ADMIN, MODERATOR)
+                "/place/filter/predicate")
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
-                "/place/update/"
-            ).hasAnyRole(ADMIN, MODERATOR)
+                "/place/update/")
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status",
-                "/place/statuses"
-            ).hasAnyRole(ADMIN, MODERATOR)
+                "/place/statuses")
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}",
-                "/place"
-            ).hasAnyRole(ADMIN, MODERATOR)
+                "/place")
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/advices",
                 "/facts",
-                "/user/filter"
-            ).hasRole(ADMIN)
+                "/user/filter")
+            .hasRole(ADMIN)
             .antMatchers(HttpMethod.PUT,
                 "/advices/{adviceId}",
-                "/facts/{factId}"
-            ).hasRole(ADMIN)
+                "/facts/{factId}")
+            .hasRole(ADMIN)
             .antMatchers(HttpMethod.PATCH,
                 "/user",
                 "/user/status",
                 "/user/role",
-                "/user/update/role"
-            ).hasRole(ADMIN)
+                "/user/update/role")
+            .hasRole(ADMIN)
             .antMatchers(HttpMethod.DELETE,
                 "/advices/{adviceId}",
                 "/facts/{factId}",
                 "/comments",
-                "/tipsandtricks/{id}"
-            ).hasRole(ADMIN)
+                "/tipsandtricks/{id}")
+            .hasRole(ADMIN)
             .anyRequest().hasAnyRole(ADMIN);
     }
 
@@ -285,7 +286,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/swagger-resources/**");
         web.ignoring().antMatchers("/webjars/**");
     }
-
 
     /**
      * Method for configure type of authentication provider.
@@ -333,8 +333,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public GoogleIdTokenVerifier googleIdTokenVerifier(@Value("${google.clientId}") String clientId) {
-        return new GoogleIdTokenVerifier
-            .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+        return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
             .setAudience(Collections.singletonList(clientId))
             .build();
     }

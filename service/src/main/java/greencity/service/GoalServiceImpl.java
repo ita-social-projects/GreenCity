@@ -53,10 +53,11 @@ public class GoalServiceImpl implements GoalService {
         if (userGoal.getCustomGoal() == null) {
             Goal goal = goalRepo
                 .findById(userGoal
-                    .getGoal().getId()).orElseThrow(() -> new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID));
+                    .getGoal().getId())
+                .orElseThrow(() -> new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID));
             userGoalResponseDto.setText(goalTranslationRepo.findByGoalAndLanguageCode(goal, languageCode)
-                .orElseThrow(() ->
-                        new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_LANGUAGE_CODE)).getContent());
+                .orElseThrow(() -> new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_LANGUAGE_CODE))
+                .getContent());
         }
         return userGoalResponseDto;
     }
@@ -67,8 +68,8 @@ public class GoalServiceImpl implements GoalService {
         UserGoalResponseDto userGoalResponseDto = modelMapper.map(userGoal, UserGoalResponseDto.class);
         if (userGoal.getGoal() == null) {
             CustomGoal customGoal = customGoalRepo.findById(userGoal
-                .getCustomGoal().getId()).orElseThrow(() ->
-                    new NotFoundException(ErrorMessage.CUSTOM_GOAL_NOT_FOUND_BY_ID));
+                .getCustomGoal().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_GOAL_NOT_FOUND_BY_ID));
             userGoalResponseDto.setText(customGoal.getText());
         }
         return userGoalResponseDto;

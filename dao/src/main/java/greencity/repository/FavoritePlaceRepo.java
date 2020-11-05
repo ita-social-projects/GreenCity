@@ -29,7 +29,7 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
     /**
      * Find favorite place by place id.
      *
-     * @param placeId        - favorite place
+     * @param placeId - favorite place
      * @return FavoritePlace entity
      * @author Zakhar Skaletskyi
      */

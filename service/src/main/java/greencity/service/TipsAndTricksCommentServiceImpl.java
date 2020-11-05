@@ -34,17 +34,21 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     /**
      * Method to save {@link greencity.entity.TipsAndTricksComment}.
      *
-     * @param tipsandtricksId                   id of {@link greencity.entity.TipsAndTricks} to which we save comment.
-     * @param addTipsAndTricksCommentDtoRequest dto with {@link greencity.entity.TipsAndTricksComment} text,
-     *                                          parentCommentId.
-     * @param userVO                            {@link UserVO} that saves the comment.
+     * @param tipsandtricksId                   id of
+     *                                          {@link greencity.entity.TipsAndTricks}
+     *                                          to which we save comment.
+     * @param addTipsAndTricksCommentDtoRequest dto with
+     *                                          {@link greencity.entity.TipsAndTricksComment}
+     *                                          text, parentCommentId.
+     * @param userVO                            {@link UserVO} that saves the
+     *                                          comment.
      * @return {@link AddTipsAndTricksCommentDtoRequest} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public AddTipsAndTricksCommentDtoResponse save(Long tipsandtricksId,
-                                                   AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
-                                                   UserVO userVO) {
+        AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
+        UserVO userVO) {
         TipsAndTricks tipsAndTricks = modelMapper.map(tipsAndTricksService
             .findById(tipsandtricksId), TipsAndTricks.class);
         TipsAndTricksComment tipsAndTricksComment =
@@ -55,8 +59,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             && addTipsAndTricksCommentDtoRequest.getParentCommentId() != 0) {
             TipsAndTricksComment parentComment =
                 tipsAndTricksCommentRepo
-                    .findById(addTipsAndTricksCommentDtoRequest.getParentCommentId()).orElseThrow(() ->
-                    new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+                    .findById(addTipsAndTricksCommentDtoRequest.getParentCommentId())
+                    .orElseThrow(() -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
             if (parentComment.isDeleted()) {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_TO_DELETED_COMMENT);
             }
@@ -77,15 +81,17 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     }
 
     /**
-     * Method returns all comments to certain tipsAndTricks specified by tipsAndTricksId.
+     * Method returns all comments to certain tipsAndTricks specified by
+     * tipsAndTricksId.
      *
      * @param userVO          current {@link UserVO}
-     * @param tipsAndTricksId specifies {@link greencity.entity.TipsAndTricks} to which we search for comments
+     * @param tipsAndTricksId specifies {@link greencity.entity.TipsAndTricks} to
+     *                        which we search for comments
      * @return all comments to certain tipsAndTricksId specified by tipsAndTricksId.
      */
     @Override
     public PageableDto<TipsAndTricksCommentDto> findAllComments(Pageable pageable, UserVO userVO,
-                                                                Long tipsAndTricksId) {
+        Long tipsAndTricksId) {
         Page<TipsAndTricksComment> pages =
             tipsAndTricksCommentRepo.findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(
                 pageable, tipsAndTricksId);
@@ -108,14 +114,15 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             tipsAndTricksCommentDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
      * Method returns all replies to certain comment specified by parentCommentId.
      *
-     * @param parentCommentId specifies {@link greencity.entity.TipsAndTricksComment} to which we search for replies
+     * @param parentCommentId specifies
+     *                        {@link greencity.entity.TipsAndTricksComment} to which
+     *                        we search for replies
      * @return all replies to certain comment specified by parentCommentId.
      */
     @Override
@@ -128,7 +135,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     }
 
     /**
-     * Method to mark {@link greencity.entity.TipsAndTricksComment} specified by id as deleted.
+     * Method to mark {@link greencity.entity.TipsAndTricksComment} specified by id
+     * as deleted.
      *
      * @param id     of {@link greencity.entity.TipsAndTricksComment} to delete.
      * @param userVO current {@link UserVO} that wants to delete.
@@ -153,7 +161,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
      * Method to change the existing {@link greencity.entity.TipsAndTricksComment}.
      *
      * @param text   new text of {@link greencity.entity.TipsAndTricksComment}.
-     * @param id     to specify {@link greencity.entity.TipsAndTricksComment} that user wants to change.
+     * @param id     to specify {@link greencity.entity.TipsAndTricksComment} that
+     *               user wants to change.
      * @param userVO current {@link UserVO} that wants to change.
      */
     @Override
@@ -168,9 +177,11 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     }
 
     /**
-     * Method to like or dislike {@link greencity.entity.TipsAndTricksComment} specified by id.
+     * Method to like or dislike {@link greencity.entity.TipsAndTricksComment}
+     * specified by id.
      *
-     * @param id     of {@link greencity.entity.TipsAndTricksComment} to like/dislike.
+     * @param id     of {@link greencity.entity.TipsAndTricksComment} to
+     *               like/dislike.
      * @param userVO current {@link UserVO} that wants to like/dislike.
      */
     @Override
@@ -187,10 +198,13 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     }
 
     /**
-     * Method returns count of likes to certain {@link greencity.entity.TipsAndTricksComment} specified by id.
+     * Method returns count of likes to certain
+     * {@link greencity.entity.TipsAndTricksComment} specified by id.
      *
-     * @param id of {@link greencity.entity.TipsAndTricksComment} to which we get count of likes.
-     * @return count of likes to certain {@link greencity.entity.TipsAndTricksComment} specified by id.
+     * @param id of {@link greencity.entity.TipsAndTricksComment} to which we get
+     *           count of likes.
+     * @return count of likes to certain
+     *         {@link greencity.entity.TipsAndTricksComment} specified by id.
      */
     @Override
     public int countLikes(Long id) {
@@ -198,7 +212,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     }
 
     /**
-     * Method to count replies to certain {@link greencity.entity.TipsAndTricksComment}.
+     * Method to count replies to certain
+     * {@link greencity.entity.TipsAndTricksComment}.
      *
      * @param id specifies parent comment to all replies
      * @return amount of replies
@@ -209,7 +224,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
     }
 
     /**
-     * Method to count replies to certain {@link greencity.entity.TipsAndTricksComment}.
+     * Method to count replies to certain
+     * {@link greencity.entity.TipsAndTricksComment}.
      *
      * @param tipAndTricksId specifies parent comment to all replies
      * @return amount of replies

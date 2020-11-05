@@ -43,10 +43,11 @@ public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslati
     @Override
     public List<FactOfTheDayTranslationVO> saveAll(List<FactOfTheDayTranslationVO> factOfTheDayTranslation) {
         List<FactOfTheDayTranslation> collect = factOfTheDayTranslation.stream()
-                .map(fact -> modelMapper.map(fact, FactOfTheDayTranslation.class))
-                .collect(Collectors.toList());
+            .map(fact -> modelMapper.map(fact, FactOfTheDayTranslation.class))
+            .collect(Collectors.toList());
         return modelMapper.map(factOfTheDayTranslationRepo.saveAll(collect),
-                new TypeToken<List<FactOfTheDayTranslationVO>>() {}.getType());
+            new TypeToken<List<FactOfTheDayTranslationVO>>() {
+            }.getType());
     }
 
     /**
@@ -55,8 +56,8 @@ public class FactOfTheDayTranslationServiceImpl implements FactOfTheDayTranslati
     @Override
     public void deleteAll(List<FactOfTheDayTranslationVO> factOfTheDayTranslations) {
         List<FactOfTheDayTranslation> collect = factOfTheDayTranslations.stream()
-                .map(fact -> modelMapper.map(fact, FactOfTheDayTranslation.class))
-                .collect(Collectors.toList());
+            .map(fact -> modelMapper.map(fact, FactOfTheDayTranslation.class))
+            .collect(Collectors.toList());
         factOfTheDayTranslationRepo.deleteAll(collect);
     }
 }

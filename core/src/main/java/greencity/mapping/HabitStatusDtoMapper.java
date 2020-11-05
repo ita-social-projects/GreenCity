@@ -31,7 +31,8 @@ public class HabitStatusDtoMapper extends AbstractConverter<HabitStatus, HabitSt
                 .map(habitStatusCalendar -> HabitStatusCalendarDto.builder()
                     .id(habitStatusCalendar.getId())
                     .enrollDate(habitStatusCalendar.getEnrollDate())
-                    .build()).collect(Collectors.toList()))
+                    .build())
+                .collect(Collectors.toList()))
             .build();
     }
 }

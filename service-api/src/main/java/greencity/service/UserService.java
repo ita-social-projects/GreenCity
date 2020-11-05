@@ -112,11 +112,11 @@ public interface UserService {
     /**
      * Method that allows you to update {@link UserVO} by dto.
      *
-     * @param dto - dto {@link UserManagementDto} with updated fields for updating {@link UserVO}.
+     * @param dto - dto {@link UserManagementDto} with updated fields for updating
+     *            {@link UserVO}.
      * @author Vasyl Zhovnir
      */
     void updateUser(UserManagementDto dto);
-
 
     /**
      * Get all exists roles.
@@ -129,7 +129,7 @@ public interface UserService {
     /**
      * Get list of available {@link EmailNotification} statuses for {@link UserVO}.
      *
-     * @return available {@link EmailNotification}  statuses.
+     * @return available {@link EmailNotification} statuses.
      */
     List<EmailNotification> getEmailNotificationsStatuses();
 
@@ -143,7 +143,8 @@ public interface UserService {
     /**
      * Find users by filter.
      *
-     * @param filterUserDto contains objects whose values determine the filter parameters of the returned list.
+     * @param filterUserDto contains objects whose values determine the filter
+     *                      parameters of the returned list.
      * @param pageable      pageable configuration.
      * @return {@link PageableDto}.
      * @author Rostyslav Khasanov.
@@ -188,7 +189,8 @@ public interface UserService {
     List<UserGoalResponseDto> getUserGoals(Long userId, String language);
 
     /**
-     * Method returns list of available (not ACTIVE) goals for user for specific language.
+     * Method returns list of available (not ACTIVE) goals for user for specific
+     * language.
      *
      * @param userId   id of the {@link UserVO} current user.
      * @param language needed language code.
@@ -259,13 +261,14 @@ public interface UserService {
      * Update user profile picture {@link UserVO}.
      *
      * @param image                 {@link MultipartFile}
-     * @param email                 {@link String} - email of user that need to update.
+     * @param email                 {@link String} - email of user that need to
+     *                              update.
      * @param userProfilePictureDto {@link UserProfilePictureDto}
      * @return {@link UserVO}.
      * @author Marian Datsko
      */
     UserVO updateUserProfilePicture(MultipartFile image, String email,
-                                  UserProfilePictureDto userProfilePictureDto);
+        UserProfilePictureDto userProfilePictureDto);
 
     /**
      * Delete user profile picture {@link UserVO}.
@@ -407,7 +410,6 @@ public interface UserService {
      * @return {@link PageableAdvancedDto} of {@link UserManagementDto} instances.
      */
     PageableAdvancedDto<UserManagementDto> searchBy(Pageable paging, String query);
-
 
     /**
      * Method for getting all Users.

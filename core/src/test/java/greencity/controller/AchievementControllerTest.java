@@ -29,7 +29,6 @@ class AchievementControllerTest {
     @Mock
     private AchievementService achievementService;
 
-
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(achievementController)

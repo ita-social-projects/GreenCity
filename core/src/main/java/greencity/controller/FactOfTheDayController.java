@@ -50,9 +50,9 @@ public class FactOfTheDayController {
     })
     @GetMapping("/")
     @ApiLocale
-    public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                                                Principal principal,
-                                                                            @ApiIgnore @ValidLanguage Locale locale) {
+    public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDay(
+        @ApiIgnore @AuthenticationPrincipal Principal principal,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayService.getRandomFactOfTheDayByLanguage(locale.getLanguage()));
     }
@@ -69,9 +69,8 @@ public class FactOfTheDayController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/all")
-    public ResponseEntity<PageableDto<FactOfTheDayDTO>> getAllFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                                               Principal principal, @ApiIgnore
-                                                                               Pageable pageable) {
+    public ResponseEntity<PageableDto<FactOfTheDayDTO>> getAllFactOfTheDay(
+        @ApiIgnore @AuthenticationPrincipal Principal principal, @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayService.getAllFactsOfTheDay(pageable));
     }
@@ -88,8 +87,8 @@ public class FactOfTheDayController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/find")
-    public ResponseEntity<FactOfTheDayDTO> findFactOfTheDay(@ApiIgnore @AuthenticationPrincipal
-                                                                Principal principal, @RequestParam("id") Long id) {
+    public ResponseEntity<FactOfTheDayDTO> findFactOfTheDay(@ApiIgnore @AuthenticationPrincipal Principal principal,
+        @RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(factOfTheDayService.getFactOfTheDayById(id));
     }
@@ -105,8 +104,7 @@ public class FactOfTheDayController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/languages")
-    public ResponseEntity<List<LanguageDTO>> getLanguages(@ApiIgnore @AuthenticationPrincipal
-                                                              Principal principal) {
+    public ResponseEntity<List<LanguageDTO>> getLanguages(@ApiIgnore @AuthenticationPrincipal Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(languageService.getAllLanguages());
     }

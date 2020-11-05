@@ -47,13 +47,15 @@ public class OwnSecurityController {
     /**
      * Constructor.
      *
-     * @param service            - {@link OwnSecurityService} - service for security logic.
-     * @param verifyEmailService {@link VerifyEmailService} - service for email verification.
+     * @param service            - {@link OwnSecurityService} - service for security
+     *                           logic.
+     * @param verifyEmailService {@link VerifyEmailService} - service for email
+     *                           verification.
      */
     @Autowired
     public OwnSecurityController(OwnSecurityService service,
-                                 VerifyEmailService verifyEmailService,
-                                 PasswordRecoveryService passwordRecoveryService) {
+        VerifyEmailService verifyEmailService,
+        PasswordRecoveryService passwordRecoveryService) {
         this.service = service;
         this.verifyEmailService = verifyEmailService;
         this.passwordRecoveryService = passwordRecoveryService;
@@ -104,7 +106,7 @@ public class OwnSecurityController {
     })
     @GetMapping("/verifyEmail")
     public ResponseEntity<Object> verify(@RequestParam @NotBlank String token,
-                                         @RequestParam("user_id") Long userId) {
+        @RequestParam("user_id") Long userId) {
         verifyEmailService.verifyByToken(userId, token);
         return ResponseEntity.ok().build();
     }
@@ -175,7 +177,7 @@ public class OwnSecurityController {
     })
     @PutMapping
     public ResponseEntity<Object> updatePassword(@Valid @RequestBody UpdatePasswordDto updateDto,
-                                                 @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         service.updateCurrentPassword(updateDto, email);
         return ResponseEntity.ok().build();

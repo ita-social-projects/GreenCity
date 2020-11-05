@@ -1,7 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception that we get when moderator trying to update user status of admin or another moderator.
+ * Exception that we get when moderator trying to update user status of admin or
+ * another moderator.
  *
  * @author Rostyslav Khasanov
  */

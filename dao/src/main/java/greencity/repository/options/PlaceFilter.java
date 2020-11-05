@@ -18,9 +18,9 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * The class implements {@link Specification}. Each constructor
- * takes a {@code DTO} class the type of which determines the further
- * creation of a new {@link Predicate} object.
+ * The class implements {@link Specification}. Each constructor takes a
+ * {@code DTO} class the type of which determines the further creation of a new
+ * {@link Predicate} object.
  *
  * @author Roman Zahouri, Nazar Stasyuk
  */
@@ -37,8 +37,7 @@ public class PlaceFilter implements Specification<Place> {
     }
 
     /**
-     * {@inheritDoc}
-     * Forms a list of {@link Predicate} based on type of the classes
+     * {@inheritDoc} Forms a list of {@link Predicate} based on type of the classes
      * initialized in the constructors.
      */
     @Override
@@ -56,8 +55,8 @@ public class PlaceFilter implements Specification<Place> {
     }
 
     /**
-     * Returns a predicate where {@link PlaceStatus} of {@link Place}
-     * is equal to {@param status} value.
+     * Returns a predicate where {@link PlaceStatus} of {@link Place} is equal to
+     * {@param status} value.
      *
      * @param r      must not be {@literal null}.
      * @param cb     must not be {@literal null}.
@@ -73,8 +72,8 @@ public class PlaceFilter implements Specification<Place> {
     }
 
     /**
-     * Returns a predicate where {@link greencity.entity.Location}'s
-     * lat and lng are in bounds of {@param bounds}.
+     * Returns a predicate where {@link greencity.entity.Location}'s lat and lng are
+     * in bounds of {@param bounds}.
      *
      * @param r      must not be {@literal null}.
      * @param cb     must not be {@literal null}.
@@ -94,8 +93,9 @@ public class PlaceFilter implements Specification<Place> {
     }
 
     /**
-     * Checks if {@link Place} is open at the time described in the {@code currentTime} string argument.
-     * The method can throw a {@link DateTimeParseException} if the {@code currentTime} string doesn't
+     * Checks if {@link Place} is open at the time described in the
+     * {@code currentTime} string argument. The method can throw a
+     * {@link DateTimeParseException} if the {@code currentTime} string doesn't
      * match a {@code AppConstant.DATE_FORMAT} format string.
      *
      * @param r           must not be {@literal null}.
@@ -114,12 +114,13 @@ public class PlaceFilter implements Specification<Place> {
     }
 
     /**
-     * Returns a predicate where {@link Place} has some values defined
-     * in the incoming {@link FilterDiscountDto} object.
+     * Returns a predicate where {@link Place} has some values defined in the
+     * incoming {@link FilterDiscountDto} object.
      *
      * @param r        must not be {@literal null}.
      * @param cb       must not be {@literal null}.
-     * @param discount a dto describes information about discount of a {@link Place}.
+     * @param discount a dto describes information about discount of a
+     *                 {@link Place}.
      * @return a {@link Predicate}, may be {@literal null}.
      * @author Roman Zahouri
      */
@@ -139,8 +140,8 @@ public class PlaceFilter implements Specification<Place> {
     }
 
     /**
-     * Returns a predicate where {@link Place} has some values defined
-     * in the incoming {@link FilterDiscountDto} object.
+     * Returns a predicate where {@link Place} has some values defined in the
+     * incoming {@link FilterDiscountDto} object.
      *
      * @param r  must not be {@literal null}.
      * @param cb must not be {@literal null}.

@@ -129,9 +129,10 @@ public class HabitServiceImpl implements HabitService {
                         .name(habitTranslationDto.getName())
                         .language(modelMapper.map(
                             languageService.findByCode(habitTranslationDto.getLanguageCode()),
-                            Language.class)).build())
-                    .collect(Collectors.toList())
-            ).build();
+                            Language.class))
+                        .build())
+                    .collect(Collectors.toList()))
+            .build();
         habit.getHabitTranslations().forEach(habitTranslation -> habitTranslation.setHabit(habit));
         return habit;
     }
@@ -169,7 +170,8 @@ public class HabitServiceImpl implements HabitService {
     }
 
     /**
-     * Method updates {@link HabitTranslation} with {@link HabitTranslationManagementDto} fields.
+     * Method updates {@link HabitTranslation} with
+     * {@link HabitTranslationManagementDto} fields.
      *
      * @param htDto {@link HabitTranslationManagementDto} instance.
      * @param ht    {@link HabitTranslation} instance.
@@ -181,11 +183,12 @@ public class HabitServiceImpl implements HabitService {
     }
 
     /**
-     * Method returns map with {@link HabitTranslationManagementDto} as a value and it's {@link String}
-     * language code as a key.
+     * Method returns map with {@link HabitTranslationManagementDto} as a value and
+     * it's {@link String} language code as a key.
      *
      * @param habitManagementDto {@link HabitManagementDto} instance.
-     * @return {@link Map} with {@link String} key and {@link HabitTranslationManagementDto} instance value.
+     * @return {@link Map} with {@link String} key and
+     *         {@link HabitTranslationManagementDto} instance value.
      */
     private Map<String, HabitTranslationManagementDto> getMapTranslationsDtos(HabitManagementDto habitManagementDto) {
         return habitManagementDto.getHabitTranslations().stream()

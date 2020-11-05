@@ -115,8 +115,7 @@ class PlaceServiceImplTest {
     private Set<DiscountValueVO> discountValuesVO = new HashSet<>();
     private List<PhotoAddDto> photoDtos = new ArrayList<>();
     private List<Photo> photos = new ArrayList<>();
-    private PlaceAddDto placeAddDto = PlaceAddDto.
-        builder()
+    private PlaceAddDto placeAddDto = PlaceAddDto.builder()
         .name("Test")
         .category(categoryDto)
         .location(locationDto)
@@ -298,16 +297,14 @@ class PlaceServiceImplTest {
     void updateStatusesTest() {
         BulkUpdatePlaceStatusDto requestDto = new BulkUpdatePlaceStatusDto(
             Arrays.asList(1L, 2L),
-            PlaceStatus.DECLINED
-        );
+            PlaceStatus.DECLINED);
         PlaceVO placeVO1 = ModelUtils.getPlaceVO();
         PlaceVO placeVO2 = ModelUtils.getPlaceVO();
         placeVO2.setId(2L);
 
         List<UpdatePlaceStatusDto> expected = Arrays.asList(
             new UpdatePlaceStatusDto(1L, PlaceStatus.DECLINED),
-            new UpdatePlaceStatusDto(2L, PlaceStatus.DECLINED)
-        );
+            new UpdatePlaceStatusDto(2L, PlaceStatus.DECLINED));
 
         when(placeRepo.findById(anyLong()))
             .thenReturn(Optional.of(genericEntity1))
@@ -322,7 +319,6 @@ class PlaceServiceImplTest {
             .thenReturn(new UpdatePlaceStatusDto(1L, PlaceStatus.DECLINED));
         when(modelMapper.map(genericEntity2, UpdatePlaceStatusDto.class))
             .thenReturn(new UpdatePlaceStatusDto(2L, PlaceStatus.DECLINED));
-
 
         assertEquals(expected, placeService.updateStatuses(requestDto));
     }

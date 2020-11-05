@@ -21,7 +21,8 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     ModelMapper modelMapper;
 
     /**
-     * Method checks if parameter is {@link UserVO} and is annotated with {@link CurrentUser}.
+     * Method checks if parameter is {@link UserVO} and is annotated with
+     * {@link CurrentUser}.
      *
      * @param parameter method parameter
      * @return boolean
@@ -39,7 +40,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
      */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Principal principal = webRequest.getUserPrincipal();
         return principal != null ? userService.findByEmail(principal.getName()) : null;
     }

@@ -35,7 +35,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @ExtendWith(MockitoExtension.class)
 class PlaceCommentControllerTest {
 
@@ -66,7 +65,6 @@ class PlaceCommentControllerTest {
         "  ],\n" +
         "  \"text\": \"string\"\n" +
         "}";
-
 
     private static final String getContent = "{\n" +
         "  \"estimate\": {\n" +
@@ -101,9 +99,9 @@ class PlaceCommentControllerTest {
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
-            .principal(principal)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON))
+                .principal(principal)
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -117,8 +115,8 @@ class PlaceCommentControllerTest {
     void saveBadRequestTest() throws Exception {
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("{}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
             .andExpect(status().isBadRequest());
 
         verify(placeCommentService, times(0)).save(eq(1L), any(), anyString());
@@ -138,9 +136,9 @@ class PlaceCommentControllerTest {
             NestedServletException.class,
             () -> mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
                 placeCommentLinkSecondPart, 1)
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
+                    .principal(principal)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
                 .andExpect(status().isCreated()));
 
         String expectedMessage = ErrorMessage.USER_HAS_BLOCKED_STATUS;

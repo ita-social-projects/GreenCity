@@ -45,7 +45,8 @@ class CategoryControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\n" +
                 "  \"name\": \"content\"\n" +
-                "}")).andExpect(status().isCreated());
+                "}"))
+            .andExpect(status().isCreated());
 
         verify(categoryService, times(1)).save(categoryDto);
     }

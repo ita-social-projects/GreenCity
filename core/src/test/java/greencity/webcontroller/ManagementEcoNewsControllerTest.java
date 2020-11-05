@@ -127,7 +127,8 @@ class ManagementEcoNewsControllerTest {
         addEcoNewsDtoRequest.setTags(Collections.singletonList("News"));
         Gson gson = new Gson();
         String json = gson.toJson(addEcoNewsDtoRequest);
-        MockMultipartFile jsonFile = new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementEcoNewsLink + "/")
             .file(jsonFile)
@@ -146,7 +147,8 @@ class ManagementEcoNewsControllerTest {
         ecoNewsDtoManagement.setTags(Collections.singletonList("News"));
         Gson gson = new Gson();
         String json = gson.toJson(ecoNewsDtoManagement);
-        MockMultipartFile jsonFile = new MockMultipartFile("ecoNewsDtoManagement", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("ecoNewsDtoManagement", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementEcoNewsLink + "/")
             .file(jsonFile)

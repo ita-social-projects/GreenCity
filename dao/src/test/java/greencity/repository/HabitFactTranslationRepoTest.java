@@ -59,7 +59,6 @@ class HabitFactTranslationRepoTest {
         assertEquals("Тест факт", res.getContent());
     }
 
-
     @Test
     void findAllByFactOfDayStatusAndLanguageIdTest_shouldReturnAllCorrectValues() {
         HabitFactTranslation res = habitFactTranslationRepo

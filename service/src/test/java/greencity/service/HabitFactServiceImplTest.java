@@ -57,7 +57,8 @@ class HabitFactServiceImplTest {
         String language = "en";
         Pageable pageable = PageRequest.of(0, 5);
         LanguageTranslationDTO languageTranslationDTO = ModelUtils.getLanguageTranslationDTO();
-        List<HabitFactTranslation> habitFactTranslation = Collections.singletonList(ModelUtils.getHabitFactTranslation());
+        List<HabitFactTranslation> habitFactTranslation =
+            Collections.singletonList(ModelUtils.getHabitFactTranslation());
         List<LanguageTranslationDTO> languageTranslationDTOS = Collections.singletonList(languageTranslationDTO);
         PageableDto<LanguageTranslationDTO> pageableDto =
             new PageableDto<>(languageTranslationDTOS, languageTranslationDTOS.size(), 0, 1);

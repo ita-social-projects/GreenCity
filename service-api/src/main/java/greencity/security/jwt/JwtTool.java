@@ -34,8 +34,8 @@ public class JwtTool {
      */
     @Autowired
     public JwtTool(@Value("${accessTokenValidTimeInMinutes}") Integer accessTokenValidTimeInMinutes,
-                   @Value("${refreshTokenValidTimeInMinutes}") Integer refreshTokenValidTimeInMinutes,
-                   @Value("${tokenKey}") String accessTokenKey) {
+        @Value("${refreshTokenValidTimeInMinutes}") Integer refreshTokenValidTimeInMinutes,
+        @Value("${tokenKey}") String accessTokenKey) {
         this.accessTokenValidTimeInMinutes = accessTokenValidTimeInMinutes;
         this.refreshTokenValidTimeInMinutes = refreshTokenValidTimeInMinutes;
         this.accessTokenKey = accessTokenKey;
@@ -83,8 +83,8 @@ public class JwtTool {
     }
 
     /**
-     * Gets email from token and throws an error if token is expired.
-     * WARNING: The method DOESN'T CHECK whether the token's signature is valid.
+     * Gets email from token and throws an error if token is expired. WARNING: The
+     * method DOESN'T CHECK whether the token's signature is valid.
      *
      * @param token - access token
      * @return - user's email

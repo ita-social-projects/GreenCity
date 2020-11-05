@@ -23,4 +23,3 @@ public class HabitFact {
     @ManyToOne
     private Habit habit;
 }
-

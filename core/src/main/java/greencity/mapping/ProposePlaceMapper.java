@@ -6,7 +6,6 @@ import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Class that used by {@link ModelMapper} to map {@link PlaceAddDto} into
  * {@link Place}.

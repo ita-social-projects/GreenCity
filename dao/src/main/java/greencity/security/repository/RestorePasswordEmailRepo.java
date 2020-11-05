@@ -22,10 +22,11 @@ public interface RestorePasswordEmailRepo extends JpaRepository<RestorePasswordE
     /**
      * Deletes from the database password reset tokens that are expired.
      *
-     * @apiNote WARNING: MySQL doesn't allow to delete/update records without specifying PRIMARY KEY.
-     *          `id <> -1` is a trick to make MySQL DB execute this query.
-     *          However, this WON'T WORK if there is a possibility of having negative PRIMARY KEYs.
-     *          Some DBMS do permit specifying IDENTITY function to generate PRIMARY KEY.
+     * @apiNote WARNING: MySQL doesn't allow to delete/update records without
+     *          specifying PRIMARY KEY. `id <> -1` is a trick to make MySQL DB
+     *          execute this query. However, this WON'T WORK if there is a
+     *          possibility of having negative PRIMARY KEYs. Some DBMS do permit
+     *          specifying IDENTITY function to generate PRIMARY KEY.
      *
      * @return number of deleted rows
      * @author Yurii Koval

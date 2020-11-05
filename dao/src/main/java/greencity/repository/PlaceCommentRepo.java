@@ -15,7 +15,7 @@ public interface PlaceCommentRepo extends JpaRepository<Comment, Long> {
     /**
      * Method with return {@link Optional} of {@link Comment} by comment id.
      *
-     * @param  id of {@link Comment}.
+     * @param id of {@link Comment}.
      * @return {@link Optional} of {@link Comment} .
      * @author Marian Milian
      */
@@ -24,7 +24,7 @@ public interface PlaceCommentRepo extends JpaRepository<Comment, Long> {
     /**
      * Method with return {@link Page} of {@link Comment} - s.
      *
-     * @param  pageable pageable configuration.
+     * @param pageable pageable configuration.
      * @return {@link Page}.
      * @author Rostyslav Khasanov
      */

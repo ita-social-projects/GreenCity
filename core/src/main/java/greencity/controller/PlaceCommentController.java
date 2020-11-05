@@ -53,8 +53,8 @@ public class PlaceCommentController {
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity<Object> save(@PathVariable Long placeId,
-                                       @Valid @RequestBody AddCommentDto addCommentDto,
-                                       @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        @Valid @RequestBody AddCommentDto addCommentDto,
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         UserVO user = userService.findByEmail(principal.getName());
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
@@ -78,9 +78,9 @@ public class PlaceCommentController {
     }
 
     /**
-     * Method return comment by id.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * Method return comment by id. Parameter pageable ignored because swagger ui
+     * shows the wrong params, instead they are explained in the
+     * {@link ApiPageable}.
      *
      * @param pageable pageable configuration
      * @return PageableDto

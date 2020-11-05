@@ -71,8 +71,7 @@ public class GoalController {
     @GetMapping("/shoppingList/{userId}")
     @ApiLocale
     public ResponseEntity<List<ShoppingListDtoResponse>> getShoppingList(
-        @ApiParam("User id")
-        @PathVariable Long userId,
+        @ApiParam("User id") @PathVariable Long userId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(goalService.getShoppingList(userId, locale.getLanguage()));
     }
@@ -91,15 +90,11 @@ public class GoalController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping(path = "/shoppingList/{userId}")
-    public ResponseEntity<HttpStatus> updateUserProfilePicture(@ApiParam("User id")
-                                                               @CurrentUserId
-                                                               @PathVariable Long userId,
-                                                               @ApiParam("Goal status : ACTIVE = false or DONE = true ")
-                                                               @RequestParam Boolean status,
-                                                               @ApiParam("Goal id")
-                                                               @RequestParam(required = false) Long goalId,
-                                                               @ApiParam("Custom goal id")
-                                                               @RequestParam(required = false) Long customGoalId) {
+    public ResponseEntity<HttpStatus> updateUserProfilePicture(
+        @ApiParam("User id") @CurrentUserId @PathVariable Long userId,
+        @ApiParam("Goal status : ACTIVE = false or DONE = true ") @RequestParam Boolean status,
+        @ApiParam("Goal id") @RequestParam(required = false) Long goalId,
+        @ApiParam("Custom goal id") @RequestParam(required = false) Long customGoalId) {
         goalService.changeGoalOrCustomGoalStatus(userId, status, goalId, customGoalId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

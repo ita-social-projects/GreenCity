@@ -69,7 +69,6 @@ class NotificationServiceImplTest {
         place.setModifiedDate(ZonedDateTime.now());
         place.setCategory(category);
 
-
         when(userRepo.findAllByEmailNotification(emailNotification))
             .thenReturn(Collections.singletonList(user));
         when(modelMapper.map(user, PlaceAuthorDto.class))

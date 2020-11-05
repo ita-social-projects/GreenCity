@@ -18,18 +18,18 @@ public class SearchTipsAndTricksDtoMapper extends AbstractConverter<TipsAndTrick
         User author = tipsAndTricks.getAuthor();
         String language = LocaleContextHolder.getLocale().getLanguage();
         return SearchTipsAndTricksDto.builder()
-                .id(tipsAndTricks.getId())
-                .title(tipsAndTricks.getTitleTranslations()
-                        .stream()
-                        .filter(elem -> elem.getLanguage().getCode().equals(language))
-                        .findFirst().orElseThrow(RuntimeException::new).getContent())
-                .author(new AuthorDto(author.getId(),
-                        author.getName()))
-                .creationDate(tipsAndTricks.getCreationDate())
-                .tags(tipsAndTricks.getTags()
-                        .stream()
-                        .map(Tag::getName)
-                        .collect(Collectors.toList()))
-                .build();
+            .id(tipsAndTricks.getId())
+            .title(tipsAndTricks.getTitleTranslations()
+                .stream()
+                .filter(elem -> elem.getLanguage().getCode().equals(language))
+                .findFirst().orElseThrow(RuntimeException::new).getContent())
+            .author(new AuthorDto(author.getId(),
+                author.getName()))
+            .creationDate(tipsAndTricks.getCreationDate())
+            .tags(tipsAndTricks.getTags()
+                .stream()
+                .map(Tag::getName)
+                .collect(Collectors.toList()))
+            .build();
     }
 }

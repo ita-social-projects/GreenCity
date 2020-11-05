@@ -27,10 +27,8 @@ import org.springframework.format.annotation.DateTimeFormat;
             columns = {
                 @ColumnResult(name = "month", type = Integer.class),
                 @ColumnResult(name = "count", type = Long.class)
-            }
-        )
-    }
-)
+            })
+    })
 @NamedNativeQuery(name = "User.findAllRegistrationMonths",
     query = "SELECT EXTRACT(MONTH FROM date_of_registration) - 1 as month, count(date_of_registration) FROM users "
         + "WHERE EXTRACT(YEAR from date_of_registration) = EXTRACT(YEAR FROM CURRENT_DATE) "

@@ -31,7 +31,8 @@ public class HabitManagementDtoMapper extends AbstractConverter<Habit, HabitMana
                     .habitItem(habitTranslation.getHabitItem())
                     .name(habitTranslation.getName())
                     .languageCode(habitTranslation.getLanguage().getCode())
-                    .build()).collect(Collectors.toList()))
+                    .build())
+                .collect(Collectors.toList()))
             .build();
     }
 }
