@@ -382,7 +382,6 @@ public class ModelUtils {
         discountValueDtos.add(getDiscountValueDto());
         placeAddDto.setDiscountValues(discountValueDtos);
         return placeAddDto;
-
     }
 
     public static HabitFactTranslation getFactTranslation() {
@@ -731,6 +730,7 @@ public class ModelUtils {
     public static FavoritePlaceVO getFavoritePlaceVO() {
         return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
+
     public static Comment getComment() {
         return new Comment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
@@ -743,6 +743,5 @@ public class ModelUtils {
     public static AddCommentDto getAddCommentDto() {
         return new AddCommentDto("comment", null, null);
     }
-
 }
 

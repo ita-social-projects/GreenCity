@@ -335,7 +335,6 @@ class UserServiceImplTest {
 
     @Test
     void updateLastVisit() {
-
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
@@ -936,7 +935,6 @@ class UserServiceImplTest {
 
     @Test
     void getUserAndSixFriendsWithOnlineStatus() {
-
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));

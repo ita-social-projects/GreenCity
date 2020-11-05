@@ -2,24 +2,15 @@ package greencity.service;
 
 import greencity.dto.goal.*;
 import java.util.Collections;
-import org.hibernate.mapping.Collection;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserGoalVO;
-import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
 import greencity.entity.localization.GoalTranslation;
-import greencity.enums.GoalStatus;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.GoalNotFoundException;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
@@ -30,11 +21,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import org.modelmapper.TypeToken;
+
 
 @ExtendWith(MockitoExtension.class)
 class GoalServiceImplTest {
