@@ -1,11 +1,9 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.goal.GoalPostDto;
 import greencity.service.GoalService;
 import java.util.Locale;
-import org.apache.poi.ss.extractor.ExcelExtractor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

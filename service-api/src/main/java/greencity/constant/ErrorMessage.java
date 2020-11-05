@@ -136,6 +136,7 @@ public final class ErrorMessage {
     public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =
             "Count of tags should be at least one but not more three";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
+
     private ErrorMessage() {
     }
 }
