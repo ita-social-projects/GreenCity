@@ -1,6 +1,7 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
+import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.entity.TipsAndTricksComment;
 import org.junit.jupiter.api.Test;
 
@@ -11,8 +12,12 @@ class AddTipsAndTricksCommentDtoRequestMapperTest {
 
     @Test
     void convertTest() {
-        TipsAndTricksComment expected = ModelUtils.getTipsAndTricksComment();
-        TipsAndTricksComment actual = mapper.convert(ModelUtils.getAddTipsAndTricksCommentDtoRequest());
+        TipsAndTricksComment expected = TipsAndTricksComment.builder()
+                .id(1L)
+                .text("TipsAndTricksComment")
+                .build();
+        AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest = ModelUtils.getAddTipsAndTricksCommentDtoRequest();
+        TipsAndTricksComment actual = mapper.convert(addTipsAndTricksCommentDtoRequest);
         actual.setId(1L);
         assertEquals(expected, actual);
     }

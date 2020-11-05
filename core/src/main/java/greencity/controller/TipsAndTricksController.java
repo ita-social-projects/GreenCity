@@ -8,7 +8,7 @@ import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.entity.TipsAndTricks;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.service.TagsService;
 import greencity.service.TipsAndTricksService;
 import io.swagger.annotations.ApiOperation;
@@ -36,9 +36,9 @@ public class TipsAndTricksController {
     private final TagsService tagService;
 
     /**
-     * Method for creating {@link TipsAndTricks}.
+     * Method for creating {@link TipsAndTricksVO}.
      *
-     * @param tipsAndTricksDtoRequest - dto for {@link TipsAndTricks} entity.
+     * @param tipsAndTricksDtoRequest - dto for {@link TipsAndTricksVO} entity.
      * @return dto {@link TipsAndTricksDtoResponse} instance.
      */
 
@@ -95,10 +95,10 @@ public class TipsAndTricksController {
     }
 
     /**
-     * Method for deleting {@link TipsAndTricks} by its id.
+     * Method for deleting {@link TipsAndTricksVO} by its id.
      *
-     * @param id {@link TipsAndTricks} which will be deleted.
-     * @return id of deleted {@link TipsAndTricks}.
+     * @param id {@link TipsAndTricksVO} which will be deleted.
+     * @return id of deleted {@link TipsAndTricksVO}.
      */
     @ApiOperation(value = "Delete tips & tricks.")
     @ApiResponses(value = {

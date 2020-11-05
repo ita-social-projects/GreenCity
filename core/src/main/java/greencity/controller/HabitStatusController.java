@@ -5,9 +5,9 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitStatus;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.service.HabitStatusService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -30,9 +30,9 @@ public class HabitStatusController {
     private final HabitStatusService habitStatusService;
 
     /**
-     * Method return {@link HabitStatus} for user by {@link HabitAssign} id.
+     * Method return {@link HabitStatusVO} for user by {@link HabitAssignVO} id.
      *
-     * @param id - id of {@link HabitAssign}.
+     * @param id - id of {@link HabitAssignVO}.
      * @return {@link HabitStatusDto}.
      */
     @ApiOperation(value = "Get status of habit by assigned id for current user.")
@@ -49,9 +49,9 @@ public class HabitStatusController {
     }
 
     /**
-     * Method return {@link HabitStatus} for user by {@link HabitAssign} id.
+     * Method return {@link HabitStatusVO} for user by {@link HabitAssignVO} id.
      *
-     * @param id - id of {@link Habit}.
+     * @param id - id of {@link HabitVO}.
      * @return {@link HabitStatusDto}.
      */
     @ApiOperation(value = "Get active assigned status by habit id for current user.")
@@ -70,9 +70,9 @@ public class HabitStatusController {
     }
 
     /**
-     * Method to enroll {@link HabitStatus}.
+     * Method to enroll {@link HabitStatusVO}.
      *
-     * @param id -  id of {@link Habit}.
+     * @param id -  id of {@link HabitVO}.
      * @return {@link HabitStatusDto}.
      */
     @ApiOperation(value = "Enroll by habit id that is assigned for current user.")
@@ -89,9 +89,9 @@ public class HabitStatusController {
     }
 
     /**
-     * Method to unenroll {@link HabitStatus} for defined date.
+     * Method to unenroll {@link HabitStatusVO} for defined date.
      *
-     * @param id   - id of {@link Habit}.
+     * @param id   - id of {@link HabitVO}.
      * @param date - {@link LocalDate} we want to unenroll.
      * @return {@link ResponseEntity}.
      */
@@ -112,9 +112,9 @@ public class HabitStatusController {
     }
 
     /**
-     * Method to enroll {@link HabitStatus} for defined date.
+     * Method to enroll {@link HabitStatusVO} for defined date.
      *
-     * @param id   - id of {@link Habit}.
+     * @param id   - id of {@link HabitVO}.
      * @param date - {@link LocalDate} we want to enroll.
      * @return {@link HabitStatusDto}.
      */
@@ -136,9 +136,9 @@ public class HabitStatusController {
     }
 
     /**
-     * Method to update {@link HabitStatus} for {@link HabitAssign} by {@link Habit}'s id.
+     * Method to update {@link HabitStatusVO} for {@link HabitAssignVO} by {@link HabitVO}'s id.
      *
-     * @param id - id of {@link Habit}.
+     * @param id - id of {@link HabitVO}.
      * @return {@link HabitStatusDto}.
      */
     @ApiOperation(value = "Update status by habit id that is assigned for current user.")

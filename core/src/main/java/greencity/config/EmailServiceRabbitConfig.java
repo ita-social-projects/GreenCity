@@ -2,7 +2,7 @@ package greencity.config;
 
 import static greencity.constant.RabbitConstants.*;
 
-import greencity.entity.EcoNews;
+import greencity.dto.econews.EcoNewsVO;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -105,9 +105,9 @@ public class EmailServiceRabbitConfig {
     }
 
     /**
-     * Queue, which stores messages for sending notification about adding new {@link EcoNews}.
+     * Queue, which stores messages for sending notification about adding new {@link EcoNewsVO}.
      *
-     * @return Queue, for sending notification about adding new {@link EcoNews}.
+     * @return Queue, for sending notification about adding new {@link EcoNewsVO}.
      */
     @Bean
     Queue ecoNewsEmailQueue() {

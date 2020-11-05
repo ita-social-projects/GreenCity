@@ -12,8 +12,10 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
-import greencity.entity.Tag;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.tag.TagVO;
+//import greencity.entity.EcoNews;
+//import greencity.entity.Tag;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
@@ -67,9 +69,9 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for creating {@link EcoNews}.
+     * Method for creating {@link EcoNewsVO}.
      *
-     * @param addEcoNewsDtoRequest - dto for {@link EcoNews} entity.
+     * @param addEcoNewsDtoRequest - dto for {@link EcoNewsVO} entity.
      * @return dto {@link AddEcoNewsDtoResponse} instance.
      * @author Yuriy Olkhovskyi & Kovaliv Taras.
      */
@@ -93,9 +95,9 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for updating {@link EcoNews}.
+     * Method for updating {@link EcoNewsVO}.
      *
-     * @param updateEcoNewsDto - dto for {@link EcoNews} entity.
+     * @param updateEcoNewsDto - dto for {@link EcoNewsVO} entity.
      * @return dto {@link EcoNewsDto} instance.
      */
     @ApiOperation(value = "Update eco news")
@@ -156,10 +158,10 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for deleting {@link EcoNews} by its id.
+     * Method for deleting {@link EcoNewsVO} by its id.
      *
-     * @param econewsId {@link EcoNews} id which will be deleted.
-     * @return id of deleted {@link EcoNews}.
+     * @param econewsId {@link EcoNewsVO} id which will be deleted.
+     * @return id of deleted {@link EcoNewsVO}.
      * @author Yuriy Olkhovskyi.
      */
     @ApiOperation(value = "Delete eco news.")
@@ -223,7 +225,7 @@ public class EcoNewsController {
     }
 
     /**
-     * The method which returns all EcoNews {@link Tag}s.
+     * The method which returns all EcoNews {@link TagVO}s.
      *
      * @return list of {@link String} (tag's names).
      * @author Kovaliv Taras

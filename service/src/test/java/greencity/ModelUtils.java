@@ -48,6 +48,7 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.*;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
 import org.springframework.mock.web.MockMultipartFile;
@@ -203,6 +204,9 @@ public class ModelUtils {
             .workingDays(10)
             .habitStreak(5)
             .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssign(HabitAssign.builder()
+                    .id(1L)
+                    .build())
             .habitStatusCalendars(
                 Collections.singletonList(getHabitStatusCalendar())).build();
     }
@@ -404,6 +408,7 @@ public class ModelUtils {
             .id(1L)
             .factOfDayStatus(FactOfDayStatus.CURRENT)
             .habitFact(null)
+            .language(getLanguageVO())
             .content("Content")
             .build();
     }
@@ -749,5 +754,37 @@ public class ModelUtils {
         return new AddCommentDto("comment", null, null);
     }
 
+    public static AdviceTranslation getAdviceTranslation() {
+        return AdviceTranslation.builder()
+                .id(1L)
+                .language(getLanguage())
+                .content("Text content")
+                .advice(getAdvice())
+                .build();
+    }
+
+    public static Advice getAdvice() {
+        return new Advice(1L, null, null);
+    }
+
+    public static OpeningHours getOpeningHours() {
+        OpeningHours openingHoursTest = new OpeningHours();
+        openingHoursTest.setOpenTime(getLocalTime());
+        openingHoursTest.setCloseTime(getLocalTime());
+        openingHoursTest.setBreakTime(BreakTime.builder()
+                .startTime(getLocalTime())
+                .endTime(getLocalTime())
+                .build());
+        openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
+        return openingHoursTest;
+    }
+
+    public static Location getLocation() {
+        return Location.builder()
+                .address("address")
+                .lng(12.12d)
+                .lat(12.12d)
+                .build();
+    }
 }
 

@@ -8,8 +8,6 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
 import greencity.dto.user.UserVO;
-import greencity.entity.Place;
-import greencity.entity.User;
 import greencity.enums.PlaceStatus;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserBlockedException;
@@ -131,7 +129,7 @@ public class PlaceController {
     }
 
     /**
-     * The method to save {@link Place} to {@link User}'s favorite list.
+     * The method to save {@link PlaceVO} to {@link UserVO}'s favorite list.
      * Parameter principal are ignored because Spring automatically provide the Principal object.
      *
      * @param favoritePlaceDto -{@link FavoritePlaceDto}
@@ -225,7 +223,7 @@ public class PlaceController {
     }
 
     /**
-     * The method which update {@link Place} status.
+     * The method which update {@link PlaceVO} status.
      *
      * @param dto - {@link UpdatePlaceStatusDto} with place id and updated {@link PlaceStatus}.
      * @return response object with {@link UpdatePlaceStatusDto} and OK status if everything is ok.
@@ -293,10 +291,10 @@ public class PlaceController {
     }
 
     /**
-     * The method which update array of {@link Place}'s from DB.
+     * The method which update array of {@link PlaceVO}'s from DB.
      *
-     * @param dto - {@link BulkUpdatePlaceStatusDto} with {@link Place}'s id's and updated {@link PlaceStatus}
-     * @return list of {@link UpdatePlaceStatusDto} with updated {@link Place}'s and {@link PlaceStatus}'s
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with {@link PlaceVO}'s id's and updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated {@link PlaceVO}'s and {@link PlaceStatus}'s
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Bulk update place statuses")
@@ -332,9 +330,9 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete {@link Place} from DB(change {@link PlaceStatus} to DELETED).
+     * The method which delete {@link PlaceVO} from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param id - {@link Place} id
+     * @param id - {@link PlaceVO} id
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Delete place")
@@ -351,10 +349,10 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
+     * The method which delete array of {@link PlaceVO}'s from DB(change {@link PlaceStatus} to DELETED).
      *
-     * @param ids - list of id's of {@link Place}'s, splited by "," which need to be deleted
-     * @return count of deleted {@link Place}'s
+     * @param ids - list of id's of {@link PlaceVO}'s, splited by "," which need to be deleted
+     * @return count of deleted {@link PlaceVO}'s
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Bulk delete places")

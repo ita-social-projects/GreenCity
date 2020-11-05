@@ -2,7 +2,6 @@ package greencity.converters;
 
 import greencity.annotations.CurrentUser;
 import greencity.dto.user.UserVO;
-import greencity.entity.User;
 import greencity.service.UserService;
 import java.security.Principal;
 import lombok.AllArgsConstructor;
@@ -33,9 +32,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     /**
-     * Method returns {@link User} by principal.
+     * Method returns {@link UserVO} by principal.
      *
-     * @return {@link User}
+     * @return {@link UserVO}
      */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,

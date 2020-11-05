@@ -4,10 +4,9 @@ import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.User;
 import greencity.service.HabitAssignService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -29,9 +28,9 @@ public class HabitAssignController {
     private final HabitAssignService habitAssignService;
 
     /**
-     * Method which assigns habit for {@link User}.
+     * Method which assigns habit for {@link UserVO}.
      *
-     * @param id     {@link Habit} id.
+     * @param id     {@link HabitVO} id.
      * @param userVO {@link UserVO} instance.
      * @return {@link ResponseEntity}.
      */
@@ -50,9 +49,9 @@ public class HabitAssignController {
     }
 
     /**
-     * Method returns {@link HabitAssign} by it's id.
+     * Method returns {@link HabitAssignVO} by it's id.
      *
-     * @param id {@link HabitAssign} id.
+     * @param id {@link HabitAssignVO} id.
      * @return {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get habit assign.")
@@ -68,9 +67,9 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to return all {@link HabitAssign} by it's {@link Habit} id.
+     * Method to return all {@link HabitAssignVO} by it's {@link HabitVO} id.
      *
-     * @param id       {@link Habit} id.
+     * @param id       {@link HabitVO} id.
      * @param acquired {@link Boolean} status.
      * @return {@link List} of {@link HabitAssignDto}.
      */
@@ -88,9 +87,9 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to return {@link HabitAssign} by it's {@link Habit} id.
+     * Method to return {@link HabitAssignVO} by it's {@link HabitVO} id.
      *
-     * @param id     {@link Habit} id.
+     * @param id     {@link HabitVO} id.
      * @param userVO {@link UserVO} user.
      * @return {@link HabitAssignDto} instance.
      */
@@ -110,10 +109,10 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to update active {@link HabitAssign} for it's {@link Habit} id and current user.
+     * Method to update active {@link HabitAssignVO} for it's {@link HabitVO} id and current user.
      *
      * @param userVO             {@link UserVO} instance.
-     * @param id                 {@link Habit} id.
+     * @param id                 {@link HabitVO} id.
      * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
      * @return {@link HabitAssignDto}.
      */

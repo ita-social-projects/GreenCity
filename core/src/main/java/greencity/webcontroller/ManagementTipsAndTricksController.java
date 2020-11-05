@@ -6,7 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
-import greencity.entity.TipsAndTricks;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.service.LanguageService;
 import greencity.service.TipsAndTricksService;
 import io.swagger.annotations.ApiOperation;
@@ -88,7 +88,7 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Method for deleting {@link TipsAndTricks} by given id.
+     * Method for deleting {@link TipsAndTricksVO} by given id.
      *
      * @param listId list of IDs.
      * @return {@link ResponseEntity}.
@@ -105,7 +105,7 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Method which updates {@link TipsAndTricks}.
+     * Method which updates {@link TipsAndTricksVO}.
      *
      * @param tipsAndTricksDtoManagement of {@link TipsAndTricksDtoManagement}.
      * @param file                       of {@link MultipartFile}.
@@ -130,9 +130,9 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Method for creating {@link TipsAndTricks}.
+     * Method for creating {@link TipsAndTricksVO}.
      *
-     * @param tipsAndTricksDtoManagement dto for {@link TipsAndTricks} entity.
+     * @param tipsAndTricksDtoManagement dto for {@link TipsAndTricksVO} entity.
      * @param file                       of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */

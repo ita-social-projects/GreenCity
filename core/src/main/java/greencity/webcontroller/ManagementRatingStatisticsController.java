@@ -4,8 +4,8 @@ import greencity.annotations.ApiPageable;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
-import greencity.entity.RatingStatistics;
 import greencity.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
 import io.swagger.annotations.ApiOperation;
@@ -65,7 +65,7 @@ public class ManagementRatingStatisticsController {
     }
 
     /**
-     * Export {@link RatingStatistics} to Excel file.
+     * Export {@link RatingStatisticsVO} to Excel file.
      *
      * @author Dovganyuk Taras
      */
@@ -85,7 +85,7 @@ public class ManagementRatingStatisticsController {
     }
 
     /**
-     * Export filtered {@link RatingStatistics} to Excel file.
+     * Export filtered {@link RatingStatisticsVO} to Excel file.
      *
      * @author Dovganyuk Taras
      */
