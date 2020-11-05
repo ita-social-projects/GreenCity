@@ -132,7 +132,7 @@ public class AdviceController {
     public ResponseEntity<AdvicePostDto> update(
         @Valid @RequestBody AdvicePostDto dto, @PathVariable Long adviceId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(adviceService.update(dto, adviceId), AdvicePostDto.class));
+            .body(adviceService.update(dto, adviceId));
     }
 
     /**

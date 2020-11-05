@@ -100,7 +100,7 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
-    public AdviceVO update(AdvicePostDto adviceDto, Long id) {
+    public AdvicePostDto update(AdvicePostDto adviceDto, Long id) {
         Advice advice = adviceRepo.findById(id).orElseThrow(() ->
                 new NotUpdatedException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id));
         Habit habit = habitRepo.findById(adviceDto.getHabit().getId())
@@ -113,7 +113,7 @@ public class AdviceServiceImpl implements AdviceService {
         adviceTranslations.forEach(adviceTranslation -> adviceTranslation.setAdvice(advice));
         Advice updated = adviceRepo.save(advice);
 
-        return modelMapper.map(updated, AdviceVO.class);
+        return modelMapper.map(updated, AdvicePostDto.class);
     }
 
     /**

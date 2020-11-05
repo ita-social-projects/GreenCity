@@ -73,10 +73,10 @@ public interface AdviceService {
      * Method updates {@link AdviceVO}.
      *
      * @param advice {@link AdvicePostDto}
-     * @return instance of {@link AdviceVO}
+     * @return instance of {@link AdvicePostDto}
      * @author Vitaliy Dzen
      */
-    AdviceVO update(AdvicePostDto advice, Long id);
+    AdvicePostDto update(AdvicePostDto advice, Long id);
 
     /**
      * Method delete {@link AdviceDto} by id.

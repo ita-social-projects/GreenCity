@@ -2,6 +2,7 @@ package greencity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
+import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
@@ -558,4 +559,14 @@ public class ModelUtils {
         return placeVO;
     }
 
+    public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
+        return Arrays.asList(
+                new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
+                new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
+                new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+    }
+
+    public static AdvicePostDto getAdvicePostDto() {
+        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
+    }
 }
