@@ -21,7 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class HabitStatusRepoTest {
     @Container
     private static final TestPostgresContainer POSTGRE_SQL_CONTAINER =
-         TestPostgresContainer.getInstance();
+        TestPostgresContainer.getInstance();
 
     @Autowired
     HabitStatusRepo habitStatusRepo;
@@ -29,12 +29,12 @@ class HabitStatusRepoTest {
     @Test
     void findByHabitAssignIdTest() {
         HabitStatus habitStatus = habitStatusRepo.findByHabitAssignId(2L).get();
-        assertEquals(2L,habitStatus.getId());
+        assertEquals(2L, habitStatus.getId());
     }
 
     @Test
     void findByUserIdAndHabitIdTest() {
-        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(1L,2L).get();
-        assertEquals(2L,habitStatus.getId());
+        HabitStatus habitStatus = habitStatusRepo.findByHabitIdAndUserId(1L, 2L).get();
+        assertEquals(2L, habitStatus.getId());
     }
 }

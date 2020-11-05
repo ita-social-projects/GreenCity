@@ -27,6 +27,6 @@ public class TestPostgresContainer extends PostgreSQLContainer<TestPostgresConta
 
     @Override
     public void stop() {
-        //do nothing, JVM handles shut down
+        // do nothing, JVM handles shut down
     }
 }
