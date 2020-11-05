@@ -10,9 +10,7 @@ import static org.mockito.Mockito.*;
 
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
-import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.Goal;
-import greencity.entity.UserGoal;
 import greencity.entity.localization.GoalTranslation;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
@@ -25,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.modelmapper.TypeToken;
+
 
 
 @ExtendWith(MockitoExtension.class)
