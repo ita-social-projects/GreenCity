@@ -63,8 +63,7 @@ class ManagementPlacesControllerTest {
     void getAllPlaces() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
         List<AdminPlaceDto> placeDtos = Collections.singletonList(new AdminPlaceDto());
-        PageableDto<AdminPlaceDto>
-            adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
+        PageableDto<AdminPlaceDto> adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
         when(placeService.findAll(pageable)).thenReturn(adminPlaceDtoPageableDto);
         when(categoryService.findAllCategoryDto()).thenReturn(Collections.singletonList(new CategoryDto("test", null)));
         when(specificationService.findAllSpecificationDto())

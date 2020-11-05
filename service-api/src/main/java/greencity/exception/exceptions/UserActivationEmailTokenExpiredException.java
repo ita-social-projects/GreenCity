@@ -1,7 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception that we get when user trying to verify email with token that has expired.
+ * Exception that we get when user trying to verify email with token that has
+ * expired.
  *
  * @author Nazar Stasyuk
  */

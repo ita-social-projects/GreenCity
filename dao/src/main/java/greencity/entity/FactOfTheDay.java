@@ -12,7 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(exclude = {"factOfTheDayTranslations","createDate"})
+@EqualsAndHashCode(exclude = {"factOfTheDayTranslations", "createDate"})
 @Table(name = "fact_of_the_day")
 public class FactOfTheDay {
     @Id

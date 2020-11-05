@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
  */
 public interface PlaceCommentService {
     /**
-     * Method witch return  comment by id.
+     * Method witch return comment by id.
      *
      * @param id of search Comment
      * @return {@link CommentReturnDto}.
@@ -22,10 +22,10 @@ public interface PlaceCommentService {
     CommentReturnDto findById(Long id);
 
     /**
-     * Save Comment  by Place id.
+     * Save Comment by Place id.
      *
-     * @param placeId       Place id to witch  related.
-     * @param addCommentDto DTO witch contain  data of.
+     * @param placeId       Place id to witch related.
+     * @param addCommentDto DTO witch contain data of.
      * @param email         of User who add comment.
      * @return @{link {@link CommentReturnDto}}.
      * @author Marian Milian.

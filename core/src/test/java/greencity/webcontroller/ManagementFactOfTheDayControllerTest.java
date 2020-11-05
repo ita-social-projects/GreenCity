@@ -111,7 +111,6 @@ class ManagementFactOfTheDayControllerTest {
         verify(languageService).getAllLanguages();
     }
 
-
     @Test
     void saveFactOfTheDayTest() throws Exception {
         FactOfTheDayPostDTO factOfTheDayPostDTO = getFactOfTheDayPostDTO();

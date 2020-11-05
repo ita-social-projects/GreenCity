@@ -74,7 +74,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-                                      MultipartFile image, String email) {
+        MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         toSave.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
         if (addEcoNewsDtoRequest.getImage() != null) {
@@ -156,8 +156,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
@@ -180,8 +179,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
@@ -259,15 +257,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             searchNewsDtos,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages()
-        );
+            page.getTotalPages());
     }
 
     /**
      * Method for building message for sending email about adding new eco news.
      *
      * @param ecoNews {@link EcoNews} which was added.
-     * @return {@link AddEcoNewsMessage} which contains needed info about {@link EcoNews} and subscribers.
+     * @return {@link AddEcoNewsMessage} which contains needed info about
+     *         {@link EcoNews} and subscribers.
      */
     private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
@@ -320,8 +318,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return new PageableDto<>(ecoNews,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages()
-        );
+            page.getTotalPages());
     }
 
     /**
@@ -377,8 +374,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return new PageableDto<>(ecoNews,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages()
-        );
+            page.getTotalPages());
     }
 
     /**
@@ -392,7 +388,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
+     * * This method used for build {@link SearchCriteria} depends on
+     * {@link RatingStatisticsViewDto}.
      *
      * @param ecoNewsViewDto used for receive parameters for filters from UI.
      * @return {@link SearchCriteria}.

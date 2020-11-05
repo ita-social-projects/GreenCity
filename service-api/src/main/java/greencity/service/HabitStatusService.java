@@ -77,7 +77,8 @@ public interface HabitStatusService {
      *
      * @param habitId {@code Habit} id to update.
      * @param userId  {@code User} id.
-     * @param dto     dto with {@code HabitStatus} working days, habitStreak, enrollment date.
+     * @param dto     dto with {@code HabitStatus} working days, habitStreak,
+     *                enrollment date.
      * @return {@link UpdateHabitStatusDto} instance.
      */
     HabitStatusDto update(Long habitId, Long userId, UpdateHabitStatusDto dto);

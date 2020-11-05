@@ -13,21 +13,23 @@ import java.util.Map;
  */
 public interface EmailService {
     /**
-     * Method for sending notification to {@link User}'s who subscribed for updates about added new places.
+     * Method for sending notification to {@link User}'s who subscribed for updates
+     * about added new places.
      *
      * @param subscribers          list of users for receiving email.
-     * @param categoriesWithPlaces map with {@link Category} and {@link Place}`s which were created.
+     * @param categoriesWithPlaces map with {@link Category} and {@link Place}`s
+     *                             which were created.
      * @param notification         type of notification.
      */
     void sendAddedNewPlacesReportEmail(List<PlaceAuthorDto> subscribers,
-                                       Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlaces,
-                                       String notification);
+        Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlaces,
+        String notification);
 
     /**
      * Method for sending news for users who subscribed for updates.
      */
     void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
-                                  AddEcoNewsDtoResponse newsDto);
+        AddEcoNewsDtoResponse newsDto);
 
     /**
      * Method for sending simple notification to {@code User} about change status.
@@ -38,7 +40,7 @@ public interface EmailService {
      * @param authorEmail     author's email.
      */
     void sendChangePlaceStatusEmail(String authorFirstName, String placeName,
-                                    String placeStatus, String authorEmail);
+        String placeStatus, String authorEmail);
 
     /**
      * Method for sending verification email to {@link User}.
@@ -51,8 +53,8 @@ public interface EmailService {
     void sendVerificationEmail(Long userId, String userName, String userEmail, String token);
 
     /**
-     * Method for sending user approval email to User,
-     * when Admin adds the User from admin panel.
+     * Method for sending user approval email to User, when Admin adds the User from
+     * admin panel.
      *
      * @param userId    user id.
      * @param userName  name current user.
@@ -66,7 +68,8 @@ public interface EmailService {
      *
      * @param userId       the user id is used for recovery link building.
      * @param userFistName user first name is used in email model constants.
-     * @param userEmail    user email which will be used for sending recovery letter.
+     * @param userEmail    user email which will be used for sending recovery
+     *                     letter.
      * @param token        password recovery token.
      */
     void sendRestoreEmail(Long userId, String userFistName, String userEmail, String token);

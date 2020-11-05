@@ -61,12 +61,12 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Get tips & tricks by id.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = TipsAndTricksDtoManagement.class),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = TipsAndTricksDtoManagement.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/find")
     public ResponseEntity<TipsAndTricksDtoManagement> getTipsAndTricksById(
-            @RequestParam("id") Long id) {
+        @RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.findManagementDtoById(id));
     }
 
@@ -78,8 +78,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Delete tips & tricks.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/")
     public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
@@ -95,8 +95,8 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Delete all tips & tricks by given IDs.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
@@ -113,16 +113,14 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Update tips & tricks.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")
-    public GenericResponseDto update(@Valid
-                                     @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-                                     BindingResult bindingResult,
-                                     @ImageValidation
-                                     @RequestPart(required = false, name = "file") MultipartFile file) {
+    public GenericResponseDto update(@Valid @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+        BindingResult bindingResult,
+        @ImageValidation @RequestPart(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             tipsAndTricksService.update(tipsAndTricksDtoManagement, file);
         }
@@ -138,38 +136,37 @@ public class ManagementTipsAndTricksController {
      */
     @ApiOperation(value = "Save tips & tricks.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
     @PostMapping("/")
-    public GenericResponseDto save(@Valid
-                                   @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-                                   BindingResult bindingResult,
-                                   @ImageValidation
-                                   @RequestParam(required = false, name = "file") MultipartFile file,
-                                   @ApiIgnore Principal principal) {
+    public GenericResponseDto save(@Valid @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file,
+        @ApiIgnore Principal principal) {
         if (!bindingResult.hasErrors()) {
             tipsAndTricksService
-                    .saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, file, principal.getName());
+                .saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, file, principal.getName());
         }
         return buildGenericResponseDto(bindingResult);
     }
 
     /**
-     * Returns  management page with User rating statistics with filtered data.
+     * Returns management page with User rating statistics with filtered data.
      *
-     * @param model                ModelAndView that will be configured and returned to user.
+     * @param model                ModelAndView that will be configured and returned
+     *                             to user.
      * @param tipsAndTricksViewDto used for receive parameters for filters from UI.
      */
     @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
-                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
-                             TipsAndTricksViewDto tipsAndTricksViewDto) {
+        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+        TipsAndTricksViewDto tipsAndTricksViewDto) {
         PageableDto<TipsAndTricksDtoManagement> pageableDto =
-                tipsAndTricksService.getFilteredDataForManagementByPage(
-                        pageable,
-                        tipsAndTricksViewDto);
+            tipsAndTricksService.getFilteredDataForManagementByPage(
+                pageable,
+                tipsAndTricksViewDto);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("fields", tipsAndTricksViewDto);
         return "core/management_tips_and_tricks";

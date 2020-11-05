@@ -14,15 +14,13 @@ public class OwnRestoreDto {
     @NotBlank
     @Pattern(
         regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_\\-{}|:;”’?/<>,.\\]\\[]+).{8,}$",
-        message = INVALID_PASSWORD
-    )
+        message = INVALID_PASSWORD)
     private String password;
 
     @NotBlank
     @Pattern(
         regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_\\-{}|:;”’?/<>,.\\]\\[]+).{8,}$",
-        message = INVALID_PASSWORD
-    )
+        message = INVALID_PASSWORD)
     private String confirmPassword;
 
     @NotBlank

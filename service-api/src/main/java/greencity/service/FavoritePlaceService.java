@@ -13,7 +13,8 @@ public interface FavoritePlaceService {
     /**
      * Save {@link PlaceVO} as {@link FavoritePlaceVO} for user.
      *
-     * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name, {@link PlaceVO} id and {@link UserVO} email
+     * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name,
+     *                         {@link PlaceVO} id and {@link UserVO} email
      * @param userEmail        - User email
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
@@ -23,7 +24,8 @@ public interface FavoritePlaceService {
     /**
      * Update favorite place name for user.
      *
-     * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name, {@link PlaceVO} id and {@link UserVO} email
+     * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name,
+     *                         {@link PlaceVO} id and {@link UserVO} email
      * @param userEmail        - {@link UserVO} email
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
@@ -41,11 +43,12 @@ public interface FavoritePlaceService {
     List<FavoritePlaceDto> findAllByUserEmail(String email);
 
     /**
-     * Delete {@link FavoritePlaceVO} by {@link UserVO} email and {@link PlaceVO} id .
+     * Delete {@link FavoritePlaceVO} by {@link UserVO} email and {@link PlaceVO} id
+     * .
      *
      * @param placeId   - {@link PlaceVO} id
      * @param userEmail - {@link UserVO} email
-     * @return -  id of deleted {@link FavoritePlaceVO}
+     * @return - id of deleted {@link FavoritePlaceVO}
      * @author Zakhar Skaletskyi
      */
     Long deleteByUserEmailAndPlaceId(Long placeId, String userEmail);

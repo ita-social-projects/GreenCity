@@ -47,7 +47,7 @@ public class HabitController {
     @GetMapping("/{id}")
     @ApiLocale
     public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id,
-                                                 @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.getByIdAndLanguageCode(id, locale.getLanguage()));
     }

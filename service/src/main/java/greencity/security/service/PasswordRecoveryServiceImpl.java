@@ -25,10 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service for password recovery functionality.
- * It manages recovery tokens creation and persistence as well as minimal validation,
- * but neither updates the password directly, nor sends a recovery email. These
- * parts of the recovery process are done by separate event listeners.
+ * Service for password recovery functionality. It manages recovery tokens
+ * creation and persistence as well as minimal validation, but neither updates
+ * the password directly, nor sends a recovery email. These parts of the
+ * recovery process are done by separate event listeners.
  */
 @Service
 @Slf4j
@@ -46,19 +46,21 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     /**
      * Constructor with all essentials beans for password recovery functionality.
      *
-     * @param restorePasswordEmailRepo  {@link RestorePasswordEmailRepo} - Used for storing recovery tokens
-     * @param applicationEventPublisher {@link ApplicationEventPublisher} - Used for publishing events,
-     *                                  such as email sending or password update
+     * @param restorePasswordEmailRepo  {@link RestorePasswordEmailRepo} - Used for
+     *                                  storing recovery tokens
+     * @param applicationEventPublisher {@link ApplicationEventPublisher} - Used for
+     *                                  publishing events, such as email sending or
+     *                                  password update
      * @param rabbitTemplate            template for sending RabbitMQ messages
-     * @param jwtTool                   {@link JwtTool} - Used for recovery token generation
+     * @param jwtTool                   {@link JwtTool} - Used for recovery token
+     *                                  generation
      */
     public PasswordRecoveryServiceImpl(
         RestorePasswordEmailRepo restorePasswordEmailRepo,
         UserRepo userRepo,
         ApplicationEventPublisher applicationEventPublisher,
         RabbitTemplate rabbitTemplate,
-        JwtTool jwtTool
-    ) {
+        JwtTool jwtTool) {
         this.restorePasswordEmailRepo = restorePasswordEmailRepo;
         this.userRepo = userRepo;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -94,8 +96,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         UserStatus userStatus = restorePasswordEmail.getUser().getUserStatus();
         if (isNotExpired(restorePasswordEmail.getExpiryDate())) {
             applicationEventPublisher.publishEvent(
-                new UpdatePasswordEvent(this, newPassword, restorePasswordEmail.getUser().getId())
-            );
+                new UpdatePasswordEvent(this, newPassword, restorePasswordEmail.getUser().getId()));
             restorePasswordEmailRepo.delete(restorePasswordEmail);
             log.info("User with email " + restorePasswordEmail.getUser().getEmail()
                 + " has successfully restored the password using token " + token);
@@ -110,8 +111,8 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     /**
-     * Creates and saves password restoration token for a given user
-     * and publishes event of sending password recovery email to the user.
+     * Creates and saves password restoration token for a given user and publishes
+     * event of sending password recovery email to the user.
      *
      * @param user  {@link User} - User whose password is to be recovered
      * @param token {@link String} - token for password restoration
@@ -131,14 +132,12 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                token
-            )
-        );
+                token));
     }
 
     /**
-     * Checks if the given date is before current {@link LocalDateTime}.
-     * Use this method for checking for token expiration.
+     * Checks if the given date is before current {@link LocalDateTime}. Use this
+     * method for checking for token expiration.
      *
      * @param tokenExpirationDate - Token expiration date
      * @return {@code boolean} - Whether token is expired or not
@@ -148,8 +147,8 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
     }
 
     /**
-     * Calculates token expiration date. The amount of hours, after which
-     * token will be expired, is set by method parameter.
+     * Calculates token expiration date. The amount of hours, after which token will
+     * be expired, is set by method parameter.
      *
      * @param expirationTimeInHours - Token expiration delay in hours
      * @return {@link LocalDateTime} - Time at which token will be expired
@@ -161,9 +160,8 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
 
     /**
      * Removes all the expired tokens from the database each period of time.
-     * Interval is set by @Scheduled annotation.
-     * Access modifier is set to package-private since this method should be
-     * invoked by Spring Framework only.
+     * Interval is set by @Scheduled annotation. Access modifier is set to
+     * package-private since this method should be invoked by Spring Framework only.
      */
     // every 86400000 milliseconds == every 24 hours
     @Scheduled(fixedRate = 86400000)

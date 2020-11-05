@@ -15,7 +15,8 @@ public interface CustomGoalService {
     /**
      * Method saves list of custom goals for user.
      *
-     * @param bulkSaveCustomGoalDto {@link BulkSaveCustomGoalDto} with objects list for saving.
+     * @param bulkSaveCustomGoalDto {@link BulkSaveCustomGoalDto} with objects list
+     *                              for saving.
      * @param userId                {@link UserVO} current user id
      * @return list of saved {@link CustomGoalResponseDto}
      */
@@ -47,7 +48,8 @@ public interface CustomGoalService {
     /**
      * Method for an update list of custom goals object.
      *
-     * @param bulkCustomGoalDto {@link BulkCustomGoalDto} with objects list for updating.
+     * @param bulkCustomGoalDto {@link BulkCustomGoalDto} with objects list for
+     *                          updating.
      * @return list of updated {@link CustomGoalResponseDto}
      */
     List<CustomGoalResponseDto> updateBulk(BulkCustomGoalDto bulkCustomGoalDto);

@@ -1,6 +1,5 @@
 package greencity.repository;
 
-
 import greencity.entity.Comment;
 import java.util.List;
 import java.util.stream.Collectors;

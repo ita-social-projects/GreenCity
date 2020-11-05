@@ -64,14 +64,12 @@ class HabitAssignServiceImplTest {
     private HabitAssign habitAssignNew = HabitAssign.builder()
         .suspended(false).user(user).habit(habit).build();
 
-
     private HabitAssignStatDto habitAssignStatDto = HabitAssignStatDto.builder()
         .acquired(true).suspended(false).build();
 
     private List<HabitAssignDto> habitAssignDtos = Collections.singletonList(habitAssignDto);
 
     private List<HabitAssign> habitAssigns = Collections.singletonList(habitAssign);
-
 
     @Test
     void getByIdTest() {

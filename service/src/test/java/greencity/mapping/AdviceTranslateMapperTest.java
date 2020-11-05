@@ -26,4 +26,3 @@ class AdviceTranslateMapperTest {
         assertEquals(expected, adviceTranslateMapper.convert(adviceTranslation));
     }
 }
-

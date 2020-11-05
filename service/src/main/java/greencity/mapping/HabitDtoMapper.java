@@ -32,4 +32,3 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
             .build();
     }
 }
-

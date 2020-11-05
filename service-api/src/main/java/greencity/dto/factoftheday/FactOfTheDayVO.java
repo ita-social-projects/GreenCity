@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(exclude = {"factOfTheDayTranslations","createDate"})
+@EqualsAndHashCode(exclude = {"factOfTheDayTranslations", "createDate"})
 public class FactOfTheDayVO {
     private Long id;
 

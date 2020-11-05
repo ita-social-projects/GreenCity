@@ -91,9 +91,11 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     /**
-     * * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
+     * * This method used for build {@link SearchCriteria} depends on
+     * {@link RatingStatisticsViewDto}.
      *
-     * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
+     * @param ratingStatisticsViewDto used for receive parameters for filters from
+     *                                UI.
      * @return {@link SearchCriteria}.
      */
     public List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto) {
@@ -168,4 +170,3 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         return new RatingStatisticsSpecification(searchCriteria);
     }
 }
-

@@ -17,7 +17,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 /**
- * Class that is used by {@link ModelMapper} to map Base64 encoded image into MultipartFile.
+ * Class that is used by {@link ModelMapper} to map Base64 encoded image into
+ * MultipartFile.
  */
 @Component
 public class MultipartBase64ImageMapper extends AbstractConverter<String, MultipartFile> {
@@ -39,7 +40,7 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
             FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
                 false, tempFile.getName(), (int) tempFile.length(), tempFile.getParentFile());
             try (InputStream input = new FileInputStream(tempFile);
-                 OutputStream outputStream = fileItem.getOutputStream()) {
+                OutputStream outputStream = fileItem.getOutputStream()) {
                 IOUtils.copy(input, outputStream);
                 outputStream.flush();
                 return new CommonsMultipartFile(fileItem);

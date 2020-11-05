@@ -34,8 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Bean
     public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource
-            = new ReloadableResourceBundleMessageSource();
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
@@ -55,8 +54,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Method for determining
-     * which locale is going to be used.
+     * Method for determining which locale is going to be used.
      *
      * @return {@link SessionLocaleResolver}
      */
@@ -68,8 +66,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Method for switching to a new locale
-     * based on the value of the lang parameter
+     * Method for switching to a new locale based on the value of the lang parameter
      * appended to a request.
      *
      * @return {@link LocaleChangeInterceptor}
@@ -92,4 +89,3 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
     }
 }
-

@@ -71,7 +71,8 @@ public class ManagementHabitsController {
      * @param habitManagementDto {@link HabitManagementDto}.
      * @param bindingResult      {@link BindingResult}.
      * @param file               of {@link MultipartFile}.
-     * @return {@link GenericResponseDto} with result of operation and errors fields.
+     * @return {@link GenericResponseDto} with result of operation and errors
+     *         fields.
      */
     @ApiOperation(value = "Save habit with translations.")
     @ApiResponses(value = {
@@ -82,9 +83,8 @@ public class ManagementHabitsController {
     @ResponseBody
     @PostMapping("/save")
     public GenericResponseDto save(@Valid @RequestPart HabitManagementDto habitManagementDto,
-                                   BindingResult bindingResult,
-                                   @ImageValidation
-                                   @RequestParam(required = false, name = "file") MultipartFile file) {
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             habitService.saveHabitAndTranslations(habitManagementDto, file);
         }
@@ -97,7 +97,8 @@ public class ManagementHabitsController {
      * @param habitManagementDto {@link HabitManagementDto}.
      * @param bindingResult      {@link BindingResult}.
      * @param file               of {@link MultipartFile}.
-     * @return {@link GenericResponseDto} with result of operation and errors fields.
+     * @return {@link GenericResponseDto} with result of operation and errors
+     *         fields.
      */
     @ApiOperation(value = "Update habit with translations.")
     @ApiResponses(value = {
@@ -108,9 +109,8 @@ public class ManagementHabitsController {
     @ResponseBody
     @PutMapping("/update")
     public GenericResponseDto update(@Valid @RequestPart HabitManagementDto habitManagementDto,
-                                     BindingResult bindingResult,
-                                     @ImageValidation
-                                     @RequestParam(required = false, name = "file") MultipartFile file) {
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             habitService.update(habitManagementDto, file);
         }
