@@ -35,12 +35,18 @@ public class GoalServiceImpl implements GoalService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<GoalTranslationVO> saveGoal(GoalPostDto goal) {
         Goal saved =  goalRepo.save(modelMapper.map(goal, Goal.class));
         return saveTranslations(goal, saved);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public List<GoalTranslationVO> saveTranslations(GoalPostDto goalPostDto, Goal goal) {
         List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
             new TypeToken<List<GoalTranslation>>() {
@@ -51,6 +57,9 @@ public class GoalServiceImpl implements GoalService {
         }.getType());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<GoalTranslationVO> update(GoalPostDto goalPostDto) {
         Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getGoal().getId());
@@ -63,6 +72,9 @@ public class GoalServiceImpl implements GoalService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(Long goalId) {
         if (goalRepo.findById(goalId).isPresent()) {
