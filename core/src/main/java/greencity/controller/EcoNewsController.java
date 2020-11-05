@@ -14,8 +14,6 @@ import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.tag.TagVO;
-//import greencity.entity.EcoNews;
-//import greencity.entity.Tag;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
