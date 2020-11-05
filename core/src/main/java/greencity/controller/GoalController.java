@@ -101,7 +101,7 @@ public class GoalController {
     /**
      * The controller which delete {@link Goal}.
      *
-     * @param goalId of {@link Goal}
+     * @param id of {@link Goal}
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Delete goal")
@@ -111,8 +111,8 @@ public class GoalController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Long goalId) {
-        goalService.delete(goalId);
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        goalService.delete(id);
         return ResponseEntity.ok().build();
     }
 }

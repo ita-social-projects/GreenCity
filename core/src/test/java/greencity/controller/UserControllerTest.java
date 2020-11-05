@@ -351,17 +351,9 @@ class UserControllerTest {
         verify(userService).updateUserGoalStatus(eq(1L), eq(1L), eq("en"));
     }
 
-    /*
     @Test
     void saveUserGoalsWithoutLanguageParamTest() throws Exception {
         String content = "{\n"
-            + "  \"userCustomGoal\": [\n"
-            + "    {\n"
-            + "      \"customGoal\": {\n"
-            + "        \"id\": 1\n"
-            + "      }\n"
-            + "    }\n"
-            + "  ],\n"
             + "  \"userGoals\": [\n"
             + "    {\n"
             + "      \"goal\": {\n"
@@ -381,7 +373,7 @@ class UserControllerTest {
             mapper.readValue(content, BulkSaveUserGoalDto.class);
 
         verify(userService).saveUserGoals(eq(1L), eq(dto), eq("en"));
-    }*/
+    }
 
     /*@Test
     void getAvailableHabitDictionaryTest() throws Exception {

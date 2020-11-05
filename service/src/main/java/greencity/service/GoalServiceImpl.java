@@ -2,11 +2,9 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.goal.*;
-import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Goal;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.GoalNotFoundException;
-import greencity.exception.exceptions.UserHasNoGoalsException;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
 import java.util.Optional;
@@ -43,18 +41,14 @@ public class GoalServiceImpl implements GoalService {
         return saveTranslations(goal, saved);
     }
 
-    private List<GoalTranslationVO> saveTranslations(GoalPostDto goalPostDto, Goal goal) {
-//        List<GoalTranslationVO> list = modelMapper.map(goalPostDto.getTranslations(),
-//            new TypeToken<List<GoalTranslationVO>>() {
-//            }.getType());
-//        list.forEach(a -> a.setGoal(modelMapper.map(goal, GoalVO.class)));
-//        List<GoalTranslation> collect = modelMapper.map(goalPostDto,
-//            new TypeToken<List<GoalTranslation>>() {
-//            }.getType());
-//        List<GoalTranslation> save = goalTranslationRepo.saveAll(collect);
-//        return modelMapper.map(save, new TypeToken<List<GoalTranslationVO>>() {
-//        }.getType());
-        return null;
+    public List<GoalTranslationVO> saveTranslations(GoalPostDto goalPostDto, Goal goal) {
+        List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
+            new TypeToken<List<GoalTranslation>>() {
+            }.getType());
+        translations.forEach(a -> a.setGoal(goal));
+        List<GoalTranslation> save = goalTranslationRepo.saveAll(translations);
+        return modelMapper.map(save, new TypeToken<List<GoalTranslationVO>>() {
+        }.getType());
     }
 
     @Override
@@ -66,16 +60,16 @@ public class GoalServiceImpl implements GoalService {
             return modelMapper.map(saveTranslations(goalPostDto, updated), new TypeToken<List<GoalTranslationVO>>() {
             }.getType());
         } else {
-            throw new UserHasNoGoalsException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
+            throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
         }
     }
 
     @Override
     public void delete(Long goalId) {
-        try {
+        if (goalRepo.findById(goalId).isPresent()) {
             goalRepo.deleteById(goalId);
-        } catch (Exception e) {
-            throw new GoalNotFoundException("goal doesn`t exist");
+        } else {
+            throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
         }
     }
 }
