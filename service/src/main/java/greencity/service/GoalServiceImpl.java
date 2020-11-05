@@ -57,8 +57,7 @@ public class GoalServiceImpl implements GoalService {
         if (optionalGoal.isPresent()) {
             Goal updated = optionalGoal.get();
             goalTranslationRepo.deleteAll(updated.getTranslations());
-            return modelMapper.map(saveTranslations(goalPostDto, updated), new TypeToken<List<GoalTranslationVO>>() {
-            }.getType());
+            return saveTranslations(goalPostDto, updated);
         } else {
             throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
         }

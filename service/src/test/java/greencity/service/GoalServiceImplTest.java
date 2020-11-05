@@ -1,8 +1,11 @@
 package greencity.service;
 
 import greencity.dto.goal.*;
+import greencity.exception.exceptions.GoalNotFoundException;
 import java.util.Collections;
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import greencity.ModelUtils;
@@ -11,7 +14,6 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
 import greencity.entity.localization.GoalTranslation;
-import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.modelmapper.TypeToken;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -32,11 +35,7 @@ class GoalServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private LanguageService languageService;
-    @Mock
     private GoalRepo goalRepo;
-    @Mock
-    private CustomGoalRepo customGoalRepo;
     @InjectMocks
     private GoalServiceImpl goalService;
 
@@ -45,12 +44,10 @@ class GoalServiceImplTest {
     private GoalServiceImpl goalServiceSpy;
 
 
-    private Goal goal = Goal.builder().id(1L).translations(ModelUtils.getGoalTranslations()).build();
-    private UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
-    private UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
-    private GoalPostDto goalPostDto =
+    private final Goal goal = Goal.builder().id(1L).translations(ModelUtils.getGoalTranslations()).build();
+    private final GoalPostDto goalPostDto =
         new GoalPostDto(Collections.singletonList(ModelUtils.getLanguageTranslationDTO()), new GoalRequestDto(1L));
-    private List<GoalTranslationVO> goalTranslationVOs = Collections.singletonList(
+    private final List<GoalTranslationVO> goalTranslationVOs = Collections.singletonList(
         GoalTranslationVO.builder().id(1L).goal(ModelUtils.getUserGoalVO().getGoal()).build());
 
     @Test
@@ -75,5 +72,30 @@ class GoalServiceImplTest {
         doReturn(goalTranslationVOs).when(goalServiceSpy).saveTranslations(goalPostDto,goal);
         List<GoalTranslationVO> res = goalServiceSpy.saveGoal(goalPostDto);
         assertEquals(goal.getId(),res.get(0).getId());
+    }
+
+    @Test
+    void updateTest() {
+        when(goalRepo.findById(goalPostDto.getGoal().getId())).thenReturn(Optional.of(goal));
+        doReturn(goalTranslationVOs).when(goalServiceSpy).saveTranslations(goalPostDto,goal);
+        List<GoalTranslationVO> res = goalServiceSpy.update(goalPostDto);
+        assertEquals(goal.getId(),res.get(0).getId());
+    }
+
+    @Test
+    void updateThrowsTest() {
+        assertThrows(GoalNotFoundException.class, () -> goalService.update(goalPostDto));
+    }
+
+    @Test
+    void deleteTest() {
+        when(goalRepo.findById(1L)).thenReturn(Optional.of(goal));
+        goalService.delete(1L);
+        verify(goalRepo).deleteById(1L);
+    }
+
+    @Test
+    void deleteThrowTest() {
+        assertThrows(GoalNotFoundException.class, () -> goalService.delete(1L));
     }
 }
