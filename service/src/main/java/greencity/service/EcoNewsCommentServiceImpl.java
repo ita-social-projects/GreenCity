@@ -84,7 +84,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             .stream()
             .map(comment -> {
                 comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                        .anyMatch(u -> u.getId().equals(userVO.getId())));
+                    .anyMatch(u -> u.getId().equals(userVO.getId())));
                 return comment;
             })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
