@@ -4,13 +4,10 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.*;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -43,7 +40,7 @@ public class ManagementEcoNewsController {
     private final EcoNewsService ecoNewsService;
 
     /**
-     * Method that returns management page with all {@link EcoNews}.
+     * Method that returns management page with all {@link EcoNewsVO}.
      *
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
@@ -60,8 +57,8 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method which deteles {@link EcoNews} and
-     * {@link greencity.entity.FactOfTheDayTranslation} by given id.
+     * Method which deteles {@link EcoNewsVO} and {@link FactOfTheDayTranslationVO}
+     * by given id.
      *
      * @param id of Eco New
      * @return {@link ResponseEntity}
@@ -73,7 +70,7 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method for deleting {@link EcoNews} by given id.
+     * Method for deleting {@link EcoNewsVO} by given id.
      *
      * @param listId list of IDs.
      * @return {@link ResponseEntity}
@@ -96,9 +93,9 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method for creating {@link EcoNews}.
+     * Method for creating {@link EcoNewsVO}.
      *
-     * @param addEcoNewsDtoRequest dto for {@link EcoNews} entity.
+     * @param addEcoNewsDtoRequest dto for {@link EcoNewsVO} entity.
      * @param file                 of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
@@ -120,7 +117,7 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method which updates {@link EcoNews}.
+     * Method which updates {@link EcoNewsVO}.
      *
      * @param ecoNewsDtoManagement of {@link EcoNewsDtoManagement}.
      * @param file                 of {@link MultipartFile}.

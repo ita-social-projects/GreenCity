@@ -5,9 +5,10 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
+import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-import greencity.entity.FactOfTheDay;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
@@ -71,7 +72,7 @@ public class ManagementFactOfTheDayController {
     }
 
     /**
-     * Method which saves {@link FactOfTheDay}.
+     * Method which saves {@link FactOfTheDayVO}.
      *
      * @param factOfTheDayPostDTO of {@link FactOfTheDayPostDTO}
      * @return {@link GenericResponseDto} with of operation and errors fields
@@ -92,7 +93,7 @@ public class ManagementFactOfTheDayController {
     }
 
     /**
-     * Method which updates {@link FactOfTheDay}.
+     * Method which updates {@link FactOfTheDayVO}.
      *
      * @param factOfTheDayPostDTO of {@link FactOfTheDayPostDTO}
      * @return {@link GenericResponseDto} with of operation and errors fields
@@ -113,8 +114,8 @@ public class ManagementFactOfTheDayController {
     }
 
     /**
-     * Method which deteles {@link FactOfTheDay} and
-     * {@link greencity.entity.FactOfTheDayTranslation} by given id.
+     * Method which deteles {@link FactOfTheDayVO} and
+     * {@link FactOfTheDayTranslationVO} by given id.
      *
      * @param id of Fact of the day
      * @return {@link ResponseEntity}
@@ -131,8 +132,8 @@ public class ManagementFactOfTheDayController {
     }
 
     /**
-     * Method which deteles {@link FactOfTheDay} and
-     * {@link greencity.entity.FactOfTheDayTranslation} by given id.
+     * Method which deteles {@link FactOfTheDayVO} and
+     * {@link FactOfTheDayTranslationVO} by given id.
      *
      * @param listId list of IDs
      * @return {@link ResponseEntity}

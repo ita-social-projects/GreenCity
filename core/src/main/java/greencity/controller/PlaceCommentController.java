@@ -10,7 +10,6 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserBlockedException;
-import greencity.repository.PlaceCommentRepo;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
@@ -36,7 +35,6 @@ public class PlaceCommentController {
     private PlaceCommentService placeCommentService;
     private UserService userService;
     private PlaceService placeService;
-    private PlaceCommentRepo placeCommentRepo;
 
     /**
      * Method witch save comment by Place Id.
