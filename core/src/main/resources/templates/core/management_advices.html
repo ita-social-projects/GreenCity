@@ -41,8 +41,10 @@
                                         <input type="text" name="query" class="form-control" placeholder="Search…">
                                     </form>
                                 </span>
-                            <a href="#addAdviceModal" id="addAdviceModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add Advice</span></a>
-                            <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>
+                            <a href="#addAdviceModal" id="addAdviceModalBtn" class="btn btn-success"
+                               data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add Advice</span></a>
+                            <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
+                                    class="material-icons">&#xE15C;</i> <span>Delete</span></a>
                         </div>
                     </div>
                 </div>
@@ -78,7 +80,8 @@
                                        th:value="${fields eq null ? '' : fields.habitId }"/>
                             </td>
                             <td>
-                                <input type="search" style="width: 100%" th:name="translationContent" placeholder="Search"
+                                <input type="search" style="width: 100%" th:name="translationContent"
+                                       placeholder="Search"
                                        th:value="${fields eq null ? '' : fields.translationContent }"/>
                             </td>
                             <td>
@@ -88,11 +91,12 @@
 
                     </form>
                     <th:block th:each="advice, iterStatus :${pageable.getPage()}">
-                        <tbody >
+                        <tbody>
                         <tr>
                             <td>
                                     <span class="custom-checkbox">
-                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1" name="options[]" th:value="${advice.getId()}">
+                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                               name="options[]" th:value="${advice.getId()}">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                             </td>
@@ -108,7 +112,8 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <th:block th:each="translation : ${pageable.getPage().get(iterStatus.index).getTranslations()}">
+                                    <th:block
+                                            th:each="translation : ${pageable.getPage().get(iterStatus.index).getTranslations()}">
                                         <tr>
                                             <td class="py-1 text-right" th:text="${translation.getId()}"></td>
                                             <td class="py-1" th:text="${translation.getContent()}"></td>
@@ -119,19 +124,31 @@
                                 </table>
                             </td>
                             <td>
-                                <a th:href="@{/management/advices/{id}(id=${advice.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a th:href="@{/management/advices/{id}(id=${advice.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                <a th:href="@{/management/advices/{id}(id=${advice.getId()})}" class="edit eBtn"><i
+                                        class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                <a th:href="@{/management/advices/{id}(id=${advice.getId()})}" class="delete eDelBtn"
+                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>
                         </tbody>
                     </th:block>
                 </table>
                 <div class="clearfix">
-                    <div class="hint-text">Showing <b th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b th:text="${pageable.getTotalElements()}">25</b> entries</div>
-                    <ul class="pagination" >
-                        <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a th:href="@{advices(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a></li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}" th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a th:href="@{advices(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
-                        <li class="page-item" th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a th:href="@{advices(page=${pageable.getCurrentPage()+1})}" class="page-link">Next</a></li>
+                    <div class="hint-text">Showing <b
+                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b
+                            th:text="${pageable.getTotalElements()}">25</b> entries
+                    </div>
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
+                                th:href="@{advices(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
+                            th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
+                                th:href="@{advices(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                        <li class="page-item"
+                            th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
+                                th:href="@{advices(page=${pageable.getCurrentPage()+1})}" class="page-link">Next</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -157,20 +174,24 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Language ID</label>
-                                        <input type="text" class="form-control" th:name="${language.getId()}" th:value="${language.getId()}" readonly required />
+                                        <input type="text" class="form-control" th:name="${language.getId()}"
+                                               th:value="${language.getId()}" readonly required/>
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Language code</label>
-                                        <input type="text" class="form-control" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required />
+                                        <input type="text" class="form-control" th:name="${language.getCode()}"
+                                               th:value="${language.getCode()}" readonly required/>
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Content</label>
-                                        <input type="text" class="form-control" th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}" />
-                                        <span th:id="'errorModalSavetranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
+                                        <input type="text" class="form-control"
+                                               th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}"/>
+                                        <span th:id="'errorModalSavetranslations['+${iterInfo.index}+'].content'"
+                                              class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
@@ -208,22 +229,25 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Language ID</label>
-                                        <input type="text" class="form-control" th:name="${language.getId()}" th:value="${language.getId()}" readonly required />
+                                        <input type="text" class="form-control" th:name="${language.getId()}"
+                                               th:value="${language.getId()}" readonly required/>
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Language code</label>
-                                        <input type="text" class="form-control" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required />
+                                        <input type="text" class="form-control" th:name="${language.getCode()}"
+                                               th:value="${language.getCode()}" readonly required/>
                                     </div>
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Content</label>
-                                            <input type="text" class="form-control"
-                                                   th:id="content+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                   th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}" />
-                                        <span th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
+                                        <input type="text" class="form-control"
+                                               th:id="content+${'_' + language.getId()+'_'}+${language.getCode()}"
+                                               th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}"/>
+                                        <span th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].content'"
+                                              class="errorSpan"></span>
                                     </div>
                                 </div>
                             </div>
@@ -241,7 +265,7 @@
     <div id="deleteAdviceModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="deleteAdviceForm" >
+                <form id="deleteAdviceForm">
                     <div class="modal-header">
                         <h4 class="modal-title">Delete Advice</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -262,7 +286,7 @@
     <div id="deleteAllSelectedModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="" >
+                <form id="">
                     <div class="modal-header">
                         <h4 class="modal-title">Delete all selected</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

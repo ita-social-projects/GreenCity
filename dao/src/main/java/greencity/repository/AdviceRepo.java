@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.entity.Advice;
 import greencity.entity.Habit;
 import greencity.entity.localization.AdviceTranslation;
+
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -10,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import  org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface AdviceRepo extends JpaRepository<Advice, Long>, JpaSpecificationExecutor<Advice> {
@@ -29,11 +30,11 @@ public interface AdviceRepo extends JpaRepository<Advice, Long>, JpaSpecificatio
     /**
      * Method finds all {@link Advice}'s b given query.
      *
-     * @param query {@link String} - string query
+     * @param query    {@link String} - string query
      * @param pageable {@link Pageable}
      * @return list of {@link Advice}'s
      * @author Markiyan Derevetskyi
-     * */
+     */
     @Query(value = "select distinct a from Advice a join fetch a.translations as at "
             + "where concat(a.id, '') like lower(concat(:query, '')) "
             + "or concat(a.habit.id, '') like lower(concat(:query, '')) "

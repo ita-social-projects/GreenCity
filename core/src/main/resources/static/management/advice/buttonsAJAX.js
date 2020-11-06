@@ -1,4 +1,4 @@
-function clearAllErrorsSpan(){
+function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
 
@@ -104,7 +104,7 @@ function composePayloadFromFormData(formData) {
     };
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 
     var checkbox = $('table tbody input[type="checkbox"]');

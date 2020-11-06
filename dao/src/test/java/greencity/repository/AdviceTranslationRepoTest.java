@@ -31,7 +31,7 @@ class AdviceTranslationRepoTest {
         Long habitId = 1L;
         String languageCode = "uk";
         AdviceTranslation adviceTranslation = adviceTranslationRepo
-            .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId).get();
+                .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId).get();
 
         assertEquals(1L, adviceTranslation.getId());
         assertEquals(1L, adviceTranslation.getAdvice().getId());
@@ -45,7 +45,7 @@ class AdviceTranslationRepoTest {
         String languageCode = "en";
         Optional<AdviceTranslation> actual = Optional.empty();
         Optional<AdviceTranslation> expected = adviceTranslationRepo
-            .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId);
+                .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId);
 
         assertEquals(expected, actual);
     }
@@ -55,7 +55,7 @@ class AdviceTranslationRepoTest {
         String languageCode = "en";
         String content = "Hello";
         AdviceTranslation expected = adviceTranslationRepo
-            .findAdviceTranslationByLanguageCodeAndContent(languageCode, content).get();
+                .findAdviceTranslationByLanguageCodeAndContent(languageCode, content).get();
 
         assertEquals(2L, expected.getId());
         assertEquals(2L, expected.getAdvice().getId());
@@ -68,7 +68,7 @@ class AdviceTranslationRepoTest {
         String content = "World";
         Optional<AdviceTranslation> actual = Optional.empty();
         Optional<AdviceTranslation> expected = adviceTranslationRepo
-            .findAdviceTranslationByLanguageCodeAndContent(languageCode, content);
+                .findAdviceTranslationByLanguageCodeAndContent(languageCode, content);
 
         assertEquals(expected, actual);
     }

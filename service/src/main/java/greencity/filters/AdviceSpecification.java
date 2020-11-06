@@ -12,7 +12,7 @@ public class AdviceSpecification implements MySpecification<Advice> {
 
     /**
      * Constructor.
-     * */
+     */
     public AdviceSpecification(List<SearchCriteria> searchCriteriaList) {
         this.searchCriteriaList = searchCriteriaList;
     }
