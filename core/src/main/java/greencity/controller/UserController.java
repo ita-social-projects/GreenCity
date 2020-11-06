@@ -12,8 +12,6 @@ import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.*;
-import greencity.entity.EcoNews;
-import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.UserStatus;
 import greencity.service.CustomGoalService;
@@ -181,7 +179,7 @@ public class UserController {
     }
 
     /**
-     * Get {@link User} dto by principal (email) from access token.
+     * Get {@link UserVO} dto by principal (email) from access token.
      *
      * @return {@link UserUpdateDto}.
      * @author Nazar Stasyuk
@@ -200,7 +198,7 @@ public class UserController {
     }
 
     /**
-     * Update {@link User}.
+     * Update {@link UserVO}.
      *
      * @return {@link ResponseEntity}.
      * @author Nazar Stasyuk
@@ -245,7 +243,7 @@ public class UserController {
     /**
      * Method returns list user custom goals.
      *
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @return list of {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -264,7 +262,7 @@ public class UserController {
      * Method saves custom goals for user.
      *
      * @param dto    {@link BulkSaveUserGoalDto} with list objects to save
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -286,7 +284,7 @@ public class UserController {
     /**
      * Method updated user custom goals.
      *
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @param dto    {@link BulkCustomGoalDto} with list objects for update
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
@@ -309,7 +307,7 @@ public class UserController {
      * Method for delete user custom goals.
      *
      * @param ids    string with objects id for deleting.
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      */
     @ApiOperation(value = "Delete user custom goals")
@@ -420,9 +418,9 @@ public class UserController {
     }
 
     /**
-     * Method for finding all active {@link User} habit assigns.
+     * Method for finding all active {@link UserVO} habit assigns.
      *
-     * @param id       {@link User} id.
+     * @param id       {@link UserVO} id.
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssignDto}.
      */
@@ -444,7 +442,7 @@ public class UserController {
      * Method for deleting user goals.
      *
      * @param ids    string with objects id for deleting.
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -485,7 +483,7 @@ public class UserController {
     }
 
     /**
-     * Update user profile picture {@link User}.
+     * Update user profile picture {@link UserVO}.
      *
      * @return {@link ResponseEntity}.
      * @author Datsko Marian
@@ -510,7 +508,7 @@ public class UserController {
     }
 
     /**
-     * Delete user profile picture {@link User}.
+     * Delete user profile picture {@link UserVO}.
      *
      * @return {@link ResponseEntity}.
      */
@@ -593,9 +591,9 @@ public class UserController {
     }
 
     /**
-     * Method for save user profile information {@link EcoNews}.
+     * Method for save user profile information {@link UserProfileDtoResponse}.
      *
-     * @param userProfileDtoRequest - dto for {@link User} entity.
+     * @param userProfileDtoRequest - dto for {@link UserVO} entity.
      * @return dto {@link UserProfileDtoResponse} instance.
      * @author Marian Datsko.
      */
@@ -635,7 +633,7 @@ public class UserController {
     }
 
     /**
-     * The method checks by id if a {@link User} is online.
+     * The method checks by id if a {@link UserVO} is online.
      *
      * @return {@link ResponseEntity}.
      * @author Zhurakovskyi Yurii
@@ -675,7 +673,7 @@ public class UserController {
     }
 
     /**
-     * The method get {@link User}s with online status for the current user-id.
+     * The method get {@link UserVO}s with online status for the current user-id.
      *
      * @return {@link UserAndFriendsWithOnlineStatusDto}.
      * @author Zhurakovskyi Yurii
@@ -688,7 +686,8 @@ public class UserController {
     }
 
     /**
-     * The method get all {@link User}s with online status for the current user-id.
+     * The method get all {@link UserVO}s with online status for the current
+     * user-id.
      *
      * @return {@link UserAndAllFriendsWithOnlineStatusDto}.
      * @author Zhurakovskyi Yurii
