@@ -35,9 +35,9 @@ public class AdviceRepoTest {
         Page<Advice> expected = adviceRepo.findAll(pageable);
 
         List<Long> actualIds = actual.getContent().stream().map(Advice::getId)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
         List<Long> expectedIds = expected.getContent().stream().map(Advice::getId)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
 
         assertEquals(expected.getContent().size(), 3);
         assertEquals(expectedIds, actualIds);
@@ -54,9 +54,9 @@ public class AdviceRepoTest {
         Page<Advice> expected = adviceRepo.searchBy(pageable, query);
 
         List<Long> actualIds = actual.getContent().stream().map(Advice::getId)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
         List<Long> expectedIds = expected.getContent().stream().map(Advice::getId)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
 
         assertEquals(expected.getContent().size(), 2);
         assertEquals(expectedIds, actualIds);
@@ -69,9 +69,9 @@ public class AdviceRepoTest {
         List<Advice> expected = adviceRepo.findAllByHabitId(habitId);
 
         List<Long> actualIds = actual.stream().map(Advice::getId)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
         List<Long> expectedIds = expected.stream().map(Advice::getId)
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
 
         assertEquals(expected.size(), actual.size());
         assertEquals(expectedIds, actualIds);

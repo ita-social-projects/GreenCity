@@ -42,9 +42,9 @@ class AdviceControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(adviceController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .setValidator(mockValidator)
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setValidator(mockValidator)
+            .build();
     }
 
     @Test
@@ -53,7 +53,7 @@ class AdviceControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(adviceLink))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(adviceService).getAllAdvices(pageable);
     }
@@ -61,7 +61,7 @@ class AdviceControllerTest {
     @Test
     void getRandomAdviceHabitIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/1?lang=en"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(adviceService).getRandomAdviceByHabitIdAndLanguage(1L, "en");
     }
@@ -74,9 +74,9 @@ class AdviceControllerTest {
         String content = objectMapper.writeValueAsString(advicePostDto);
 
         mockMvc.perform(put(adviceLink + "/" + adviceId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isOk());
 
         verify(adviceService, times(1)).update(advicePostDto, adviceId);
     }
@@ -84,7 +84,7 @@ class AdviceControllerTest {
     @Test
     void getRandomAdviceHabitWithInvalidIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/{id}?lang=en", "invalidId"))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
         verify(adviceService, times(0)).getRandomAdviceByHabitIdAndLanguage(1L, "en");
     }
 
@@ -95,38 +95,36 @@ class AdviceControllerTest {
         String content = objectMapper.writeValueAsString(advicePostDto);
 
         mockMvc.perform(post(adviceLink)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
-                .andExpect(status().isCreated());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isCreated());
 
         verify(adviceService, times(1)).save(advicePostDto);
     }
 
     @Test
     void deleteTest() throws Exception {
-        mockMvc.perform(delete(adviceLink + "/{adviceId}", 1)
-        ).andExpect(status().isOk());
+        mockMvc.perform(delete(adviceLink + "/{adviceId}", 1)).andExpect(status().isOk());
 
         verify(adviceService, times(1))
-                .delete(1L);
+            .delete(1L);
     }
 
     @Test
     void deleteFailedTest() throws Exception {
-        mockMvc.perform(delete(adviceLink + "/{adviceId}", "invalidId")
-        ).andExpect(status().isBadRequest());
+        mockMvc.perform(delete(adviceLink + "/{adviceId}", "invalidId")).andExpect(status().isBadRequest());
 
         verify(adviceService, times(0))
-                .delete(anyLong());
+            .delete(anyLong());
     }
 
     @Test
     void getByIdTest() throws Exception {
         Long adviceId = 1L;
         mockMvc.perform(get(adviceLink + "/{adviceId}", adviceId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(adviceService, times(1))
-                .getAdviceById(adviceId);
+            .getAdviceById(adviceId);
     }
 }

@@ -35,7 +35,8 @@ public class ManagementAdvicesController {
     private final LanguageService languageService;
 
     /**
-     * Method that returns management page with all {@link Advice}'s that satisfy query.
+     * Method that returns management page with all {@link Advice}'s that satisfy
+     * query.
      *
      * @param query    {@link String} - string query
      * @param model    {@link Model} - for passing data between controller and view
@@ -45,14 +46,15 @@ public class ManagementAdvicesController {
      */
     @ApiOperation(value = "Get all advices")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping
     public String findAllAdvices(@RequestParam(required = false) String query,
-                                 Model model, @ApiIgnore Pageable pageable) {
+        Model model, @ApiIgnore Pageable pageable) {
         PageableDto<AdviceVO> allAdvices = query == null || query.isEmpty()
-                ? adviceService.getAllAdvices(pageable) : adviceService.searchBy(pageable, query);
+            ? adviceService.getAllAdvices(pageable)
+            : adviceService.searchBy(pageable, query);
         model.addAttribute("pageable", allAdvices);
         model.addAttribute("languages", languageService.getAllLanguages());
 
@@ -68,13 +70,13 @@ public class ManagementAdvicesController {
      */
     @ApiOperation(value = "Get advice by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/{id}")
     public ResponseEntity<AdviceVO> findAdviceById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(adviceService.getAdviceById(id));
+            .body(adviceService.getAdviceById(id));
     }
 
     /**
@@ -86,13 +88,13 @@ public class ManagementAdvicesController {
      */
     @ApiOperation(value = "Save advice")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
     @PostMapping
     public GenericResponseDto saveAdvice(@Valid @RequestBody AdvicePostDto advice,
-                                         BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             adviceService.save(advice);
         }
@@ -109,32 +111,32 @@ public class ManagementAdvicesController {
      */
     @ApiOperation(value = "Delete advice by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteAdviceById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(adviceService.delete(id));
+            .body(adviceService.delete(id));
     }
 
     /**
      * Method that deletes all {@link Advice}'s by given id's.
      *
-     * @param ids - list of  {@link Long}
+     * @param ids - list of {@link Long}
      * @return {@link org.springframework.http.ResponseEntity}
      * @author Markiyan Derevetskyi
      */
     @ApiOperation(value = "Delete all advices by given id's")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAllAdvices(@RequestBody List<Long> ids) {
         adviceService.deleteAllByIds(ids);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ids);
+            .body(ids);
     }
 
     /**
@@ -147,13 +149,13 @@ public class ManagementAdvicesController {
      */
     @ApiOperation(value = "Update advice by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
     @PutMapping("/{id}")
     public GenericResponseDto updateAdvice(@Valid @RequestBody AdvicePostDto advicePostDto, BindingResult bindingResult,
-                                           @PathVariable Long id) {
+        @PathVariable Long id) {
         if (!bindingResult.hasErrors()) {
             adviceService.update(advicePostDto, id);
         }
@@ -162,7 +164,8 @@ public class ManagementAdvicesController {
     }
 
     /**
-     * Method that returns management page with all {@link Advice}'s that satisfy filters.
+     * Method that returns management page with all {@link Advice}'s that satisfy
+     * filters.
      *
      * @param model    {@link Model} - for passing data between controller and view
      * @param pageable {@link Pageable}
@@ -172,13 +175,13 @@ public class ManagementAdvicesController {
     @PostMapping("/filter")
     @ApiOperation(value = "Get all advices by filter data")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     public String filterAdvices(Model model, @ApiIgnore Pageable pageable,
-                                AdviceViewDto adviceViewDto) {
+        AdviceViewDto adviceViewDto) {
         PageableDto<AdviceVO> filteredAdvices =
-                adviceService.getFilteredAdvices(pageable, adviceViewDto);
+            adviceService.getFilteredAdvices(pageable, adviceViewDto);
         model.addAttribute("pageable", filteredAdvices);
         model.addAttribute("fields", adviceViewDto);
 

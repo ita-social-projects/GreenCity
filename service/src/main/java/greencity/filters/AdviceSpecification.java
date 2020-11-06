@@ -25,17 +25,17 @@ public class AdviceSpecification implements MySpecification<Advice> {
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             if (searchCriteria.getType().equals("id")) {
                 allPredicates = criteriaBuilder.and(allPredicates,
-                        getNumericPredicate(root, criteriaBuilder, searchCriteria));
+                    getNumericPredicate(root, criteriaBuilder, searchCriteria));
             }
 
             if (searchCriteria.getType().equals("habitId")) {
                 allPredicates = criteriaBuilder.and(allPredicates,
-                        getHabitIdPredicate(root, criteriaBuilder, searchCriteria));
+                    getHabitIdPredicate(root, criteriaBuilder, searchCriteria));
             }
 
             if (searchCriteria.getType().equals("translationContent")) {
                 allPredicates = criteriaBuilder.and(allPredicates,
-                        getTranslationPredicate(root, criteriaBuilder, searchCriteria));
+                    getTranslationPredicate(root, criteriaBuilder, searchCriteria));
             }
         }
 
@@ -43,20 +43,20 @@ public class AdviceSpecification implements MySpecification<Advice> {
     }
 
     private Predicate getTranslationPredicate(Root<Advice> root,
-                                              CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
+        CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
         Join<Advice, AdviceTranslation> translationJoin = root.join("translations");
 
-        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
-                criteriaBuilder.and(criteriaBuilder.like(translationJoin.get("content"),
-                        "%" + searchCriteria.getValue() + "%"),
-                        criteriaBuilder.equal(translationJoin.get("advice").get("id"), root.get("id")));
+        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
+            : criteriaBuilder.and(criteriaBuilder.like(translationJoin.get("content"),
+                "%" + searchCriteria.getValue() + "%"),
+                criteriaBuilder.equal(translationJoin.get("advice").get("id"), root.get("id")));
     }
 
     private Predicate getHabitIdPredicate(Root<Advice> root, CriteriaBuilder criteriaBuilder,
-                                          SearchCriteria searchCriteria) {
+        SearchCriteria searchCriteria) {
         Join<Advice, Habit> habitJoin = root.join("habit");
 
         return criteriaBuilder
-                .equal(habitJoin.get("id"), searchCriteria.getValue());
+            .equal(habitJoin.get("id"), searchCriteria.getValue());
     }
 }

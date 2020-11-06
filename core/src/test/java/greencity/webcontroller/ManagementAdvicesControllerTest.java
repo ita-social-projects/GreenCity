@@ -57,9 +57,9 @@ class ManagementAdvicesControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(advicesController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .setValidator(mockValidator)
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setValidator(mockValidator)
+            .build();
     }
 
     @Test
@@ -72,10 +72,10 @@ class ManagementAdvicesControllerTest {
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
         mockMvc.perform(get(managementAdvicesLink + "?page=0&size=20"))
-                .andExpect(view().name("core/management_advices"))
-                .andExpect(model().attribute("pageable", pageableDto))
-                .andExpect(model().attribute("languages", languageDTOS))
-                .andExpect(status().isOk());
+            .andExpect(view().name("core/management_advices"))
+            .andExpect(model().attribute("pageable", pageableDto))
+            .andExpect(model().attribute("languages", languageDTOS))
+            .andExpect(status().isOk());
 
         verify(adviceService).getAllAdvices(pageable);
         verify(languageService).getAllLanguages();
@@ -88,9 +88,9 @@ class ManagementAdvicesControllerTest {
         String adviceViewDtoAsJson = objectMapper.writeValueAsString(adviceViewDto);
 
         mockMvc.perform(post(managementAdvicesLink + "/filter")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(adviceViewDtoAsJson))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(adviceViewDtoAsJson))
+            .andExpect(status().isOk());
 
         verify(adviceService).getFilteredAdvices(eq(pageable), any(AdviceViewDto.class));
     }
@@ -106,10 +106,10 @@ class ManagementAdvicesControllerTest {
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
         mockMvc.perform(get(managementAdvicesLink + "?page=0&size=20&query=" + query))
-                .andExpect(view().name("core/management_advices"))
-                .andExpect(model().attribute("pageable", pageableDto))
-                .andExpect(model().attribute("languages", languageDTOS))
-                .andExpect(status().isOk());
+            .andExpect(view().name("core/management_advices"))
+            .andExpect(model().attribute("pageable", pageableDto))
+            .andExpect(model().attribute("languages", languageDTOS))
+            .andExpect(status().isOk());
 
         verify(adviceService).searchBy(pageable, query);
         verify(languageService).getAllLanguages();
@@ -119,7 +119,7 @@ class ManagementAdvicesControllerTest {
     void findAdviceById() throws Exception {
         Long adviceId = 1L;
         mockMvc.perform(get(managementAdvicesLink + "/" + adviceId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(adviceService).getAdviceById(adviceId);
     }
@@ -130,10 +130,10 @@ class ManagementAdvicesControllerTest {
         String advicePostDtoAsJson = objectMapper.writeValueAsString(advicePostDto);
 
         mockMvc.perform(post(managementAdvicesLink)
-                .content(advicePostDtoAsJson)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(advicePostDtoAsJson)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(adviceService).save(advicePostDto);
     }
@@ -142,7 +142,7 @@ class ManagementAdvicesControllerTest {
     void deleteAdviceById() throws Exception {
         Long adviceId = 1L;
         mockMvc.perform(delete(managementAdvicesLink + "/" + adviceId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(adviceService).delete(1L);
     }
@@ -151,10 +151,10 @@ class ManagementAdvicesControllerTest {
     void deleteAllAdvices() throws Exception {
         List<Long> ids = Arrays.asList(1L, 2L);
         mockMvc.perform(delete(managementAdvicesLink + "/deleteAll")
-                .content("[1,2]")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content("[1,2]")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(adviceService).deleteAllByIds(ids);
     }
@@ -166,10 +166,10 @@ class ManagementAdvicesControllerTest {
         String advicePostDtoAsJson = objectMapper.writeValueAsString(advicePostDto);
 
         mockMvc.perform(put(managementAdvicesLink + "/" + id)
-                .content(advicePostDtoAsJson)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(advicePostDtoAsJson)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(adviceService).update(advicePostDto, id);
     }

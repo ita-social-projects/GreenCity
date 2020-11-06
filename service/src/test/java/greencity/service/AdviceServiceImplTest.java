@@ -67,7 +67,7 @@ class AdviceServiceImplTest {
         List<Advice> advices = Collections.singletonList(advice);
         List<AdviceVO> adviceVOs = Collections.singletonList(adviceVO);
         Page<Advice> pageAdvices = new PageImpl<>(advices,
-                pageable, advices.size());
+            pageable, advices.size());
         PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
         when(adviceRepo.findAll(pageable)).thenReturn(pageAdvices);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
@@ -87,7 +87,7 @@ class AdviceServiceImplTest {
         List<Advice> advices = Collections.singletonList(advice);
         List<AdviceVO> adviceVOs = Collections.singletonList(adviceVO);
         Page<Advice> pageAdvices = new PageImpl<>(advices,
-                pageable, advices.size());
+            pageable, advices.size());
         when(adviceRepo.findAll(any(AdviceSpecification.class), eq(pageable))).thenReturn(pageAdvices);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
         PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
@@ -103,7 +103,7 @@ class AdviceServiceImplTest {
         AdviceTranslation adviceTranslation = ModelUtils.getAdviceTranslations().get(0);
         LanguageTranslationDTO expected = ModelUtils.getLanguageTranslationsDTOs().get(0);
         when(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id))
-                .thenReturn(Optional.of(adviceTranslation));
+            .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, LanguageTranslationDTO.class)).thenReturn(expected);
         LanguageTranslationDTO actual = adviceService.getRandomAdviceByHabitIdAndLanguage(id, language);
 
@@ -143,7 +143,7 @@ class AdviceServiceImplTest {
         Advice advice = ModelUtils.getAdvice();
         AdviceDto expected = modelMapper.map(advice, AdviceDto.class);
         when(adviceTranslationRepo.findAdviceTranslationByLanguageCodeAndContent(language, name))
-                .thenReturn(Optional.of(adviceTranslation));
+            .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, AdviceDto.class)).thenReturn(expected);
         AdviceDto actual = adviceService.getAdviceByName(language, name);
 
@@ -161,7 +161,7 @@ class AdviceServiceImplTest {
         List<Advice> advices = Collections.singletonList(advice);
         List<AdviceVO> adviceVOs = Collections.singletonList(adviceVO);
         Page<Advice> pageAdvices = new PageImpl<>(advices,
-                pageable, advices.size());
+            pageable, advices.size());
         PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
         when(adviceRepo.searchBy(pageable, query)).thenReturn(pageAdvices);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);

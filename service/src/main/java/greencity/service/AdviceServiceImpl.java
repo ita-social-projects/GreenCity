@@ -67,8 +67,8 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id)
-                .orElseThrow(() ->
-                        new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), LanguageTranslationDTO.class);
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)),
+            LanguageTranslationDTO.class);
     }
 
     @Override
@@ -81,8 +81,9 @@ public class AdviceServiceImpl implements AdviceService {
      */
     @Override
     public AdviceVO getAdviceById(Long id) {
-        return modelMapper.map(adviceRepo.findById(id).orElseThrow(() ->
-                new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)), AdviceVO.class);
+        return modelMapper.map(
+            adviceRepo.findById(id).orElseThrow(() -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)),
+            AdviceVO.class);
     }
 
     /**
@@ -91,8 +92,8 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public AdviceDto getAdviceByName(String language, String name) {
         return modelMapper.map(adviceTranslationRepo
-                .findAdviceTranslationByLanguageCodeAndContent(language, name).orElseThrow(() ->
-                        new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDto.class);
+            .findAdviceTranslationByLanguageCodeAndContent(language, name)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_NAME + name)), AdviceDto.class);
     }
 
     /**
@@ -112,14 +113,14 @@ public class AdviceServiceImpl implements AdviceService {
      */
     @Override
     public AdvicePostDto update(AdvicePostDto adviceDto, Long id) {
-        Advice advice = adviceRepo.findById(id).orElseThrow(() ->
-                new NotUpdatedException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id));
+        Advice advice = adviceRepo.findById(id)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id));
         Habit habit = habitRepo.findById(adviceDto.getHabit().getId())
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
         advice.setHabit(habit);
         List<AdviceTranslation> adviceTranslations = modelMapper.map(adviceDto.getTranslations(),
-                new TypeToken<List<AdviceTranslation>>() {
-                }.getType());
+            new TypeToken<List<AdviceTranslation>>() {
+            }.getType());
         adviceTranslationRepo.deleteAllByAdvice(advice);
         advice.setTranslations(adviceTranslations);
         adviceTranslations.forEach(adviceTranslation -> adviceTranslation.setAdvice(advice));
@@ -148,10 +149,10 @@ public class AdviceServiceImpl implements AdviceService {
     public void deleteAllByHabit(HabitVO habitVO) {
         Habit habit = modelMapper.map(habitVO, Habit.class);
         adviceRepo.findAllByHabitId(habit.getId())
-                .forEach(advice -> {
-                    adviceTranslationRepo.deleteAllByAdvice(advice);
-                    adviceRepo.delete(advice);
-                });
+            .forEach(advice -> {
+                adviceTranslationRepo.deleteAllByAdvice(advice);
+                adviceRepo.delete(advice);
+            });
     }
 
     /**
@@ -164,14 +165,15 @@ public class AdviceServiceImpl implements AdviceService {
 
     private PageableDto<AdviceVO> buildPageableDto(Page<Advice> advices) {
         List<AdviceVO> adviceVOs = advices.getContent().stream()
-                .map(advice -> modelMapper.map(advice, AdviceVO.class)).collect(Collectors.toList());
+            .map(advice -> modelMapper.map(advice, AdviceVO.class)).collect(Collectors.toList());
 
         return new PageableDto<>(adviceVOs, advices.getTotalElements(),
-                advices.getPageable().getPageNumber(), advices.getTotalPages());
+            advices.getPageable().getPageNumber(), advices.getTotalPages());
     }
 
     /**
-     * * This method used for build {@link SearchCriteria} depends on {@link Advice}.
+     * * This method used for build {@link SearchCriteria} depends on
+     * {@link Advice}.
      *
      * @param adviceViewDto used for receive parameters for filters from UI.
      * @return {@link SearchCriteria}.
@@ -190,9 +192,9 @@ public class AdviceServiceImpl implements AdviceService {
             }
             if (!value.isEmpty()) {
                 criteriaList.add(SearchCriteria.builder()
-                        .key(field.getName()).type(field.getName())
-                        .value(value)
-                        .build());
+                    .key(field.getName()).type(field.getName())
+                    .value(value)
+                    .build());
             }
         }
 
