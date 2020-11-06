@@ -6,7 +6,6 @@ import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-import greencity.entity.Advice;
 import greencity.service.AdviceService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +34,7 @@ public class ManagementAdvicesController {
     private final LanguageService languageService;
 
     /**
-     * Method that returns management page with all {@link Advice}'s that satisfy
+     * Method that returns management page with all {@link AdviceVO}'s that satisfy
      * query.
      *
      * @param query    {@link String} - string query
@@ -62,7 +61,7 @@ public class ManagementAdvicesController {
     }
 
     /**
-     * Method that finds {@link Advice} by id.
+     * Method that finds {@link AdviceVO} by id.
      *
      * @param id {@link Long} - advice id
      * @return found advice {@link AdviceVO}
@@ -80,7 +79,7 @@ public class ManagementAdvicesController {
     }
 
     /**
-     * Method that saves new {@link Advice}.
+     * Method that saves new {@link AdvicePostDto}.
      *
      * @param advice {@link AdvicePostDto} - advice that will be saved in DB.
      * @return saved advice {@link GenericResponseDto}
@@ -103,7 +102,7 @@ public class ManagementAdvicesController {
     }
 
     /**
-     * Method that deletes {@link Advice} by id.
+     * Method that deletes advice by id.
      *
      * @param id {@link Long}
      * @return {@link org.springframework.http.ResponseEntity}
@@ -121,7 +120,7 @@ public class ManagementAdvicesController {
     }
 
     /**
-     * Method that deletes all {@link Advice}'s by given id's.
+     * Method that deletes all advices by given id's.
      *
      * @param ids - list of {@link Long}
      * @return {@link org.springframework.http.ResponseEntity}
@@ -140,7 +139,7 @@ public class ManagementAdvicesController {
     }
 
     /**
-     * Method that updates {@link Advice} by id.
+     * Method that updates {@link AdvicePostDto} by id.
      *
      * @param advicePostDto {@link AdvicePostDto} - new advice
      * @param id            {@link Long} - advice id
@@ -164,7 +163,7 @@ public class ManagementAdvicesController {
     }
 
     /**
-     * Method that returns management page with all {@link Advice}'s that satisfy
+     * Method that returns management page with all {@link AdviceVO}'s that satisfy
      * filters.
      *
      * @param model    {@link Model} - for passing data between controller and view
