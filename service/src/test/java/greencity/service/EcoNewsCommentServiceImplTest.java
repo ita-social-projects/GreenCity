@@ -51,12 +51,6 @@ class EcoNewsCommentServiceImplTest {
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
 
-//    @BeforeEach
-//    public void setUp() {
-//        modelMapper.addConverter(new AddEcoNewsCommentDtoResponseMapper());
-//        modelMapper.addConverter(new EcoNewsCommentDtoMapper());
-//    }
-
     @Test
     void saveCommentWithNoParentCommentId() {
         UserVO userVO = getUserVO();
@@ -170,7 +164,6 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsService.findById(1L)).thenReturn(ModelUtils.getEcoNewsVO());
         when(ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId))
             .thenReturn(pages);
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
         when(ecoNewsCommentRepo.countByParentCommentId(any())).thenReturn(0);
 
