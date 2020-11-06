@@ -80,11 +80,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         ecoNewsService.findById(ecoNewsId);
         Page<EcoNewsComment> pages = ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(
             pageable, ecoNewsId);
-        User user = modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                    .anyMatch(u -> u.getId().equals(userVO.getId())));
                 return comment;
             })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
