@@ -4,6 +4,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.entity.Advice;
 import greencity.service.AdviceService;
@@ -157,5 +158,29 @@ public class ManagementAdvicesController {
         }
 
         return buildGenericResponseDto(bindingResult);
+    }
+
+    /**
+     * Method that returns management page with all {@link Advice}'s that satisfy filters.
+     *
+     * @param model    {@link Model} - for passing data between controller and view
+     * @param pageable {@link Pageable}
+     * @return name of template {@link String}
+     * @author Markiyan Derevetskyi
+     */
+    @PostMapping("/filter")
+    @ApiOperation(value = "Get all advices by filter data")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    public String filterAdvices(Model model, @ApiIgnore Pageable pageable,
+                                AdviceViewDto adviceViewDto) {
+        PageableDto<AdviceVO> filteredAdvices =
+                adviceService.getFilteredAdvices(pageable, adviceViewDto);
+        model.addAttribute("pageable", filteredAdvices);
+        model.addAttribute("fields", adviceViewDto);
+
+        return "core/management_advices";
     }
 }

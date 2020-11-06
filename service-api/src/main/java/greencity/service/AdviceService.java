@@ -4,6 +4,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
+import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,14 @@ public interface AdviceService {
      * @author Vitaliy Dzen
      */
     PageableDto<AdviceVO> getAllAdvices(Pageable pageable);
+
+    /**
+     * Method finds all {@link AdviceVO}'s that satisfy filters .
+     *
+     * @return List of all {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     */
+    PageableDto<AdviceVO> getFilteredAdvices(Pageable pageable, AdviceViewDto adviceViewDto);
 
     /**
      * Method finds random {@link AdviceDto}.

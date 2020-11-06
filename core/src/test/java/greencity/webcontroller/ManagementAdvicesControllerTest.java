@@ -5,6 +5,7 @@ import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
+import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.service.AdviceService;
 import greencity.service.LanguageService;
@@ -51,6 +52,8 @@ class ManagementAdvicesControllerTest {
     @InjectMocks
     private ManagementAdvicesController advicesController;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(advicesController)
@@ -76,6 +79,20 @@ class ManagementAdvicesControllerTest {
 
         verify(adviceService).getAllAdvices(pageable);
         verify(languageService).getAllLanguages();
+    }
+
+    @Test
+    void filterAdvices() throws Exception {
+        Pageable pageable = PageRequest.of(0, 20);
+        AdviceViewDto adviceViewDto = new AdviceViewDto("1", "", "Pro");
+        String adviceViewDtoAsJson = objectMapper.writeValueAsString(adviceViewDto);
+
+        mockMvc.perform(post(managementAdvicesLink + "/filter")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(adviceViewDtoAsJson))
+                .andExpect(status().isOk());
+
+        verify(adviceService).getFilteredAdvices(eq(pageable), any(AdviceViewDto.class));
     }
 
     @Test
@@ -110,10 +127,9 @@ class ManagementAdvicesControllerTest {
     @Test
     void saveAdvice() throws Exception {
         AdvicePostDto advicePostDto = ModelUtils.getAdvicePostDto();
-        ObjectMapper objectMapper = new ObjectMapper();
         String advicePostDtoAsJson = objectMapper.writeValueAsString(advicePostDto);
 
-        mockMvc.perform(post(managementAdvicesLink + "/")
+        mockMvc.perform(post(managementAdvicesLink)
                 .content(advicePostDtoAsJson)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -147,7 +163,6 @@ class ManagementAdvicesControllerTest {
     void updateAdvice() throws Exception {
         AdvicePostDto advicePostDto = ModelUtils.getAdvicePostDto();
         Long id = 1L;
-        ObjectMapper objectMapper = new ObjectMapper();
         String advicePostDtoAsJson = objectMapper.writeValueAsString(advicePostDto);
 
         mockMvc.perform(put(managementAdvicesLink + "/" + id)

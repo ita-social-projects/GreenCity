@@ -61,6 +61,32 @@
                         <th>Actions</th>
                     </tr>
                     </thead>
+                    <tbody>
+
+                    </tbody>
+                    <form method="POST" action="/management/advices/filter" id="searchForm" onsubmit="applyFilters()">
+
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                <input type="search" th:name="id" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.id }"/>
+                            </td>
+                            <td>
+                                <input type="search" th:name="habitId" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.habitId }"/>
+                            </td>
+                            <td>
+                                <input type="search" style="width: 100%" th:name="translationContent" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.translationContent }"/>
+                            </td>
+                            <td>
+                                <button type="submit"><i class="fa fa-search"></i></button>
+                            </td>
+                        </tr>
+
+                    </form>
                     <th:block th:each="advice, iterStatus :${pageable.getPage()}">
                         <tbody >
                         <tr>
@@ -255,5 +281,11 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
+<script>
+    function applyFilters() {
+        document.getElementById("searchForm").action = "/management/advices/filter";
+        document.getElementById("searchForm").submit();
+    }
+</script>
 </body>
 </html>

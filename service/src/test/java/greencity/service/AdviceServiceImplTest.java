@@ -5,6 +5,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
+import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
@@ -13,6 +14,7 @@ import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.filters.AdviceSpecification;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitRepo;
@@ -67,6 +69,26 @@ class AdviceServiceImplTest {
         when(adviceRepo.findAll(pageable)).thenReturn(pageAdvices);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
         PageableDto<AdviceVO> actual = adviceService.getAllAdvices(pageable);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getFilteredAdvices() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Advice advice = ModelUtils.getAdvice();
+        AdviceVO adviceVO = ModelUtils.getAdviceVO();
+        AdviceViewDto adviceViewDto = new AdviceViewDto("1", "", "Pro");
+        List<Advice> advices = Collections.singletonList(advice);
+        List<AdviceVO> adviceVOs = Collections.singletonList(adviceVO);
+        Page<Advice> pageAdvices = new PageImpl<>(advices,
+                pageable, advices.size());
+        when(adviceRepo.findAll(any(AdviceSpecification.class), eq(pageable))).thenReturn(pageAdvices);
+        when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
+        PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
+        PageableDto<AdviceVO> actual = adviceService.getFilteredAdvices(pageable, adviceViewDto);
 
         assertEquals(expected, actual);
     }
@@ -252,4 +274,3 @@ class AdviceServiceImplTest {
         verify(adviceRepo, times(ids.size())).deleteById(anyLong());
     }
 }
-
