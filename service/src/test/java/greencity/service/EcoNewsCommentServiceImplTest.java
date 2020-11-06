@@ -190,7 +190,6 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId))
             .thenReturn(pages);
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(ecoNewsCommentChild, EcoNewsCommentDto.class))
             .thenReturn(ModelUtils.getEcoNewsCommentDto());
 
