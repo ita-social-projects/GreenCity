@@ -5,8 +5,6 @@ import greencity.constant.AppConstant;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.AddCommentDto;
-import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -31,7 +29,6 @@ import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
@@ -62,22 +59,22 @@ public class ModelUtils {
 
     public static User getUser() {
         return User.builder()
-            .id(1L)
-            .email(TestConst.EMAIL)
-            .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
-            .lastVisit(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
-            .build();
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .role(ROLE.ROLE_USER)
+                .lastVisit(LocalDateTime.now())
+                .dateOfRegistration(LocalDateTime.now())
+                .build();
     }
 
     public static UserVO getUserVO() {
         return UserVO.builder()
-            .id(1L)
-            .email(TestConst.EMAIL)
-            .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
-            .build();
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .role(ROLE.ROLE_USER)
+                .build();
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
@@ -86,24 +83,24 @@ public class ModelUtils {
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
-            "title", "text", null, Collections.singletonList(getTag()));
+                "title", "text", null, Collections.singletonList(getTag()));
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"), null, null);
+                Collections.singletonList("tag"), null, null);
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
         return new AddEcoNewsDtoResponse(1L, "title",
-            "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
-            ZonedDateTime.now(), TestConst.SITE, null,
-            Collections.singletonList("tag"));
+                "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
+                ZonedDateTime.now(), TestConst.SITE, null,
+                Collections.singletonList("tag"));
     }
 
     public static MultipartFile getFile() {
@@ -117,7 +114,7 @@ public class ModelUtils {
             e.printStackTrace();
         }
         return new MockMultipartFile(name,
-            name, contentType, content);
+                name, contentType, content);
     }
 
     public static URL getUrl() throws MalformedURLException {
@@ -155,106 +152,106 @@ public class ModelUtils {
 
     public static AddHabitStatisticDto addHabitStatisticDto() {
         return AddHabitStatisticDto.builder()
-            .amountOfItems(5)
-            .habitRate(HabitRate.DEFAULT)
-            .createDate(ZonedDateTime.now())
-            .build();
+                .amountOfItems(5)
+                .habitRate(HabitRate.DEFAULT)
+                .createDate(ZonedDateTime.now())
+                .build();
     }
 
     public static HabitStatistic getHabitStatistic() {
         return HabitStatistic.builder()
-            .id(1L)
-            .habitRate(HabitRate.DEFAULT)
-            .createDate(ZonedDateTime.now())
-            .amountOfItems(5)
-            .habitAssign(HabitAssign.builder().id(13L).build())
-            .build();
+                .id(1L)
+                .habitRate(HabitRate.DEFAULT)
+                .createDate(ZonedDateTime.now())
+                .amountOfItems(5)
+                .habitAssign(HabitAssign.builder().id(13L).build())
+                .build();
     }
 
     public static HabitStatus getHabitStatus() {
         HabitAssign habitAssign = getHabitAssign();
 
         return HabitStatus.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssign(habitAssign)
-            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
-            .build();
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitAssign(habitAssign)
+                .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
+                .build();
 
     }
 
     public static Category getCategory() {
         return Category.builder()
-            .id(12L)
-            .name("category")
-            .build();
+                .id(12L)
+                .name("category")
+                .build();
     }
 
     public static GoalTranslation getGoalTranslation() {
         return GoalTranslation.builder()
-            .id(2L)
-            .language(
-                new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
-            .content("Buy a bamboo toothbrush")
-            .build();
+                .id(2L)
+                .language(
+                        new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+                .content("Buy a bamboo toothbrush")
+                .build();
     }
 
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
-            .id(1L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
-            .status(GoalStatus.DONE)
-            .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
-            .build();
+                .id(1L)
+                .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+                .status(GoalStatus.DONE)
+                .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
+                .build();
     }
 
     public static UserGoalResponseDto getCustomUserGoalDto() {
         return UserGoalResponseDto.builder()
-            .id(1L)
-            .text("Buy electric car")
-            .status(GoalStatus.ACTIVE)
-            .build();
+                .id(1L)
+                .text("Buy electric car")
+                .status(GoalStatus.ACTIVE)
+                .build();
     }
 
     public static UserGoal getPredefinedUserGoal() {
         return UserGoal.builder()
-            .id(2L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
-            .status(GoalStatus.ACTIVE)
-            .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
-            .build();
+                .id(2L)
+                .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+                .status(GoalStatus.ACTIVE)
+                .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
+                .build();
     }
 
     public static UserGoalResponseDto getPredefinedUserGoalDto() {
         return UserGoalResponseDto.builder()
-            .id(2L)
-            .text("Buy a bamboo toothbrush")
-            .status(GoalStatus.ACTIVE)
-            .build();
+                .id(2L)
+                .text("Buy a bamboo toothbrush")
+                .status(GoalStatus.ACTIVE)
+                .build();
     }
 
     public static List<GoalTranslation> getGoalTranslations() {
         return Arrays.asList(
-            GoalTranslation.builder()
-                .id(2L)
-                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-                .content("Buy a bamboo toothbrush")
-                .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
-                .build(),
-            GoalTranslation.builder()
-                .id(11L)
-                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-                .content("Start recycling batteries")
-                .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList()))
-                .build());
+                GoalTranslation.builder()
+                        .id(2L)
+                        .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
+                                Collections.emptyList(),
+                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                        .content("Buy a bamboo toothbrush")
+                        .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+                        .build(),
+                GoalTranslation.builder()
+                        .id(11L)
+                        .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
+                                Collections.emptyList(),
+                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                        .content("Start recycling batteries")
+                        .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList()))
+                        .build());
     }
 
     public static Advice getAdvice() {
@@ -263,11 +260,11 @@ public class ModelUtils {
 
     public static HabitFactTranslation getFactTranslation() {
         return HabitFactTranslation.builder()
-            .id(1L)
-            .factOfDayStatus(FactOfDayStatus.CURRENT)
-            .habitFact(null)
-            .content("Content")
-            .build();
+                .id(1L)
+                .factOfDayStatus(FactOfDayStatus.CURRENT)
+                .habitFact(null)
+                .content("Content")
+                .build();
     }
 
     public static HabitFact getHabitFact() {
@@ -276,10 +273,10 @@ public class ModelUtils {
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
         return LocationAddressAndGeoDto.builder()
-            .address("address")
-            .lat(12.12d)
-            .lng(12.12d)
-            .build();
+                .address("address")
+                .lat(12.12d)
+                .lng(12.12d)
+                .build();
     }
 
     public static LocalTime getLocalTime() {
@@ -291,9 +288,9 @@ public class ModelUtils {
         openingHours.setOpenTime(getLocalTime());
         openingHours.setCloseTime(getLocalTime());
         openingHours.setBreakTime(BreakTimeDto.builder()
-            .startTime(getLocalTime())
-            .endTime(getLocalTime())
-            .build());
+                .startTime(getLocalTime())
+                .endTime(getLocalTime())
+                .build());
         openingHours.setWeekDay(DayOfWeek.MONDAY);
         return openingHours;
     }
@@ -303,41 +300,41 @@ public class ModelUtils {
         openingHoursTest.setOpenTime(getLocalTime());
         openingHoursTest.setCloseTime(getLocalTime());
         openingHoursTest.setBreakTime(BreakTime.builder()
-            .startTime(getLocalTime())
-            .endTime(getLocalTime())
-            .build());
+                .startTime(getLocalTime())
+                .endTime(getLocalTime())
+                .build());
         openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
         return openingHoursTest;
     }
 
     public static Location getLocation() {
         return Location.builder()
-            .address("address")
-            .lng(12.12d)
-            .lat(12.12d)
-            .build();
+                .address("address")
+                .lng(12.12d)
+                .lat(12.12d)
+                .build();
     }
 
     public static LocationVO getLocationVO() {
         return LocationVO.builder()
-            .address("address")
-            .lng(12.12d)
-            .lat(12.12d)
-            .build();
+                .address("address")
+                .lng(12.12d)
+                .lat(12.12d)
+                .build();
     }
 
     public static Specification getSpecification() {
         return Specification.builder()
-            .id(1L)
-            .name("specification")
-            .build();
+                .id(1L)
+                .name("specification")
+                .build();
     }
 
     public static Photo getPhoto() {
         return Photo.builder()
-            .id(1L)
-            .name("photo")
-            .build();
+                .id(1L)
+                .name("photo")
+                .build();
     }
 
     public static LanguageDTO getLanguageDTO() {
@@ -350,21 +347,21 @@ public class ModelUtils {
 
     public static TipsAndTricks getTipsAndTricks() {
         return TipsAndTricks.builder()
-            .id(1L)
-            .titleTranslations(Collections.singletonList(TitleTranslation.builder()
-                .content("title content")
-                .language(getLanguage())
-                .build()))
-            .textTranslations(Collections.singletonList(TextTranslation.builder()
-                .content("text content for tips and tricks")
-                .language(getLanguage())
-                .build()))
-            .creationDate(ZonedDateTime.now())
-            .author(getUser())
-            .tags(Collections.singletonList(getTag()))
-            .imagePath(null)
-            .source(null)
-            .build();
+                .id(1L)
+                .titleTranslations(Collections.singletonList(TitleTranslation.builder()
+                        .content("title content")
+                        .language(getLanguage())
+                        .build()))
+                .textTranslations(Collections.singletonList(TextTranslation.builder()
+                        .content("text content for tips and tricks")
+                        .language(getLanguage())
+                        .build()))
+                .creationDate(ZonedDateTime.now())
+                .author(getUser())
+                .tags(Collections.singletonList(getTag()))
+                .imagePath(null)
+                .source(null)
+                .build();
     }
 
     public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
@@ -373,13 +370,13 @@ public class ModelUtils {
 
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
-            .id(1L)
-            .text("text")
-            .createdDate(LocalDateTime.now())
-            .modifiedDate(LocalDateTime.now())
-            .user(getUser())
-            .ecoNews(getEcoNews())
-            .build();
+                .id(1L)
+                .text("text")
+                .createdDate(LocalDateTime.now())
+                .modifiedDate(LocalDateTime.now())
+                .user(getUser())
+                .ecoNews(getEcoNews())
+                .build();
     }
 
     public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
@@ -388,59 +385,59 @@ public class ModelUtils {
 
     public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
         return AddEcoNewsCommentDtoResponse.builder()
-            .id(getEcoNewsComment().getId())
-            .author(getEcoNewsCommentAuthorDto())
-            .text(getEcoNewsComment().getText())
-            .modifiedDate(getEcoNewsComment().getModifiedDate())
-            .build();
+                .id(getEcoNewsComment().getId())
+                .author(getEcoNewsCommentAuthorDto())
+                .text(getEcoNewsComment().getText())
+                .modifiedDate(getEcoNewsComment().getModifiedDate())
+                .build();
     }
 
     public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
-            .id(getUser().getId())
-            .name(getUser().getName().trim())
-            .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
+                .id(getUser().getId())
+                .name(getUser().getName().trim())
+                .userProfilePicturePath(getUser().getProfilePicturePath())
+                .build();
     }
 
     public static AddTipsAndTricksCommentDtoRequest getAddTipsAndTricksCommentDtoRequest() {
         return AddTipsAndTricksCommentDtoRequest.builder()
-            .text(getTipsAndTricksComment().getText().intern())
-            .parentCommentId(getTipsAndTricksComment().getId())
-            .build();
+                .text(getTipsAndTricksComment().getText().intern())
+                .parentCommentId(getTipsAndTricksComment().getId())
+                .build();
     }
 
     public static TipsAndTricksComment getTipsAndTricksComment() {
         return TipsAndTricksComment.builder()
-            .id(1L)
-            .text("text")
-            .user(getUser())
-            .build();
+                .id(1L)
+                .text("text")
+                .user(getUser())
+                .build();
     }
 
     public static AddTipsAndTricksCommentDtoResponse getAddTipsAndTricksCommentDtoResponse() {
         return AddTipsAndTricksCommentDtoResponse.builder()
-            .id(getTipsAndTricksComment().getId())
-            .text(getTipsAndTricksComment().getText())
-            .author(TipsAndTricksCommentAuthorDto.builder()
-                .id(getUser().getId())
-                .name(getUser().getName())
-                .userProfilePicturePath(getUser().getProfilePicturePath())
-                .build())
-            .build();
+                .id(getTipsAndTricksComment().getId())
+                .text(getTipsAndTricksComment().getText())
+                .author(TipsAndTricksCommentAuthorDto.builder()
+                        .id(getUser().getId())
+                        .name(getUser().getName())
+                        .userProfilePicturePath(getUser().getProfilePicturePath())
+                        .build())
+                .build();
     }
 
     public static EcoNewsCommentDto getEcoNewsCommentDto() {
         return EcoNewsCommentDto.builder()
-            .id(1L)
-            .modifiedDate(LocalDateTime.now())
-            .author(getEcoNewsCommentAuthorDto())
-            .text("text")
-            .replies(0)
-            .likes(0)
-            .currentUserLiked(false)
-            .status(CommentStatus.ORIGINAL)
-            .build();
+                .id(1L)
+                .modifiedDate(LocalDateTime.now())
+                .author(getEcoNewsCommentAuthorDto())
+                .text("text")
+                .replies(0)
+                .likes(0)
+                .currentUserLiked(false)
+                .status(CommentStatus.ORIGINAL)
+                .build();
     }
 
     public static Principal getPrincipal() {
@@ -465,8 +462,8 @@ public class ModelUtils {
 
     public static FactOfTheDayPostDTO getFactOfTheDayPostDto() {
         return new FactOfTheDayPostDTO(1L, "name",
-            Collections.singletonList(
-                new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)));
+                Collections.singletonList(
+                        new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)));
     }
 
     public static ObjectMapper getObjectMapper() {
@@ -475,72 +472,72 @@ public class ModelUtils {
 
     public static HabitAssign getHabitAssign() {
         return HabitAssign.builder()
-            .id(1L)
-            .acquired(true)
-            .createDate(ZonedDateTime.now())
-            .suspended(false)
-            .habit(Habit.builder()
                 .id(1L)
-                .image("")
-                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
-                    .id(1L)
-                    .name("")
-                    .description("")
-                    .habitItem("")
-                    .language(getLanguage())
-                    .habit(new Habit())
-                    .build()))
-                .habitAssigns(null)
-                .build())
-            .user(getUser())
-            .habitStatus(new HabitStatus())
-            .habitStatistic(null)
-            .build();
+                .acquired(true)
+                .createDate(ZonedDateTime.now())
+                .suspended(false)
+                .habit(Habit.builder()
+                        .id(1L)
+                        .image("")
+                        .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                                .id(1L)
+                                .name("")
+                                .description("")
+                                .habitItem("")
+                                .language(getLanguage())
+                                .habit(new Habit())
+                                .build()))
+                        .habitAssigns(null)
+                        .build())
+                .user(getUser())
+                .habitStatus(new HabitStatus())
+                .habitStatistic(null)
+                .build();
     }
 
     public static HabitStatusCalendar getHabitStatusCalendar() {
         return HabitStatusCalendar.builder()
-            .id(1L)
-            .enrollDate(LocalDate.now()).build();
+                .id(1L)
+                .enrollDate(LocalDate.now()).build();
     }
 
     public static AdviceTranslation getAdviceTranslation() {
         return AdviceTranslation.builder()
-            .id(1L)
-            .language(getLanguage())
-            .content("Text content")
-            .advice(getAdvice())
-            .build();
+                .id(1L)
+                .language(getLanguage())
+                .content("Text content")
+                .advice(getAdvice())
+                .build();
     }
 
     public static HabitFactTranslation getHabitFactTranslation() {
         return HabitFactTranslation.builder()
-            .id(1L)
-            .content("content")
-            .language(getLanguage())
-            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
-            .habitFact(getHabitFact())
-            .build();
+                .id(1L)
+                .content("content")
+                .language(getLanguage())
+                .factOfDayStatus(FactOfDayStatus.POTENTIAL)
+                .habitFact(getHabitFact())
+                .build();
     }
 
     public static HabitFactVO getHabitFactVO() {
         return HabitFactVO.builder()
-            .id(1L)
-            .habit(HabitVO.builder()
                 .id(1L)
-                .image("string")
-                .build())
-            .translations(Collections.singletonList(HabitFactTranslationVO.builder()
-                .id(1L)
-                .content("content")
-                .factOfDayStatus(FactOfDayStatus.POTENTIAL)
-                .habitFact(null)
-                .language(LanguageVO.builder()
-                    .id(1L)
-                    .code("ua")
-                    .build())
-                .build()))
-            .build();
+                .habit(HabitVO.builder()
+                        .id(1L)
+                        .image("string")
+                        .build())
+                .translations(Collections.singletonList(HabitFactTranslationVO.builder()
+                        .id(1L)
+                        .content("content")
+                        .factOfDayStatus(FactOfDayStatus.POTENTIAL)
+                        .habitFact(null)
+                        .language(LanguageVO.builder()
+                                .id(1L)
+                                .code("ua")
+                                .build())
+                        .build()))
+                .build();
     }
 
     public static PlaceVO getPlaceVO() {

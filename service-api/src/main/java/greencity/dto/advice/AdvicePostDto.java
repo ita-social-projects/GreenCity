@@ -1,13 +1,12 @@
 package greencity.dto.advice;
 
 import greencity.annotations.LanguageTranslationConstraint;
-import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.language.LanguageTranslationDTO;
-
-import java.util.List;
-import javax.validation.Valid;
-
+import greencity.dto.user.HabitIdRequestDto;
 import lombok.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor

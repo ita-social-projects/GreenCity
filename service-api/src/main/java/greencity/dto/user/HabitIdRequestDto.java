@@ -1,9 +1,9 @@
 package greencity.dto.user;
 
+import lombok.*;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-
-import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor

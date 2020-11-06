@@ -1,10 +1,9 @@
 package greencity.dto.advice;
 
 import greencity.dto.user.HabitIdRequestDto;
+import lombok.*;
 
 import java.util.List;
-
-import lombok.*;
 
 @Getter
 @Setter

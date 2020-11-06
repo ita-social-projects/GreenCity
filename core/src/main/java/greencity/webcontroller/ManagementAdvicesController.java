@@ -2,16 +2,13 @@ package greencity.webcontroller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.entity.Advice;
 import greencity.service.AdviceService;
 import greencity.service.LanguageService;
-
-import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -27,6 +24,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
 @AllArgsConstructor
