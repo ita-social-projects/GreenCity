@@ -97,8 +97,7 @@ class GoalServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(ModelUtils.getLanguage().getCode());
         when(goalRepo.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(GoalNotFoundException.class, () ->
-            goalService.getUserGoalResponseDtoFromPredefinedGoal(map));
+        assertThrows(GoalNotFoundException.class, () -> goalService.getUserGoalResponseDtoFromPredefinedGoal(map));
     }
 
     @Test
@@ -123,8 +122,7 @@ class GoalServiceImplTest {
         when(modelMapper.map(customUserGoal, UserGoalResponseDto.class)).thenReturn(customUserGoalDto);
         when(customGoalRepo.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () ->
-            goalService.getUserGoalResponseDtoFromCustomGoal(map));
+        assertThrows(NotFoundException.class, () -> goalService.getUserGoalResponseDtoFromCustomGoal(map));
     }
 
     @Test

@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import static greencity.validator.ValidationConstants.*;
+import static greencity.constant.ServiceValidationConstants.*;
 
 @Data
 @AllArgsConstructor

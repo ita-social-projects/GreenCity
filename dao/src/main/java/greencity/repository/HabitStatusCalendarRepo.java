@@ -13,7 +13,8 @@ import org.springframework.lang.NonNull;
 
 public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalendar, Long> {
     /**
-     * Method to find {@link HabitStatusCalendar} by {@link LocalDate} and {@link HabitStatus}.
+     * Method to find {@link HabitStatusCalendar} by {@link LocalDate} and
+     * {@link HabitStatus}.
      *
      * @param date        after this date the search is performed.
      * @param habitStatus target {@link HabitStatus}.
@@ -49,7 +50,8 @@ public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalend
     List<HabitStatusCalendar> findAllByEnrollDateBeforeAndHabitStatus(LocalDate dateTime, HabitStatus habitStatus);
 
     /**
-     * Method deletes all {@link HabitStatusCalendar} by {@link HabitStatus} instance.
+     * Method deletes all {@link HabitStatusCalendar} by {@link HabitStatus}
+     * instance.
      *
      * @param habitStatus {@link HabitStatus} instance.
      */

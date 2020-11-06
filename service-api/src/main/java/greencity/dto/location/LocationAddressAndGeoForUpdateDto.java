@@ -1,6 +1,6 @@
 package greencity.dto.location;
 
-import greencity.validator.ValidationConstants;
+import greencity.constant.ServiceValidationConstants;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -17,14 +17,14 @@ import org.hibernate.validator.constraints.Length;
 public class LocationAddressAndGeoForUpdateDto {
     @NotBlank
     @Length(
-        min = ValidationConstants.PLACE_ADDRESS_MIN_LENGTH,
-        max = ValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
+        min = ServiceValidationConstants.PLACE_ADDRESS_MIN_LENGTH,
+        max = ServiceValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
     @Pattern(regexp = "^[^<>]+$")
     private String address;
 
-    @NotNull(message = ValidationConstants.EMPTY_VALUE_OF_LATITUDE)
+    @NotNull(message = ServiceValidationConstants.EMPTY_VALUE_OF_LATITUDE)
     private Double lat;
 
-    @NotNull(message = ValidationConstants.EMPTY_VALUE_OF_LONGITUDE)
+    @NotNull(message = ServiceValidationConstants.EMPTY_VALUE_OF_LONGITUDE)
     private Double lng;
 }

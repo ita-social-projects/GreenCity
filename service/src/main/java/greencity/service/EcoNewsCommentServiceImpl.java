@@ -37,15 +37,18 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
      *
-     * @param econewsId                   id of {@link greencity.entity.EcoNews} to which we save comment.
-     * @param addEcoNewsCommentDtoRequest dto with {@link greencity.entity.EcoNewsComment} text, parentCommentId.
-     * @param userVO                        {@link User} that saves the comment.
+     * @param econewsId                   id of {@link greencity.entity.EcoNews} to
+     *                                    which we save comment.
+     * @param addEcoNewsCommentDtoRequest dto with
+     *                                    {@link greencity.entity.EcoNewsComment}
+     *                                    text, parentCommentId.
+     * @param userVO                      {@link User} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
-                                             UserVO userVO) {
+        UserVO userVO) {
         EcoNewsVO ecoNewsVO = ecoNewsService.findById(econewsId);
         EcoNewsComment ecoNewsComment = modelMapper.map(addEcoNewsCommentDtoRequest, EcoNewsComment.class);
         ecoNewsComment.setUser(modelMapper.map(userVO, User.class));
@@ -67,8 +70,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method returns all comments to certain ecoNews specified by ecoNewsId.
      *
-     * @param userVO      current {@link User}
-     * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we search for comments
+     * @param userVO    current {@link User}
+     * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we
+     *                  search for comments
      * @return all comments to certain ecoNews specified by ecoNewsId.
      */
     @Override
@@ -94,15 +98,15 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsCommentDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
      * Method returns all replies to certain comment specified by parentCommentId.
      *
-     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to which we search for replies
-     * @param userVO            current {@link User}
+     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to
+     *                        which we search for replies
+     * @param userVO          current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      */
     @Override
@@ -123,14 +127,14 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsCommentDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
-     * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as deleted.
+     * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as
+     * deleted.
      *
-     * @param id   of {@link greencity.entity.EcoNewsComment} to delete.
+     * @param id     of {@link greencity.entity.EcoNewsComment} to delete.
      * @param userVO current {@link User} that wants to delete.
      */
     @RatingCalculation(rating = RatingCalculationEnum.DELETE_COMMENT)
@@ -152,8 +156,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method to change the existing {@link greencity.entity.EcoNewsComment}.
      *
-     * @param text new text of {@link greencity.entity.EcoNewsComment}.
-     * @param id   to specify {@link greencity.entity.EcoNewsComment} that user wants to change.
+     * @param text   new text of {@link greencity.entity.EcoNewsComment}.
+     * @param id     to specify {@link greencity.entity.EcoNewsComment} that user
+     *               wants to change.
      * @param userVO current {@link User} that wants to change.
      */
     @Override
@@ -169,9 +174,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to like or dislike {@link greencity.entity.EcoNewsComment} specified by id.
+     * Method to like or dislike {@link greencity.entity.EcoNewsComment} specified
+     * by id.
      *
-     * @param id   of {@link greencity.entity.EcoNewsComment} to like/dislike.
+     * @param id     of {@link greencity.entity.EcoNewsComment} to like/dislike.
      * @param userVO current {@link User} that wants to like/dislike.
      */
     @Override
@@ -179,26 +185,29 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         EcoNewsCommentVO ecoNewsCommentVO = modelMapper.map(comment, EcoNewsCommentVO.class);
-        if (comment.getUsersLiked().contains(modelMapper.map(userVO, User.class))) {
+        if (comment.getUsersLiked().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()))) {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
         }
-        ecoNewsCommentRepo.save(comment);
+        ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }
 
     /**
-     * Method returns count of likes to certain {@link greencity.entity.EcoNewsComment} specified by id.
+     * Method returns count of likes to certain
+     * {@link greencity.entity.EcoNewsComment} specified by id.
      *
-     * @param id of {@link greencity.entity.EcoNewsComment} to which we get count of likes.
-     * @return count of likes to certain {@link greencity.entity.EcoNewsComment} specified by id.
+     * @param id of {@link greencity.entity.EcoNewsComment} to which we get count of
+     *           likes.
+     * @return count of likes to certain {@link greencity.entity.EcoNewsComment}
+     *         specified by id.
      */
     @Override
     @Transactional
     public int countLikes(Long id) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id).orElseThrow(
-            () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)
-        );
+            () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         return comment.getUsersLiked().size();
     }
 
@@ -217,7 +226,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to count not deleted comments to certain {@link greencity.entity.EcoNews}.
+     * Method to count not deleted comments to certain
+     * {@link greencity.entity.EcoNews}.
      *
      * @param ecoNewsId to specify {@link greencity.entity.EcoNews}
      * @return amount of comments
@@ -228,10 +238,12 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to get all active comments to {@link greencity.entity.EcoNews} specified by ecoNewsId.
+     * Method to get all active comments to {@link greencity.entity.EcoNews}
+     * specified by ecoNewsId.
      *
      * @param pageable  page of news.
-     * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we search for comments
+     * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we
+     *                  search for comments
      * @return all active comments to certain ecoNews specified by ecoNewsId.
      * @author Taras Dovganyuk
      */
@@ -241,7 +253,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsCommentRepo
                 .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId);
         User user = userVO == null ? modelMapper.map(UserVO.builder().build(), User.class)
-                : modelMapper.map(userVO, User.class);
+            : modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
@@ -259,15 +271,15 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsCommentDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
      * Method returns all replies to certain comment specified by parentCommentId.
      *
-     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to which we search for replies
-     * @param userVO            current {@link User}
+     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to
+     *                        which we search for replies
+     * @param userVO          current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      * @author Taras Dovganyuk
      */
@@ -276,7 +288,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
         User user = userVO == null ? modelMapper.map(UserVO.builder().build(), User.class)
-                : modelMapper.map(userVO, User.class);
+            : modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
@@ -290,7 +302,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsCommentDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 }

@@ -23,8 +23,8 @@ public interface HabitFactTranslationService {
     List<HabitFactTranslationVO> saveHabitFactTranslation(List<HabitFactTranslationVO> habitFactTranslations);
 
     /**
-     * Method saves new {HabitFact} and list of new {@link HabitFactTranslationVO} with relationship
-     * to {HabitFact}.
+     * Method saves new {HabitFact} and list of new {@link HabitFactTranslationVO}
+     * with relationship to {HabitFact}.
      *
      * @param habitFactPostDTO {@link greencity.dto.habitfact.HabitFactDto}.
      * @return {@link HabitFactVO}.

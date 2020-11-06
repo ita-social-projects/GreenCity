@@ -52,8 +52,7 @@ class JwtAuthenticationProviderTest {
         assertEquals(expectedExpiration, actualExpiration);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             accessToken,
-            null
-        );
+            null);
         Authentication actual = jwtAuthenticationProvider.authenticate(authentication);
         final String expectedEmail = "test@gmail.com";
         assertEquals(expectedEmail, actual.getPrincipal());
@@ -62,8 +61,7 @@ class JwtAuthenticationProviderTest {
                 .map(ROLE::toString)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList()),
-            actual.getAuthorities()
-        );
+            actual.getAuthorities());
         assertEquals("", actual.getCredentials());
     }
 
@@ -75,8 +73,7 @@ class JwtAuthenticationProviderTest {
                 + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1Nz"
                 + "U4Mzk3OTMsImV4cCI6MTU3NTg0MDY5M30"
                 + ".DYna1ycZd7eaUBrXKGzYvEMwcybe7l5YiliOR-LfyRw",
-            null
-        );
+            null);
         Assertions
             .assertThrows(ExpiredJwtException.class,
                 () -> jwtAuthenticationProvider.authenticate(authentication));
@@ -90,8 +87,7 @@ class JwtAuthenticationProviderTest {
                 + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1Nz"
                 + "U4Mzk3OTMsImV4cCI6MTU3NTg0MDY5M30"
                 + ".DYna1ycZd7eaUBrXKGzYvEMwcybe7l5YiliOR-LfyRw",
-            null
-        );
+            null);
         Assertions
             .assertThrows(Exception.class,
                 () -> jwtAuthenticationProvider.authenticate(authentication));

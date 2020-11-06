@@ -16,4 +16,3 @@ public class HabitIdRequestDto {
     @NotNull
     private Long id;
 }
-

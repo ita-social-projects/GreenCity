@@ -1,7 +1,7 @@
 package greencity.dto.place;
 
+import greencity.constant.ServiceValidationConstants;
 import greencity.enums.PlaceStatus;
-import greencity.validator.ValidationConstants;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import lombok.*;
@@ -12,7 +12,7 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 public class UpdatePlaceStatusDto {
-    @Positive(message = ValidationConstants.NEGATIVE_ID)
+    @Positive(message = ServiceValidationConstants.NEGATIVE_ID)
     @NotNull
     private Long id;
 

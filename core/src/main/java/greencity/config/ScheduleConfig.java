@@ -22,7 +22,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-
 /**
  * Config for scheduling.
  *
@@ -42,8 +41,8 @@ public class ScheduleConfig {
     private final RatingStatisticsService ratingStatisticsService;
 
     /**
-     * Invoke {@link sendHabitNotification} from EmailMessageReceiver to send email letters
-     * to each user that hasn't marked any habit during last 3 days.
+     * Invoke {@link sendHabitNotification} from EmailMessageReceiver to send email
+     * letters to each user that hasn't marked any habit during last 3 days.
      *
      * @param users list of potential {@link User} to send notifications.
      */
@@ -56,15 +55,15 @@ public class ScheduleConfig {
                 rabbitTemplate.convertAndSend(
                     EMAIL_TOPIC_EXCHANGE_NAME,
                     SEND_HABIT_NOTIFICATION_ROUTING_KEY,
-                    new SendHabitNotification(user.getName(), user.getEmail())
-                );
+                    new SendHabitNotification(user.getName(), user.getEmail()));
             }
         }
     }
 
     /**
-     * Every day at 19:00 sends notifications about not marked habits to users with field
-     * {@link greencity.enums.EmailNotification} equal to IMMEDIATELY or DAILY.
+     * Every day at 19:00 sends notifications about not marked habits to users with
+     * field {@link greencity.enums.EmailNotification} equal to IMMEDIATELY or
+     * DAILY.
      */
     @Scheduled(cron = "0 0 19 * * ?")
     void sendHabitNotificationEveryDay() {
@@ -74,8 +73,8 @@ public class ScheduleConfig {
     }
 
     /**
-     * Every friday at 19:00 sends notifications about not marked habits to users with field
-     * {@link greencity.enums.EmailNotification} equal to WEEKLY.
+     * Every friday at 19:00 sends notifications about not marked habits to users
+     * with field {@link greencity.enums.EmailNotification} equal to WEEKLY.
      */
     @Scheduled(cron = "0 0 19 * * FRI")
     void sendHabitNotificationEveryWeek() {
@@ -84,8 +83,9 @@ public class ScheduleConfig {
     }
 
     /**
-     * On th 25th of every month at 19:00 sends notifications about not marked habits to users with field
-     * {@link greencity.enums.EmailNotification} equal to MONTHLY.
+     * On th 25th of every month at 19:00 sends notifications about not marked
+     * habits to users with field {@link greencity.enums.EmailNotification} equal to
+     * MONTHLY.
      */
     @Scheduled(cron = "0 0 19 25 * ?")
     void sendHabitNotificationEveryMonth() {
@@ -94,8 +94,9 @@ public class ScheduleConfig {
     }
 
     /**
-     * Once a day randomly chooses new habitfact of day that has not been habitfact of day during this iteration.
-     * factOfDay == 0 - wasn't habitfact of day, 1 - is today's habitfact of day, 2 - already was habitfact of day.
+     * Once a day randomly chooses new habitfact of day that has not been habitfact
+     * of day during this iteration. factOfDay == 0 - wasn't habitfact of day, 1 -
+     * is today's habitfact of day, 2 - already was habitfact of day.
      */
     @CacheEvict(value = HABIT_FACT_OF_DAY_CACHE, allEntries = true)
     @Transactional
@@ -122,8 +123,8 @@ public class ScheduleConfig {
     }
 
     /**
-     * Every day at 00:00 deletes from the database users
-     * that have status 'DEACTIVATED' and last visited the site 2 years ago.
+     * Every day at 00:00 deletes from the database users that have status
+     * 'DEACTIVATED' and last visited the site 2 years ago.
      *
      * @author Vasyl Zhovnir
      **/
@@ -134,8 +135,8 @@ public class ScheduleConfig {
     }
 
     /**
-     * Every day at 00:00 deletes from the table rating_statistics records
-     * witch are older than period in application properties.
+     * Every day at 00:00 deletes from the table rating_statistics records witch are
+     * older than period in application properties.
      *
      * @author Dovganyuk Taras
      **/

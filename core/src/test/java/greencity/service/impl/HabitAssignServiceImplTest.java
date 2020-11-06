@@ -5,7 +5,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.service.HabitAssignServiceImpl;
@@ -64,14 +64,12 @@ class HabitAssignServiceImplTest {
     private HabitAssign habitAssignNew = HabitAssign.builder()
         .suspended(false).user(user).habit(habit).build();
 
-
     private HabitAssignStatDto habitAssignStatDto = HabitAssignStatDto.builder()
         .acquired(true).suspended(false).build();
 
     private List<HabitAssignDto> habitAssignDtos = Collections.singletonList(habitAssignDto);
 
     private List<HabitAssign> habitAssigns = Collections.singletonList(habitAssign);
-
 
     @Test
     void getByIdTest() {
@@ -82,7 +80,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void getByIdFailTest() {
-        assertThrows(WrongIdException.class, () -> habitAssignService.getById(1L));
+        assertThrows(NotFoundException.class, () -> habitAssignService.getById(1L));
     }
 
     @Test
@@ -102,6 +100,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void findActiveHabitAssignByUserIdAndHabitIdTest() {
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
@@ -119,12 +118,10 @@ class HabitAssignServiceImplTest {
         assertEquals(habitAssignDtos, actual);
     }
 
-
-
     @Test
-    void updateStatus() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
+    void updateStatusByHabitIdAndUserId() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignDto.class)).thenReturn(habitAssignDto);
-        assertEquals(habitAssignDto, habitAssignService.updateStatus(1L, habitAssignStatDto));
+        assertEquals(habitAssignDto, habitAssignService.updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto));
     }
 }

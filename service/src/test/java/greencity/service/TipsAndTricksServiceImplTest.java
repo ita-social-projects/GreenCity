@@ -77,7 +77,6 @@ class TipsAndTricksServiceImplTest {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
 
-
         TipsAndTricksDtoResponse actual =
             tipsAndTricksService.save(tipsAndTricksDtoRequest, null, ModelUtils.getUser().getEmail());
 
@@ -106,8 +105,7 @@ class TipsAndTricksServiceImplTest {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(tipsAndTricksRepo.save(tipsAndTricks)).thenThrow(DataIntegrityViolationException.class);
 
-        assertThrows(NotSavedException.class, () ->
-            tipsAndTricksService.save(tipsAndTricksDtoRequest, null, email));
+        assertThrows(NotSavedException.class, () -> tipsAndTricksService.save(tipsAndTricksDtoRequest, null, email));
     }
 
     @Test
@@ -215,7 +213,7 @@ class TipsAndTricksServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
         when(tipsAndTricksRepo
             .searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en"))
-            .thenReturn(page);
+                .thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual =
@@ -247,7 +245,6 @@ class TipsAndTricksServiceImplTest {
         tipsAndTricksService.update(tipsAndTricksDtoManagement, null);
         assertEquals("test", tipsAndTricks.getTitleTranslations().get(0).getContent());
         verify(tipsAndTricksRepo).save(tipsAndTricks);
-
 
     }
 
@@ -287,7 +284,7 @@ class TipsAndTricksServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
         when(tipsAndTricksRepo
             .searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en"))
-            .thenReturn(page);
+                .thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual =
@@ -313,7 +310,7 @@ class TipsAndTricksServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
         when(tipsAndTricksRepo
             .searchBy(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en"))
-            .thenReturn(page);
+                .thenReturn(page);
 
         assertEquals(tipsAndTricksDtoResponsePageableDto, tipsAndTricksService
             .searchBy(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent()));

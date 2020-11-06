@@ -15,10 +15,10 @@ public class UtilsMapper {
     static {
         modelMapper = new ModelMapper();
         modelMapper.getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.STRICT)
-                .setFieldMatchingEnabled(true)
-                .setSkipNullEnabled(true)
-                .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
+            .setMatchingStrategy(MatchingStrategies.STRICT)
+            .setFieldMatchingEnabled(true)
+            .setSkipNullEnabled(true)
+            .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
     }
 
     private UtilsMapper() {
@@ -40,8 +40,8 @@ public class UtilsMapper {
      */
     public static <D, T> List<D> mapAllToList(final Collection<T> entityList, Class<D> outCLass) {
         return entityList.stream()
-                .map(entity -> map(entity, outCLass))
-                .collect(Collectors.toList());
+            .map(entity -> map(entity, outCLass))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -51,7 +51,7 @@ public class UtilsMapper {
      */
     public static <D, T> Set<D> mapAllToSet(final Collection<T> entityList, Class<D> outCLass) {
         return entityList.stream()
-                .map(entity -> map(entity, outCLass))
-                .collect(Collectors.toSet());
+            .map(entity -> map(entity, outCLass))
+            .collect(Collectors.toSet());
     }
 }

@@ -1,8 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception that we get when we try saving some object but such object already exist,
- * then we get {@link NotSavedException}.
+ * Exception that we get when we try saving some object but such object already
+ * exist, then we get {@link NotSavedException}.
  *
  * @author Vitaliy Dzen
  * @version 1.0

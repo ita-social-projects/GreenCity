@@ -67,8 +67,7 @@ class CustomGoalServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.emptyList()),
-            1L
-        );
+            1L);
         assertTrue(saveResult.isEmpty());
         assertTrue(user.getCustomGoals().isEmpty());
     }
@@ -84,8 +83,7 @@ class CustomGoalServiceImplTest {
         when(modelMapper.map(customGoal, CustomGoalResponseDto.class)).thenReturn(new CustomGoalResponseDto(1L, "bar"));
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave)),
-            1L
-        );
+            1L);
         assertEquals(user.getCustomGoals().get(0), customGoal);
         assertEquals("bar", saveResult.get(0).getText());
     }
