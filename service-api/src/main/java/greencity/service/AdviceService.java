@@ -44,11 +44,11 @@ public interface AdviceService {
     /**
      * Method finds all {@link AdviceVO} by query.
      *
-     * @param query {@link String} - string query
+     * @param query    {@link String} - string query
      * @param pageable {@link Pageable}
      * @return list of found {@link AdviceVO}
      * @author Markiyan Derevetskyi
-     * */
+     */
     PageableDto<AdviceVO> searchBy(Pageable pageable, String query);
 
     /**
@@ -108,6 +108,6 @@ public interface AdviceService {
      *
      * @param ids - list of {@link Long}
      * @author Markiyan Derevetskyi
-     * */
+     */
     void deleteAllByIds(List<Long> ids);
 }
