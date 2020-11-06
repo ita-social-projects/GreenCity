@@ -3,9 +3,7 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitFact;
@@ -15,6 +13,8 @@ import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.filters.HabitFactSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.repository.HabitFactRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.HabitRepo;
@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,16 +57,15 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     public PageableDto<HabitFactVO> getAllHabitFactsVO(Pageable pageable) {
-        Page<HabitFact> habitFacts = habitFactRepo.findAll(pageable);
-        List<HabitFactVO> habitFactVOS = habitFactRepo.findAll()
-            .stream()
+        Page<HabitFact> page = habitFactRepo.findAll(pageable);
+        List<HabitFactVO> habitFactVOS = page.stream()
             .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
             .collect(Collectors.toList());
         return new PageableDto<>(
             habitFactVOS,
-            habitFacts.getTotalElements(),
-            habitFacts.getPageable().getPageNumber(),
-            habitFacts.getTotalPages());
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages());
     }
 
     /**
@@ -82,10 +82,11 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
-    public HabitFactDto getHabitFactById(Long id) {
-        return modelMapper.map(habitFactRepo.findById(id)
+    public HabitFactDtoResponse getHabitFactById(Long id) {
+        HabitFactVO habitFactVO = modelMapper.map(habitFactRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
-            HabitFactDto.class);
+            HabitFactVO.class);
+        return modelMapper.map(habitFactVO, HabitFactDtoResponse.class);
     }
 
     /**
@@ -154,11 +155,12 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     @Transactional
     public List<Long> deleteAllHabitFactsByListOfId(List<Long> listId) {
-        listId.forEach(id ->  habitFactRepo.findAllByHabitId(id)
-            .forEach(habitFact -> {
-                habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
-                habitFactRepo.delete(habitFact);
-            }));
+        listId.forEach(id -> {
+            HabitFact habitFact = habitFactRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id));
+            habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
+            habitFactRepo.delete(habitFact);
+        });
         return listId;
     }
 
@@ -185,5 +187,90 @@ public class HabitFactServiceImpl implements HabitFactService {
             habitFactTranslation.setContent(languageDTO.getContent());
             habitFactTranslation.setLanguage(modelMapper.map(languageDTO.getLanguage(), Language.class));
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitFactVO> searchBy(Pageable paging, String query) {
+        Page<HabitFact> page = habitFactRepo.searchBy(paging, query);
+        List<HabitFactVO> habitFactVOS = page.stream()
+            .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            habitFactVOS,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitFactVO> getFilteredDataForManagementByPage(
+        Pageable pageable,
+        HabitFactViewDto habitFactViewDto) {
+        Page<HabitFact> pages = habitFactRepo.findAll(getSpecification(habitFactViewDto), pageable);
+        return getPagesWithHabitFactVO(pages);
+    }
+
+    /**
+     * * This method used for build {@link SearchCriteria} depends on {@link HabitFactViewDto}.
+     *
+     * @param habitFactViewDto used for receive parameters for filters from UI.
+     * @return {@link SearchCriteria}.
+     */
+    private List<SearchCriteria> buildSearchCriteria(HabitFactViewDto habitFactViewDto) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        SearchCriteria searchCriteria;
+        if (!habitFactViewDto.getId().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                .key("id")
+                .type("id")
+                .value(habitFactViewDto.getId())
+                .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!habitFactViewDto.getHabitId().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                .key("habitId")
+                .type("habitId")
+                .value(habitFactViewDto.getHabitId())
+                .build();
+            criteriaList.add(searchCriteria);
+        }
+        if (!habitFactViewDto.getContent().isEmpty()) {
+            searchCriteria = SearchCriteria.builder()
+                .key("content")
+                .type("content")
+                .value(habitFactViewDto.getContent())
+                .build();
+            criteriaList.add(searchCriteria);
+        }
+        return criteriaList;
+    }
+
+    /**
+     * Returns {@link HabitFactSpecification} for entered filter parameters.
+     *
+     * @param habitFactViewDto contains data from filters
+     */
+    private HabitFactSpecification getSpecification(HabitFactViewDto habitFactViewDto) {
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(habitFactViewDto);
+        return new HabitFactSpecification(searchCriteria);
+    }
+
+    private PageableDto<HabitFactVO> getPagesWithHabitFactVO(Page<HabitFact> pages) {
+        List<HabitFactVO> habitFactVOS = pages
+            .stream()
+            .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            habitFactVOS,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages());
     }
 }

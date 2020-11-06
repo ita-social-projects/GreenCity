@@ -5,8 +5,10 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.HabitFactViewDto;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.service.HabitFactService;
@@ -15,10 +17,12 @@ import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +33,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/management/facts")
 public class ManagementHabitFactsController {
     @Autowired
@@ -40,6 +44,23 @@ public class ManagementHabitFactsController {
     private LanguageService languageService;
 
     /**
+     * Method for getting tips & tricks by id.
+     *
+     * @return {@link HabitFactVO} instance.
+     * @author Ivan Behar
+     */
+    @ApiOperation(value = "Get habit facts by id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitFactDtoResponse.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/find")
+    public ResponseEntity<HabitFactDtoResponse> getHabitFactsById(
+        @RequestParam("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitFactService.getHabitFactById(id));
+    }
+
+    /**
      * Returns management page with all {@link HabitFact}'s.
      *
      * @param model Model that will be configured.
@@ -48,8 +69,10 @@ public class ManagementHabitFactsController {
      */
     @ApiOperation(value = "Get management page with habit facts.")
     @GetMapping
-    public String findAll(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<HabitFactVO> pageableDto = habitFactService.getAllHabitFactsVO(pageable);
+    public String findAll(@RequestParam(required = false, name = "query") String query,
+                          Model model, @ApiIgnore Pageable pageable) {
+        PageableDto<HabitFactVO> pageableDto = query == null || query.isEmpty()
+            ? habitFactService.getAllHabitFactsVO(pageable) : habitFactService.searchBy(pageable, query);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_habit_facts";
@@ -90,10 +113,10 @@ public class ManagementHabitFactsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
-    @PutMapping("/")
+    @PutMapping("/{id}")
     public GenericResponseDto updateFactOfTheDay(@Valid @RequestBody HabitFactPostDto habitFactPostDto,
                                                  BindingResult bindingResult,
-                                                 Long id) {
+                                                 @PathVariable Long id) {
         if (!bindingResult.hasErrors()) {
             habitFactService.update(habitFactPostDto, id);
         }
@@ -134,5 +157,24 @@ public class ManagementHabitFactsController {
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitFactService.deleteAllHabitFactsByListOfId(listId));
+    }
+
+    /**
+     * Returns  management page with Habit facts filtered data.
+     *
+     * @param model            ModelAndView that will be configured and returned to user.
+     * @param habitFactViewDto used for receive parameters for filters from UI.
+     */
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String filterData(Model model,
+                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+                             HabitFactViewDto habitFactViewDto) {
+        PageableDto<HabitFactVO> pageableDto =
+            habitFactService.getFilteredDataForManagementByPage(
+                pageable,
+                habitFactViewDto);
+        model.addAttribute("pageable", pageableDto);
+        model.addAttribute("fields", habitFactViewDto);
+        return "core/management_habit_facts";
     }
 }

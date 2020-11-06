@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="utf-8"/>
-    <title>Tips&Tricks management</title>
+    <title>Habit facts management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
@@ -22,9 +21,8 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-    <script th:src="@{/management/tipsandtricks/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/habitfacts/buttonsAJAX.js}"></script>
 </head>
-
 <body>
 <div id="header" th:insert="core/header"></div>
 <div class="main-content">
@@ -34,14 +32,17 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage <b>Tips&tricks</b></h2>
+                            <h2>Manage <strong>Habit Facts</strong></h2>
                         </div>
                         <div class="col-sm-6">
-                            <a href="#addTipsAndTricksModal" id="addTipsAndTricksModalBtn" class="btn btn-success"
-                               data-toggle="modal"><i class="material-icons">&#xE147;</i>
-                                <span>Add New Tips&Tricks</span></a>
-                            <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
-                                    class="material-icons">&#xE15C;</i> <span>Delete</span></a>
+                                <span class="search-box-right">
+                                    <form class="form-inline searching" action="/management/facts" method="get">
+                                        <i class="material-icons"></i>
+                                        <input type="text" name="query" class="form-control" placeholder="Search…">
+                                    </form>
+                                </span>
+                            <a href="#addHabitFactsModal" id="addHabitFactsModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Habit Facts</span></a>
+                            <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>
                         </div>
                     </div>
                 </div>
@@ -54,102 +55,81 @@
                                     <label for="selectAll"></label>
                                 </span>
                         </th>
-                        <th>id</th>
-                        <th>title translations</th>
-                        <th>author</th>
-                        <th>imagePath</th>
-                        <th>creationDate</th>
-                        <th>Actions</th>
+                        <th style="width: 5%">ID</th>
+                        <th style="width: 5%">Habit ID</th>
+                        <th style="width: 80%">Translations</th>
+                        <th style="width: 10%">Actions</th>
                     </tr>
                     </thead>
-                    <form method="POST" action="/management/tipsandtricks" id="searchForm" onsubmit="applyFilters()">
 
-                        <tr>
-                            <td>
+                        <form method="POST" action="/management/facts" id="searchForm" onsubmit="applyFilters()">
 
-                            </td>
-                            <td>
+                            <tr>
+                                <td>
 
-                                <input type="search" th:name="id" placeholder="Search"
+                                </td>
+                                <td>
+                                    <input type="search" th:name="id" placeholder="Search"
                                        th:value="${fields eq null ? '' : fields.id }"/>
+                                </td>
+                                <td>
+                                    <input type="search" th:name="habitId" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.habitId }"/>
+                                </td>
+                                <td>
+                                    <input type="search" th:name="content" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.content }"/>
+                                </td>
+                                <td>
+                                    <button type="submit" id="searchBy"><i class="fa fa-search"></i></button>
+                                </td>
 
-                            </td>
-                            <td>
+                            </tr>
 
-                                <input type="search" th:name="title" placeholder="Search"
-                                       th:value="${fields eq null ? '' : fields.title }"/>
+                        </form>
 
-                            </td>
-                            <td>
-
-                                <input type="search" th:name="author" placeholder="Search"
-                                       th:value="${fields eq null ? '' : fields.author }"/>
-
-                            </td>
-                            <td>
-
-                            </td>
-                            <td>
-                                <div class="input-group input-daterange">
-                                    <input type="search" name="startDate" class="form-control"
-                                           th:value="${fields eq null ? '' : fields.startDate }"/>
-                                    <div class="input-group-addon">to</div>
-                                    <input type="search" name="endDate" class="form-control"
-                                           th:value="${fields eq null ? '' : fields.endDate }"/>
-                                    <button type="submit" id="searchByDates"><i class="fa fa-search"></i></button>
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    </form>
-                    <th:block th:each="tipsAndTricks, iterStatus :${pageable.getPage()}">
-                        <tbody>
+                        <th:block th:each="habitFacts, iterStatus :${pageable.getPage()}">
+                            <tbody>
                         <tr>
                             <td>
-                                    <span class="custom-checkbox">
+                                <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                               name="options[]" th:value="${tipsAndTricks.getId()}">
+                                               name="options[]" th:value="${habitFacts.getId()}">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
-                                    </span>
+                                </span>
                             </td>
-                            <td th:text="${tipsAndTricks.getId()}"></td>
+                            <td th:text="${habitFacts.getId()}"></td>
+                            <td th:text="${habitFacts.getHabit().getId()}"></td>
                             <td>
                                 <table class="table table-borderless m-0">
                                     <thead>
                                     <tr class="table-secondary">
-                                        <th class="py-1">Content</th>
-                                        <th class="py-1">LanguageCode</th>
+                                        <th class="py-1" style="width: 10%">Translation ID</th>
+                                        <th class="py-1" style="width: 70%">Content</th>
+                                        <th class="py-1" style="width: 5%">LanguageCode</th>
+                                        <th class="py-1" style="width: 15%">Fact of day status</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <th:block
-                                            th:each="translation : ${tipsAndTricks.getTitleTranslations()}">
+                                            th:each="translation : ${habitFacts.getTranslations()}">
                                         <tr>
+                                            <td class="py-1" th:text="${translation.getId()}"></td>
                                             <td class="py-1" th:text="${translation.getContent()}"></td>
-                                            <td class="py-1" th:text="${translation.getLanguageCode()}"></td>
+                                            <td class="py-1" th:text="${translation.getLanguage().getCode()}"></td>
+                                            <td class="py-1" th:text="${translation.getFactOfDayStatus()}"></td>
                                         </tr>
                                     </th:block>
                                     </tbody>
                                 </table>
                             </td>
-
-                            <td th:text="${tipsAndTricks.getAuthorName()}"></td>
-                            <td><img th:src="${tipsAndTricks.getImagePath()}" th:width="150" th:height="100"></td>
-                            <td th:text="${#temporals.format(tipsAndTricks.getCreationDate(), 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
-                                <a th:href="@{/management/tipsandtricks/find/(id=${tipsAndTricks.getId()})}"
-                                   class="edit eBtn"><i
-                                        class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a th:href="@{/management/tipsandtricks/(id=${tipsAndTricks.getId()})}"
-                                   class="delete eDelBtn"
-                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip"
-                                                          title="Delete">&#xE872;</i></a>
+                                <a th:href="@{/management/facts/find/(id=${habitFacts.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                <a th:href="@{/management/facts/(id=${habitFacts.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>
-                        </tbody>
-                    </th:block>
+                            </tbody>
+                        </th:block>
                 </table>
                 <div class="clearfix">
                     <div class="hint-text">Showing <b
@@ -158,76 +138,55 @@
                     </div>
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                th:href="@{tipsandtricks(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
+                                th:href="@{facts(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
                             th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                                th:href="@{tipsandtricks(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                                th:href="@{facts(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
                         <li class="page-item"
                             th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
-                                th:href="@{tipsandtricks(page=${pageable.getCurrentPage()+1})}"
+                                th:href="@{facts(page=${pageable.getCurrentPage()+1})}"
                                 class="page-link">Next</a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-
-    <div id="addTipsAndTricksModal" class="modal fade">
+    <!-- Add Modal HTML -->
+    <div id="addHabitFactsModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form th:action="@{management/tipsandtricks/save}" method="post" id="addTipsAndTricksForm">
+                <form method="post" id="addHabitFactsForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Add Tips&Tricks</h4>
+                        <h4 class="modal-title">Add Habit Facts</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
-                            <th:block th:each="language, iterInfo : ${languages}">
-                                <th:block th:switch="${language.getCode()}">
-                                    <label th:case="'ua'">Заголовок</label>
-                                    <label th:case="'en'">Title</label>
-                                    <label th:case="'ru'">Заглавие</label>
-                                </th:block>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" th:text="${language.getCode()}" th:name="${language.getCode()}"></span>
+                            <label>Habit ID</label>
+                            <input type="text" class="form-control" name="habit_id" required>
+                            <span th:id="errorModalSavename" class="errorSpan"></span>
+                        </div>
+                        <th:block th:each="language, iterInfo : ${languages}">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>Language code</label>
+                                        <input type="text" class="form-control" th:name="${language.getCode()}"
+                                               th:value="${language.getCode()}" readonly required>
                                     </div>
-                                    <input type="text" class="form-control"
-                                           id="titleContent+${language.getCode()}"
-                                           th:name="titleContent+${language.getCode()}">
-                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
-                                          class="errorSpan"></span>
                                 </div>
-                                <div class="form-group">
-                                    <th:block th:switch="${language.getCode()}">
-                                        <label th:case="'ua'">Teкст</label>
-                                        <label th:case="'en'">Text</label>
-                                        <label th:case="'ru'">Teкст</label>
-                                    </th:block>
-                                    <textarea type="text" class="form-control"
-                                              th:name="textContent+${language.getCode()}"></textarea>
-                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
-                                          class="errorSpan"></span>
+                                <div class="col-9">
+                                    <div class="form-group">
+                                        <label>Content</label>
+                                        <input type="text" class="form-control eEdit"
+                                               th:name="content+${language.getCode()}">
+                                        <span th:id="'errorModalSaveHabitFactsTranslations['+${iterInfo.index}+'].content'"
+                                              class="errorSpan"></span>
+                                    </div>
                                 </div>
-                            </th:block>
-                        </div>
-                        <div class="form-group">
-                            <label>Tags</label>
-                            <input type="text" class="form-control" name="tags" required>
-                            <span th:id="errorModalSavetags" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Source</label>
-                            <input type="text" class="form-control" name="source">
-                        </div>
-                        <div class="form-group">
-                            <label>Image</label>
-                            <input type="file" class="form-control" name="file" id="creationFile">
-                            <span th:id="errorModalSavefile" class="errorSpan"></span>
-                        </div>
-
+                            </div>
+                        </th:block>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -238,75 +197,46 @@
         </div>
     </div>
     <!-- Edit Modal HTML -->
-    <div id="editTipsAndTricksModal" class="modal fade">
+    <div id="editHabitFactsModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="editTipsAndTricksForm">
+                <form id="editHabitFactsForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Edit Tips&Tricks</h4>
+                        <h4 class="modal-title">Edit Habit Facts</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="id">ID</label>
+                            <label>ID</label>
                             <input type="text" class="form-control" id="id" name="id" readonly required>
-                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
+                            <span th:id="errorModalUpdateId" class="errorSpan"></span>
                         </div>
-
                         <div class="form-group">
-                            <th:block th:each="language, iterInfo : ${languages}">
-                                <th:block th:switch="${language.getCode()}">
-                                    <label th:case="'ua'">Заголовок</label>
-                                    <label th:case="'en'">Title</label>
-                                    <label th:case="'ru'">Заглавие</label>
-                                </th:block>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" th:text="${language.getCode()}" th:name="${language.getCode()}"></span>
+                            <label>Habit ID</label>
+                            <input type="text" class="form-control" id="habit_id" name="habit_id" required>
+                            <span th:id="errorModalUpdateHabitId" class="errorSpan"></span>
+                        </div>
+                        <th:block th:each="language, iterInfo : ${languages}">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>Language code</label>
+                                        <input type="text" class="form-control" th:id="${language.getCode()}" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required>
                                     </div>
-                                    <input type="text" class="form-control"
-                                           th:name="titleContent+${language.getCode()}">
-                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
-                                          class="errorSpan"></span>
                                 </div>
-                                <div class="form-group">
-                                    <th:block th:switch="${language.getCode()}">
-                                        <label th:case="'ua'">Teкст</label>
-                                        <label th:case="'en'">Text</label>
-                                        <label th:case="'ru'">Teкст</label>
-                                    </th:block>
-                                    <textarea type="text" class="form-control"
-                                              th:name="textContent+${language.getCode()}"></textarea>
-                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
-                                          class="errorSpan"></span>
+                                <div class="col-9">
+                                    <div class="form-group">
+                                        <label>Content</label>
+                                        <input type="text" class="form-control eEdit" th:id="content+${language.getCode()}" th:name="content+${language.getCode()}">
+                                        <span th:id="'errorModalUpdateHabitFactTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
+                                    </div>
                                 </div>
-                            </th:block>
-                        </div>
-                        <div class="form-group">
-                            <label for="tags">Tags</label>
-                            <input type="text" class="form-control" id="tags" name="tags" required>
-                            <span th:id="errorModalUpdatetags" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="authorName">Author</label>
-                            <input type="email" class="form-control" id="authorName" name="authorName" readonly
-                                   required>
-                            <span th:id="errorModalUpdateauthorName" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="imagePath">Image</label>
-                            <input type="text" class="form-control" id="imagePath" name="imagePath">
-                        </div>
-                        <div class="form-group">
-                            <label for="source">Source</label>
-                            <input type="text" class="form-control" id="source" name="source">
-                        </div>
-                        <div class="form-group">
-                            <label for="file">Image</label>
-                            <input type="file" class="form-control" id="file" name="file">
-                            <span th:id="errorModalUpdatefile" class="errorSpan"></span>
-                        </div>
-
+                            </div>
+                            <div class="form-group">
+                                <label>Fact of day status</label>
+                                <input type="text" class="form-control" th:id="status+${language.getCode()}" th:name="status+${language.getCode()}" required>
+                            </div>
+                        </th:block>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -317,12 +247,12 @@
         </div>
     </div>
     <!-- Delete Modal HTML -->
-    <div id="deleteTipsAndTricksModal" class="modal fade">
+    <div id="deleteHabitFactsModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="deleteTipsAndTricksForm">
+                <form id="deleteHabitFactsForm" >
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete Tips&Tricks</h4>
+                        <h4 class="modal-title">Delete Habit Facts</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -341,7 +271,7 @@
     <div id="deleteAllSelectedModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="">
+                <form id="" >
                     <div class="modal-header">
                         <h4 class="modal-title">Delete all selected</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -360,27 +290,11 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
-<!-- Include Date Range Picker -->
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-
 <script>
-    $('.input-daterange input').each(function () {
-        $(this).datepicker({
-            format: 'yyyy-mm-dd',
-            todayHighlight: true,
-            autoclose: true,
-            orientation: 'top'
-        });
-    });
-
     function applyFilters() {
-        document.getElementById("searchForm").action = "/management/tipsandtricks";
+        document.getElementById("searchForm").action = "/management/facts";
         document.getElementById("searchForm").submit();
     }
-
 </script>
 </body>
 </html>

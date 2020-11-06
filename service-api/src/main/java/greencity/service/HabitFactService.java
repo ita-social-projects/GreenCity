@@ -1,10 +1,9 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
@@ -44,10 +43,10 @@ public interface HabitFactService {
      * Method find {HabitFact} by id.
      *
      * @param id of {HabitFact}
-     * @return {@link HabitFactDto}
+     * @return {@link HabitFactVO}
      * @author Vitaliy Dzen
      */
-    HabitFactDto getHabitFactById(Long id);
+    HabitFactDtoResponse getHabitFactById(Long id);
 
     /**
      * Method find {HabitFact} by habitfact.
@@ -101,4 +100,20 @@ public interface HabitFactService {
      * @param habit {@link HabitVO} instance.
      */
     void deleteAllByHabit(HabitVO habit);
+
+    /**
+     * Method for getting HabitFactVO by search query.
+     *
+     * @param paging {@link Pageable}.
+     * @param query  query to search,
+     * @return {@link PageableAdvancedDto} of {@link HabitFactVO} instances.
+     */
+    PageableDto<HabitFactVO> searchBy(Pageable paging, String query);
+
+    /**
+     * Method for finding {@link HabitFactVO} by specification.
+     *
+     * @return a dto of {@link PageableDto}.
+     */
+    PageableDto<HabitFactVO> getFilteredDataForManagementByPage(Pageable pageable, HabitFactViewDto habitFactViewDto);
 }

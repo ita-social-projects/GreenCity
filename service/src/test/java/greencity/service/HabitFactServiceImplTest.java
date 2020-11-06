@@ -10,6 +10,7 @@ import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactDto;
+import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageDTO;
@@ -102,13 +103,15 @@ class HabitFactServiceImplTest {
     void getHabitFactByIdTest_shouldReturnCorrectValue() {
         Long id = 1L;
         HabitFact habitFact = ModelUtils.getHabitFact();
-        HabitFactDto habitFactDto = ModelUtils.getHabitFactDto();
+        HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
+        HabitFactDtoResponse habitFactDtoResponse = new HabitFactDtoResponse();
         when(habitFactRepo.findById(id)).thenReturn(Optional.of(habitFact));
-        when(modelMapper.map(habitFact, HabitFactDto.class)).thenReturn(habitFactDto);
+        when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
+        when(modelMapper.map(habitFactVO, HabitFactDtoResponse.class)).thenReturn(habitFactDtoResponse);
 
-        HabitFactDto actual = habitFactService.getHabitFactById(id);
+        HabitFactDtoResponse actual = habitFactService.getHabitFactById(id);
 
-        assertEquals(habitFactDto, actual);
+        assertEquals(habitFactDtoResponse, actual);
     }
 
     @Test
