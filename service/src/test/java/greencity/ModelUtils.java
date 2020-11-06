@@ -30,6 +30,7 @@ import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
@@ -160,6 +161,25 @@ public class ModelUtils {
                 .suspended(false)
                 .createDateTime(ZonedDateTime.now())
                 .userVO(UserVO.builder().id(1L).build()).build();
+    }
+
+    public static HabitStatistic getHabitStatistic() {
+        return HabitStatistic.builder()
+                .id(1L).habitRate(HabitRate.GOOD).createDate(ZonedDateTime.now())
+                .amountOfItems(10).build();
+    }
+
+    public static HabitStatusDto getHabitStatusDto() {
+        HabitAssignDto habitAssignDto = getHabitAssignDto();
+
+        return HabitStatusDto.builder()
+                .id(1L)
+                .workingDays(10)
+                .habitStreak(5)
+                .lastEnrollmentDate(LocalDateTime.now())
+                .habitAssignId(habitAssignDto.getId())
+                .habitStatusCalendarDtos(Collections.singletonList(getHabitStatusCalendarDto()))
+                .build();
     }
 
     public static HabitVO getHabitVO() {
