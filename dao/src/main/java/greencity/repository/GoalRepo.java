@@ -31,7 +31,7 @@ public interface GoalRepo extends JpaRepository<Goal, Long> {
      */
     @Query(nativeQuery = true)
     List<ShoppingListDtoResponse> getShoppingList(@Param(value = "userId") Long userId,
-                                                  @Param(value = "languageCode") String languageCode);
+        @Param(value = "languageCode") String languageCode);
 
     /**
      * Method change goal status.
@@ -42,7 +42,7 @@ public interface GoalRepo extends JpaRepository<Goal, Long> {
     @Query(nativeQuery = true, value = " UPDATE user_goals "
         + " SET status = :status, date_completed = :date WHERE goal_id = :id AND user_id = :userId ")
     void changeGoalStatus(@Param(value = "userId") Long userId,
-                          @Param(value = "id") Long id,
-                          @Param(value = "status") String status,
-                          @Param(value = "date") LocalDateTime date);
+        @Param(value = "id") Long id,
+        @Param(value = "status") String status,
+        @Param(value = "date") LocalDateTime date);
 }

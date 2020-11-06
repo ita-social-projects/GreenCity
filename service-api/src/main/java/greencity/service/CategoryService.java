@@ -19,7 +19,7 @@ public interface CategoryService {
     /**
      * Method for updating Category.
      *
-     * @param id       - category id.
+     * @param id   - category id.
      * @param name - Category name.
      * @return a category.
      */

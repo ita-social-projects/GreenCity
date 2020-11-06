@@ -1,7 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception, that is throw after saving object with language code, that doesn't exist in database.
+ * Exception, that is throw after saving object with language code, that doesn't
+ * exist in database.
  */
 public class LanguageNotFoundException extends RuntimeException {
     /**

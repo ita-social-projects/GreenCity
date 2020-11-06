@@ -15,7 +15,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
 /**
- * This class is used for export {@link greencity.entity.RatingStatistics} data to Excel file.
+ * This class is used for export {@link greencity.entity.RatingStatistics} data
+ * to Excel file.
  *
  * @author Dovganyuk Taras
  */

@@ -1,6 +1,6 @@
 package greencity.dto.tipsandtricks;
 
-import greencity.validator.ValidationConstants;
+import greencity.constant.ServiceValidationConstants;
 import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.Valid;
@@ -28,7 +28,7 @@ public class TipsAndTricksDtoManagement {
 
     private String authorName;
 
-    @NotEmpty(message = ValidationConstants.MIN_AMOUNT_OF_TAGS)
+    @NotEmpty(message = ServiceValidationConstants.MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
 
     private String imagePath;

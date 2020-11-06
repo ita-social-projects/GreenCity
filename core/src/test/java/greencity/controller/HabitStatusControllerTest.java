@@ -30,27 +30,34 @@ class HabitStatusControllerTest {
     @InjectMocks
     HabitStatusController habitStatusController;
 
-    private static final String habitStatusLink = "/habit/status";
+    private static final String habitStatusLink = "/habit";
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitStatusController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
-    void getHabitStatusForUser() throws Exception {
-        mockMvc.perform(get(habitStatusLink + "/{habitAssignId}", 1))
-                .andExpect(status().isOk());
+    void getHabitStatusByHabitAssignId() throws Exception {
+        mockMvc.perform(get(habitStatusLink + "/assign/{id}/status", 1))
+            .andExpect(status().isOk());
         verify(habitStatusService).findStatusByHabitAssignId(1L);
     }
 
     @Test
+    void getHabitStatusByHabitId() throws Exception {
+        mockMvc.perform(get(habitStatusLink + "/{id}/status", 1))
+            .andExpect(status().isOk());
+        verify(habitStatusService).findActiveStatusByHabitIdAndUserId(1L, 1L);
+    }
+
+    @Test
     void enrollHabit() throws Exception {
-        mockMvc.perform(post(habitStatusLink + "/enroll/{habitAssignId}", 1))
-                .andExpect(status().isOk());
-        verify(habitStatusService).enrollHabit(1L);
+        mockMvc.perform(post(habitStatusLink + "/{id}/status/enroll", 1))
+            .andExpect(status().isOk());
+        verify(habitStatusService).enrollHabit(1L, 1L);
     }
 
     @Test
@@ -59,14 +66,14 @@ class HabitStatusControllerTest {
         habitStatusForUpdateDto.setHabitStreak(1);
         habitStatusForUpdateDto.setWorkingDays(5);
         habitStatusForUpdateDto.setLastEnrollmentDate(LocalDateTime.parse("2020-10-10T16:03:01.652"));
-        mockMvc.perform(patch(habitStatusLink + "/{habitAssignId}", 1)
-                .content("{\n" +
-                        "  \"habitStreak\": 1,\n" +
-                        "  \"lastEnrollmentDate\": \"2020-10-10T16:03:01.652\",\n" +
-                        "  \"workingDays\": 5\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        verify(habitStatusService).update(1L, habitStatusForUpdateDto);
+        mockMvc.perform(put(habitStatusLink + "/{id}/status", 1)
+            .content("{\n" +
+                "  \"habitStreak\": 1,\n" +
+                "  \"lastEnrollmentDate\": \"2020-10-10T16:03:01.652\",\n" +
+                "  \"workingDays\": 5\n" +
+                "}")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitStatusService).update(1L, 1L, habitStatusForUpdateDto);
     }
 }

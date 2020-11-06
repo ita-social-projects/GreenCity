@@ -74,7 +74,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public LanguageTranslationDTO getRandomHabitFactByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(habitFactTranslationRepo.getRandomHabitFactTranslationByHabitIdAndLanguage(language, id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
             LanguageTranslationDTO.class);
     }
 
@@ -95,7 +95,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public HabitFactDto getHabitFactByName(String language, String name) {
         return modelMapper.map(habitFactTranslationRepo.findFactTranslationByLanguageCodeAndContent(language, name)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
             HabitFactDto.class);
     }
 
@@ -173,12 +173,11 @@ public class HabitFactServiceImpl implements HabitFactService {
             languageTranslationDTOS,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     private void updateHabitTranslations(List<HabitFactTranslation> habitFactTranslations,
-                                         List<LanguageTranslationDTO> languageTranslationDTOS) {
+        List<LanguageTranslationDTO> languageTranslationDTOS) {
         Iterator<HabitFactTranslation> adviceTranslationIterator = habitFactTranslations.iterator();
         Iterator<LanguageTranslationDTO> languageTranslationDTOIterator = languageTranslationDTOS.iterator();
         while (adviceTranslationIterator.hasNext() && languageTranslationDTOIterator.hasNext()) {

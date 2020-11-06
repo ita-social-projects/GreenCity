@@ -14,5 +14,6 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 public class BulkDeleteCustomGoalDto {
-    @Valid List<@Valid CustomGoalRequestDto> customGoals;
+    @Valid
+    List<@Valid CustomGoalRequestDto> customGoals;
 }

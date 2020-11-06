@@ -14,7 +14,8 @@ public interface EcoNewsService {
     /**
      * Method for creating {@link EcoNewsVO} instance.
      *
-     * @param addEcoNewsDtoRequest - dto with {@link EcoNewsVO} title, text, image path.
+     * @param addEcoNewsDtoRequest - dto with {@link EcoNewsVO} title, text, image
+     *                             path.
      * @return {@link AddEcoNewsDtoResponse} instance.
      */
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
@@ -71,9 +72,10 @@ public interface EcoNewsService {
     /**
      * Method for deleting the {@link EcoNewsVO} instance by its id.
      *
-     * @param id - {@link EcoNewsVO} instance id which will be deleted.
+     * @param id   - {@link EcoNewsVO} instance id which will be deleted.
+     * @param user current {@link UserVO} that wants to delete.
      */
-    void delete(Long id);
+    void delete(Long id, UserVO user);
 
     /**
      * Method deletes all {@link EcoNewsVO} by list of ids.

@@ -28,18 +28,20 @@ public class UserActivityInterceptor extends HandlerInterceptorAdapter {
     }
 
     /**
-     * The method finds and updates the last user activity time before handling a request.
+     * The method finds and updates the last user activity time before handling a
+     * request.
      *
      * @param request  provides request information
      * @param response provides functionality in sending a response
      * @param handler  the handler object to handle the request
-     * @return a boolean value determines if the request further processed by a handler or not
+     * @return a boolean value determines if the request further processed by a
+     *         handler or not
      */
     @Override
     public boolean preHandle(@SuppressWarnings("NullableProblems") HttpServletRequest request,
-                             @SuppressWarnings("NullableProblems") HttpServletResponse response,
-                             @SuppressWarnings("NullableProblems") Object handler)
-            throws Exception {
+        @SuppressWarnings("NullableProblems") HttpServletResponse response,
+        @SuppressWarnings("NullableProblems") Object handler)
+        throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             String email = authentication.getPrincipal().toString();

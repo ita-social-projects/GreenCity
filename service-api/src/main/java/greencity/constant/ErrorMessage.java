@@ -6,12 +6,14 @@ public final class ErrorMessage {
     public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
-    public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists by such date";
+    public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists with such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
-    public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "The Habit statistic does not exist by this id : ";
-    public static final String HABIT_NOT_FOUND_BY_ID = "The Habit does not exist by this id : ";
+    public static final String USER_ALREADY_HAS_MAX_NUMBER_OF_HABIT_ASSIGNS =
+        "User has reached the limit of active habit assigns: ";
+    public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "Habit statistic does not exist by this id : ";
+    public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
-    public static final String HABIT_TRANSLATION_NOT_FOUND = "HabitTranslation not found";
+    public static final String HABIT_TRANSLATION_NOT_FOUND = "Habit translation not found for habit with id : ";
     public static final String END_TIME_LATE_THAN_START_TIME = "End time have to be late than start time";
     public static final String BREAK_TIME_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String CLOSE_TIME_LATE_THAN_OPEN_TIME = "Close time have to be late than open time";
@@ -41,22 +43,17 @@ public final class ErrorMessage {
         "Subscriber with this email address not found in the database.";
     public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
-    public static final String NO_STATUS_FOR_SUCH_HABIT_ASSIGN = "There is no status for such habit for current user";
-    public static final String USER_HAS_NO_STATUS_FOR_SUCH_HABIT =
-        "There is no status for such habit for current user";
+    public static final String NO_STATUS_FOR_SUCH_HABIT_ASSIGN =
+        "There is no status for assigned habit with id: ";
+    public static final String NO_STATUS_FOR_SUCH_HABIT_AND_USER =
+        "There is no status for current user and such habit with id: ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
-    public static final String HABIT_HAS_BEEN_ALREADY_IN_THAT_DAY = "Habit has been enrolled";
-    public static final String STATUS_OF_HABIT_ASSIGN_NOT_DELETED = "Status of user habit wasn't deleted by id: ";
-    public static final String STATUS_OF_HABIT_ASSIGN_NOT_UPDATED = "Status of user habit wasn't updated by id: ";
-    public static final String HABIT_ASSIGN_NOT_UPDATED_BY_ID = "Habit assign does not exist by this id : ";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID_AND_DATE =
-        "There is no habit assign for such habit, user and date";
-    public static final String HABIT_ASSIGN_SUSPENDED_STATUS_NOT_UPDATED =
-        "Habit assign suspended status wasn't updated because there is no habit assign with such user "
-            + "and habit with id : ";
+    public static final String HABIT_HAS_BEEN_ALREADY_ON_THAT_DAY = "Habit has been enrolled";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
-        "There is no habit assign for such habit and user";
+        "There is no habit assign for current user and such habit with id: ";
+    public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
+        "Current user does not have habit statistic with id: ";
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";
     public static final String USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY =
         "User already assigned and suspended this habit for today with id: ";
@@ -79,7 +76,7 @@ public final class ErrorMessage {
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String USER_HAS_NO_AVAILABLE_HABITS =
-            "This user is tracking all available habits";
+        "This user is tracking all available habits";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
     public static final String IMAGE_EXISTS = "Image should be download, PNG or JPEG ";
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
@@ -93,11 +90,11 @@ public final class ErrorMessage {
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved because of constraint violation";
     public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
-            "User cannot add more than 5 social network links";
+        "User cannot add more than 5 social network links";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
     public static final String MALFORMED_URL = "Malformed URL. The string could not be parsed.";
     public static final String USER_CANNOT_ADD_SAME_SOCIAL_NETWORK_LINKS =
-            "User cannot add the same social network links";
+        "User cannot add the same social network links";
     public static final String SOCIAL_NETWORK_IMAGE_NOT_SAVED = "Social network image hasn't been saved";
     public static final String SOCIAL_NETWORK_IMAGE_FOUND_BY_ID = "Social network image doesn't exist by this id: ";
     public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
@@ -114,8 +111,30 @@ public final class ErrorMessage {
     public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
         + "different TipsAndTricks Id";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
-            "Favorite place already exist for this placeId: %d and user with email: %s";
+        "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
+    public static final String USER_DEACTIVATED = "User is deactivated";
+    public static final String BAD_GOOGLE_TOKEN = "Bad google token";
+    public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";
+    public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No any email to verify by this token";
+    public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
+    public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT =
+        "Password restore link already sent, please check your email: ";
+    public static final String REFRESH_TOKEN_NOT_VALID = "Refresh token not valid!";
+    public static final String BAD_PASSWORD = "Bad password";
+    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email is already registered";
+    public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
+    public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
+    public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
+    public static final String WRONG_DATE_TIME_FORMAT =
+        "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
+    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'uk' or 'ru'";
+    public static final String INVALID_HABIT_ID = "Invalid habit id ";
+    public static final String CAN_NOT_CREATE_EVENT_INSTANCE =
+        "Can not create instance of events, used constructor that differ from events superclass.";
+    public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =
+        "Count of tags should be at least one but not more three";
+    public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
 
     private ErrorMessage() {
     }

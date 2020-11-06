@@ -27,7 +27,7 @@ public class TipsAndTricksDtoRequestValidator
             isUrlValid(dto.getSource());
         }
         if ((tagService.isValidNumOfUniqueTags(dto.getTags()))
-                && (!tagService.isAllTipsAndTricksValid(dto.getTags()))) {
+            && (!tagService.isAllTipsAndTricksValid(dto.getTags()))) {
             throw new TagNotFoundDuringValidation(ErrorMessage.TAGS_NOT_FOUND);
         }
         return true;

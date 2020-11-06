@@ -8,7 +8,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
-import greencity.entity.TipsAndTricks;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.service.LanguageService;
 import greencity.service.TipsAndTricksService;
 import io.swagger.annotations.ApiOperation;
@@ -87,7 +87,7 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Method for deleting {@link TipsAndTricks} by given id.
+     * Method for deleting {@link TipsAndTricksVO} by given id.
      *
      * @param listId list of IDs.
      * @return {@link ResponseEntity}.
@@ -104,7 +104,7 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Method which updates {@link TipsAndTricks}.
+     * Method which updates {@link TipsAndTricksVO}.
      *
      * @param tipsAndTricksDtoManagement of {@link TipsAndTricksDtoManagement}.
      * @param file                       of {@link MultipartFile}.
@@ -117,11 +117,9 @@ public class ManagementTipsAndTricksController {
     })
     @ResponseBody
     @PutMapping("/")
-    public GenericResponseDto update(@Valid
-                                     @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-                                     BindingResult bindingResult,
-                                     @ImageValidation
-                                     @RequestPart(required = false, name = "file") MultipartFile file) {
+    public GenericResponseDto update(@Valid @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+        BindingResult bindingResult,
+        @ImageValidation @RequestPart(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             tipsAndTricksService.update(tipsAndTricksDtoManagement, file);
         }
@@ -129,9 +127,9 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Method for creating {@link TipsAndTricks}.
+     * Method for creating {@link TipsAndTricksVO}.
      *
-     * @param tipsAndTricksDtoManagement dto for {@link TipsAndTricks} entity.
+     * @param tipsAndTricksDtoManagement dto for {@link TipsAndTricksVO} entity.
      * @param file                       of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
@@ -142,12 +140,10 @@ public class ManagementTipsAndTricksController {
     })
     @ResponseBody
     @PostMapping("/")
-    public GenericResponseDto save(@Valid
-                                   @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-                                   BindingResult bindingResult,
-                                   @ImageValidation
-                                   @RequestParam(required = false, name = "file") MultipartFile file,
-                                   @ApiIgnore Principal principal) {
+    public GenericResponseDto save(@Valid @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file,
+        @ApiIgnore Principal principal) {
         if (!bindingResult.hasErrors()) {
             tipsAndTricksService
                 .saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, file, principal.getName());
@@ -156,15 +152,16 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Returns  management page with User rating statistics with filtered data.
+     * Returns management page with User rating statistics with filtered data.
      *
-     * @param model                ModelAndView that will be configured and returned to user.
+     * @param model                ModelAndView that will be configured and returned
+     *                             to user.
      * @param tipsAndTricksViewDto used for receive parameters for filters from UI.
      */
     @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
-                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
-                             TipsAndTricksViewDto tipsAndTricksViewDto) {
+        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+        TipsAndTricksViewDto tipsAndTricksViewDto) {
         PageableDto<TipsAndTricksDtoManagement> pageableDto =
             tipsAndTricksService.getFilteredDataForManagementByPage(
                 pageable,

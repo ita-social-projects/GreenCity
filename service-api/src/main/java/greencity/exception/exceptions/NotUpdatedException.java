@@ -1,8 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception that we get when we try updating some object but such object not exist,
- * then we get {@link NotUpdatedException}.
+ * Exception that we get when we try updating some object but such object not
+ * exist, then we get {@link NotUpdatedException}.
  *
  * @author Vitaliy Dzen
  * @version 1.0

@@ -23,7 +23,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      */
     @Override
     public HabitStatusCalendarVO findHabitStatusCalendarByEnrollDateAndHabitStatus(LocalDate date,
-                                                                                   HabitStatusVO habitStatusVO) {
+        HabitStatusVO habitStatusVO) {
         HabitStatus toFind = modelMapper.map(habitStatusVO, HabitStatus.class);
         HabitStatusCalendar calendar =
             habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitStatus(date, toFind);
@@ -83,5 +83,13 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
         habitStatusCalendars.forEach(habitStatusCalendar -> dates.add(habitStatusCalendar.getEnrollDate()));
 
         return dates;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAllByHabitStatus(HabitStatusVO habitStatusVO) {
+        habitStatusCalendarRepo.deleteAllByHabitStatus(modelMapper.map(habitStatusVO, HabitStatus.class));
     }
 }

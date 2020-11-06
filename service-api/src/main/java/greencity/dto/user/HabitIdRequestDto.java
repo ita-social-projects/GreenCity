@@ -13,4 +13,3 @@ public class HabitIdRequestDto {
     @Min(1)
     private Long id;
 }
-

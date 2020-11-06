@@ -3,16 +3,29 @@ package greencity.repository;
 import greencity.entity.Advice;
 import greencity.entity.Language;
 import greencity.entity.localization.AdviceTranslation;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, Long> {
     /**
-     * Method for getting random content by habit id and language code.
-     * This method use native SQL query to reduce the load on the backend
+     * Method that returns list of {@link AdviceTranslation} and also fetches
+     * {@link Advice} and {@link Language}.
+     *
+     * @return list of {@link AdviceTranslation}
+     * @author Markiyan Derevetskyi
+     */
+    @Query(value = "select at from AdviceTranslation at join fetch at.advice join fetch at.language order by at.id")
+    List<AdviceTranslation> findAll();
+
+    /**
+     * Method for getting random content by habit id and language code. This method
+     * use native SQL query to reduce the load on the backend
      *
      * @param habitId Id of HabitDictionary
      * @return {@link AdviceTranslation} in Optional
@@ -28,7 +41,7 @@ public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, 
      * Method find {@link AdviceTranslation} by content and language code.
      *
      * @param languageCode of {@link Language}
-     * @param content       of {@link Advice}
+     * @param content      of {@link Advice}
      * @return {@link AdviceTranslation} in Optional
      * @author Vitaliy Dzen
      */
@@ -39,5 +52,6 @@ public interface AdviceTranslationRepo extends JpaRepository<AdviceTranslation, 
      *
      * @param advice {@link Advice} instance.
      */
+    @Transactional
     void deleteAllByAdvice(Advice advice);
 }

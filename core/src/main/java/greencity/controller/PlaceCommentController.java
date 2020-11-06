@@ -10,7 +10,6 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserBlockedException;
-import greencity.repository.PlaceCommentRepo;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
@@ -36,7 +35,6 @@ public class PlaceCommentController {
     private PlaceCommentService placeCommentService;
     private UserService userService;
     private PlaceService placeService;
-    private PlaceCommentRepo placeCommentRepo;
 
     /**
      * Method witch save comment by Place Id.
@@ -53,8 +51,8 @@ public class PlaceCommentController {
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity<Object> save(@PathVariable Long placeId,
-                                       @Valid @RequestBody AddCommentDto addCommentDto,
-                                       @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        @Valid @RequestBody AddCommentDto addCommentDto,
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         UserVO user = userService.findByEmail(principal.getName());
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
@@ -78,9 +76,9 @@ public class PlaceCommentController {
     }
 
     /**
-     * Method return comment by id.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * Method return comment by id. Parameter pageable ignored because swagger ui
+     * shows the wrong params, instead they are explained in the
+     * {@link ApiPageable}.
      *
      * @param pageable pageable configuration
      * @return PageableDto

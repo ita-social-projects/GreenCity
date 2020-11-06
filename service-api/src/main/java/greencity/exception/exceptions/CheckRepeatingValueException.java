@@ -1,7 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception that we get when user trying to save schedule with repeating week days.
+ * Exception that we get when user trying to save schedule with repeating week
+ * days.
  *
  * @author Kateryna Horokh
  */

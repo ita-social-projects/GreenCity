@@ -30,7 +30,6 @@ class SocialNetworkImageServiceImplTest {
     @InjectMocks
     SocialNetworkImageServiceImpl socialNetworkImageService;
 
-
     @Test
     void getSocialNetworkImageByUrl() throws Exception {
         URL checkUrl = new URL("http:");
@@ -59,9 +58,7 @@ class SocialNetworkImageServiceImplTest {
 
         when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost())).thenReturn(Optional.ofNullable(null));
 
-        assertThrows(RuntimeException.class, () ->
-            socialNetworkImageService.getSocialNetworkImageByUrl("HTTP:")
-        );
+        assertThrows(RuntimeException.class, () -> socialNetworkImageService.getSocialNetworkImageByUrl("HTTP:"));
     }
 
     @Test
@@ -98,7 +95,7 @@ class SocialNetworkImageServiceImplTest {
     }
 
     @Test
-    void getDefaultSocialNetworkImage(){
+    void getDefaultSocialNetworkImage() {
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath("img/default_social_network_icon.png");

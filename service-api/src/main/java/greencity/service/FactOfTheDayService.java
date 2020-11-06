@@ -26,7 +26,8 @@ public interface FactOfTheDayService {
     FactOfTheDayDTO getFactOfTheDayById(Long id);
 
     /**
-     * Method saves new {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}.
+     * Method saves new {@link FactOfTheDayVO} and
+     * {@link FactOfTheDayTranslationVO}.
      *
      * @param fact {@link FactOfTheDayPostDTO}
      * @return instance of {@link FactOfTheDayPostDTO}
@@ -35,7 +36,8 @@ public interface FactOfTheDayService {
     FactOfTheDayPostDTO saveFactOfTheDayAndTranslations(FactOfTheDayPostDTO fact);
 
     /**
-     * Method saves new {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}.
+     * Method saves new {@link FactOfTheDayVO} and
+     * {@link FactOfTheDayTranslationVO}.
      *
      * @param fact {@link FactOfTheDayPostDTO}
      * @return instance of {@link FactOfTheDayPostDTO}
@@ -44,7 +46,8 @@ public interface FactOfTheDayService {
     FactOfTheDayPostDTO updateFactOfTheDayAndTranslations(FactOfTheDayPostDTO fact);
 
     /**
-     * Method updates {@link FactOfTheDayVO}{@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}.
+     * Method updates {@link FactOfTheDayVO}{@link FactOfTheDayVO} and
+     * {@link FactOfTheDayTranslationVO}.
      *
      * @param fact {@link FactOfTheDayVO}
      * @return instance of {@link FactOfTheDayVO}
@@ -53,7 +56,8 @@ public interface FactOfTheDayService {
     FactOfTheDayVO update(FactOfTheDayPostDTO fact);
 
     /**
-     * Method deletes {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO} by id.
+     * Method deletes {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}
+     * by id.
      *
      * @param id Long
      * @return id of deleted {@link FactOfTheDayVO}
@@ -62,8 +66,8 @@ public interface FactOfTheDayService {
     Long deleteFactOfTheDayAndTranslations(Long id);
 
     /**
-     * Method deletes all {@link FactOfTheDayVO}
-     * and {@link FactOfTheDayTranslationVO} by list of IDs.
+     * Method deletes all {@link FactOfTheDayVO} {@link FactOfTheDayVO} and
+     * {@link FactOfTheDayTranslationVO} by list of IDs.
      *
      * @param listId list of id {@link FactOfTheDayVO}
      * @return listId list of id {@link FactOfTheDayVO}
@@ -73,6 +77,7 @@ public interface FactOfTheDayService {
 
     /**
      * Method returns pageable of {@link FactOfTheDayDTO} that satisfy search query.
+     *
      * @param searchQuery query to search
      * @return pageable of {@link FactOfTheDayDTO}
      */

@@ -11,7 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface RatingStatisticsRepo extends JpaRepository<RatingStatistics, Long>,
     JpaSpecificationExecutor<RatingStatistics> {
     /**
-     * Scheduled method to clean records from table rating_statistics which are older than 2 years.
+     * Scheduled method to clean records from table rating_statistics which are
+     * older than 2 years.
      *
      * @author Dovganyuk Taras
      */

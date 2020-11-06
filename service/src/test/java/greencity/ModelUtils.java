@@ -4,6 +4,8 @@ import greencity.constant.AppConstant;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
+import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -25,6 +27,7 @@ import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
@@ -43,7 +46,9 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.*;
+import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
 import org.springframework.mock.web.MockMultipartFile;
@@ -55,6 +60,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
+import java.util.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -72,6 +80,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
+            .verifyEmail(new VerifyEmail())
             .dateOfRegistration(LocalDateTime.now())
             .build();
     }
@@ -83,10 +92,10 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(ROLE.ROLE_USER)
             .lastVisit(LocalDateTime.now())
+            .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(LocalDateTime.now())
             .build();
     }
-
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
@@ -146,7 +155,9 @@ public class ModelUtils {
             .suspended(false)
             .createDate(ZonedDateTime.now())
             .habitStatus(getHabitStatus())
-            .habit(Habit.builder().id(1L).build()).build();
+            .habit(Habit.builder().id(1L).build())
+            .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .user(User.builder().id(1L).build()).build();
     }
 
     public static HabitAssignVO getHabitAssignVO() {
@@ -159,8 +170,31 @@ public class ModelUtils {
             .userVO(UserVO.builder().id(1L).build()).build();
     }
 
+    public static HabitStatistic getHabitStatistic() {
+        return HabitStatistic.builder()
+            .id(1L).habitRate(HabitRate.GOOD).createDate(ZonedDateTime.now())
+            .amountOfItems(10).build();
+    }
+
+    public static HabitStatusDto getHabitStatusDto() {
+        HabitAssignDto habitAssignDto = getHabitAssignDto();
+
+        return HabitStatusDto.builder()
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssignId(habitAssignDto.getId())
+            .habitStatusCalendarDtos(Collections.singletonList(getHabitStatusCalendarDto()))
+            .build();
+    }
+
     public static HabitVO getHabitVO() {
         return HabitVO.builder().id(1L).image("img.png").build();
+    }
+
+    public static Habit getHabit() {
+        return Habit.builder().id(1L).image("img.png").build();
     }
 
     public static HabitStatus getHabitStatus() {
@@ -169,8 +203,21 @@ public class ModelUtils {
             .workingDays(10)
             .habitStreak(5)
             .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssign(HabitAssign.builder()
+                .id(1L)
+                .build())
             .habitStatusCalendars(
-                Collections.singletonList(getHabitStatusCalendar())).build();
+                Collections.singletonList(getHabitStatusCalendar()))
+            .build();
+    }
+
+    public static HabitStatusVO getHabitStatusVO() {
+        return HabitStatusVO.builder()
+            .id(1L)
+            .workingDays(10)
+            .habitStreak(5)
+            .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssignVO(getHabitAssignVO()).build();
     }
 
     public static UserGoal getCustomUserGoal() {
@@ -197,15 +244,6 @@ public class ModelUtils {
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
             .build();
-    }
-
-    public static HabitStatusVO getHabitStatusVO() {
-        return HabitStatusVO.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssignVO(getHabitAssignVO()).build();
     }
 
     public static UserGoalVO getUserGoalVO() {
@@ -370,10 +408,10 @@ public class ModelUtils {
             .id(1L)
             .factOfDayStatus(FactOfDayStatus.CURRENT)
             .habitFact(null)
+            .language(getLanguageVO())
             .content("Content")
             .build();
     }
-
 
     public static HabitFact getHabitFact() {
         return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
@@ -447,7 +485,6 @@ public class ModelUtils {
     public static UserProfilePictureDto getUserProfilePictureDto() {
         return new UserProfilePictureDto(1L, "image");
     }
-
 
     public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
         return new FactOfTheDayTranslationDTO(1L, "content");
@@ -523,7 +560,6 @@ public class ModelUtils {
     public static LanguageVO getLanguageVO() {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
-
 
     public static TagVO getTagVO() {
         return new TagVO(1L, "tag", null, null);
@@ -702,5 +738,50 @@ public class ModelUtils {
     public static FavoritePlaceVO getFavoritePlaceVO() {
         return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
-}
 
+    public static Comment getComment() {
+        return new Comment(1L, "text", getUser(),
+            getPlace(), null, null, Collections.emptyList(), null, null, null);
+    }
+
+    public static CommentReturnDto getCommentReturnDto() {
+        return new CommentReturnDto(1L, "text", null, null, null);
+    }
+
+    public static AddCommentDto getAddCommentDto() {
+        return new AddCommentDto("comment", null, null);
+    }
+
+    public static AdviceTranslation getAdviceTranslation() {
+        return AdviceTranslation.builder()
+            .id(1L)
+            .language(getLanguage())
+            .content("Text content")
+            .advice(getAdvice())
+            .build();
+    }
+
+    public static Advice getAdvice() {
+        return new Advice(1L, null, null);
+    }
+
+    public static OpeningHours getOpeningHours() {
+        OpeningHours openingHoursTest = new OpeningHours();
+        openingHoursTest.setOpenTime(getLocalTime());
+        openingHoursTest.setCloseTime(getLocalTime());
+        openingHoursTest.setBreakTime(BreakTime.builder()
+            .startTime(getLocalTime())
+            .endTime(getLocalTime())
+            .build());
+        openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
+        return openingHoursTest;
+    }
+
+    public static Location getLocation() {
+        return Location.builder()
+            .address("address")
+            .lng(12.12d)
+            .lat(12.12d)
+            .build();
+    }
+}

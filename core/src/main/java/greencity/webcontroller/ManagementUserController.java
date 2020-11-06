@@ -5,7 +5,6 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.User;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
 import java.util.List;
@@ -31,7 +30,7 @@ public class ManagementUserController {
     private final OwnSecurityService ownSecurityService;
 
     /**
-     * Method that returns management page with all {@link User}.
+     * Method that returns management page with all {@link UserVO}.
      *
      * @param query    Query for searching related data
      * @param model    Model that will be configured and returned to user.
@@ -41,10 +40,11 @@ public class ManagementUserController {
      */
     @GetMapping
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
-                              Model model) {
+        Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
         PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
-            ? userService.findUserForManagementByPage(paging) : userService.searchBy(paging, query);
+            ? userService.findUserForManagementByPage(paging)
+            : userService.searchBy(paging, query);
         model.addAttribute("users", pageableDto);
         return "core/management_user";
     }
@@ -82,10 +82,10 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for finding {@link User} by id.
+     * Method for finding {@link UserVO} by id.
      *
-     * @param id of the searched {@link User}.
-     * @return dto {@link UserManagementDto} of the {@link User}.
+     * @param id of the searched {@link UserVO}.
+     * @return dto {@link UserManagementDto} of the {@link UserVO}.
      * @author Vasyl Zhovnir
      */
     @GetMapping("/findById")
@@ -96,10 +96,10 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for setting {@link User}'s status to DEACTIVATED,
-     * so the user will not be able to log in into the system.
+     * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
+     * not be able to log in into the system.
      *
-     * @param id of the searched {@link User}.
+     * @param id of the searched {@link UserVO}.
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivate")
@@ -109,9 +109,9 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for setting {@link User}'s status to ACTIVATED.
+     * Method for setting {@link UserVO}'s status to ACTIVATED.
      *
-     * @param id of the searched {@link User}.
+     * @param id of the searched {@link UserVO}.
      * @author Vasyl Zhovnir
      */
     @PostMapping("/activate")
@@ -121,10 +121,11 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for setting to a list of {@link User} status DEACTIVATED,
-     * so the users will not be able to log in into the system.
+     * Method for setting to a list of {@link UserVO} status DEACTIVATED, so the
+     * users will not be able to log in into the system.
      *
-     * @param listId {@link List} populated with ids of {@link User} to be deleted.
+     * @param listId {@link List} populated with ids of {@link UserVO} to be
+     *               deleted.
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivateAll")

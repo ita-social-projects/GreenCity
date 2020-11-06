@@ -7,12 +7,12 @@ import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.Habit;
-import greencity.entity.HabitFact;
 import greencity.service.HabitFactService;
 import greencity.service.HabitFactTranslationService;
 import io.swagger.annotations.ApiOperation;
@@ -37,9 +37,10 @@ public class HabitFactController {
     private final ModelMapper mapper;
 
     /**
-     * The controller which returns random {@link HabitFact} by {@link Habit} id.
+     * The controller which returns random {@link HabitFactVO} by {@link HabitVO}
+     * id.
      *
-     * @param habitId {@link Habit} id.
+     * @param habitId {@link HabitVO} id.
      * @return {@link HabitFactDto}.
      * @author Vitaliy Dzen
      */
@@ -59,10 +60,11 @@ public class HabitFactController {
     }
 
     /**
-     * The controller which return today's {@link HabitFact} of the day.
+     * The controller which return today's {@link HabitFactVO} of the day.
      *
-     * @param languageId id of language to display the {@link HabitFact}.
-     * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of the day.
+     * @param languageId id of language to display the {@link HabitFactVO}.
+     * @return {@link LanguageTranslationDTO} of today's {@link HabitFactVO} of the
+     *         day.
      */
     @ApiOperation("Get habit fact of the day")
     @ApiResponses(value = {
@@ -73,14 +75,12 @@ public class HabitFactController {
     })
     @GetMapping("/dayFact/{languageId}")
     public LanguageTranslationDTO getHabitFactOfTheDay(
-        @PathVariable Long languageId
-    ) {
+        @PathVariable Long languageId) {
         return habitFactTranslationService.getHabitFactOfTheDay(languageId);
     }
 
-
     /**
-     * The controller which returns all {@link HabitFact}.
+     * The controller which returns all {@link HabitFactVO}.
      *
      * @return List of {@link HabitFactDto}.
      * @author Vitaliy Dzen
@@ -95,13 +95,13 @@ public class HabitFactController {
     @GetMapping
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<LanguageTranslationDTO>> getAll(@ApiIgnore Pageable page,
-                                                                      @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitFactService.getAllHabitFacts(page, locale.getLanguage()));
     }
 
     /**
-     * The controller which save {@link HabitFact}.
+     * The controller which save {@link HabitFactVO}.
      *
      * @param fact {@link HabitFactPostDto}.
      * @return {@link ResponseEntity}.
@@ -121,10 +121,10 @@ public class HabitFactController {
     }
 
     /**
-     * The controller which update {@link HabitFact}.
+     * The controller which update {@link HabitFactVO}.
      *
      * @param dto    {@link HabitFactPostDto}.
-     * @param factId of {@link HabitFact}.
+     * @param factId of {@link HabitFactVO}.
      * @return {@link ResponseEntity}.
      * @author Vitaliy Dzen
      */
@@ -143,9 +143,9 @@ public class HabitFactController {
     }
 
     /**
-     * The controller which delete {@link HabitFact}.
+     * The controller which delete {@link HabitFactVO}.
      *
-     * @param factId of {@link HabitFact}.
+     * @param factId of {@link HabitFactVO}.
      * @return {@link ResponseEntity}.
      * @author Vitaliy Dzen
      */

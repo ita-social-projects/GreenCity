@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findById(Long id) {
         User source = userRepo.findById(id)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         return modelMapper.map(source, UserVO.class);
     }
 
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Method for setting data from {@link UserManagementDto} to {@link UserVO}.
      *
-     * @param dto  - dto {@link UserManagementDto} with updated fields.
+     * @param dto    - dto {@link UserManagementDto} with updated fields.
      * @param userVO {@link UserVO} to be updated.
      * @author Vasyl Zhovnir
      */
@@ -174,7 +174,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserVO> findAll() {
-        return modelMapper.map(userRepo.findAll(), new TypeToken<List<UserVO>>(){}.getType());
+        return modelMapper.map(userRepo.findAll(), new TypeToken<List<UserVO>>() {
+        }.getType());
     }
 
     /**
@@ -274,10 +275,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserUpdateDto getUserUpdateDtoByEmail(String email) {
         return modelMapper.map(
-            userRepo.findByEmail(email).orElseThrow(() ->
-                    new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
-            UserUpdateDto.class
-        );
+            userRepo.findByEmail(email)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
+            UserUpdateDto.class);
     }
 
     /**
@@ -313,7 +313,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method for setting text either for UserGoal with localization or for CustomGoal.
+     * Method for setting text either for UserGoal with localization or for
+     * CustomGoal.
      *
      * @param userId id of the current user.
      * @param dto    {@link UserGoalResponseDto}
@@ -369,8 +370,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Method save user goals with goal dictionary.
      *
-     * @param userVO  {@link UserVO} current user
-     * @param goals list {@link UserGoalDto} for saving
+     * @param userVO {@link UserVO} current user
+     * @param goals  list {@link UserGoalDto} for saving
      * @author Bogdan Kuzenko
      */
     private void saveGoalForUserGoal(UserVO userVO, List<UserGoalDto> goals) {
@@ -386,7 +387,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Method save user goals with custom goal dictionary.
      *
-     * @param userVO        {@link UserVO} current user
+     * @param userVO      {@link UserVO} current user
      * @param customGoals list {@link UserCustomGoalDto} for saving
      * @author Bogdan Kuzenko
      */
@@ -470,7 +471,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method which check that, if admin/moderator update role/status of himself, then throw exception.
+     * Method which check that, if admin/moderator update role/status of himself,
+     * then throw exception.
      *
      * @param id    id of updatable user.
      * @param email email of admin/moderator.
@@ -484,7 +486,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method which check that, if moderator trying update status of admins or moderators, then throw exception.
+     * Method which check that, if moderator trying update status of admins or
+     * moderators, then throw exception.
      *
      * @param id    id of updatable user.
      * @param email email of admin/moderator.
@@ -548,14 +551,15 @@ public class UserServiceImpl implements UserService {
      * Update user profile picture {@link UserVO}.
      *
      * @param image                 {@link MultipartFile}
-     * @param email                 {@link String} - email of user that need to update.
+     * @param email                 {@link String} - email of user that need to
+     *                              update.
      * @param userProfilePictureDto {@link UserProfilePictureDto}
      * @return {@link UserVO}.
      * @author Marian Datsko
      */
     @Override
     public UserVO updateUserProfilePicture(MultipartFile image, String email,
-                                         UserProfilePictureDto userProfilePictureDto) {
+        UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -594,7 +598,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserVO> getAllUserFriends(Long userId) {
         List<User> allUserFriends = userRepo.getAllUserFriends(userId);
-        return modelMapper.map(allUserFriends, new TypeToken<List<UserVO>>(){}.getType());
+        return modelMapper.map(allUserFriends, new TypeToken<List<UserVO>>() {
+        }.getType());
     }
 
     /**
@@ -683,16 +688,15 @@ public class UserServiceImpl implements UserService {
         user.getSocialNetworks().clear();
         user.getSocialNetworks().addAll(userProfileDtoRequest.getSocialNetworks()
             .stream()
-            .map(url ->
-                SocialNetwork.builder()
-                    .url(url)
-                    .user(user)
-                    .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
-                            SocialNetworkImage.class))
-                    .user(user)
-                    .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
-                        SocialNetworkImage.class))
-                    .build())
+            .map(url -> SocialNetwork.builder()
+                .url(url)
+                .user(user)
+                .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
+                    SocialNetworkImage.class))
+                .user(user)
+                .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
+                    SocialNetworkImage.class))
+                .build())
             .collect(Collectors.toList()));
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());

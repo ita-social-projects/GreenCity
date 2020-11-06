@@ -36,8 +36,8 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
     private final ModelMapper modelMapper;
 
     /**
-     * Method saves new {@link HabitFact} and list of new {@link HabitFactTranslation} with relationship
-     * to {@link HabitFact}.
+     * Method saves new {@link HabitFact} and list of new
+     * {@link HabitFactTranslation} with relationship to {@link HabitFact}.
      *
      * @param habitFactPostDTO {@link HabitFactPostDto}.
      * @return List of {@link HabitFactTranslationVO}.
@@ -95,4 +95,3 @@ public class HabitFactTranslationServiceImpl implements HabitFactTranslationServ
             LanguageTranslationDTO.class);
     }
 }
-

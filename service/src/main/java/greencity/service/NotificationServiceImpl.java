@@ -37,14 +37,13 @@ public class NotificationServiceImpl implements NotificationService {
     private String sendEmailTopic;
     private final ModelMapper modelMapper;
 
-
     /**
      * Constructor.
      */
     @Autowired
     public NotificationServiceImpl(UserRepo userRepo, PlaceRepo placeRepo,
-                                   RabbitTemplate rabbitTemplate,
-                                   ModelMapper modelMapper) {
+        RabbitTemplate rabbitTemplate,
+        ModelMapper modelMapper) {
         this.userRepo = userRepo;
         this.placeRepo = placeRepo;
         this.rabbitTemplate = rabbitTemplate;
@@ -66,7 +65,6 @@ public class NotificationServiceImpl implements NotificationService {
         List<PlaceAuthorDto> placeAuthorDto = subscribers.stream()
             .map(o -> modelMapper.map(o, PlaceAuthorDto.class))
             .collect(Collectors.toList());
-
 
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.SEND_REPORT_ROUTING_KEY,
             new SendReportEmailMessage(placeAuthorDto, categoriesDtoWithPlacesDtoMap, emailNotification.toString()));

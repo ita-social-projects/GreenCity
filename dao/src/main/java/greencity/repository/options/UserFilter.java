@@ -13,9 +13,9 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * The class implements {@link Specification}. Constructor
- * takes a {@code DTO} class the type of which determines the further
- * creation of a new {@link Predicate} object.
+ * The class implements {@link Specification}. Constructor takes a {@code DTO}
+ * class the type of which determines the further creation of a new
+ * {@link Predicate} object.
  *
  * @author Rostyslav Khasanov
  */
@@ -32,8 +32,8 @@ public class UserFilter implements Specification<User> {
     }
 
     /**
-     * Forms a list of {@link Predicate} based on type of the classes
-     * initialized in the constructors.
+     * Forms a list of {@link Predicate} based on type of the classes initialized in
+     * the constructors.
      */
     @Override
     public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -45,8 +45,8 @@ public class UserFilter implements Specification<User> {
     }
 
     /**
-     * Returns a predicate where {@link User} has some values defined
-     * in the incoming {@link FilterUserDto} object.
+     * Returns a predicate where {@link User} has some values defined in the
+     * incoming {@link FilterUserDto} object.
      *
      * @param r  must not be {@literal null}.
      * @param cb must not be {@literal null}.
@@ -57,15 +57,14 @@ public class UserFilter implements Specification<User> {
         return cb.or(
             cb.like(r.get(RepoConstants.NAME), reg),
             cb.like(r.get(RepoConstants.EMAIL), reg),
-            cb.like(r.get(RepoConstants.REGISTRATION_DATE).as(String.class), reg)
-        );
+            cb.like(r.get(RepoConstants.REGISTRATION_DATE).as(String.class), reg));
     }
 
     /**
      * Returns a String criteria for search.
      *
-     * @param criteria  String for search.
-     * @return String creteria  not be {@literal null}.
+     * @param criteria String for search.
+     * @return String creteria not be {@literal null}.
      */
     private String replaceCriteria(String criteria) {
         criteria = Optional.ofNullable(criteria).orElseGet(() -> "");
