@@ -18,7 +18,7 @@ public class HabitFactSpecification implements MySpecification<HabitFact> {
 
     @Override
     public Predicate toPredicate(Root<HabitFact> root, CriteriaQuery<?> criteriaQuery,
-                                 CriteriaBuilder criteriaBuilder) {
+        CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = criteriaBuilder.conjunction();
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             if (searchCriteria.getType().equals("id")) {
@@ -39,16 +39,16 @@ public class HabitFactSpecification implements MySpecification<HabitFact> {
     }
 
     private Predicate getTranslationPredicate(Root<HabitFact> root, CriteriaQuery<?> criteriaQuery,
-                                                   CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
+        CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
         Root<HabitFactTranslation> habitFactTranslationRoot = criteriaQuery.from(HabitFactTranslation.class);
-        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
-            criteriaBuilder.and(criteriaBuilder.like(habitFactTranslationRoot.get("content"),
+        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
+            : criteriaBuilder.and(criteriaBuilder.like(habitFactTranslationRoot.get("content"),
                 "%" + searchCriteria.getValue() + "%"),
                 criteriaBuilder.equal(habitFactTranslationRoot.get("habitFact").get("id"), root.get("id")));
     }
 
     private Predicate getHabitIdPredicate(Root<HabitFact> root, CriteriaBuilder criteriaBuilder,
-                                          SearchCriteria searchCriteria) {
+        SearchCriteria searchCriteria) {
         Join<HabitFact, Habit> habitJoin = root.join("habit");
 
         return criteriaBuilder

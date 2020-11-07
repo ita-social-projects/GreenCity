@@ -74,7 +74,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public LanguageTranslationDTO getRandomHabitFactByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(habitFactTranslationRepo.getRandomHabitFactTranslationByHabitIdAndLanguage(language, id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
             LanguageTranslationDTO.class);
     }
 
@@ -84,7 +84,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public HabitFactDtoResponse getHabitFactById(Long id) {
         HabitFactVO habitFactVO = modelMapper.map(habitFactRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
             HabitFactVO.class);
         return modelMapper.map(habitFactVO, HabitFactDtoResponse.class);
     }
@@ -95,7 +95,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public HabitFactDto getHabitFactByName(String language, String name) {
         return modelMapper.map(habitFactTranslationRepo.findFactTranslationByLanguageCodeAndContent(language, name)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
             HabitFactDto.class);
     }
 
@@ -211,7 +211,8 @@ public class HabitFactServiceImpl implements HabitFactService {
     }
 
     /**
-     * * This method used for build {@link SearchCriteria} depends on {@link HabitFactViewDto}.
+     * * This method used for build {@link SearchCriteria} depends on
+     * {@link HabitFactViewDto}.
      *
      * @param habitFactViewDto used for receive parameters for filters from UI.
      * @return {@link SearchCriteria}.

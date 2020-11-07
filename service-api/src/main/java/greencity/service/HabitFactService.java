@@ -85,8 +85,7 @@ public interface HabitFactService {
     Long delete(Long id);
 
     /**
-     * Method deletes all HabitFact
-     * and HabitFactTranslation by list of IDs.
+     * Method deletes all HabitFact and HabitFactTranslation by list of IDs.
      *
      * @param listId list of id
      * @return listId list of id

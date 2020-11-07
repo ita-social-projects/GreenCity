@@ -64,9 +64,10 @@ public class ManagementHabitFactsController {
     @ApiOperation(value = "Get management page with habit facts.")
     @GetMapping
     public String findAll(@RequestParam(required = false, name = "query") String query,
-                          Model model, @ApiIgnore Pageable pageable) {
+        Model model, @ApiIgnore Pageable pageable) {
         PageableDto<HabitFactVO> pageableDto = query == null || query.isEmpty()
-            ? habitFactService.getAllHabitFactsVO(pageable) : habitFactService.searchBy(pageable, query);
+            ? habitFactService.getAllHabitFactsVO(pageable)
+            : habitFactService.searchBy(pageable, query);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_habit_facts";
@@ -87,7 +88,7 @@ public class ManagementHabitFactsController {
     @ResponseBody
     @PostMapping("/")
     public GenericResponseDto saveHabitFacts(@Valid @RequestBody HabitFactPostDto habitFactPostDto,
-                                             BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             habitFactTranslationService.saveHabitFactAndFactTranslation(habitFactPostDto);
         }
@@ -109,8 +110,8 @@ public class ManagementHabitFactsController {
     @ResponseBody
     @PutMapping("/{id}")
     public GenericResponseDto updateHabitFacts(@Valid @RequestBody HabitFactUpdateDto habitFactUpdateDto,
-                                                 BindingResult bindingResult,
-                                                 @PathVariable Long id) {
+        BindingResult bindingResult,
+        @PathVariable Long id) {
         if (!bindingResult.hasErrors()) {
             habitFactService.update(habitFactUpdateDto, id);
         }
@@ -118,7 +119,8 @@ public class ManagementHabitFactsController {
     }
 
     /**
-     * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO} by given id.
+     * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO}
+     * by given id.
      *
      * @param id of Fact of the day
      * @return {@link ResponseEntity}
@@ -136,7 +138,8 @@ public class ManagementHabitFactsController {
     }
 
     /**
-     * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO} by given id.
+     * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO}
+     * by given id.
      *
      * @param listId list of IDs
      * @return {@link ResponseEntity}
@@ -154,15 +157,16 @@ public class ManagementHabitFactsController {
     }
 
     /**
-     * Returns  management page with Habit facts filtered data.
+     * Returns management page with Habit facts filtered data.
      *
-     * @param model            ModelAndView that will be configured and returned to user.
+     * @param model            ModelAndView that will be configured and returned to
+     *                         user.
      * @param habitFactViewDto used for receive parameters for filters from UI.
      */
     @PostMapping(value = "")
     public String filterData(Model model,
-                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
-                             HabitFactViewDto habitFactViewDto) {
+        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+        HabitFactViewDto habitFactViewDto) {
         PageableDto<HabitFactVO> pageableDto =
             habitFactService.getFilteredDataForManagementByPage(
                 pageable,
