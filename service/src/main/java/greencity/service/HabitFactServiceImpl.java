@@ -8,7 +8,6 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
-import greencity.entity.Language;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -20,12 +19,13 @@ import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.HabitRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +74,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public LanguageTranslationDTO getRandomHabitFactByHabitIdAndLanguage(Long id, String language) {
         return modelMapper.map(habitFactTranslationRepo.getRandomHabitFactTranslationByHabitIdAndLanguage(language, id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
             LanguageTranslationDTO.class);
     }
 
@@ -95,7 +95,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public HabitFactDto getHabitFactByName(String language, String name) {
         return modelMapper.map(habitFactTranslationRepo.findFactTranslationByLanguageCodeAndContent(language, name)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + name)),
             HabitFactDto.class);
     }
 
@@ -112,16 +112,23 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
-    public HabitFactVO update(HabitFactPostDto factDto, Long id) {
-        HabitFact habitFactFromDB = habitFactRepo.findById(id)
-            .map(habitFact -> {
-                Habit habit = habitRepo.findById(factDto.getHabit().getId())
-                    .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
-                habitFact.setHabit(habit);
-                updateHabitTranslations(habitFact.getTranslations(), factDto.getTranslations());
-                return habitFactRepo.save(habitFact);
-            }).orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_FACT_NOT_UPDATED_BY_ID));
-        return modelMapper.map(habitFactFromDB, HabitFactVO.class);
+    public HabitFactVO update(HabitFactUpdateDto factDto, Long id) {
+        HabitFact habitFact = habitFactRepo.findById(id)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id));
+        Habit habit = habitRepo.findById(factDto.getHabit().getId())
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
+        habitFact.setHabit(habit);
+        List<HabitFactTranslation> habitFactTranslations = modelMapper.map(factDto.getTranslations(),
+            new TypeToken<List<HabitFactTranslation>>() {
+            }.getType());
+        habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
+        habitFact.setTranslations(habitFactTranslations);
+        habitFactTranslations.forEach(habitFactTranslation -> {
+            habitFactTranslation.setHabitFact(habitFact);
+            habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().get(0).getFactOfDayStatus());
+        });
+        habitFactTranslationRepo.saveAll(habitFactTranslations);
+        return modelMapper.map(habitFact, HabitFactVO.class);
     }
 
     /**
@@ -176,18 +183,6 @@ public class HabitFactServiceImpl implements HabitFactService {
             pages.getTotalPages());
     }
 
-    private void updateHabitTranslations(List<HabitFactTranslation> habitFactTranslations,
-        List<LanguageTranslationDTO> languageTranslationDTOS) {
-        Iterator<HabitFactTranslation> adviceTranslationIterator = habitFactTranslations.iterator();
-        Iterator<LanguageTranslationDTO> languageTranslationDTOIterator = languageTranslationDTOS.iterator();
-        while (adviceTranslationIterator.hasNext() && languageTranslationDTOIterator.hasNext()) {
-            HabitFactTranslation habitFactTranslation = adviceTranslationIterator.next();
-            LanguageTranslationDTO languageDTO = languageTranslationDTOIterator.next();
-            habitFactTranslation.setContent(languageDTO.getContent());
-            habitFactTranslation.setLanguage(modelMapper.map(languageDTO.getLanguage(), Language.class));
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -223,30 +218,21 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     private List<SearchCriteria> buildSearchCriteria(HabitFactViewDto habitFactViewDto) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
-        SearchCriteria searchCriteria;
-        if (!habitFactViewDto.getId().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key("id")
-                .type("id")
-                .value(habitFactViewDto.getId())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
-        if (!habitFactViewDto.getHabitId().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key("habitId")
-                .type("habitId")
-                .value(habitFactViewDto.getHabitId())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
-        if (!habitFactViewDto.getContent().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key("content")
-                .type("content")
-                .value(habitFactViewDto.getContent())
-                .build();
-            criteriaList.add(searchCriteria);
+        Field[] fields = habitFactViewDto.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            String value;
+            try {
+                value = (String) field.get(habitFactViewDto);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Cannot retrieve value from field!");
+            }
+            if (!value.isEmpty()) {
+                criteriaList.add(SearchCriteria.builder()
+                    .key(field.getName()).type(field.getName())
+                    .value(value)
+                    .build());
+            }
         }
         return criteriaList;
     }
@@ -262,7 +248,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     }
 
     private PageableDto<HabitFactVO> getPagesWithHabitFactVO(Page<HabitFact> pages) {
-        List<HabitFactVO> habitFactVOS = pages
+        List<HabitFactVO> habitFactVOS = pages.getContent()
             .stream()
             .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
             .collect(Collectors.toList());

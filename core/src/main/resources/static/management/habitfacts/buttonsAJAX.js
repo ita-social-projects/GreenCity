@@ -182,9 +182,9 @@ $(document).ready(function(){
                         "content": formData["content" + lang],
                         "language": {
                             "code": lang,
-                            "id" : langId,
-                            "factOfDayStatus" : formData.factOfDayStatus
-                        }
+                            "id" : langId
+                        },
+                        "factOfDayStatus" : formData["status" + lang]
                     }
                 );
             }

@@ -10,8 +10,6 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.genericresponse.GenericResponseDto;
-import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-import greencity.entity.FactOfTheDay;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
@@ -65,7 +63,7 @@ public class ManagementFactOfTheDayController {
     @ApiOperation(value = "Get management page with facts of the day that satisfy query.")
     @GetMapping("/findAll")
     public String findAll(@RequestParam(required = false, name = "query") String query,
-        Model model, @ApiIgnore Pageable pageable) {
+                          Model model, @ApiIgnore Pageable pageable) {
         PageableDto<FactOfTheDayDTO> pageableDto = query == null || query.isEmpty()
             ? factOfTheDayService.getAllFactsOfTheDay(pageable)
             : factOfTheDayService.searchBy(pageable, query);
@@ -88,7 +86,7 @@ public class ManagementFactOfTheDayController {
     @ResponseBody
     @PostMapping("/")
     public GenericResponseDto saveFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
-        BindingResult bindingResult) {
+                                               BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             factOfTheDayService.saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         }
@@ -109,7 +107,7 @@ public class ManagementFactOfTheDayController {
     @ResponseBody
     @PutMapping("/")
     public GenericResponseDto updateFactOfTheDay(@Valid @RequestBody FactOfTheDayPostDTO factOfTheDayPostDTO,
-        BindingResult bindingResult) {
+                                                 BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             factOfTheDayService.updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
         }

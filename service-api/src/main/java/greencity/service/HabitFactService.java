@@ -69,11 +69,11 @@ public interface HabitFactService {
     /**
      * Method updates {HabitFact}.
      *
-     * @param fact {@link HabitFactPostDto}
+     * @param fact {@link HabitFactUpdateDto}
      * @return instance of {HabitFactVO}
      * @author Vitaliy Dzen
      */
-    HabitFactVO update(HabitFactPostDto fact, Long id);
+    HabitFactVO update(HabitFactUpdateDto fact, Long id);
 
     /**
      * Method delete {HabitFact} by id.

@@ -5,12 +5,7 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-import greencity.dto.habitfact.HabitFactDtoResponse;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
-import greencity.dto.habitfact.HabitFactViewDto;
-import greencity.entity.HabitFact;
-import greencity.entity.HabitFactTranslation;
+import greencity.dto.habitfact.*;
 import greencity.service.HabitFactService;
 import greencity.service.HabitFactTranslationService;
 import greencity.service.LanguageService;
@@ -22,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -61,7 +55,7 @@ public class ManagementHabitFactsController {
     }
 
     /**
-     * Returns management page with all {@link HabitFact}'s.
+     * Returns management page with all {@link HabitFactVO}'s.
      *
      * @param model Model that will be configured.
      * @return View template path {@link String}.
@@ -79,7 +73,7 @@ public class ManagementHabitFactsController {
     }
 
     /**
-     * Method which saves {@link HabitFact}.
+     * Method which saves {@link HabitFactVO}.
      *
      * @param habitFactPostDto of {@link HabitFactPostDto}
      * @return {@link GenericResponseDto} with of operation and errors fields
@@ -101,9 +95,9 @@ public class ManagementHabitFactsController {
     }
 
     /**
-     * Method which updates {@link HabitFact}.
+     * Method which updates {@link HabitFactVO}.
      *
-     * @param habitFactPostDto of {@link HabitFactPostDto}
+     * @param habitFactUpdateDto of {@link HabitFactPostDto}
      * @return {@link GenericResponseDto} with of operation and errors fields
      * @author Ivan Behar
      */
@@ -114,17 +108,17 @@ public class ManagementHabitFactsController {
     })
     @ResponseBody
     @PutMapping("/{id}")
-    public GenericResponseDto updateFactOfTheDay(@Valid @RequestBody HabitFactPostDto habitFactPostDto,
+    public GenericResponseDto updateHabitFacts(@Valid @RequestBody HabitFactUpdateDto habitFactUpdateDto,
                                                  BindingResult bindingResult,
                                                  @PathVariable Long id) {
         if (!bindingResult.hasErrors()) {
-            habitFactService.update(habitFactPostDto, id);
+            habitFactService.update(habitFactUpdateDto, id);
         }
         return buildGenericResponseDto(bindingResult);
     }
 
     /**
-     * Method which deletes {@link HabitFact} and {@link HabitFactTranslation} by given id.
+     * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO} by given id.
      *
      * @param id of Fact of the day
      * @return {@link ResponseEntity}
@@ -142,7 +136,7 @@ public class ManagementHabitFactsController {
     }
 
     /**
-     * Method which deletes {@link HabitFact} and {@link HabitFactTranslation} by given id.
+     * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO} by given id.
      *
      * @param listId list of IDs
      * @return {@link ResponseEntity}
@@ -165,7 +159,7 @@ public class ManagementHabitFactsController {
      * @param model            ModelAndView that will be configured and returned to user.
      * @param habitFactViewDto used for receive parameters for filters from UI.
      */
-    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "")
     public String filterData(Model model,
                              @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
                              HabitFactViewDto habitFactViewDto) {

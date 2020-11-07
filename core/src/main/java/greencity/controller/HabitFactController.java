@@ -8,10 +8,7 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactDtoResponse;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.service.HabitFactService;
 import greencity.service.HabitFactTranslationService;
@@ -64,7 +61,7 @@ public class HabitFactController {
      *
      * @param languageId id of language to display the {@link HabitFactVO}.
      * @return {@link LanguageTranslationDTO} of today's {@link HabitFactVO} of the
-     *         day.
+     * day.
      */
     @ApiOperation("Get habit fact of the day")
     @ApiResponses(value = {
@@ -95,7 +92,7 @@ public class HabitFactController {
     @GetMapping
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<LanguageTranslationDTO>> getAll(@ApiIgnore Pageable page,
-        @ApiIgnore @ValidLanguage Locale locale) {
+                                                                      @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitFactService.getAllHabitFacts(page, locale.getLanguage()));
     }
@@ -123,8 +120,8 @@ public class HabitFactController {
     /**
      * The controller which update {@link HabitFactVO}.
      *
-     * @param dto    {@link HabitFactPostDto}.
-     * @param factId of {@link HabitFactVO}.
+     * @param dto {@link HabitFactPostDto}.
+     * @param id  of {@link HabitFactVO}.
      * @return {@link ResponseEntity}.
      * @author Vitaliy Dzen
      */
@@ -135,17 +132,17 @@ public class HabitFactController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PutMapping("/{factId}")
+    @PutMapping("/{id}")
     public ResponseEntity<HabitFactPostDto> update(
-        @Valid @RequestBody HabitFactPostDto dto, @PathVariable Long factId) {
+        @Valid @RequestBody HabitFactUpdateDto dto, @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(habitFactService.update(dto, factId), HabitFactPostDto.class));
+            .body(mapper.map(habitFactService.update(dto, id), HabitFactPostDto.class));
     }
 
     /**
      * The controller which delete {@link HabitFactVO}.
      *
-     * @param factId of {@link HabitFactVO}.
+     * @param id of {@link HabitFactVO}.
      * @return {@link ResponseEntity}.
      * @author Vitaliy Dzen
      */
@@ -156,9 +153,9 @@ public class HabitFactController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @DeleteMapping("/{factId}")
-    public ResponseEntity<Object> delete(@PathVariable Long factId) {
-        habitFactService.delete(factId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        habitFactService.delete(id);
         return ResponseEntity.ok().build();
     }
 }

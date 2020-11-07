@@ -40,11 +40,11 @@ public class HabitFactSpecification implements MySpecification<HabitFact> {
 
     private Predicate getTranslationPredicate(Root<HabitFact> root, CriteriaQuery<?> criteriaQuery,
                                                    CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
-        Root<HabitFactTranslation> titleTranslationRoot = criteriaQuery.from(HabitFactTranslation.class);
+        Root<HabitFactTranslation> habitFactTranslationRoot = criteriaQuery.from(HabitFactTranslation.class);
         return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction() :
-            criteriaBuilder.and(criteriaBuilder.like(titleTranslationRoot.get("content"),
+            criteriaBuilder.and(criteriaBuilder.like(habitFactTranslationRoot.get("content"),
                 "%" + searchCriteria.getValue() + "%"),
-                criteriaBuilder.equal(titleTranslationRoot.get("habitFact").get("id"), root.get("id")));
+                criteriaBuilder.equal(habitFactTranslationRoot.get("habitFact").get("id"), root.get("id")));
     }
 
     private Predicate getHabitIdPredicate(Root<HabitFact> root, CriteriaBuilder criteriaBuilder,

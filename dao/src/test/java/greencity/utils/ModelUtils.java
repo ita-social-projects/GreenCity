@@ -1,10 +1,10 @@
-package greencity.repository;
+package greencity.utils;
 
-import greencity.entity.Advice;
-import greencity.entity.Habit;
-import greencity.entity.Language;
+import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
+import greencity.enums.FactOfDayStatus;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ModelUtils {
@@ -49,5 +49,24 @@ public class ModelUtils {
 
     public static List<AdviceTranslation> getAdviceTranslations() {
         return List.of(getAdviceTranslationFirst(), getAdviceTranslationSecond(), getAdviceTranslationThird());
+    }
+
+    public static HabitFactTranslation getHabitFactTranslation() {
+        return HabitFactTranslation.builder()
+            .id(1L)
+            .content("content")
+            .language(getLanguage())
+            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
+            .habitFact(null)
+            .build();
+    }
+
+    public static HabitFact getHabitFact() {
+        return new HabitFact(1L, Collections.singletonList(getHabitFactTranslation()), null);
+    }
+
+    public static Language getLanguage() {
+        return new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
 }

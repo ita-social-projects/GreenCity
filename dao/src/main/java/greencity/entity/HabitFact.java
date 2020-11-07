@@ -20,6 +20,6 @@ public class HabitFact {
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "habitFact", fetch = FetchType.LAZY)
     private List<HabitFactTranslation> translations;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;
 }
