@@ -381,7 +381,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
     public void unlikeComment(UserVO user, TipsAndTricksCommentVO comment) {
-        comment.getUsersLiked().remove(user);
+        comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
     }
 
     /**
