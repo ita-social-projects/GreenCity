@@ -13,7 +13,6 @@ import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitfact.HabitFactViewDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.service.HabitFactService;
-import greencity.service.HabitFactTranslationService;
 import greencity.service.LanguageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,9 +43,6 @@ class ManagementHabitFactsControllerTest {
 
     @Mock
     private HabitFactService habitFactService;
-
-    @Mock
-    private HabitFactTranslationService habitFactTranslationService;
 
     @Mock
     private LanguageService languageService;
@@ -92,7 +88,7 @@ class ManagementHabitFactsControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<HabitFactVO> habitFactVOS = Collections.singletonList(ModelUtils.getHabitFactVO());
         PageableDto<HabitFactVO> pageableDto = new PageableDto<>(habitFactVOS, 1, 0, 1);
-        when(habitFactService.searchBy(pageable, query)).thenReturn(pageableDto);
+        when(habitFactService.searchHabitFactByFilter(pageable, query)).thenReturn(pageableDto);
         List<LanguageDTO> languageDTOS = Collections.emptyList();
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
@@ -102,7 +98,7 @@ class ManagementHabitFactsControllerTest {
             .andExpect(model().attribute("languages", languageDTOS))
             .andExpect(status().isOk());
 
-        verify(habitFactService).searchBy(pageable, query);
+        verify(habitFactService).searchHabitFactByFilter(pageable, query);
         verify(languageService).getAllLanguages();
     }
 
@@ -141,7 +137,7 @@ class ManagementHabitFactsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(habitFactTranslationService).saveHabitFactAndFactTranslation(habitFactPostDto);
+        verify(habitFactService).save(habitFactPostDto);
     }
 
     @Test

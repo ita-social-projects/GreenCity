@@ -11,7 +11,6 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.service.HabitFactService;
-import greencity.service.HabitFactTranslationService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -30,7 +29,6 @@ import java.util.Locale;
 @AllArgsConstructor
 public class HabitFactController {
     private final HabitFactService habitFactService;
-    private final HabitFactTranslationService habitFactTranslationService;
     private final ModelMapper mapper;
 
     /**
@@ -73,7 +71,7 @@ public class HabitFactController {
     @GetMapping("/dayFact/{languageId}")
     public LanguageTranslationDTO getHabitFactOfTheDay(
         @PathVariable Long languageId) {
-        return habitFactTranslationService.getHabitFactOfTheDay(languageId);
+        return habitFactService.getHabitFactOfTheDay(languageId);
     }
 
     /**
@@ -114,7 +112,7 @@ public class HabitFactController {
     @PostMapping
     public ResponseEntity<HabitFactDtoResponse> save(@Valid @RequestBody HabitFactPostDto fact) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            habitFactTranslationService.saveHabitFactAndFactTranslation(fact));
+            mapper.map(habitFactService.save(fact), HabitFactDtoResponse.class));
     }
 
     /**

@@ -35,7 +35,7 @@ class HabitFactRepoTest {
         List<HabitFact> habitFacts = List.of(ModelUtils.getHabitFact());
 
         Page<HabitFact> actual = new PageImpl<>(habitFacts, pageable, habitFacts.size());
-        Page<HabitFact> expected = habitFactRepo.searchBy(pageable, query);
+        Page<HabitFact> expected = habitFactRepo.searchHabitFactByFilter(pageable, query);
 
         List<Long> actualIds = actual.getContent().stream().map(HabitFact::getId)
             .collect(Collectors.toList());

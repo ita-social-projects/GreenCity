@@ -7,7 +7,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habitfact.*;
 import greencity.service.HabitFactService;
-import greencity.service.HabitFactTranslationService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -15,7 +14,6 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,8 +31,6 @@ public class ManagementHabitFactsController {
     @Autowired
     private HabitFactService habitFactService;
     @Autowired
-    private HabitFactTranslationService habitFactTranslationService;
-    @Autowired
     private LanguageService languageService;
 
     /**
@@ -48,9 +44,9 @@ public class ManagementHabitFactsController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitFactDtoResponse.class),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @GetMapping("/find")
+    @GetMapping("/find/{id}")
     public ResponseEntity<HabitFactDtoResponse> getHabitFactsById(
-        @RequestParam("id") Long id) {
+        @PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(habitFactService.getHabitFactById(id));
     }
 
@@ -63,12 +59,9 @@ public class ManagementHabitFactsController {
      */
     @ApiOperation(value = "Get management page with habit facts.")
     @GetMapping
-    public String findAll(@RequestParam(required = false, name = "query") String query,
-        Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<HabitFactVO> pageableDto = query == null || query.isEmpty()
-            ? habitFactService.getAllHabitFactsVO(pageable)
-            : habitFactService.searchBy(pageable, query);
-        model.addAttribute("pageable", pageableDto);
+    public String findAll(@RequestParam(required = false, name = "query") String filter,
+                          Model model, @ApiIgnore Pageable pageable) {
+        model.addAttribute("pageable", habitFactService.getAllHabitFactVOsWithFilter(filter, pageable));
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_habit_facts";
     }
@@ -86,11 +79,11 @@ public class ManagementHabitFactsController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
-    @PostMapping("/")
+    @PostMapping
     public GenericResponseDto saveHabitFacts(@Valid @RequestBody HabitFactPostDto habitFactPostDto,
-        BindingResult bindingResult) {
+                                             BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
-            habitFactTranslationService.saveHabitFactAndFactTranslation(habitFactPostDto);
+            habitFactService.save(habitFactPostDto);
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -110,8 +103,8 @@ public class ManagementHabitFactsController {
     @ResponseBody
     @PutMapping("/{id}")
     public GenericResponseDto updateHabitFacts(@Valid @RequestBody HabitFactUpdateDto habitFactUpdateDto,
-        BindingResult bindingResult,
-        @PathVariable Long id) {
+                                               BindingResult bindingResult,
+                                               @PathVariable Long id) {
         if (!bindingResult.hasErrors()) {
             habitFactService.update(habitFactUpdateDto, id);
         }
@@ -131,8 +124,8 @@ public class ManagementHabitFactsController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @DeleteMapping("/")
-    public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> delete(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitFactService.delete(id));
     }
@@ -163,10 +156,15 @@ public class ManagementHabitFactsController {
      *                         user.
      * @param habitFactViewDto used for receive parameters for filters from UI.
      */
-    @PostMapping(value = "")
+    @ApiOperation(value = "Get all habit facts by filter data")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping(value = "/filter")
     public String filterData(Model model,
-        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
-        HabitFactViewDto habitFactViewDto) {
+                             @ApiIgnore Pageable pageable,
+                             HabitFactViewDto habitFactViewDto) {
         PageableDto<HabitFactVO> pageableDto =
             habitFactService.getFilteredDataForManagementByPage(
                 pageable,

@@ -107,7 +107,7 @@ public interface HabitFactService {
      * @param query  query to search,
      * @return {@link PageableAdvancedDto} of {@link HabitFactVO} instances.
      */
-    PageableDto<HabitFactVO> searchBy(Pageable paging, String query);
+    PageableDto<HabitFactVO> searchHabitFactByFilter(Pageable paging, String query);
 
     /**
      * Method for finding {@link HabitFactVO} by specification.
@@ -115,4 +115,21 @@ public interface HabitFactService {
      * @return a dto of {@link PageableDto}.
      */
     PageableDto<HabitFactVO> getFilteredDataForManagementByPage(Pageable pageable, HabitFactViewDto habitFactViewDto);
+
+    /**
+     * Method to get today's {HabitFact} of day by language id.
+     *
+     * @param languageId id of {Language}.
+     * @return {@link LanguageTranslationDTO} of today's {HabitFact} of day.
+     */
+    LanguageTranslationDTO getHabitFactOfTheDay(Long languageId);
+
+    /**
+     * Method finds all {@code HabitFact} with filter.
+     *
+     * @param filter - filter params.
+     * @param pageable - instance of {@link Pageable}.
+     * @return list of {@link HabitFactVO}.
+     */
+    PageableDto<HabitFactVO> getAllHabitFactVOsWithFilter(String filter, Pageable pageable);
 }

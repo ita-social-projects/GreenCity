@@ -16,7 +16,6 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.enums.FactOfDayStatus;
 import greencity.service.HabitFactService;
-import greencity.service.HabitFactTranslationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,8 +42,6 @@ class HabitFactControllerTest {
 
     @Mock
     HabitFactService habitFactService;
-    @Mock
-    HabitFactTranslationService habitFactTranslationService;
     @Mock
     ModelMapper mapper;
     @Mock
@@ -108,7 +105,7 @@ class HabitFactControllerTest {
     void getHabitFactOfTheDayTest() throws Exception {
         mockMvc.perform(get(factLink + "/dayFact/{languageId}", 1))
             .andExpect(status().isOk());
-        verify(habitFactTranslationService).getHabitFactOfTheDay(1L);
+        verify(habitFactService).getHabitFactOfTheDay(1L);
     }
 
     @Test
@@ -138,8 +135,8 @@ class HabitFactControllerTest {
 
         ObjectMapper mapper = new ObjectMapper();
         HabitFactPostDto habitFactPostDto = mapper.readValue(content, HabitFactPostDto.class);
-        verify(habitFactTranslationService, times(1))
-            .saveHabitFactAndFactTranslation(eq(habitFactPostDto));
+        verify(habitFactService, times(1))
+            .save(eq(habitFactPostDto));
     }
 
     @Test

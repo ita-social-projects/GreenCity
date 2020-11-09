@@ -62,7 +62,7 @@
                     </tr>
                     </thead>
 
-                        <form method="POST" action="/management/facts" id="searchForm" onsubmit="applyFilters()">
+                        <form method="POST" action="/management/facts/filter" id="searchForm" onsubmit="applyFilters()">
 
                             <tr>
                                 <td>
@@ -124,8 +124,8 @@
                                 </table>
                             </td>
                             <td>
-                                <a th:href="@{/management/facts/find/(id=${habitFacts.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a th:href="@{/management/facts/(id=${habitFacts.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                <a th:href="@{/management/facts/find/{id}(id=${habitFacts.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                <a th:href="@{/management/facts/{id}(id=${habitFacts.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>
                             </tbody>
@@ -292,7 +292,7 @@
 <div id="footer" th:insert="core/footer"></div>
 <script>
     function applyFilters() {
-        document.getElementById("searchForm").action = "/management/facts";
+        document.getElementById("searchForm").action = "/management/facts/filter";
         document.getElementById("searchForm").submit();
     }
 </script>
