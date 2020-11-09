@@ -264,7 +264,7 @@ class HabitFactServiceImplTest {
         PageableDto<HabitFactVO> expected = new PageableDto<>(habitFactVOS, habitFacts.size(), pageNumber, pageSize);
         when(habitFactRepo.searchHabitFactByFilter(pageable, query)).thenReturn(habitFactPage);
         when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
-        PageableDto<HabitFactVO> actual = habitFactService.searchHabitFactByFilter(pageable, query);
+        PageableDto<HabitFactVO> actual = habitFactService.searchHabitFactWithFilter(pageable, query);
 
         assertEquals(expected, actual);
     }

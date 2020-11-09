@@ -191,7 +191,7 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitFactVO> searchHabitFactByFilter(Pageable paging, String filter) {
+    public PageableDto<HabitFactVO> searchHabitFactWithFilter(Pageable paging, String filter) {
         Page<HabitFact> page = habitFactRepo.searchHabitFactByFilter(paging, filter);
         List<HabitFactVO> habitFactVOS = page.stream()
             .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
@@ -284,6 +284,6 @@ public class HabitFactServiceImpl implements HabitFactService {
     public PageableDto<HabitFactVO> getAllHabitFactVOsWithFilter(String filter, Pageable pageable) {
         return filter == null || filter.isEmpty()
             ? getAllHabitFactsVO(pageable)
-            : searchHabitFactByFilter(pageable, filter);
+            : searchHabitFactWithFilter(pageable, filter);
     }
 }

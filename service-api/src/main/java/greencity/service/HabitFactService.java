@@ -107,7 +107,7 @@ public interface HabitFactService {
      * @param query  query to search,
      * @return {@link PageableAdvancedDto} of {@link HabitFactVO} instances.
      */
-    PageableDto<HabitFactVO> searchHabitFactByFilter(Pageable paging, String query);
+    PageableDto<HabitFactVO> searchHabitFactWithFilter(Pageable paging, String query);
 
     /**
      * Method for finding {@link HabitFactVO} by specification.
