@@ -60,7 +60,7 @@ public class ManagementHabitFactsController {
     @ApiOperation(value = "Get management page with habit facts.")
     @GetMapping
     public String findAll(@RequestParam(required = false, name = "query") String filter,
-                          Model model, @ApiIgnore Pageable pageable) {
+        Model model, @ApiIgnore Pageable pageable) {
         model.addAttribute("pageable", habitFactService.getAllHabitFactVOsWithFilter(filter, pageable));
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_habit_facts";
@@ -81,7 +81,7 @@ public class ManagementHabitFactsController {
     @ResponseBody
     @PostMapping
     public GenericResponseDto saveHabitFacts(@Valid @RequestBody HabitFactPostDto habitFactPostDto,
-                                             BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             habitFactService.save(habitFactPostDto);
         }
@@ -103,8 +103,8 @@ public class ManagementHabitFactsController {
     @ResponseBody
     @PutMapping("/{id}")
     public GenericResponseDto updateHabitFacts(@Valid @RequestBody HabitFactUpdateDto habitFactUpdateDto,
-                                               BindingResult bindingResult,
-                                               @PathVariable Long id) {
+        BindingResult bindingResult,
+        @PathVariable Long id) {
         if (!bindingResult.hasErrors()) {
             habitFactService.update(habitFactUpdateDto, id);
         }
@@ -163,8 +163,8 @@ public class ManagementHabitFactsController {
     })
     @PostMapping(value = "/filter")
     public String filterData(Model model,
-                             @ApiIgnore Pageable pageable,
-                             HabitFactViewDto habitFactViewDto) {
+        @ApiIgnore Pageable pageable,
+        HabitFactViewDto habitFactViewDto) {
         PageableDto<HabitFactVO> pageableDto =
             habitFactService.getFilteredDataForManagementByPage(
                 pageable,
