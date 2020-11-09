@@ -41,7 +41,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @author Vitaliy Dzen.
      */
     Optional<HabitFactTranslation> findFactTranslationByLanguageCodeAndContent(String languageCode,
-                                                                               String content);
+        String content);
 
     /**
      * Method finds random {@link HabitFact} in 3 languages between all facts that
@@ -65,7 +65,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
     @Query("SELECT ht FROM HabitFactTranslation ht"
         + " WHERE ht.factOfDayStatus = :factOfDayStatus AND ht.language.id = :languageId")
     HabitFactTranslation findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus factOfDayStatus,
-                                                               Long languageId);
+        Long languageId);
 
     /**
      * Method to replace all outdated {@link FactOfDayStatus} by updated.
@@ -88,7 +88,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
     @Modifying
     @Query("UPDATE HabitFactTranslation f SET f.factOfDayStatus = :status WHERE f.habitFact.id = :habitFactId")
     void updateFactOfDayStatusByHabitFactId(@Param("status") FactOfDayStatus status,
-                                            @Param("habitFactId") Long habitfactId);
+        @Param("habitFactId") Long habitfactId);
 
     /**
      * Method deletes all {@link HabitFactTranslation}'s by {@link Habit} instance.
