@@ -18,16 +18,6 @@ public class TestPostgresContainer extends PostgreSQLContainer<TestPostgresConta
         return container;
     }
 
-    @Bean
-    public PostgreSQLContainer postgreSQLContainer() {
-        final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer()
-            .withDatabaseName("integration-tests-db")
-            .withUsername("user")
-            .withPassword("password");
-        postgreSQLContainer.start();
-        return postgreSQLContainer;
-    }
-
     @Override
     public void start() {
         super.start();
