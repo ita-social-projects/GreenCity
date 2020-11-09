@@ -6,7 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
-import greencity.entity.Habit;
+import greencity.dto.habit.HabitVO;
 import greencity.service.HabitService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +33,7 @@ public class ManagementHabitsController {
     private final LanguageService languageService;
 
     /**
-     * Returns management page with all {@link Habit}'s.
+     * Returns management page with all {@link HabitVO}'s.
      *
      * @param model    {@link Model} that will be configured and returned to user.
      * @param pageable {@link Pageable}.
@@ -48,9 +48,9 @@ public class ManagementHabitsController {
     }
 
     /**
-     * Method finds {@link Habit} with all translations by given id.
+     * Method finds {@link HabitVO} with all translations by given id.
      *
-     * @param id of {@link Habit}.
+     * @param id of {@link HabitVO}.
      * @return {@link HabitManagementDto}.
      */
     @ApiOperation(value = "Find habit by id.")
@@ -66,7 +66,7 @@ public class ManagementHabitsController {
     }
 
     /**
-     * Method saves {@link Habit} with translations.
+     * Method saves {@link HabitVO} with translations.
      *
      * @param habitManagementDto {@link HabitManagementDto}.
      * @param bindingResult      {@link BindingResult}.
@@ -92,7 +92,7 @@ public class ManagementHabitsController {
     }
 
     /**
-     * Method updates {@link Habit} with translations.
+     * Method updates {@link HabitVO} with translations.
      *
      * @param habitManagementDto {@link HabitManagementDto}.
      * @param bindingResult      {@link BindingResult}.
@@ -118,7 +118,7 @@ public class ManagementHabitsController {
     }
 
     /**
-     * Method deletes {@link Habit} by id.
+     * Method deletes {@link HabitVO} by id.
      *
      * @param id {@link HabitDto}'s id.
      * @return {@link ResponseEntity}.
@@ -136,7 +136,7 @@ public class ManagementHabitsController {
     }
 
     /**
-     * Method deletes all {@link Habit}'s by given id's.
+     * Method deletes all {@link HabitVO}'s by given id's.
      *
      * @param listId {@link List} of id's.
      * @return {@link ResponseEntity}.

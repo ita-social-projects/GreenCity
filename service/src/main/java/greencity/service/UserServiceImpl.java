@@ -840,6 +840,7 @@ public class UserServiceImpl implements UserService {
     public void deactivateUser(Long id) {
         UserVO foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.DEACTIVATED);
+        userRepo.save(modelMapper.map(foundUser, User.class));
     }
 
     /**
@@ -860,6 +861,7 @@ public class UserServiceImpl implements UserService {
     public void setActivatedStatus(Long id) {
         UserVO foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.ACTIVATED);
+        userRepo.save(modelMapper.map(foundUser, User.class));
     }
 
     /**

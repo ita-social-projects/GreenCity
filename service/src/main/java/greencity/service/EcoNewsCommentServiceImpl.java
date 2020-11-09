@@ -80,11 +80,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         ecoNewsService.findById(ecoNewsId);
         Page<EcoNewsComment> pages = ecoNewsCommentRepo.findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(
             pageable, ecoNewsId);
-        User user = modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                    .anyMatch(u -> u.getId().equals(userVO.getId())));
                 return comment;
             })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
@@ -113,11 +113,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId);
-        User user = modelMapper.map(userVO, User.class);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                    .anyMatch(u -> u.getId().equals(userVO.getId())));
                 return comment;
             })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
@@ -252,12 +252,12 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
                 .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId);
-        User user = userVO == null ? modelMapper.map(UserVO.builder().build(), User.class)
-            : modelMapper.map(userVO, User.class);
+        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                    .anyMatch(u -> u.getId().equals(user.getId())));
                 return comment;
             })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
@@ -287,12 +287,12 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
-        User user = userVO == null ? modelMapper.map(UserVO.builder().build(), User.class)
-            : modelMapper.map(userVO, User.class);
+        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
             .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().contains(user));
+                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                    .anyMatch(u -> u.getId().equals(user.getId())));
                 return comment;
             })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))

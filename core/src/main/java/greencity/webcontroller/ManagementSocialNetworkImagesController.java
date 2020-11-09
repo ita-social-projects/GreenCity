@@ -6,7 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
-import greencity.entity.SocialNetworkImage;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.service.SocialNetworkImageService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -34,7 +34,7 @@ public class ManagementSocialNetworkImagesController {
     private final SocialNetworkImageService socialNetworkImageService;
 
     /**
-     * Method that returns management page with all {@link SocialNetworkImage}.
+     * Method that returns management page with all {@link SocialNetworkImageVO}.
      *
      * @param query    Query for searching related data
      * @param model    Model that will be configured and returned to user.
@@ -53,9 +53,9 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method for creating {@link SocialNetworkImage}.
+     * Method for creating {@link SocialNetworkImageVO}.
      *
-     * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImage}
+     * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO}
      *                                     entity.
      * @param file                         of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
@@ -77,7 +77,7 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method which deteles {@link SocialNetworkImage} by given id.
+     * Method which deteles {@link SocialNetworkImageVO} by given id.
      *
      * @param id of Social Network Images
      * @return {@link ResponseEntity}
@@ -89,7 +89,7 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method for deleting {@link SocialNetworkImage} by given id.
+     * Method for deleting {@link SocialNetworkImageVO} by given id.
      *
      * @param listId list of IDs.
      * @return {@link ResponseEntity}
@@ -112,7 +112,7 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method which updates {@link SocialNetworkImage}.
+     * Method which updates {@link SocialNetworkImageVO}.
      *
      * @param socialNetworkImageResponseDTO of
      *                                      {@link SocialNetworkImageResponseDTO}.

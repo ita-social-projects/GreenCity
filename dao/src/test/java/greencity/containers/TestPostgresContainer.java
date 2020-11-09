@@ -1,5 +1,6 @@
 package greencity.containers;
 
+import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class TestPostgresContainer extends PostgreSQLContainer<TestPostgresContainer> {
@@ -17,16 +18,21 @@ public class TestPostgresContainer extends PostgreSQLContainer<TestPostgresConta
         return container;
     }
 
+    @Bean
+    public PostgreSQLContainer postgreSQLContainer() {
+        final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer()
+            .withDatabaseName("integration-tests-db")
+            .withUsername("user")
+            .withPassword("password");
+        postgreSQLContainer.start();
+        return postgreSQLContainer;
+    }
+
     @Override
     public void start() {
         super.start();
         System.setProperty("DB_URL", container.getJdbcUrl());
         System.setProperty("DB_USERNAME", container.getUsername());
         System.setProperty("DB_PASSWORD", container.getPassword());
-    }
-
-    @Override
-    public void stop() {
-        // do nothing, JVM handles shut down
     }
 }
