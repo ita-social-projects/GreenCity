@@ -186,7 +186,7 @@ public class HabitServiceImpl implements HabitService {
      *
      * @param habitManagementDto {@link HabitManagementDto} instance.
      * @return {@link Map} with {@link String} key and
-     * {@link HabitTranslationManagementDto} instance value.
+     *         {@link HabitTranslationManagementDto} instance value.
      */
     private Map<String, HabitTranslationManagementDto> getMapTranslationsDtos(HabitManagementDto habitManagementDto) {
         return habitManagementDto.getHabitTranslations().stream()
