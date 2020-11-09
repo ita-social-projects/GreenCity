@@ -1,37 +1,42 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
+import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.HabitIdRequestDto;
 import greencity.entity.Advice;
 import greencity.entity.Habit;
-import greencity.entity.Language;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.filters.AdviceSpecification;
 import greencity.repository.AdviceRepo;
 import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitRepo;
-import java.lang.reflect.Type;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AdviceServiceImplTest {
@@ -50,57 +55,51 @@ class AdviceServiceImplTest {
     @Mock
     private AdviceTranslationRepo adviceTranslationRepo;
 
-    private Language defaultLanguage = ModelUtils.getLanguage();
+    @Test
+    void getAllAdvices() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Advice advice = ModelUtils.getAdvice();
+        AdviceVO adviceVO = ModelUtils.getAdviceVO();
+        List<Advice> advices = Collections.singletonList(advice);
+        List<AdviceVO> adviceVOs = Collections.singletonList(adviceVO);
+        Page<Advice> pageAdvices = new PageImpl<>(advices,
+            pageable, advices.size());
+        PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
+        when(adviceRepo.findAll(pageable)).thenReturn(pageAdvices);
+        when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
+        PageableDto<AdviceVO> actual = adviceService.getAllAdvices(pageable);
 
-    private List<AdviceTranslation> adviceTranslations = new ArrayList<>(Arrays.asList(
-        AdviceTranslation.builder().id(1L).language(defaultLanguage).content("hello").build(),
-        AdviceTranslation.builder().id(2L).language(defaultLanguage).content("text").build(),
-        AdviceTranslation.builder().id(3L).language(defaultLanguage).content("smile").build()));
-
-    private List<LanguageTranslationDTO> languageTranslationDTOs = Arrays.asList(
-        new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
-        new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
-        new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
-
-    private List<Advice> advices = new ArrayList<>(Arrays.asList(
-        Advice.builder().id(1L).habit(Habit.builder().id(1L).build()).build(),
-        Advice.builder().id(2L).habit(Habit.builder().id(1L).build()).build(),
-        Advice.builder().id(3L).habit(Habit.builder().id(1L).build()).build()));
-
-    private Habit habit = Habit.builder().id(1L).image("image.png").build();
-
-    private HabitVO habitVO = HabitVO.builder().id(1L).image("image_png").build();
-
-    private Advice advice = Advice.builder().id(1L)
-        .translations(adviceTranslations)
-        .habit(habit)
-        .build();
-
-    private AdviceDto getAdviceDto() {
-        return modelMapper.map(advice, AdviceDto.class);
-    }
-
-    private AdvicePostDto getAdvicePostDto() {
-        return new AdvicePostDto(languageTranslationDTOs, new HabitIdRequestDto(1L));
+        assertEquals(expected, actual);
     }
 
     @Test
-    void getAllAdvices() {
-        Type type = new TypeToken<List<LanguageTranslationDTO>>() {
-        }.getType();
-        when(adviceTranslationRepo.findAll()).thenReturn(adviceTranslations);
-        when(modelMapper.map(adviceTranslations, type)).thenReturn(languageTranslationDTOs);
-        List<LanguageTranslationDTO> actual = adviceService.getAllAdvices();
+    void getFilteredAdvices() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Advice advice = ModelUtils.getAdvice();
+        AdviceVO adviceVO = ModelUtils.getAdviceVO();
+        AdviceViewDto adviceViewDto = new AdviceViewDto("1", "", "Pro");
+        List<Advice> advices = Collections.singletonList(advice);
+        List<AdviceVO> adviceVOs = Collections.singletonList(adviceVO);
+        Page<Advice> pageAdvices = new PageImpl<>(advices,
+            pageable, advices.size());
+        when(adviceRepo.findAll(any(AdviceSpecification.class), eq(pageable))).thenReturn(pageAdvices);
+        when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
+        PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
+        PageableDto<AdviceVO> actual = adviceService.getFilteredAdvices(pageable, adviceViewDto);
 
-        assertEquals(languageTranslationDTOs, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
     void getRandomAdviceByHabitIdAndLanguage() {
         String language = "en";
         Long id = 1L;
-        AdviceTranslation adviceTranslation = adviceTranslations.get(0);
-        LanguageTranslationDTO expected = languageTranslationDTOs.get(0);
+        AdviceTranslation adviceTranslation = ModelUtils.getAdviceTranslations().get(0);
+        LanguageTranslationDTO expected = ModelUtils.getLanguageTranslationsDTOs().get(0);
         when(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id))
             .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, LanguageTranslationDTO.class)).thenReturn(expected);
@@ -120,6 +119,7 @@ class AdviceServiceImplTest {
     @Test
     void getAdviceById() {
         Long id = 1L;
+        Advice advice = ModelUtils.getAdvice();
         AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
         when(adviceRepo.findById(id)).thenReturn(Optional.of(advice));
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(expected);
@@ -137,12 +137,33 @@ class AdviceServiceImplTest {
     void getAdviceByName() {
         String language = "en";
         String name = "name";
-        AdviceTranslation adviceTranslation = adviceTranslations.get(0);
-        AdviceDto expected = getAdviceDto();
+        AdviceTranslation adviceTranslation = ModelUtils.getAdviceTranslations().get(0);
+        Advice advice = ModelUtils.getAdvice();
+        AdviceDto expected = modelMapper.map(advice, AdviceDto.class);
         when(adviceTranslationRepo.findAdviceTranslationByLanguageCodeAndContent(language, name))
             .thenReturn(Optional.of(adviceTranslation));
         when(modelMapper.map(adviceTranslation, AdviceDto.class)).thenReturn(expected);
         AdviceDto actual = adviceService.getAdviceByName(language, name);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void filterByAllFields() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        String query = "Pro";
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Advice advice = ModelUtils.getAdvice();
+        AdviceVO adviceVO = ModelUtils.getAdviceVO();
+        List<Advice> advices = Collections.singletonList(advice);
+        List<AdviceVO> adviceVOs = Collections.singletonList(adviceVO);
+        Page<Advice> pageAdvices = new PageImpl<>(advices,
+            pageable, advices.size());
+        PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
+        when(adviceRepo.filterByAllFields(pageable, query)).thenReturn(pageAdvices);
+        when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
+        PageableDto<AdviceVO> actual = adviceService.getAllAdvicesWithFilter(pageable, query);
 
         assertEquals(expected, actual);
     }
@@ -157,7 +178,8 @@ class AdviceServiceImplTest {
 
     @Test
     void save() {
-        AdvicePostDto advicePostDto = getAdvicePostDto();
+        AdvicePostDto advicePostDto = ModelUtils.getAdvicePostDto();
+        Advice advice = ModelUtils.getAdvice();
         when(modelMapper.map(advicePostDto, Advice.class)).thenReturn(advice);
         when(adviceRepo.save(advice)).thenReturn(advice);
         AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
@@ -169,7 +191,9 @@ class AdviceServiceImplTest {
 
     @Test
     void update() {
-        AdvicePostDto advicePostDto = getAdvicePostDto();
+        AdvicePostDto advicePostDto = ModelUtils.getAdvicePostDto();
+        Advice advice = ModelUtils.getAdvice();
+        Habit habit = ModelUtils.getHabit();
         Long adviceId = 1L;
         Long habitId = advicePostDto.getHabit().getId();
 
@@ -177,9 +201,9 @@ class AdviceServiceImplTest {
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         advice.setHabit(habit);
         when(adviceRepo.save(advice)).thenReturn(advice);
-        AdviceVO expected = modelMapper.map(advice, AdviceVO.class);
-        when(modelMapper.map(advice, AdviceVO.class)).thenReturn(expected);
-        AdviceVO actual = adviceService.update(advicePostDto, adviceId);
+        AdvicePostDto expected = modelMapper.map(advice, AdvicePostDto.class);
+        when(modelMapper.map(advice, AdvicePostDto.class)).thenReturn(expected);
+        AdvicePostDto actual = adviceService.update(advicePostDto, adviceId);
 
         assertEquals(expected, actual);
     }
@@ -187,7 +211,7 @@ class AdviceServiceImplTest {
     @Test
     void updateThrowNotFoundException() {
         Long adviceId = 1L;
-        AdvicePostDto advicePostDto = getAdvicePostDto();
+        AdvicePostDto advicePostDto = ModelUtils.getAdvicePostDto();
 
         assertThrows(NotUpdatedException.class, () -> adviceService.update(advicePostDto, adviceId));
     }
@@ -211,6 +235,9 @@ class AdviceServiceImplTest {
 
     @Test
     void deleteAllByHabit() {
+        Habit habit = ModelUtils.getHabit();
+        HabitVO habitVO = ModelUtils.getHabitVO();
+        List<Advice> advices = ModelUtils.getAdvices();
         Long habitId = habit.getId();
         when(modelMapper.map(habitVO, Habit.class)).thenReturn(habit);
         when(adviceRepo.findAllByHabitId(habitId)).thenReturn(advices);
@@ -223,6 +250,8 @@ class AdviceServiceImplTest {
 
     @Test
     void deleteAllByHabitReturnEmptyList() {
+        Habit habit = ModelUtils.getHabit();
+        HabitVO habitVO = ModelUtils.getHabitVO();
         Long habitId = habit.getId();
         when(modelMapper.map(habitVO, Habit.class)).thenReturn(habit);
         when(adviceRepo.findAllByHabitId(habitId)).thenReturn(Collections.emptyList());
@@ -230,5 +259,13 @@ class AdviceServiceImplTest {
 
         verify(adviceTranslationRepo, never()).deleteAllByAdvice(any(Advice.class));
         verify(adviceRepo, never()).delete(any(Advice.class));
+    }
+
+    @Test
+    void deleteAllByIds() {
+        List<Long> ids = List.of(1L, 2L, 3L);
+        adviceService.deleteAllByIds(ids);
+
+        verify(adviceRepo, times(ids.size())).deleteById(anyLong());
     }
 }
