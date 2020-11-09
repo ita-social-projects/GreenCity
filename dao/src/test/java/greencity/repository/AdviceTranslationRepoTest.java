@@ -29,15 +29,15 @@ class AdviceTranslationRepoTest {
 
     @Test
     void getRandomAdviceTranslationByHabitIdAndLanguage() {
-        Long habitId = 1L;
-        String languageCode = "uk";
+        Long habitId = 2L;
+        String languageCode = "en";
         AdviceTranslation adviceTranslation = adviceTranslationRepo
             .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId).get();
 
-        assertEquals(1L, adviceTranslation.getId());
-        assertEquals(1L, adviceTranslation.getAdvice().getId());
-        assertEquals(1L, adviceTranslation.getLanguage().getId());
-        assertEquals("Привіт", adviceTranslation.getContent());
+        assertEquals(2L, adviceTranslation.getId());
+        assertEquals(2L, adviceTranslation.getAdvice().getId());
+        assertEquals(2L, adviceTranslation.getLanguage().getId());
+        assertEquals("Hello", adviceTranslation.getContent());
     }
 
     @Test

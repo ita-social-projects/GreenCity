@@ -68,17 +68,17 @@ class ManagementHabitFactsControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<HabitFactVO> habitFactVOS = Collections.singletonList(ModelUtils.getHabitFactVO());
         PageableDto<HabitFactVO> pageableDto = new PageableDto<>(habitFactVOS, 1, 0, 1);
-        when(habitFactService.getAllHabitFactsVO(pageable)).thenReturn(pageableDto);
+        when(habitFactService.getAllHabitFactVOsWithFilter(null, pageable)).thenReturn(pageableDto);
         List<LanguageDTO> languageDTOS = Collections.emptyList();
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
-        mockMvc.perform(get(managementHabitFactLink + "?page=0&size=20"))
+        mockMvc.perform(get(managementHabitFactLink))
             .andExpect(view().name("core/management_habit_facts"))
             .andExpect(model().attribute("pageable", pageableDto))
             .andExpect(model().attribute("languages", languageDTOS))
             .andExpect(status().isOk());
 
-        verify(habitFactService).getAllHabitFactsVO(pageable);
+        verify(habitFactService).getAllHabitFactVOsWithFilter(null, pageable);
         verify(languageService).getAllLanguages();
     }
 
@@ -88,7 +88,7 @@ class ManagementHabitFactsControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<HabitFactVO> habitFactVOS = Collections.singletonList(ModelUtils.getHabitFactVO());
         PageableDto<HabitFactVO> pageableDto = new PageableDto<>(habitFactVOS, 1, 0, 1);
-        when(habitFactService.searchHabitFactByFilter(pageable, query)).thenReturn(pageableDto);
+        when(habitFactService.getAllHabitFactVOsWithFilter(query, pageable)).thenReturn(pageableDto);
         List<LanguageDTO> languageDTOS = Collections.emptyList();
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
@@ -98,7 +98,7 @@ class ManagementHabitFactsControllerTest {
             .andExpect(model().attribute("languages", languageDTOS))
             .andExpect(status().isOk());
 
-        verify(habitFactService).searchHabitFactByFilter(pageable, query);
+        verify(habitFactService).getAllHabitFactVOsWithFilter(query, pageable);
         verify(languageService).getAllLanguages();
     }
 
@@ -108,7 +108,7 @@ class ManagementHabitFactsControllerTest {
         HabitFactViewDto habitFactViewDto = new HabitFactViewDto("1", "", "Pro");
         String habitFactViewDtoAsJson = objectMapper.writeValueAsString(habitFactViewDto);
 
-        mockMvc.perform(post(managementHabitFactLink + "")
+        mockMvc.perform(post(managementHabitFactLink + "/filter")
             .contentType(MediaType.APPLICATION_JSON)
             .content(habitFactViewDtoAsJson))
             .andExpect(status().isOk());
@@ -119,8 +119,7 @@ class ManagementHabitFactsControllerTest {
     @Test
     void getHabitFactsByIdTest() throws Exception {
         Long habitFactId = 1L;
-        mockMvc.perform(get(managementHabitFactLink + "/find")
-            .param("id", "1"))
+        mockMvc.perform(get(managementHabitFactLink + "/find/" + habitFactId))
             .andExpect(status().isOk());
 
         verify(habitFactService).getHabitFactById(habitFactId);
@@ -131,7 +130,7 @@ class ManagementHabitFactsControllerTest {
         HabitFactPostDto habitFactPostDto = ModelUtils.getHabitFactPostDto();
         String habitFactPostDtoAsJson = objectMapper.writeValueAsString(habitFactPostDto);
 
-        mockMvc.perform(post(managementHabitFactLink + "/")
+        mockMvc.perform(post(managementHabitFactLink)
             .content(habitFactPostDtoAsJson)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
@@ -143,8 +142,7 @@ class ManagementHabitFactsControllerTest {
     @Test
     void deleteTest() throws Exception {
         Long habitFactId = 1L;
-        mockMvc.perform(delete(managementHabitFactLink + "/")
-            .param("id", "1"))
+        mockMvc.perform(delete(managementHabitFactLink + "/" + habitFactId))
             .andExpect(status().isOk());
 
         verify(habitFactService).delete(habitFactId);

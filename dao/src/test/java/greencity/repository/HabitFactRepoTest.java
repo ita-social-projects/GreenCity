@@ -31,11 +31,11 @@ class HabitFactRepoTest {
     @Test
     void searchByTest() {
         Pageable pageable = PageRequest.of(0, 2);
-        String query = "номер";
+        String filter = "#";
         List<HabitFact> habitFacts = List.of(ModelUtils.getHabitFact());
 
         Page<HabitFact> actual = new PageImpl<>(habitFacts, pageable, habitFacts.size());
-        Page<HabitFact> expected = habitFactRepo.searchHabitFactByFilter(pageable, query);
+        Page<HabitFact> expected = habitFactRepo.searchHabitFactByFilter(pageable, filter);
 
         List<Long> actualIds = actual.getContent().stream().map(HabitFact::getId)
             .collect(Collectors.toList());
