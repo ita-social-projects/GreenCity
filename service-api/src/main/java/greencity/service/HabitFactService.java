@@ -127,7 +127,7 @@ public interface HabitFactService {
     /**
      * Method finds all {@code HabitFact} with filter.
      *
-     * @param filter - filter params.
+     * @param filter   - filter params.
      * @param pageable - instance of {@link Pageable}.
      * @return list of {@link HabitFactVO}.
      */
