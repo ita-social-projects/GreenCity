@@ -5,6 +5,7 @@ import greencity.entity.Habit;
 import greencity.entity.Language;
 import greencity.entity.localization.AdviceTranslation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ModelUtils {
@@ -49,5 +50,23 @@ public class ModelUtils {
 
     public static List<AdviceTranslation> getAdviceTranslations() {
         return List.of(getAdviceTranslationFirst(), getAdviceTranslationSecond(), getAdviceTranslationThird());
+    }
+
+    public static List<Advice> getAdvices() {
+        return new ArrayList<>(List.of(Advice.builder().id(1L)
+            .habit(Habit.builder().id(2L).image("image_one.png")
+                .build())
+            .translations(List.of(getAdviceTranslationFirst()))
+            .build(),
+            Advice.builder().id(2L)
+                .habit(Habit.builder().id(2L).image("image_one.png")
+                    .build())
+                .translations(List.of(getAdviceTranslationSecond()))
+                .build(),
+            Advice.builder().id(3L)
+                .habit(Habit.builder().id(3L).image("image_one.png")
+                    .build())
+                .translations(List.of(getAdviceTranslationThird()))
+                .build()));
     }
 }

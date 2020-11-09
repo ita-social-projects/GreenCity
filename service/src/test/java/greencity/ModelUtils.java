@@ -1,6 +1,9 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceTranslationVO;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
@@ -191,10 +194,6 @@ public class ModelUtils {
 
     public static HabitVO getHabitVO() {
         return HabitVO.builder().id(1L).image("img.png").build();
-    }
-
-    public static Habit getHabit() {
-        return Habit.builder().id(1L).image("img.png").build();
     }
 
     public static HabitStatus getHabitStatus() {
@@ -755,10 +754,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static Advice getAdvice() {
-        return new Advice(1L, null, null);
-    }
-
     public static OpeningHours getOpeningHours() {
         OpeningHours openingHoursTest = new OpeningHours();
         openingHoursTest.setOpenTime(getLocalTime());
@@ -777,5 +772,67 @@ public class ModelUtils {
             .lng(12.12d)
             .lat(12.12d)
             .build();
+    }
+
+    public static List<AdviceTranslation> getAdviceTranslations() {
+        Language defaultLanguage = getLanguage();
+        return new ArrayList<>(Arrays.asList(
+            AdviceTranslation.builder().id(1L).language(defaultLanguage).content("hello").build(),
+            AdviceTranslation.builder().id(2L).language(defaultLanguage).content("text").build(),
+            AdviceTranslation.builder().id(3L).language(defaultLanguage).content("smile").build()));
+    }
+
+    public static List<AdviceTranslationVO> getAdviceTranslationVOs() {
+        LanguageVO defaultLanguage = getLanguageVO();
+        return new ArrayList<>(Arrays.asList(
+            AdviceTranslationVO.builder().id(1L).language(defaultLanguage).content("hello").build(),
+            AdviceTranslationVO.builder().id(2L).language(defaultLanguage).content("text").build(),
+            AdviceTranslationVO.builder().id(3L).language(defaultLanguage).content("smile").build()));
+    }
+
+    public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
+        return Arrays.asList(
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+    }
+
+    public static List<Advice> getAdvices() {
+        List<AdviceTranslation> adviceTranslations = getAdviceTranslations();
+        return new ArrayList<>(Arrays.asList(
+            Advice.builder().id(1L).habit(Habit.builder().id(1L).build())
+                .translations(adviceTranslations).build(),
+            Advice.builder().id(2L).habit(Habit.builder().id(1L).build()).translations(adviceTranslations).build(),
+            Advice.builder().id(3L).habit(Habit.builder().id(1L).build()).translations(adviceTranslations).build()));
+    }
+
+    public static List<AdviceVO> getAdviceVOs() {
+        List<AdviceTranslationVO> adviceTranslationVOs = getAdviceTranslationVOs();
+        return new ArrayList<>(Arrays.asList(
+            AdviceVO.builder().id(1L).habit(new HabitIdRequestDto(1L)).translations(adviceTranslationVOs).build(),
+            AdviceVO.builder().id(2L).habit(new HabitIdRequestDto(1L)).translations(adviceTranslationVOs).build(),
+            AdviceVO.builder().id(3L).habit(new HabitIdRequestDto(1L)).translations(adviceTranslationVOs).build()));
+    }
+
+    public static Habit getHabit() {
+        return Habit.builder().id(1L).image("image.png").build();
+    }
+
+    public static Advice getAdvice() {
+        return Advice.builder().id(1L)
+            .translations(getAdviceTranslations())
+            .habit(getHabit())
+            .build();
+    }
+
+    public static AdviceVO getAdviceVO() {
+        return AdviceVO.builder().id(1L)
+            .translations(getAdviceTranslationVOs())
+            .habit(new HabitIdRequestDto(1L))
+            .build();
+    }
+
+    public static AdvicePostDto getAdvicePostDto() {
+        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
     }
 }
