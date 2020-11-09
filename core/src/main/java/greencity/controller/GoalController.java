@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,10 +70,7 @@ public class GoalController {
     })
     @PostMapping
     public ResponseEntity<List<LanguageTranslationDTO>> save(@Valid @RequestBody GoalPostDto goalPostDto) {
-        List<LanguageTranslationDTO> response = mapper.map(goalService.saveGoal(goalPostDto),
-            new TypeToken<List<LanguageTranslationDTO>>() {
-            }.getType());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(goalService.saveGoal(goalPostDto));
     }
 
     /**
@@ -92,10 +88,7 @@ public class GoalController {
     @PutMapping("/{id}")
     public ResponseEntity<List<LanguageTranslationDTO>> update(
         @Valid @RequestBody GoalPostDto goalPostDto) {
-        List<LanguageTranslationDTO> response = mapper.map(goalService.update(goalPostDto),
-            new TypeToken<List<LanguageTranslationDTO>>() {
-            }.getType());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(goalService.update(goalPostDto));
     }
 
     /**

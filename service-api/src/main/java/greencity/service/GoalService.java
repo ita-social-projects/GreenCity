@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.goal.*;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 
@@ -21,7 +22,7 @@ public interface GoalService {
      * @param goalPostDto needed text
      * @author Dmytro Khonko
      */
-    List<GoalTranslationVO> saveGoal(GoalPostDto goalPostDto);
+    List<LanguageTranslationDTO> saveGoal(GoalPostDto goalPostDto);
 
     /**
      * Method to update goal translations from {@link GoalPostDto}.
@@ -29,7 +30,7 @@ public interface GoalService {
      * @param goalPostDto new text
      * @author Dmytro Khonko
      */
-    List<GoalTranslationVO> update(GoalPostDto goalPostDto);
+    List<LanguageTranslationDTO> update(GoalPostDto goalPostDto);
 
     /**
      * Method delete goal.

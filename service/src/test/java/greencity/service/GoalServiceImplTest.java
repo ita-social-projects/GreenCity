@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.goal.*;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.exception.exceptions.GoalNotFoundException;
 import java.util.Collections;
 import java.util.Optional;
@@ -18,12 +19,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.modelmapper.TypeToken;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -36,17 +36,13 @@ class GoalServiceImplTest {
     private GoalRepo goalRepo;
     @InjectMocks
     private GoalServiceImpl goalService;
-
-    @Spy
-    @InjectMocks
-    private GoalServiceImpl goalServiceSpy;
-
-
+    @Mock
     private final Goal goal = Goal.builder().id(1L).translations(ModelUtils.getGoalTranslations()).build();
+
+    private final List<LanguageTranslationDTO> languageTranslationDTOS =
+        Collections.singletonList(ModelUtils.getLanguageTranslationDTO());
     private final GoalPostDto goalPostDto =
-        new GoalPostDto(Collections.singletonList(ModelUtils.getLanguageTranslationDTO()), new GoalRequestDto(1L));
-    private final List<GoalTranslationVO> goalTranslationVOs = Collections.singletonList(
-        GoalTranslationVO.builder().id(1L).goal(ModelUtils.getUserGoalVO().getGoal()).build());
+        new GoalPostDto(languageTranslationDTOS, new GoalRequestDto(1L));
 
     @Test
     void findAllTest() {
@@ -66,18 +62,25 @@ class GoalServiceImplTest {
 
     @Test
     void saveGoalTest() {
-        when(goalRepo.save(modelMapper.map(goalPostDto, Goal.class))).thenReturn(goal);
-        doReturn(goalTranslationVOs).when(goalServiceSpy).saveTranslations(goalPostDto,goal);
-        List<GoalTranslationVO> res = goalServiceSpy.saveGoal(goalPostDto);
-        assertEquals(goal.getId(),res.get(0).getId());
+        when((modelMapper.map(goalPostDto, Goal.class))).thenReturn(goal);
+        when(modelMapper.map(goal.getTranslations(),
+            new TypeToken<List<LanguageTranslationDTO>>(){
+            }.getType())).thenReturn(languageTranslationDTOS);
+        List<LanguageTranslationDTO> res = goalService.saveGoal(goalPostDto);
+        assertEquals(languageTranslationDTOS.get(0).getContent(),res.get(0).getContent());
     }
 
     @Test
     void updateTest() {
         when(goalRepo.findById(goalPostDto.getGoal().getId())).thenReturn(Optional.of(goal));
-        doReturn(goalTranslationVOs).when(goalServiceSpy).saveTranslations(goalPostDto,goal);
-        List<GoalTranslationVO> res = goalServiceSpy.update(goalPostDto);
-        assertEquals(goal.getId(),res.get(0).getId());
+        when(modelMapper.map(goalPostDto.getTranslations(),
+            new TypeToken<List<GoalTranslation>>() {
+            }.getType())).thenReturn(ModelUtils.getGoalTranslations());
+        when(modelMapper.map(goal.getTranslations(),
+            new TypeToken<List<LanguageTranslationDTO>>(){
+            }.getType())).thenReturn(languageTranslationDTOS);
+        List<LanguageTranslationDTO> res = goalService.update(goalPostDto);
+        assertEquals(languageTranslationDTOS.get(0).getContent(),res.get(0).getContent());
     }
 
     @Test
