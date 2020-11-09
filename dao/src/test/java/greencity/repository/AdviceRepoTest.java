@@ -51,7 +51,7 @@ public class AdviceRepoTest {
         advices.remove(1);
 
         Page<Advice> actual = new PageImpl<>(advices, pageable, advices.size());
-        Page<Advice> expected = adviceRepo.searchBy(pageable, query);
+        Page<Advice> expected = adviceRepo.filterByAllFields(pageable, query);
 
         List<Long> actualIds = actual.getContent().stream().map(Advice::getId)
             .collect(Collectors.toList());

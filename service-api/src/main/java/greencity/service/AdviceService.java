@@ -44,12 +44,12 @@ public interface AdviceService {
     /**
      * Method finds all {@link AdviceVO} by query.
      *
-     * @param query    {@link String} - string query
+     * @param filter    {@link String}
      * @param pageable {@link Pageable}
      * @return list of found {@link AdviceVO}
      * @author Markiyan Derevetskyi
      */
-    PageableDto<AdviceVO> searchBy(Pageable pageable, String query);
+    PageableDto<AdviceVO> filterByAllFields(Pageable pageable, String filter);
 
     /**
      * Method find {@link AdviceVO} by id.

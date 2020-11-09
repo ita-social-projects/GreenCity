@@ -151,7 +151,7 @@ class AdviceServiceImplTest {
     }
 
     @Test
-    void searchBy() {
+    void filterByAllFields() {
         int pageNumber = 0;
         int pageSize = 1;
         String query = "Pro";
@@ -163,9 +163,9 @@ class AdviceServiceImplTest {
         Page<Advice> pageAdvices = new PageImpl<>(advices,
             pageable, advices.size());
         PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
-        when(adviceRepo.searchBy(pageable, query)).thenReturn(pageAdvices);
+        when(adviceRepo.filterByAllFields(pageable, query)).thenReturn(pageAdvices);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
-        PageableDto<AdviceVO> actual = adviceService.searchBy(pageable, query);
+        PageableDto<AdviceVO> actual = adviceService.filterByAllFields(pageable, query);
 
         assertEquals(expected, actual);
     }

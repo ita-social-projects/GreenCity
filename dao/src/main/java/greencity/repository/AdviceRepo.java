@@ -30,19 +30,19 @@ public interface AdviceRepo extends JpaRepository<Advice, Long>, JpaSpecificatio
     /**
      * Method finds all {@link Advice}'s b given query.
      *
-     * @param query    {@link String} - string query
+     * @param filter    {@link String}
      * @param pageable {@link Pageable}
      * @return list of {@link Advice}'s
      * @author Markiyan Derevetskyi
      */
     @Query(value = "select distinct a from Advice a join fetch a.translations as at "
-        + "where concat(a.id, '') like lower(concat(:query, '')) "
-        + "or concat(a.habit.id, '') like lower(concat(:query, '')) "
-        + "or concat(at.id, '') like lower(concat(:query, '')) "
-        + "or lower(at.language.code) like lower(concat('%', :query, '%')) "
-        + "or lower(at.content) like lower(concat('%', :query, '%'))",
+        + "where concat(a.id, '') like lower(concat(:filter, '')) "
+        + "or concat(a.habit.id, '') like lower(concat(:filter, '')) "
+        + "or concat(at.id, '') like lower(concat(:filter, '')) "
+        + "or lower(at.language.code) like lower(concat('%', :filter, '%')) "
+        + "or lower(at.content) like lower(concat('%', :filter, '%'))",
         countQuery = "select count(a) from Advice a")
-    Page<Advice> searchBy(Pageable pageable, String query);
+    Page<Advice> filterByAllFields(Pageable pageable, String filter);
 
     /**
      * Method finds all {@link Advice}'s by {@link Habit} id.

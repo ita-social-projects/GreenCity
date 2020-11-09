@@ -72,8 +72,8 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     @Override
-    public PageableDto<AdviceVO> searchBy(Pageable pageable, String query) {
-        return buildPageableDto(adviceRepo.searchBy(pageable, query));
+    public PageableDto<AdviceVO> filterByAllFields(Pageable pageable, String filter) {
+        return buildPageableDto(adviceRepo.filterByAllFields(pageable, filter));
     }
 
     /**

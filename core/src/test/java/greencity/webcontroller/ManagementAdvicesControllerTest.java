@@ -97,21 +97,21 @@ class ManagementAdvicesControllerTest {
 
     @Test
     void findAllAdvicesWithQuery() throws Exception {
-        String query = "Pro";
+        String filter = "Pro";
         Pageable pageable = PageRequest.of(0, 20);
         List<AdviceVO> adviceVOs = Collections.singletonList(new AdviceVO());
         PageableDto<AdviceVO> pageableDto = new PageableDto<>(adviceVOs, 1, 0, 1);
-        when(adviceService.searchBy(pageable, query)).thenReturn(pageableDto);
+        when(adviceService.filterByAllFields(pageable, filter)).thenReturn(pageableDto);
         List<LanguageDTO> languageDTOS = Collections.emptyList();
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
-        mockMvc.perform(get(managementAdvicesLink + "?page=0&size=20&query=" + query))
+        mockMvc.perform(get(managementAdvicesLink + "?page=0&size=20&query=" + filter))
             .andExpect(view().name("core/management_advices"))
             .andExpect(model().attribute("pageable", pageableDto))
             .andExpect(model().attribute("languages", languageDTOS))
             .andExpect(status().isOk());
 
-        verify(adviceService).searchBy(pageable, query);
+        verify(adviceService).filterByAllFields(pageable, filter);
         verify(languageService).getAllLanguages();
     }
 
