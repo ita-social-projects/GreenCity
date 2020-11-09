@@ -16,6 +16,4 @@ import lombok.Setter;
 public class BulkSaveUserGoalDto {
     @Valid
     List<@Valid UserGoalDto> userGoals;
-    @Valid
-    List<@Valid UserCustomGoalDto> userCustomGoal;
 }

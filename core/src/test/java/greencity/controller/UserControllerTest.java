@@ -353,13 +353,6 @@ class UserControllerTest {
     @Test
     void saveUserGoalsWithoutLanguageParamTest() throws Exception {
         String content = "{\n"
-            + "  \"userCustomGoal\": [\n"
-            + "    {\n"
-            + "      \"customGoal\": {\n"
-            + "        \"id\": 1\n"
-            + "      }\n"
-            + "    }\n"
-            + "  ],\n"
             + "  \"userGoals\": [\n"
             + "    {\n"
             + "      \"goal\": {\n"

@@ -49,6 +49,6 @@ public class Goal {
     @OneToMany(mappedBy = "goal", fetch = FetchType.LAZY)
     private List<UserGoal> userGoals;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "goal", cascade = {CascadeType.REMOVE, CascadeType.REFRESH})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "goal", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<GoalTranslation> translations;
 }

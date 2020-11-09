@@ -64,17 +64,17 @@ VALUES (1, 1, 'ACTIVE'),
        (9, 9, 'INACTIVE'),
        (10, 10, 'ACTIVE');
 
-INSERT INTO custom_goals (text, user_id)
-VALUES ('Choose eco-transport', 1),
-       ('Buy a bamboo brush', 1),
-       ('Buy composter', 1),
-       ('Start sorting trash', 1),
-       ('Start recycling batteries', 2),
-       ('Finish book about vegans', 2),
-       ('Give up plastic', 3),
-       ('Carry a paper bag', 3),
-       ('Use paper cups', 3),
-       ('Buy only loose tea', 3);
+INSERT INTO custom_goals (text, user_id, status, date_completed)
+VALUES ('Choose eco-transport', 1, 'DONE', '2020-09-10 20:00:001'),
+       ('Buy a bamboo brush', 1, 'DONE', '2020-09-10 20:00:001'),
+       ('Buy composter', 1, 'ACTIVE', null),
+       ('Start sorting trash', 1, 'ACTIVE', null),
+       ('Start recycling batteries', 2, 'DONE', '2020-09-10 20:00:001'),
+       ('Finish book about vegans', 2, 'ACTIVE', null),
+       ('Give up plastic', 3, 'ACTIVE', null),
+       ('Carry a paper bag', 3, 'ACTIVE', null),
+       ('Use paper cups', 3, 'ACTIVE', null),
+       ('Buy only loose tea', 3, 'ACTIVE', null);
 
 INSERT INTO goals (id)
 VALUES (1), (2), (3),
@@ -82,17 +82,14 @@ VALUES (1), (2), (3),
        (7), (8), (9), (10);
 
 
-INSERT INTO user_goals (user_id, goal_id, status, date_completed, custom_goal_id)
-VALUES (1, 2, 'DONE', '2020-09-10 20:00:001', null),
-       (1, 5, 'DONE', '2020-09-11 18:00:001', null),
-       (2, 3, 'ACTIVE', null, null),
-       (2, 1, 'DONE', '2020-10-05 20:00:001', null),
-       (3, null, 'DONE', '2020-09-10 20:00:001', 1),
-       (3, null, 'ACTIVE', null, 2),
-       (4, null, 'ACTIVE', null, 3),
-       (4, null, 'DONE', '2020-09-10 22:00:001', 4),
-       (5, null, 'ACTIVE', null, 5),
-       (5, null, 'DONE', '2020-09-10 21:15:001', 6);
+INSERT INTO user_goals (user_id, goal_id, status, date_completed)
+VALUES (1, 2, 'DONE', '2020-09-10 20:00:001'),
+       (1, 5, 'DONE', '2020-09-11 18:00:001'),
+       (2, 5, 'DONE', '2020-09-11 18:00:001'),
+       (2, 3, 'ACTIVE', null),
+       (2, 1, 'ACTIVE', null),
+       (3, 3, 'ACTIVE', null),
+       (3, 1, 'DONE', '2020-10-05 20:00:001');
 
 
 INSERT INTO achievements (title, description, message)

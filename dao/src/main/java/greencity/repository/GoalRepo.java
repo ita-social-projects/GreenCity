@@ -24,16 +24,6 @@ public interface GoalRepo extends JpaRepository<Goal, Long> {
     List<Goal> findAvailableGoalsByUser(User user);
 
     /**
-     * Method returns shopping list by user id.
-     *
-     * @return shopping list {@link ShoppingListDtoResponse}.
-     * @author Marian Datsko
-     */
-    @Query(nativeQuery = true)
-    List<ShoppingListDtoResponse> getShoppingList(@Param(value = "userId") Long userId,
-        @Param(value = "languageCode") String languageCode);
-
-    /**
      * Method change goal status.
      *
      * @author Marian Datsko

@@ -113,6 +113,7 @@ public final class ErrorMessage {
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
+    public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "The statis of this goal is already done";
     public static final String USER_DEACTIVATED = "User is deactivated";
     public static final String BAD_GOOGLE_TOKEN = "Bad google token";
     public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";
