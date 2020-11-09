@@ -165,7 +165,7 @@ class AdviceServiceImplTest {
         PageableDto<AdviceVO> expected = new PageableDto<>(adviceVOs, advices.size(), pageNumber, pageSize);
         when(adviceRepo.filterByAllFields(pageable, query)).thenReturn(pageAdvices);
         when(modelMapper.map(advice, AdviceVO.class)).thenReturn(adviceVO);
-        PageableDto<AdviceVO> actual = adviceService.filterByAllFields(pageable, query);
+        PageableDto<AdviceVO> actual = adviceService.getAllAdvicesWithFilter(pageable, query);
 
         assertEquals(expected, actual);
     }

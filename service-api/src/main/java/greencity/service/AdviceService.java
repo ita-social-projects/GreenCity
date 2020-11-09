@@ -26,6 +26,17 @@ public interface AdviceService {
     PageableDto<AdviceVO> getAllAdvices(Pageable pageable);
 
     /**
+     * Method finds all {@link AdviceVO}.
+     *
+     * @param pageable of {@link Pageable}
+     * @param filter   of {@Link String}
+     * @return List of {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     *
+     */
+    PageableDto<AdviceVO> getAllAdvicesWithFilter(Pageable pageable, String filter);
+
+    /**
      * Method finds all {@link AdviceVO}'s that satisfy filters .
      *
      * @return List of all {@link AdviceVO}
@@ -40,16 +51,6 @@ public interface AdviceService {
      * @author Vitaliy Dzen
      */
     LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language);
-
-    /**
-     * Method finds all {@link AdviceVO} by query.
-     *
-     * @param filter    {@link String}
-     * @param pageable {@link Pageable}
-     * @return list of found {@link AdviceVO}
-     * @author Markiyan Derevetskyi
-     */
-    PageableDto<AdviceVO> filterByAllFields(Pageable pageable, String filter);
 
     /**
      * Method find {@link AdviceVO} by id.

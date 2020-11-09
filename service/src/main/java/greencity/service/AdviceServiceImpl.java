@@ -27,8 +27,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +54,14 @@ public class AdviceServiceImpl implements AdviceService {
         return buildPageableDto(adviceRepo.findAll(pageable));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<AdviceVO> getAllAdvicesWithFilter(Pageable pageable, String filter) {
+        return filter == null ? getAllAdvices(pageable) : filterByAllFields(pageable, filter);
+    }
+
     @Override
     public PageableDto<AdviceVO> getFilteredAdvices(Pageable pageable, AdviceViewDto adviceViewDto) {
         Page<Advice> filteredAdvices = adviceRepo.findAll(getSpecification(adviceViewDto), pageable);
@@ -69,11 +77,6 @@ public class AdviceServiceImpl implements AdviceService {
         return modelMapper.map(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)),
             LanguageTranslationDTO.class);
-    }
-
-    @Override
-    public PageableDto<AdviceVO> filterByAllFields(Pageable pageable, String filter) {
-        return buildPageableDto(adviceRepo.filterByAllFields(pageable, filter));
     }
 
     /**
@@ -172,8 +175,18 @@ public class AdviceServiceImpl implements AdviceService {
     }
 
     /**
-     * * This method used for build {@link SearchCriteria} depends on
-     * {@link Advice}.
+     * Method filters by all fields all {@link AdviceVO}.
+     *
+     * @param pageable - {@link Pageable}
+     * @param filter   - {@link String}
+     * @return list of {@link AdviceVO}
+     */
+    private PageableDto<AdviceVO> filterByAllFields(Pageable pageable, String filter) {
+        return buildPageableDto(adviceRepo.filterByAllFields(pageable, filter));
+    }
+
+    /**
+     * This method used for build {@link SearchCriteria} depends on. {@link Advice}.
      *
      * @param adviceViewDto used for receive parameters for filters from UI.
      * @return {@link SearchCriteria}.
@@ -181,22 +194,9 @@ public class AdviceServiceImpl implements AdviceService {
     private List<SearchCriteria> buildSearchCriteria(AdviceViewDto adviceViewDto) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
 
-        Field[] fields = adviceViewDto.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            String value;
-            try {
-                value = (String) field.get(adviceViewDto);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Cannot retrieve value from field!");
-            }
-            if (!value.isEmpty()) {
-                criteriaList.add(SearchCriteria.builder()
-                    .key(field.getName()).type(field.getName())
-                    .value(value)
-                    .build());
-            }
-        }
+        setValueIfNotEmpty(criteriaList, "id", adviceViewDto.getId());
+        setValueIfNotEmpty(criteriaList, "habitId", adviceViewDto.getHabitId());
+        setValueIfNotEmpty(criteriaList, "translationContent", adviceViewDto.getTranslationContent());
 
         return criteriaList;
     }
@@ -208,5 +208,22 @@ public class AdviceServiceImpl implements AdviceService {
      */
     private AdviceSpecification getSpecification(AdviceViewDto adviceViewDto) {
         return new AdviceSpecification(buildSearchCriteria(adviceViewDto));
+    }
+
+    /**
+     * Method that adds new {@link SearchCriteria}.
+     *
+     * @param searchCriteria - list of existing {@link SearchCriteria}
+     * @param key            - key of field
+     * @param value          - value of field
+     */
+    private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
+        if (!StringUtils.isEmpty(value)) {
+            searchCriteria.add(SearchCriteria.builder()
+                .key(key)
+                .type(key)
+                .value(value)
+                .build());
+        }
     }
 }

@@ -30,7 +30,7 @@ public interface AdviceRepo extends JpaRepository<Advice, Long>, JpaSpecificatio
     /**
      * Method finds all {@link Advice}'s b given query.
      *
-     * @param filter    {@link String}
+     * @param filter   {@link String}
      * @param pageable {@link Pageable}
      * @return list of {@link Advice}'s
      * @author Markiyan Derevetskyi

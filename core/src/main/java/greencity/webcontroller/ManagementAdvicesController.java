@@ -37,7 +37,7 @@ public class ManagementAdvicesController {
      * Method that returns management page with all {@link AdviceVO}'s that satisfy
      * query.
      *
-     * @param filter    {@link String}
+     * @param filter   {@link String}
      * @param model    {@link Model} - for passing data between controller and view
      * @param pageable {@link Pageable}
      * @return name of template {@link String}
@@ -51,9 +51,7 @@ public class ManagementAdvicesController {
     @GetMapping
     public String findAllAdvices(@RequestParam(required = false) String filter,
         Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<AdviceVO> allAdvices = filter == null || filter.isEmpty()
-            ? adviceService.getAllAdvices(pageable)
-            : adviceService.filterByAllFields(pageable, filter);
+        PageableDto<AdviceVO> allAdvices = adviceService.getAllAdvicesWithFilter(pageable, filter);
         model.addAttribute("pageable", allAdvices);
         model.addAttribute("languages", languageService.getAllLanguages());
 

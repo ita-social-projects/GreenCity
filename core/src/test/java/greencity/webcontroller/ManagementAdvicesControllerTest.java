@@ -67,7 +67,7 @@ class ManagementAdvicesControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<AdviceVO> adviceVOs = Collections.singletonList(new AdviceVO());
         PageableDto<AdviceVO> pageableDto = new PageableDto<>(adviceVOs, 1, 0, 1);
-        when(adviceService.getAllAdvices(pageable)).thenReturn(pageableDto);
+        when(adviceService.getAllAdvicesWithFilter(pageable, null)).thenReturn(pageableDto);
         List<LanguageDTO> languageDTOS = Collections.emptyList();
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
@@ -77,7 +77,7 @@ class ManagementAdvicesControllerTest {
             .andExpect(model().attribute("languages", languageDTOS))
             .andExpect(status().isOk());
 
-        verify(adviceService).getAllAdvices(pageable);
+        verify(adviceService).getAllAdvicesWithFilter(pageable, null);
         verify(languageService).getAllLanguages();
     }
 
@@ -101,17 +101,17 @@ class ManagementAdvicesControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<AdviceVO> adviceVOs = Collections.singletonList(new AdviceVO());
         PageableDto<AdviceVO> pageableDto = new PageableDto<>(adviceVOs, 1, 0, 1);
-        when(adviceService.filterByAllFields(pageable, filter)).thenReturn(pageableDto);
+        when(adviceService.getAllAdvicesWithFilter(pageable, filter)).thenReturn(pageableDto);
         List<LanguageDTO> languageDTOS = Collections.emptyList();
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
-        mockMvc.perform(get(managementAdvicesLink + "?page=0&size=20&query=" + filter))
+        mockMvc.perform(get(managementAdvicesLink + "?page=0&size=20&filter=" + filter))
             .andExpect(view().name("core/management_advices"))
             .andExpect(model().attribute("pageable", pageableDto))
             .andExpect(model().attribute("languages", languageDTOS))
             .andExpect(status().isOk());
 
-        verify(adviceService).filterByAllFields(pageable, filter);
+        verify(adviceService).getAllAdvicesWithFilter(pageable, filter);
         verify(languageService).getAllLanguages();
     }
 
