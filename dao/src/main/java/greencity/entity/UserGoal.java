@@ -26,9 +26,6 @@ public class UserGoal {
     @ManyToOne(fetch = FetchType.LAZY)
     private Goal goal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private CustomGoal customGoal;
-
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private GoalStatus status = GoalStatus.ACTIVE;
@@ -48,13 +45,12 @@ public class UserGoal {
         return id.equals(userGoal.id)
             && user.equals(userGoal.user)
             && Objects.equals(goal, userGoal.goal)
-            && Objects.equals(customGoal, userGoal.customGoal)
             && status == userGoal.status
             && Objects.equals(dateCompleted, userGoal.dateCompleted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, goal, customGoal, status, dateCompleted);
+        return Objects.hash(id, user, goal, status, dateCompleted);
     }
 }

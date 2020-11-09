@@ -1,9 +1,12 @@
 package greencity.entity;
 
+import greencity.enums.GoalStatus;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @NoArgsConstructor
@@ -11,7 +14,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"userGoals", "user"})
+@ToString(exclude = {"userGoals", "user", "dateCompleted"})
 @Table(name = "custom_goals")
 @Builder
 public class CustomGoal {
@@ -25,6 +28,11 @@ public class CustomGoal {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "customGoal", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<UserGoal> userGoals = new ArrayList<>();
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private GoalStatus status = GoalStatus.ACTIVE;
+
+    @Column
+    @DateTimeFormat(pattern = "yyyy-MM-dd-HH-mm-ss.zzz")
+    private LocalDateTime dateCompleted;
 }

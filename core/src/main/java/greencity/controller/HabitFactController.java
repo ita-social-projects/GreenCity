@@ -8,13 +8,9 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactDtoResponse;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.service.HabitFactService;
-import greencity.service.HabitFactTranslationService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -33,7 +29,6 @@ import java.util.Locale;
 @AllArgsConstructor
 public class HabitFactController {
     private final HabitFactService habitFactService;
-    private final HabitFactTranslationService habitFactTranslationService;
     private final ModelMapper mapper;
 
     /**
@@ -76,7 +71,7 @@ public class HabitFactController {
     @GetMapping("/dayFact/{languageId}")
     public LanguageTranslationDTO getHabitFactOfTheDay(
         @PathVariable Long languageId) {
-        return habitFactTranslationService.getHabitFactOfTheDay(languageId);
+        return habitFactService.getHabitFactOfTheDay(languageId);
     }
 
     /**
@@ -96,7 +91,8 @@ public class HabitFactController {
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<LanguageTranslationDTO>> getAll(@ApiIgnore Pageable page,
         @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitFactService.getAllHabitFacts(page, locale.getLanguage()));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitFactService.getAllHabitFacts(page, locale.getLanguage()));
     }
 
     /**
@@ -116,14 +112,14 @@ public class HabitFactController {
     @PostMapping
     public ResponseEntity<HabitFactDtoResponse> save(@Valid @RequestBody HabitFactPostDto fact) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            habitFactTranslationService.saveHabitFactAndFactTranslation(fact));
+            mapper.map(habitFactService.save(fact), HabitFactDtoResponse.class));
     }
 
     /**
      * The controller which update {@link HabitFactVO}.
      *
-     * @param dto    {@link HabitFactPostDto}.
-     * @param factId of {@link HabitFactVO}.
+     * @param dto {@link HabitFactPostDto}.
+     * @param id  of {@link HabitFactVO}.
      * @return {@link ResponseEntity}.
      * @author Vitaliy Dzen
      */
@@ -134,17 +130,17 @@ public class HabitFactController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PutMapping("/{factId}")
+    @PutMapping("/{id}")
     public ResponseEntity<HabitFactPostDto> update(
-        @Valid @RequestBody HabitFactPostDto dto, @PathVariable Long factId) {
+        @Valid @RequestBody HabitFactUpdateDto dto, @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(habitFactService.update(dto, factId), HabitFactPostDto.class));
+            .body(mapper.map(habitFactService.update(dto, id), HabitFactPostDto.class));
     }
 
     /**
      * The controller which delete {@link HabitFactVO}.
      *
-     * @param factId of {@link HabitFactVO}.
+     * @param id of {@link HabitFactVO}.
      * @return {@link ResponseEntity}.
      * @author Vitaliy Dzen
      */
@@ -155,9 +151,9 @@ public class HabitFactController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @DeleteMapping("/{factId}")
-    public ResponseEntity<Object> delete(@PathVariable Long factId) {
-        habitFactService.delete(factId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        habitFactService.delete(id);
         return ResponseEntity.ok().build();
     }
 }

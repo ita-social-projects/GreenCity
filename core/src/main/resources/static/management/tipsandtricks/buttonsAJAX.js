@@ -183,7 +183,6 @@ $(document).ready(function () {
             "tags": [],
             "titleTranslations":[],
             "textTranslations":[]
-
         };
         for (var key in formData) {
             if (key.startsWith("tags") && $("#" + key).val().trim().length !== 0) {

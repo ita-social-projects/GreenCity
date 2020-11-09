@@ -1,13 +1,12 @@
 package greencity.dto.habitstatus;
 
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import lombok.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor

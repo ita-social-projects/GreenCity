@@ -2,10 +2,9 @@ package greencity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
+import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.AddCommentDto;
-import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -18,8 +17,7 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -30,7 +28,6 @@ import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
@@ -41,7 +38,6 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -207,7 +203,6 @@ public class ModelUtils {
             .id(1L)
             .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
             .status(GoalStatus.DONE)
-            .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
             .build();
     }
 
@@ -260,17 +255,8 @@ public class ModelUtils {
         return new Advice(1L, null, null);
     }
 
-    public static HabitFactTranslation getFactTranslation() {
-        return HabitFactTranslation.builder()
-            .id(1L)
-            .factOfDayStatus(FactOfDayStatus.CURRENT)
-            .habitFact(null)
-            .content("Content")
-            .build();
-    }
-
     public static HabitFact getHabitFact() {
-        return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
+        return new HabitFact(1L, Collections.singletonList(getHabitFactTranslation()), null);
     }
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
@@ -558,4 +544,29 @@ public class ModelUtils {
         return placeVO;
     }
 
+    public static HabitFactPostDto getHabitFactPostDto() {
+        return HabitFactPostDto.builder()
+            .translations(List.of(getLanguageTranslationDTO()))
+            .habit(new HabitIdRequestDto(1L))
+            .build();
+    }
+
+    public static HabitFactUpdateDto getHabitFactUpdateDto() {
+        return HabitFactUpdateDto.builder()
+            .habit(new HabitIdRequestDto(1L))
+            .translations(Collections.singletonList(
+                new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL, getLanguageDTO(), "")))
+            .build();
+    }
+
+    public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
+        return Arrays.asList(
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+    }
+
+    public static AdvicePostDto getAdvicePostDto() {
+        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
+    }
 }
