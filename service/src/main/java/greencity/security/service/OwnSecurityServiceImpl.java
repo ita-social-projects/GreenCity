@@ -58,7 +58,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final JwtTool jwtTool;
     private final Integer expirationTime;
     private final RabbitTemplate rabbitTemplate;
-    private final String defaultProfilePicture;
     private final RestorePasswordEmailRepo restorePasswordEmailRepo;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
@@ -77,7 +76,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         JwtTool jwtTool,
         @Value("${verifyEmailTimeHour}") Integer expirationTime,
         RabbitTemplate rabbitTemplate,
-        @Value("${defaultProfilePicture}") String defaultProfilePicture,
         RestorePasswordEmailRepo restorePasswordEmailRepo,
         ModelMapper modelMapper,
         UserRepo userRepo) {
@@ -87,7 +85,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         this.jwtTool = jwtTool;
         this.expirationTime = expirationTime;
         this.rabbitTemplate = rabbitTemplate;
-        this.defaultProfilePicture = defaultProfilePicture;
         this.restorePasswordEmailRepo = restorePasswordEmailRepo;
         this.modelMapper = modelMapper;
         this.userRepo = userRepo;
@@ -131,7 +128,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
-            .profilePicturePath(defaultProfilePicture)
             .rating(AppConstant.DEFAULT_RATING)
             .build();
     }
@@ -269,7 +265,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .lastVisit(LocalDateTime.now())
             .userStatus(dto.getUserStatus())
             .emailNotification(EmailNotification.DISABLED)
-            .profilePicturePath(defaultProfilePicture)
             .rating(AppConstant.DEFAULT_RATING)
             .build();
     }
