@@ -1,7 +1,7 @@
 package greencity.repository;
 
 import greencity.DaoApplication;
-import greencity.utils.ModelUtils;
+import greencity.ModelUtils;
 import greencity.entity.Advice;
 import greencity.entity.Translation;
 import greencity.entity.localization.AdviceTranslation;

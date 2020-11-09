@@ -1,4 +1,4 @@
-package greencity.utils;
+package greencity;
 
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
@@ -72,10 +72,10 @@ public class ModelUtils {
 
     public static List<Advice> getAdvices() {
         return new ArrayList<>(List.of(Advice.builder().id(1L)
-                .habit(Habit.builder().id(2L).image("image_one.png")
-                    .build())
-                .translations(List.of(getAdviceTranslationFirst()))
-                .build(),
+            .habit(Habit.builder().id(2L).image("image_one.png")
+                .build())
+            .translations(List.of(getAdviceTranslationFirst()))
+            .build(),
             Advice.builder().id(2L)
                 .habit(Habit.builder().id(2L).image("image_one.png")
                     .build())

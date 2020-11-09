@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import greencity.DaoApplication;
 import greencity.entity.HabitFact;
-import greencity.utils.ModelUtils;
+import greencity.ModelUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

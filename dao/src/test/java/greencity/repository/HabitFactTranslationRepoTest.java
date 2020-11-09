@@ -7,7 +7,7 @@ import greencity.DaoApplication;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.enums.FactOfDayStatus;
-import greencity.utils.ModelUtils;
+import greencity.ModelUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
