@@ -18,4 +18,3 @@ public class EcoNewsAuthorDto implements Serializable {
     private Long id;
     private String name;
 }
-

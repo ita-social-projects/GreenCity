@@ -15,10 +15,7 @@ import lombok.*;
 @EqualsAndHashCode
 public class BulkUpdatePlaceStatusDto {
     @Valid
-    private List<
-        @Positive(message = ServiceValidationConstants.NEGATIVE_ID)
-        @NotNull
-            Long> ids;
+    private List<@Positive(message = ServiceValidationConstants.NEGATIVE_ID) @NotNull Long> ids;
 
     @NotNull
     private PlaceStatus status;

@@ -20,7 +20,8 @@ public final class PasswordRecoveryMessage implements Serializable {
      *
      * @param userId        the user id is used for recovery link building.
      * @param userFirstName user first name is used in email model constants.
-     * @param userEmail     user email which will be used for sending recovery letter.
+     * @param userEmail     user email which will be used for sending recovery
+     *                      letter.
      * @param recoveryToken password recovery token.
      */
     public PasswordRecoveryMessage(Long userId, String userFirstName, String userEmail, String recoveryToken) {

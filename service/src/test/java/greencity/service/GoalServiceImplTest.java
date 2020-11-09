@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.TypeToken;
 
-
 @ExtendWith(MockitoExtension.class)
 class GoalServiceImplTest {
     @Mock
@@ -64,10 +63,10 @@ class GoalServiceImplTest {
     void saveGoalTest() {
         when((modelMapper.map(goalPostDto, Goal.class))).thenReturn(goal);
         when(modelMapper.map(goal.getTranslations(),
-            new TypeToken<List<LanguageTranslationDTO>>(){
+            new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType())).thenReturn(languageTranslationDTOS);
         List<LanguageTranslationDTO> res = goalService.saveGoal(goalPostDto);
-        assertEquals(languageTranslationDTOS.get(0).getContent(),res.get(0).getContent());
+        assertEquals(languageTranslationDTOS.get(0).getContent(), res.get(0).getContent());
     }
 
     @Test
@@ -77,10 +76,10 @@ class GoalServiceImplTest {
             new TypeToken<List<GoalTranslation>>() {
             }.getType())).thenReturn(ModelUtils.getGoalTranslations());
         when(modelMapper.map(goal.getTranslations(),
-            new TypeToken<List<LanguageTranslationDTO>>(){
+            new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType())).thenReturn(languageTranslationDTOS);
         List<LanguageTranslationDTO> res = goalService.update(goalPostDto);
-        assertEquals(languageTranslationDTOS.get(0).getContent(),res.get(0).getContent());
+        assertEquals(languageTranslationDTOS.get(0).getContent(), res.get(0).getContent());
     }
 
     @Test

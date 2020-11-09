@@ -17,7 +17,8 @@ public interface PlaceService {
      *
      * @param placeStatus a value of {@link PlaceStatus} enum.
      * @param pageable    pageable configuration.
-     * @return an object of {@link PageableDto} which contains a list of {@link AdminPlaceDto}.
+     * @return an object of {@link PageableDto} which contains a list of
+     *         {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
     PageableDto<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable);
@@ -34,8 +35,10 @@ public interface PlaceService {
     /**
      * Update statuses for the {@link PlaceVO}'s and set the time of modification.
      *
-     * @param dto - {@link BulkUpdatePlaceStatusDto} with places id's and updated {@link PlaceStatus}
-     * @return list of {@link UpdatePlaceStatusDto} with updated places and statuses.
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with places id's and updated
+     *            {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated places and
+     *         statuses.
      */
     List<UpdatePlaceStatusDto> updateStatuses(BulkUpdatePlaceStatusDto dto);
 
@@ -46,7 +49,6 @@ public interface PlaceService {
      * @return Place entity.
      */
     PlaceVO findById(Long id);
-
 
     /**
      * Method with return {@link Optional} of {@link PlaceVO} by comment id.
@@ -86,7 +88,8 @@ public interface PlaceService {
      * Find all places from DB.
      *
      * @param pageable {@link Pageable}.
-     * @return an object of {@link PageableDto} which contains a list of {@link AdminPlaceDto}.
+     * @return an object of {@link PageableDto} which contains a list of
+     *         {@link AdminPlaceDto}.
      * @author Olena Petryshak
      */
     PageableDto<AdminPlaceDto> findAll(Pageable pageable);
@@ -125,11 +128,11 @@ public interface PlaceService {
     boolean existsById(Long id);
 
     /**
-     * The method which return a list {@code PlaceByBoundsDto} with information about place, *
-     * location depends on the map bounds.
+     * The method which return a list {@code PlaceByBoundsDto} with information
+     * about place, * location depends on the map bounds.
      *
-     * @param filterPlaceDto contains northEastLng, northEastLat,southWestLat, southWestLng of current
-     *                       state of map
+     * @param filterPlaceDto contains northEastLng, northEastLat,southWestLat,
+     *                       southWestLng of current state of map
      * @return a list of {@code PlaceByBoundsDto}
      * @author Marian Milian.
      */
@@ -145,20 +148,22 @@ public interface PlaceService {
     Double averageRate(Long id);
 
     /**
-     * The method finds all {@link PlaceVO}'s filtered by the parameters contained in {@param filterDto} object.
+     * The method finds all {@link PlaceVO}'s filtered by the parameters contained
+     * in {@param filterDto} object.
      *
-     * @param filterDto contains objects whose values determine
-     *                  the filter parameters of the returned list.
+     * @param filterDto contains objects whose values determine the filter
+     *                  parameters of the returned list.
      * @return a list of {@link PlaceByBoundsDto}
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto);
 
     /**
-     * The method finds all {@link PlaceVO}'s filtered by the parameters contained in {@param filterDto} object.
+     * The method finds all {@link PlaceVO}'s filtered by the parameters contained
+     * in {@param filterDto} object.
      *
-     * @param filterDto contains objects whose values determine
-     *                  the filter parameters of the returned list.
+     * @param filterDto contains objects whose values determine the filter
+     *                  parameters of the returned list.
      * @param pageable  pageable configuration.
      * @return a list of {@code PlaceByBoundsDto}
      * @author Rostyslav Khasanov
@@ -186,7 +191,8 @@ public interface PlaceService {
      *
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search,
-     * @return an object of {@link PageableDto} which contains a list of {@link AdminPlaceDto}.
+     * @return an object of {@link PageableDto} which contains a list of
+     *         {@link AdminPlaceDto}.
      * @author Olena Petryshak
      */
     PageableDto<AdminPlaceDto> searchBy(Pageable pageable, String searchQuery);

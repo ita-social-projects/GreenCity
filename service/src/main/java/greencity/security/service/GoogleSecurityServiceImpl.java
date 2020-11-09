@@ -40,16 +40,17 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     /**
      * Constructor.
      *
-     * @param userService           {@link UserService} - service of {@link User} logic.
+     * @param userService           {@link UserService} - service of {@link User}
+     *                              logic.
      * @param jwtTool               {@link JwtTool} - tool for jwt logic.
-     * @param googleIdTokenVerifier {@link GoogleIdTokenVerifier} - tool for verify googleIdToken.
+     * @param googleIdTokenVerifier {@link GoogleIdTokenVerifier} - tool for verify
+     *                              googleIdToken.
      */
     @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
-                                     JwtTool jwtTool,
-                                     GoogleIdTokenVerifier googleIdTokenVerifier,
-                                     ModelMapper modelMapper
-    ) {
+        JwtTool jwtTool,
+        GoogleIdTokenVerifier googleIdTokenVerifier,
+        ModelMapper modelMapper) {
         this.userService = userService;
         this.jwtTool = jwtTool;
         this.googleIdTokenVerifier = googleIdTokenVerifier;

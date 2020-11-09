@@ -49,23 +49,25 @@ class ManagementSocialNetworkImagesControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementSocialNetworkImagesController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
     void getAllSocialNetworkImages() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
-        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = Collections.singletonList(new SocialNetworkImageResponseDTO());
-        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImageResponsePageableDto = new PageableDto<>(socialNetworkImageResponseDTOS, 2, 0, 3);
+        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS =
+            Collections.singletonList(new SocialNetworkImageResponseDTO());
+        PageableDto<SocialNetworkImageResponseDTO> socialNetworkImageResponsePageableDto =
+            new PageableDto<>(socialNetworkImageResponseDTOS, 2, 0, 3);
         when(socialNetworkImageService.findAll(pageable)).thenReturn(socialNetworkImageResponsePageableDto);
 
         this.mockMvc.perform(get(managementSocialNetworkImagesLink)
-                .param("page", "0")
-                .param("size", "10"))
-                .andExpect(view().name("core/management_social_network_images"))
-                .andExpect(model().attribute("pageable", socialNetworkImageResponsePageableDto))
-                .andExpect(status().isOk());
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(view().name("core/management_social_network_images"))
+            .andExpect(model().attribute("pageable", socialNetworkImageResponsePageableDto))
+            .andExpect(status().isOk());
 
         verify(socialNetworkImageService).findAll(pageable);
     }
@@ -75,13 +77,14 @@ class ManagementSocialNetworkImagesControllerTest {
         SocialNetworkImageRequestDTO socialNetworkImageRequestDTO = new SocialNetworkImageRequestDTO();
         Gson gson = new Gson();
         String json = gson.toJson(socialNetworkImageRequestDTO);
-        MockMultipartFile jsonFile = new MockMultipartFile("socialNetworkImageRequestDTO", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("socialNetworkImageRequestDTO", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
-                .file(jsonFile)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .file(jsonFile)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(socialNetworkImageService, never()).save(socialNetworkImageRequestDTO, jsonFile);
     }
@@ -89,7 +92,7 @@ class ManagementSocialNetworkImagesControllerTest {
     @Test
     void delete() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.delete(managementSocialNetworkImagesLink + "/delete?id=1"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(socialNetworkImageService, times(1)).delete(1L);
     }
@@ -101,10 +104,10 @@ class ManagementSocialNetworkImagesControllerTest {
         String json = gson.toJson(longList);
 
         this.mockMvc.perform(MockMvcRequestBuilders.delete(managementSocialNetworkImagesLink + "/deleteAll")
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(socialNetworkImageService).deleteAll(longList);
     }
@@ -112,7 +115,7 @@ class ManagementSocialNetworkImagesControllerTest {
     @Test
     void getEcoNewsById() throws Exception {
         this.mockMvc.perform(get(managementSocialNetworkImagesLink + "/find?id=1"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(socialNetworkImageService).findDtoById(1L);
     }
@@ -122,17 +125,18 @@ class ManagementSocialNetworkImagesControllerTest {
         SocialNetworkImageResponseDTO socialNetworkImageResponseDTO = new SocialNetworkImageResponseDTO();
         Gson gson = new Gson();
         String json = gson.toJson(socialNetworkImageResponseDTO);
-        MockMultipartFile jsonFile = new MockMultipartFile("socialNetworkImageResponseDTO", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("socialNetworkImageResponseDTO", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
-                .file(jsonFile)
-                .with(new RequestPostProcessor() {
-                    @Override
-                    public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
-                        mockHttpServletRequest.setMethod("PUT");
-                        return mockHttpServletRequest;
-                    }
-                })).andExpect(status().isOk());
+            .file(jsonFile)
+            .with(new RequestPostProcessor() {
+                @Override
+                public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
+                    mockHttpServletRequest.setMethod("PUT");
+                    return mockHttpServletRequest;
+                }
+            })).andExpect(status().isOk());
 
         verify(socialNetworkImageService, never()).update(socialNetworkImageResponseDTO, jsonFile);
     }

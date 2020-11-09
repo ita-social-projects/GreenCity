@@ -30,7 +30,7 @@ public class CloudStorageService implements FileService {
      * Constructor with parameters.
      */
     public CloudStorageService(@Autowired PropertyResolver propertyResolver,
-                               ModelMapper modelMapper) {
+        ModelMapper modelMapper) {
         this.bucketName = propertyResolver.getProperty("bucketName");
         this.staticUrl = propertyResolver.getProperty("staticUrl");
         this.storage = StorageOptions.newBuilder().build().getService();

@@ -25,8 +25,7 @@ class EcoNewsDtoMapperTest {
             ModelUtils.getEcoNewsAuthorDto(),
             ecoNews.getTags().stream()
                 .map(Tag::getName)
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList()));
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));
     }

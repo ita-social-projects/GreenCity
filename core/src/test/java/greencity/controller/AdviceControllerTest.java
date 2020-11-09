@@ -47,53 +47,53 @@ class AdviceControllerTest {
     private ModelMapper modelMapper;
 
     public static final String content = "{\n"
-            + "  \"habit\": {\n"
-            + "    \"id\": 1\n"
-            + "  },\n"
-            + "  \"translations\": [\n"
-            + "    {\n"
-            + "      \"content\": \"Еко\",\n"
-            + "      \"language\": {\n"
-            + "        \"code\": \"ua\",\n"
-            + "        \"id\": 1\n"
-            + "      }\n"
-            + "    },\n"
-            + "    {\n"
-            + "      \"content\": \"Eco\",\n"
-            + "      \"language\": {\n"
-            + "        \"code\": \"en\",\n"
-            + "        \"id\": 2\n"
-            + "      }\n"
-            + "    },\n"
-            + "    {\n"
-            + "      \"content\": \"Эко\",\n"
-            + "      \"language\": {\n"
-            + "        \"code\": \"ru\",\n"
-            + "        \"id\": 3\n"
-            + "      }\n"
-            + "    }\n"
-            + "  ]\n"
-            + "}";
+        + "  \"habit\": {\n"
+        + "    \"id\": 1\n"
+        + "  },\n"
+        + "  \"translations\": [\n"
+        + "    {\n"
+        + "      \"content\": \"Еко\",\n"
+        + "      \"language\": {\n"
+        + "        \"code\": \"ua\",\n"
+        + "        \"id\": 1\n"
+        + "      }\n"
+        + "    },\n"
+        + "    {\n"
+        + "      \"content\": \"Eco\",\n"
+        + "      \"language\": {\n"
+        + "        \"code\": \"en\",\n"
+        + "        \"id\": 2\n"
+        + "      }\n"
+        + "    },\n"
+        + "    {\n"
+        + "      \"content\": \"Эко\",\n"
+        + "      \"language\": {\n"
+        + "        \"code\": \"ru\",\n"
+        + "        \"id\": 3\n"
+        + "      }\n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(adviceController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .setValidator(mockValidator)
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setValidator(mockValidator)
+            .build();
     }
 
     @Test
     void getAllTest() throws Exception {
         mockMvc.perform(get(adviceLink))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
         verify(adviceService).getAllAdvices();
     }
 
     @Test
     void getRandomAdviceHabitIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/1?lang=en"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(adviceService).getRandomAdviceByHabitIdAndLanguage(1L, "en");
     }
@@ -101,18 +101,18 @@ class AdviceControllerTest {
     @Test
     void updateTest() throws Exception {
         List<LanguageTranslationDTO> languageTranslationDTOs = Arrays.asList(
-                new LanguageTranslationDTO(new LanguageDTO(1L, "ua"), "hello"),
-                new LanguageTranslationDTO(new LanguageDTO(2L, "en"), "привіт"),
-                new LanguageTranslationDTO(new LanguageDTO(3L, "ru"), "привет"));
+            new LanguageTranslationDTO(new LanguageDTO(1L, "ua"), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(2L, "en"), "привіт"),
+            new LanguageTranslationDTO(new LanguageDTO(3L, "ru"), "привет"));
         AdvicePostDto advicePostDto = new AdvicePostDto(languageTranslationDTOs, new HabitIdRequestDto(1L));
         ObjectMapper objectMapper = new ObjectMapper();
         String advicePostDtoJson = objectMapper.writeValueAsString(advicePostDto);
 
         Long adviceId = 1L;
         mockMvc.perform(put(adviceLink + "/{adviceId}", adviceId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(advicePostDtoJson))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(advicePostDtoJson))
+            .andExpect(status().isOk());
 
         verify(adviceService).update(advicePostDto, adviceId);
     }
@@ -120,16 +120,16 @@ class AdviceControllerTest {
     @Test
     void getRandomAdviceHabitWithInvalidIdAndLanguageTest() throws Exception {
         mockMvc.perform(get(adviceLink + "/random/{id}?lang=en", "invalidId"))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
         verify(adviceService, times(0)).getRandomAdviceByHabitIdAndLanguage(1L, "en");
     }
 
     @Test
     void saveTest() throws Exception {
         mockMvc.perform(post(adviceLink)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
-                .andExpect(status().isCreated());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isCreated());
         ObjectMapper mapper = new ObjectMapper();
         AdvicePostDto advicePostDTO = mapper.readValue(content, AdvicePostDto.class);
         verify(adviceService, times(1)).save(advicePostDTO);
@@ -137,29 +137,27 @@ class AdviceControllerTest {
 
     @Test
     void deleteTest() throws Exception {
-        mockMvc.perform(delete(adviceLink + "/{adviceId}", 1)
-        ).andExpect(status().isOk());
+        mockMvc.perform(delete(adviceLink + "/{adviceId}", 1)).andExpect(status().isOk());
 
         verify(adviceService, times(1))
-                .delete(1L);
+            .delete(1L);
     }
 
     @Test
     void deleteFailedTest() throws Exception {
-        mockMvc.perform(delete(adviceLink + "/{adviceId}", "invalidId")
-        ).andExpect(status().isBadRequest());
+        mockMvc.perform(delete(adviceLink + "/{adviceId}", "invalidId")).andExpect(status().isBadRequest());
 
         verify(adviceService, times(0))
-                .delete(anyLong());
+            .delete(anyLong());
     }
 
     @Test
     void getByIdTest() throws Exception {
         Long adviceId = 1L;
         mockMvc.perform(get(adviceLink + "/{adviceId}", adviceId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(adviceService, times(1))
-                .getAdviceById(adviceId);
+            .getAdviceById(adviceId);
     }
 }

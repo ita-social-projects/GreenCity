@@ -27,6 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class GoalController {
     private final GoalService goalService;
     private final ModelMapper mapper;
+
     /**
      * Constructor with parameters.
      */

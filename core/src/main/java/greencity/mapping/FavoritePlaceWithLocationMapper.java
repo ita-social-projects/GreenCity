@@ -7,8 +7,8 @@ import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
 /**
- * The class uses other {@code Autowired} mappers to convert {@link FavoritePlace} entity objects to {@link
- * PlaceByBoundsDto} dto objects.
+ * The class uses other {@code Autowired} mappers to convert
+ * {@link FavoritePlace} entity objects to {@link PlaceByBoundsDto} dto objects.
  *
  * @author Zakhar Skaletskyi
  */

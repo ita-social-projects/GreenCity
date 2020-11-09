@@ -29,7 +29,6 @@ import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AccessTokenAuthenticationFilterTest {
@@ -84,7 +83,7 @@ class AccessTokenAuthenticationFilterTest {
         when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(token);
         when(authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(token, null)))
-            .thenThrow(ExpiredJwtException.class);
+                .thenThrow(ExpiredJwtException.class);
         authenticationFilter.doFilterInternal(request, response, chain);
         assertTrue(systemOutContent.toString().contains("Token has expired: "));
     }

@@ -37,7 +37,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ManagementUserControllerTest {
@@ -159,9 +158,9 @@ class ManagementUserControllerTest {
         Gson gson = new Gson();
         String json = gson.toJson(userManagementDto);
         this.mockMvc.perform(post(managementUserControllerLink + "/register")
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(ownSecurityService, times(1)).managementRegisterUser(userManagementDto);
     }

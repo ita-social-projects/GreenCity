@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
-        JpaSpecificationExecutor<TipsAndTricks> {
+    JpaSpecificationExecutor<TipsAndTricks> {
     /**
      * Method returns {@link TipsAndTricks} by specific tags.
      *
@@ -23,17 +23,17 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @return {@link TipsAndTricks} by specific tags.
      */
     @Query("SELECT DISTINCT tt FROM TipsAndTricks tt "
-            + "left JOIN tt.titleTranslations title "
-            + "left JOIN tt.tags ttt "
-            + "WHERE lower(ttt.name) in :tags "
-            + "and title.language.code = :languageCode "
-            + "ORDER BY tt.creationDate DESC")
+        + "left JOIN tt.titleTranslations title "
+        + "left JOIN tt.tags ttt "
+        + "WHERE lower(ttt.name) in :tags "
+        + "and title.language.code = :languageCode "
+        + "ORDER BY tt.creationDate DESC")
     Page<TipsAndTricks> find(String languageCode, Pageable pageable, List<String> tags);
 
     /**
      * Method returns all {@link TipsAndTricks} by id and languageCode.
      *
-     * @param id of {@link TipsAndTricks}
+     * @param id           of {@link TipsAndTricks}
      * @param languageCode of titleTranslation.
      * @return all {@link TipsAndTricks} by languageCode and page.
      */
@@ -50,7 +50,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
     /**
      * Method returns all {@link TipsAndTricks} by languageCode and page.
      *
-     * @param page of tips & tricks.
+     * @param page         of tips & tricks.
      * @param languageCode of titleTranslation.
      * @return all {@link TipsAndTricks} by languageCode and page.
      */
@@ -63,15 +63,15 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @return list of {@link TipsAndTricks}
      */
     @Query("select distinct tt from TipsAndTricks tt "
-            + "left JOIN tt.titleTranslations title "
-            + "left JOIN tt.textTranslations textTrans "
-            + "where ("
-            + "lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
-            + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
-            + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
-            + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))"
-            + ")"
-            + "and title.language.code = :languageCode")
+        + "left JOIN tt.titleTranslations title "
+        + "left JOIN tt.textTranslations textTrans "
+        + "where ("
+        + "lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
+        + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))"
+        + ")"
+        + "and title.language.code = :languageCode")
     Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery, String languageCode);
 
     /**
@@ -82,16 +82,15 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @return list of {@link TipsAndTricks}.
      */
     @Query("select distinct tt from TipsAndTricks tt "
-            + "left JOIN tt.titleTranslations title "
-            + "left JOIN tt.textTranslations textTrans "
-            + "where (CONCAT(tt.id,'') like lower(CONCAT('%', :searchQuery, '%')) "
-            + "or lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
-            + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
-            + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.author a "
-            + "where lower(a.name) like lower(CONCAT('%', :searchQuery, '%'))) "
-            + "and title.language.code = :languageCode)")
+        + "left JOIN tt.titleTranslations title "
+        + "left JOIN tt.textTranslations textTrans "
+        + "where (CONCAT(tt.id,'') like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
+        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.author a "
+        + "where lower(a.name) like lower(CONCAT('%', :searchQuery, '%'))) "
+        + "and title.language.code = :languageCode)")
     Page<TipsAndTricks> searchBy(Pageable pageable, String searchQuery, String languageCode);
-
 
     /**
      * Method for getting amount of written tips and trick by user id.
@@ -101,7 +100,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @author Marian Datsko
      */
     @Query(nativeQuery = true,
-            value = " SELECT COUNT(author_id) "
-                    + " FROM tips_and_tricks WHERE author_id = :userId")
+        value = " SELECT COUNT(author_id) "
+            + " FROM tips_and_tricks WHERE author_id = :userId")
     Long getAmountOfWrittenTipsAndTrickByUserId(@Param("userId") Long id);
 }

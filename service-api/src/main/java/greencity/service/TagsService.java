@@ -40,7 +40,6 @@ public interface TagsService {
      */
     List<String> findAllTipsAndTricksTags();
 
-
     /**
      * Method that checks if all Tags are unique.
      *

@@ -76,18 +76,18 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Autowired
     public PlaceServiceImpl(PlaceRepo placeRepo,
-                            ModelMapper modelMapper,
-                            CategoryService categoryService,
-                            LocationService locationService,
-                            SpecificationService specificationService,
-                            UserService userService,
-                            OpenHoursService openingHoursService,
-                            DiscountService discountService,
-                            NotificationService notificationService,
-                            @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
-                            RabbitTemplate rabbitTemplate,
-                            ProposePlaceServiceImpl proposePlaceService,
-                            CategoryRepo categoryRepo) {
+        ModelMapper modelMapper,
+        CategoryService categoryService,
+        LocationService locationService,
+        SpecificationService specificationService,
+        UserService userService,
+        OpenHoursService openingHoursService,
+        DiscountService discountService,
+        NotificationService notificationService,
+        @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
+        RabbitTemplate rabbitTemplate,
+        ProposePlaceServiceImpl proposePlaceService,
+        CategoryRepo categoryRepo) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.categoryService = categoryService;
@@ -133,7 +133,7 @@ public class PlaceServiceImpl implements PlaceService {
             proposePlaceService.checkInputTime(dto.getOpeningHoursList());
         }
         PlaceVO placeVO = modelMapper.map(dto, PlaceVO.class);
-        setUserToPlaceByEmail(email,placeVO);
+        setUserToPlaceByEmail(email, placeVO);
         if (placeVO.getDiscountValues() != null) {
             proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
         }
@@ -150,7 +150,7 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * Method for getting {@link User} and set this {@link User} to place.
      *
-     * @param email - String, user's email.
+     * @param email   - String, user's email.
      * @param placeVO - {@link Place} entity.
      * @return user - {@link User}.
      * @author Kateryna Horokh
@@ -191,7 +191,8 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for updating set of {@link DiscountValue} and save with new {@link Category} and {@link Place}.
+     * Method for updating set of {@link DiscountValue} and save with new
+     * {@link Category} and {@link Place}.
      *
      * @param discounts    - set of {@link DiscountValue}.
      * @param updatedPlace - {@link Place} entity.
@@ -220,7 +221,8 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for updating set of {@link OpeningHours} and save with new {@link Place}.
+     * Method for updating set of {@link OpeningHours} and save with new
+     * {@link Place}.
      *
      * @param hoursUpdateDtoSet - set of {@code Discount}.
      * @param updatedPlace      - {@link Place} entity.
@@ -368,8 +370,6 @@ public class PlaceServiceImpl implements PlaceService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
     }
 
-
-
     /**
      * {@inheritDoc}
      *
@@ -424,8 +424,7 @@ public class PlaceServiceImpl implements PlaceService {
             adminPlaceDtos,
             pages.getTotalElements(),
             pageable.getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
@@ -502,7 +501,7 @@ public class PlaceServiceImpl implements PlaceService {
                         * Math.cos(placeLatRad)
                         * Math.cos(placeLngRad - userLngRad)
                         + Math.sin(userLatRad)
-                        * Math.sin(placeLatRad));
+                            * Math.sin(placeLatRad));
                 return distance <= distanceFromUserDto.getDistance();
             }).collect(Collectors.toList());
         }

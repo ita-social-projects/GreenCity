@@ -13,8 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(
-    exclude = {"userAchievements"}
-)
+    exclude = {"userAchievements"})
 @Table(name = "achievements")
 public class Achievement {
     @Id

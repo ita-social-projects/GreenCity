@@ -40,7 +40,7 @@ public class ManagementRatingStatisticsController {
      */
     @Autowired
     public ManagementRatingStatisticsController(RatingStatisticsService ratingStatisticsService,
-                                                RatingExcelExporter ratingExcelExporter) {
+        RatingExcelExporter ratingExcelExporter) {
         this.ratingStatisticsService = ratingStatisticsService;
         this.ratingExcelExporter = ratingExcelExporter;
     }
@@ -91,7 +91,7 @@ public class ManagementRatingStatisticsController {
      */
     @PostMapping(value = "/exportFiltered", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public void exportFilteredToExcel(HttpServletResponse response,
-                                      RatingStatisticsViewDto ratingStatisticsViewDto)
+        RatingStatisticsViewDto ratingStatisticsViewDto)
         throws IOException {
         response.setContentType("application/octet-stream");
         String headerKey = "Content-Disposition";
@@ -109,15 +109,17 @@ public class ManagementRatingStatisticsController {
     }
 
     /**
-     * Returns  management page with User rating statistics with filtered data.
+     * Returns management page with User rating statistics with filtered data.
      *
-     * @param model                   ModelAndView that will be configured and returned to user.
-     * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
+     * @param model                   ModelAndView that will be configured and
+     *                                returned to user.
+     * @param ratingStatisticsViewDto used for receive parameters for filters from
+     *                                UI.
      */
     @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
-                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
-                             RatingStatisticsViewDto ratingStatisticsViewDto) {
+        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+        RatingStatisticsViewDto ratingStatisticsViewDto) {
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
             ratingStatisticsService.getFilteredDataForManagementByPage(pageable,
                 ratingStatisticsViewDto);

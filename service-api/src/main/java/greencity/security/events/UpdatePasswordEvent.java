@@ -21,7 +21,8 @@ public class UpdatePasswordEvent extends ApplicationEvent {
      * Creates a new {@link UpdatePasswordEvent} with new password and user id,
      * using which this new password will be updated.
      *
-     * @param source      the object on which the event initially occurred (never {@code null})
+     * @param source      the object on which the event initially occurred (never
+     *                    {@code null})
      * @param newPassword new password to which current password will be replaced
      * @param userId      user id whose password will be updated
      */

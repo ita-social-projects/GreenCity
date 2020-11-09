@@ -25,7 +25,9 @@ public interface GoalService {
     List<LanguageTranslationDTO> saveGoal(GoalPostDto goalPostDto);
 
     /**
-     * Method to update goal translations from {@link GoalPostDto}.
+     * <<<<<<< HEAD Method to update goal translations from {@link GoalPostDto}.
+     * ======= Method for getting {@link UserGoalResponseDto} from
+     * {@link UserGoalVO} if there was set a {@link CustomGoalVO}. >>>>>>> dev
      *
      * @param goalPostDto new text
      * @author Dmytro Khonko

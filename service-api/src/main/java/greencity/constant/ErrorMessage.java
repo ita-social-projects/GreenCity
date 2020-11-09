@@ -76,7 +76,7 @@ public final class ErrorMessage {
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String USER_HAS_NO_AVAILABLE_HABITS =
-            "This user is tracking all available habits";
+        "This user is tracking all available habits";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
     public static final String IMAGE_EXISTS = "Image should be download, PNG or JPEG ";
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
@@ -90,11 +90,11 @@ public final class ErrorMessage {
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved because of constraint violation";
     public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
-            "User cannot add more than 5 social network links";
+        "User cannot add more than 5 social network links";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
     public static final String MALFORMED_URL = "Malformed URL. The string could not be parsed.";
     public static final String USER_CANNOT_ADD_SAME_SOCIAL_NETWORK_LINKS =
-            "User cannot add the same social network links";
+        "User cannot add the same social network links";
     public static final String SOCIAL_NETWORK_IMAGE_NOT_SAVED = "Social network image hasn't been saved";
     public static final String SOCIAL_NETWORK_IMAGE_FOUND_BY_ID = "Social network image doesn't exist by this id: ";
     public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
@@ -111,7 +111,7 @@ public final class ErrorMessage {
     public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
         + "different TipsAndTricks Id";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
-            "Favorite place already exist for this placeId: %d and user with email: %s";
+        "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "The statis of this goal is already done";
     public static final String USER_DEACTIVATED = "User is deactivated";
@@ -120,7 +120,7 @@ public final class ErrorMessage {
     public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No any email to verify by this token";
     public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
     public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT =
-            "Password restore link already sent, please check your email: ";
+        "Password restore link already sent, please check your email: ";
     public static final String REFRESH_TOKEN_NOT_VALID = "Refresh token not valid!";
     public static final String BAD_PASSWORD = "Bad password";
     public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email is already registered";
@@ -128,13 +128,13 @@ public final class ErrorMessage {
     public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
     public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
     public static final String WRONG_DATE_TIME_FORMAT =
-            "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
+        "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
     public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'uk' or 'ru'";
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
     public static final String CAN_NOT_CREATE_EVENT_INSTANCE =
-            "Can not create instance of events, used constructor that differ from events superclass.";
+        "Can not create instance of events, used constructor that differ from events superclass.";
     public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =
-            "Count of tags should be at least one but not more three";
+        "Count of tags should be at least one but not more three";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
 
     private ErrorMessage() {

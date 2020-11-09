@@ -96,7 +96,6 @@ public class ModelUtils {
             .build();
     }
 
-
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
@@ -204,7 +203,8 @@ public class ModelUtils {
             .habitStreak(5)
             .lastEnrollmentDate(LocalDateTime.now())
             .habitStatusCalendars(
-                Collections.singletonList(getHabitStatusCalendar())).build();
+                Collections.singletonList(getHabitStatusCalendar()))
+            .build();
     }
 
     public static HabitStatusVO getHabitStatusVO() {
@@ -218,10 +218,10 @@ public class ModelUtils {
 
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
-                .id(1L)
-                .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
-                .status(GoalStatus.DONE)
-                .build();
+            .id(1L)
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+            .status(GoalStatus.DONE)
+            .build();
     }
 
     public static UserGoalResponseDto getCustomUserGoalDto() {
@@ -402,7 +402,6 @@ public class ModelUtils {
             .build();
     }
 
-
     public static HabitFact getHabitFact() {
         return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
     }
@@ -475,7 +474,6 @@ public class ModelUtils {
     public static UserProfilePictureDto getUserProfilePictureDto() {
         return new UserProfilePictureDto(1L, "image");
     }
-
 
     public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
         return new FactOfTheDayTranslationDTO(1L, "content");
@@ -551,7 +549,6 @@ public class ModelUtils {
     public static LanguageVO getLanguageVO() {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
-
 
     public static TagVO getTagVO() {
         return new TagVO(1L, "tag", null, null);
@@ -744,4 +741,3 @@ public class ModelUtils {
         return new AddCommentDto("comment", null, null);
     }
 }
-

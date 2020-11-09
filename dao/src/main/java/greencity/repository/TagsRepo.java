@@ -29,8 +29,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      *
      * @return list of {@link Tag}'s names
      */
-    @Query(nativeQuery = true, value =
-        "SELECT t.name FROM tags t WHERE t.id IN(SELECT tags_id FROM eco_news_tags)")
+    @Query(nativeQuery = true, value = "SELECT t.name FROM tags t WHERE t.id IN(SELECT tags_id FROM eco_news_tags)")
     List<String> findAllEcoNewsTags();
 
     /**
@@ -38,7 +37,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      *
      * @return list of {@link Tag}'s names
      */
-    @Query(nativeQuery = true, value =
-        "SELECT t.name FROM tags t WHERE t.id IN(SELECT tags_id FROM tips_and_tricks_tags)")
+    @Query(nativeQuery = true,
+        value = "SELECT t.name FROM tags t WHERE t.id IN(SELECT tags_id FROM tips_and_tricks_tags)")
     List<String> findAllTipsAndTricksTags();
 }

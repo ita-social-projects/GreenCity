@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @Sql("classpath:sql/tipsandtricks_comment.sql")
@@ -29,7 +28,7 @@ class TipsAndTricksCommentRepoTest {
     void findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDescTest() {
         Pageable pageable = PageRequest.of(0, 6);
         Page<TipsAndTricksComment> page = tipsAndTricksCommentRepo
-                .findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(pageable, 6L);
+            .findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(pageable, 6L);
         List<TipsAndTricksComment> commentList = page.get().collect(Collectors.toList());
         assertEquals(2, commentList.get(0).getId());
     }
@@ -38,21 +37,22 @@ class TipsAndTricksCommentRepoTest {
     void findAllByParentCommentIsNullAndTipsAndTricksIdNotFoundTest() {
         Pageable pageable = PageRequest.of(0, 6);
         Page<TipsAndTricksComment> page = tipsAndTricksCommentRepo
-                .findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(pageable, 10L);
+            .findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(pageable, 10L);
         assertTrue(page.isEmpty());
     }
 
     @Test
     void findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAscTest() {
         List<TipsAndTricksComment> comments = tipsAndTricksCommentRepo
-                .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(2L);
+            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(2L);
         assertEquals(2, comments.size());
         assertEquals(3, comments.get(0).getId());
     }
+
     @Test
     void findAllByParentCommentIdAndDeletedFalseNotFoundTest() {
         List<TipsAndTricksComment> comments = tipsAndTricksCommentRepo
-                .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(5L);
+            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(5L);
         assertTrue(comments.isEmpty());
     }
 

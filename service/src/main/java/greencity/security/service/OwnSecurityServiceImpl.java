@@ -72,15 +72,15 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Autowired
     public OwnSecurityServiceImpl(OwnSecurityRepo ownSecurityRepo,
-                                  UserService userService,
-                                  PasswordEncoder passwordEncoder,
-                                  JwtTool jwtTool,
-                                  @Value("${verifyEmailTimeHour}") Integer expirationTime,
-                                  RabbitTemplate rabbitTemplate,
-                                  @Value("${defaultProfilePicture}") String defaultProfilePicture,
-                                  RestorePasswordEmailRepo restorePasswordEmailRepo,
-                                  ModelMapper modelMapper,
-                                  UserRepo userRepo) {
+        UserService userService,
+        PasswordEncoder passwordEncoder,
+        JwtTool jwtTool,
+        @Value("${verifyEmailTimeHour}") Integer expirationTime,
+        RabbitTemplate rabbitTemplate,
+        @Value("${defaultProfilePicture}") String defaultProfilePicture,
+        RestorePasswordEmailRepo restorePasswordEmailRepo,
+        ModelMapper modelMapper,
+        UserRepo userRepo) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -113,8 +113,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                 sendEmailTopic,
                 VERIFY_EMAIL_ROUTING_KEY,
                 new VerifyEmailMessage(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
-                    savedUser.getVerifyEmail().getToken())
-            );
+                    savedUser.getVerifyEmail().getToken()));
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
@@ -207,8 +206,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             user.setRefreshTokenKey(newRefreshTokenKey);
             return new AccessRefreshTokensDto(
                 jwtTool.createAccessToken(user.getEmail(), user.getRole()),
-                jwtTool.createRefreshToken(user)
-            );
+                jwtTool.createRefreshToken(user));
         }
         throw new BadRefreshTokenException(ErrorMessage.REFRESH_TOKEN_NOT_VALID);
     }
@@ -232,7 +230,6 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         String password = passwordEncoder.encode(pass);
         ownSecurityRepo.updatePassword(password, id);
     }
-
 
     /**
      * {@inheritDoc}
@@ -315,8 +312,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     }
 
     /**
-     * Creates and saves password restoration token for a given user
-     * and publishes event of sending user approval email.
+     * Creates and saves password restoration token for a given user and publishes
+     * event of sending user approval email.
      *
      * @param user  {@link User} - User whose password is to be recovered
      * @param token {@link String} - token for password restoration
@@ -334,13 +331,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             sendEmailTopic,
             SEND_USER_APPROVAL_ROUTING_KEY,
             new UserApprovalMessage(user.getId(), user.getName(), user.getEmail(),
-                token)
-        );
+                token));
     }
 
     /**
-     * Calculates token expiration date. The amount of hours, after which
-     * token will be expired, is set by method parameter.
+     * Calculates token expiration date. The amount of hours, after which token will
+     * be expired, is set by method parameter.
      *
      * @param expirationTimeInHours - Token expiration delay in hours
      * @return {@link LocalDateTime} - Time at which token will be expired

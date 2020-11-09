@@ -45,7 +45,7 @@ public class GoalServiceImpl implements GoalService {
         savedGoal.getTranslations().forEach(a -> a.setGoal(savedGoal));
         goalRepo.save(savedGoal);
         return modelMapper.map(savedGoal.getTranslations(),
-            new TypeToken<List<LanguageTranslationDTO>>(){
+            new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType());
     }
 
@@ -65,7 +65,7 @@ public class GoalServiceImpl implements GoalService {
             updatedGoal.getTranslations().addAll(translations);
             goalRepo.save(updatedGoal);
             return modelMapper.map(updatedGoal.getTranslations(),
-                new TypeToken<List<LanguageTranslationDTO>>(){
+                new TypeToken<List<LanguageTranslationDTO>>() {
                 }.getType());
         } else {
             throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);

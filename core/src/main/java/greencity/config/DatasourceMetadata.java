@@ -34,9 +34,8 @@ public class DatasourceMetadata {
     }
 
     /**
-     * Gets zoneId of the database.
-     * WARNING: this method uses native query for PostgreSQL.
-     * It may NOT WORK with another DBMS.
+     * Gets zoneId of the database. WARNING: this method uses native query for
+     * PostgreSQL. It may NOT WORK with another DBMS.
      *
      * @return zoneId instance of the database.
      */

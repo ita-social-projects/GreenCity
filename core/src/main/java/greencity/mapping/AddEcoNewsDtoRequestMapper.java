@@ -8,8 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link AddEcoNewsDtoRequest} into
- * {@link EcoNews}.
+ * Class that used by {@link ModelMapper} to map {@link AddEcoNewsDtoRequest}
+ * into {@link EcoNews}.
  */
 @Component
 public class AddEcoNewsDtoRequestMapper extends AbstractConverter<AddEcoNewsDtoRequest, EcoNews> {

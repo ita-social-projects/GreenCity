@@ -30,7 +30,8 @@ class HabitStatusDtoMapperTest {
                 .map(habitStatusCalendar -> HabitStatusCalendarDto.builder()
                     .id(habitStatusCalendar.getId())
                     .enrollDate(habitStatusCalendar.getEnrollDate())
-                    .build()).collect(Collectors.toList()))
+                    .build())
+                .collect(Collectors.toList()))
             .build();
 
         HabitStatusDto actual = habitStatusDtoMapper.convert(habitStatus);
