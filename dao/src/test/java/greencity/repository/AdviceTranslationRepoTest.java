@@ -82,7 +82,7 @@ class AdviceTranslationRepoTest {
         List<Long> actualIds = actual.stream().map(Translation::getId).collect(Collectors.toList());
         List<Long> expectedIds = expected.stream().map(Translation::getId).collect(Collectors.toList());
 
-        assertEquals(expected.size(), 3);
+        assertEquals(3, expected.size());
         assertEquals(expectedIds, actualIds);
     }
 
@@ -99,7 +99,7 @@ class AdviceTranslationRepoTest {
         List<Long> actualIds = actual.stream().map(Translation::getId).collect(Collectors.toList());
         List<Long> expectedIds = expected.stream().map(Translation::getId).collect(Collectors.toList());
 
-        assertEquals(expected.size(), 2);
+        assertEquals(2, expected.size());
         assertEquals(expectedIds, actualIds);
     }
 }

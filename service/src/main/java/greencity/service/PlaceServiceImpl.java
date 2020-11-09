@@ -16,8 +16,6 @@ import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
-import greencity.dto.place.*;
-import greencity.entity.*;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ROLE;
 import greencity.exception.exceptions.NotFoundException;
@@ -26,12 +24,6 @@ import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
-import greencity.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -76,18 +68,18 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Autowired
     public PlaceServiceImpl(PlaceRepo placeRepo,
-        ModelMapper modelMapper,
-        CategoryService categoryService,
-        LocationService locationService,
-        SpecificationService specificationService,
-        UserService userService,
-        OpenHoursService openingHoursService,
-        DiscountService discountService,
-        NotificationService notificationService,
-        @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
-        RabbitTemplate rabbitTemplate,
-        ProposePlaceServiceImpl proposePlaceService,
-        CategoryRepo categoryRepo) {
+                            ModelMapper modelMapper,
+                            CategoryService categoryService,
+                            LocationService locationService,
+                            SpecificationService specificationService,
+                            UserService userService,
+                            OpenHoursService openingHoursService,
+                            DiscountService discountService,
+                            NotificationService notificationService,
+                            @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
+                            RabbitTemplate rabbitTemplate,
+                            ProposePlaceServiceImpl proposePlaceService,
+                            CategoryRepo categoryRepo) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.categoryService = categoryService;
@@ -501,7 +493,7 @@ public class PlaceServiceImpl implements PlaceService {
                         * Math.cos(placeLatRad)
                         * Math.cos(placeLngRad - userLngRad)
                         + Math.sin(userLatRad)
-                            * Math.sin(placeLatRad));
+                        * Math.sin(placeLatRad));
                 return distance <= distanceFromUserDto.getDistance();
             }).collect(Collectors.toList());
         }

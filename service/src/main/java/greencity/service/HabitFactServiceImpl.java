@@ -230,7 +230,7 @@ public class HabitFactServiceImpl implements HabitFactService {
             try {
                 value = (String) field.get(habitFactViewDto);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Cannot retrieve value from field!");
+                throw new NotFoundException("Cannot retrieve value from field!");
             }
             if (!value.isEmpty()) {
                 criteriaList.add(SearchCriteria.builder()
