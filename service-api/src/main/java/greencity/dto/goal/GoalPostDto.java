@@ -1,23 +1,20 @@
-package greencity.dto.advice;
+package greencity.dto.goal;
 
 import greencity.annotations.LanguageTranslationConstraint;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.HabitIdRequestDto;
-import lombok.*;
-
-import javax.validation.Valid;
 import java.util.List;
+import javax.validation.constraints.NotNull;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AdvicePostDto {
-    @Valid
+public class GoalPostDto {
     @LanguageTranslationConstraint
     private List<LanguageTranslationDTO> translations;
 
-    @Valid
-    private HabitIdRequestDto habit;
+    @NotNull
+    private GoalRequestDto goal;
 }

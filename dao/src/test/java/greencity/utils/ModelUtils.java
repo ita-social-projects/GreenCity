@@ -3,7 +3,7 @@ package greencity.utils;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.enums.FactOfDayStatus;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,5 +68,23 @@ public class ModelUtils {
     public static Language getLanguage() {
         return new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    }
+
+    public static List<Advice> getAdvices() {
+        return new ArrayList<>(List.of(Advice.builder().id(1L)
+                .habit(Habit.builder().id(2L).image("image_one.png")
+                    .build())
+                .translations(List.of(getAdviceTranslationFirst()))
+                .build(),
+            Advice.builder().id(2L)
+                .habit(Habit.builder().id(2L).image("image_one.png")
+                    .build())
+                .translations(List.of(getAdviceTranslationSecond()))
+                .build(),
+            Advice.builder().id(3L)
+                .habit(Habit.builder().id(3L).image("image_one.png")
+                    .build())
+                .translations(List.of(getAdviceTranslationThird()))
+                .build()));
     }
 }

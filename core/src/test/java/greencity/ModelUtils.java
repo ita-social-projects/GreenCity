@@ -2,6 +2,7 @@ package greencity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
+import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.discount.DiscountValueDto;
@@ -202,7 +203,6 @@ public class ModelUtils {
             .id(1L)
             .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
             .status(GoalStatus.DONE)
-            .customGoal(CustomGoal.builder().id(8L).text("Buy electric car").build())
             .build();
     }
 
@@ -557,5 +557,16 @@ public class ModelUtils {
             .translations(Collections.singletonList(
                 new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL, getLanguageDTO(), "")))
             .build();
+    }
+
+    public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
+        return Arrays.asList(
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+    }
+
+    public static AdvicePostDto getAdvicePostDto() {
+        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
     }
 }

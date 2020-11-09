@@ -14,7 +14,5 @@ public class AdviceTranslationVO {
 
     private LanguageVO language;
 
-    private AdviceVO advice;
-
     private String content;
 }

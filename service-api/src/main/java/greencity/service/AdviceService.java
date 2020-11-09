@@ -1,10 +1,14 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
 import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
+import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 /**
@@ -19,7 +23,26 @@ public interface AdviceService {
      * @return List of all {@link AdviceDto}
      * @author Vitaliy Dzen
      */
-    List<LanguageTranslationDTO> getAllAdvices();
+    PageableDto<AdviceVO> getAllAdvices(Pageable pageable);
+
+    /**
+     * Method finds all {@link AdviceVO}.
+     *
+     * @param pageable of {@link Pageable}
+     * @param filter   of {@Link String}
+     * @return List of {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     *
+     */
+    PageableDto<AdviceVO> getAllAdvicesWithFilter(Pageable pageable, String filter);
+
+    /**
+     * Method finds all {@link AdviceVO}'s that satisfy filters .
+     *
+     * @return List of all {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     */
+    PageableDto<AdviceVO> getFilteredAdvices(Pageable pageable, AdviceViewDto adviceViewDto);
 
     /**
      * Method finds random {@link AdviceDto}.
@@ -60,10 +83,10 @@ public interface AdviceService {
      * Method updates {@link AdviceVO}.
      *
      * @param advice {@link AdvicePostDto}
-     * @return instance of {@link AdviceVO}
+     * @return instance of {@link AdvicePostDto}
      * @author Vitaliy Dzen
      */
-    AdviceVO update(AdvicePostDto advice, Long id);
+    AdvicePostDto update(AdvicePostDto advice, Long id);
 
     /**
      * Method delete {@link AdviceDto} by id.
@@ -80,4 +103,12 @@ public interface AdviceService {
      * @param habit {@link HabitVO} instance.
      */
     void deleteAllByHabit(HabitVO habit);
+
+    /**
+     * Method that deletes all advices by given ids.
+     *
+     * @param ids - list of {@link Long}
+     * @author Markiyan Derevetskyi
+     */
+    void deleteAllByIds(List<Long> ids);
 }
