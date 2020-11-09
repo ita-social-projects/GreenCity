@@ -6,8 +6,8 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalPostDto;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.localization.GoalTranslation;
-import greencity.entity.Goal;
+import greencity.dto.goal.GoalTranslationVO;
+import greencity.dto.goal.GoalVO;
 import greencity.service.GoalService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -58,7 +58,7 @@ public class GoalController {
     }
 
     /**
-     * The controller which saveGoal {@link Goal}.
+     * The controller which saveGoal {@link GoalVO}.
      *
      * @param goalPostDto {@link GoalDto}
      * @return {@link ResponseEntity}
@@ -75,7 +75,7 @@ public class GoalController {
     }
 
     /**
-     * The controller which update {@link GoalTranslation}.
+     * The controller which update {@link GoalTranslationVO}.
      *
      * @param goalPostDto {@link GoalPostDto}
      * @return {@link ResponseEntity}
@@ -93,9 +93,9 @@ public class GoalController {
     }
 
     /**
-     * The controller which delete {@link Goal}.
+     * The controller which delete {@link GoalVO}.
      *
-     * @param id of {@link Goal}
+     * @param id of {@link GoalVO}
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Delete goal")

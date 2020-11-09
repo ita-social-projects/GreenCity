@@ -189,7 +189,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
         TipsAndTricksComment comment = tipsAndTricksCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         TipsAndTricksCommentVO commentVO = modelMapper.map(comment, TipsAndTricksCommentVO.class);
-        if (comment.getUsersLiked().contains(userVO)) {
+        if (comment.getUsersLiked().stream()
+            .anyMatch(user -> user.getId().equals(userVO.getId()))) {
             tipsAndTricksService.unlikeComment(userVO, commentVO);
         } else {
             tipsAndTricksService.likeComment(userVO, commentVO);
