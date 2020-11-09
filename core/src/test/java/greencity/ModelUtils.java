@@ -17,8 +17,7 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -39,7 +38,6 @@ import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -257,17 +255,8 @@ public class ModelUtils {
         return new Advice(1L, null, null);
     }
 
-    public static HabitFactTranslation getFactTranslation() {
-        return HabitFactTranslation.builder()
-            .id(1L)
-            .factOfDayStatus(FactOfDayStatus.CURRENT)
-            .habitFact(null)
-            .content("Content")
-            .build();
-    }
-
     public static HabitFact getHabitFact() {
-        return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
+        return new HabitFact(1L, Collections.singletonList(getHabitFactTranslation()), null);
     }
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
@@ -553,6 +542,21 @@ public class ModelUtils {
         categoryVO.setName("category");
         placeVO.setCategory(categoryVO);
         return placeVO;
+    }
+
+    public static HabitFactPostDto getHabitFactPostDto() {
+        return HabitFactPostDto.builder()
+            .translations(List.of(getLanguageTranslationDTO()))
+            .habit(new HabitIdRequestDto(1L))
+            .build();
+    }
+
+    public static HabitFactUpdateDto getHabitFactUpdateDto() {
+        return HabitFactUpdateDto.builder()
+            .habit(new HabitIdRequestDto(1L))
+            .translations(Collections.singletonList(
+                new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL, getLanguageDTO(), "")))
+            .build();
     }
 
     public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {

@@ -1,30 +1,34 @@
 package greencity.service;
 
+import static greencity.enums.FactOfDayStatus.CURRENT;
+
+import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.Habit;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
+import greencity.enums.FactOfDayStatus;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.filters.HabitFactSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.repository.HabitFactRepo;
 import greencity.repository.HabitFactTranslationRepo;
-import greencity.repository.HabitRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Iterator;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +43,6 @@ public class HabitFactServiceImpl implements HabitFactService {
     private final HabitFactRepo habitFactRepo;
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final ModelMapper modelMapper;
-    private final HabitRepo habitRepo;
 
     /**
      * {@inheritDoc}
@@ -49,6 +52,22 @@ public class HabitFactServiceImpl implements HabitFactService {
         Page<HabitFactTranslation> habitFactTranslation = habitFactTranslationRepo
             .findAllByLanguageCode(page, language);
         return getPagesWithLanguageTranslationDTO(habitFactTranslation);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitFactVO> getAllHabitFactsVO(Pageable pageable) {
+        Page<HabitFact> page = habitFactRepo.findAll(pageable);
+        List<HabitFactVO> habitFactVOS = page.stream()
+            .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            habitFactVOS,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages());
     }
 
     /**
@@ -65,10 +84,11 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
-    public HabitFactDto getHabitFactById(Long id) {
-        return modelMapper.map(habitFactRepo.findById(id)
+    public HabitFactDtoResponse getHabitFactById(Long id) {
+        HabitFactVO habitFactVO = modelMapper.map(habitFactRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id)),
-            HabitFactDto.class);
+            HabitFactVO.class);
+        return modelMapper.map(habitFactVO, HabitFactDtoResponse.class);
     }
 
     /**
@@ -86,24 +106,33 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     public HabitFactVO save(HabitFactPostDto fact) {
-        HabitFact map = modelMapper.map(fact, HabitFact.class);
-        return modelMapper.map(habitFactRepo.save(map), HabitFactVO.class);
+        HabitFact habitFact = modelMapper.map(fact, HabitFact.class);
+        habitFact.getTranslations().forEach(habitFactTranslation -> {
+            habitFactTranslation.setHabitFact(habitFact);
+            habitFactTranslation.setFactOfDayStatus(FactOfDayStatus.POTENTIAL);
+        });
+
+        return modelMapper.map(habitFactRepo.save(habitFact), HabitFactVO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public HabitFactVO update(HabitFactPostDto factDto, Long id) {
-        HabitFact habitFactFromDB = habitFactRepo.findById(id)
-            .map(habitFact -> {
-                Habit habit = habitRepo.findById(factDto.getHabit().getId())
-                    .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
-                habitFact.setHabit(habit);
-                updateHabitTranslations(habitFact.getTranslations(), factDto.getTranslations());
-                return habitFactRepo.save(habitFact);
-            }).orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_FACT_NOT_UPDATED_BY_ID));
-        return modelMapper.map(habitFactFromDB, HabitFactVO.class);
+    public HabitFactVO update(HabitFactUpdateDto factDto, Long id) {
+        HabitFact habitFact = habitFactRepo.findById(id)
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id));
+        List<HabitFactTranslation> habitFactTranslations = modelMapper.map(factDto.getTranslations(),
+            new TypeToken<List<HabitFactTranslation>>() {
+            }.getType());
+        habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
+        habitFact.setTranslations(habitFactTranslations);
+        habitFactTranslations.forEach(habitFactTranslation -> {
+            habitFactTranslation.setHabitFact(habitFact);
+            habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().get(0).getFactOfDayStatus());
+        });
+        habitFactRepo.save(habitFact);
+        return modelMapper.map(habitFact, HabitFactVO.class);
     }
 
     /**
@@ -131,6 +160,21 @@ public class HabitFactServiceImpl implements HabitFactService {
             });
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public List<Long> deleteAllHabitFactsByListOfId(List<Long> listId) {
+        listId.forEach(id -> {
+            HabitFact habitFact = habitFactRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id));
+            habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
+            habitFactRepo.delete(habitFact);
+        });
+        return listId;
+    }
+
     private PageableDto<LanguageTranslationDTO> getPagesWithLanguageTranslationDTO(Page<HabitFactTranslation> pages) {
         List<LanguageTranslationDTO> languageTranslationDTOS = pages
             .stream()
@@ -143,15 +187,103 @@ public class HabitFactServiceImpl implements HabitFactService {
             pages.getTotalPages());
     }
 
-    private void updateHabitTranslations(List<HabitFactTranslation> habitFactTranslations,
-        List<LanguageTranslationDTO> languageTranslationDTOS) {
-        Iterator<HabitFactTranslation> adviceTranslationIterator = habitFactTranslations.iterator();
-        Iterator<LanguageTranslationDTO> languageTranslationDTOIterator = languageTranslationDTOS.iterator();
-        while (adviceTranslationIterator.hasNext() && languageTranslationDTOIterator.hasNext()) {
-            HabitFactTranslation habitFactTranslation = adviceTranslationIterator.next();
-            LanguageTranslationDTO languageDTO = languageTranslationDTOIterator.next();
-            habitFactTranslation.setContent(languageDTO.getContent());
-            habitFactTranslation.setLanguage(modelMapper.map(languageDTO.getLanguage(), Language.class));
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitFactVO> searchHabitFactWithFilter(Pageable paging, String filter) {
+        Page<HabitFact> page = habitFactRepo.searchHabitFactByFilter(paging, filter);
+        List<HabitFactVO> habitFactVOS = page.stream()
+            .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            habitFactVOS,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitFactVO> getFilteredDataForManagementByPage(
+        Pageable pageable,
+        HabitFactViewDto habitFactViewDto) {
+        Page<HabitFact> pages = habitFactRepo.findAll(getSpecification(habitFactViewDto), pageable);
+        return getPagesWithHabitFactVO(pages);
+    }
+
+    /**
+     * * This method used for build {@link SearchCriteria} depends on
+     * {@link HabitFactViewDto}.
+     *
+     * @param habitFactViewDto used for receive parameters for filters from UI.
+     * @return {@link SearchCriteria}.
+     */
+    private List<SearchCriteria> buildSearchCriteria(HabitFactViewDto habitFactViewDto) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        Field[] fields = habitFactViewDto.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            String value;
+            try {
+                value = (String) field.get(habitFactViewDto);
+            } catch (IllegalAccessException e) {
+                throw new NotFoundException("Cannot retrieve value from field!");
+            }
+            if (!value.isEmpty()) {
+                criteriaList.add(SearchCriteria.builder()
+                    .key(field.getName()).type(field.getName())
+                    .value(value)
+                    .build());
+            }
         }
+        return criteriaList;
+    }
+
+    /**
+     * Returns {@link HabitFactSpecification} for entered filter parameters.
+     *
+     * @param habitFactViewDto contains data from filters
+     */
+    private HabitFactSpecification getSpecification(HabitFactViewDto habitFactViewDto) {
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(habitFactViewDto);
+        return new HabitFactSpecification(searchCriteria);
+    }
+
+    private PageableDto<HabitFactVO> getPagesWithHabitFactVO(Page<HabitFact> pages) {
+        List<HabitFactVO> habitFactVOS = pages.getContent()
+            .stream()
+            .map(habitFact -> modelMapper.map(habitFact, HabitFactVO.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            habitFactVOS,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages());
+    }
+
+    /**
+     * Method to get today's {@link HabitFact} of day by {@link Language} id.
+     *
+     * @param languageId id of {@link Language} of the {@link HabitFact}.
+     * @return {@link LanguageTranslationDTO} of today's {@link HabitFact} of day.
+     */
+    @Cacheable(value = CacheConstants.HABIT_FACT_OF_DAY_CACHE)
+    @Override
+    public LanguageTranslationDTO getHabitFactOfTheDay(Long languageId) {
+        return modelMapper.map(
+            habitFactTranslationRepo.findAllByFactOfDayStatusAndLanguageId(CURRENT, languageId),
+            LanguageTranslationDTO.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public PageableDto<HabitFactVO> getAllHabitFactVOsWithFilter(String filter, Pageable pageable) {
+        return filter == null || filter.isEmpty()
+            ? getAllHabitFactsVO(pageable)
+            : searchHabitFactWithFilter(pageable, filter);
     }
 }

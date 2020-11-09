@@ -1,5 +1,7 @@
 package greencity.service;
 
+import static greencity.ModelUtils.getFactTranslation;
+import static greencity.ModelUtils.getLanguageTranslationDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,18 +11,15 @@ import static org.mockito.Mockito.*;
 import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
-import greencity.dto.language.LanguageDTO;
+import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.Habit;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
-import greencity.entity.Language;
+import greencity.enums.FactOfDayStatus;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.filters.HabitFactSpecification;
 import greencity.repository.HabitFactRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.HabitRepo;
@@ -30,10 +29,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -89,6 +90,25 @@ class HabitFactServiceImplTest {
     }
 
     @Test
+    void getAllHabitFactsVOTest_shouldReturnCorrectValue() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        HabitFact habitFact = ModelUtils.getHabitFact();
+        HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
+        List<HabitFact> habitFacts = Collections.singletonList(habitFact);
+        List<HabitFactVO> habitFactVOS = Collections.singletonList(habitFactVO);
+        Page<HabitFact> pageAdvices = new PageImpl<>(habitFacts,
+            pageable, habitFacts.size());
+        PageableDto<HabitFactVO> expected = new PageableDto<>(habitFactVOS, habitFacts.size(), pageNumber, pageSize);
+        when(habitFactRepo.findAll(pageable)).thenReturn(pageAdvices);
+        when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
+        PageableDto<HabitFactVO> actual = habitFactService.getAllHabitFactsVO(pageable);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void getRandomHabitFactByHabitIdAndLanguageTest_shouldThrowExceptionWhenWrongId() {
         Long id = 1L;
         String language = "ua";
@@ -103,13 +123,15 @@ class HabitFactServiceImplTest {
     void getHabitFactByIdTest_shouldReturnCorrectValue() {
         Long id = 1L;
         HabitFact habitFact = ModelUtils.getHabitFact();
-        HabitFactDto habitFactDto = ModelUtils.getHabitFactDto();
+        HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
+        HabitFactDtoResponse habitFactDtoResponse = new HabitFactDtoResponse();
         when(habitFactRepo.findById(id)).thenReturn(Optional.of(habitFact));
-        when(modelMapper.map(habitFact, HabitFactDto.class)).thenReturn(habitFactDto);
+        when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
+        when(modelMapper.map(habitFactVO, HabitFactDtoResponse.class)).thenReturn(habitFactDtoResponse);
 
-        HabitFactDto actual = habitFactService.getHabitFactById(id);
+        HabitFactDtoResponse actual = habitFactService.getHabitFactById(id);
 
-        assertEquals(habitFactDto, actual);
+        assertEquals(habitFactDtoResponse, actual);
     }
 
     @Test
@@ -162,28 +184,19 @@ class HabitFactServiceImplTest {
     @Test
     void updateTest_shouldReturnCorrectValue() {
         Long id = 1L;
-        Habit habit = Habit.builder()
-            .id(1L)
-            .habitAssigns(Collections.singletonList(ModelUtils.getHabitAssign()))
-            .habitTranslations(null)
-            .image("")
-            .build();
-        HabitFact habitFact = HabitFact.builder()
-            .id(1L)
-            .habit(habit)
-            .translations(Collections.singletonList(ModelUtils.getHabitFactTranslation()))
-            .build();
-        Language defaultLanguage = ModelUtils.getLanguage();
-        HabitFactPostDto habitFactPostDto = ModelUtils.getHabitFactPostDto();
-        Long id2 = habitFactPostDto.getHabit().getId();
+        HabitFact habitFact = ModelUtils.getHabitFact();
+        HabitFactUpdateDto habitFactUpdateDto = ModelUtils.getHabitFactUpdateDto();
         when(habitFactRepo.findById(id)).thenReturn(Optional.of(habitFact));
-        when(habitRepo.findById(id2)).thenReturn(Optional.of(habit));
-        habitFact.setHabit(habit);
-        when(modelMapper.map(any(LanguageDTO.class), eq(Language.class))).thenReturn(defaultLanguage);
+        Type type = new TypeToken<List<HabitFactTranslation>>() {
+        }.getType();
+        List<HabitFactTranslation> habitFactTranslations = Collections.singletonList(
+            ModelUtils.getHabitFactTranslation());
+        when(modelMapper.map(habitFactUpdateDto.getTranslations(), type)).thenReturn(habitFactTranslations);
+        habitFact.setTranslations(habitFactTranslations);
         when(habitFactRepo.save(habitFact)).thenReturn(habitFact);
         HabitFactVO expected = modelMapper.map(habitFact, HabitFactVO.class);
         when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(expected);
-        HabitFactVO actual = habitFactService.update(habitFactPostDto, id);
+        HabitFactVO actual = habitFactService.update(habitFactUpdateDto, id);
 
         assertEquals(expected, actual);
     }
@@ -191,9 +204,9 @@ class HabitFactServiceImplTest {
     @Test
     void updateTest_shouldThrowNotUpdatedException() {
         Long id = 1L;
-        HabitFactPostDto habitFactPostDto = ModelUtils.getHabitFactPostDto();
+        HabitFactUpdateDto habitFactUpdateDto = ModelUtils.getHabitFactUpdateDto();
 
-        assertThrows(NotUpdatedException.class, () -> habitFactService.update(habitFactPostDto, id));
+        assertThrows(NotUpdatedException.class, () -> habitFactService.update(habitFactUpdateDto, id));
     }
 
     @Test
@@ -223,5 +236,66 @@ class HabitFactServiceImplTest {
         habitFactService.deleteAllByHabit(habitVO);
 
         verify(habitFactTranslationRepo, times(1)).deleteAllByHabitFact(habitFact);
+    }
+
+    @Test
+    void deleteAllHabitFactsByListOfIdTest_shouldReturnCorrectValue() {
+        List<Long> ids = List.of(1L, 2L, 3L);
+        HabitFact habitFact = ModelUtils.getHabitFact();
+        when(habitFactRepo.findById(anyLong())).thenReturn(Optional.of(habitFact));
+        List<Long> actual = habitFactService.deleteAllHabitFactsByListOfId(ids);
+
+        assertEquals(ids, actual);
+        verify(habitFactRepo, times(ids.size())).delete(habitFact);
+    }
+
+    @Test
+    void searchByTest_shouldReturnCorrectValue() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        String query = "eng";
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        HabitFact habitFact = ModelUtils.getHabitFact();
+        HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
+        List<HabitFact> habitFacts = Collections.singletonList(habitFact);
+        List<HabitFactVO> habitFactVOS = Collections.singletonList(habitFactVO);
+        Page<HabitFact> habitFactPage = new PageImpl<>(habitFacts,
+            pageable, habitFacts.size());
+        PageableDto<HabitFactVO> expected = new PageableDto<>(habitFactVOS, habitFacts.size(), pageNumber, pageSize);
+        when(habitFactRepo.searchHabitFactByFilter(pageable, query)).thenReturn(habitFactPage);
+        when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
+        PageableDto<HabitFactVO> actual = habitFactService.searchHabitFactWithFilter(pageable, query);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getFilteredDataForManagementByPage_shouldReturnCorrectValue() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        HabitFact habitFact = ModelUtils.getHabitFact();
+        HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
+        List<HabitFact> habitFacts = Collections.singletonList(habitFact);
+        List<HabitFactVO> habitFactVOS = Collections.singletonList(habitFactVO);
+        HabitFactViewDto habitFactViewDto = new HabitFactViewDto("1", "1", "eng");
+        Page<HabitFact> habitFactPage = new PageImpl<>(habitFacts,
+            pageable, habitFacts.size());
+        when(habitFactRepo.findAll(any(HabitFactSpecification.class), eq(pageable))).thenReturn(habitFactPage);
+        when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
+        PageableDto<HabitFactVO> expected = new PageableDto<>(habitFactVOS, habitFacts.size(), pageNumber, pageSize);
+        PageableDto<HabitFactVO> actual = habitFactService
+            .getFilteredDataForManagementByPage(pageable, habitFactViewDto);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getHabitFactOfTheDay() {
+        HabitFactTranslation res = getFactTranslation();
+        when(habitFactTranslationRepo.findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus.CURRENT, 1L))
+            .thenReturn(res);
+        when(modelMapper.map(res, LanguageTranslationDTO.class)).thenReturn(getLanguageTranslationDTO());
+        assertEquals(getLanguageTranslationDTO(), habitFactService.getHabitFactOfTheDay(1L));
     }
 }

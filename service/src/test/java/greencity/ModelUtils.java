@@ -26,10 +26,7 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
@@ -64,12 +61,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -771,6 +762,23 @@ public class ModelUtils {
             .address("address")
             .lng(12.12d)
             .lat(12.12d)
+            .build();
+    }
+
+    public static HabitFactUpdateDto getHabitFactUpdateDto() {
+        return HabitFactUpdateDto.builder()
+            .habit(HabitIdRequestDto.builder()
+                .id(1L)
+                .build())
+            .translations(Collections.singletonList(getHabitFactTranslationUpdateDto()))
+            .build();
+    }
+
+    public static HabitFactTranslationUpdateDto getHabitFactTranslationUpdateDto() {
+        return HabitFactTranslationUpdateDto.builder()
+            .content("")
+            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
+            .language(getLanguageDTO())
             .build();
     }
 
