@@ -7,7 +7,6 @@ import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.Advice;
 import greencity.service.AdviceService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -41,7 +40,7 @@ public class AdviceController {
     private final ModelMapper mapper;
 
     /**
-     * The controller which returns random {@link Advice} by HabitDictionary
+     * The controller which returns random {@link AdviceVO} by HabitDictionary
      * adviceId.
      *
      * @param habitId HabitDictionary
@@ -63,7 +62,7 @@ public class AdviceController {
     }
 
     /**
-     * The controller which returns all {@link Advice}.
+     * The controller which returns all {@link AdviceVO}.
      *
      * @return List of {@link AdviceDto}
      * @author Vitaliy Dzen
@@ -80,7 +79,7 @@ public class AdviceController {
     }
 
     /**
-     * The controller which returns advice by id {@link Advice}.
+     * The controller which returns advice by id {@link AdviceVO}.
      *
      * @return instance of {@link AdviceVO}
      * @author Markiyan Derevetskyi
@@ -97,7 +96,7 @@ public class AdviceController {
     }
 
     /**
-     * The controller which saveAdviceAndAdviceTranslation {@link Advice}.
+     * The controller which saveAdviceAndAdviceTranslation {@link AdviceVO}.
      *
      * @param advice {@link AdviceDto}
      * @return {@link ResponseEntity}
@@ -116,7 +115,7 @@ public class AdviceController {
     }
 
     /**
-     * The controller which update {@link Advice}.
+     * The controller which update {@link AdviceVO}.
      *
      * @param dto {@link AdviceDto}
      * @return {@link ResponseEntity}
@@ -136,9 +135,9 @@ public class AdviceController {
     }
 
     /**
-     * The controller which delete {@link Advice}.
+     * The controller which delete {@link AdviceVO}.
      *
-     * @param adviceId of {@link Advice}
+     * @param adviceId of {@link AdviceVO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */

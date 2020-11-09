@@ -27,8 +27,6 @@
             <artifactId>dao</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-            <!--TODO #1618
-            <scope>runtime</scope>-->
         </dependency>
         <dependency>
             <groupId>greencity</groupId>
