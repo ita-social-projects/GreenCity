@@ -117,7 +117,10 @@ VALUES ('image1'),
        ('image6'),
 	   ('image7'),
 	   ('image8');
--- HABIT END --
+
+INSERT INTO habit_tags(id,name)
+VALUES (1,'Smart consuming'),
+       (2,'Transport');
 
 INSERT INTO advices (habit_id)
 VALUES (1),
