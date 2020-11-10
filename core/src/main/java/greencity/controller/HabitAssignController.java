@@ -2,10 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitAssignService;
 import io.swagger.annotations.ApiOperation;
@@ -28,13 +25,13 @@ public class HabitAssignController {
     private final HabitAssignService habitAssignService;
 
     /**
-     * Method which assigns habit for {@link UserVO}.
+     * Method which assigns habit for {@link UserVO} with default props.
      *
      * @param id     {@link HabitVO} id.
      * @param userVO {@link UserVO} instance.
      * @return {@link ResponseEntity}.
      */
-    @ApiOperation(value = "Assign habit for current user.")
+    @ApiOperation(value = "Assign habit with default properties for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -42,10 +39,34 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/assign/{id}")
-    public ResponseEntity<HabitAssignDto> assign(@PathVariable Long id,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+    public ResponseEntity<HabitAssignDto> assignDefault(@PathVariable Long id,
+                                                        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitAssignService.assignHabitForUser(id, userVO));
+            .body(habitAssignService.assignDefaultHabitForUser(id, userVO));
+    }
+
+    /**
+     * Method which assigns habit for {@link UserVO} with custom props.
+     *
+     * @param id                       {@link HabitVO} id.
+     * @param userVO                   {@link UserVO} instance.
+     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
+     * @return {@link ResponseEntity}.
+     */
+    @ApiOperation(value = "Assign habit with custom properties for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitAssignDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/assign/{id}/custom")
+    public ResponseEntity<HabitAssignDto> assignCustom(@PathVariable Long id,
+                                                       @ApiIgnore @CurrentUser UserVO userVO,
+                                                       @Valid @RequestBody
+                                                           HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(habitAssignService.assignCustomHabitForUser(id, userVO, habitAssignPropertiesDto));
     }
 
     /**
@@ -73,7 +94,7 @@ public class HabitAssignController {
      * @param acquired {@link Boolean} status.
      * @return {@link List} of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get all users assigns from certain habit.")
+    @ApiOperation(value = "Get all active users assigns from certain habit.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -81,7 +102,7 @@ public class HabitAssignController {
     })
     @GetMapping("/{id}/assign/all")
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long id,
-        @RequestParam Boolean acquired) {
+                                                                                       @RequestParam Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(id, acquired));
     }

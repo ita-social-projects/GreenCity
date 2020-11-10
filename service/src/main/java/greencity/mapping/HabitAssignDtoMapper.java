@@ -26,6 +26,7 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
             .createDateTime(habitAssign.getCreateDate())
             .habitId(habitAssign.getHabit().getId())
             .userId(habitAssign.getUser().getId())
+            .duration(habitAssign.getDuration())
             .build();
     }
 }

@@ -28,4 +28,7 @@ public class HabitAssignDto {
     @NotNull
     @Min(1)
     private Long userId;
+    @Min(1)
+    @NotNull
+    private Integer duration;
 }

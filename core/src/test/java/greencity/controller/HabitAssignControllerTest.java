@@ -52,7 +52,7 @@ class HabitAssignControllerTest {
             .principal(principal))
             .andExpect(status().isCreated());
         Long id = 1L;
-        verify(habitAssignService, never()).assignHabitForUser(eq(id), eq(user));
+        verify(habitAssignService, never()).assignDefaultHabitForUser(eq(id), eq(user));
     }
 
     @Test

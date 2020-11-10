@@ -504,7 +504,7 @@ public class UserServiceImpl implements UserService {
     public void addDefaultHabit(UserVO user, String language) {
         if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
             UserVO userVO = modelMapper.map(user, UserVO.class);
-            habitAssignService.assignHabitForUser(1L, userVO);
+            habitAssignService.assignDefaultHabitForUser(1L, userVO);
         }
     }
 
