@@ -64,7 +64,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void enhanceAssignWithDefaultProperties(HabitAssign habitAssign) {
-        habitAssign.setDuration(10);
+        habitAssign.setDuration(AppConstant.DEFAULT_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER);
     }
 
     /**
@@ -123,8 +123,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @return {@link Habit} instance.
      */
     private Habit validateHabitForAssign(Long habitId, User user) {
-        Habit habit = habitRepo.findById(habitId).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
 
         if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
