@@ -57,13 +57,16 @@ public interface SocialNetworkImageService {
     /**
      * Method for creating {@link SocialNetworkImageVO} instance.
      *
-     * @param socialNetworkImageRequestDTO - dto with {@link SocialNetworkImageRequestDTO} title, text, image path.
+     * @param socialNetworkImageRequestDTO - dto with
+     *                                     {@link SocialNetworkImageRequestDTO}
+     *                                     title, text, image path.
      * @return {@link SocialNetworkImageResponseDTO} instance.
      */
     SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile image);
 
     /**
-     * Method for getting the {@link SocialNetworkImageResponseDTO} instance by its id.
+     * Method for getting the {@link SocialNetworkImageResponseDTO} instance by its
+     * id.
      *
      * @param id {@link SocialNetworkImageResponseDTO} instance id.
      * @return {@link SocialNetworkImageResponseDTO} instance.
@@ -73,7 +76,8 @@ public interface SocialNetworkImageService {
     /**
      * Method for updating {@link SocialNetworkImageVO} instance.
      *
-     * @param socialNetworkImageResponseDTO - instance of {@link SocialNetworkImageVO}.
+     * @param socialNetworkImageResponseDTO - instance of
+     *                                      {@link SocialNetworkImageVO}.
      */
     void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile multipartFile);
 }

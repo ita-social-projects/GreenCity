@@ -57,7 +57,6 @@ public interface OwnSecurityService {
      */
     void updateCurrentPassword(UpdatePasswordDto updatePasswordDto, String email);
 
-
     /**
      * Method for registering a user from admin panel.
      *

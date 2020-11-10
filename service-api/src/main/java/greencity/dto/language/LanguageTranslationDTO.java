@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.validation.constraints.NotBlank;
+
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -14,10 +15,10 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Builder
 public class LanguageTranslationDTO {
+    @Valid
     @NotNull
     private LanguageDTO language;
 
-    @NotBlank
     @Size(min = ServiceValidationConstants.ADVICE_MIN_LENGTH, max = ServiceValidationConstants.ADVICE_MAX_LENGTH)
     private String content;
 }

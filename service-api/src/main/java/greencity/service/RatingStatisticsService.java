@@ -58,11 +58,12 @@ public interface RatingStatisticsService {
         Pageable pageable, RatingStatisticsViewDto ratingStatisticsViewDto);
 
     /**
-     * * This method used for build {@link SearchCriteria} depends on {@link RatingStatisticsViewDto}.
+     * * This method used for build {@link SearchCriteria} depends on
+     * {@link RatingStatisticsViewDto}.
      *
-     * @param ratingStatisticsViewDto used for receive parameters for filters from UI.
+     * @param ratingStatisticsViewDto used for receive parameters for filters from
+     *                                UI.
      * @return {@link SearchCriteria}.
      */
     List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto);
 }
-

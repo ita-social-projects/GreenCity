@@ -87,7 +87,8 @@ public class CategoryServiceImpl implements CategoryService {
             .findById(id)
             .orElseThrow(
                 () -> new NotFoundException(
-                    ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id)), CategoryDtoResponse.class);
+                    ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id)),
+            CategoryDtoResponse.class);
     }
 
     /**

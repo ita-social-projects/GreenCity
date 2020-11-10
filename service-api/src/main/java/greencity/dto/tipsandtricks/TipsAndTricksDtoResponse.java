@@ -28,7 +28,6 @@ public class TipsAndTricksDtoResponse implements Serializable {
     @NotEmpty
     private String text;
 
-
     @NotEmpty
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime creationDate;

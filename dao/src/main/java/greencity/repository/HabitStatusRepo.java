@@ -23,7 +23,8 @@ public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
     Optional<HabitStatus> findByHabitAssignId(Long habitAssignId);
 
     /**
-     * Method to return active {@link HabitStatus} by {@link Habit} id and {@link User} id.
+     * Method to return active {@link HabitStatus} by {@link Habit} id and
+     * {@link User} id.
      *
      * @param userId  {@link User} id.
      * @param habitId {@link Habit} id.
@@ -33,5 +34,5 @@ public interface HabitStatusRepo extends JpaRepository<HabitStatus, Long> {
         + "WHERE hs.habitAssign.user.id = :userId AND hs.habitAssign.habit.id = :habitId "
         + "AND hs.habitAssign.suspended = false")
     Optional<HabitStatus> findByHabitIdAndUserId(@Param("habitId") Long habitId,
-                                                 @Param("userId") Long userId);
+        @Param("userId") Long userId);
 }

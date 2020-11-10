@@ -1,6 +1,5 @@
 package greencity.security.service;
 
-
 import greencity.entity.VerifyEmail;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;

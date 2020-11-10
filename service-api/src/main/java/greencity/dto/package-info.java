@@ -1,6 +1,5 @@
 /**
- *  Service API DTOs.
+ * Service API DTOs.
  */
 
 package greencity.dto;
-

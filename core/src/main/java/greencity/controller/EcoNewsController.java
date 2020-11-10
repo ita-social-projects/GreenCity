@@ -12,8 +12,8 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
-import greencity.entity.Tag;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.tag.TagVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
@@ -67,9 +67,9 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for creating {@link EcoNews}.
+     * Method for creating {@link EcoNewsVO}.
      *
-     * @param addEcoNewsDtoRequest - dto for {@link EcoNews} entity.
+     * @param addEcoNewsDtoRequest - dto for {@link EcoNewsVO} entity.
      * @return dto {@link AddEcoNewsDtoResponse} instance.
      * @author Yuriy Olkhovskyi & Kovaliv Taras.
      */
@@ -82,20 +82,18 @@ public class EcoNewsController {
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AddEcoNewsDtoResponse> save(
-        @ApiParam(value = SwaggerExampleModel.ADD_ECO_NEWS_REQUEST, required = true)
-        @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        @ApiParam(value = "Image of eco news")
-        @ImageValidation
-        @RequestPart(required = false) MultipartFile image,
+        @ApiParam(value = SwaggerExampleModel.ADD_ECO_NEWS_REQUEST,
+            required = true) @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+        @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
     }
 
     /**
-     * Method for updating {@link EcoNews}.
+     * Method for updating {@link EcoNewsVO}.
      *
-     * @param updateEcoNewsDto - dto for {@link EcoNews} entity.
+     * @param updateEcoNewsDto - dto for {@link EcoNewsVO} entity.
      * @return dto {@link EcoNewsDto} instance.
      */
     @ApiOperation(value = "Update eco news")
@@ -109,15 +107,12 @@ public class EcoNewsController {
     @PutMapping(path = "/update", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
         MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<EcoNewsDto> update(
-        @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS, required = true)
-        @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
-        @ApiParam(value = "Image of eco news")
-        @ImageValidation
-        @RequestPart(required = false) MultipartFile image,
+        @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS,
+            required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
+        @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(required = false) MultipartFile image,
         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ecoNewsService.update(updateEcoNewsDto, image, user)
-        );
+            ecoNewsService.update(updateEcoNewsDto, image, user));
     }
 
     /**
@@ -156,10 +151,10 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for deleting {@link EcoNews} by its id.
+     * Method for deleting {@link EcoNewsVO} by its id.
      *
-     * @param econewsId {@link EcoNews} id which will be deleted.
-     * @return id of deleted {@link EcoNews}.
+     * @param econewsId {@link EcoNewsVO} id which will be deleted.
+     * @return id of deleted {@link EcoNewsVO}.
      * @author Yuriy Olkhovskyi.
      */
     @ApiOperation(value = "Delete eco news.")
@@ -191,9 +186,8 @@ public class EcoNewsController {
     @ApiPageable
     public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(
         @ApiIgnore Pageable page,
-        @ApiParam(value = "Tags to filter (if do not input tags get all)")
-        @RequestParam(required = false) List<String> tags
-    ) {
+        @ApiParam(value = "Tags to filter (if do not input tags get all)") @RequestParam(
+            required = false) List<String> tags) {
         if (tags == null || tags.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(
                 ecoNewsService.findAll(page));
@@ -223,7 +217,7 @@ public class EcoNewsController {
     }
 
     /**
-     * The method which returns all EcoNews {@link Tag}s.
+     * The method which returns all EcoNews {@link TagVO}s.
      *
      * @return list of {@link String} (tag's names).
      * @author Kovaliv Taras

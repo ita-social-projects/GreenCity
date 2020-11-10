@@ -43,7 +43,7 @@ class FacebookSecurityControllerTest {
     @Test
     void generateFacebookAccessTokenTest() throws Exception {
         mockMvc.perform(get("/facebookSecurity/facebook")
-            .param("code","almostSecretCode"))
+            .param("code", "almostSecretCode"))
             .andExpect(status().isOk());
         verify(facebookSecurityService).generateFacebookAccessToken("almostSecretCode");
     }

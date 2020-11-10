@@ -72,12 +72,11 @@ class PlaceControllerTest {
     @Mock
     private ModelMapper modelMapper;
 
-
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(placeController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
@@ -86,10 +85,10 @@ class PlaceControllerTest {
         CategoryDto categoryDto = CategoryDto.builder().name("test").build();
 
         LocationAddressAndGeoDto locationAddressAndGeoDto = LocationAddressAndGeoDto.builder()
-                .address("Lviv")
-                .lat(1.0)
-                .lng(1.0)
-                .build();
+            .address("Lviv")
+            .lat(1.0)
+            .lng(1.0)
+            .build();
 
         Set<DiscountValueDto> discountValuesDtos = new HashSet<>();
         DiscountValueDto discountValueDto = new DiscountValueDto();
@@ -99,16 +98,16 @@ class PlaceControllerTest {
         discountValuesDtos.add(discountValueDto);
 
         BreakTimeDto breakTimeDto = BreakTimeDto.builder()
-                .endTime(LocalTime.of(14, 0))
-                .startTime(LocalTime.of(13, 0))
-                .build();
+            .endTime(LocalTime.of(14, 0))
+            .startTime(LocalTime.of(13, 0))
+            .build();
         Set<OpeningHoursDto> openingHoursDtos = new HashSet<>();
         OpeningHoursDto openingHoursDto = OpeningHoursDto.builder()
-                .breakTime(breakTimeDto)
-                .closeTime(LocalTime.of(20, 0))
-                .openTime(LocalTime.of(8, 0))
-                .weekDay(DayOfWeek.MONDAY)
-                .build();
+            .breakTime(breakTimeDto)
+            .closeTime(LocalTime.of(20, 0))
+            .openTime(LocalTime.of(8, 0))
+            .weekDay(DayOfWeek.MONDAY)
+            .build();
         openingHoursDtos.add(openingHoursDto);
 
         List<PhotoAddDto> photoAddDtoList = new ArrayList<>();
@@ -117,85 +116,86 @@ class PlaceControllerTest {
         photoAddDtoList.add(photoAddDto);
 
         PlaceAddDto placeAddDto = PlaceAddDto.builder()
-                .category(categoryDto)
-                .discountValues(discountValuesDtos)
-                .location(locationAddressAndGeoDto)
-                .name("test")
-                .openingHoursList(openingHoursDtos)
-                .photos(photoAddDtoList)
-                .build();
+            .category(categoryDto)
+            .discountValues(discountValuesDtos)
+            .location(locationAddressAndGeoDto)
+            .name("test")
+            .openingHoursList(openingHoursDtos)
+            .photos(photoAddDtoList)
+            .build();
 
         UserVO user = UserVO.builder()
-                .name("Orest")
-                .userStatus(UserStatus.ACTIVATED)
-                .build();
+            .name("Orest")
+            .userStatus(UserStatus.ACTIVATED)
+            .build();
 
         PlaceVO place = PlaceVO.builder()
-                .id(1L)
-                .status(APPROVED)
-                .build();
+            .id(1L)
+            .status(APPROVED)
+            .build();
 
         when(userService.findByEmail(principal.getName())).thenReturn(user);
         when(placeService.save(placeAddDto, principal.getName())).thenReturn(place);
 
-        when(modelMapper.map(placeService.save(placeAddDto, principal.getName()), PlaceWithUserDto.class)).thenReturn(new PlaceWithUserDto());
+        when(modelMapper.map(placeService.save(placeAddDto, principal.getName()), PlaceWithUserDto.class))
+            .thenReturn(new PlaceWithUserDto());
 
         mockMvc.perform(post(placeLink + "/propose")
-                .content("{\n" +
-                        "  \"category\": {\n" +
-                        "    \"name\": \"test\"\n" +
-                        "  },\n" +
-                        "  \"discountValues\": [\n" +
-                        "    {\n" +
-                        "      \"specification\": {\n" +
-                        "        \"name\": \"test\"\n" +
-                        "      },\n" +
-                        "      \"value\": 1\n" +
-                        "    }\n" +
-                        "  ],\n" +
-                        "  \"id\": 1,\n" +
-                        "  \"location\": {\n" +
-                        "    \"address\": \"test\",\n" +
-                        "    \"lat\": 1,\n" +
-                        "    \"lng\": 1\n" +
-                        "  },\n" +
-                        "  \"name\": \"string\",\n" +
-                        "  \"openingHoursList\": [\n" +
-                        "    {\n" +
-                        "      \"breakTime\": {\n" +
-                        "        \"endTime\": \"14:00\",\n" +
-                        "        \"startTime\": \"13:00\"\n" +
-                        "      },\n" +
-                        "      \"closeTime\": \"20:00\",\n" +
-                        "      \"openTime\": \"08:00\",\n" +
-                        "      \"weekDay\": \"MONDAY\"\n" +
-                        "    }\n" +
-                        "  ],\n" +
-                        "  \"photos\": [\n" +
-                        "    {\n" +
-                        "      \"name\": \"test\"\n" +
-                        "    }\n" +
-                        "  ],\n" +
-                        "  \"status\": \"PROPOSED\"\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .principal(principal))
-                .andExpect(status().isCreated());
+            .content("{\n" +
+                "  \"category\": {\n" +
+                "    \"name\": \"test\"\n" +
+                "  },\n" +
+                "  \"discountValues\": [\n" +
+                "    {\n" +
+                "      \"specification\": {\n" +
+                "        \"name\": \"test\"\n" +
+                "      },\n" +
+                "      \"value\": 1\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"id\": 1,\n" +
+                "  \"location\": {\n" +
+                "    \"address\": \"test\",\n" +
+                "    \"lat\": 1,\n" +
+                "    \"lng\": 1\n" +
+                "  },\n" +
+                "  \"name\": \"string\",\n" +
+                "  \"openingHoursList\": [\n" +
+                "    {\n" +
+                "      \"breakTime\": {\n" +
+                "        \"endTime\": \"14:00\",\n" +
+                "        \"startTime\": \"13:00\"\n" +
+                "      },\n" +
+                "      \"closeTime\": \"20:00\",\n" +
+                "      \"openTime\": \"08:00\",\n" +
+                "      \"weekDay\": \"MONDAY\"\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"photos\": [\n" +
+                "    {\n" +
+                "      \"name\": \"test\"\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"status\": \"PROPOSED\"\n" +
+                "}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .principal(principal))
+            .andExpect(status().isCreated());
 
         verify(userService).findByEmail(eq(principal.getName()));
         verify(placeService, times(1))
-                .save(placeAddDto, principal.getName());
+            .save(placeAddDto, principal.getName());
 
     }
 
     @Test
     void updatePlace() throws Exception {
         LocationAddressAndGeoForUpdateDto locationAddressAndGeoDto = LocationAddressAndGeoForUpdateDto.builder()
-                .address("Lviv")
-                .lat(1.0)
-                .lng(1.0)
-                .build();
+            .address("Lviv")
+            .lat(1.0)
+            .lng(1.0)
+            .build();
 
         CategoryDto categoryDto = CategoryDto.builder().name("test").build();
 
@@ -207,64 +207,64 @@ class PlaceControllerTest {
         discountValuesDtos.add(discountValueDto);
 
         BreakTimeDto breakTimeDto = BreakTimeDto.builder()
-                .endTime(LocalTime.of(14, 0))
-                .startTime(LocalTime.of(13, 0))
-                .build();
+            .endTime(LocalTime.of(14, 0))
+            .startTime(LocalTime.of(13, 0))
+            .build();
         Set<OpeningHoursDto> openingHoursDtos = new HashSet<>();
         OpeningHoursDto openingHoursDto = OpeningHoursDto.builder()
-                .breakTime(breakTimeDto)
-                .closeTime(LocalTime.of(20, 0))
-                .openTime(LocalTime.of(8, 0))
-                .weekDay(DayOfWeek.MONDAY)
-                .build();
+            .breakTime(breakTimeDto)
+            .closeTime(LocalTime.of(20, 0))
+            .openTime(LocalTime.of(8, 0))
+            .weekDay(DayOfWeek.MONDAY)
+            .build();
         openingHoursDtos.add(openingHoursDto);
 
         PlaceUpdateDto placeUpdateDto = PlaceUpdateDto.builder()
-                .id(1L)
-                .category(categoryDto)
-                .discountValues(discountValuesDtos)
-                .location(locationAddressAndGeoDto)
-                .name("test")
-                .openingHoursList(openingHoursDtos)
-                .build();
+            .id(1L)
+            .category(categoryDto)
+            .discountValues(discountValuesDtos)
+            .location(locationAddressAndGeoDto)
+            .name("test")
+            .openingHoursList(openingHoursDtos)
+            .build();
 
         when(modelMapper.map(placeService.update(anyObject()), PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
 
         this.mockMvc.perform(put(placeLink + "/update")
-                .content("{\n" +
-                        "  \"category\": {\n" +
-                        "    \"name\": \"test\"\n" +
-                        "  },\n" +
-                        "  \"discountValues\": [\n" +
-                        "    {\n" +
-                        "      \"specification\": {\n" +
-                        "        \"name\": \"test\"\n" +
-                        "      },\n" +
-                        "      \"value\": 1\n" +
-                        "    }\n" +
-                        "  ],\n" +
-                        "  \"id\": 1,\n" +
-                        "  \"location\": {\n" +
-                        "    \"address\": \"Lviv\",\n" +
-                        "    \"lat\": 1.0,\n" +
-                        "    \"lng\": 1.0\n" +
-                        "  },\n" +
-                        "  \"name\": \"test\",\n" +
-                        "  \"openingHoursList\": [\n" +
-                        "    {\n" +
-                        "      \"breakTime\": {\n" +
-                        "        \"endTime\": \"14:00\",\n" +
-                        "        \"startTime\": \"13:00\"\n" +
-                        "      },\n" +
-                        "      \"closeTime\": \"20:00\",\n" +
-                        "      \"openTime\": \"08:00\",\n" +
-                        "      \"weekDay\": \"MONDAY\"\n" +
-                        "    }\n" +
-                        "  ]\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content("{\n" +
+                "  \"category\": {\n" +
+                "    \"name\": \"test\"\n" +
+                "  },\n" +
+                "  \"discountValues\": [\n" +
+                "    {\n" +
+                "      \"specification\": {\n" +
+                "        \"name\": \"test\"\n" +
+                "      },\n" +
+                "      \"value\": 1\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"id\": 1,\n" +
+                "  \"location\": {\n" +
+                "    \"address\": \"Lviv\",\n" +
+                "    \"lat\": 1.0,\n" +
+                "    \"lng\": 1.0\n" +
+                "  },\n" +
+                "  \"name\": \"test\",\n" +
+                "  \"openingHoursList\": [\n" +
+                "    {\n" +
+                "      \"breakTime\": {\n" +
+                "        \"endTime\": \"14:00\",\n" +
+                "        \"startTime\": \"13:00\"\n" +
+                "      },\n" +
+                "      \"closeTime\": \"20:00\",\n" +
+                "      \"openTime\": \"08:00\",\n" +
+                "      \"weekDay\": \"MONDAY\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(placeService).update(placeUpdateDto);
     }
@@ -272,19 +272,19 @@ class PlaceControllerTest {
     @Test
     void getInfo() throws Exception {
         this.mockMvc.perform(get(placeLink + "/info/{id}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(placeService, times(1))
-                .getInfoById(eq(1L));
+            .getInfoById(eq(1L));
     }
 
     @Test
     void getFavoritePlaceInfo() throws Exception {
         this.mockMvc.perform(get(placeLink + "/info/favorite/{placeId}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(favoritePlaceService, times(1))
-                .getInfoFavoritePlace(eq(1L));
+            .getInfoFavoritePlace(eq(1L));
     }
 
     @Test
@@ -292,13 +292,13 @@ class PlaceControllerTest {
         Principal principal = mock(Principal.class);
         FavoritePlaceDto favoritePlaceDto = FavoritePlaceDto.builder().name("test").placeId(1L).build();
         this.mockMvc.perform(post(placeLink + "/save/favorite/")
-                .content("{\n" +
-                        "  \"name\": \"test\",\n" +
-                        "  \"placeId\": 1\n" +
-                        "}")
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content("{\n" +
+                "  \"name\": \"test\",\n" +
+                "  \"placeId\": 1\n" +
+                "}")
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(favoritePlaceService).save(favoritePlaceDto, principal.getName());
     }
@@ -323,34 +323,33 @@ class PlaceControllerTest {
 
         filterPlaceDto.setDiscountDto(filterDistanceDto);
 
-
         this.mockMvc.perform(post(placeLink + "/getListPlaceLocationByMapsBounds")
-                .content("{\n" +
-                        "  \"discountDto\": {\n" +
-                        "    \"discountMax\": 1,\n" +
-                        "    \"discountMin\": 1,\n" +
-                        "    \"specification\": {\n" +
-                        "      \"name\": \"test\"\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"distanceFromUserDto\": {\n" +
-                        "    \"distance\": 1,\n" +
-                        "    \"lat\": 1,\n" +
-                        "    \"lng\": 1\n" +
-                        "  },\n" +
-                        "  \"mapBoundsDto\": {\n" +
-                        "    \"northEastLat\": 1,\n" +
-                        "    \"northEastLng\": 1,\n" +
-                        "    \"southWestLat\": 1,\n" +
-                        "    \"southWestLng\": 1\n" +
-                        "  },\n" +
-                        "  \"searchReg\": \"test\",\n" +
-                        "  \"status\": \"PROPOSED\",\n" +
-                        "  \"time\": \"10/10/2010 20:00:00\"\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content("{\n" +
+                "  \"discountDto\": {\n" +
+                "    \"discountMax\": 1,\n" +
+                "    \"discountMin\": 1,\n" +
+                "    \"specification\": {\n" +
+                "      \"name\": \"test\"\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"distanceFromUserDto\": {\n" +
+                "    \"distance\": 1,\n" +
+                "    \"lat\": 1,\n" +
+                "    \"lng\": 1\n" +
+                "  },\n" +
+                "  \"mapBoundsDto\": {\n" +
+                "    \"northEastLat\": 1,\n" +
+                "    \"northEastLng\": 1,\n" +
+                "    \"southWestLat\": 1,\n" +
+                "    \"southWestLng\": 1\n" +
+                "  },\n" +
+                "  \"searchReg\": \"test\",\n" +
+                "  \"status\": \"PROPOSED\",\n" +
+                "  \"time\": \"10/10/2010 20:00:00\"\n" +
+                "}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(placeService).findPlacesByMapsBounds(filterPlaceDto);
 
@@ -363,7 +362,7 @@ class PlaceControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         this.mockMvc.perform(get(placeLink + "/{status}?page=5", APPROVED))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(placeService).getPlacesByStatus(APPROVED, pageable);
     }
@@ -389,33 +388,33 @@ class PlaceControllerTest {
         filterPlaceDto.setDiscountDto(filterDistanceDto);
 
         this.mockMvc.perform(post(placeLink + "/filter")
-                .content("{\n" +
-                        "  \"discountDto\": {\n" +
-                        "    \"discountMax\": 1,\n" +
-                        "    \"discountMin\": 1,\n" +
-                        "    \"specification\": {\n" +
-                        "      \"name\": \"test\"\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"distanceFromUserDto\": {\n" +
-                        "    \"distance\": 1,\n" +
-                        "    \"lat\": 1,\n" +
-                        "    \"lng\": 1\n" +
-                        "  },\n" +
-                        "  \"mapBoundsDto\": {\n" +
-                        "    \"northEastLat\": 1,\n" +
-                        "    \"northEastLng\": 1,\n" +
-                        "    \"southWestLat\": 1,\n" +
-                        "    \"southWestLng\": 1\n" +
-                        "  },\n" +
-                        "  \"searchReg\": \"test\",\n" +
-                        "  \"status\": \"PROPOSED\",\n" +
-                        "  \"time\": \"10/10/2010 20:00:00\"\n" +
-                        "}")
+            .content("{\n" +
+                "  \"discountDto\": {\n" +
+                "    \"discountMax\": 1,\n" +
+                "    \"discountMin\": 1,\n" +
+                "    \"specification\": {\n" +
+                "      \"name\": \"test\"\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"distanceFromUserDto\": {\n" +
+                "    \"distance\": 1,\n" +
+                "    \"lat\": 1,\n" +
+                "    \"lng\": 1\n" +
+                "  },\n" +
+                "  \"mapBoundsDto\": {\n" +
+                "    \"northEastLat\": 1,\n" +
+                "    \"northEastLng\": 1,\n" +
+                "    \"southWestLat\": 1,\n" +
+                "    \"southWestLng\": 1\n" +
+                "  },\n" +
+                "  \"searchReg\": \"test\",\n" +
+                "  \"status\": \"PROPOSED\",\n" +
+                "  \"time\": \"10/10/2010 20:00:00\"\n" +
+                "}")
 
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
         verify(placeService).getPlacesByFilter(eq(filterPlaceDto));
     }
 
@@ -425,13 +424,13 @@ class PlaceControllerTest {
         updatePlaceStatusDto.setId(1L);
         updatePlaceStatusDto.setStatus(PROPOSED);
         this.mockMvc.perform(patch(placeLink + "/status")
-                .content("{\n" +
-                        "  \"id\": 1,\n" +
-                        "  \"status\": \"PROPOSED\"\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content("{\n" +
+                "  \"id\": 1,\n" +
+                "  \"status\": \"PROPOSED\"\n" +
+                "}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(placeService).updateStatus(updatePlaceStatusDto.getId(), updatePlaceStatusDto.getStatus());
 
@@ -461,32 +460,32 @@ class PlaceControllerTest {
         filterPlaceDto.setDiscountDto(filterDistanceDto);
 
         this.mockMvc.perform(post(placeLink + "/filter/predicate?page=5")
-                .content("{\n" +
-                        "  \"discountDto\": {\n" +
-                        "    \"discountMax\": 1,\n" +
-                        "    \"discountMin\": 1,\n" +
-                        "    \"specification\": {\n" +
-                        "      \"name\": \"test\"\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  \"distanceFromUserDto\": {\n" +
-                        "    \"distance\": 1,\n" +
-                        "    \"lat\": 1,\n" +
-                        "    \"lng\": 1\n" +
-                        "  },\n" +
-                        "  \"mapBoundsDto\": {\n" +
-                        "    \"northEastLat\": 1,\n" +
-                        "    \"northEastLng\": 1,\n" +
-                        "    \"southWestLat\": 1,\n" +
-                        "    \"southWestLng\": 1\n" +
-                        "  },\n" +
-                        "  \"searchReg\": \"test\",\n" +
-                        "  \"status\": \"PROPOSED\",\n" +
-                        "  \"time\": \"10/10/2010 20:00:00\"\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content("{\n" +
+                "  \"discountDto\": {\n" +
+                "    \"discountMax\": 1,\n" +
+                "    \"discountMin\": 1,\n" +
+                "    \"specification\": {\n" +
+                "      \"name\": \"test\"\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"distanceFromUserDto\": {\n" +
+                "    \"distance\": 1,\n" +
+                "    \"lat\": 1,\n" +
+                "    \"lng\": 1\n" +
+                "  },\n" +
+                "  \"mapBoundsDto\": {\n" +
+                "    \"northEastLat\": 1,\n" +
+                "    \"northEastLng\": 1,\n" +
+                "    \"southWestLat\": 1,\n" +
+                "    \"southWestLng\": 1\n" +
+                "  },\n" +
+                "  \"searchReg\": \"test\",\n" +
+                "  \"status\": \"PROPOSED\",\n" +
+                "  \"time\": \"10/10/2010 20:00:00\"\n" +
+                "}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
         verify(placeService).filterPlaceBySearchPredicate(filterPlaceDto, pageable);
 
     }
@@ -494,10 +493,10 @@ class PlaceControllerTest {
     @Test
     void getPlaceById() throws Exception {
         this.mockMvc.perform(get(placeLink + "/about/{id}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(placeService, times(1))
-                .getInfoForUpdatingById(eq(1L));
+            .getInfoForUpdatingById(eq(1L));
     }
 
     @Test
@@ -509,16 +508,16 @@ class PlaceControllerTest {
         bulkUpdatePlaceStatusDto.setStatus(PROPOSED);
 
         this.mockMvc.perform(patch(placeLink + "/statuses")
-                .content("{\n" +
-                        "  \"ids\": [\n" +
-                        "    1,\n" +
-                        "    2\n" +
-                        "  ],\n" +
-                        "  \"status\": \"PROPOSED\"\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content("{\n" +
+                "  \"ids\": [\n" +
+                "    1,\n" +
+                "    2\n" +
+                "  ],\n" +
+                "  \"status\": \"PROPOSED\"\n" +
+                "}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(placeService).updateStatuses(bulkUpdatePlaceStatusDto);
     }
@@ -526,7 +525,7 @@ class PlaceControllerTest {
     @Test
     void getStatuses() throws Exception {
         this.mockMvc.perform(get(placeLink + "/statuses"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(placeService).getStatuses();
     }
@@ -534,18 +533,18 @@ class PlaceControllerTest {
     @Test
     void delete() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.delete(placeLink + "/{id}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(placeService, times(1))
-                .deleteById(eq(1L));
+            .deleteById(eq(1L));
     }
 
     @Test
     void bulkDelete() throws Exception {
         List<Long> longList = Arrays.asList(1L, 2L);
         this.mockMvc.perform(MockMvcRequestBuilders.delete(placeLink)
-                .param("ids", "1,2"))
-                .andExpect(status().isOk());
+            .param("ids", "1,2"))
+            .andExpect(status().isOk());
 
         verify(placeService).bulkDelete(longList);
     }

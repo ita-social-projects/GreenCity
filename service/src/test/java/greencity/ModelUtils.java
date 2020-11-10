@@ -1,6 +1,9 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceTranslationVO;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
@@ -23,10 +26,7 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
@@ -48,6 +48,7 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.*;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
+import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
 import org.springframework.mock.web.MockMultipartFile;
@@ -60,12 +61,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -95,7 +90,6 @@ public class ModelUtils {
             .dateOfRegistration(LocalDateTime.now())
             .build();
     }
-
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
@@ -193,18 +187,18 @@ public class ModelUtils {
         return HabitVO.builder().id(1L).image("img.png").build();
     }
 
-    public static Habit getHabit() {
-        return Habit.builder().id(1L).image("img.png").build();
-    }
-
     public static HabitStatus getHabitStatus() {
         return HabitStatus.builder()
             .id(1L)
             .workingDays(10)
             .habitStreak(5)
             .lastEnrollmentDate(LocalDateTime.now())
+            .habitAssign(HabitAssign.builder()
+                .id(1L)
+                .build())
             .habitStatusCalendars(
-                Collections.singletonList(getHabitStatusCalendar())).build();
+                Collections.singletonList(getHabitStatusCalendar()))
+            .build();
     }
 
     public static HabitStatusVO getHabitStatusVO() {
@@ -218,10 +212,10 @@ public class ModelUtils {
 
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
-                .id(1L)
-                .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
-                .status(GoalStatus.DONE)
-                .build();
+            .id(1L)
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+            .status(GoalStatus.DONE)
+            .build();
     }
 
     public static UserGoalResponseDto getCustomUserGoalDto() {
@@ -398,10 +392,10 @@ public class ModelUtils {
             .id(1L)
             .factOfDayStatus(FactOfDayStatus.CURRENT)
             .habitFact(null)
+            .language(getLanguageVO())
             .content("Content")
             .build();
     }
-
 
     public static HabitFact getHabitFact() {
         return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
@@ -475,7 +469,6 @@ public class ModelUtils {
     public static UserProfilePictureDto getUserProfilePictureDto() {
         return new UserProfilePictureDto(1L, "image");
     }
-
 
     public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
         return new FactOfTheDayTranslationDTO(1L, "content");
@@ -551,7 +544,6 @@ public class ModelUtils {
     public static LanguageVO getLanguageVO() {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
-
 
     public static TagVO getTagVO() {
         return new TagVO(1L, "tag", null, null);
@@ -743,5 +735,112 @@ public class ModelUtils {
     public static AddCommentDto getAddCommentDto() {
         return new AddCommentDto("comment", null, null);
     }
-}
 
+    public static AdviceTranslation getAdviceTranslation() {
+        return AdviceTranslation.builder()
+            .id(1L)
+            .language(getLanguage())
+            .content("Text content")
+            .advice(getAdvice())
+            .build();
+    }
+
+    public static OpeningHours getOpeningHours() {
+        OpeningHours openingHoursTest = new OpeningHours();
+        openingHoursTest.setOpenTime(getLocalTime());
+        openingHoursTest.setCloseTime(getLocalTime());
+        openingHoursTest.setBreakTime(BreakTime.builder()
+            .startTime(getLocalTime())
+            .endTime(getLocalTime())
+            .build());
+        openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
+        return openingHoursTest;
+    }
+
+    public static Location getLocation() {
+        return Location.builder()
+            .address("address")
+            .lng(12.12d)
+            .lat(12.12d)
+            .build();
+    }
+
+    public static HabitFactUpdateDto getHabitFactUpdateDto() {
+        return HabitFactUpdateDto.builder()
+            .habit(HabitIdRequestDto.builder()
+                .id(1L)
+                .build())
+            .translations(Collections.singletonList(getHabitFactTranslationUpdateDto()))
+            .build();
+    }
+
+    public static HabitFactTranslationUpdateDto getHabitFactTranslationUpdateDto() {
+        return HabitFactTranslationUpdateDto.builder()
+            .content("")
+            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
+            .language(getLanguageDTO())
+            .build();
+    }
+
+    public static List<AdviceTranslation> getAdviceTranslations() {
+        Language defaultLanguage = getLanguage();
+        return new ArrayList<>(Arrays.asList(
+            AdviceTranslation.builder().id(1L).language(defaultLanguage).content("hello").build(),
+            AdviceTranslation.builder().id(2L).language(defaultLanguage).content("text").build(),
+            AdviceTranslation.builder().id(3L).language(defaultLanguage).content("smile").build()));
+    }
+
+    public static List<AdviceTranslationVO> getAdviceTranslationVOs() {
+        LanguageVO defaultLanguage = getLanguageVO();
+        return new ArrayList<>(Arrays.asList(
+            AdviceTranslationVO.builder().id(1L).language(defaultLanguage).content("hello").build(),
+            AdviceTranslationVO.builder().id(2L).language(defaultLanguage).content("text").build(),
+            AdviceTranslationVO.builder().id(3L).language(defaultLanguage).content("smile").build()));
+    }
+
+    public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
+        return Arrays.asList(
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+    }
+
+    public static List<Advice> getAdvices() {
+        List<AdviceTranslation> adviceTranslations = getAdviceTranslations();
+        return new ArrayList<>(Arrays.asList(
+            Advice.builder().id(1L).habit(Habit.builder().id(1L).build())
+                .translations(adviceTranslations).build(),
+            Advice.builder().id(2L).habit(Habit.builder().id(1L).build()).translations(adviceTranslations).build(),
+            Advice.builder().id(3L).habit(Habit.builder().id(1L).build()).translations(adviceTranslations).build()));
+    }
+
+    public static List<AdviceVO> getAdviceVOs() {
+        List<AdviceTranslationVO> adviceTranslationVOs = getAdviceTranslationVOs();
+        return new ArrayList<>(Arrays.asList(
+            AdviceVO.builder().id(1L).habit(new HabitIdRequestDto(1L)).translations(adviceTranslationVOs).build(),
+            AdviceVO.builder().id(2L).habit(new HabitIdRequestDto(1L)).translations(adviceTranslationVOs).build(),
+            AdviceVO.builder().id(3L).habit(new HabitIdRequestDto(1L)).translations(adviceTranslationVOs).build()));
+    }
+
+    public static Habit getHabit() {
+        return Habit.builder().id(1L).image("image.png").build();
+    }
+
+    public static Advice getAdvice() {
+        return Advice.builder().id(1L)
+            .translations(getAdviceTranslations())
+            .habit(getHabit())
+            .build();
+    }
+
+    public static AdviceVO getAdviceVO() {
+        return AdviceVO.builder().id(1L)
+            .translations(getAdviceTranslationVOs())
+            .habit(new HabitIdRequestDto(1L))
+            .build();
+    }
+
+    public static AdvicePostDto getAdvicePostDto() {
+        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
+    }
+}

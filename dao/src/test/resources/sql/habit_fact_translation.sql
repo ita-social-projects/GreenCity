@@ -48,8 +48,8 @@ VALUES (1, 1),
        (5, 3);
 
 INSERT INTO habit_fact_translations (language_id, habit_fact_id, content, fact_of_day_status)
-VALUES (1, 1, 'Тест факт', 1),
-       (2, 2, 'testFactTranslationsContent', 0),
+VALUES (1, 1, 'Тест факт # 1', 0),
+       (2, 2, 'testFactTranslationsContent', 1),
        (3, 3, 'Тест факт', 2),
        (1, 4, 'Тест факт2', 0),
        (2, 5, 'testFactTranslationsContent2', 0);

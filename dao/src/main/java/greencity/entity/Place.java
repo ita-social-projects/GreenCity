@@ -20,8 +20,7 @@ import lombok.*;
         "location", "favoritePlaces", "category", "webPages", "status", "discountValues"})
 @ToString(
     exclude = {"discountValues", "author", "openingHoursList", "comments", "photos",
-        "location", "favoritePlaces", "category", "webPages", "status", "discountValues"}
-)
+        "location", "favoritePlaces", "category", "webPages", "status", "discountValues"})
 @Table(name = "places")
 public class Place {
     @Id

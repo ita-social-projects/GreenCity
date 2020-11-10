@@ -6,8 +6,8 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalPostDto;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.localization.GoalTranslation;
-import greencity.entity.Goal;
+import greencity.dto.goal.GoalTranslationVO;
+import greencity.dto.goal.GoalVO;
 import greencity.service.GoalService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class GoalController {
     private final GoalService goalService;
     private final ModelMapper mapper;
+
     /**
      * Constructor with parameters.
      */
@@ -58,7 +58,7 @@ public class GoalController {
     }
 
     /**
-     * The controller which saveGoal {@link Goal}.
+     * The controller which saveGoal {@link GoalVO}.
      *
      * @param goalPostDto {@link GoalDto}
      * @return {@link ResponseEntity}
@@ -71,14 +71,11 @@ public class GoalController {
     })
     @PostMapping
     public ResponseEntity<List<LanguageTranslationDTO>> save(@Valid @RequestBody GoalPostDto goalPostDto) {
-        List<LanguageTranslationDTO> response = mapper.map(goalService.saveGoal(goalPostDto),
-            new TypeToken<List<LanguageTranslationDTO>>() {
-            }.getType());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(goalService.saveGoal(goalPostDto));
     }
 
     /**
-     * The controller which update {@link GoalTranslation}.
+     * The controller which update {@link GoalTranslationVO}.
      *
      * @param goalPostDto {@link GoalPostDto}
      * @return {@link ResponseEntity}
@@ -92,16 +89,13 @@ public class GoalController {
     @PutMapping("/{id}")
     public ResponseEntity<List<LanguageTranslationDTO>> update(
         @Valid @RequestBody GoalPostDto goalPostDto) {
-        List<LanguageTranslationDTO> response = mapper.map(goalService.update(goalPostDto),
-            new TypeToken<List<LanguageTranslationDTO>>() {
-            }.getType());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(goalService.update(goalPostDto));
     }
 
     /**
-     * The controller which delete {@link Goal}.
+     * The controller which delete {@link GoalVO}.
      *
-     * @param id of {@link Goal}
+     * @param id of {@link GoalVO}
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Delete goal")

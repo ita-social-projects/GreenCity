@@ -6,7 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
-import greencity.entity.SocialNetworkImage;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.service.SocialNetworkImageService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -34,42 +34,42 @@ public class ManagementSocialNetworkImagesController {
     private final SocialNetworkImageService socialNetworkImageService;
 
     /**
-     * Method that returns management page with all {@link SocialNetworkImage}.
+     * Method that returns management page with all {@link SocialNetworkImageVO}.
      *
-     * @param query Query for searching related data
-     * @param model Model that will be configured and returned to user.
+     * @param query    Query for searching related data
+     * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      * @author Orest Mamchuk
      */
     @GetMapping
     public String getAllSocialNetworkImages(@RequestParam(required = false, name = "query") String query, Model model,
-                                            @ApiIgnore Pageable pageable) {
+        @ApiIgnore Pageable pageable) {
         PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages = query == null || query.isEmpty()
-                ? socialNetworkImageService.findAll(pageable) : socialNetworkImageService.searchBy(pageable, query);
+            ? socialNetworkImageService.findAll(pageable)
+            : socialNetworkImageService.searchBy(pageable, query);
         model.addAttribute("pageable", socialNetworkImages);
         return "core/management_social_network_images";
     }
 
     /**
-     * Method for creating {@link SocialNetworkImage}.
+     * Method for creating {@link SocialNetworkImageVO}.
      *
-     * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImage} entity.
-     * @param file                 of {@link MultipartFile}
+     * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO}
+     *                                     entity.
+     * @param file                         of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
     @ApiOperation(value = "Save SocialNetworkImages.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @ResponseBody
     @PostMapping("/")
-    public GenericResponseDto save(@Valid
-                                   @RequestPart SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-                                   BindingResult bindingResult,
-                                   @ImageValidation
-                                   @RequestParam(required = false, name = "file") MultipartFile file) {
+    public GenericResponseDto save(@Valid @RequestPart SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             socialNetworkImageService.save(socialNetworkImageRequestDTO, file);
         }
@@ -77,7 +77,7 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method which deteles {@link SocialNetworkImage}  by given id.
+     * Method which deteles {@link SocialNetworkImageVO} by given id.
      *
      * @param id of Social Network Images
      * @return {@link ResponseEntity}
@@ -89,7 +89,7 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method for deleting {@link SocialNetworkImage} by given id.
+     * Method for deleting {@link SocialNetworkImageVO} by given id.
      *
      * @param listId list of IDs.
      * @return {@link ResponseEntity}
@@ -112,24 +112,23 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method which updates {@link SocialNetworkImage}.
+     * Method which updates {@link SocialNetworkImageVO}.
      *
-     * @param socialNetworkImageResponseDTO of {@link SocialNetworkImageResponseDTO}.
-     * @param file                 of {@link MultipartFile}.
+     * @param socialNetworkImageResponseDTO of
+     *                                      {@link SocialNetworkImageResponseDTO}.
+     * @param file                          of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
     @ApiOperation(value = "Update Econews.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")
-    public GenericResponseDto update(@Valid
-                                     @RequestPart SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
-                                     BindingResult bindingResult,
-                                     @ImageValidation
-                                     @RequestPart(required = false, name = "file") MultipartFile file) {
+    public GenericResponseDto update(@Valid @RequestPart SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+        BindingResult bindingResult,
+        @ImageValidation @RequestPart(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             socialNetworkImageService.update(socialNetworkImageResponseDTO, file);
         }

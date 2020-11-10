@@ -49,7 +49,8 @@ public class NewsSubscriberController {
     /**
      * Method saves email for receiving news.
      *
-     * @param dto {@link NewsSubscriberResponseDto} object with email address for receiving news.
+     * @param dto {@link NewsSubscriberResponseDto} object with email address for
+     *            receiving news.
      * @return {@link NewsSubscriberResponseDto} object with saving email.
      * @author Bogdan Kuzenko
      */
@@ -69,7 +70,8 @@ public class NewsSubscriberController {
     /**
      * Method for delete subscriber email from database.
      *
-     * @param email {@link NewsSubscriberResponseDto} object with email address for deleting.
+     * @param email {@link NewsSubscriberResponseDto} object with email address for
+     *              deleting.
      * @return id of deleted object.
      */
     @ApiOperation(value = "Deleting an email from subscribe table in database.")
@@ -80,7 +82,7 @@ public class NewsSubscriberController {
     })
     @GetMapping("/unsubscribe")
     public ResponseEntity<Long> delete(@RequestParam @Valid String email,
-                                       @RequestParam String unsubscribeToken) {
+        @RequestParam String unsubscribeToken) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(newsSubscriberService.unsubscribe(email, unsubscribeToken));
     }

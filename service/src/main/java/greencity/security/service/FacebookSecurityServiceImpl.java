@@ -50,8 +50,8 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
      */
     @Autowired
     public FacebookSecurityServiceImpl(UserService userService,
-                                       JwtTool jwtTool,
-                                       ModelMapper modelMapper) {
+        JwtTool jwtTool,
+        ModelMapper modelMapper) {
         this.userService = userService;
         this.jwtTool = jwtTool;
         this.modelMapper = modelMapper;
@@ -94,7 +94,7 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
         if (accessToken != null) {
             Facebook facebook = new FacebookTemplate(accessToken);
             UserVO byEmail = facebook.fetchObject(AppConstant.FACEBOOK_OBJECT_ID, UserVO.class, AppConstant.USERNAME,
-                    REGISTRATION_EMAIL_FIELD_NAME);
+                REGISTRATION_EMAIL_FIELD_NAME);
             String email = byEmail.getEmail();
             log.info(email);
             String name = byEmail.getName();

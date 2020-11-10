@@ -28,7 +28,8 @@ public class TipsAndTricksTranslationServiceImpl implements TipsAndTricksTransla
             modelMapper.map(titleTranslations, new TypeToken<List<TitleTranslation>>() {
             }.getType());
         return modelMapper.map(titleTranslationRepo.saveAll(entityTitleTranslations),
-            new TypeToken<List<TitleTranslationVO>>() {}.getType());
+            new TypeToken<List<TitleTranslationVO>>() {
+            }.getType());
     }
 
     /**
@@ -40,6 +41,7 @@ public class TipsAndTricksTranslationServiceImpl implements TipsAndTricksTransla
             modelMapper.map(textTranslations, new TypeToken<List<TextTranslation>>() {
             }.getType());
         return modelMapper.map(textTranslationRepo.saveAll(entityTextTranslations),
-            new TypeToken<List<TextTranslationVO>>() {}.getType());
+            new TypeToken<List<TextTranslationVO>>() {
+            }.getType());
     }
 }

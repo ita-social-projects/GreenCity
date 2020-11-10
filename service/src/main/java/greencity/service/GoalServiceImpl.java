@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.goal.*;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Goal;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.GoalNotFoundException;
@@ -39,34 +40,33 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<GoalTranslationVO> saveGoal(GoalPostDto goal) {
-        Goal saved =  goalRepo.save(modelMapper.map(goal, Goal.class));
-        return saveTranslations(goal, saved);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<GoalTranslationVO> saveTranslations(GoalPostDto goalPostDto, Goal goal) {
-        List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
-            new TypeToken<List<GoalTranslation>>() {
+    public List<LanguageTranslationDTO> saveGoal(GoalPostDto goal) {
+        Goal savedGoal = modelMapper.map(goal, Goal.class);
+        savedGoal.getTranslations().forEach(a -> a.setGoal(savedGoal));
+        goalRepo.save(savedGoal);
+        return modelMapper.map(savedGoal.getTranslations(),
+            new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType());
-        translations.forEach(a -> a.setGoal(goal));
-        List<GoalTranslation> save = goalTranslationRepo.saveAll(translations);
-        return modelMapper.map(save, new TypeToken<List<GoalTranslationVO>>() {
-        }.getType());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<GoalTranslationVO> update(GoalPostDto goalPostDto) {
+    public List<LanguageTranslationDTO> update(GoalPostDto goalPostDto) {
         Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getGoal().getId());
         if (optionalGoal.isPresent()) {
-            Goal updated = optionalGoal.get();
-            goalTranslationRepo.deleteAll(updated.getTranslations());
-            return saveTranslations(goalPostDto, updated);
+            Goal updatedGoal = optionalGoal.get();
+            List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
+                new TypeToken<List<GoalTranslation>>() {
+                }.getType());
+            translations.forEach(a -> a.setGoal(updatedGoal));
+            updatedGoal.getTranslations().clear();
+            updatedGoal.getTranslations().addAll(translations);
+            goalRepo.save(updatedGoal);
+            return modelMapper.map(updatedGoal.getTranslations(),
+                new TypeToken<List<LanguageTranslationDTO>>() {
+                }.getType());
         } else {
             throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
         }

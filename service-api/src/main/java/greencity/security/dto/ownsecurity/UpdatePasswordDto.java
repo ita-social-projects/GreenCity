@@ -17,20 +17,17 @@ public class UpdatePasswordDto {
     @NotBlank
     @Pattern(
         regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_\\-{}|:;”’?/<>,.\\]\\[]+).{8,}$",
-        message = ServiceValidationConstants.INVALID_PASSWORD
-    )
+        message = ServiceValidationConstants.INVALID_PASSWORD)
     private String currentPassword;
     @NotBlank
     @Pattern(
         regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_\\-{}|:;”’?/<>,.\\]\\[]+).{8,}$",
-        message = ServiceValidationConstants.INVALID_PASSWORD
-    )
+        message = ServiceValidationConstants.INVALID_PASSWORD)
     private String password;
 
     @NotBlank
     @Pattern(
         regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_\\-{}|:;”’?/<>,.\\]\\[]+).{8,}$",
-        message = ServiceValidationConstants.INVALID_PASSWORD
-    )
+        message = ServiceValidationConstants.INVALID_PASSWORD)
     private String confirmPassword;
 }

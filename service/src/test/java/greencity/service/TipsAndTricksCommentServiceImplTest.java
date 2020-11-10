@@ -171,8 +171,8 @@ class TipsAndTricksCommentServiceImplTest {
 
         when(tipsAndTricksCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateAsc(anyLong()))
             .thenReturn(tipsAndTricksComments);
-        when(modelMapper.map(tipsAndTricksComments.get(0), TipsAndTricksCommentDto.class)).
-            thenReturn(tipsAndTricksCommentDto);
+        when(modelMapper.map(tipsAndTricksComments.get(0), TipsAndTricksCommentDto.class))
+            .thenReturn(tipsAndTricksCommentDto);
 
         assertEquals(dtoList,
             tipsAndTricksCommentService.findAllReplies(tipsAndTricksComment.getParentComment().getId()));

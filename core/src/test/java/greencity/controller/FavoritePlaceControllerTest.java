@@ -50,8 +50,7 @@ class FavoritePlaceControllerTest {
     @Test
     void findAllByUserEmail() throws Exception {
         mockMvc.perform(get(favoritePlaceLink + "/")
-            .principal(ModelUtils.getPrincipal())
-        ).andExpect(status().isOk());
+            .principal(ModelUtils.getPrincipal())).andExpect(status().isOk());
 
         verify(favoritePlaceService, times(1)).findAllByUserEmail(eq("test@gmail.com"));
     }
@@ -62,7 +61,7 @@ class FavoritePlaceControllerTest {
 
         when(
             modelMapper.map(favoritePlaceService.update(favoritePlaceDto, principal.getName()), FavoritePlaceDto.class))
-            .thenReturn(favoritePlaceDto);
+                .thenReturn(favoritePlaceDto);
 
         mockMvc.perform(put(favoritePlaceLink + "/")
             .content("{\n" +
@@ -70,8 +69,7 @@ class FavoritePlaceControllerTest {
                 "  \"placeId\": 1\n" +
                 "}")
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
         verify(favoritePlaceService, times(1)).update(favoritePlaceDto, principal.getName());
     }

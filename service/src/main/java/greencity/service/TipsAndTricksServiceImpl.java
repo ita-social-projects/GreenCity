@@ -62,7 +62,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     @Transactional
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
-                                         String email) {
+        String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
         toSave.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
         if (tipsAndTricksDtoRequest.getImage() != null) {
@@ -110,8 +110,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                         .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()),
                             Language.class))
                         .build())
-                    .collect(Collectors.toList())
-            )
+                    .collect(Collectors.toList()))
             .textTranslations(
                 tipsAndTricksDtoManagement.getTextTranslations().stream()
                     .map(el -> TextTranslation.builder()
@@ -119,8 +118,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                         .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()),
                             Language.class))
                         .build())
-                    .collect(Collectors.toList())
-            )
+                    .collect(Collectors.toList()))
             .build();
         tipsAndTricks.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
         tipsAndTricks.getTitleTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
@@ -153,7 +151,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public void update(TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-                       MultipartFile image) {
+        MultipartFile image) {
         TipsAndTricks toUpdate = findTipsAndTricksById(tipsAndTricksDtoManagement.getId());
         toUpdate.setSource(tipsAndTricksDtoManagement.getSource());
         toUpdate.setTags(modelMapper.map(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()),
@@ -163,14 +161,14 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             toUpdate.setImagePath(fileService.upload(image).toString());
         }
         toUpdate.getTitleTranslations()
-            .forEach(titleTranslation ->
-                titleTranslation.setContent(tipsAndTricksDtoManagement.getTitleTranslations().stream()
+            .forEach(titleTranslation -> titleTranslation
+                .setContent(tipsAndTricksDtoManagement.getTitleTranslations().stream()
                     .filter(elem -> elem.getLanguageCode().equals(titleTranslation.getLanguage().getCode()))
                     .findFirst().orElseThrow(RuntimeException::new).getContent()));
 
         toUpdate.getTextTranslations()
-            .forEach(textTranslation ->
-                textTranslation.setContent(tipsAndTricksDtoManagement.getTextTranslations().stream()
+            .forEach(
+                textTranslation -> textTranslation.setContent(tipsAndTricksDtoManagement.getTextTranslations().stream()
                     .filter(elem -> elem.getLanguageCode().equals(textTranslation.getLanguage().getCode()))
                     .findFirst().orElseThrow(RuntimeException::new).getContent()));
 
@@ -210,8 +208,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             tipsAndTricksDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
@@ -244,8 +241,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             tipsAndTricksDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages()
-        );
+            pages.getTotalPages());
     }
 
     /**
@@ -339,8 +335,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             tipsAndTricksDtos,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages()
-        );
+            page.getTotalPages());
     }
 
     /**
@@ -386,7 +381,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      */
     @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
     public void unlikeComment(UserVO user, TipsAndTricksCommentVO comment) {
-        comment.getUsersLiked().remove(user);
+        comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
     }
 
     /**
@@ -401,7 +396,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     }
 
     /**
-     * * This method used for build {@link SearchCriteria} depends on {@link TipsAndTricksViewDto}.
+     * * This method used for build {@link SearchCriteria} depends on
+     * {@link TipsAndTricksViewDto}.
      *
      * @param tipsAndTricksViewDto used for receive parameters for filters from UI.
      * @return {@link SearchCriteria}.

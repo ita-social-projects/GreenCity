@@ -35,14 +35,14 @@ class HabitStatusControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitStatusController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
     void getHabitStatusByHabitAssignId() throws Exception {
         mockMvc.perform(get(habitStatusLink + "/assign/{id}/status", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
         verify(habitStatusService).findStatusByHabitAssignId(1L);
     }
 
@@ -56,7 +56,7 @@ class HabitStatusControllerTest {
     @Test
     void enrollHabit() throws Exception {
         mockMvc.perform(post(habitStatusLink + "/{id}/status/enroll", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
         verify(habitStatusService).enrollHabit(1L, 1L);
     }
 
@@ -67,13 +67,13 @@ class HabitStatusControllerTest {
         habitStatusForUpdateDto.setWorkingDays(5);
         habitStatusForUpdateDto.setLastEnrollmentDate(LocalDateTime.parse("2020-10-10T16:03:01.652"));
         mockMvc.perform(put(habitStatusLink + "/{id}/status", 1)
-                .content("{\n" +
-                        "  \"habitStreak\": 1,\n" +
-                        "  \"lastEnrollmentDate\": \"2020-10-10T16:03:01.652\",\n" +
-                        "  \"workingDays\": 5\n" +
-                        "}")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content("{\n" +
+                "  \"habitStreak\": 1,\n" +
+                "  \"lastEnrollmentDate\": \"2020-10-10T16:03:01.652\",\n" +
+                "  \"workingDays\": 5\n" +
+                "}")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
         verify(habitStatusService).update(1L, 1L, habitStatusForUpdateDto);
     }
 }

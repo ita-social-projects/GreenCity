@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import static greencity.constant.ServiceValidationConstants.*;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

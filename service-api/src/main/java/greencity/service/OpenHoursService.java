@@ -58,7 +58,8 @@ public interface OpenHoursService {
     OpeningHoursVO update(Long id, OpeningHoursVO updatedHours);
 
     /**
-     * Finds all {@code OpeningHours} records related to the specified {@code Place}.
+     * Finds all {@code OpeningHours} records related to the specified
+     * {@code Place}.
      *
      * @param placeId to find by.
      * @return a list of the {@code OpeningHours} for the place by id.
@@ -66,7 +67,8 @@ public interface OpenHoursService {
     Set<OpeningHoursVO> findAllByPlaceId(Long placeId);
 
     /**
-     * Delete all {@code OpeningHours} records related to the specified {@code Place}.
+     * Delete all {@code OpeningHours} records related to the specified
+     * {@code Place}.
      *
      * @param placeId to find by.
      */

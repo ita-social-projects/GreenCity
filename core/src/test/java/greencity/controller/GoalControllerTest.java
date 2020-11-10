@@ -41,33 +41,33 @@ class GoalControllerTest {
 
     public static final String content =
         "{\n"
-        + "  \"goal\": {\n"
-        + "    \"id\": 1\n"
-        + "  },\n"
-        + "  \"translations\": [\n"
-        + "    {\n"
-        + "      \"content\": \"Еко\",\n"
-        + "      \"language\": {\n"
-        + "        \"code\": \"ua\",\n"
-        + "        \"id\": 1\n"
-        + "      }\n"
-        + "    },\n"
-        + "    {\n"
-        + "      \"content\": \"Eco\",\n"
-        + "      \"language\": {\n"
-        + "        \"code\": \"en\",\n"
-        + "        \"id\": 2\n"
-        + "      }\n"
-        + "    },\n"
-        + "    {\n"
-        + "      \"content\": \"Эко\",\n"
-        + "      \"language\": {\n"
-        + "        \"code\": \"ru\",\n"
-        + "        \"id\": 3\n"
-        + "      }\n"
-        + "    }\n"
-        + "  ]\n"
-        + "}";
+            + "  \"goal\": {\n"
+            + "    \"id\": 1\n"
+            + "  },\n"
+            + "  \"translations\": [\n"
+            + "    {\n"
+            + "      \"content\": \"Еко\",\n"
+            + "      \"language\": {\n"
+            + "        \"code\": \"ua\",\n"
+            + "        \"id\": 1\n"
+            + "      }\n"
+            + "    },\n"
+            + "    {\n"
+            + "      \"content\": \"Eco\",\n"
+            + "      \"language\": {\n"
+            + "        \"code\": \"en\",\n"
+            + "        \"id\": 2\n"
+            + "      }\n"
+            + "    },\n"
+            + "    {\n"
+            + "      \"content\": \"Эко\",\n"
+            + "      \"language\": {\n"
+            + "        \"code\": \"ru\",\n"
+            + "        \"id\": 3\n"
+            + "      }\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}";
 
     @BeforeEach
     void setUp() {
@@ -110,7 +110,7 @@ class GoalControllerTest {
     @Test
     void deleteTest() throws Exception {
         mockMvc.perform(delete(goalLink + "/1")
-            .param("id","1"))
+            .param("id", "1"))
             .andExpect(status().isOk());
         verify(goalService, times(1)).delete(1L);
     }

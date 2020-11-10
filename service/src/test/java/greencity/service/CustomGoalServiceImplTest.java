@@ -66,8 +66,7 @@ class CustomGoalServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.emptyList()),
-            1L
-        );
+            1L);
         assertTrue(saveResult.isEmpty());
         assertTrue(user.getCustomGoals().isEmpty());
     }
@@ -75,7 +74,7 @@ class CustomGoalServiceImplTest {
     @Test
     void saveNonExistentBulkSaveCustomGoalDtoTest() {
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
-        CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null,null);
+        CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null, null);
         UserVO userVO = ModelUtils.getUserVO();
         when(userService.findById(1L)).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
@@ -83,8 +82,7 @@ class CustomGoalServiceImplTest {
         when(modelMapper.map(customGoal, CustomGoalResponseDto.class)).thenReturn(new CustomGoalResponseDto(1L, "bar"));
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave)),
-            1L
-        );
+            1L);
         assertEquals(user.getCustomGoals().get(0), customGoal);
         assertEquals("bar", saveResult.get(0).getText());
     }
@@ -92,7 +90,7 @@ class CustomGoalServiceImplTest {
     @Test
     void saveDuplicatedBulkSaveCustomGoalDtoTest() {
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
-        CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null,null);
+        CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null, null);
         user.setCustomGoals(Collections.singletonList(customGoal));
         UserVO userVO = ModelUtils.getUserVO();
         when(userService.findById(1L)).thenReturn(userVO);
@@ -104,7 +102,7 @@ class CustomGoalServiceImplTest {
 
     @Test
     void findAllTest() {
-        CustomGoal customGoal = new CustomGoal(1L, "foo", null, null,null);
+        CustomGoal customGoal = new CustomGoal(1L, "foo", null, null, null);
         when(customGoalRepo.findAll()).thenReturn(Collections.singletonList(customGoal));
         when(modelMapper.map(customGoal, CustomGoalResponseDto.class))
             .thenReturn(new CustomGoalResponseDto(customGoal.getId(), customGoal.getText()));

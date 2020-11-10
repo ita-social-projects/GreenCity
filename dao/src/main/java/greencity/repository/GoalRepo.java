@@ -32,7 +32,7 @@ public interface GoalRepo extends JpaRepository<Goal, Long> {
     @Query(nativeQuery = true, value = " UPDATE user_goals "
         + " SET status = :status, date_completed = :date WHERE goal_id = :id AND user_id = :userId ")
     void changeGoalStatus(@Param(value = "userId") Long userId,
-                          @Param(value = "id") Long id,
-                          @Param(value = "status") String status,
-                          @Param(value = "date") LocalDateTime date);
+        @Param(value = "id") Long id,
+        @Param(value = "status") String status,
+        @Param(value = "date") LocalDateTime date);
 }

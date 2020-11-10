@@ -21,7 +21,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class    PlaceAddDto {
+public class PlaceAddDto {
     @NotBlank
     @Length(max = ServiceValidationConstants.PLACE_NAME_MAX_LENGTH)
     private String name;
