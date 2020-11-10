@@ -1,9 +1,10 @@
 package greencity.dto.habit;
 
 import greencity.constant.AppConstant;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.validator.constraints.Range;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import org.hibernate.validator.constraints.Range;
 @Builder
 public class HabitAssignPropertiesDto {
     @NotNull
-    @Range(min = AppConstant.MIN_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER,
-        max = AppConstant.MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
+    @Min(AppConstant.MIN_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
+    @Max(AppConstant.MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
     private Integer duration;
 }

@@ -19,8 +19,8 @@ public final class AppConstant {
     public static final String FACEBOOK_OBJECT_ID = "me";
     public static final Integer MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER = 6;
     public static final Integer DEFAULT_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER = 14;
-    public static final Integer MIN_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER = 7;
-    public static final Integer MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER = 56;
+    public static final int MIN_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER = 7;
+    public static final int MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER = 56;
 
     private AppConstant() {
     }
