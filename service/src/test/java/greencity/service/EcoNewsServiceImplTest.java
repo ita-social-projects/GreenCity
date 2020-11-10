@@ -129,9 +129,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
 
-        assertThrows(NotSavedException.class, () ->
-            ecoNewsService.save(addEcoNewsDtoRequest, null, TestConst.EMAIL)
-        );
+        assertThrows(NotSavedException.class, () -> ecoNewsService.save(addEcoNewsDtoRequest, null, TestConst.EMAIL));
     }
 
     @Test()
@@ -143,9 +141,7 @@ class EcoNewsServiceImplTest {
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
-        assertThrows(NotSavedException.class, () ->
-            ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL)
-        );
+        assertThrows(NotSavedException.class, () -> ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL));
     }
 
     @Test
@@ -174,9 +170,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.getThreeLastEcoNews())
             .thenReturn(ecoNews);
 
-        assertThrows(NotFoundException.class, () ->
-            ecoNewsService.getThreeLastEcoNews()
-        );
+        assertThrows(NotFoundException.class, () -> ecoNewsService.getThreeLastEcoNews());
     }
 
     @Test
@@ -191,8 +185,7 @@ class EcoNewsServiceImplTest {
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
             new EcoNewsDto(now, "test image path", 1L, "test title", "test text", null,
-                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList())
-        );
+                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList()));
         PageableDto<EcoNewsDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
         when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);

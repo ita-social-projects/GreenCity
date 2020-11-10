@@ -92,14 +92,14 @@ class GoogleSecurityServiceImplTest {
             .dateOfRegistration(LocalDateTime.now())
             .build();
         UserVO userVO = UserVO.builder()
-                .id(1L)
-                .email(TestConst.EMAIL)
-                .name(TestConst.NAME)
-                .role(ROLE.ROLE_USER)
-                .userStatus(UserStatus.DEACTIVATED)
-                .lastVisit(LocalDateTime.now())
-                .dateOfRegistration(LocalDateTime.now())
-                .build();
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(ROLE.ROLE_USER)
+            .userStatus(UserStatus.DEACTIVATED)
+            .lastVisit(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .build();
         when(googleIdTokenVerifier.verify("1234")).thenReturn(googleIdToken);
         when(googleIdToken.getPayload()).thenReturn(payload);
         when(payload.getEmail()).thenReturn("test@mail.com");

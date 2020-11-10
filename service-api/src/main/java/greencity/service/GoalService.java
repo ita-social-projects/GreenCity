@@ -1,8 +1,7 @@
 package greencity.service;
 
-import greencity.dto.goal.GoalDto;
-import greencity.dto.goal.ShoppingListDtoResponse;
-import greencity.dto.goal.CustomGoalVO;
+import greencity.dto.goal.*;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 
@@ -18,33 +17,26 @@ public interface GoalService {
     List<GoalDto> findAll(String language);
 
     /**
-     * Method for getting {@link UserGoalResponseDto} from {@link UserGoalVO}.
+     * Method for saving goal from {@link GoalPostDto}.
      *
-     * @param userGoal needed text from GoalTranslation
-     * @return userGoalResponseDto.
+     * @param goalPostDto needed text
+     * @author Dmytro Khonko
      */
-    UserGoalResponseDto getUserGoalResponseDtoFromPredefinedGoal(UserGoalVO userGoal);
+    List<LanguageTranslationDTO> saveGoal(GoalPostDto goalPostDto);
 
     /**
-     * Method for getting {@link UserGoalResponseDto} from {@link UserGoalVO} if there was set a {@link CustomGoalVO}.
+     * Method to update goal translations from {@link GoalPostDto}.
      *
-     * @param userGoal needed text from CustomGoal
-     * @return userGoalResponseDto.
+     * @param goalPostDto new text
+     * @author Dmytro Khonko
      */
-    UserGoalResponseDto getUserGoalResponseDtoFromCustomGoal(UserGoalVO userGoal);
+    List<LanguageTranslationDTO> update(GoalPostDto goalPostDto);
 
     /**
-     * Method returns shopping list by user id.
+     * Method delete goal.
      *
-     * @return shopping list {@link ShoppingListDtoResponse}.
-     * @author Marian Datsko
+     * @param goalId id of goal you need to delete
+     * @author Dmytro Khonko
      */
-    List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode);
-
-    /**
-     * Method change goal or custom goal status.
-     *
-     * @author Marian Datsko
-     */
-    void changeGoalOrCustomGoalStatus(Long userId, boolean status, Long goalId, Long customGoalId);
+    void delete(Long goalId);
 }

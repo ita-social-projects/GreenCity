@@ -236,19 +236,19 @@ class FavoritePlaceServiceImplTest {
         location.setLat(favoritePlaceVO.getPlace().getLocation().getLat());
         location.setAddress(favoritePlaceVO.getPlace().getLocation().getAddress());
         PlaceByBoundsDto placeByBoundsDto =
-                new PlaceByBoundsDto(favoritePlaceVO.getId(), favoritePlaceVO.getName(), location);
+            new PlaceByBoundsDto(favoritePlaceVO.getId(), favoritePlaceVO.getName(), location);
         when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(favoritePlace);
         when(modelMapper.map(favoritePlace, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
 
         assertEquals(placeByBoundsDto,
-                favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
+            favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
     }
 
     @Test
     void getFavoritePlaceWithLocationWrongIdException() {
         when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(null);
         assertThrows(WrongIdException.class,
-                () -> favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
+            () -> favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
     }
 
 }

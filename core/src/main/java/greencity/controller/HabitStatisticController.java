@@ -4,14 +4,13 @@ import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitStatistic;
 import greencity.service.HabitStatisticService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -34,9 +33,9 @@ public class HabitStatisticController {
     private final HabitStatisticService habitStatisticService;
 
     /**
-     * Method for finding all {@link HabitStatisticDto} by {@link Habit id}.
+     * Method for finding all {@link HabitStatisticDto} by {@link HabitVO id}.
      *
-     * @param id {@link Habit} id.
+     * @param id {@link HabitVO} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
     @ApiOperation(value = "Find all statistics by habit id.")
@@ -52,9 +51,9 @@ public class HabitStatisticController {
     }
 
     /**
-     * Method for finding {@link HabitStatisticDto} by {@link HabitAssign id}.
+     * Method for finding {@link HabitStatisticDto} by {@link HabitAssignVO id}.
      *
-     * @param id {@link HabitAssign} id.
+     * @param id {@link HabitAssignVO} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
     @ApiOperation(value = "Find all statistics by habit assign id.")
@@ -71,11 +70,12 @@ public class HabitStatisticController {
     }
 
     /**
-     * Method for creating {@link HabitStatistic} by {@link Habit} id that is assigned for current user.
+     * Method for creating {@link HabitStatisticDto} by {@link HabitVO} id that is
+     * assigned for current user.
      *
-     * @param addHabitStatisticDto dto for {@link HabitStatistic} entity.
+     * @param addHabitStatisticDto dto for {@link HabitStatisticDto} entity.
      * @param userVO               {@link UserVO} instance.
-     * @param id                   {@link Habit} id.
+     * @param id                   {@link HabitVO} id.
      * @return dto {@link AddHabitStatisticDto} instance.
      * @author Yuriy Olkhovskyi.
      */
@@ -96,11 +96,12 @@ public class HabitStatisticController {
     }
 
     /**
-     * Method for updating {@link HabitStatistic} by it's id.
+     * Method for updating {@link HabitStatisticDto} by it's id.
      *
-     * @param id                         {@link HabitStatistic} id.
-     * @param habitStatisticForUpdateDto {@link UpdateHabitStatisticDto} with habit statistic id and
-     *                                   updated rate and amount of items.
+     * @param id                         {@link HabitStatisticDto} id.
+     * @param habitStatisticForUpdateDto {@link UpdateHabitStatisticDto} with habit
+     *                                   statistic id and updated rate and amount of
+     *                                   items.
      * @return {@link UpdateHabitStatisticDto} instance.
      */
     @ApiOperation(value = "Update habit statistic.")
@@ -121,12 +122,14 @@ public class HabitStatisticController {
 
     /**
      * Returns statistics for all not taken habit items in the system for today.
-     * Data is returned as an array of key-value-pairs mapped to {@link HabitItemsAmountStatisticDto},
-     * where key is the name of habit item and value is not taken amount of these items.
-     * Language of habit items is defined by the `language` parameter.
+     * Data is returned as an array of key-value-pairs mapped to
+     * {@link HabitItemsAmountStatisticDto}, where key is the name of habit item and
+     * value is not taken amount of these items. Language of habit items is defined
+     * by the `language` parameter.
      *
      * @param locale - Name of habit item localization language(e.x. "en" or "uk").
-     * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those key-value pairs.
+     * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those
+     *         key-value pairs.
      */
     @ApiOperation(value = "Get today's statistic for all habit items.")
     @ApiResponses(value = {

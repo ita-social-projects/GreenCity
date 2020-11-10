@@ -13,13 +13,15 @@ public interface EcoNewsCommentService {
     /**
      * Method to save {@link EcoNewsCommentVO}.
      *
-     * @param econewsId                   id of {@link EcoNewsVO} to which we save comment.
-     * @param addEcoNewsCommentDtoRequest dto with {@link EcoNewsCommentVO} text, parentCommentId.
+     * @param econewsId                   id of {@link EcoNewsVO} to which we save
+     *                                    comment.
+     * @param addEcoNewsCommentDtoRequest dto with {@link EcoNewsCommentVO} text,
+     *                                    parentCommentId.
      * @param user                        {@link UserVO} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
-                                      UserVO user);
+        UserVO user);
 
     /**
      * Method returns all comments to certain ecoNews specified by ecoNewsId.
@@ -33,7 +35,8 @@ public interface EcoNewsCommentService {
     /**
      * Method returns all replies to certain comment specified by parentCommentId.
      *
-     * @param parentCommentId specifies {@link EcoNewsCommentVO} to which we search for replies
+     * @param parentCommentId specifies {@link EcoNewsCommentVO} to which we search
+     *                        for replies
      * @param user            current {@link UserVO}
      * @return all replies to certain comment specified by parentCommentId.
      */
@@ -65,7 +68,8 @@ public interface EcoNewsCommentService {
     void like(Long id, UserVO user);
 
     /**
-     * Method returns count of likes to certain {@link EcoNewsCommentVO} specified by id.
+     * Method returns count of likes to certain {@link EcoNewsCommentVO} specified
+     * by id.
      *
      * @param id of {@link EcoNewsCommentVO} to which we get count of likes.
      * @return count of likes to certain {@link EcoNewsCommentVO} specified by id.
@@ -89,7 +93,8 @@ public interface EcoNewsCommentService {
     int countOfComments(Long ecoNewsId);
 
     /**
-     * Method to get all active comments to {@link EcoNewsVO} specified by ecoNewsId.
+     * Method to get all active comments to {@link EcoNewsVO} specified by
+     * ecoNewsId.
      *
      * @param pageable  page of news.
      * @param ecoNewsId specifies {@link EcoNewsVO} to which we search for comments
@@ -99,9 +104,11 @@ public interface EcoNewsCommentService {
     PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, UserVO user, Long ecoNewsId);
 
     /**
-     * Method returns all active replies to certain comment specified by parentCommentId.
+     * Method returns all active replies to certain comment specified by
+     * parentCommentId.
      *
-     * @param parentCommentId specifies {@link EcoNewsCommentVO} to which we search for replies
+     * @param parentCommentId specifies {@link EcoNewsCommentVO} to which we search
+     *                        for replies
      * @param user            current {@link UserVO}
      * @return all replies to certain comment specified by parentCommentId.
      * @author Taras Dovganyuk

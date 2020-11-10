@@ -19,7 +19,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @ExtendWith(MockitoExtension.class)
 class FactOfTheDayControllerTest {
     private static final String factOfTheDayLink = "/factoftheday";
@@ -63,7 +62,6 @@ class FactOfTheDayControllerTest {
         verify(factOfTheDayService).getFactOfTheDayById(1L);
     }
 
-
     @Test
     void getLanguagesTest() throws Exception {
         mockMvc.perform(get(factOfTheDayLink + "/languages"))
@@ -71,4 +69,3 @@ class FactOfTheDayControllerTest {
         verify(languageService).getAllLanguages();
     }
 }
-

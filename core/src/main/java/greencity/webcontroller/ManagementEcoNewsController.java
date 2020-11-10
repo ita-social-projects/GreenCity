@@ -4,13 +4,10 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.*;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -43,7 +40,7 @@ public class ManagementEcoNewsController {
     private final EcoNewsService ecoNewsService;
 
     /**
-     * Method that returns management page with all {@link EcoNews}.
+     * Method that returns management page with all {@link EcoNewsVO}.
      *
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
@@ -51,15 +48,17 @@ public class ManagementEcoNewsController {
      */
     @GetMapping
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
-                                @ApiIgnore Pageable pageable) {
+        @ApiIgnore Pageable pageable) {
         PageableDto<EcoNewsDto> allEcoNews = query == null || query.isEmpty()
-                ? ecoNewsService.findAll(pageable) : ecoNewsService.searchEcoNewsBy(pageable, query);
+            ? ecoNewsService.findAll(pageable)
+            : ecoNewsService.searchEcoNewsBy(pageable, query);
         model.addAttribute("pageable", allEcoNews);
         return "core/management_eco_news";
     }
 
     /**
-     * Method which deteles {@link EcoNews} and {@link greencity.entity.FactOfTheDayTranslation} by given id.
+     * Method which deteles {@link EcoNewsVO} and {@link FactOfTheDayTranslationVO}
+     * by given id.
      *
      * @param id of Eco New
      * @return {@link ResponseEntity}
@@ -71,7 +70,7 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method for deleting {@link EcoNews} by given id.
+     * Method for deleting {@link EcoNewsVO} by given id.
      *
      * @param listId list of IDs.
      * @return {@link ResponseEntity}
@@ -94,9 +93,9 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method for creating {@link EcoNews}.
+     * Method for creating {@link EcoNewsVO}.
      *
-     * @param addEcoNewsDtoRequest dto for {@link EcoNews} entity.
+     * @param addEcoNewsDtoRequest dto for {@link EcoNewsVO} entity.
      * @param file                 of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
@@ -107,12 +106,10 @@ public class ManagementEcoNewsController {
     })
     @ResponseBody
     @PostMapping("/")
-    public GenericResponseDto saveEcoNews(@Valid
-                                          @RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-                                          BindingResult bindingResult,
-                                          @ImageValidation
-                                          @RequestParam(required = false, name = "file") MultipartFile file,
-                                          @ApiIgnore Principal principal) {
+    public GenericResponseDto saveEcoNews(@Valid @RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file,
+        @ApiIgnore Principal principal) {
         if (!bindingResult.hasErrors()) {
             ecoNewsService.save(addEcoNewsDtoRequest, file, principal.getName());
         }
@@ -120,7 +117,7 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method which updates {@link EcoNews}.
+     * Method which updates {@link EcoNewsVO}.
      *
      * @param ecoNewsDtoManagement of {@link EcoNewsDtoManagement}.
      * @param file                 of {@link MultipartFile}.
@@ -133,11 +130,9 @@ public class ManagementEcoNewsController {
     })
     @ResponseBody
     @PutMapping("/")
-    public GenericResponseDto update(@Valid
-                                     @RequestPart EcoNewsDtoManagement ecoNewsDtoManagement,
-                                     BindingResult bindingResult,
-                                     @ImageValidation
-                                     @RequestPart(required = false, name = "file") MultipartFile file) {
+    public GenericResponseDto update(@Valid @RequestPart EcoNewsDtoManagement ecoNewsDtoManagement,
+        BindingResult bindingResult,
+        @ImageValidation @RequestPart(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             ecoNewsService.update(ecoNewsDtoManagement, file);
         }
@@ -145,19 +140,20 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Returns  management page with Eco news filtered data.
+     * Returns management page with Eco news filtered data.
      *
-     * @param model                   ModelAndView that will be configured and returned to user.
+     * @param model          ModelAndView that will be configured and returned to
+     *                       user.
      * @param ecoNewsViewDto used for receive parameters for filters from UI.
      */
     @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
-                             @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
-                             EcoNewsViewDto ecoNewsViewDto) {
+        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(),
-                pageable.getPageSize(), Sort.by("creationDate").descending());
+            pageable.getPageSize(), Sort.by("creationDate").descending());
         PageableDto<EcoNewsDto> pageableDto =
-                ecoNewsService.getFilteredDataForManagementByPage(paging, ecoNewsViewDto);
+            ecoNewsService.getFilteredDataForManagementByPage(paging, ecoNewsViewDto);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("fields", ecoNewsViewDto);
         return "core/management_eco_news";

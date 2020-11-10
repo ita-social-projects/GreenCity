@@ -12,14 +12,15 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTranslation, Long> {
     /**
-     * Method for getting random content by {@link Habit} id and {@link Language} code.
-     * This method use native SQL query to reduce the load on the backend.
+     * Method for getting random content by {@link Habit} id and {@link Language}
+     * code. This method use native SQL query to reduce the load on the backend.
      *
      * @param habitId {@link Habit} Id.
      * @return {@link HabitFactTranslation} in Optional.
@@ -40,10 +41,11 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
      * @author Vitaliy Dzen.
      */
     Optional<HabitFactTranslation> findFactTranslationByLanguageCodeAndContent(String languageCode,
-                                                                               String content);
+        String content);
 
     /**
-     * Method finds random {@link HabitFact} in 3 languages between all facts that were not used during this iteration.
+     * Method finds random {@link HabitFact} in 3 languages between all facts that
+     * were not used during this iteration.
      *
      * @return optional list of {@link HabitFactTranslation}.
      */
@@ -52,17 +54,18 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
     List<HabitFactTranslation> findRandomHabitFact();
 
     /**
-     * Method to get list of {@link HabitFactTranslation} specified by status and {@link Language}.
+     * Method to get list of {@link HabitFactTranslation} specified by status and
+     * {@link Language}.
      *
-     * @param factOfDayStatus {@link FactOfDayStatus} shows if {@link HabitFact} was or
-     *                        will be in future {@link HabitFact} of the day.
+     * @param factOfDayStatus {@link FactOfDayStatus} shows if {@link HabitFact} was
+     *                        or will be in future {@link HabitFact} of the day.
      * @param languageId      of {@link Language}.
      * @return list of {@link HabitFactTranslation} that satisfy the conditions.
      */
     @Query("SELECT ht FROM HabitFactTranslation ht"
         + " WHERE ht.factOfDayStatus = :factOfDayStatus AND ht.language.id = :languageId")
     HabitFactTranslation findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus factOfDayStatus,
-                                                               Long languageId);
+        Long languageId);
 
     /**
      * Method to replace all outdated {@link FactOfDayStatus} by updated.
@@ -75,21 +78,24 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
     void updateFactOfDayStatus(@Param("outdated") FactOfDayStatus outdated, @Param("updated") FactOfDayStatus updated);
 
     /**
-     * Method to change {@link HabitFact} of day status for all facts with certain {@link HabitFact} id.
+     * Method to change {@link HabitFact} of day status for all facts with certain
+     * {@link HabitFact} id.
      *
      * @param status      new {@link HabitFact} of day status.
-     * @param habitfactId {@link HabitFact} id of group of facts which changes {@link HabitFact} of day status.
+     * @param habitfactId {@link HabitFact} id of group of facts which changes
+     *                    {@link HabitFact} of day status.
      */
     @Modifying
     @Query("UPDATE HabitFactTranslation f SET f.factOfDayStatus = :status WHERE f.habitFact.id = :habitFactId")
     void updateFactOfDayStatusByHabitFactId(@Param("status") FactOfDayStatus status,
-                                            @Param("habitFactId") Long habitfactId);
+        @Param("habitFactId") Long habitfactId);
 
     /**
      * Method deletes all {@link HabitFactTranslation}'s by {@link Habit} instance.
      *
      * @param habitFact {@link HabitFact} instance.
      */
+    @Transactional
     void deleteAllByHabitFact(HabitFact habitFact);
 
     /**

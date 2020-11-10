@@ -1,12 +1,12 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 /**
  * HabitFactService interface.
@@ -23,6 +23,15 @@ public interface HabitFactService {
     PageableDto<LanguageTranslationDTO> getAllHabitFacts(Pageable page, String language);
 
     /**
+     * Method finds all {@code HabitFact} with all {@code HabitFactTranslation}'s.
+     *
+     * @param pageable - instance of {@link Pageable}.
+     * @return list of {@link HabitFactVO}.
+     * @author Ivan Behar
+     */
+    PageableDto<HabitFactVO> getAllHabitFactsVO(Pageable pageable);
+
+    /**
      * Method finds random {HabitFact}.
      *
      * @return random {@link LanguageTranslationDTO}
@@ -34,10 +43,10 @@ public interface HabitFactService {
      * Method find {HabitFact} by id.
      *
      * @param id of {HabitFact}
-     * @return {@link HabitFactDto}
+     * @return {@link HabitFactVO}
      * @author Vitaliy Dzen
      */
-    HabitFactDto getHabitFactById(Long id);
+    HabitFactDtoResponse getHabitFactById(Long id);
 
     /**
      * Method find {HabitFact} by habitfact.
@@ -60,11 +69,11 @@ public interface HabitFactService {
     /**
      * Method updates {HabitFact}.
      *
-     * @param fact {@link HabitFactPostDto}
+     * @param fact {@link HabitFactUpdateDto}
      * @return instance of {HabitFactVO}
      * @author Vitaliy Dzen
      */
-    HabitFactVO update(HabitFactPostDto fact, Long id);
+    HabitFactVO update(HabitFactUpdateDto fact, Long id);
 
     /**
      * Method delete {HabitFact} by id.
@@ -76,9 +85,51 @@ public interface HabitFactService {
     Long delete(Long id);
 
     /**
+     * Method deletes all HabitFact and HabitFactTranslation by list of IDs.
+     *
+     * @param listId list of id
+     * @return listId list of id
+     * @author Ivan Behar
+     */
+    List<Long> deleteAllHabitFactsByListOfId(List<Long> listId);
+
+    /**
      * Method deletes all {@code HabitFact}'s by {@code Habit} instance.
      *
      * @param habit {@link HabitVO} instance.
      */
     void deleteAllByHabit(HabitVO habit);
+
+    /**
+     * Method for getting HabitFactVO by search query.
+     *
+     * @param paging {@link Pageable}.
+     * @param query  query to search,
+     * @return {@link PageableAdvancedDto} of {@link HabitFactVO} instances.
+     */
+    PageableDto<HabitFactVO> searchHabitFactWithFilter(Pageable paging, String query);
+
+    /**
+     * Method for finding {@link HabitFactVO} by specification.
+     *
+     * @return a dto of {@link PageableDto}.
+     */
+    PageableDto<HabitFactVO> getFilteredDataForManagementByPage(Pageable pageable, HabitFactViewDto habitFactViewDto);
+
+    /**
+     * Method to get today's {HabitFact} of day by language id.
+     *
+     * @param languageId id of {Language}.
+     * @return {@link LanguageTranslationDTO} of today's {HabitFact} of day.
+     */
+    LanguageTranslationDTO getHabitFactOfTheDay(Long languageId);
+
+    /**
+     * Method finds all {@code HabitFact} with filter.
+     *
+     * @param filter   - filter params.
+     * @param pageable - instance of {@link Pageable}.
+     * @return list of {@link HabitFactVO}.
+     */
+    PageableDto<HabitFactVO> getAllHabitFactVOsWithFilter(String filter, Pageable pageable);
 }

@@ -13,7 +13,8 @@ public interface VerifyEmailService {
      * Verifies email by token.
      *
      * @param userId {@link Long} - user's id.
-     * @param token {@link String} - token that confirms the user is the owner of his/her email.
+     * @param token  {@link String} - token that confirms the user is the owner of
+     *               his/her email.
      */
     void verifyByToken(Long userId, String token);
 

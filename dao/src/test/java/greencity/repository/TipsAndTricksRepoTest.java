@@ -70,9 +70,9 @@ class TipsAndTricksRepoTest {
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
         assertEquals(1, tipsAndTricks.size());
         assertEquals(Optional.of("TitleTest"),
-                tipsAndTricks.get(0).getTitleTranslations().stream()
-                        .filter(elem -> elem.getLanguage().getCode().equals("en"))
-                        .findFirst().map(TitleTranslation::getContent));
+            tipsAndTricks.get(0).getTitleTranslations().stream()
+                .filter(elem -> elem.getLanguage().getCode().equals("en"))
+                .findFirst().map(TitleTranslation::getContent));
     }
 
     @Test

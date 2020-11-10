@@ -100,4 +100,3 @@ class SpecificationServiceImplTest {
         assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationVO);
     }
 }
-

@@ -1,12 +1,12 @@
 package greencity.dto.advice;
 
 import greencity.annotations.LanguageTranslationConstraint;
-import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.language.LanguageTranslationDTO;
-import java.util.List;
-import javax.validation.constraints.NotNull;
+import greencity.dto.user.HabitIdRequestDto;
 import lombok.*;
 
+import javax.validation.Valid;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,9 +14,10 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 public class AdvicePostDto {
+    @Valid
     @LanguageTranslationConstraint
     private List<LanguageTranslationDTO> translations;
 
-    @NotNull
+    @Valid
     private HabitIdRequestDto habit;
 }

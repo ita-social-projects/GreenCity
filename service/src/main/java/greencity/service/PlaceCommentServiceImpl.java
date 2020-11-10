@@ -106,7 +106,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             commentList,
             comments.getTotalElements(),
             comments.getPageable().getPageNumber(),
-            comments.getTotalPages()
-        );
+            comments.getTotalPages());
     }
 }

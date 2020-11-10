@@ -54,24 +54,23 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      * @author Marian Milian.
      */
     @Query(
-        value =
-            "FROM Place p "
-                + " LEFT JOIN"
-                + " Location l  ON p.location.id = l.id "
-                + " WHERE l.lat > :southWestLat  AND l.lat< :northEastLat"
-                + " AND l.lng >:southWestLng AND l.lng<:northEastLng "
-                + " AND p.status = :status"
-                + " ORDER BY p.name")
+        value = "FROM Place p "
+            + " LEFT JOIN"
+            + " Location l  ON p.location.id = l.id "
+            + " WHERE l.lat > :southWestLat  AND l.lat< :northEastLat"
+            + " AND l.lng >:southWestLng AND l.lng<:northEastLng "
+            + " AND p.status = :status"
+            + " ORDER BY p.name")
     List<Place> findPlacesByMapsBounds(
         @Param("northEastLat") Double northEastLat,
         @Param("northEastLng") Double northEastLng,
         @Param("southWestLat") Double southWestLat,
         @Param("southWestLng") Double southWestLng,
-        @Param("status") PlaceStatus status
-    );
+        @Param("status") PlaceStatus status);
 
     /**
-     * The method to find all {@link Place}'s which was added between 2 dates and has {@link PlaceStatus}.
+     * The method to find all {@link Place}'s which was added between 2 dates and
+     * has {@link PlaceStatus}.
      *
      * @param startDate - start date of search
      * @param endDate   - end date of search

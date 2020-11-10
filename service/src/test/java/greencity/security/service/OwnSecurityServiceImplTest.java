@@ -88,7 +88,7 @@ class OwnSecurityServiceImplTest {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
             jwtTool, 1, rabbitTemplate, defaultProfilePicture, restorePasswordEmailRepo, modelMapper,
-                userRepo);
+            userRepo);
 
         verifiedUser = UserVO.builder()
             .email("test@gmail.com")
@@ -134,13 +134,10 @@ class OwnSecurityServiceImplTest {
             refEq(sendEmailTopic),
             refEq(VERIFY_EMAIL_ROUTING_KEY),
             refEq(new VerifyEmailMessage(
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getVerifyEmail().getToken()
-                )
-            )
-        );
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getVerifyEmail().getToken())));
         verify(jwtTool, times(2)).generateTokenKey();
     }
 
@@ -280,8 +277,8 @@ class OwnSecurityServiceImplTest {
     void updateCurrentPasswordDifferentPasswordsTest() {
         updatePasswordDto.setPassword("123");
         when(userService.findByEmail("test@gmail.com")).thenReturn(verifiedUser);
-        assertThrows(PasswordsDoNotMatchesException.class, ()
-            -> ownSecurityService.updateCurrentPassword(updatePasswordDto, "test@gmail.com"));
+        assertThrows(PasswordsDoNotMatchesException.class,
+            () -> ownSecurityService.updateCurrentPassword(updatePasswordDto, "test@gmail.com"));
     }
 
     @Test
@@ -289,8 +286,8 @@ class OwnSecurityServiceImplTest {
         when(userService.findByEmail("test@gmail.com")).thenReturn(verifiedUser);
         when(passwordEncoder.matches(updatePasswordDto.getCurrentPassword(),
             verifiedUser.getOwnSecurity().getPassword())).thenReturn(false);
-        assertThrows(PasswordsDoNotMatchesException.class, ()
-            -> ownSecurityService.updateCurrentPassword(updatePasswordDto, "test@gmail.com"));
+        assertThrows(PasswordsDoNotMatchesException.class,
+            () -> ownSecurityService.updateCurrentPassword(updatePasswordDto, "test@gmail.com"));
     }
 
     @Test

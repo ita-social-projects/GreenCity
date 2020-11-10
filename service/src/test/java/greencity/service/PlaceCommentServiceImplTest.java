@@ -48,7 +48,6 @@ class PlaceCommentServiceImplTest {
         assertEquals(1, (long) result.getId());
     }
 
-
     @Test
     void deleteByIdTest() {
         Comment comment = ModelUtils.getComment();
@@ -71,7 +70,6 @@ class PlaceCommentServiceImplTest {
         placeCommentService.save(1L, addCommentDto, "email");
         verify(placeCommentRepo, times(1)).save(comment);
     }
-
 
     @Test
     void getAllCommentsTest() {

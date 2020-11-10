@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findById(Long id) {
         User source = userRepo.findById(id)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         return modelMapper.map(source, UserVO.class);
     }
 
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Method for setting data from {@link UserManagementDto} to {@link UserVO}.
      *
-     * @param dto  - dto {@link UserManagementDto} with updated fields.
+     * @param dto    - dto {@link UserManagementDto} with updated fields.
      * @param userVO {@link UserVO} to be updated.
      * @author Vasyl Zhovnir
      */
@@ -174,7 +174,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserVO> findAll() {
-        return modelMapper.map(userRepo.findAll(), new TypeToken<List<UserVO>>(){}.getType());
+        return modelMapper.map(userRepo.findAll(), new TypeToken<List<UserVO>>() {
+        }.getType());
     }
 
     /**
@@ -274,10 +275,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserUpdateDto getUserUpdateDtoByEmail(String email) {
         return modelMapper.map(
-            userRepo.findByEmail(email).orElseThrow(() ->
-                    new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
-            UserUpdateDto.class
-        );
+            userRepo.findByEmail(email)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
+            UserUpdateDto.class);
     }
 
     /**
@@ -313,7 +313,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method for setting text either for UserGoal with localization or for CustomGoal.
+     * Method for setting text either for UserGoal with localization or for
+     * CustomGoal.
      *
      * @param userId id of the current user.
      * @param dto    {@link UserGoalResponseDto}
@@ -321,7 +322,7 @@ public class UserServiceImpl implements UserService {
     private UserGoalResponseDto setTextForAnyUserGoal(UserGoalResponseDto dto, Long userId, String language) {
         String text = userGoalRepo.findGoalByUserGoalId(dto.getId()).isPresent()
             ? goalTranslationRepo.findByUserIdLangAndUserGoalId(userId, language, dto.getId()).getContent()
-            : customGoalRepo.findByUserGoalIdAndUserId(dto.getId(), userId).getText();
+            : customGoalRepo.findByUserId(userId).getText();
         dto.setText(text);
         return dto;
     }
@@ -350,18 +351,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto bulkDto, String language) {
         List<UserGoalDto> goalDtos = bulkDto.getUserGoals();
-        List<UserCustomGoalDto> customGoalDtos = bulkDto.getUserCustomGoal();
         UserVO user = modelMapper.map(userRepo.findById(userId)
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)), UserVO.class);
-        if (goalDtos == null && customGoalDtos != null) {
-            saveCustomGoalsForUserGoals(user, customGoalDtos);
-        }
-        if (goalDtos != null && customGoalDtos == null) {
+        if (goalDtos != null) {
             saveGoalForUserGoal(user, goalDtos);
-        }
-        if (goalDtos != null && customGoalDtos != null) {
-            saveGoalForUserGoal(user, goalDtos);
-            saveCustomGoalsForUserGoals(user, customGoalDtos);
         }
         return getUserGoals(userId, language);
     }
@@ -369,8 +362,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Method save user goals with goal dictionary.
      *
-     * @param userVO  {@link UserVO} current user
-     * @param goals list {@link UserGoalDto} for saving
+     * @param userVO {@link UserVO} current user
+     * @param goals  list {@link UserGoalDto} for saving
      * @author Bogdan Kuzenko
      */
     private void saveGoalForUserGoal(UserVO userVO, List<UserGoalDto> goals) {
@@ -381,23 +374,6 @@ public class UserServiceImpl implements UserService {
             user.getUserGoals().add(userGoal);
             userGoalRepo.saveAll(user.getUserGoals());
         }
-    }
-
-    /**
-     * Method save user goals with custom goal dictionary.
-     *
-     * @param userVO        {@link UserVO} current user
-     * @param customGoals list {@link UserCustomGoalDto} for saving
-     * @author Bogdan Kuzenko
-     */
-    private void saveCustomGoalsForUserGoals(UserVO userVO, List<UserCustomGoalDto> customGoals) {
-        User user = modelMapper.map(userVO, User.class);
-        for (UserCustomGoalDto el1 : customGoals) {
-            UserGoal userGoal = modelMapper.map(el1, UserGoal.class);
-            userGoal.setUser(user);
-            user.getUserGoals().add(userGoal);
-        }
-        userGoalRepo.saveAll(user.getUserGoals());
     }
 
     /**
@@ -444,14 +420,12 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
             userGoal = userGoalRepo.getOne(goalId);
-            if (userGoal.getStatus().equals(GoalStatus.DONE)) {
-                userGoal.setStatus(GoalStatus.ACTIVE);
-                userGoal.setDateCompleted(null);
-                userGoalRepo.save(userGoal);
-            } else if (userGoal.getStatus().equals(GoalStatus.ACTIVE)) {
+            if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
                 userGoal.setStatus(GoalStatus.DONE);
                 userGoal.setDateCompleted(LocalDateTime.now());
                 userGoalRepo.save(userGoal);
+            } else {
+                throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
             }
         } else {
             throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_HAS_NO_SUCH_GOAL + goalId);
@@ -470,7 +444,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method which check that, if admin/moderator update role/status of himself, then throw exception.
+     * Method which check that, if admin/moderator update role/status of himself,
+     * then throw exception.
      *
      * @param id    id of updatable user.
      * @param email email of admin/moderator.
@@ -484,7 +459,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Method which check that, if moderator trying update status of admins or moderators, then throw exception.
+     * Method which check that, if moderator trying update status of admins or
+     * moderators, then throw exception.
      *
      * @param id    id of updatable user.
      * @param email email of admin/moderator.
@@ -548,14 +524,15 @@ public class UserServiceImpl implements UserService {
      * Update user profile picture {@link UserVO}.
      *
      * @param image                 {@link MultipartFile}
-     * @param email                 {@link String} - email of user that need to update.
+     * @param email                 {@link String} - email of user that need to
+     *                              update.
      * @param userProfilePictureDto {@link UserProfilePictureDto}
      * @return {@link UserVO}.
      * @author Marian Datsko
      */
     @Override
     public UserVO updateUserProfilePicture(MultipartFile image, String email,
-                                         UserProfilePictureDto userProfilePictureDto) {
+        UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -594,7 +571,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserVO> getAllUserFriends(Long userId) {
         List<User> allUserFriends = userRepo.getAllUserFriends(userId);
-        return modelMapper.map(allUserFriends, new TypeToken<List<UserVO>>(){}.getType());
+        return modelMapper.map(allUserFriends, new TypeToken<List<UserVO>>() {
+        }.getType());
     }
 
     /**
@@ -683,16 +661,15 @@ public class UserServiceImpl implements UserService {
         user.getSocialNetworks().clear();
         user.getSocialNetworks().addAll(userProfileDtoRequest.getSocialNetworks()
             .stream()
-            .map(url ->
-                SocialNetwork.builder()
-                    .url(url)
-                    .user(user)
-                    .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
-                            SocialNetworkImage.class))
-                    .user(user)
-                    .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
-                        SocialNetworkImage.class))
-                    .build())
+            .map(url -> SocialNetwork.builder()
+                .url(url)
+                .user(user)
+                .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
+                    SocialNetworkImage.class))
+                .user(user)
+                .socialNetworkImage(modelMapper.map(socialNetworkImageService.getSocialNetworkImageByUrl(url),
+                    SocialNetworkImage.class))
+                .build())
             .collect(Collectors.toList()));
         user.setShowLocation(userProfileDtoRequest.getShowLocation());
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
@@ -836,6 +813,7 @@ public class UserServiceImpl implements UserService {
     public void deactivateUser(Long id) {
         UserVO foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.DEACTIVATED);
+        userRepo.save(modelMapper.map(foundUser, User.class));
     }
 
     /**
@@ -856,6 +834,7 @@ public class UserServiceImpl implements UserService {
     public void setActivatedStatus(Long id) {
         UserVO foundUser = findById(id);
         foundUser.setUserStatus(UserStatus.ACTIVATED);
+        userRepo.save(modelMapper.map(foundUser, User.class));
     }
 
     /**

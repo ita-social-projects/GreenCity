@@ -1,7 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception that we get when user trying to refresh access token with bad refresh token.
+ * Exception that we get when user trying to refresh access token with bad
+ * refresh token.
  *
  * @author Nazar Stasyuk
  */

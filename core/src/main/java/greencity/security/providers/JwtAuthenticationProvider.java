@@ -22,6 +22,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     /**
      * Constructor.
+     * 
      * @param jwtTool {@link JwtTool}
      */
     public JwtAuthenticationProvider(JwtTool jwtTool) {
@@ -31,12 +32,16 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     /**
      * Method that provide authentication.
      *
-     * @param authentication {@link Authentication} - authentication that has jwt access token.
+     * @param authentication {@link Authentication} - authentication that has jwt
+     *                       access token.
      * @return {@link Authentication} if user successfully authenticated.
-     * @throws io.jsonwebtoken.ExpiredJwtException - if the token expired.
-     * @throws UnsupportedJwtException  if the argument does not represent an Claims JWS
-     * @throws io.jsonwebtoken.MalformedJwtException if the string is not a valid JWS
-     * @throws io.jsonwebtoken.SignatureException if the JWS signature validation fails
+     * @throws io.jsonwebtoken.ExpiredJwtException   - if the token expired.
+     * @throws UnsupportedJwtException               if the argument does not
+     *                                               represent an Claims JWS
+     * @throws io.jsonwebtoken.MalformedJwtException if the string is not a valid
+     *                                               JWS
+     * @throws io.jsonwebtoken.SignatureException    if the JWS signature validation
+     *                                               fails
      */
     @Override
     public Authentication authenticate(Authentication authentication) {
@@ -54,8 +59,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         return new UsernamePasswordAuthenticationToken(
             email,
             "",
-            authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
-        );
+            authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
     }
 
     /**

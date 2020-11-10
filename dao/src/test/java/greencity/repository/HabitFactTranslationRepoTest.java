@@ -7,6 +7,7 @@ import greencity.DaoApplication;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.enums.FactOfDayStatus;
+import greencity.ModelUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import java.util.List;
 import java.util.Optional;
 
 @DataJpaTest
@@ -55,24 +57,16 @@ class HabitFactTranslationRepoTest {
     @Test
     void findAllByFactOfDayStatusAndLanguageIdTest_shouldReturnCorrectValue() {
         HabitFactTranslation res = habitFactTranslationRepo
-            .findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus.USED, 3L);
-        assertEquals("Тест факт", res.getContent());
-    }
-
-
-    @Test
-    void findAllByFactOfDayStatusAndLanguageIdTest_shouldReturnAllCorrectValues() {
-        HabitFactTranslation res = habitFactTranslationRepo
-            .findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus.CURRENT, 1L);
-        assertEquals("Тест факт", res.getContent());
+            .findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus.CURRENT, 2L);
+        assertEquals("testFactTranslationsContent", res.getContent());
     }
 
     @Test
     void updateFactOfDayStatusTest_shouldUpdateCorrectValue() {
         habitFactTranslationRepo.updateFactOfDayStatus(FactOfDayStatus.USED, FactOfDayStatus.CURRENT);
         HabitFactTranslation res = habitFactTranslationRepo
-            .findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus.CURRENT, 3L);
-        assertEquals("Тест факт", res.getContent());
+            .findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus.CURRENT, 2L);
+        assertEquals("testFactTranslationsContent", res.getContent());
     }
 
     @Test
@@ -89,5 +83,13 @@ class HabitFactTranslationRepoTest {
         HabitFactTranslation res = habitFactTranslationRepo
             .findAllByFactOfDayStatusAndLanguageId(FactOfDayStatus.CURRENT, 2L);
         assertEquals("testFactTranslationsContent", res.getContent());
+    }
+
+    @Test
+    void deleteAllByHabitFactTest_shouldDeleteCorrectly() {
+        HabitFact habitFact = ModelUtils.getHabitFact();
+        habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
+        List<HabitFactTranslation> res = habitFactTranslationRepo.findAll();
+        assertEquals(4, res.size());
     }
 }

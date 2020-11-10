@@ -55,27 +55,29 @@ class ManagementTipsAndTricksControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementTipsAndTricksController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
 
     }
 
     @Test
     void findAll() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
-        List<TipsAndTricksDtoManagement> tipsAndTricksDtoManagements = Collections.singletonList(new TipsAndTricksDtoManagement());
-        PageableDto<TipsAndTricksDtoManagement> tipsAndTricksDtoManagementPageableDto = new PageableDto<>(tipsAndTricksDtoManagements, 2, 0, 3);
+        List<TipsAndTricksDtoManagement> tipsAndTricksDtoManagements =
+            Collections.singletonList(new TipsAndTricksDtoManagement());
+        PageableDto<TipsAndTricksDtoManagement> tipsAndTricksDtoManagementPageableDto =
+            new PageableDto<>(tipsAndTricksDtoManagements, 2, 0, 3);
         when(tipsAndTricksService.findAllManagementDtos(pageable)).thenReturn(tipsAndTricksDtoManagementPageableDto);
         List<LanguageDTO> languageDTOS = Collections.singletonList(new LanguageDTO(1L, "ua"));
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
 
         this.mockMvc.perform(get(managementTipsAndTricksLink)
-                .param("page", "0")
-                .param("size", "10"))
-                .andExpect(view().name("core/management_tips_and_tricks"))
-                .andExpect(model().attribute("pageable", tipsAndTricksDtoManagementPageableDto))
-                .andExpect(model().attribute("languages", languageService.getAllLanguages()))
-                .andExpect(status().isOk());
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(view().name("core/management_tips_and_tricks"))
+            .andExpect(model().attribute("pageable", tipsAndTricksDtoManagementPageableDto))
+            .andExpect(model().attribute("languages", languageService.getAllLanguages()))
+            .andExpect(status().isOk());
 
         verify(tipsAndTricksService).findAllManagementDtos(pageable);
 
@@ -84,7 +86,7 @@ class ManagementTipsAndTricksControllerTest {
     @Test
     void getTipsAndTricksById() throws Exception {
         this.mockMvc.perform(get(managementTipsAndTricksLink + "/find?id=1"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(tipsAndTricksService).findManagementDtoById(1L);
 
@@ -93,7 +95,7 @@ class ManagementTipsAndTricksControllerTest {
     @Test
     void delete() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.delete(managementTipsAndTricksLink + "/?id=1"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1)).delete(1L);
     }
@@ -105,10 +107,10 @@ class ManagementTipsAndTricksControllerTest {
         String json = gson.toJson(longList);
 
         this.mockMvc.perform(MockMvcRequestBuilders.delete(managementTipsAndTricksLink + "/deleteAll")
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(tipsAndTricksService).deleteAll(longList);
 
@@ -119,17 +121,18 @@ class ManagementTipsAndTricksControllerTest {
         TipsAndTricksDtoManagement tipsAndTricksDtoManagement = new TipsAndTricksDtoManagement();
         Gson gson = new Gson();
         String json = gson.toJson(tipsAndTricksDtoManagement);
-        MockMultipartFile jsonFile = new MockMultipartFile("tipsAndTricksDtoManagement", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("tipsAndTricksDtoManagement", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementTipsAndTricksLink + "/")
-                .file(jsonFile)
-                .with(new RequestPostProcessor() {
-                    @Override
-                    public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
-                        mockHttpServletRequest.setMethod("PUT");
-                        return mockHttpServletRequest;
-                    }
-                })).andExpect(status().isOk());
+            .file(jsonFile)
+            .with(new RequestPostProcessor() {
+                @Override
+                public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
+                    mockHttpServletRequest.setMethod("PUT");
+                    return mockHttpServletRequest;
+                }
+            })).andExpect(status().isOk());
 
         verify(tipsAndTricksService, never()).update(tipsAndTricksDtoManagement, jsonFile);
     }
@@ -140,15 +143,17 @@ class ManagementTipsAndTricksControllerTest {
         TipsAndTricksDtoManagement tipsAndTricksDtoManagement = new TipsAndTricksDtoManagement();
         Gson gson = new Gson();
         String json = gson.toJson(tipsAndTricksDtoManagement);
-        MockMultipartFile jsonFile = new MockMultipartFile("tipsAndTricksDtoManagement", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("tipsAndTricksDtoManagement", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementTipsAndTricksLink + "/")
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
-        verify(tipsAndTricksService, never()).saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, jsonFile, principal.getName());
+        verify(tipsAndTricksService, never()).saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, jsonFile,
+            principal.getName());
     }
 }

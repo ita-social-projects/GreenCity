@@ -105,7 +105,8 @@ class LocationServiceImplTest {
             new ArrayList<>(Arrays.asList(new LocationVO(), new LocationVO()));
 
         when(locationRepo.findAll()).thenReturn(genericEntities);
-        when(modelMapper.map(genericEntities, new TypeToken<List<LocationVO>>(){}.getType()))
+        when(modelMapper.map(genericEntities, new TypeToken<List<LocationVO>>() {
+        }.getType()))
             .thenReturn(genericEntitiesVO);
 
         List<LocationVO> foundEntities = locationService.findAll();

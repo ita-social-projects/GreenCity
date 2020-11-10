@@ -39,19 +39,11 @@ class GoalRepoTest {
             .city("New York")
             .build();
 
-
     @Test
     void findAvailableGoalsByUserTest() {
         List<Goal> goals = goalRepo.findAvailableGoalsByUser(testUser);
         assertEquals(2, goals.size());
         assertEquals(1, goals.get(0).getId());
-    }
-
-    @Test
-    void getShoppingListTest() {
-        List<ShoppingListDtoResponse> shoppingListDtoResponses = goalRepo.getShoppingList(1L, "en");
-        assertEquals(1, shoppingListDtoResponses.size());
-        assertEquals("goal translation", shoppingListDtoResponses.get(0).getText());
     }
 
     @Test

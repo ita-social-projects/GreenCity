@@ -33,7 +33,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      * Constructor.
      */
     public AccessTokenAuthenticationFilter(JwtTool jwtTool, AuthenticationManager authenticationManager,
-                                           UserService userService) {
+        UserService userService) {
         this.jwtTool = jwtTool;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
@@ -49,8 +49,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     public void doFilterInternal(@SuppressWarnings("NullableProblems") HttpServletRequest request,
-                                 @SuppressWarnings("NullableProblems") HttpServletResponse response,
-                                 @SuppressWarnings("NullableProblems") FilterChain chain)
+        @SuppressWarnings("NullableProblems") HttpServletResponse response,
+        @SuppressWarnings("NullableProblems") FilterChain chain)
         throws IOException, ServletException {
         String token = jwtTool.getTokenFromHttpServletRequest(request);
         if (token != null) {

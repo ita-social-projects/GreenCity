@@ -10,4 +10,3 @@ public class InvalidNumOfTagsException extends ConstraintDeclarationException {
         super(message);
     }
 }
-

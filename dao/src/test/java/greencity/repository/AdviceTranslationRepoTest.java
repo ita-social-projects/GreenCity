@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.DaoApplication;
+import greencity.ModelUtils;
 import greencity.entity.Advice;
 import greencity.entity.Translation;
 import greencity.entity.localization.AdviceTranslation;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
@@ -28,15 +29,15 @@ class AdviceTranslationRepoTest {
 
     @Test
     void getRandomAdviceTranslationByHabitIdAndLanguage() {
-        Long habitId = 1L;
-        String languageCode = "uk";
+        Long habitId = 2L;
+        String languageCode = "en";
         AdviceTranslation adviceTranslation = adviceTranslationRepo
-                .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId).get();
+            .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId).get();
 
-        assertEquals(1L, adviceTranslation.getId());
-        assertEquals(1L, adviceTranslation.getAdvice().getId());
-        assertEquals(1L, adviceTranslation.getLanguage().getId());
-        assertEquals("Привіт", adviceTranslation.getContent());
+        assertEquals(2L, adviceTranslation.getId());
+        assertEquals(2L, adviceTranslation.getAdvice().getId());
+        assertEquals(2L, adviceTranslation.getLanguage().getId());
+        assertEquals("Hello", adviceTranslation.getContent());
     }
 
     @Test
@@ -45,7 +46,7 @@ class AdviceTranslationRepoTest {
         String languageCode = "en";
         Optional<AdviceTranslation> actual = Optional.empty();
         Optional<AdviceTranslation> expected = adviceTranslationRepo
-                .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId);
+            .getRandomAdviceTranslationByHabitIdAndLanguage(languageCode, habitId);
 
         assertEquals(expected, actual);
     }
@@ -55,7 +56,7 @@ class AdviceTranslationRepoTest {
         String languageCode = "en";
         String content = "Hello";
         AdviceTranslation expected = adviceTranslationRepo
-                .findAdviceTranslationByLanguageCodeAndContent(languageCode, content).get();
+            .findAdviceTranslationByLanguageCodeAndContent(languageCode, content).get();
 
         assertEquals(2L, expected.getId());
         assertEquals(2L, expected.getAdvice().getId());
@@ -68,7 +69,7 @@ class AdviceTranslationRepoTest {
         String content = "World";
         Optional<AdviceTranslation> actual = Optional.empty();
         Optional<AdviceTranslation> expected = adviceTranslationRepo
-                .findAdviceTranslationByLanguageCodeAndContent(languageCode, content);
+            .findAdviceTranslationByLanguageCodeAndContent(languageCode, content);
 
         assertEquals(expected, actual);
     }
@@ -81,7 +82,7 @@ class AdviceTranslationRepoTest {
         List<Long> actualIds = actual.stream().map(Translation::getId).collect(Collectors.toList());
         List<Long> expectedIds = expected.stream().map(Translation::getId).collect(Collectors.toList());
 
-        assertEquals(expected.size(), 3);
+        assertEquals(3, expected.size());
         assertEquals(expectedIds, actualIds);
     }
 
@@ -98,7 +99,7 @@ class AdviceTranslationRepoTest {
         List<Long> actualIds = actual.stream().map(Translation::getId).collect(Collectors.toList());
         List<Long> expectedIds = expected.stream().map(Translation::getId).collect(Collectors.toList());
 
-        assertEquals(expected.size(), 2);
+        assertEquals(2, expected.size());
         assertEquals(expectedIds, actualIds);
     }
 }

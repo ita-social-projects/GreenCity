@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DiscountValuesRepo extends JpaRepository<DiscountValue, Long> {
     /**
-     * Finds all {@link DiscountValue} records related to the specified {@code Place}.
+     * Finds all {@link DiscountValue} records related to the specified
+     * {@code Place}.
      *
      * @param placeId to find by.
      * @return a list of the {@code DiscountValue} for the place by id.
@@ -16,7 +17,8 @@ public interface DiscountValuesRepo extends JpaRepository<DiscountValue, Long> {
     Set<DiscountValue> findAllByPlaceId(Long placeId);
 
     /**
-     * Delete all {@code DiscountValue} records related to the specified {@code Place}.
+     * Delete all {@code DiscountValue} records related to the specified
+     * {@code Place}.
      *
      * @param placeId to find by.
      */

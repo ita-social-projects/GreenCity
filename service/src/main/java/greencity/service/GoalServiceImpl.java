@@ -1,26 +1,19 @@
 package greencity.service;
 
-import greencity.dto.goal.GoalDto;
-import greencity.dto.goal.ShoppingListDtoResponse;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserGoalVO;
-import greencity.entity.CustomGoal;
+import greencity.constant.ErrorMessage;
+import greencity.dto.goal.*;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Goal;
-import greencity.entity.UserGoal;
-import greencity.enums.GoalStatus;
-import greencity.exception.exceptions.BadRequestException;
+import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.GoalNotFoundException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.CustomGoalRepo;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
-import greencity.constant.ErrorMessage;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,10 +21,8 @@ import java.util.stream.Collectors;
 @Service
 public class GoalServiceImpl implements GoalService {
     private final GoalTranslationRepo goalTranslationRepo;
-    private final CustomGoalRepo customGoalRepo;
     private final GoalRepo goalRepo;
     private final ModelMapper modelMapper;
-    private final LanguageService languageService;
 
     /**
      * {@inheritDoc}
@@ -45,68 +36,51 @@ public class GoalServiceImpl implements GoalService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public UserGoalResponseDto getUserGoalResponseDtoFromPredefinedGoal(UserGoalVO userGoalVO) {
-        UserGoal userGoal = modelMapper.map(userGoalVO, UserGoal.class);
-        UserGoalResponseDto userGoalResponseDto = modelMapper.map(userGoal, UserGoalResponseDto.class);
-        String languageCode = languageService.extractLanguageCodeFromRequest();
-        if (userGoal.getCustomGoal() == null) {
-            Goal goal = goalRepo
-                .findById(userGoal
-                    .getGoal().getId()).orElseThrow(() -> new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID));
-            userGoalResponseDto.setText(goalTranslationRepo.findByGoalAndLanguageCode(goal, languageCode)
-                .orElseThrow(() ->
-                        new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_LANGUAGE_CODE)).getContent());
-        }
-        return userGoalResponseDto;
-    }
-
-    @Override
-    public UserGoalResponseDto getUserGoalResponseDtoFromCustomGoal(UserGoalVO userGoalVO) {
-        UserGoal userGoal = modelMapper.map(userGoalVO, UserGoal.class);
-        UserGoalResponseDto userGoalResponseDto = modelMapper.map(userGoal, UserGoalResponseDto.class);
-        if (userGoal.getGoal() == null) {
-            CustomGoal customGoal = customGoalRepo.findById(userGoal
-                .getCustomGoal().getId()).orElseThrow(() ->
-                    new NotFoundException(ErrorMessage.CUSTOM_GOAL_NOT_FOUND_BY_ID));
-            userGoalResponseDto.setText(customGoal.getText());
-        }
-        return userGoalResponseDto;
+    public List<LanguageTranslationDTO> saveGoal(GoalPostDto goal) {
+        Goal savedGoal = modelMapper.map(goal, Goal.class);
+        savedGoal.getTranslations().forEach(a -> a.setGoal(savedGoal));
+        goalRepo.save(savedGoal);
+        return modelMapper.map(savedGoal.getTranslations(),
+            new TypeToken<List<LanguageTranslationDTO>>() {
+            }.getType());
     }
 
     /**
-     * Method returns shopping list by user id.
-     *
-     * @return shopping list {@link ShoppingListDtoResponse}.
-     * @author Marian Datsko
+     * {@inheritDoc}
      */
     @Override
-    public List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode) {
-        return goalRepo.getShoppingList(userId, languageCode);
-    }
-
-    /**
-     * Method change goal or custom goal status.
-     *
-     * @author Marian Datsko
-     */
-    @Override
-    @Transactional
-    public void changeGoalOrCustomGoalStatus(Long userId, boolean status, Long goalId, Long customGoalId) {
-        String goalStatus = status ? GoalStatus.DONE.toString() : GoalStatus.ACTIVE.toString();
-        LocalDateTime now = LocalDateTime.now().withNano(0);
-        if ((goalId == null && customGoalId == null) || (goalId != null && customGoalId != null)) {
-            throw new BadRequestException(ErrorMessage.WRONG_PARAMETER);
-        } else if (goalId != null) {
-            if (goalRepo.findById(goalId).isEmpty()) {
-                throw new NotFoundException(ErrorMessage.GOAL_WRONG_ID + goalId);
-            }
-            goalRepo.changeGoalStatus(userId, goalId, goalStatus, now);
+    public List<LanguageTranslationDTO> update(GoalPostDto goalPostDto) {
+        Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getGoal().getId());
+        if (optionalGoal.isPresent()) {
+            Goal updatedGoal = optionalGoal.get();
+            List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
+                new TypeToken<List<GoalTranslation>>() {
+                }.getType());
+            translations.forEach(a -> a.setGoal(updatedGoal));
+            updatedGoal.getTranslations().clear();
+            updatedGoal.getTranslations().addAll(translations);
+            goalRepo.save(updatedGoal);
+            return modelMapper.map(updatedGoal.getTranslations(),
+                new TypeToken<List<LanguageTranslationDTO>>() {
+                }.getType());
         } else {
-            if (customGoalRepo.findById(customGoalId).isEmpty()) {
-                throw new NotFoundException(ErrorMessage.GOAL_WRONG_ID + customGoalId);
-            }
-            customGoalRepo.changeCustomGoalStatus(userId, customGoalId, goalStatus, now);
+            throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void delete(Long goalId) {
+        if (goalRepo.findById(goalId).isPresent()) {
+            goalRepo.deleteById(goalId);
+        } else {
+            throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
         }
     }
 }

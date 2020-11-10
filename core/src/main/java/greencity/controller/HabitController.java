@@ -6,8 +6,8 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.entity.Habit;
 import greencity.service.HabitService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -32,9 +32,9 @@ public class HabitController {
     private final HabitService habitService;
 
     /**
-     * Method finds {@link Habit} by given id with locale translation.
+     * Method finds {@link HabitVO} by given id with locale translation.
      *
-     * @param id     of {@link Habit}.
+     * @param id     of {@link HabitVO}.
      * @param locale {@link Locale} with needed language code.
      * @return {@link HabitDto}.
      */
@@ -47,7 +47,7 @@ public class HabitController {
     @GetMapping("/{id}")
     @ApiLocale
     public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id,
-                                                 @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.getByIdAndLanguageCode(id, locale.getLanguage()));
     }
