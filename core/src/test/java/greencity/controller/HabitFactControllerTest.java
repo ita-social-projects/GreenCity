@@ -10,8 +10,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
+import greencity.dto.habitfact.HabitFactUpdateDto;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.user.HabitIdRequestDto;
+import greencity.enums.FactOfDayStatus;
 import greencity.service.HabitFactService;
-import greencity.service.HabitFactTranslationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +31,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,8 +42,6 @@ class HabitFactControllerTest {
 
     @Mock
     HabitFactService habitFactService;
-    @Mock
-    HabitFactTranslationService habitFactTranslationService;
     @Mock
     ModelMapper mapper;
     @Mock
@@ -101,7 +105,7 @@ class HabitFactControllerTest {
     void getHabitFactOfTheDayTest() throws Exception {
         mockMvc.perform(get(factLink + "/dayFact/{languageId}", 1))
             .andExpect(status().isOk());
-        verify(habitFactTranslationService).getHabitFactOfTheDay(1L);
+        verify(habitFactService).getHabitFactOfTheDay(1L);
     }
 
     @Test
@@ -131,21 +135,31 @@ class HabitFactControllerTest {
 
         ObjectMapper mapper = new ObjectMapper();
         HabitFactPostDto habitFactPostDto = mapper.readValue(content, HabitFactPostDto.class);
-        verify(habitFactTranslationService, times(1))
-            .saveHabitFactAndFactTranslation(eq(habitFactPostDto));
+        verify(habitFactService, times(1))
+            .save(eq(habitFactPostDto));
     }
 
     @Test
     void updateTest() throws Exception {
-        Long factId = 1L;
-        mockMvc.perform(put(factLink + "/{factId}", factId)
+        List<HabitFactTranslationUpdateDto> habitFactTranslationUpdateDtos = Arrays.asList(
+            new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL,
+                new LanguageDTO(1L, "ua"), "hello"),
+            new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL,
+                new LanguageDTO(2L, "en"), "привіт"),
+            new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL,
+                new LanguageDTO(3L, "ru"), "привет"));
+        HabitFactUpdateDto habitFactUpdateDto = new HabitFactUpdateDto(habitFactTranslationUpdateDtos,
+            new HabitIdRequestDto(1L));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String habitFactTranslationUpdateDtoJson = objectMapper.writeValueAsString(habitFactUpdateDto);
+
+        Long id = 1L;
+        mockMvc.perform(put(factLink + "/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
+            .content(habitFactTranslationUpdateDtoJson))
             .andExpect(status().isOk());
 
-        ObjectMapper mapper = new ObjectMapper();
-        HabitFactPostDto habitFactPostDto = mapper.readValue(content, HabitFactPostDto.class);
-        verify(habitFactService).update(eq(habitFactPostDto), eq(factId));
+        verify(habitFactService).update(habitFactUpdateDto, id);
     }
 
     @Test

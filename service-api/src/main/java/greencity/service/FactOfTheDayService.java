@@ -77,7 +77,7 @@ public interface FactOfTheDayService {
 
     /**
      * Method returns pageable of {@link FactOfTheDayDTO} that satisfy search query.
-     * 
+     *
      * @param searchQuery query to search
      * @return pageable of {@link FactOfTheDayDTO}
      */

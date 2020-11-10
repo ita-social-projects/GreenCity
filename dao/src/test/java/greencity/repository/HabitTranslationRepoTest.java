@@ -28,10 +28,10 @@ class HabitTranslationRepoTest {
     @Test
     void findByNameAndLanguageCodeTest_shouldReturnCorrectTranslation() {
         HabitTranslation habitTranslation = habitTranslationRepo
-            .findByNameAndLanguageCode("Економити пакети", "ua").get();
+            .findByNameAndLanguageCode("Save bags", "en").get();
 
-        assertAll(() -> assertEquals("Опис пакетів", habitTranslation.getDescription()),
-            () -> assertEquals("Пакети", habitTranslation.getHabitItem()));
+        assertAll(() -> assertEquals("bag description", habitTranslation.getDescription()),
+            () -> assertEquals("bags", habitTranslation.getHabitItem()));
     }
 
     @Test
@@ -64,10 +64,10 @@ class HabitTranslationRepoTest {
     @Test
     void findHabitTranslationsByUserAndAcquiredStatusTest_shouldReturnCorrectTranslationsList() {
         List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findHabitTranslationsByUserAndAcquiredStatus(7L, "ua", false);
+            .findHabitTranslationsByUserAndAcquiredStatus(1L, "en", false);
 
         assertEquals(1, habitTranslations.size());
-        assertEquals("Стаканчики", habitTranslations.get(0).getHabitItem());
+        assertEquals("bags", habitTranslations.get(0).getHabitItem());
     }
 
     @Test
@@ -90,12 +90,12 @@ class HabitTranslationRepoTest {
     void findAllByLanguageCodeTest_shouldReturnCorrectTranslationsList() {
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findAllByLanguageCode(pageRequest, "ua").getContent();
+            .findAllByLanguageCode(pageRequest, "en").getContent();
 
         HabitTranslation actual = habitTranslations.get(1);
 
         assertEquals(2, habitTranslations.size());
-        assertEquals("Опис стаканчиків", actual.getDescription());
+        assertEquals("cap description", actual.getDescription());
     }
 
     @Test

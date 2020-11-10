@@ -1,5 +1,7 @@
 package greencity.webcontroller;
 
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
+
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -8,14 +10,11 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.genericresponse.GenericResponseDto;
-import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +25,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
