@@ -165,7 +165,7 @@
                         <div class="form-group">
                             <label>Habit ID</label>
                             <input type="text" class="form-control" name="habit_id" required>
-                            <span th:id="errorModalSavename" class="errorSpan"></span>
+                            <span class="errorSpan" th:id="errorModalSavehabit.id"></span>
                         </div>
                         <th:block th:each="language, iterInfo : ${languages}">
                             <div class="row">
@@ -181,8 +181,8 @@
                                         <label>Content</label>
                                         <input type="text" class="form-control eEdit"
                                                th:name="content+${language.getCode()}">
-                                        <span th:id="'errorModalSaveHabitFactsTranslations['+${iterInfo.index}+'].content'"
-                                              class="errorSpan"></span>
+                                        <span class="errorSpan"
+                                              th:id="'errorModalSavetranslations['+${iterInfo.index}+'].content'"></span>
                                     </div>
                                 </div>
                             </div>
@@ -214,7 +214,7 @@
                         <div class="form-group">
                             <label>Habit ID</label>
                             <input type="text" class="form-control" id="habit_id" name="habit_id" required>
-                            <span th:id="errorModalUpdateHabitId" class="errorSpan"></span>
+                            <span class="errorSpan" th:id="errorModalUpdatehabit.id"></span>
                         </div>
                         <th:block th:each="language, iterInfo : ${languages}">
                             <div class="row">
@@ -228,7 +228,8 @@
                                     <div class="form-group">
                                         <label>Content</label>
                                         <input type="text" class="form-control eEdit" th:id="content+${language.getCode()}" th:name="content+${language.getCode()}">
-                                        <span th:id="'errorModalUpdateHabitFactTranslations['+${iterInfo.index}+'].content'" class="errorSpan"></span>
+                                        <span class="errorSpan"
+                                              th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].content'"></span>
                                     </div>
                                 </div>
                             </div>
