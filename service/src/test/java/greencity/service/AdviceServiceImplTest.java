@@ -24,14 +24,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -202,18 +200,12 @@ class AdviceServiceImplTest {
         when(adviceRepo.findById(adviceId)).thenReturn(Optional.of(advice));
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         advice.setHabit(habit);
-        Type type = new TypeToken<List<AdviceTranslation>>() {
-        }.getType();
-        List<AdviceTranslation> adviceTranslations = ModelUtils.getAdviceTranslations();
-        when(modelMapper.map(advicePostDto.getTranslations(), type)).thenReturn(adviceTranslations);
-        advice.setTranslations(adviceTranslations);
         when(adviceRepo.save(advice)).thenReturn(advice);
         AdvicePostDto expected = modelMapper.map(advice, AdvicePostDto.class);
         when(modelMapper.map(advice, AdvicePostDto.class)).thenReturn(expected);
         AdvicePostDto actual = adviceService.update(advicePostDto, adviceId);
 
         assertEquals(expected, actual);
-        verify(adviceTranslationRepo, times(1)).deleteAllByAdvice(advice);
     }
 
     @Test
