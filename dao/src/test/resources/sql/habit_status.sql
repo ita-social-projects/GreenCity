@@ -1,3 +1,7 @@
+DELETE FROM habit_status;
+DELETE FROM habit_assign;
+DELETE FROM habits;
+DELETE FROM users ;
 INSERT INTO users (id, date_of_registration, email, email_notification, name, last_visit, role, user_status,
                    refresh_token_key, rating, last_activity_time, first_name, city, user_credo, show_location,
                    show_eco_place, show_shopping_list)
