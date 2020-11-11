@@ -1,10 +1,12 @@
 package greencity.dto;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@ToString
+@EqualsAndHashCode
+@Getter
+@Setter
 @AllArgsConstructor
 public class PageableAdvancedDto<T> {
     private List<T> page;

@@ -1,6 +1,5 @@
 package greencity.dto.user;
 
-import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.goal.GoalVO;
 import greencity.enums.GoalStatus;
 import java.time.LocalDateTime;

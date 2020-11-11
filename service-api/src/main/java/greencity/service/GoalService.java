@@ -2,8 +2,6 @@ package greencity.service;
 
 import greencity.dto.goal.*;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserGoalVO;
 
 import java.util.List;
 

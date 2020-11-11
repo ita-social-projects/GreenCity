@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import greencity.dto.user.UserGoalVO;
-import greencity.entity.CustomGoal;
 import greencity.entity.Goal;
 import greencity.entity.User;
 import greencity.entity.UserGoal;

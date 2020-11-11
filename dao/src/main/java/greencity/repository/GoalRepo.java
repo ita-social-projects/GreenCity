@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.entity.Goal;
 import greencity.entity.User;
 import java.time.LocalDateTime;
