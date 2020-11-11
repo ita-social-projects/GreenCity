@@ -10,10 +10,12 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitStatusRepo;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.dom4j.rule.Mode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,8 @@ class HabitStatusServiceImplTest {
     private HabitStatusRepo habitStatusRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
+    @Mock
+    private HabitAssignRepo habitAssignRepo;
     @Mock
     private ModelMapper modelMapper;
 
@@ -126,9 +130,11 @@ class HabitStatusServiceImplTest {
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
         HabitStatusDto habitStatusDto = ModelUtils.getHabitStatusDto();
         HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
-        HabitStatusVO habitStatusVO = modelMapper.map(habitStatus, HabitStatusVO.class);
+        HabitStatusVO habitStatusVO = ModelUtils.getHabitStatusVO();
 
         when(habitStatusRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitStatus));
+
+
         when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
             .thenReturn(LocalDate.of(2020, 10, 15));
         when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
@@ -153,10 +159,11 @@ class HabitStatusServiceImplTest {
     void enrollHabitThrowBadRequestException() {
         HabitStatus habitStatus = ModelUtils.getHabitStatus();
         HabitStatusVO habitStatusVO = ModelUtils.getHabitStatusVO();
-        when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
         when(habitStatusRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitStatus));
+
+        when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
         when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
-            .thenReturn(LocalDate.of(2100, 10, 16));
+            .thenReturn(LocalDate.now());
 
         assertThrows(BadRequestException.class, () -> {
             habitStatusService.enrollHabit(1L, 1L);
