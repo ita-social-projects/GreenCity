@@ -20,7 +20,6 @@ import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.factoftheday.*;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
-import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignVO;
@@ -384,6 +383,7 @@ public class ModelUtils {
             .factOfDayStatus(FactOfDayStatus.CURRENT)
             .habitFact(null)
             .content("Content")
+            .language(getLanguage())
             .build();
     }
 
@@ -770,16 +770,18 @@ public class ModelUtils {
             .habit(HabitIdRequestDto.builder()
                 .id(1L)
                 .build())
-            .translations(Collections.singletonList(getHabitFactTranslationUpdateDto()))
+            .translations(getHabitFactTranslationUpdateDtos())
             .build();
     }
 
-    public static HabitFactTranslationUpdateDto getHabitFactTranslationUpdateDto() {
-        return HabitFactTranslationUpdateDto.builder()
-            .content("")
-            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
-            .language(getLanguageDTO())
-            .build();
+    public static List<HabitFactTranslationUpdateDto> getHabitFactTranslationUpdateDtos() {
+        return new ArrayList<>(Arrays.asList(
+            HabitFactTranslationUpdateDto.builder().content("ua").factOfDayStatus(FactOfDayStatus.POTENTIAL)
+                .language(getLanguageDTO()).build(),
+            HabitFactTranslationUpdateDto.builder().content("en").factOfDayStatus(FactOfDayStatus.POTENTIAL)
+                .language(getLanguageDTO()).build(),
+            HabitFactTranslationUpdateDto.builder().content("ru").factOfDayStatus(FactOfDayStatus.POTENTIAL)
+                .language(getLanguageDTO()).build()));
     }
 
     public static List<AdviceTranslation> getAdviceTranslations() {

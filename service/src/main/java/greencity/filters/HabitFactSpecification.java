@@ -1,8 +1,8 @@
 package greencity.filters;
 
-import greencity.entity.Habit;
-import greencity.entity.HabitFact;
-import greencity.entity.HabitFactTranslation;
+import static greencity.entity.HabitFactTranslation_.content;
+
+import greencity.entity.*;
 import javax.persistence.criteria.*;
 import java.util.List;
 
@@ -42,16 +42,17 @@ public class HabitFactSpecification implements MySpecification<HabitFact> {
         CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
         Root<HabitFactTranslation> habitFactTranslationRoot = criteriaQuery.from(HabitFactTranslation.class);
         return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
-            : criteriaBuilder.and(criteriaBuilder.like(habitFactTranslationRoot.get("content"),
+            : criteriaBuilder.and(criteriaBuilder.like(habitFactTranslationRoot.get(content),
                 "%" + searchCriteria.getValue() + "%"),
-                criteriaBuilder.equal(habitFactTranslationRoot.get("habitFact").get("id"), root.get("id")));
+                criteriaBuilder.equal(habitFactTranslationRoot.get(HabitFactTranslation_.habitFact).get(HabitFact_.id),
+                    root.get(HabitFact_.id)));
     }
 
     private Predicate getHabitIdPredicate(Root<HabitFact> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        Join<HabitFact, Habit> habitJoin = root.join("habit");
+        Join<HabitFact, Habit> habitJoin = root.join(HabitFact_.habit);
 
         return criteriaBuilder
-            .equal(habitJoin.get("id"), searchCriteria.getValue());
+            .equal(habitJoin.get(Habit_.id), searchCriteria.getValue());
     }
 }

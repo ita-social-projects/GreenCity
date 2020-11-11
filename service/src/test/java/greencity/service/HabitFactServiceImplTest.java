@@ -13,6 +13,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.entity.Habit;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.enums.FactOfDayStatus;
@@ -29,12 +30,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -184,15 +183,12 @@ class HabitFactServiceImplTest {
     @Test
     void updateTest_shouldReturnCorrectValue() {
         Long id = 1L;
+        Habit habit = ModelUtils.getHabit();
         HabitFact habitFact = ModelUtils.getHabitFact();
         HabitFactUpdateDto habitFactUpdateDto = ModelUtils.getHabitFactUpdateDto();
         when(habitFactRepo.findById(id)).thenReturn(Optional.of(habitFact));
-        Type type = new TypeToken<List<HabitFactTranslation>>() {
-        }.getType();
-        List<HabitFactTranslation> habitFactTranslations = Collections.singletonList(
-            ModelUtils.getHabitFactTranslation());
-        when(modelMapper.map(habitFactUpdateDto.getTranslations(), type)).thenReturn(habitFactTranslations);
-        habitFact.setTranslations(habitFactTranslations);
+        when(habitRepo.findById(id)).thenReturn(Optional.of(habit));
+        habitFact.setHabit(habit);
         when(habitFactRepo.save(habitFact)).thenReturn(habitFact);
         HabitFactVO expected = modelMapper.map(habitFact, HabitFactVO.class);
         when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(expected);

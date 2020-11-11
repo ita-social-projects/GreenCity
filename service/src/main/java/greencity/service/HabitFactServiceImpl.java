@@ -8,6 +8,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.entity.Habit;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
@@ -19,9 +20,9 @@ import greencity.filters.HabitFactSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.HabitFactRepo;
 import greencity.repository.HabitFactTranslationRepo;
+import greencity.repository.HabitRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +44,7 @@ public class HabitFactServiceImpl implements HabitFactService {
     private final HabitFactRepo habitFactRepo;
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final ModelMapper modelMapper;
+    private final HabitRepo habitRepo;
 
     /**
      * {@inheritDoc}
@@ -121,18 +123,20 @@ public class HabitFactServiceImpl implements HabitFactService {
     @Override
     public HabitFactVO update(HabitFactUpdateDto factDto, Long id) {
         HabitFact habitFact = habitFactRepo.findById(id)
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id));
-        List<HabitFactTranslation> habitFactTranslations = modelMapper.map(factDto.getTranslations(),
-            new TypeToken<List<HabitFactTranslation>>() {
-            }.getType());
-        habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
-        habitFact.setTranslations(habitFactTranslations);
-        habitFactTranslations.forEach(habitFactTranslation -> {
-            habitFactTranslation.setHabitFact(habitFact);
-            habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().get(0).getFactOfDayStatus());
-        });
-        habitFactRepo.save(habitFact);
-        return modelMapper.map(habitFact, HabitFactVO.class);
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_FACT_NOT_FOUND_BY_ID + id));
+        Habit habit = habitRepo.findById(factDto.getHabit().getId())
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
+        habitFact.setHabit(habit);
+        habitFact.getTranslations()
+            .forEach(habitFactTranslation -> {
+                habitFactTranslation.setContent(factDto.getTranslations().stream()
+                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                        .equals(habitFactTranslation.getLanguage().getCode()))
+                    .findFirst().get()
+                    .getContent());
+                habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().get(0).getFactOfDayStatus());
+            });
+        return modelMapper.map(habitFactRepo.save(habitFact), HabitFactVO.class);
     }
 
     /**
