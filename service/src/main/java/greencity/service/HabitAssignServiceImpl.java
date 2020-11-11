@@ -69,7 +69,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void enhanceAssignWithDefaultProperties(HabitAssign habitAssign) {
-        habitAssign.setDuration(AppConstant.DEFAULT_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER);
+        habitAssign.setDuration(habitAssign.getHabit().getDefaultDuration());
     }
 
     /**
