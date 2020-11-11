@@ -1,6 +1,8 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
@@ -9,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -70,7 +73,7 @@ public class HabitAssignController {
     }
 
     /**
-     * Method returns {@link HabitAssignVO} by it's id.
+     * Method returns {@link HabitAssignDto} by it's id.
      *
      * @param id {@link HabitAssignVO} id.
      * @return {@link HabitAssignDto}.
@@ -88,10 +91,36 @@ public class HabitAssignController {
     }
 
     /**
+     * Method for finding all active {@link HabitAssignDto}'s for current user.
+     *
+     * @param userVO   {@link UserVO} instance.
+     * @param acquired {@link Boolean} status.
+     * @param locale   needed language code.
+     * @return list of {@link HabitAssignDto}.
+     */
+    @ApiOperation(value = "Get active habit assigns for current user by acquired status.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @GetMapping("/assign")
+    public ResponseEntity<List<HabitAssignDto>> getCurrentUserHabitAssignsByIdAndAcquired(
+        @ApiIgnore @CurrentUser UserVO userVO, @RequestParam Boolean acquired,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .getAllHabitAssignsByUserIdAndAcquiredStatus(userVO.getId(), acquired, locale.getLanguage()));
+    }
+
+    /**
      * Method to return all {@link HabitAssignVO} by it's {@link HabitVO} id.
      *
      * @param id       {@link HabitVO} id.
      * @param acquired {@link Boolean} status.
+     * @param locale   needed language code.
      * @return {@link List} of {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get all active users assigns from certain habit.")
@@ -100,11 +129,14 @@ public class HabitAssignController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
+    @ApiLocale
     @GetMapping("/{id}/assign/all")
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long id,
-                                                                                       @RequestParam Boolean acquired) {
+                                                                                       @RequestParam Boolean acquired,
+                                                                                       @ApiIgnore @ValidLanguage
+                                                                                           Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(id, acquired));
+            .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(id, acquired, locale.getLanguage()));
     }
 
     /**
@@ -112,6 +144,7 @@ public class HabitAssignController {
      *
      * @param id     {@link HabitVO} id.
      * @param userVO {@link UserVO} user.
+     * @param locale needed language code.
      * @return {@link HabitAssignDto} instance.
      */
     @ApiOperation(value = "Get active assign by habit id for current user.")
@@ -121,12 +154,14 @@ public class HabitAssignController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
+    @ApiLocale
     @GetMapping("/{id}/assign")
     public ResponseEntity<HabitAssignDto> getHabitAssignByHabitId(
         @ApiIgnore @CurrentUser UserVO userVO,
-        @PathVariable Long id) {
+        @PathVariable Long id,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.findActiveHabitAssignByUserIdAndHabitId(userVO.getId(), id));
+            .body(habitAssignService.findActiveHabitAssignByUserIdAndHabitId(userVO.getId(), id, locale.getLanguage()));
     }
 
     /**

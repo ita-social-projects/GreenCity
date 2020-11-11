@@ -23,8 +23,7 @@ public class HabitAssignDto {
     @NotEmpty
     private ZonedDateTime createDateTime;
     @NotNull
-    @Min(1)
-    private Long habitId;
+    private HabitDto habit;
     @NotNull
     @Min(1)
     private Long userId;

@@ -14,9 +14,9 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitRepo habitRepo;
+    private final HabitService habitService;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusService habitStatusService;
     private final ModelMapper modelMapper;
@@ -148,36 +149,45 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), userId)
-                .orElseThrow(
-                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID
-                        + userId + ", " + habitId)),
-            HabitAssignDto.class);
+    public HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language) {
+        HabitDto habitDto = habitService.getByIdAndLanguageCode(habitId, language);
+        HabitAssignDto habitAssignDto =
+            modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+                .orElseThrow(() -> new NotFoundException(
+                    ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID + userId
+                        + ", " + habitId)), HabitAssignDto.class);
+        habitAssignDto.setHabit(habitDto);
+        return habitAssignDto;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired) {
-        return modelMapper.map(habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired),
-            new TypeToken<List<HabitAssignDto>>() {
-            }.getType());
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired,
+                                                                            String language) {
+        return habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired)
+            .stream().map(habitAssign -> {
+                HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
+                HabitDto habitDto = habitService.getByIdAndLanguageCode(habitAssign.getHabit().getId(), language);
+                habitAssignDto.setHabit(habitDto);
+                return habitAssignDto;
+            }).collect(Collectors.toList());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        return modelMapper.map(habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habit.getId(), acquired),
-            new TypeToken<List<HabitAssignDto>>() {
-            }.getType());
+    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired,
+                                                                             String language) {
+        HabitDto habitDto = habitService.getByIdAndLanguageCode(habitId, language);
+        return habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habitId, acquired)
+            .stream().map(habitAssign -> {
+                HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
+                habitAssignDto.setHabit(habitDto);
+                return habitAssignDto;
+            }).collect(Collectors.toList());
     }
 
     /**

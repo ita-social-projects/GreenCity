@@ -2,6 +2,7 @@ package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitDto;
 import greencity.entity.HabitAssign;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,6 @@ class HabitAssignDtoMapperTest {
             .acquired(habitAssign.getAcquired())
             .suspended(habitAssign.getSuspended())
             .createDateTime(habitAssign.getCreateDate())
-            .habitId(habitAssign.getHabit().getId())
             .userId(habitAssign.getUser().getId())
             .build();
 

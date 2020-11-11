@@ -1,6 +1,5 @@
 package greencity.mapping;
 
-import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.entity.HabitStatistic;
 import org.modelmapper.AbstractConverter;
@@ -25,14 +24,7 @@ public class HabitStatisticDtoMapper extends AbstractConverter<HabitStatistic, H
             .amountOfItems(habitStatistic.getAmountOfItems())
             .createDate(habitStatistic.getCreateDate())
             .habitRate(habitStatistic.getHabitRate())
-            .habitAssign(
-                HabitAssignDto.builder()
-                    .id(habitStatistic.getHabitAssign().getId())
-                    .acquired(habitStatistic.getHabitAssign().getAcquired())
-                    .createDateTime(habitStatistic.getHabitAssign().getCreateDate())
-                    .suspended(habitStatistic.getHabitAssign().getSuspended())
-                    .habitId(habitStatistic.getHabitAssign().getHabit().getId())
-                    .userId(habitStatistic.getHabitAssign().getUser().getId()).build())
+            .habitAssignId(habitStatistic.getHabitAssign().getId())
             .build();
     }
 }

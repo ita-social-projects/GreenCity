@@ -7,8 +7,8 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
-import greencity.service.HabitService;
 import greencity.service.LanguageService;
+import greencity.service.ManagementHabitService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -28,8 +28,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/habits")
-public class ManagementHabitsController {
-    private final HabitService habitService;
+public class ManagementHabitController {
+    private final ManagementHabitService managementHabitService;
     private final LanguageService languageService;
 
     /**
@@ -41,7 +41,7 @@ public class ManagementHabitsController {
      */
     @GetMapping
     public String findAllHabits(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<HabitManagementDto> allHabits = habitService.getAllHabitsDto(pageable);
+        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(pageable);
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_user_habits";
@@ -62,7 +62,7 @@ public class ManagementHabitsController {
     @GetMapping("/find")
     public ResponseEntity<HabitManagementDto> getHabitById(@RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.getById(id));
+            .body(managementHabitService.getById(id));
     }
 
     /**
@@ -86,7 +86,7 @@ public class ManagementHabitsController {
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
-            habitService.saveHabitAndTranslations(habitManagementDto, file);
+            managementHabitService.saveHabitAndTranslations(habitManagementDto, file);
         }
         return GenericResponseDto.buildGenericResponseDto(bindingResult);
     }
@@ -112,7 +112,7 @@ public class ManagementHabitsController {
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
-            habitService.update(habitManagementDto, file);
+            managementHabitService.update(habitManagementDto, file);
         }
         return GenericResponseDto.buildGenericResponseDto(bindingResult);
     }
@@ -131,7 +131,7 @@ public class ManagementHabitsController {
     })
     @DeleteMapping("/delete")
     public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
-        habitService.delete(id);
+        managementHabitService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
@@ -149,7 +149,7 @@ public class ManagementHabitsController {
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
-        habitService.deleteAll(listId);
+        managementHabitService.deleteAll(listId);
         return ResponseEntity.status(HttpStatus.OK).body(listId);
     }
 }
