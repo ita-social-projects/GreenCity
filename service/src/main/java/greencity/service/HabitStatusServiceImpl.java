@@ -85,7 +85,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId));
         LocalDate todayDate = LocalDate.now();
 
-        checkAssignCompleted(habitStatus);
+        updateHabitAssignIfCompleted(habitStatus);
         updateHabitStatus(habitStatus, todayDate);
 
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
@@ -130,11 +130,11 @@ public class HabitStatusServiceImpl implements HabitStatusService {
      *
      * @param habitStatus {@link HabitStatus} instance.
      */
-    private void checkAssignCompleted(HabitStatus habitStatus) {
+    private void updateHabitAssignIfCompleted(HabitStatus habitStatus) {
         int workingDays = habitStatus.getWorkingDays();
         int habitDuration = habitStatus.getHabitAssign().getDuration();
         if (workingDays == habitDuration) {
-            if (habitStatus.getHabitAssign().getAcquired().equals(true)) {
+            if (Boolean.TRUE.equals(habitStatus.getHabitAssign().getAcquired())) {
                 throw new BadRequestException(
                     ErrorMessage.HABIT_ALREADY_ACQUIRED + habitStatus.getHabitAssign().getHabit().getId());
             }
