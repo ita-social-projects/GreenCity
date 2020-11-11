@@ -17,6 +17,7 @@
         <swagger.version>2.9.2</swagger.version>
         <io.jsonwebtoken.version>0.9.1</io.jsonwebtoken.version>
     </properties>
+    <packaging>pom</packaging>
 
     <dependencies>
         <dependency>

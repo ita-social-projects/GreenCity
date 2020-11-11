@@ -20,6 +20,7 @@
         <commons-io.version>2.6</commons-io.version>
         <org.springframework.social.version>2.0.3.RELEASE</org.springframework.social.version>
     </properties>
+    <packaging>pom</packaging>
 
     <dependencies>
         <dependency>
