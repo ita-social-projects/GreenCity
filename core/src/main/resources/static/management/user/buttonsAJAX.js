@@ -2,7 +2,20 @@ function clearAllErrorsSpan(){
     $('.errorSpan').text('');
 }
 
+let checkedCh = 0;
+function updateCheckBoxCount(chInt){
+    let chBox = $('#checkbox' + chInt);
+    let deactivateButton = $("#btnDeactivate");
+    chBox.is(":checked") ? checkedCh++ : checkedCh--;
+    console.log(checkedCh)
+    if(checkedCh === 0) {
+        deactivateButton.addClass("disabled");
+    } else deactivateButton.removeClass("disabled");
+}
+
 $(document).ready(function(){
+    let deactivateButton = $("#btnDeactivate");
+
     // Activate tooltip
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -10,13 +23,18 @@ $(document).ready(function(){
     var checkbox = $('table tbody input[type="checkbox"]');
     $("#selectAll").click(function(){
         if(this.checked){
+            checkedCh = 0;
             checkbox.each(function(){
                 this.checked = true;
+                checkedCh++;
             });
+            deactivateButton.removeClass("disabled");
         } else{
             checkbox.each(function(){
+                checkedCh--;
                 this.checked = false;
             });
+            deactivateButton.addClass("disabled");
         }
     });
     checkbox.click(function(){
@@ -24,6 +42,19 @@ $(document).ready(function(){
             $("#selectAll").prop("checked", false);
         }
     });
+
+    $('#btnSearchImage').click(function (){
+        let url = "/management/users?query=";
+        let query = $('#inputSearch').val();
+        $.ajax({
+            url: url + query,
+            type: 'GET',
+            success: function(res) {
+                window.location.href= url + query;
+            }
+        });
+    });
+
 
     // Add user button (popup)
     $('#addUserModalBtn').on('click',function(event){
