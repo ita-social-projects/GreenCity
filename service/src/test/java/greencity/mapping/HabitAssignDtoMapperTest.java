@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitDto;
 import greencity.entity.HabitAssign;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
