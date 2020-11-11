@@ -65,8 +65,9 @@ public class HabitAssignController {
     })
     @PostMapping("/assign/{id}/custom")
     public ResponseEntity<HabitAssignManagementDto> assignCustom(@PathVariable Long id,
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
+                                                       @ApiIgnore @CurrentUser UserVO userVO,
+                                                       @Valid @RequestBody
+                                                           HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignCustomHabitForUser(id, userVO, habitAssignPropertiesDto));
     }
@@ -116,7 +117,7 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to return all {@link HabitAssignVO} by it's {@link HabitVO} id.
+     * Method to return all active {@link HabitAssignDto} by it's {@link HabitVO} id.
      *
      * @param id       {@link HabitVO} id.
      * @param acquired {@link Boolean} status.

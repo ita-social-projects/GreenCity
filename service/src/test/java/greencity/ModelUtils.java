@@ -195,6 +195,7 @@ public class ModelUtils {
             .lastEnrollmentDate(LocalDateTime.now())
             .habitAssign(HabitAssign.builder()
                 .id(1L)
+                .duration(14)
                 .build())
             .habitStatusCalendars(
                 Collections.singletonList(getHabitStatusCalendar()))
