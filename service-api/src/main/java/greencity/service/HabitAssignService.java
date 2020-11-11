@@ -31,7 +31,7 @@ public interface HabitAssignService {
      * @return {@link HabitAssignManagementDto}.
      */
     HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO user,
-                                                      HabitAssignPropertiesDto habitAssignPropertiesDto);
+        HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
      * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id

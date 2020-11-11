@@ -43,7 +43,7 @@ public class HabitAssignController {
     })
     @PostMapping("/assign/{id}")
     public ResponseEntity<HabitAssignManagementDto> assignDefault(@PathVariable Long id,
-                                                                  @ApiIgnore @CurrentUser UserVO userVO) {
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignDefaultHabitForUser(id, userVO));
     }
@@ -65,9 +65,8 @@ public class HabitAssignController {
     })
     @PostMapping("/assign/{id}/custom")
     public ResponseEntity<HabitAssignManagementDto> assignCustom(@PathVariable Long id,
-                                                                 @ApiIgnore @CurrentUser UserVO userVO,
-                                                                 @Valid @RequestBody
-                                                           HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignCustomHabitForUser(id, userVO, habitAssignPropertiesDto));
     }
@@ -86,7 +85,7 @@ public class HabitAssignController {
     })
     @GetMapping("/assign/{id}")
     public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long id,
-                                                         @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getById(id, locale.getLanguage()));
     }
@@ -133,9 +132,8 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/{id}/assign/all")
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long id,
-                                                                                       @RequestParam Boolean acquired,
-                                                                                       @ApiIgnore @ValidLanguage
-                                                                                           Locale locale) {
+        @RequestParam Boolean acquired,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(id, acquired, locale.getLanguage()));
     }

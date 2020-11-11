@@ -80,7 +80,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
 
         when(habitService.getByIdAndLanguageCode(habitAssign.getHabit().getId(), language))
-        .thenReturn(habitDto);
+            .thenReturn(habitDto);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         assertEquals(habitAssignDto, habitAssignService.getById(1L, language));
     }
@@ -143,7 +143,9 @@ class HabitAssignServiceImplTest {
     @Test
     void updateStatusByHabitIdAndUserId() {
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        assertEquals(habitAssignManagementDto, habitAssignService.updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto));
+        when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
+            .thenReturn(habitAssignManagementDto);
+        assertEquals(habitAssignManagementDto,
+            habitAssignService.updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto));
     }
 }

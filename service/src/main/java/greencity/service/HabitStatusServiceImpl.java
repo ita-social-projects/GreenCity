@@ -38,7 +38,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     @Override
     public HabitStatusDto getById(Long id) {
         return modelMapper.map(habitStatusRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN + id)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN + id)),
             HabitStatusDto.class);
     }
 
@@ -62,7 +62,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     @Override
     public HabitStatusDto findActiveStatusByHabitIdAndUserId(Long habitId, Long userId) {
         return modelMapper.map(habitStatusRepo.findByHabitIdAndUserId(habitId, userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId)),
             HabitStatusDto.class);
     }
 
@@ -72,7 +72,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     @Override
     public HabitStatusDto findStatusByHabitAssignId(Long habitAssignId) {
         return modelMapper.map(habitStatusRepo.findByHabitAssignId(habitAssignId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN + habitAssignId)),
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_ASSIGN + habitAssignId)),
             HabitStatusDto.class);
     }
 
