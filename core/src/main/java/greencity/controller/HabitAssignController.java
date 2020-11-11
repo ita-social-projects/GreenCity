@@ -42,8 +42,8 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/assign/{id}")
-    public ResponseEntity<HabitAssignDto> assignDefault(@PathVariable Long id,
-                                                        @ApiIgnore @CurrentUser UserVO userVO) {
+    public ResponseEntity<HabitAssignManagementDto> assignDefault(@PathVariable Long id,
+                                                                  @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignDefaultHabitForUser(id, userVO));
     }
@@ -64,9 +64,9 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/assign/{id}/custom")
-    public ResponseEntity<HabitAssignDto> assignCustom(@PathVariable Long id,
-                                                       @ApiIgnore @CurrentUser UserVO userVO,
-                                                       @Valid @RequestBody
+    public ResponseEntity<HabitAssignManagementDto> assignCustom(@PathVariable Long id,
+                                                                 @ApiIgnore @CurrentUser UserVO userVO,
+                                                                 @Valid @RequestBody
                                                            HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignCustomHabitForUser(id, userVO, habitAssignPropertiesDto));
@@ -85,9 +85,10 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/assign/{id}")
-    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long id) {
+    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long id,
+                                                         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getById(id));
+            .body(habitAssignService.getById(id, locale.getLanguage()));
     }
 
     /**
@@ -171,7 +172,7 @@ public class HabitAssignController {
      * @param userVO             {@link UserVO} instance.
      * @param id                 {@link HabitVO} id.
      * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
-     * @return {@link HabitAssignDto}.
+     * @return {@link HabitAssignManagementDto}.
      */
     @ApiOperation(value = "Update active user habit assign acquired or suspended status.")
     @ApiResponses(value = {
@@ -181,7 +182,7 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("/{id}/assign")
-    public ResponseEntity<HabitAssignDto> updateAssignByHabitId(
+    public ResponseEntity<HabitAssignManagementDto> updateAssignByHabitId(
         @ApiIgnore @CurrentUser UserVO userVO,
         @PathVariable Long id, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitAssignService

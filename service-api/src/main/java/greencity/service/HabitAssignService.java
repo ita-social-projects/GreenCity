@@ -1,9 +1,6 @@
 package greencity.service;
 
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
 import java.util.List;
 
@@ -11,18 +8,19 @@ public interface HabitAssignService {
     /**
      * Method to find {@code HabitAssign} by id.
      *
+     * @param language {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto getById(Long habitAssignId);
+    HabitAssignDto getById(Long habitAssignId, String language);
 
     /**
      * Method for assigning {@code Habit} with default properties.
      *
      * @param habitId {@code Habit} id.
      * @param user    @link UserVO} id.
-     * @return {@link HabitAssignDto}.
+     * @return {@link HabitAssignManagementDto}.
      */
-    HabitAssignDto assignDefaultHabitForUser(Long habitId, UserVO user);
+    HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO user);
 
     /**
      * Method for assigning {@code Habit} with custom properties.
@@ -30,10 +28,10 @@ public interface HabitAssignService {
      * @param habitId                  {@code Habit} id.
      * @param user                     @link UserVO} id.
      * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
-     * @return {@link HabitAssignDto}.
+     * @return {@link HabitAssignManagementDto}.
      */
-    HabitAssignDto assignCustomHabitForUser(Long habitId, UserVO user,
-                                            HabitAssignPropertiesDto habitAssignPropertiesDto);
+    HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO user,
+                                                      HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
      * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id
@@ -83,7 +81,7 @@ public interface HabitAssignService {
      * @param userId  {@code User} id.
      * @param dto     {@link HabitAssignStatDto} dto with new suspended and acquired
      *                status.
-     * @return {@link HabitAssignDto} instance.
+     * @return {@link HabitAssignManagementDto} instance.
      */
-    HabitAssignDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto);
+    HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto);
 }

@@ -1,6 +1,9 @@
 package greencity.dto.habit;
 
 import java.time.ZonedDateTime;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.*;
 
 @NoArgsConstructor
@@ -9,12 +12,23 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class HabitAssignDto {
+public class HabitAssignManagementDto {
+    @NotNull
+    @Min(1)
     private Long id;
+    @NotEmpty
     private Boolean acquired;
+    @NotEmpty
     private Boolean suspended;
+    @NotEmpty
     private ZonedDateTime createDateTime;
-    private HabitDto habit;
+    @NotNull
+    @Min(1)
+    private Long habitId;
+    @NotNull
+    @Min(1)
     private Long userId;
+    @Min(1)
+    @NotNull
     private Integer duration;
 }
