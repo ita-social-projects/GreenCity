@@ -116,7 +116,7 @@ public class ScheduleConfig {
     @Transactional
     @Scheduled(cron = "0 0 0 * * ?")
     public void chooseNewHabitFactOfTheDay() {
-        //Do nothing to clean cache
+        // Do nothing to clean cache
     }
 
     /**

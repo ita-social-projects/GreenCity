@@ -46,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final String econewsComents = "/econews/comments";
     private final String tipsAndTricksComents = "/tipsandtricks/comments";
     private final String userCustomGoals = "/user/{userId}/customGoals";
+
     /**
      * Constructor.
      */
