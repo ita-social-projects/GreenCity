@@ -112,7 +112,7 @@ $(document).ready(function () {
             var lang, langId;
             if (key.startsWith("content")) {
                 lang = key.split("content").pop();
-                if (lang === 'ua') {
+                if (lang === 'uk') {
                     langId = 1;
                 } else if (lang === 'en') {
                     langId = 2;
@@ -168,7 +168,7 @@ $(document).ready(function () {
             var lang, langId;
             if (key.startsWith("content")) {
                 lang = key.split("content").pop();
-                if (lang === 'ua') {
+                if (lang === 'uk') {
                     langId = 1;
                 } else if (lang === 'en') {
                     langId = 2;
