@@ -131,9 +131,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
 
-        if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {
+        if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
-                ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
+                ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habit.getId());
         }
         if (habitAssignRepo.countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(
             user.getId()) >= AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER) {
@@ -142,9 +142,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     + AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER);
         }
         if (habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(
-            habitId, user.getId(), ZonedDateTime.now()).isPresent()) {
+            habit.getId(), user.getId(), ZonedDateTime.now()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
-                ErrorMessage.USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY + habitId);
+                ErrorMessage.USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY + habit.getId());
         }
         return habit;
     }
