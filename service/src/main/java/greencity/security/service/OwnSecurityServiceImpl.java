@@ -100,7 +100,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
      */
     @Transactional
     @Override
-    public SuccessSignUpDto signUp(OwnSignUpDto dto) {
+    public SuccessSignUpDto signUp(OwnSignUpDto dto, String language) {
         User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey());
         OwnSecurity ownSecurity = createOwnSecurity(dto, user);
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
@@ -113,7 +113,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                 sendEmailTopic,
                 VERIFY_EMAIL_ROUTING_KEY,
                 new VerifyEmailMessage(savedUser.getId(), savedUser.getName(), savedUser.getEmail(),
-                    savedUser.getVerifyEmail().getToken()));
+                    savedUser.getVerifyEmail().getToken(), language));
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyRegisteredException(ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }

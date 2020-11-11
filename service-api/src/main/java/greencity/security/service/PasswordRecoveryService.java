@@ -15,7 +15,7 @@ public interface PasswordRecoveryService {
      *
      * @param email - destination email address
      */
-    void sendPasswordRecoveryEmailTo(String email);
+    void sendPasswordRecoveryEmailTo(String email, String language);
 
     /**
      * Restore password by token.

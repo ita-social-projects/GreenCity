@@ -129,7 +129,7 @@ class OwnSecurityServiceImplTest {
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(userRepo.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
-        ownSecurityService.signUp(new OwnSignUpDto());
+        ownSecurityService.signUp(new OwnSignUpDto(), "en");
         verify(rabbitTemplate, times(1)).convertAndSend(
             refEq(sendEmailTopic),
             refEq(VERIFY_EMAIL_ROUTING_KEY),
@@ -137,7 +137,7 @@ class OwnSecurityServiceImplTest {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getVerifyEmail().getToken())));
+                user.getVerifyEmail().getToken(), "en")));
         verify(jwtTool, times(2)).generateTokenKey();
     }
 
@@ -150,7 +150,7 @@ class OwnSecurityServiceImplTest {
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
         when(userRepo.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
         assertThrows(UserAlreadyRegisteredException.class,
-            () -> ownSecurityService.signUp(ownSignUpDto));
+            () -> ownSecurityService.signUp(ownSignUpDto, "en"));
     }
 
     @Test
