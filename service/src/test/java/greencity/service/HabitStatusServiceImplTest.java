@@ -134,7 +134,6 @@ class HabitStatusServiceImplTest {
 
         when(habitStatusRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitStatus));
 
-
         when(habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatusVO))
             .thenReturn(LocalDate.of(2020, 10, 15));
         when(modelMapper.map(habitStatus, HabitStatusVO.class)).thenReturn(habitStatusVO);
