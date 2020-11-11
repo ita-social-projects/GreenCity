@@ -2,7 +2,7 @@ package greencity.dto.habitfact;
 
 import greencity.dto.user.HabitIdRequestDto;
 import lombok.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import java.util.List;
 
 @EqualsAndHashCode
@@ -12,9 +12,9 @@ import java.util.List;
 @Setter
 @Builder
 public class HabitFactUpdateDto {
-    @NotNull
+    @Valid
     private List<HabitFactTranslationUpdateDto> translations;
 
-    @NotNull
+    @Valid
     private HabitIdRequestDto habit;
 }
