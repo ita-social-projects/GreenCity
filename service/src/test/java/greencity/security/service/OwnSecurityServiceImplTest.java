@@ -80,14 +80,12 @@ class OwnSecurityServiceImplTest {
 
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
-    @Value("${defaultProfilePicture}")
-    private String defaultProfilePicture;
 
     @BeforeEach
     public void init() {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
-            jwtTool, 1, rabbitTemplate, defaultProfilePicture, restorePasswordEmailRepo, modelMapper,
+            jwtTool, 1, rabbitTemplate, restorePasswordEmailRepo, modelMapper,
             userRepo);
 
         verifiedUser = UserVO.builder()
