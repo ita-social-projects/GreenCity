@@ -40,7 +40,7 @@ public class HabitAssignController {
     })
     @PostMapping("/assign/{id}")
     public ResponseEntity<HabitAssignDto> assignDefault(@PathVariable Long id,
-                                                        @ApiIgnore @CurrentUser UserVO userVO) {
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignDefaultHabitForUser(id, userVO));
     }
@@ -62,9 +62,8 @@ public class HabitAssignController {
     })
     @PostMapping("/assign/{id}/custom")
     public ResponseEntity<HabitAssignDto> assignCustom(@PathVariable Long id,
-                                                       @ApiIgnore @CurrentUser UserVO userVO,
-                                                       @Valid @RequestBody
-                                                           HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignCustomHabitForUser(id, userVO, habitAssignPropertiesDto));
     }
@@ -102,7 +101,7 @@ public class HabitAssignController {
     })
     @GetMapping("/{id}/assign/all")
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long id,
-                                                                                       @RequestParam Boolean acquired) {
+        @RequestParam Boolean acquired) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(id, acquired));
     }
