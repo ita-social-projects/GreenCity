@@ -26,16 +26,14 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/goals")
 public class GoalController {
     private final GoalService goalService;
-    private final ModelMapper mapper;
 
     /**
      * Constructor with parameters.
      */
 
     @Autowired
-    public GoalController(GoalService goalService, ModelMapper mapper) {
+    public GoalController(GoalService goalService) {
         this.goalService = goalService;
-        this.mapper = mapper;
     }
 
     /**
