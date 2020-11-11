@@ -31,7 +31,7 @@ public class TipsAndTricksSpecification implements MySpecification<TipsAndTricks
                 allPredicates =
                     criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
             }
-            if (searchCriteria.getType().equals("title")) {
+            if (searchCriteria.getType().equals("titleTranslations")) {
                 allPredicates =
                     criteriaBuilder.and(allPredicates,
                         getTitleTranslationPredicate(root, criteriaQuery, criteriaBuilder, searchCriteria));

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import greencity.DaoApplication;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
+import greencity.entity.Language;
 import greencity.enums.FactOfDayStatus;
 import greencity.ModelUtils;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,6 +92,6 @@ class HabitFactTranslationRepoTest {
         HabitFact habitFact = ModelUtils.getHabitFact();
         habitFactTranslationRepo.deleteAllByHabitFact(habitFact);
         List<HabitFactTranslation> res = habitFactTranslationRepo.findAll();
-        assertEquals(4, res.size());
+        assertEquals(5, res.size());
     }
 }

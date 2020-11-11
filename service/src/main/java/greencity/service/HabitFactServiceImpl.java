@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -227,22 +228,9 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     private List<SearchCriteria> buildSearchCriteria(HabitFactViewDto habitFactViewDto) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
-        Field[] fields = habitFactViewDto.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            String value;
-            try {
-                value = (String) field.get(habitFactViewDto);
-            } catch (IllegalAccessException e) {
-                throw new NotFoundException("Cannot retrieve value from field!");
-            }
-            if (!value.isEmpty()) {
-                criteriaList.add(SearchCriteria.builder()
-                    .key(field.getName()).type(field.getName())
-                    .value(value)
-                    .build());
-            }
-        }
+        setValueIfNotEmpty(criteriaList, "id", habitFactViewDto.getId());
+        setValueIfNotEmpty(criteriaList, "habitId", habitFactViewDto.getHabitId());
+        setValueIfNotEmpty(criteriaList, "content", habitFactViewDto.getContent());
         return criteriaList;
     }
 
@@ -289,5 +277,22 @@ public class HabitFactServiceImpl implements HabitFactService {
         return filter == null || filter.isEmpty()
             ? getAllHabitFactsVO(pageable)
             : searchHabitFactWithFilter(pageable, filter);
+    }
+
+    /**
+     * Method that adds new {@link SearchCriteria}.
+     *
+     * @param searchCriteria - list of existing {@link SearchCriteria}
+     * @param key            - key of field
+     * @param value          - value of field
+     */
+    private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
+        if (!StringUtils.isEmpty(value)) {
+            searchCriteria.add(SearchCriteria.builder()
+                .key(key)
+                .type(key)
+                .value(value)
+                .build());
+        }
     }
 }

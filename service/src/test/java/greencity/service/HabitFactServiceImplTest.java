@@ -246,7 +246,7 @@ class HabitFactServiceImplTest {
     }
 
     @Test
-    void searchByTest_shouldReturnCorrectValue() {
+    void searchByTest_shouldReturnCorrectValueWithQuery() {
         int pageNumber = 0;
         int pageSize = 1;
         String query = "eng";
@@ -260,7 +260,26 @@ class HabitFactServiceImplTest {
         PageableDto<HabitFactVO> expected = new PageableDto<>(habitFactVOS, habitFacts.size(), pageNumber, pageSize);
         when(habitFactRepo.searchHabitFactByFilter(pageable, query)).thenReturn(habitFactPage);
         when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
-        PageableDto<HabitFactVO> actual = habitFactService.searchHabitFactWithFilter(pageable, query);
+        PageableDto<HabitFactVO> actual = habitFactService.getAllHabitFactVOsWithFilter(query, pageable);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void searchByTest_shouldReturnCorrectValue() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        HabitFact habitFact = ModelUtils.getHabitFact();
+        HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
+        List<HabitFact> habitFacts = Collections.singletonList(habitFact);
+        List<HabitFactVO> habitFactVOS = Collections.singletonList(habitFactVO);
+        Page<HabitFact> habitFactPage = new PageImpl<>(habitFacts,
+            pageable, habitFacts.size());
+        PageableDto<HabitFactVO> expected = new PageableDto<>(habitFactVOS, habitFacts.size(), pageNumber, pageSize);
+        when(habitFactRepo.findAll(pageable)).thenReturn(habitFactPage);
+        when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
+        PageableDto<HabitFactVO> actual = habitFactService.getAllHabitFactVOsWithFilter(null, pageable);
 
         assertEquals(expected, actual);
     }

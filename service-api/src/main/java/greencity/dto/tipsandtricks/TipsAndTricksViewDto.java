@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 public class TipsAndTricksViewDto {
     private String id;
-    private String title;
+    private String titleTranslations;
     private String author;
     private String startDate;
     private String endDate;
