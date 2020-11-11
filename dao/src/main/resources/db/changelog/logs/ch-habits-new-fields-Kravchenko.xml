@@ -14,16 +14,12 @@
             </column>
         </addColumn>
     </changeSet>
-
-    <changeSet author="Kravchenko" id="2">
-    <createTable tableName="habit_tags">
-        <column name="id" type="bigint" autoIncrement="true">
-            <constraints primaryKey="true" nullable="false"/>
-        </column>
-        <column name="name" type="varchar(30)">
-            <constraints nullable="false"/>
-        </column>
-    </createTable>
+    
+    <changeSet id="2" author="Kravchenko">
+        <addColumn tableName="habits">
+            <column name="default_duration" type="integer" defaultValue="14">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
-
 </databaseChangeLog>
