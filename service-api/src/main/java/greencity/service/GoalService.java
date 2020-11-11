@@ -1,11 +1,16 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.goal.*;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserGoalVO;
 
+
+import greencity.dto.user.UserManagementDto;
+import greencity.entity.User;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface GoalService {
     /**
@@ -39,4 +44,18 @@ public interface GoalService {
      * @author Dmytro Khonko
      */
     void delete(Long goalId);
+
+    /**
+     * Method delete goal.
+     *
+     * @author Dmytro Khonko
+     */
+    public PageableAdvancedDto<GoalManagementDto> findGoalForManagementByPage(Pageable pageable);
+
+    /**
+     * Method delete goal.
+     *
+     * @author Dmytro Khonko
+     */
+    public PageableAdvancedDto<GoalManagementDto> searchBy(Pageable paging, String query);
 }

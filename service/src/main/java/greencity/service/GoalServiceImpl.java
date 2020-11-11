@@ -1,9 +1,12 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.goal.*;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.user.UserManagementDto;
 import greencity.entity.Goal;
+import greencity.entity.User;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.GoalNotFoundException;
 import greencity.repository.GoalRepo;
@@ -12,6 +15,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -82,5 +87,48 @@ public class GoalServiceImpl implements GoalService {
         } else {
             throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableAdvancedDto<GoalManagementDto> findGoalForManagementByPage(Pageable pageable) {
+        Page<Goal> goals = goalRepo.findAll(pageable);
+        List<GoalManagementDto> goalManagementDtos =
+            goals.getContent().stream()
+                .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
+                .collect(Collectors.toList());
+        return new PageableAdvancedDto<>(
+            goalManagementDtos,
+            goals.getTotalElements(),
+            goals.getPageable().getPageNumber(),
+            goals.getTotalPages(),
+            goals.getNumber(),
+            goals.hasPrevious(),
+            goals.hasNext(),
+            goals.isFirst(),
+            goals.isLast());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableAdvancedDto<GoalManagementDto> searchBy(Pageable paging, String query) {
+        Page<Goal> page = goalRepo.searchBy(paging, query);
+        List<GoalManagementDto> goals = page.stream()
+            .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
+            .collect(Collectors.toList());
+        return new PageableAdvancedDto<>(
+            goals,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages(),
+            page.getNumber(),
+            page.hasPrevious(),
+            page.hasNext(),
+            page.isFirst(),
+            page.isLast());
     }
 }
