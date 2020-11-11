@@ -16,8 +16,20 @@
     <properties>
         <swagger.version>2.9.2</swagger.version>
         <io.jsonwebtoken.version>0.9.1</io.jsonwebtoken.version>
+        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
-    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
