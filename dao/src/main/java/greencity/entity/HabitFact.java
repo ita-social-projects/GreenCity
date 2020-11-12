@@ -20,6 +20,6 @@ public class HabitFact {
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "habitFact", fetch = FetchType.EAGER)
     private List<HabitFactTranslation> translations;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private Habit habit;
 }

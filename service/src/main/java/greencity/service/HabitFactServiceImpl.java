@@ -29,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -128,15 +127,7 @@ public class HabitFactServiceImpl implements HabitFactService {
         Habit habit = habitRepo.findById(factDto.getHabit().getId())
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         habitFact.setHabit(habit);
-        habitFact.getTranslations()
-            .forEach(habitFactTranslation -> {
-                habitFactTranslation.setContent(factDto.getTranslations().stream()
-                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
-                        .equals(habitFactTranslation.getLanguage().getCode()))
-                    .findFirst().get()
-                    .getContent());
-                habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().get(0).getFactOfDayStatus());
-            });
+        habitFactTranslationsSetter(habitFact, factDto);
         return modelMapper.map(habitFactRepo.save(habitFact), HabitFactVO.class);
     }
 
@@ -294,5 +285,17 @@ public class HabitFactServiceImpl implements HabitFactService {
                 .value(value)
                 .build());
         }
+    }
+
+    private void habitFactTranslationsSetter(HabitFact habitFact, HabitFactUpdateDto factDto) {
+        habitFact.getTranslations()
+            .forEach(habitFactTranslation -> {
+                habitFactTranslation.setContent(factDto.getTranslations().stream()
+                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                        .equals(habitFactTranslation.getLanguage().getCode()))
+                    .findFirst().get()
+                    .getContent());
+                habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().get(0).getFactOfDayStatus());
+            });
     }
 }
