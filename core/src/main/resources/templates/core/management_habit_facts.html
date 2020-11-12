@@ -140,13 +140,13 @@
                             </tbody>
                         </th:block>
                 </table>
-                <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
+                <div class="clearfix">
                     <div class="hint-text">Showing <b
                             th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b
                             th:text="${pageable.getTotalElements()}">25</b> entries
                     </div>
                     <ul class="pagination">
-                        <li class="page-item" th:classappend="${pageable.g  etCurrentPage()==0?'disabled':''}"><a
+                        <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
                                 th:href="@{facts(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
