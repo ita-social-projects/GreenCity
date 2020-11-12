@@ -32,23 +32,9 @@ $(document).ready(function(){
 
     // Submit button in addUserModal
     $('#submitAddBtn').on('click',function(event){
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#addUserForm').serializeArray().reduce(function(obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        var payload={
-            "id" : formData.id,
-            "name" : formData.name,
-            "email" : formData.email,
-            "role" : formData.role,
-            "userStatus" : formData.userStatus
-        }
-
         // Ajax request
         $.ajax({
-            url: '/management/users/register',
+            url: '/management/goals/',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',

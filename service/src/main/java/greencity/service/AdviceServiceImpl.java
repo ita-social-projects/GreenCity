@@ -10,7 +10,6 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.Habit;
-import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -22,7 +21,6 @@ import greencity.repository.AdviceTranslationRepo;
 import greencity.repository.HabitRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -121,12 +119,12 @@ public class AdviceServiceImpl implements AdviceService {
         Habit habit = habitRepo.findById(adviceDto.getHabit().getId())
             .orElseThrow(() -> new WrongIdException(ErrorMessage.HABIT_NOT_FOUND_BY_ID));
         advice.setHabit(habit);
-        List<AdviceTranslation> adviceTranslations = modelMapper.map(adviceDto.getTranslations(),
-            new TypeToken<List<AdviceTranslation>>() {
-            }.getType());
-        adviceTranslationRepo.deleteAllByAdvice(advice);
-        advice.setTranslations(adviceTranslations);
-        adviceTranslations.forEach(adviceTranslation -> adviceTranslation.setAdvice(advice));
+        advice.getTranslations()
+            .forEach(adviceTranslation -> adviceTranslation.setContent(adviceDto.getTranslations().stream()
+                .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                    .equals(adviceTranslation.getLanguage().getCode()))
+                .findFirst().get()
+                .getContent()));
         Advice updated = adviceRepo.save(advice);
 
         return modelMapper.map(updated, AdvicePostDto.class);

@@ -6,11 +6,13 @@ import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitStatusRepo;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitStatusServiceImpl implements HabitStatusService {
     private final HabitStatusRepo habitStatusRepo;
     private final HabitStatusCalendarService habitStatusCalendarService;
+    private final HabitAssignRepo habitAssignRepo;
     private final ModelMapper modelMapper;
 
     /**
@@ -82,6 +85,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.NO_STATUS_FOR_SUCH_HABIT_AND_USER + habitId));
         LocalDate todayDate = LocalDate.now();
 
+        updateHabitAssignIfCompleted(habitStatus);
         updateHabitStatus(habitStatus, todayDate);
 
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
@@ -100,6 +104,7 @@ public class HabitStatusServiceImpl implements HabitStatusService {
     private void updateHabitStatus(HabitStatus habitStatus, LocalDate todayDate) {
         int workingDays = habitStatus.getWorkingDays();
         int habitStreak = habitStatus.getHabitStreak();
+
         habitStatus.setWorkingDays(++workingDays);
         habitStatus.setLastEnrollmentDate(LocalDateTime.now());
 
@@ -117,6 +122,25 @@ public class HabitStatusServiceImpl implements HabitStatusService {
             habitStatus.setHabitStreak(habitStreak);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
+        }
+    }
+
+    /**
+     * Method updates {@link HabitAssign} if it's completed.
+     *
+     * @param habitStatus {@link HabitStatus} instance.
+     */
+    private void updateHabitAssignIfCompleted(HabitStatus habitStatus) {
+        int workingDays = habitStatus.getWorkingDays();
+        int habitDuration = habitStatus.getHabitAssign().getDuration();
+        if (workingDays == habitDuration) {
+            if (Boolean.TRUE.equals(habitStatus.getHabitAssign().getAcquired())) {
+                throw new BadRequestException(
+                    ErrorMessage.HABIT_ALREADY_ACQUIRED + habitStatus.getHabitAssign().getHabit().getId());
+            }
+            HabitAssign toUpdate = habitStatus.getHabitAssign();
+            toUpdate.setAcquired(true);
+            habitAssignRepo.save(toUpdate);
         }
     }
 

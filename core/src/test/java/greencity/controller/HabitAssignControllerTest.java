@@ -36,7 +36,7 @@ class HabitAssignControllerTest {
 
     private Principal principal = getPrincipal();
 
-    private static final String habitLink = "/habit";
+    private static final String habitLink = "/habit/assign";
 
     @BeforeEach
     void setUp() {
@@ -48,18 +48,18 @@ class HabitAssignControllerTest {
     @Test
     void assign() throws Exception {
         UserVO user = ModelUtils.getUserVO();
-        mockMvc.perform(post(habitLink + "/assign/{habitId}", 1)
+        mockMvc.perform(post(habitLink + "/{habitId}", 1)
             .principal(principal))
             .andExpect(status().isCreated());
         Long id = 1L;
-        verify(habitAssignService, never()).assignHabitForUser(eq(id), eq(user));
+        verify(habitAssignService, never()).assignDefaultHabitForUser(eq(id), eq(user));
     }
 
     @Test
     void getHabitAssign() throws Exception {
-        mockMvc.perform(get(habitLink + "/assign/{habitAssignId}", 1))
+        mockMvc.perform(get(habitLink + "/{habitAssignId}", 1))
             .andExpect(status().isOk());
-        verify(habitAssignService).getById(1L);
+        verify(habitAssignService).getById(1L, "en");
     }
 
     @Test
@@ -69,10 +69,10 @@ class HabitAssignControllerTest {
         habitAssignStatDto.setSuspended(true);
         Gson gson = new Gson();
         String json = gson.toJson(habitAssignStatDto);
-        mockMvc.perform(patch(habitLink + "/{id}/assign", 1)
+        mockMvc.perform(patch(habitLink + "/{habitId}", 1)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto);
+        verify(habitAssignService).updateStatusByHabitIdAndUserId(1L, null, habitAssignStatDto);
     }
 }

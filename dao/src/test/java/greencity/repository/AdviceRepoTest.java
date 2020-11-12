@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = DaoApplication.class)
 @Sql("classpath:sql/advice_translation.sql")
-public class AdviceRepoTest {
+class AdviceRepoTest {
     @Autowired
     private AdviceRepo adviceRepo;
 
@@ -58,7 +58,7 @@ public class AdviceRepoTest {
         List<Long> expectedIds = expected.getContent().stream().map(Advice::getId)
             .collect(Collectors.toList());
 
-        assertEquals(expected.getContent().size(), 2);
+        assertEquals(2, expected.getContent().size());
         assertEquals(expectedIds, actualIds);
     }
 

@@ -11,5 +11,6 @@ import lombok.*;
 public class HabitDto implements Serializable {
     private Long id;
     private String image;
+    private Integer defaultDuration;
     private HabitTranslationDto habitTranslation;
 }

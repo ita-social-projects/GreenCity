@@ -12,6 +12,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.service.GoalService;
+import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -37,7 +39,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/management/goals")
 public class ManagementGoalsController {
     private final GoalService goalService;
-    private final ModelMapper mapper;
+    private final LanguageService languageService;
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -56,13 +58,14 @@ public class ManagementGoalsController {
             ? goalService.findGoalForManagementByPage(paging)
             : goalService.searchBy(paging, query);
         model.addAttribute("goals", pageableDto);
+        model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_goals";
     }
 
     /**
      * The controller which saveGoal {@link GoalVO}.
      *
-     * @param goalPostDto {@link GoalDto}
+     * @param goalManagementDto {@link GoalDto}
      * @return {@link ResponseEntity}
      */
     @ApiOperation(value = "Save goal")
@@ -71,7 +74,9 @@ public class ManagementGoalsController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PostMapping("/save")
+    @ResponseBody
+    @PostMapping
+    @ExceptionHandler(value = MultipartException.class)
     public GenericResponseDto save(@Valid @RequestPart GoalManagementDto goalManagementDto,
                                    BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {

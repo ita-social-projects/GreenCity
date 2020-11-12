@@ -6,6 +6,7 @@ import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
+import greencity.entity.RatingStatistics_;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;
@@ -103,15 +104,15 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         SearchCriteria searchCriteria;
         if (!ratingStatisticsViewDto.getId().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("id")
-                .type("id")
+                .key(RatingStatistics_.ID)
+                .type(RatingStatistics_.ID)
                 .value(ratingStatisticsViewDto.getId())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!ratingStatisticsViewDto.getEventName().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("ratingCalculationEnum")
+                .key(RatingStatistics_.RATING_CALCULATION_ENUM)
                 .type("enum")
                 .value(ratingStatisticsViewDto.getEventName())
                 .build();
@@ -119,7 +120,7 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         }
         if (!ratingStatisticsViewDto.getUserId().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("user")
+                .key(RatingStatistics_.USER)
                 .type("userId")
                 .value(ratingStatisticsViewDto.getUserId())
                 .build();
@@ -127,7 +128,7 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         }
         if (!ratingStatisticsViewDto.getUserEmail().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("user")
+                .key(RatingStatistics_.USER)
                 .type("userMail")
                 .value(ratingStatisticsViewDto.getUserEmail())
                 .build();
@@ -135,7 +136,7 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         }
         if (!ratingStatisticsViewDto.getStartDate().isEmpty() && !ratingStatisticsViewDto.getEndDate().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("createDate")
+                .key(RatingStatistics_.CREATE_DATE)
                 .type("dateRange")
                 .value(new String[] {ratingStatisticsViewDto.getStartDate(), ratingStatisticsViewDto.getEndDate()})
                 .build();
@@ -143,15 +144,15 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         }
         if (!ratingStatisticsViewDto.getPointsChanged().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("pointsChanged")
-                .type("pointsChanged")
+                .key(RatingStatistics_.POINTS_CHANGED)
+                .type(RatingStatistics_.POINTS_CHANGED)
                 .value(ratingStatisticsViewDto.getPointsChanged())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!ratingStatisticsViewDto.getCurrentRating().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("rating")
+                .key(RatingStatistics_.RATING)
                 .type("currentRating")
                 .value(ratingStatisticsViewDto.getCurrentRating())
                 .build();

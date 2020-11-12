@@ -54,7 +54,7 @@ public class ModelUtils {
     public static HabitFactTranslation getHabitFactTranslation() {
         return HabitFactTranslation.builder()
             .id(1L)
-            .content("content")
+            .content("Тест факт # 1'")
             .language(getLanguage())
             .factOfDayStatus(FactOfDayStatus.POTENTIAL)
             .habitFact(null)
@@ -62,7 +62,11 @@ public class ModelUtils {
     }
 
     public static HabitFact getHabitFact() {
-        return new HabitFact(1L, Collections.singletonList(getHabitFactTranslation()), null);
+        return HabitFact.builder()
+            .id(1L)
+            .habit(Habit.builder().id(1L).image("image_one.png")
+                .build())
+            .build();
     }
 
     public static Language getLanguage() {

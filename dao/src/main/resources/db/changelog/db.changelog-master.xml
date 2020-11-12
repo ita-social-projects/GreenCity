@@ -57,4 +57,5 @@
     <include file="/db/changelog/logs/ch-change-column-name-goals-Petryshak.xml"/>
     <include file="db/changelog/logs/ch-change-custom-goals-Khonko.xml"/>
     <include file="db/changelog/logs/ch-change-goals-Khonko.xml"/>
+    <include file="db/changelog/logs/ch-habits-new-fields-Kravchenko.xml"/>
 </databaseChangeLog>

@@ -1,9 +1,13 @@
 package greencity.filters;
 
-import greencity.entity.Advice;
-import greencity.entity.Habit;
-import greencity.entity.localization.AdviceTranslation;
+import static greencity.entity.localization.AdviceTranslation_.content;
 
+import greencity.entity.Advice;
+import greencity.entity.Advice_;
+import greencity.entity.Habit;
+import greencity.entity.Habit_;
+import greencity.entity.localization.AdviceTranslation;
+import greencity.entity.localization.AdviceTranslation_;
 import javax.persistence.criteria.*;
 import java.util.List;
 
@@ -44,19 +48,20 @@ public class AdviceSpecification implements MySpecification<Advice> {
 
     private Predicate getTranslationPredicate(Root<Advice> root,
         CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
-        Join<Advice, AdviceTranslation> translationJoin = root.join("translations");
+        Join<Advice, AdviceTranslation> translationJoin = root.join(Advice_.translations);
 
         return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
-            : criteriaBuilder.and(criteriaBuilder.like(translationJoin.get("content"),
+            : criteriaBuilder.and(criteriaBuilder.like(translationJoin.get(content),
                 "%" + searchCriteria.getValue() + "%"),
-                criteriaBuilder.equal(translationJoin.get("advice").get("id"), root.get("id")));
+                criteriaBuilder.equal(translationJoin.get(AdviceTranslation_.advice).get(Advice_.id),
+                    root.get(Advice_.id)));
     }
 
     private Predicate getHabitIdPredicate(Root<Advice> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        Join<Advice, Habit> habitJoin = root.join("habit");
+        Join<Advice, Habit> habitJoin = root.join(Advice_.habit);
 
         return criteriaBuilder
-            .equal(habitJoin.get("id"), searchCriteria.getValue());
+            .equal(habitJoin.get(Habit_.id), searchCriteria.getValue());
     }
 }

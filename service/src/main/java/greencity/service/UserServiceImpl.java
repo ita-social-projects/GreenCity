@@ -50,7 +50,6 @@ public class UserServiceImpl implements UserService {
     private final CustomGoalRepo customGoalRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
-    private final HabitTranslationRepo habitTranslationRepo;
     private final GoalTranslationRepo goalTranslationRepo;
     private final FileService fileService;
     private final TipsAndTricksRepo tipsAndTricksRepo;
@@ -59,9 +58,6 @@ public class UserServiceImpl implements UserService {
     private final HabitStatisticRepo habitStatisticRepo;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
-    @Value("${defaultProfilePicture}")
-    private String defaultProfilePicture;
-
     /**
      * Autowired mapper.
      */
@@ -504,7 +500,7 @@ public class UserServiceImpl implements UserService {
     public void addDefaultHabit(UserVO user, String language) {
         if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
             UserVO userVO = modelMapper.map(user, UserVO.class);
-            habitAssignService.assignHabitForUser(1L, userVO);
+            habitAssignService.assignDefaultHabitForUser(1L, userVO);
         }
     }
 
@@ -557,7 +553,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-        user.setProfilePicturePath(defaultProfilePicture);
+        user.setProfilePicturePath(null);
         userRepo.save(user);
     }
 

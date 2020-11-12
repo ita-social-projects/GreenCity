@@ -61,7 +61,6 @@ spring.rabbitmq.password=${RABBITMQ_PASSWORD}
 spring.rabbitmq.username=${RABBITMQ_USERNAME}
 bucketName=${BUCKET_NAME}
 staticUrl=${STATIC_URL}
-defaultProfilePicture=${DEFAULT_PROFILE_PICTURE}
 spring.social.facebook.app-id=${FACEBOOK_APP_ID}
 spring.social.facebook.app-secret=${FACEBOOK_APP_SECRET}
 ```

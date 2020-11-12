@@ -1,6 +1,5 @@
 package greencity.mapping;
 
-import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.goal.GoalVO;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserVO;

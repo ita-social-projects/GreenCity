@@ -1,11 +1,16 @@
 body {
     color: #566787;
-    background: #f5f5f5;
-    font-family: 'Varela Round', sans-serif;
-    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+}
+.table{
+    font-size: 14px;
 }
 .table-responsive {
     margin: 30px 0;
+}
+.table-secondary, .table-secondary>td, .table-secondary>th{
+    background-color: #F5F6F6;
 }
 .table-wrapper {
     background: #fff;
@@ -16,16 +21,17 @@ body {
 }
 .table-title {
     padding-bottom: 15px;
-    background: #435d7d;
-    color: #fff;
+    color: #212529;
     padding: 16px 30px;
     min-width: 100%;
     margin: -20px -25px 10px;
     border-radius: 3px 3px 0 0;
 }
 .table-title h2 {
+    display: inline-block;
+    font-weight: 500;
     margin: 5px 0 0;
-    font-size: 24px;
+    font-size: 32px;
 }
 .table-title .btn-group {
     float: right;
@@ -33,7 +39,7 @@ body {
 .table-title .btn {
     color: #fff;
     float: right;
-    font-size: 13px;
+    font-size: 14px;
     border: none;
     min-width: 50px;
     border-radius: 2px;
@@ -68,7 +74,7 @@ table.table-striped.table-hover tbody tr:hover {
     background: #f5f5f5;
 }
 table.table th i {
-    font-size: 13px;
+    font-size: 14px;
     margin: 0 5px;
     cursor: pointer;
 }
@@ -85,22 +91,22 @@ table.table td a {
     outline: none !important;
 }
 table.table td a:hover {
-    color: #2196F3;
+    color: #13AA57;
 }
 table.table td a.edit {
-    color: #FFC107;
+    color: #FF9310;
 }
 table.table td a.delete {
-    color: #F44336;
+    color: #E02116;
 }
 table.table td a.deactivate-user {
-    color: #F44336;
+    color: #E02116;
 }
 table.table td a.activate-user {
-    color: #008000;
+    color: #13AA57;
 }
 .statistic-style {
-    color: #008000;
+    color: #13AA57;
 }
 table.table td i {
     font-size: 19px;
@@ -116,7 +122,7 @@ table.table .avatar {
 }
 .pagination li a {
     border: none;
-    font-size: 13px;
+    font-size: 14px;
     min-width: 30px;
     min-height: 30px;
     color: #999;
@@ -130,10 +136,10 @@ table.table .avatar {
     color: #666;
 }
 .pagination li.active a, .pagination li.active a.page-link {
-    background: #03A9F4;
+    background: #13AA57;
 }
 .pagination li.active a:hover {
-    background: #0397d6;
+    background: #245740;
 }
 .pagination li.disabled i {
     color: #ccc;
@@ -145,7 +151,7 @@ table.table .avatar {
 .hint-text {
     float: left;
     margin-top: 10px;
-    font-size: 13px;
+    font-size: 14px;
 }
 /* Custom checkbox */
 .custom-checkbox {
@@ -186,8 +192,8 @@ table.table .avatar {
     transform: rotateZ(45deg);
 }
 .custom-checkbox input[type="checkbox"]:checked + label:before {
-    border-color: #03A9F4;
-    background: #03A9F4;
+    border-color: #245740;
+    background: #245740;
 }
 .custom-checkbox input[type="checkbox"]:checked + label:after {
     border-color: #fff;
@@ -210,16 +216,15 @@ table.table .avatar {
     font-size: 14px;
 }
 .modal .modal-footer {
-    background: #ecf0f1;
     border-radius: 0 0 3px 3px;
 }
 .modal .modal-title {
     display: inline-block;
 }
 .modal .form-control {
-    border-radius: 2px;
+    border-radius: 3px;
     box-shadow: none;
-    border-color: #dddddd;
+    border: 1px solid #878787;
 }
 .modal textarea.form-control {
     resize: vertical;
@@ -235,6 +240,11 @@ table.table .avatar {
     color: red;
     font-style: italic;
 }
+.form-inline.searching{
+    margin-bottom: 0;
+    margin-top: 5px;
+    vertical-align: middle;
+}
 .search-box {
     position: relative;
     float: left;
@@ -248,7 +258,7 @@ table.table .avatar {
     box-shadow: none;
 }
 .search-box input:focus {
-    border-color: #3FBAE4;
+    border-color: #245740;
 }
 .search-box i {
     color: #a0a5b1;
@@ -265,13 +275,14 @@ table.table .avatar {
 }
 .search-box-right input {
     height: 34px;
-    border-radius: 20px;
-    padding-left: 35px;
-    border-color: #ddd;
-    box-shadow: none;
+    border:none;
+    border-radius: 0;
+    padding-left: 8px;
+    border-bottom: #E6E6E6 1px solid;
 }
 .search-box-right input:focus {
-    border-color: #3FBAE4;
+    border-color: #245740;
+    outline: none;
 }
 .search-box-right i {
     color: #a0a5b1;
@@ -287,4 +298,125 @@ input[type=search] {
     margin: 0;
     box-sizing: border-box;
     -webkit-appearance: none;
+}
+
+.search-box-right img{
+    width: 16px;
+    cursor: pointer ;
+}
+
+.btn{
+    width: 122px;
+    height: 48px;
+    border-radius: 5px;
+    font-weight: 600;
+}
+.btn div{
+    text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    line-height: 16px;
+}
+
+.btn-primary{
+    background-color: #13AA57;
+}
+.btn-primary:hover{
+    background-color: #245740;
+}
+.btn-primary:focus{
+    background-color: #245740;
+    outline: none;
+}
+
+.btn.btn-secondary{
+    border: 1px solid #13AA57;
+    background-color: #ffffff;
+    color: #13AA57;
+}
+.btn-secondary:hover{
+    border: 1px solid #10804E;
+    background-color: #ffffff;
+    color: #245740;
+}
+.btn-secondary:focus{
+    border: 1px solid #10804E;
+    background-color: #ffffff !important;
+    color: #245740 !important;
+    outline: none;
+}
+
+.btn-tertiary{
+    color: #056B33;
+}
+.btn-tertiary:hover{
+    color: #13AA57;
+}
+.btn-tertiary:focus{
+    color: #13AA57;
+}
+
+.btn-remove {
+    color: #fff;
+    background-color: #E02116;
+}
+.btn-remove:hover{
+    color: #fff;
+    background-color: #B21D15;
+}
+.btn-remove:focus{
+    color: #fff;
+    background-color: #B21D15;
+    outline: none;
+}
+.btn-remove.disabled   {
+    background-color: #839C94;
+}
+
+a#deactivateAllSubmit.btn.btn-danger{
+    height: 59px;
+}
+a#deactivateOneSubmit.btn.btn-danger{
+    vertical-align: middle;
+}
+
+.table-primary>th{
+    background-color: #F5F6F6;
+}
+
+.graph{
+    margin-bottom: 0;
+    margin-left: 5px;
+    display: block;
+    vertical-align: middle;
+}
+.arrow.fas.fa-chevron-right{
+    text-align: center;
+    padding-top: 9px;
+    font-size: 12px;
+}
+.arrow.fas.fa-chevron-left{
+    font-size: 12px;
+    padding-top: 9px;
+    text-align: center;
+}
+.page-item{
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.text-warning{
+    color: #FF9310 !important;
+}
+
+.table-hover thead tr:hover th{
+    background-color: #13AA57 !important;
+    color: #fff;
+}
+button#searchBy{
+    border: none;
+    background-color: transparent;
+}
+button#searchBy img{
+    width: 22px;
 }
