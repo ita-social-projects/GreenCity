@@ -1,5 +1,7 @@
 package greencity.controller;
 
+import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
+
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -13,18 +15,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
 import javax.validation.Valid;
 import java.util.Locale;
-
-import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
 @RestController
 @RequestMapping("/advices")
@@ -32,7 +30,6 @@ import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 @Validated
 public class AdviceController {
     private final AdviceService adviceService;
-    private final ModelMapper mapper;
 
     /**
      * The controller which returns random {@link AdviceVO} by HabitDictionary

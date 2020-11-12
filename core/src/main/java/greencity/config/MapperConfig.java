@@ -21,7 +21,7 @@ public class MapperConfig {
      * @return the configured instance of {@code ModelMapper}.
      */
     @Bean
-    public ModelMapper getModelMapper(List<Converter> converters) {
+    public ModelMapper getModelMapper(List<Converter<?, ?>> converters) {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper
             .getConfiguration()

@@ -1,8 +1,8 @@
 package greencity.entity;
 
-import java.util.List;
-import javax.persistence.*;
 import lombok.*;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -17,7 +17,7 @@ public class HabitFact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "habitFact", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "habitFact", fetch = FetchType.EAGER)
     private List<HabitFactTranslation> translations;
 
     @ManyToOne

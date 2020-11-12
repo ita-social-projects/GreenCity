@@ -17,10 +17,7 @@ import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import greencity.entity.Tag;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.ROLE;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -399,39 +396,39 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         SearchCriteria searchCriteria;
         if (!ecoNewsViewDto.getId().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("id")
-                .type("id")
+                .key(EcoNews_.ID)
+                .type(EcoNews_.ID)
                 .value(ecoNewsViewDto.getId())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!ecoNewsViewDto.getTitle().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("title")
-                .type("title")
+                .key(EcoNews_.TITLE)
+                .type(EcoNews_.TITLE)
                 .value(ecoNewsViewDto.getTitle())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!ecoNewsViewDto.getAuthor().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("author")
-                .type("author")
+                .key(EcoNews_.AUTHOR)
+                .type(EcoNews_.AUTHOR)
                 .value(ecoNewsViewDto.getAuthor())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!ecoNewsViewDto.getText().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("text")
-                .type("text")
+                .key(EcoNews_.TEXT)
+                .type(EcoNews_.TEXT)
                 .value(ecoNewsViewDto.getText())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!ecoNewsViewDto.getStartDate().isEmpty() && !ecoNewsViewDto.getEndDate().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("creationDate")
+                .key(EcoNews_.CREATION_DATE)
                 .type("dateRange")
                 .value(new String[] {ecoNewsViewDto.getStartDate(), ecoNewsViewDto.getEndDate()})
                 .build();
@@ -439,24 +436,24 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         if (!ecoNewsViewDto.getImagePath().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("imagePath")
-                .type("imagePath")
+                .key(EcoNews_.IMAGE_PATH)
+                .type(EcoNews_.IMAGE_PATH)
                 .value(ecoNewsViewDto.getImagePath())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!ecoNewsViewDto.getSource().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("source")
-                .type("source")
+                .key(EcoNews_.SOURCE)
+                .type(EcoNews_.SOURCE)
                 .value(ecoNewsViewDto.getSource())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!ecoNewsViewDto.getTags().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("tags")
-                .type("tags")
+                .key(EcoNews_.TAGS)
+                .type(EcoNews_.TAGS)
                 .value(ecoNewsViewDto.getTags())
                 .build();
             criteriaList.add(searchCriteria);

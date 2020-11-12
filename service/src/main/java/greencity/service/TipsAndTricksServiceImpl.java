@@ -407,24 +407,24 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         SearchCriteria searchCriteria;
         if (!tipsAndTricksViewDto.getId().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("id")
-                .type("id")
+                .key(TipsAndTricks_.ID)
+                .type(TipsAndTricks_.ID)
                 .value(tipsAndTricksViewDto.getId())
                 .build();
             criteriaList.add(searchCriteria);
         }
-        if (!tipsAndTricksViewDto.getTitle().isEmpty()) {
+        if (!tipsAndTricksViewDto.getTitleTranslations().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("title")
-                .type("title")
-                .value(tipsAndTricksViewDto.getTitle())
+                .key(TipsAndTricks_.TITLE_TRANSLATIONS)
+                .type(TipsAndTricks_.TITLE_TRANSLATIONS)
+                .value(tipsAndTricksViewDto.getTitleTranslations())
                 .build();
             criteriaList.add(searchCriteria);
         }
         if (!tipsAndTricksViewDto.getAuthor().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
-                .key("author")
-                .type("author")
+                .key(TipsAndTricks_.AUTHOR)
+                .type(TipsAndTricks_.AUTHOR)
                 .value(tipsAndTricksViewDto.getAuthor())
                 .build();
             criteriaList.add(searchCriteria);

@@ -109,22 +109,15 @@ $(document).ready(function () {
             "translations": []
         };
         for (var key in formData) {
-            var lang, langId;
+            var lang;
             if (key.startsWith("content")) {
                 lang = key.split("content").pop();
-                if (lang === 'ua') {
-                    langId = 1;
-                } else if (lang === 'en') {
-                    langId = 2;
-                } else if (lang === 'ru') {
-                    langId = 3;
-                }
                 payload.translations.push(
                     {
                         "content": formData["content" + lang],
                         "language": {
                             "code": lang,
-                            "id": langId
+                            "id": formData["id" + lang]
                         }
                     }
                 );
@@ -165,22 +158,15 @@ $(document).ready(function () {
             "translations": []
         };
         for (var key in formData) {
-            var lang, langId;
+            var lang;
             if (key.startsWith("content")) {
                 lang = key.split("content").pop();
-                if (lang === 'ua') {
-                    langId = 1;
-                } else if (lang === 'en') {
-                    langId = 2;
-                } else if (lang === 'ru') {
-                    langId = 3;
-                }
                 returnData.translations.push(
                     {
                         "content": formData["content" + lang],
                         "language": {
                             "code": lang,
-                            "id": langId
+                            "id": formData["id" + lang]
                         },
                         "factOfDayStatus": formData["status" + lang]
                     }
