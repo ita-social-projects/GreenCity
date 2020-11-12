@@ -24,6 +24,9 @@ public class Habit {
     @Column(name = "image", nullable = false)
     private String image;
 
+    @Column(name = "default_duration", nullable = false)
+    private Integer defaultDuration;
+
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
     private List<HabitTranslation> habitTranslations;
 

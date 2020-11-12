@@ -23,6 +23,7 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
         return HabitDto.builder()
             .id(habitTranslation.getHabit().getId())
             .image(habitTranslation.getHabit().getImage())
+            .defaultDuration(habitTranslation.getHabit().getDefaultDuration())
             .habitTranslation(HabitTranslationDto.builder()
                 .description(habitTranslation.getDescription())
                 .habitItem(habitTranslation.getHabitItem())

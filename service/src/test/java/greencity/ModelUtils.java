@@ -137,7 +137,7 @@ public class ModelUtils {
             .acquired(true)
             .suspended(false)
             .createDateTime(ZonedDateTime.now())
-            .habitId(1L)
+            .habit(HabitDto.builder().id(1L).build())
             .userId(1L).build();
     }
 

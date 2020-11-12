@@ -14,9 +14,9 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitRepo habitRepo;
+    private final HabitService habitService;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusService habitStatusService;
     private final ModelMapper modelMapper;
@@ -36,10 +37,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto getById(Long habitAssignId) {
-        return modelMapper.map(habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId)),
-            HabitAssignDto.class);
+    public HabitAssignDto getById(Long habitAssignId, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        HabitDto habitDto = habitService.getByIdAndLanguageCode(habitAssign.getHabit().getId(), language);
+        HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
+        habitAssignDto.setHabit(habitDto);
+        return habitAssignDto;
     }
 
     /**
@@ -47,15 +52,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
+    public HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
         User user = modelMapper.map(userVO, User.class);
-        Habit habit = validateHabitForAssign(habitId, user);
+
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        validateHabitForAssign(habitId, user);
 
         HabitAssign habitAssign = buildHabitAssign(habit, user);
         enhanceAssignWithDefaultProperties(habitAssign);
 
         habitStatusService.saveStatusByHabitAssign(modelMapper.map(habitAssign, HabitAssignVO.class));
-        return modelMapper.map(habitAssign, HabitAssignDto.class);
+        return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
 
     /**
@@ -64,7 +72,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void enhanceAssignWithDefaultProperties(HabitAssign habitAssign) {
-        habitAssign.setDuration(AppConstant.DEFAULT_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER);
+        habitAssign.setDuration(habitAssign.getHabit().getDefaultDuration());
     }
 
     /**
@@ -72,16 +80,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignDto assignCustomHabitForUser(Long habitId, UserVO userVO,
+    public HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO userVO,
         HabitAssignPropertiesDto habitAssignPropertiesDto) {
         User user = modelMapper.map(userVO, User.class);
-        Habit habit = validateHabitForAssign(habitId, user);
+
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        validateHabitForAssign(habitId, user);
 
         HabitAssign habitAssign = buildHabitAssign(habit, user);
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
 
         habitStatusService.saveStatusByHabitAssign(modelMapper.map(habitAssign, HabitAssignVO.class));
-        return modelMapper.map(habitAssign, HabitAssignDto.class);
+        return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
 
     /**
@@ -120,15 +131,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param habitId {@link Habit} id.
      * @param user    {@link User} instance.
-     * @return {@link Habit} instance.
      */
-    private Habit validateHabitForAssign(Long habitId, User user) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-
-        if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()).isPresent()) {
+    private void validateHabitForAssign(Long habitId, User user) {
+        if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
-                ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habit.getId());
+                ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
         }
         if (habitAssignRepo.countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(
             user.getId()) >= AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER) {
@@ -137,47 +144,56 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     + AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER);
         }
         if (habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(
-            habit.getId(), user.getId(), ZonedDateTime.now()).isPresent()) {
+            habitId, user.getId(), ZonedDateTime.now()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
-                ErrorMessage.USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY + habit.getId());
+                ErrorMessage.USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY + habitId);
         }
-        return habit;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        return modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), userId)
-            .orElseThrow(
-                () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID
-                    + userId + ", " + habitId)),
-            HabitAssignDto.class);
+    public HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language) {
+        HabitDto habitDto = habitService.getByIdAndLanguageCode(habitId, language);
+        HabitAssignDto habitAssignDto =
+            modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+                .orElseThrow(() -> new NotFoundException(
+                    ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID + userId
+                        + ", " + habitId)),
+                HabitAssignDto.class);
+        habitAssignDto.setHabit(habitDto);
+        return habitAssignDto;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired) {
-        return modelMapper.map(habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired),
-            new TypeToken<List<HabitAssignDto>>() {
-            }.getType());
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired,
+        String language) {
+        return habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired)
+            .stream().map(habitAssign -> {
+                HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
+                HabitDto habitDto = habitService.getByIdAndLanguageCode(habitAssign.getHabit().getId(), language);
+                habitAssignDto.setHabit(habitDto);
+                return habitAssignDto;
+            }).collect(Collectors.toList());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        return modelMapper.map(habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habit.getId(), acquired),
-            new TypeToken<List<HabitAssignDto>>() {
-            }.getType());
+    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired,
+        String language) {
+        HabitDto habitDto = habitService.getByIdAndLanguageCode(habitId, language);
+        return habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habitId, acquired)
+            .stream().map(habitAssign -> {
+                HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
+                habitAssignDto.setHabit(habitDto);
+                return habitAssignDto;
+            }).collect(Collectors.toList());
     }
 
     /**
@@ -185,14 +201,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto) {
+    public HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId,
+        HabitAssignStatDto dto) {
         HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID + habitId));
 
         enhanceStatusesWithDto(dto, updatable);
 
-        return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignDto.class);
+        return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignManagementDto.class);
     }
 
     /**

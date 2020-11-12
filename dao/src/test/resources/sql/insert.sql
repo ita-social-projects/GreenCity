@@ -109,15 +109,14 @@ VALUES ('ua'),
        ('en'),
        ('ru');
 
-INSERT INTO habits (image)
-VALUES ('image1'),
-       ('image2'),
-       ('image3'),
-       ('image4'),
-       ('image6'),
-	   ('image7'),
-	   ('image8');
--- HABIT END --
+INSERT INTO habits (image, default_duration)
+VALUES ('image1', 14),
+       ('image2', 14),
+       ('image3', 14),
+       ('image4', 14),
+       ('image6', 14),
+	   ('image7', 14),
+	   ('image8', 14);
 
 INSERT INTO advices (habit_id)
 VALUES (1),
@@ -424,8 +423,8 @@ VALUES ('Економити пакети', 'Опис пакетів', 'Паке�
        ('Discard disposable cups', 'cap description', 'caps',2, 2),
        ('Отказаться от одноразовых стаканчиков', 'описание стаканчиков', 'Стаканчики',3, 2);
 
-INSERT INTO habit_assign (habit_id, user_id, acquired, create_date, suspended)
-VALUES (1, 1, false, '2020-09-10 20:00:00', false);
+INSERT INTO habit_assign (habit_id, user_id, acquired, create_date, suspended, duration)
+VALUES (1, 1, false, '2020-09-10 20:00:00', false, 14);
 
 INSERT INTO habit_statistics (rate, create_date, amount_of_items, habit_assign_id)
 VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);

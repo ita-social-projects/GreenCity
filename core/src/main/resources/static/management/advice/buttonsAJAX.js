@@ -2,6 +2,59 @@ function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
 
+let checkedCh = 0;
+function updateCheckBoxCount(chInt){
+    let chBox = $('#checkbox' + chInt);
+    let deleteBtn = $("#btnDelete");
+    chBox.is(":checked") ? checkedCh++ : checkedCh--;
+    console.log(checkedCh)
+    if(checkedCh === 0) {
+        deleteBtn.addClass("disabled");
+    } else deleteBtn.removeClass("disabled");
+}
+
+$(document).ready(function () {
+    let deleteBtn = $("#btnDelete");
+
+    // Activate tooltip
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // Select/Deselect checkboxes
+    var checkbox = $('table tbody input[type="checkbox"]');
+    $("#selectAll").click(function(){
+        if(this.checked){
+            checkedCh = 0;
+            checkbox.each(function(){
+                this.checked = true;
+                checkedCh++;
+            });
+            deleteBtn.removeClass("disabled");
+        } else{
+            checkbox.each(function(){
+                checkedCh--;
+                this.checked = false;
+            });
+            deleteBtn.addClass("disabled");
+        }
+    });
+    checkbox.click(function(){
+        if(!this.checked){
+            $("#selectAll").prop("checked", false);
+        }
+    });
+
+    $('#btnSearchImage').click(function (){
+        let url = "/management/advices?query=";
+        let query = $('#inputSearch').val();
+        $.ajax({
+            url: url + query,
+            type: 'GET',
+            success: function(res) {
+                window.location.href= url + query;
+            }
+        });
+    });
+
 function sendAjaxDeleteRequest(href, payload) {
     payload = payload !== undefined ? payload : {};
     $.ajax({
@@ -103,28 +156,6 @@ function composePayloadFromFormData(formData) {
         "translations": getTranslationsFormFormData(formData)
     };
 }
-
-$(document).ready(function () {
-    $('[data-toggle="tooltip"]').tooltip();
-
-    var checkbox = $('table tbody input[type="checkbox"]');
-    $("#selectAll").click(function () {
-        if (this.checked) {
-            checkbox.each(function () {
-                this.checked = true;
-            });
-        } else {
-            checkbox.each(function () {
-                this.checked = false;
-            });
-        }
-    });
-
-    checkbox.click(function () {
-        if (!this.checked) {
-            $("#selectAll").prop("checked", false);
-        }
-    });
 
     $('td .edit.eBtn').on('click', function (event) {
         event.preventDefault();
