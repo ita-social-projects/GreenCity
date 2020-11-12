@@ -9,6 +9,9 @@ body {
 .table-responsive {
     margin: 30px 0;
 }
+.table-secondary, .table-secondary>td, .table-secondary>th{
+    background-color: #F5F6F6;
+}
 .table-wrapper {
     background: #fff;
     padding: 20px 25px;
@@ -410,4 +413,10 @@ a#deactivateOneSubmit.btn.btn-danger{
     background-color: #13AA57 !important;
     color: #fff;
 }
-
+button#searchBy{
+    border: none;
+    background-color: transparent;
+}
+button#searchBy img{
+    width: 22px;
+}

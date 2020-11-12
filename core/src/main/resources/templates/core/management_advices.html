@@ -32,19 +32,25 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage <strong>Advice</strong></h2>
+                            <h2>Manage Advice</h2>
                         </div>
                         <div class="col-sm-6">
                                 <span class="search-box-right">
                                     <form action="/management/advices" class="form-inline searching" method="get">
-                                        <i class="material-icons"></i>
-                                        <input class="form-control" name="filter" placeholder="Search…" type="text">
+                                        <!--<i class="material-icons"></i>-->
+                                        <img alt="search" id="btnSearchImage"
+                                             src="/img/search.png">
+                                        <input type="text" name="query" id="inputSearch" class="form-control"
+                                               placeholder="Search…">
                                     </form>
                                 </span>
-                            <a class="btn btn-success" data-toggle="modal" href="#addAdviceModal"
-                               id="addAdviceModalBtn"><i class="material-icons">&#xE147;</i> <span>Add Advice</span></a>
-                            <a class="btn btn-danger" data-toggle="modal" href="#deleteAllSelectedModal"><i
-                                    class="material-icons">&#xE15C;</i> <span>Delete</span></a>
+                            <a class="btn btn-secondary" data-toggle="modal" href="#addAdviceModal"
+                               id="addAdviceModalBtn">
+                                <!--<i class="material-icons">&#xE147;</i>-->
+                                <div>Add Advice</div></a>
+                            <a class="btn btn-remove disabled" data-toggle="modal" id="btnDelete" href="#deleteAllSelectedModal">
+                                <!--<i class="material-icons">&#xE15C;</i>-->
+                                <div>Delete</div></a>
                         </div>
                     </div>
                 </div>
@@ -84,8 +90,9 @@
                                        th:value="${fields eq null ? '' : fields.translationContent }"
                                        type="search"/>
                             </td>
-                            <td>
-                                <button type="submit"><i class="fa fa-search"></i></button>
+                            <td colspan="2">
+                                <button type="submit" id="searchBy"><img alt="search"
+                                                                         src="/img/search.png"></button>
                             </td>
                         </tr>
 
@@ -96,7 +103,8 @@
                             <td>
                                     <span class="custom-checkbox">
                                         <input id="checkbox1" name="options[]" th:id="checkbox+${iterStatus.count}"
-                                               th:value="${advice.getId()}" type="checkbox">
+                                               th:value="${advice.getId()}" type="checkbox"
+                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                         <label for="checkbox1" th:for="checkbox+${iterStatus.count}"></label>
                                     </span>
                             </td>
@@ -198,8 +206,8 @@
                         </th:block>
                     </div>
                     <div class="modal-footer">
-                        <input class="btn btn-default" data-dismiss="modal" type="button" value="Cancel">
-                        <input class="btn btn-success" id="submitAddBtn" type="submit" value="Add">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
                     </div>
                 </form>
             </div>
@@ -254,8 +262,8 @@
                         </th:block>
                     </div>
                     <div class="modal-footer">
-                        <input class="btn btn-default" data-dismiss="modal" type="button" value="Cancel">
-                        <input class="btn btn-info" id="submitEditBtn" type="submit" value="Save">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success btn-primary" value="Save" id="submitEditBtn">
                     </div>
                 </form>
             </div>
@@ -275,8 +283,9 @@
                         <p class="text-warning"><small>This action cannot be undone.</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input class="btn btn-default" data-dismiss="modal" type="button" value="Cancel">
-                        <a class="btn btn-danger" href="" id="deleteOneSubmit">Delete</a>
+                        <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button" value="Cancel">
+                        <a class="btn btn-remove" href="" id="deleteOneSubmit">
+                            <div>Delete</div></a>
                     </div>
                 </form>
             </div>
@@ -296,8 +305,9 @@
                         <p class="text-warning"><small>This action cannot be undone.</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input class="btn btn-default" data-dismiss="modal" type="button" value="Cancel">
-                        <a class="btn btn-danger" href="" id="deleteAllSubmit">Delete</a>
+                        <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button" value="Cancel">
+                        <a class="btn btn-danger" href="" id="deleteAllSubmit">
+                            <div>Delete</div></a>
                     </div>
                 </form>
             </div>
