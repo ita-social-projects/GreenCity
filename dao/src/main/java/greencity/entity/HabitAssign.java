@@ -27,6 +27,9 @@ public class HabitAssign {
     @Column(name = "suspended", nullable = false)
     private Boolean suspended;
 
+    @Column(name = "duration", nullable = false)
+    private Integer duration;
+
     @ManyToOne
     private Habit habit;
 

@@ -8,9 +8,6 @@ import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
-import greencity.service.HabitAssignServiceImpl;
-import greencity.service.HabitStatisticService;
-import greencity.service.HabitStatusService;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -93,7 +90,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        HabitAssignDto actual = habitAssignService.assignHabitForUser(habit.getId(), userVO);
+        HabitAssignDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         verify(habitStatusService, times(1)).saveStatusByHabitAssign(any());
         assertEquals(habitAssignDto, actual);
     }
