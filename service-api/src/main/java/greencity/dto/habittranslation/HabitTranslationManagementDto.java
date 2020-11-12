@@ -1,5 +1,6 @@
 package greencity.dto.habittranslation;
 
+import java.io.Serializable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class HabitTranslationManagementDto {
+public class HabitTranslationManagementDto implements Serializable {
     private Long id;
     @NotEmpty
     @Size(min = 1, max = 170)

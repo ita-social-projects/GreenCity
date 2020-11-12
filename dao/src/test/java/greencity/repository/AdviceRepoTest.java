@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = DaoApplication.class)
 @Sql("classpath:sql/advice_translation.sql")
-public class AdviceRepoTest {
+class AdviceRepoTest {
     @Autowired
     private AdviceRepo adviceRepo;
 
