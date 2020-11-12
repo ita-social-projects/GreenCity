@@ -1,10 +1,13 @@
 package greencity.webcontroller;
 
 import greencity.annotations.ApiLocale;
+import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.goal.*;
+import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
@@ -24,7 +27,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
@@ -66,9 +71,13 @@ public class ManagementGoalsController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @PostMapping
-    public ResponseEntity<List<LanguageTranslationDTO>> save(@Valid @RequestBody GoalPostDto goalPostDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(goalService.saveGoal(goalPostDto));
+    @PostMapping("/save")
+    public GenericResponseDto save(@Valid @RequestPart GoalManagementDto goalManagementDto,
+                                   BindingResult bindingResult) {
+        if (!bindingResult.hasErrors()) {
+            goalService.saveGoal(goalManagementDto);
+        }
+        return GenericResponseDto.buildGenericResponseDto(bindingResult);
     }
 
     /**
@@ -86,7 +95,8 @@ public class ManagementGoalsController {
     @PutMapping("/{id}")
     public ResponseEntity<List<LanguageTranslationDTO>> update(
         @Valid @RequestBody GoalPostDto goalPostDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(goalService.update(goalPostDto));
+//        return ResponseEntity.status(HttpStatus.OK).body(goalService.update(goalPostDto));
+        return null;
     }
 
     /**

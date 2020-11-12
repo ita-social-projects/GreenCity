@@ -32,8 +32,7 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage <strong>Goal </strong><a class="statistic-style" th:href="@{displayGraph}"><i
-                                    class="fas fa-chart-bar"></i></a></h2>
+                            <h2>Manage<strong>Goal</strong></h2>
                         </div>
                         <div class="col-sm-6">
                                 <span class="search-box-right">
@@ -42,10 +41,10 @@
                                         <input type="text" name="query" class="form-control" placeholder="Search…">
                                     </form>
                                 </span>
-                            <a href="#addUserModal" id="addUserModalBtn" class="btn btn-success" data-toggle="modal"><i
+                            <a href="#addGoalModal" id="addGoalModalBtn" class="btn btn-success" data-toggle="modal"><i
                                     class="material-icons">&#xE147;</i> <span>Add New Goal</span></a>
-                            <a href="#deactivateAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
-                                    class="material-icons">&#xE15C;</i> <span>Deactivate</span></a>
+                            <a href="#deleteGoalModal" class="btn btn-danger" data-toggle="modal"><i
+                                    class="material-icons">&#xE15C;</i> <span>Delete</span></a>
                         </div>
                     </div>
                 </div>
@@ -154,39 +153,30 @@
         </div>
     </div>
     <!-- Add Modal HTML -->
-    <div id="addUserModal" class="modal fade">
+    <div id="addGoalModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form th:action="@{#}" method="post" id="addUserForm">
+                <form th:action="@{#}" method="post" id="addGoalForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Add User</h4>
+                        <h4 class="modal-title">Add Goal</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
-                            <label>User name</label>
-                            <input type="text" class="form-control" name="name" required>
-                            <span th:id="errorModalSavename" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="text" class="form-control" name="email" required>
+                            <label>Translaion uk</label>
+                            <input type="text" class="form-control" name="translaion_uk" required>
                             <span th:id="errorModalSaveemail" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label>Role</label>
-                            <select class="form-control" name="role">
-                                <option selected="selected">ROLE_USER</option>
-                                <option>ROLE_ADMIN</option>
-                                <option>ROLE_MODERATOR</option>
-                            </select>
-                            <span th:id="errorModalSaverole" class="errorSpan"></span>
+                            <label>Translaion en</label>
+                            <input type="text" class="form-control" name="translaion_en" required>
+                            <span th:id="errorModalSaveemail" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label>Status</label>
-                            <input type="text" class="form-control" name="userStatus" value="CREATED" readonly required>
-                            <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
+                            <label>Translaion ru</label>
+                            <input type="text" class="form-control" name="translaion_ru" required>
+                            <span th:id="errorModalSaveemail" class="errorSpan"></span>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -289,21 +279,21 @@
         </div>
     </div>
     <!-- Deactivate all selected users Modal HTML -->
-    <div id="deactivateAllSelectedModal" class="modal fade">
+    <div id="deleteGoalModel" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="">
                     <div class="modal-header">
-                        <h4 class="modal-title">Deactivate all selected</h4>
+                        <h4 class="modal-title">Delete all selected</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to deactivate these Users?</p>
+                        <p>Are you sure you want to delete these goals?</p>
                         <p class="text-warning"><small>This action cannot be undone.</small></p>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deactivateAllSubmit" class="btn btn-danger">Deactivate marked</a>
+                        <a href="" id="deactivateAllSubmit" class="btn btn-danger">Delete marked</a>
                     </div>
                 </form>
             </div>

@@ -27,7 +27,7 @@ public interface GoalService {
      * @param goalPostDto needed text
      * @author Dmytro Khonko
      */
-    List<LanguageTranslationDTO> saveGoal(GoalPostDto goalPostDto);
+    List<LanguageTranslationDTO> saveGoal(GoalManagementDto goalPostDto);
 
     /**
      * Method to update goal translations from {@link GoalPostDto}.
@@ -35,7 +35,7 @@ public interface GoalService {
      * @param goalPostDto new text
      * @author Dmytro Khonko
      */
-    List<LanguageTranslationDTO> update(GoalPostDto goalPostDto);
+    List<LanguageTranslationDTO> update(GoalManagementDto goalPostDto);
 
     /**
      * Method delete goal.

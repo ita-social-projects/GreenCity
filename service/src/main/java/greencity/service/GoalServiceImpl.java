@@ -45,7 +45,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationDTO> saveGoal(GoalPostDto goal) {
+    public List<LanguageTranslationDTO> saveGoal(GoalManagementDto goal) {
         Goal savedGoal = modelMapper.map(goal, Goal.class);
         savedGoal.getTranslations().forEach(a -> a.setGoal(savedGoal));
         goalRepo.save(savedGoal);
@@ -58,8 +58,8 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationDTO> update(GoalPostDto goalPostDto) {
-        Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getGoal().getId());
+    public List<LanguageTranslationDTO> update(GoalManagementDto goalPostDto) {
+        Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getId());
         if (optionalGoal.isPresent()) {
             Goal updatedGoal = optionalGoal.get();
             List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
