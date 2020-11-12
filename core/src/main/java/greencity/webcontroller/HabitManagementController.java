@@ -28,7 +28,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/habits")
-public class ManagementHabitController {
+public class HabitManagementController {
     private final ManagementHabitService managementHabitService;
     private final LanguageService languageService;
 
