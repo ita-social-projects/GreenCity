@@ -24,7 +24,7 @@ public class Habit {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @OneToMany(mappedBy = "habit", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
     private List<HabitTranslation> habitTranslations;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
