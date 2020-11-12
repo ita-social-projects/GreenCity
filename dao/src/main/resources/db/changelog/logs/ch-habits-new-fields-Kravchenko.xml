@@ -14,5 +14,12 @@
             </column>
         </addColumn>
     </changeSet>
-
+    
+    <changeSet id="2" author="Kravchenko">
+        <addColumn tableName="habits">
+            <column name="default_duration" type="integer" defaultValue="14">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

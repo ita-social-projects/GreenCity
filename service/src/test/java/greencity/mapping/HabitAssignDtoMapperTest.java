@@ -24,7 +24,6 @@ class HabitAssignDtoMapperTest {
             .acquired(habitAssign.getAcquired())
             .suspended(habitAssign.getSuspended())
             .createDateTime(habitAssign.getCreateDate())
-            .habitId(habitAssign.getHabit().getId())
             .userId(habitAssign.getUser().getId())
             .build();
 
