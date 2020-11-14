@@ -188,7 +188,7 @@ class EcoNewsServiceImplTest {
             new EcoNewsDto(now, "test image path", 1L, "test title", "test text", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList()));
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
-                0, false, false, true, true);
+            0, false, false, true, true);
 
         when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
@@ -205,7 +205,7 @@ class EcoNewsServiceImplTest {
         Page<EcoNews> page = new PageImpl<>(ecoNews, pageRequest, ecoNews.size());
         List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
-                0, false, false, true, true);
+            0, false, false, true, true);
 
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
         when(ecoNewsRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
