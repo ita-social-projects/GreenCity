@@ -6,7 +6,7 @@ import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
-import greencity.dto.PageableDto;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
@@ -146,7 +146,7 @@ public class EcoNewsController {
     })
     @GetMapping("")
     @ApiPageable
-    public ResponseEntity<PageableDto<EcoNewsDto>> findAll(@ApiIgnore Pageable page) {
+    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> findAll(@ApiIgnore Pageable page) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(page));
     }
 
@@ -184,7 +184,7 @@ public class EcoNewsController {
     })
     @GetMapping("/tags")
     @ApiPageable
-    public ResponseEntity<PageableDto<EcoNewsDto>> getEcoNews(
+    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> getEcoNews(
         @ApiIgnore Pageable page,
         @ApiParam(value = "Tags to filter (if do not input tags get all)") @RequestParam(
             required = false) List<String> tags) {
