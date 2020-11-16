@@ -5,6 +5,7 @@ import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -142,18 +143,22 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public PageableDto<EcoNewsDto> findAll(Pageable page) {
+    public PageableAdvancedDto<EcoNewsDto> findAll(Pageable page) {
         Page<EcoNews> pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
         List<EcoNewsDto> ecoNewsDtos = pages
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
-
-        return new PageableDto<>(
+        return new PageableAdvancedDto<>(
             ecoNewsDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages());
+            pages.getTotalPages(),
+            pages.getNumber(),
+            pages.hasPrevious(),
+            pages.hasNext(),
+            pages.isFirst(),
+            pages.isLast());
     }
 
     /**
@@ -162,7 +167,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public PageableDto<EcoNewsDto> find(Pageable page, List<String> tags) {
+    public PageableAdvancedDto<EcoNewsDto> find(Pageable page, List<String> tags) {
         List<String> lowerCaseTags = tags.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
@@ -172,11 +177,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
 
-        return new PageableDto<>(
+        return new PageableAdvancedDto<>(
             ecoNewsDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
-            pages.getTotalPages());
+            pages.getTotalPages(),
+            pages.getNumber(),
+            pages.hasPrevious(),
+            pages.hasNext(),
+            pages.isFirst(),
+            pages.isLast());
     }
 
     /**
@@ -307,15 +317,21 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public PageableDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query) {
+    public PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query) {
         Page<EcoNews> page = ecoNewsRepo.searchEcoNewsBy(paging, query);
         List<EcoNewsDto> ecoNews = page.stream()
             .map(ecoNew -> modelMapper.map(ecoNew, EcoNewsDto.class))
             .collect(Collectors.toList());
-        return new PageableDto<>(ecoNews,
+        return new PageableAdvancedDto<>(
+            ecoNews,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages());
+            page.getTotalPages(),
+            page.getNumber(),
+            page.hasPrevious(),
+            page.hasNext(),
+            page.isFirst(),
+            page.isLast());
     }
 
     /**
@@ -362,16 +378,22 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public PageableDto<EcoNewsDto> getFilteredDataForManagementByPage(
+    public PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(
         Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
         Page<EcoNews> page = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
         List<EcoNewsDto> ecoNews = page.stream()
             .map(ecoNew -> modelMapper.map(ecoNew, EcoNewsDto.class))
             .collect(Collectors.toList());
-        return new PageableDto<>(ecoNews,
+        return new PageableAdvancedDto<>(
+            ecoNews,
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
-            page.getTotalPages());
+            page.getTotalPages(),
+            page.getNumber(),
+            page.hasPrevious(),
+            page.hasNext(),
+            page.isFirst(),
+            page.isLast());
     }
 
     /**

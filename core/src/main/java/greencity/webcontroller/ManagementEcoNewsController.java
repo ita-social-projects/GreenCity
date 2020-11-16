@@ -3,6 +3,7 @@ package greencity.webcontroller;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.*;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
@@ -49,7 +50,7 @@ public class ManagementEcoNewsController {
     @GetMapping
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
         @ApiIgnore Pageable pageable) {
-        PageableDto<EcoNewsDto> allEcoNews = query == null || query.isEmpty()
+        PageableAdvancedDto<EcoNewsDto> allEcoNews = query == null || query.isEmpty()
             ? ecoNewsService.findAll(pageable)
             : ecoNewsService.searchEcoNewsBy(pageable, query);
         model.addAttribute("pageable", allEcoNews);
@@ -152,7 +153,7 @@ public class ManagementEcoNewsController {
         EcoNewsViewDto ecoNewsViewDto) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(),
             pageable.getPageSize(), Sort.by("creationDate").descending());
-        PageableDto<EcoNewsDto> pageableDto =
+        PageableAdvancedDto<EcoNewsDto> pageableDto =
             ecoNewsService.getFilteredDataForManagementByPage(paging, ecoNewsViewDto);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("fields", ecoNewsViewDto);

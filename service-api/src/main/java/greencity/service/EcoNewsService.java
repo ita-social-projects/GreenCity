@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
@@ -42,7 +43,7 @@ public interface EcoNewsService {
      * @param page parameters of to search.
      * @return PageableDto of {@link EcoNewsDto} instances.
      */
-    PageableDto<EcoNewsDto> findAll(Pageable page);
+    PageableAdvancedDto<EcoNewsDto> findAll(Pageable page);
 
     /**
      * Method for getting eco news by params.
@@ -51,7 +52,7 @@ public interface EcoNewsService {
      * @param tags tags to search.
      * @return PageableDto with {@link EcoNewsDto} instance.
      */
-    PageableDto<EcoNewsDto> find(Pageable page, List<String> tags);
+    PageableAdvancedDto<EcoNewsDto> find(Pageable page, List<String> tags);
 
     /**
      * Method for getting the {@link EcoNewsVO} instance by its id.
@@ -136,7 +137,7 @@ public interface EcoNewsService {
      * @param query  query to search.
      * @return list of {@link EcoNewsDto}.
      */
-    PageableDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query);
+    PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query);
 
     /**
      * Method for updating {@link EcoNewsVO} instance.
@@ -159,6 +160,6 @@ public interface EcoNewsService {
      * @return a dto of {@link PageableDto}.
      * @author Dovganyuk Taras
      */
-    PageableDto<EcoNewsDto> getFilteredDataForManagementByPage(
+    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(
         Pageable pageable, EcoNewsViewDto ecoNewsViewDto);
 }
