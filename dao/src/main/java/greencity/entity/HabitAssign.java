@@ -30,10 +30,10 @@ public class HabitAssign {
     @Column(name = "duration", nullable = false)
     private Integer duration;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @OneToOne(mappedBy = "habitAssign", cascade = CascadeType.ALL)

@@ -16,6 +16,17 @@ import org.springframework.stereotype.Repository;
 public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     JpaSpecificationExecutor<HabitAssign> {
     /**
+     * Method to find {@link HabitAssign} by id.
+     *
+     * @param id {@link HabitAssign} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "select ha from HabitAssign ha"
+        + " join fetch ha.habit h left join fetch h.habitTranslations ht join fetch ht.language l"
+        + " where ha.id = :id")
+    Optional<HabitAssign> findById(@Param("id") Long id);
+
+    /**
      * Method to find all {@link HabitAssign} by {@link User} id (including
      * suspended).
      *
