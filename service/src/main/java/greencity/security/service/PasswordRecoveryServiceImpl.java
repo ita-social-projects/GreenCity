@@ -130,7 +130,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
             PASSWORD_RECOVERY_ROUTING_KEY,
             new PasswordRecoveryMessage(
                 user.getId(),
-                user.getName(),
+                user.getFirstName(),
                 user.getEmail(),
                 token));
     }
