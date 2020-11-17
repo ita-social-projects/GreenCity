@@ -98,7 +98,7 @@ public class HabitStatisticController {
     /**
      * Method for updating {@link HabitStatisticDto} by it's id.
      *
-     * @param habitId                    {@link HabitStatisticDto} id.
+     * @param id                         {@link HabitStatisticDto} id.
      * @param habitStatisticForUpdateDto {@link UpdateHabitStatisticDto} with habit
      *                                   statistic id and updated rate and amount of
      *                                   items.
@@ -111,13 +111,13 @@ public class HabitStatisticController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PutMapping("/{habitId}")
+    @PutMapping("/{id}")
     public ResponseEntity<UpdateHabitStatisticDto> updateStatistic(
-        @PathVariable Long habitId,
+        @PathVariable Long id,
         @ApiIgnore @CurrentUser UserVO userVO,
         @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService
-            .update(habitId, userVO.getId(), habitStatisticForUpdateDto));
+            .update(id, userVO.getId(), habitStatisticForUpdateDto));
     }
 
     /**
