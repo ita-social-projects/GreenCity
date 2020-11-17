@@ -43,9 +43,9 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTool jwtTool;
     private final UserService userService;
-    private final static String econewsComents = "/econews/comments";
-    private final static String tipsAndTricksComents = "/tipsandtricks/comments";
-    private final static String userCustomGoals = "/user/{userId}/customGoals";
+    private static final String econewsComents = "/econews/comments";
+    private static final String tipsAndTricksComents = "/tipsandtricks/comments";
+    private static final String userCustomGoals = "/user/{userId}/customGoals";
 
     /**
      * Constructor.
