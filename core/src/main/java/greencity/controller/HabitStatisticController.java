@@ -57,7 +57,7 @@ public class HabitStatisticController {
      * @return list of {@link HabitStatisticDto} instances.
      */
     @ApiOperation(value = "Find all statistics by habit assign id.")
-    @GetMapping("/assign/{habitAssignId}/")
+    @GetMapping("/assign/{habitAssignId}")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

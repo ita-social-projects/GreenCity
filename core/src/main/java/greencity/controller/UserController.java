@@ -420,7 +420,7 @@ public class UserController {
     /**
      * Method for finding all active habit assigns by {@link UserVO} id.
      *
-     * @param id       {@link UserVO} id.
+     * @param userId   {@link UserVO} id.
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssignDto}.
      */
@@ -431,12 +431,13 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/{id}/habit/assign")
+    @GetMapping("/{userId}/habit/assign")
     @ApiLocale
     public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
-        @PathVariable Long id, @RequestParam Boolean acquired, @ApiIgnore @ValidLanguage Locale locale) {
+        @PathVariable Long userId, @RequestParam Boolean acquired, @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(id, acquired, locale.getLanguage()));
+            .body(
+                habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, acquired, locale.getLanguage()));
     }
 
     /**
