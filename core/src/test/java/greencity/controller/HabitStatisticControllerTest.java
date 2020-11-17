@@ -36,7 +36,7 @@ class HabitStatisticControllerTest {
 
     private Principal principal = getPrincipal();
 
-    private static final String habitLink = "/habit";
+    private static final String habitLink = "/habit/statistic";
 
     @BeforeEach
     void setUp() {
@@ -51,7 +51,7 @@ class HabitStatisticControllerTest {
         addHabitStatisticDto.setAmountOfItems(1);
         addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z[UTC]"));
         addHabitStatisticDto.setHabitRate(GOOD);
-        mockMvc.perform(post(habitLink + "/{id}/statistic/", 1L)
+        mockMvc.perform(post(habitLink + "/{habitId}", 1L)
             .content("{\n" +
                 "  \"amountOfItems\": 1,\n" +
                 "  \"createDate\": \"2020-10-09T16:49:01.020Z\",\n" +
@@ -59,7 +59,7 @@ class HabitStatisticControllerTest {
                 "}")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
-        verify(habitStatisticService).saveByHabitIdAndUserId(1L, 1L, addHabitStatisticDto);
+        verify(habitStatisticService).saveByHabitIdAndUserId(1L, null, addHabitStatisticDto);
     }
 
     @Test
@@ -69,16 +69,16 @@ class HabitStatisticControllerTest {
         habitStatisticForUpdateDto.setHabitRate(GOOD);
         Gson gson = new Gson();
         String json = gson.toJson(habitStatisticForUpdateDto);
-        mockMvc.perform(put(habitLink + "/statistic/{id}", 1)
+        mockMvc.perform(put(habitLink + "/{habitId}", 1)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitStatisticService).update(1L, 1L, habitStatisticForUpdateDto);
+        verify(habitStatisticService).update(1L, null, habitStatisticForUpdateDto);
     }
 
     @Test
     void findAllByHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/{id}/statistic/", 1))
+        mockMvc.perform(get(habitLink + "/{habitId}", 1))
             .andExpect(status().isOk());
         verify(habitStatisticService).findAllStatsByHabitId(1L);
     }
@@ -88,7 +88,7 @@ class HabitStatisticControllerTest {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
         String json = gson.toJson(locale);
-        mockMvc.perform(get(habitLink + "/statistic/todayStatisticsForAllHabitItems")
+        mockMvc.perform(get(habitLink + "/todayStatisticsForAllHabitItems")
             .content(json))
             .andExpect(status().isOk());
         verify(habitStatisticService).getTodayStatisticsForAllHabitItems(locale.getLanguage());
