@@ -200,9 +200,6 @@ public class ModelUtils {
         return HabitVO.builder().id(1L).image("img.png").build();
     }
 
-
-
-
     public static HabitStatusVO getHabitStatusVO() {
         return HabitStatusVO.builder()
             .id(1L)

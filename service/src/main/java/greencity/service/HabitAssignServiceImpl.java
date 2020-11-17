@@ -79,7 +79,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO userVO,
-                                                             HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        HabitAssignPropertiesDto habitAssignPropertiesDto) {
         User user = modelMapper.map(userVO, User.class);
 
         Habit habit = habitRepo.findById(habitId)
@@ -100,7 +100,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param props       {@link HabitAssignPropertiesDto} instance.
      */
     private void enhanceAssignWithCustomProperties(HabitAssign habitAssign,
-                                                   HabitAssignPropertiesDto props) {
+        HabitAssignPropertiesDto props) {
         habitAssign.setDuration(props.getDuration());
     }
 
@@ -186,7 +186,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired,
-                                                                            String language) {
+        String language) {
         return habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -196,7 +196,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired,
-                                                                             String language) {
+        String language) {
         return habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habitId, acquired)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -207,7 +207,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId,
-                                                                   HabitAssignStatDto dto) {
+        HabitAssignStatDto dto) {
         HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
@@ -331,7 +331,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new BadRequestException(ErrorMessage.HABIT_IS_NOT_ENROLLED);
         }
     }
-
 
     private int checkHabitStreakAfterDate(LocalDate dateTime, HabitAssign habitAssign) {
         int daysStreak = 0;

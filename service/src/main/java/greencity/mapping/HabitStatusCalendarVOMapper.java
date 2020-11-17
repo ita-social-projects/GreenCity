@@ -25,6 +25,7 @@ public class HabitStatusCalendarVOMapper extends AbstractConverter<HabitStatusCa
             .enrollDate(habitStatusCalendar.getEnrollDate())
             .habitAssignVO(HabitAssignVO.builder()
                 .id(habitStatusCalendar.getHabitAssign().getId())
-                .build()).build();
+                .build())
+            .build();
     }
 }

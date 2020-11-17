@@ -129,7 +129,7 @@ public class HabitStatisticController {
      *
      * @param locale - Name of habit item localization language(e.x. "en" or "uk").
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those
-     * key-value pairs.
+     *         key-value pairs.
      */
     @ApiOperation(value = "Get today's statistic for all habit items.")
     @ApiResponses(value = {

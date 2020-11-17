@@ -23,7 +23,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      */
     @Override
     public HabitStatusCalendarVO findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate date,
-                                                                                   HabitAssignVO habitAssignVO) {
+        HabitAssignVO habitAssignVO) {
         HabitAssign toFind = modelMapper.map(habitAssignVO, HabitAssign.class);
         HabitStatusCalendar calendar =
             habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, toFind);
