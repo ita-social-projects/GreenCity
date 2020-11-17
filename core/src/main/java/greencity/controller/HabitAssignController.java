@@ -221,9 +221,9 @@ public class HabitAssignController {
     /**
      * Method to unenroll {@link HabitAssignVO} for defined date.
      *
-     * @param id     - id of {@link HabitVO}.
-     * @param userVO {@link UserVO} user.
-     * @param date   - {@link LocalDate} we want to unenroll.
+     * @param habitId - id of {@link HabitVO}.
+     * @param userVO  {@link UserVO} user.
+     * @param date    - {@link LocalDate} we want to unenroll.
      * @return {@link ResponseEntity}.
      */
     @ApiOperation(value = "Unenroll assigned habit for a specific day.")
@@ -233,12 +233,12 @@ public class HabitAssignController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/{id}/unenroll/{date}")
-    public ResponseEntity<HabitAssignDto> unenrollHabit(@PathVariable Long id,
+    @PostMapping("/{habitId}/unenroll/{date}")
+    public ResponseEntity<HabitAssignDto> unenrollHabit(@PathVariable Long habitId,
                                                         @ApiIgnore @CurrentUser UserVO userVO,
                                                         @PathVariable(value = "date")
                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        habitAssignService.unenrollHabit(id, userVO.getId(), date);
+        habitAssignService.unenrollHabit(habitId, userVO.getId(), date);
         return ResponseEntity.ok().build();
     }
 }
