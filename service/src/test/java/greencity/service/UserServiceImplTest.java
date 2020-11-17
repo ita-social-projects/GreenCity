@@ -455,8 +455,10 @@ class UserServiceImplTest {
         user.setUserGoals(Collections.singletonList(userGoal));
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.empty());
+        Long userId = user.getId();
+        Long userGoalId = userGoal.getId();
         assertThrows(UserGoalStatusNotUpdatedException.class,
-            () -> userService.updateUserGoalStatus(user.getId(), userGoal.getId(), "en"));
+            () -> userService.updateUserGoalStatus(userId, userGoalId, "en"));
         assertNotEquals(GoalStatus.ACTIVE, userGoal.getStatus());
     }
 
