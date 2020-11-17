@@ -185,7 +185,7 @@
                                                th:value="${language.getCode()}" readonly required>
                                     </div>
                                 </div>
-                                <input type="hidden" class="form-control" th:id="id+${language.getCode()}" th:name="id+${language.getCode()}">
+                                <input type="hidden" class="form-control" th:id="id+${language.getCode()}" th:name="id+${language.getCode()}" th:value="${language.getId()}">
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Content</label>

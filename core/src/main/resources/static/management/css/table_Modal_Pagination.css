@@ -420,3 +420,19 @@ button#searchBy{
 button#searchBy img{
     width: 22px;
 }
+
+.col.text {
+    width: 280px;
+    word-wrap: break-word;
+}
+.col.title {
+    width: 140px;
+    word-wrap: break-word;
+}
+.col.source {
+    width: 140px;
+    word-wrap: break-word;
+}
+.col.action {
+    width: 90px;
+}
