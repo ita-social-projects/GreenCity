@@ -32,4 +32,11 @@ public class HabitAssignManagementDto {
     @Max(AppConstant.MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
     @NotNull
     private Integer duration;
+
+    @NotNull
+    private Integer workingDays;
+    @NotNull
+    private Integer habitStreak;
+    @NotEmpty
+    private ZonedDateTime lastEnrollment;
 }

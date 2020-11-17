@@ -1,8 +1,8 @@
 package greencity.service;
 
-import greencity.dto.habitstatus.HabitStatusVO;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.entity.HabitStatus;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatusCalendar;
 import greencity.repository.HabitStatusCalendarRepo;
 import java.time.LocalDate;
@@ -22,11 +22,11 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      * {@inheritDoc}
      */
     @Override
-    public HabitStatusCalendarVO findHabitStatusCalendarByEnrollDateAndHabitStatus(LocalDate date,
-        HabitStatusVO habitStatusVO) {
-        HabitStatus toFind = modelMapper.map(habitStatusVO, HabitStatus.class);
+    public HabitStatusCalendarVO findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate date,
+                                                                                   HabitAssignVO habitAssignVO) {
+        HabitAssign toFind = modelMapper.map(habitAssignVO, HabitAssign.class);
         HabitStatusCalendar calendar =
-            habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitStatus(date, toFind);
+            habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, toFind);
         return calendar == null ? null : modelMapper.map(calendar, HabitStatusCalendarVO.class);
     }
 
@@ -34,9 +34,9 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      * {@inheritDoc}
      */
     @Override
-    public void save(HabitStatusCalendarVO habitStatusCalendarVO) {
+    public HabitStatusCalendarVO save(HabitStatusCalendarVO habitStatusCalendarVO) {
         HabitStatusCalendar habitStatusCalendar = modelMapper.map(habitStatusCalendarVO, HabitStatusCalendar.class);
-        habitStatusCalendarRepo.save(habitStatusCalendar);
+        return modelMapper.map(habitStatusCalendarRepo.save(habitStatusCalendar), HabitStatusCalendarVO.class);
     }
 
     /**
@@ -52,22 +52,21 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      * {@inheritDoc}
      */
     @Override
-    public LocalDate findTopByEnrollDateAndHabitStatus(HabitStatusVO habitStatusVO) {
-        HabitStatus toFind = modelMapper.map(habitStatusVO, HabitStatus.class);
-        return habitStatusCalendarRepo.findTopByEnrollDateAndHabitStatus(toFind);
+    public LocalDate findTopByEnrollDateAndHabitAssign(HabitAssignVO habitAssignVO) {
+        HabitAssign toFind = modelMapper.map(habitAssignVO, HabitAssign.class);
+        return habitStatusCalendarRepo.findTopByEnrollDateAndHabitAssign(toFind);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<LocalDate> findEnrolledDatesAfter(LocalDate dateTime, HabitStatusVO habitStatusVO) {
-        HabitStatus toFind = modelMapper.map(habitStatusVO, HabitStatus.class);
+    public List<LocalDate> findEnrolledDatesAfter(LocalDate dateTime, HabitAssignVO habitAssignVO) {
+        HabitAssign toFind = modelMapper.map(habitAssignVO, HabitAssign.class);
         List<HabitStatusCalendar> habitStatusCalendars =
-            habitStatusCalendarRepo.findAllByEnrollDateAfterAndHabitStatus(dateTime, toFind);
+            habitStatusCalendarRepo.findAllByEnrollDateAfterAndHabitAssign(dateTime, toFind);
         List<LocalDate> dates = new LinkedList<>();
         habitStatusCalendars.forEach(habitStatusCalendar -> dates.add(habitStatusCalendar.getEnrollDate()));
-
         return dates;
     }
 
@@ -75,13 +74,12 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      * {@inheritDoc}
      */
     @Override
-    public List<LocalDate> findEnrolledDatesBefore(LocalDate dateTime, HabitStatusVO habitStatusVO) {
-        HabitStatus toFind = modelMapper.map(habitStatusVO, HabitStatus.class);
+    public List<LocalDate> findEnrolledDatesBefore(LocalDate dateTime, HabitAssignVO habitAssignVO) {
+        HabitAssign toFind = modelMapper.map(habitAssignVO, HabitAssign.class);
         List<HabitStatusCalendar> habitStatusCalendars =
-            habitStatusCalendarRepo.findAllByEnrollDateBeforeAndHabitStatus(dateTime, toFind);
+            habitStatusCalendarRepo.findAllByEnrollDateBeforeAndHabitAssign(dateTime, toFind);
         List<LocalDate> dates = new LinkedList<>();
         habitStatusCalendars.forEach(habitStatusCalendar -> dates.add(habitStatusCalendar.getEnrollDate()));
-
         return dates;
     }
 
@@ -89,7 +87,7 @@ public class HabitStatusCalendarServiceImpl implements HabitStatusCalendarServic
      * {@inheritDoc}
      */
     @Override
-    public void deleteAllByHabitStatus(HabitStatusVO habitStatusVO) {
-        habitStatusCalendarRepo.deleteAllByHabitStatus(modelMapper.map(habitStatusVO, HabitStatus.class));
+    public void deleteAllByHabitAssign(HabitAssignVO habitAssignVO) {
+        habitStatusCalendarRepo.deleteAllByHabitAssign(modelMapper.map(habitAssignVO, HabitAssign.class));
     }
 }

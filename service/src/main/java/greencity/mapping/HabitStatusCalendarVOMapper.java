@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.habitstatus.HabitStatusVO;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.entity.HabitStatusCalendar;
 import org.modelmapper.AbstractConverter;
@@ -23,11 +23,8 @@ public class HabitStatusCalendarVOMapper extends AbstractConverter<HabitStatusCa
         return HabitStatusCalendarVO.builder()
             .id(habitStatusCalendar.getId())
             .enrollDate(habitStatusCalendar.getEnrollDate())
-            .habitStatusVO(HabitStatusVO.builder()
-                .id(habitStatusCalendar.getHabitStatus().getId())
-                .habitStreak(habitStatusCalendar.getHabitStatus().getHabitStreak())
-                .lastEnrollmentDate(habitStatusCalendar.getHabitStatus().getLastEnrollmentDate())
-                .workingDays(habitStatusCalendar.getHabitStatus().getWorkingDays()).build())
-            .build();
+            .habitAssignVO(HabitAssignVO.builder()
+                .id(habitStatusCalendar.getHabitAssign().getId())
+                .build()).build();
     }
 }

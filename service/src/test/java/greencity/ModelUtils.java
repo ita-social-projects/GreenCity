@@ -145,12 +145,26 @@ public class ModelUtils {
         return HabitAssign.builder()
             .id(1L)
             .acquired(true)
-            .suspended(false)
             .createDate(ZonedDateTime.now())
-            .habitStatus(getHabitStatus())
-            .habit(Habit.builder().id(1L).build())
+            .suspended(false)
+            .habit(Habit.builder()
+                .id(1L)
+                .image("")
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .build()))
+                .build())
+            .user(getUser())
+            .workingDays(0)
+            .duration(0)
+            .habitStreak(0)
             .habitStatistic(Collections.singletonList(getHabitStatistic()))
-            .user(User.builder().id(1L).build()).build();
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
     }
 
     public static HabitAssignVO getHabitAssignVO() {
@@ -186,20 +200,8 @@ public class ModelUtils {
         return HabitVO.builder().id(1L).image("img.png").build();
     }
 
-    public static HabitStatus getHabitStatus() {
-        return HabitStatus.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssign(HabitAssign.builder()
-                .id(1L)
-                .duration(14)
-                .build())
-            .habitStatusCalendars(
-                Collections.singletonList(getHabitStatusCalendar()))
-            .build();
-    }
+
+
 
     public static HabitStatusVO getHabitStatusVO() {
         return HabitStatusVO.builder()

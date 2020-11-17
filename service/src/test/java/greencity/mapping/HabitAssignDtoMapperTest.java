@@ -25,6 +25,10 @@ class HabitAssignDtoMapperTest {
             .suspended(habitAssign.getSuspended())
             .createDateTime(habitAssign.getCreateDate())
             .userId(habitAssign.getUser().getId())
+            .habitStreak(habitAssign.getHabitStreak())
+            .workingDays(habitAssign.getWorkingDays())
+            .lastEnrollmentDate(habitAssign.getLastEnrollmentDate())
+            .duration(habitAssign.getDuration())
             .build();
 
         assertEquals(expected, habitAssignDtoMapper.convert(habitAssign));

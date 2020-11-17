@@ -16,4 +16,8 @@ public class HabitAssignVO {
     private ZonedDateTime createDateTime;
     private HabitVO habitVO;
     private UserVO userVO;
+    private Integer duration;
+    private Integer habitStreak;
+    private Integer workingDays;
+    private ZonedDateTime lastEnrollmentDate;
 }

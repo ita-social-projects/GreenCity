@@ -21,9 +21,10 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param id {@link HabitAssign} id.
      * @return {@link HabitAssign} instance.
      */
-    @Query(value = "select ha from HabitAssign ha"
-        + " join fetch ha.habit h left join fetch h.habitTranslations ht join fetch ht.language l"
-        + " where ha.id = :id")
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE ha.id = :id")
     Optional<HabitAssign> findById(@Param("id") Long id);
 
     /**
@@ -33,7 +34,11 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param userId {@link User} id.
      * @return list of {@link HabitAssign} instances.
      */
-    List<HabitAssign> findAllByUserId(Long userId);
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE ha.user.id = :userId")
+    List<HabitAssign> findAllByUserId(@Param("userId") Long userId);
 
     /**
      * Method to find all {@link HabitAssign} by {@link Habit} id (including
@@ -42,7 +47,11 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param habitId {@link Habit} id.
      * @return list of {@link HabitAssign} instances.
      */
-    List<HabitAssign> findAllByHabitId(Long habitId);
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE h.id = :habitId")
+    List<HabitAssign> findAllByHabitId(@Param("habitId") Long habitId);
 
     /**
      * Method to find {@link HabitAssign} by {@link User} and {@link Habit} id's and
@@ -68,7 +77,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssign} instances.
      */
-    List<HabitAssign> findAllByUserIdAndAcquiredAndSuspendedFalse(Long userId, Boolean acquired);
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE ha.user.id = :userId AND ha.acquired = :acquired")
+    List<HabitAssign> findAllByUserIdAndAcquiredAndSuspendedFalse(@Param("userId") Long userId,
+        @Param("acquired") Boolean acquired);
 
     /**
      * Method to find all {@link HabitAssign}'s by {@link Habit} id and acquired
@@ -78,7 +92,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssign} instances.
      */
-    List<HabitAssign> findAllByHabitIdAndAcquiredAndSuspendedFalse(Long habitId, Boolean acquired);
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE h.id = :habitId AND ha.acquired = :acquired")
+    List<HabitAssign> findAllByHabitIdAndAcquiredAndSuspendedFalse(@Param("habitId") Long habitId,
+        @Param("acquired") Boolean acquired);
 
     /**
      * Method to find {@link HabitAssign} by {@link User} id and {@link Habit} id
@@ -88,15 +107,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param habitId {@link Habit} id.
      * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
      */
-    Optional<HabitAssign> findByHabitIdAndUserIdAndSuspendedFalse(Long habitId, Long userId);
-
-    /**
-     * Method to find {@link HabitAssign} by it's id (with not suspended status).
-     *
-     * @param id {@link HabitAssign} id.
-     * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
-     */
-    Optional<HabitAssign> findByIdAndSuspendedFalse(Long id);
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE h.id = :habitId AND ha.user.id = :userId")
+    Optional<HabitAssign> findByHabitIdAndUserIdAndSuspendedFalse(@Param("habitId") Long habitId,
+        @Param("userId") Long userId);
 
     /**
      * Method for counting all {@link HabitAssign}'s by {@link User} id (with not
