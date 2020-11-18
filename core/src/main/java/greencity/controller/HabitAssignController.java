@@ -237,4 +237,30 @@ public class HabitAssignController {
         habitAssignService.unenrollHabit(habitId, userVO.getId(), date);
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * Method to find all active {@link HabitAssignVO} on certain {@link LocalDate}.
+     *
+     * @param userVO {@link UserVO} user.
+     * @param date   {@link LocalDate} date to check if has active assigns.
+     * @param locale needed language code.
+     * @return {@link HabitAssignDto} instance.
+     */
+    @ApiOperation(value = "Get active user habit assigns on certain date.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @GetMapping("/active/{date}")
+    public ResponseEntity<List<HabitAssignDto>> getActiveHabitAssignOnDate(
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .findActiveHabitAssignsOnDate(userVO.getId(), date, locale.getLanguage()));
+    }
 }

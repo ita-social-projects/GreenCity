@@ -104,4 +104,14 @@ public interface HabitAssignService {
      * @param dateTime {@link LocalDate} dateTime we want unenroll.
      */
     void unenrollHabit(Long habitId, Long userId, LocalDate dateTime);
+
+    /**
+     * Method to find all active habit assigns on certain {@link LocalDate}.
+     *
+     * @param userId   {@code User} id.
+     * @param date     {@link LocalDate} instance.
+     * @param language {@link String} of language code value.
+     * @return list of {@link HabitAssignDto} instances.
+     */
+    List<HabitAssignDto> findActiveHabitAssignsOnDate(Long userId, LocalDate date, String language);
 }

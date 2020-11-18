@@ -366,4 +366,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
         return daysStreak;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitAssignDto> findActiveHabitAssignsOnDate(Long id, LocalDate date, String language) {
+        List<HabitAssign> list = habitAssignRepo.findAllActiveHabitAssignsOnDate(date);
+        return list.stream().map(
+            habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+    }
 }

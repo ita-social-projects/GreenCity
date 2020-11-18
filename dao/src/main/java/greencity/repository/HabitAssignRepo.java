@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param userId {@link User} id.
      * @return list of {@link HabitAssign} instances.
      */
-    @Query(value = "SELECT ha FROM HabitAssign ha"
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
         + " WHERE ha.user.id = :userId")
@@ -47,7 +48,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param habitId {@link Habit} id.
      * @return list of {@link HabitAssign} instances.
      */
-    @Query(value = "SELECT ha FROM HabitAssign ha"
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
         + " WHERE h.id = :habitId")
@@ -77,7 +78,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssign} instances.
      */
-    @Query(value = "SELECT ha FROM HabitAssign ha"
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
         + " WHERE ha.user.id = :userId AND ha.acquired = :acquired")
@@ -92,7 +93,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssign} instances.
      */
-    @Query(value = "SELECT ha FROM HabitAssign ha"
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
         + " WHERE h.id = :habitId AND ha.acquired = :acquired")
@@ -149,4 +150,18 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     int countMarkedHabitAssignsByUserIdAndPeriod(@Param("userId") Long userId,
         @Param("start") ZonedDateTime start,
         @Param("end") ZonedDateTime end);
+
+    /**
+     * Method to find all active habit assigns on certain {@link LocalDate}.
+     *
+     * @param date {@link LocalDate} instance.
+     * @return list of {@link HabitAssign} instances.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
+        + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
+        + "JOIN FETCH ht.language l "
+        + "WHERE ha.suspended = false AND ha.acquired = false "
+        + "AND cast(ha.createDate as date) <= cast(:date as date) "
+        + "AND cast(ha.createDate as date) + ha.duration >= cast(:date as date)")
+    List<HabitAssign> findAllActiveHabitAssignsOnDate(@Param("date") LocalDate date);
 }
