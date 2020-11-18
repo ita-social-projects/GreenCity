@@ -38,7 +38,7 @@ public class ManagementGoalsController {
      */
     @GetMapping
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
-                              Model model) {
+        Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").ascending());
         PageableAdvancedDto<GoalManagementDto> pageableDto = query == null || query.isEmpty()
             ? goalService.findGoalForManagementByPage(paging)
@@ -57,8 +57,8 @@ public class ManagementGoalsController {
      */
     @PostMapping
     @ResponseBody
-    public GenericResponseDto save(@Valid @RequestBody  GoalPostDto goalPostDto,
-                                   BindingResult bindingResult) {
+    public GenericResponseDto save(@Valid @RequestBody GoalPostDto goalPostDto,
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             goalService.saveGoal(goalPostDto);
         }
@@ -83,14 +83,14 @@ public class ManagementGoalsController {
     }
 
     /**
-     * Method for goals by  id.
+     * Method for goals by id.
      *
      * @return {@link GoalVO} instance.
      * @author Dmytro Khonko
      */
     @GetMapping("/find/{id}")
     public ResponseEntity<GoalResponseDto> getHabitFactsById(
-            @PathVariable("id") Long id) {
+        @PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(goalService.findGoalById(id));
     }
 
@@ -105,6 +105,7 @@ public class ManagementGoalsController {
     public ResponseEntity<Object> delete(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(goalService.delete(id));
     }
+
     /**
      * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO}
      * by given id.
@@ -117,7 +118,6 @@ public class ManagementGoalsController {
     @ResponseBody
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(goalService.deleteAllGoalByListOfId(listId));
+            .body(goalService.deleteAllGoalByListOfId(listId));
     }
-
 }

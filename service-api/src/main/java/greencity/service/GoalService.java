@@ -51,7 +51,7 @@ public interface GoalService {
      * Method search goals.
      *
      * @param paging our page.
-     * @param query search request
+     * @param query  search request
      * @author Dmytro Khonko
      */
     PageableAdvancedDto<GoalManagementDto> searchBy(Pageable paging, String query);
@@ -67,7 +67,7 @@ public interface GoalService {
     /**
      * Method to find goal.
      *
-     * *@param id id of goal you need to find
+     * @param id id of goal you need to find
      * @author Dmytro Khonko
      */
     GoalResponseDto findGoalById(Long id);

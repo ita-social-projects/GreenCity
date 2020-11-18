@@ -38,7 +38,6 @@
                         <div class="col-sm-6">
                                 <span class="search-box-right">
                                     <form class="form-inline searching" action="/management/users" method="get">
-                                        <!--<i class="material-icons"></i>-->
                                         <img alt="search" id="btnSearchImage"
                                              src="/img/search.png">
                                         <input type="text" name="query" id="inputSearch" class="form-control"
@@ -46,12 +45,10 @@
                                     </form>
                                 </span>
                             <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
-                                <!--<i class="material-icons">&#xE147;</i>-->
                                 <div>Add New User</div>
                             </a>
                             <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
                                data-toggle="modal">
-                                <!--<i class="material-icons">&#xE15C;</i>-->
                                 <div>Deactivate</div>
                             </a>
                         </div>
@@ -128,22 +125,14 @@
                             <a class="page-link" rel="tooltip" th:if="${users.isFirst()}"><i
                                     class="arrow fas fa-chevron-left"></i></a>
                         </li>
-                        <!-- <li class="page-item"
-                             th:classappend="${users.isHasPrevious()} ? '' : 'disabled'">
-                             <a class="page-link" th:if="${users.isHasPrevious()}" th:href="@{/management/users?page={id}(id=${users.getNumber()-1})}">Previous</a>
-                             <a th:if="${!users.isHasPrevious()}">Previous</a>
-                         </li>-->
+
                         <li class="page-item"
                             th:if="${pageNumber > -1 && pageNumber < users.getTotalPages()}"
                             th:classappend="${pageNumber == users.getNumber()} ? 'active' : ''"
                             th:each="pageNumber : ${#numbers.sequence(users.getNumber()-3, users.getNumber()+3)}">
                             <a class="page-link" th:href="@{/management/users?page={id}(id=${pageNumber})}">[[${pageNumber}+1]]</a>
                         </li>
-                        <!--<li class="page-item"
-                            th:classappend="${users.isHasNext()} ? '' : 'disabled'">
-                            <a class="page-link" th:if="${users.isHasNext()}" th:href="@{/management/users?page={id}(id=${users.getNumber()+1})}">Next</a>
-                            <a th:if="${!users.isHasNext()}">Next</a>
-                        </li>-->
+
                         <li class="page-item"
                             th:classappend="${!users.isLast()} ? '' : 'disabled'">
                             <a class="page-link" rel="tooltip" th:if="${!users.isLast()}"
@@ -159,7 +148,7 @@
         </div>
     </div>
     <!-- Add Modal HTML -->
-    <div id="addUserModal" class="modal fade">
+    <div id="   addUserModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form th:action="@{#}" method="post" id="addUserForm">

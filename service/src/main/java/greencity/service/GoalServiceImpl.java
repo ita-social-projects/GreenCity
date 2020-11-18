@@ -62,9 +62,14 @@ public class GoalServiceImpl implements GoalService {
             List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
                 new TypeToken<List<GoalTranslation>>() {
                 }.getType());
-            translations.forEach(a -> a.setGoal(updatedGoal));
-            updatedGoal.getTranslations().clear();
-            updatedGoal.getTranslations().addAll(translations);
+            updatedGoal.getTranslations()
+                .forEach(goalTranslation -> {
+                    goalTranslation.setContent(goalPostDto.getTranslations().stream()
+                        .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                            .equals(goalTranslation.getLanguage().getCode()))
+                        .findFirst().get()
+                        .getContent());
+                });
             goalRepo.save(updatedGoal);
             return modelMapper.map(updatedGoal.getTranslations(),
                 new TypeToken<List<LanguageTranslationDTO>>() {
@@ -78,12 +83,13 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public GoalResponseDto findGoalById(Long id){
+    public GoalResponseDto findGoalById(Long id) {
         Optional<Goal> goal = goalRepo.findById(id);
         if (goal.isPresent()) {
             GoalResponseDto responseDto = GoalResponseDto.builder().id(goal.get().getId()).build();
-            responseDto.setTranslations(modelMapper.map(goal.get().getTranslations(),new TypeToken<List<GoalTranslationDTO>>() {
-            }.getType()));
+            responseDto.setTranslations(modelMapper.map(goal.get().getTranslations(),
+                new TypeToken<List<GoalTranslationDTO>>() {
+                }.getType()));
             return responseDto;
         } else {
             throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
@@ -131,7 +137,7 @@ public class GoalServiceImpl implements GoalService {
     @Override
     public List<Long> deleteAllGoalByListOfId(List<Long> listId) {
         listId.forEach(id -> {
-           delete(id);
+            delete(id);
         });
         return listId;
     }

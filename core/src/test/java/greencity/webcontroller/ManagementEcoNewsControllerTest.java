@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import com.google.gson.Gson;
 import greencity.converters.UserArgumentResolver;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
@@ -69,7 +70,8 @@ class ManagementEcoNewsControllerTest {
     void getAllEcoNews() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
         List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
-        PageableDto<EcoNewsDto> ecoNewsDtoPageableDto = new PageableDto<>(ecoNewsDtos, 2, 0, 3);
+        PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
+            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
         when(ecoNewsService.findAll(pageable)).thenReturn(ecoNewsDtoPageableDto);
 
         this.mockMvc.perform(get(managementEcoNewsLink)

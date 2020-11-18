@@ -127,7 +127,7 @@ $(document).ready(function () {
         }, {});
         var payload = {
             "goal": {
-                "id": 0
+                "id": 1
             },
             "translations": []
         };

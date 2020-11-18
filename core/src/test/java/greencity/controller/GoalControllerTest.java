@@ -32,7 +32,6 @@ class GoalControllerTest {
     @Mock
     private Validator mockValidator;
 
-
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders
