@@ -4,9 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.goal.*;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.UserManagementDto;
 import greencity.entity.Goal;
-import greencity.entity.User;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.GoalNotFoundException;
 import greencity.repository.GoalRepo;
@@ -18,7 +16,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +42,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationDTO> saveGoal(GoalManagementDto goal) {
+    public List<LanguageTranslationDTO> saveGoal(GoalPostDto goal) {
         Goal savedGoal = modelMapper.map(goal, Goal.class);
         savedGoal.getTranslations().forEach(a -> a.setGoal(savedGoal));
         goalRepo.save(savedGoal);
@@ -58,8 +55,8 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationDTO> update(GoalManagementDto goalPostDto) {
-        Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getId());
+    public List<LanguageTranslationDTO> update(GoalPostDto goalPostDto) {
+        Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getGoal().getId());
         if (optionalGoal.isPresent()) {
             Goal updatedGoal = optionalGoal.get();
             List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
@@ -81,12 +78,29 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public void delete(Long goalId) {
+    public GoalResponseDto findGoalById(Long id){
+        Optional<Goal> goal = goalRepo.findById(id);
+        if (goal.isPresent()) {
+            GoalResponseDto responseDto = GoalResponseDto.builder().id(goal.get().getId()).build();
+            responseDto.setTranslations(modelMapper.map(goal.get().getTranslations(),new TypeToken<List<GoalTranslationDTO>>() {
+            }.getType()));
+            return responseDto;
+        } else {
+            throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long delete(Long goalId) {
         if (goalRepo.findById(goalId).isPresent()) {
             goalRepo.deleteById(goalId);
         } else {
             throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
         }
+        return goalId;
     }
 
     /**
@@ -109,6 +123,17 @@ public class GoalServiceImpl implements GoalService {
             goals.hasNext(),
             goals.isFirst(),
             goals.isLast());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Long> deleteAllGoalByListOfId(List<Long> listId) {
+        listId.forEach(id -> {
+           delete(id);
+        });
+        return listId;
     }
 
     /**

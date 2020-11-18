@@ -1,26 +1,15 @@
 package greencity.webcontroller;
 
-import greencity.annotations.ApiLocale;
-import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidLanguage;
-import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.goal.*;
-import greencity.dto.habit.HabitManagementDto;
-import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.service.GoalService;
 import greencity.service.LanguageService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import java.util.List;
-import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,9 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartException;
-import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
 @AllArgsConstructor
@@ -42,18 +29,17 @@ public class ManagementGoalsController {
     private final LanguageService languageService;
 
     /**
-     * Method that returns management page with all {@link UserVO}.
+     * Method that returns management page with all {@link GoalVO}.
      *
      * @param query    Query for searching related data
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
-     * @author Vasyl Zhovnir
      */
     @GetMapping
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
                               Model model) {
-        Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+        Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").ascending());
         PageableAdvancedDto<GoalManagementDto> pageableDto = query == null || query.isEmpty()
             ? goalService.findGoalForManagementByPage(paging)
             : goalService.searchBy(paging, query);
@@ -65,22 +51,16 @@ public class ManagementGoalsController {
     /**
      * The controller which saveGoal {@link GoalVO}.
      *
-     * @param goalManagementDto {@link GoalDto}
+     * @param goalPostDto {@link GoalPostDto}
      * @return {@link ResponseEntity}
+     * @author Dmytro Khonko
      */
-    @ApiOperation(value = "Save goal")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @ResponseBody
     @PostMapping
-    @ExceptionHandler(value = MultipartException.class)
-    public GenericResponseDto save(@Valid @RequestPart GoalManagementDto goalManagementDto,
+    @ResponseBody
+    public GenericResponseDto save(@Valid @RequestBody  GoalPostDto goalPostDto,
                                    BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
-            goalService.saveGoal(goalManagementDto);
+            goalService.saveGoal(goalPostDto);
         }
         return GenericResponseDto.buildGenericResponseDto(bindingResult);
     }
@@ -90,18 +70,28 @@ public class ManagementGoalsController {
      *
      * @param goalPostDto {@link GoalPostDto}
      * @return {@link ResponseEntity}
+     * @author Dmytro Khonko
      */
-    @ApiOperation(value = "Update goal")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
     @PutMapping("/{id}")
-    public ResponseEntity<List<LanguageTranslationDTO>> update(
-        @Valid @RequestBody GoalPostDto goalPostDto) {
-//        return ResponseEntity.status(HttpStatus.OK).body(goalService.update(goalPostDto));
-        return null;
+    @ResponseBody
+    public GenericResponseDto update(
+        @Valid @RequestBody GoalPostDto goalPostDto, BindingResult bindingResult) {
+        if (!bindingResult.hasErrors()) {
+            goalService.update(goalPostDto);
+        }
+        return buildGenericResponseDto(bindingResult);
+    }
+
+    /**
+     * Method for goals by  id.
+     *
+     * @return {@link GoalVO} instance.
+     * @author Dmytro Khonko
+     */
+    @GetMapping("/find/{id}")
+    public ResponseEntity<GoalResponseDto> getHabitFactsById(
+            @PathVariable("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(goalService.findGoalById(id));
     }
 
     /**
@@ -109,16 +99,25 @@ public class ManagementGoalsController {
      *
      * @param id of {@link GoalVO}
      * @return {@link ResponseEntity}
+     * @author Dmytro Khonko
      */
-    @ApiOperation(value = "Delete goal")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
-        goalService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(goalService.delete(id));
     }
+    /**
+     * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO}
+     * by given id.
+     *
+     * @param listId list of IDs
+     * @return {@link ResponseEntity}
+     * @author Dmytro Khonko
+     */
+    @DeleteMapping("/deleteAll")
+    @ResponseBody
+    public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(goalService.deleteAllGoalByListOfId(listId));
+    }
+
 }
