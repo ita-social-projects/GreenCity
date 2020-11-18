@@ -59,8 +59,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             URL checkUrl = new URL(url);
             Optional<SocialNetworkImageVO> optionalSocialNetworkImageVO =
                 findByHostPath(checkUrl.getHost());
-            return optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get()
-                : saveSocialNetworkImage(checkUrl);
+            return modelMapper.map(optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get()
+                : saveSocialNetworkImage(checkUrl), SocialNetworkImageVO.class);
         } catch (IOException e) {
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
