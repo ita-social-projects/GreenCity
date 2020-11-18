@@ -92,17 +92,23 @@ VALUES (1, 2, 'DONE', '2020-09-10 20:00:001'),
        (3, 1, 'DONE', '2020-10-05 20:00:001');
 
 
-INSERT INTO achievements (title, description, message)
-VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!'),
-       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.'),
-       ('Сonscious', 'Made first habit', 'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".'),
-       ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!'),
-       ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!'),
-       ('ach6', 'get ach 6', 'info'),
-       ('ach7', 'get ach 7', 'info'),
-       ('ach8', 'get ach 8', 'info'),
-       ('ach9', 'get ach 9', 'info'),
-       ('ach10', 'get ach 10', 'info');
+INSERT INTO achievement_categories(name)
+VALUES ('Econews'),
+       ('Rating'),
+       ('Likes');
+
+INSERT INTO achievements (title, description, message, achievement_category_id, condition)
+VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!', '1', '10'),
+       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.', '1', '20'),
+       ('Сonscious', 'Made first habit', 'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".', '2', '10'),
+       ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!', '2', '10'),
+       ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!', '2', '10'),
+       ('ach6', 'get ach 6', 'info', '2', '10'),
+       ('ach7', 'get ach 7', 'info', '3', '10'),
+       ('ach8', 'get ach 8', 'info', '2', '10'),
+       ('ach9', 'get ach 9', 'info', '2', '10'),
+       ('ach10', 'get ach 10', 'info', '1', '10');
+
 
 INSERT INTO languages (code)
 VALUES ('ua'),

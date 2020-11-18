@@ -34,7 +34,8 @@ class AchievementServiceImplTest {
 
     @Test
     void findAllWithOneValueInRepoTest() {
-        Achievement achievement = new Achievement(1L, "foo", null, null, null);
+        Achievement achievement = new Achievement(1L, "foo", null, null,
+                null, null, 1);
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
         when(modelMapper.map(achievement, AchievementDTO.class))

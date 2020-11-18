@@ -1,5 +1,7 @@
 package greencity.mapping;
 
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -36,6 +38,23 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                     .build())
                 .collect(Collectors.toList());
         }
+
+        List<UserAchievementVO> userAchievements = new ArrayList<>();
+        if (user.getUserAchievements() != null) {
+            userAchievements = user.getUserAchievements()
+                    .stream().map(userAchievement -> UserAchievementVO.builder()
+                            .id(userAchievement.getId())
+                            .achievementStatus(userAchievement.getAchievementStatus())
+                            .user(UserVO.builder()
+                                    .id(userAchievement.getUser().getId())
+                                    .build())
+                            .achievement(AchievementVO.builder()
+                                    .id(userAchievement.getAchievement().getId())
+                                    .build())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
         OwnSecurityVO ownSecurityVO = null;
         if (user.getOwnSecurity() != null) {
             ownSecurityVO = OwnSecurityVO.builder()
@@ -69,6 +88,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             .showEcoPlace(user.getShowEcoPlace())
             .showLocation(user.getShowLocation())
             .lastActivityTime(user.getLastActivityTime())
+            .userAchievements(userAchievements)
             .build();
     }
 }

@@ -32,6 +32,12 @@ public class Achievement {
     @OneToMany(mappedBy = "achievement", fetch = FetchType.LAZY)
     private List<UserAchievement> userAchievements;
 
+    @ManyToOne
+    private AchievementCategory achievementCategory;
+
+    @Column(nullable = false)
+    private Integer condition;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
