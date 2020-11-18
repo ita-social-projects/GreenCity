@@ -6,7 +6,6 @@ import greencity.dto.habitstatus.HabitStatusDto;
 import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatus.UpdateHabitStatusDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatus;
 import greencity.entity.HabitStatusCalendar;
