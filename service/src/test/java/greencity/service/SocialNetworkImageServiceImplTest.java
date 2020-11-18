@@ -44,6 +44,7 @@ class SocialNetworkImageServiceImplTest {
         when(modelMapper.map(socialNetworkImage, new TypeToken<Optional<SocialNetworkImageVO>>() {
         }.getType()))
             .thenReturn(Optional.of(socialNetworkImageVO));
+        when(modelMapper.map(socialNetworkImageVO, SocialNetworkImageVO.class)).thenReturn(socialNetworkImageVO);
 
         assertEquals(socialNetworkImageVO, socialNetworkImageService.getSocialNetworkImageByUrl("http:"));
     }
