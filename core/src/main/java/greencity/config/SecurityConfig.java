@@ -43,9 +43,9 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTool jwtTool;
     private final UserService userService;
-    private final String econewsComents = "/econews/comments";
-    private final String tipsAndTricksComents = "/tipsandtricks/comments";
-    private final String userCustomGoals = "/user/{userId}/customGoals";
+    private static final String ECONEWS_COMMENTS = "/econews/comments";
+    private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
+    private static final String USER_CUSTOM_GOALS = "/user/{userId}/customGoals";
 
     /**
      * Constructor.
@@ -93,7 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/img/**")
             .permitAll()
             .antMatchers(HttpMethod.GET,
-                econewsComents)
+                ECONEWS_COMMENTS)
             .hasRole(ADMIN)
             .antMatchers(HttpMethod.GET,
                 "/ownSecurity/verifyEmail",
@@ -133,7 +133,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/count/likes",
                 "/econews/comments/replies/active/{parentCommentId}",
                 "/econews/comments/active",
-                tipsAndTricksComents,
+                TIPS_AND_TRICKS_COMMENTS,
                 "/tipsandtricks/comments/count/comments",
                 "/tipsandtricks/comments/replies/{parentCommentId}",
                 "/tipsandtricks/comments/count/likes",
@@ -174,7 +174,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/{status}",
                 "/user",
                 "/user/{userId}/goals",
-                userCustomGoals,
+                USER_CUSTOM_GOALS,
                 "/user/{userId}/goals/available",
                 "/user/{userId}/customGoals/available",
                 "/user/{userId}/sixUserFriends/",
@@ -202,7 +202,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/{tipsAndTricksId}",
                 "/tipsandtricks/comments/like",
                 "/tipsandtricks",
-                userCustomGoals,
+                USER_CUSTOM_GOALS,
                 "/user/{userId}/goals",
                 "/user/{userId}/habit",
                 "/user/{userId}/userFriend/{friendId}")
@@ -215,21 +215,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/profile")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
-                "/econews/comments",
+                ECONEWS_COMMENTS,
                 "/goals/shoppingList/{userId}",
                 "/habit/assign/{habitId}",
-                tipsAndTricksComents,
-                userCustomGoals,
+                TIPS_AND_TRICKS_COMMENTS,
+                USER_CUSTOM_GOALS,
                 "/user/{userId}/goals/{goalId}",
                 "/user/profilePicture",
                 "/user/deleteProfilePicture")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
-                econewsComents,
+                ECONEWS_COMMENTS,
                 "/econews/{econewsId}",
                 "/favorite_place/{placeId}",
-                tipsAndTricksComents,
-                userCustomGoals,
+                TIPS_AND_TRICKS_COMMENTS,
+                USER_CUSTOM_GOALS,
                 "/user/{userId}/userGoals",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
