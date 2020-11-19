@@ -174,12 +174,6 @@ public class UserServiceImpl implements UserService {
         }.getType());
     }
 
-    @Override
-    public UserRoleDto getRole(String email) {
-        UserVO user = findByEmail(email);
-        return new UserRoleDto(user.getId(), user.getRole());
-    }
-
     /**
      * {@inheritDoc}
      */

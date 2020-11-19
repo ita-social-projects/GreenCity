@@ -417,6 +417,4 @@ public interface UserService {
      * @return {@link List} of {@link UserVO} instances.
      */
     List<UserVO> findAll();
-
-    UserRoleDto getRole(String email);
 }
