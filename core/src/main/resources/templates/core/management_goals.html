@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
 <head>
     <meta charset="utf-8"/>
-    <title>Habit facts management</title>
+    <title>Goal management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
@@ -21,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-    <script th:src="@{/management/habitfacts/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/goal/buttonsAJAX.js}"></script>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
@@ -32,11 +32,11 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage Habit Facts</h2>
+                            <h2>Manage Goal</h2>
                         </div>
                         <div class="col-sm-6">
                                 <span class="search-box-right">
-                                    <form class="form-inline searching" action="/management/facts" method="get">
+                                    <form class="form-inline searching" action="/management/goals" method="get">
                                         <!--<i class="material-icons"></i>-->
                                         <img alt="search" id="btnSearchImage"
                                              src="/img/search.png">
@@ -44,9 +44,9 @@
                                                placeholder="Search…">
                                     </form>
                                 </span>
-                            <a href="#addHabitFactsModal" id="addHabitFactsModalBtn" class="btn btn-secondary" data-toggle="modal">
+                            <a href="#addGoalModal" id="addGoalModalBtn" class="btn btn-secondary" data-toggle="modal" >
                                 <!--<i class="material-icons">&#xE147;</i>-->
-                                <div>Add New Habit Facts</div></a>
+                                <div>Add New Goal</div></a>
                             <a href="#deleteAllSelectedModal" class="btn btn-remove disabled" data-toggle="modal" id="btnDelete" >
                                 <!--<i class="material-icons">&#xE15C;</i>-->
                                 <div>Delete</div></a>
@@ -63,52 +63,44 @@
                                 </span>
                         </th>
                         <th style="width: 5%">ID</th>
-                        <th style="width: 5%">Habit ID</th>
                         <th style="width: 80%">Translations</th>
                         <th style="width: 10%">Actions</th>
                     </tr>
                     </thead>
 
-                        <form method="POST" action="/management/facts/filter" id="searchForm">
+                    <form method="POST" action="/management/goals/filter" id="searchForm">
 
-                            <tr>
-                                <td>
+                        <tr>
+                            <td>
 
-                                </td>
-                                <td>
-                                    <input type="search" th:name="id" placeholder="Search"
+                            </td>
+                            <td>
+                                <input type="search" th:name="id" placeholder="Search"
                                        th:value="${fields eq null ? '' : fields.id }"/>
-                                </td>
-                                <td>
-                                    <input type="search" th:name="habitId" placeholder="Search"
-                                       th:value="${fields eq null ? '' : fields.habitId }"/>
-                                </td>
-                                <td>
-                                    <input type="search" th:name="content" placeholder="Search"
+                            </td>
+                            <td>
+                                <input type="search" th:name="content" placeholder="Search"
                                        th:value="${fields eq null ? '' : fields.content }"/>
-                                </td>
-                                <td colspan="2">
-                                        <button type="submit" id="searchBy"><img alt="search"
-                                                                                 src="/img/search.png"></button>
-                                </td>
+                            </td>
+                            <td colspan="2">
+                                <button type="submit" id="searchBy"><img alt="search" src="/img/search.png" ></button>
+                            </td>
+                        </tr>
 
-                            </tr>
+                    </form>
 
-                        </form>
-
-                        <th:block th:each="habitFacts, iterStatus :${pageable.getPage()}">
-                            <tbody>
+                    <th:block th:each="goal, iterStatus :${goals.getPage()}">
+                        <tbody>
                         <tr>
                             <td>
                                 <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                               name="options[]" th:value="${habitFacts.getId()}"
+                                               name="options[]" th:value="${goal.getId()}"
                                                th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                 </span>
                             </td>
-                            <td th:text="${habitFacts.getId()}"></td>
-                            <td th:text="${habitFacts.getHabit().getId()}"></td>
+                            <td th:text="${goal.getId()}"></td>
                             <td>
                                 <table class="table table-borderless m-0">
                                     <thead>
@@ -116,45 +108,43 @@
                                         <th class="py-1" style="width: 10%">Translation ID</th>
                                         <th class="py-1" style="width: 70%">Content</th>
                                         <th class="py-1" style="width: 5%">LanguageCode</th>
-                                        <th class="py-1" style="width: 15%">Fact of day status</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <th:block
-                                            th:each="translation : ${habitFacts.getTranslations()}">
+                                            th:each="translation : ${goal.getTranslations()}">
                                         <tr>
                                             <td class="py-1" th:text="${translation.getId()}"></td>
                                             <td class="py-1" th:text="${translation.getContent()}"></td>
                                             <td class="py-1" th:text="${translation.getLanguage().getCode()}"></td>
-                                            <td class="py-1" th:text="${translation.getFactOfDayStatus()}"></td>
                                         </tr>
                                     </th:block>
                                     </tbody>
                                 </table>
                             </td>
                             <td>
-                                <a th:href="@{/management/facts/find/{id}(id=${habitFacts.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                <a th:href="@{/management/facts/{id}(id=${habitFacts.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                <a th:href="@{/management/goals/{id}(id=${goal.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                <a th:href="@{/management/goals/{id}(id=${goal.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>
-                            </tbody>
-                        </th:block>
+                        </tbody>
+                    </th:block>
                 </table>
                 <div class="clearfix">
                     <div class="hint-text">Showing <b
-                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b
-                            th:text="${pageable.getTotalElements()}">25</b> entries
+                            th:text="${goals.getTotalElements()>20?20:goals.getTotalElements()}">5</b> out of <b
+                            th:text="${goals.getTotalElements()}">25</b> entries
                     </div>
                     <ul class="pagination">
-                        <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                th:href="@{facts(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
+                        <li class="page-item" th:classappend="${goals.getCurrentPage()==0?'disabled':''}"><a
+                                th:href="@{goals(page=${goals.getCurrentPage()-1})}" class="page-link">Previous</a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
-                            th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                                th:href="@{facts(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0,goals.getTotalPages()-1)}"
+                            th:classappend="${goals.getCurrentPage()==i?'active':''}"><a
+                                th:href="@{goals(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
                         <li class="page-item"
-                            th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
-                                th:href="@{facts(page=${pageable.getCurrentPage()+1})}"
+                            th:classappend="${goals.getCurrentPage()==goals.getTotalPages()-1?'disabled':''}"><a
+                                th:href="@{goals(page=${goals.getCurrentPage()+1})}"
                                 class="page-link">Next</a></li>
                     </ul>
                 </div>
@@ -162,20 +152,15 @@
         </div>
     </div>
     <!-- Add Modal HTML -->
-    <div id="addHabitFactsModal" class="modal fade">
+    <div id="addGoalModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" id="addHabitFactsForm">
+                <form method="post" id="addGoalForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Add Habit Facts</h4>
+                        <h4 class="modal-title">Add Goal</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label>Habit ID</label>
-                            <input type="text" class="form-control" name="habit_id" required>
-                            <span class="errorSpan" th:id="errorModalSavehabit.id"></span>
-                        </div>
                         <th:block th:each="language, iterInfo : ${languages}">
                             <div class="row">
                                 <div class="col">
@@ -190,7 +175,7 @@
                                     <div class="form-group">
                                         <label>Content</label>
                                         <input type="text" class="form-control eEdit"
-                                               th:name="content+${language.getCode()}">
+                                               th:name="content+${language.getCode()}" >
                                         <span class="errorSpan"
                                               th:id="'errorModalSavetranslations['+${iterInfo.index}+'].content'"></span>
                                     </div>
@@ -207,12 +192,12 @@
         </div>
     </div>
     <!-- Edit Modal HTML -->
-    <div id="editHabitFactsModal" class="modal fade">
-        <div class="modal-dialog">
+    <div id="editGoalModal" class="modal fade">
+        f<div class="modal-dialog">
             <div class="modal-content">
-                <form id="editHabitFactsForm">
+                <form id="editGoalForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Edit Habit Facts</h4>
+                        <h4 class="modal-title">Edit Goal</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -221,11 +206,6 @@
                             <input type="text" class="form-control" id="id" name="id" readonly required>
                             <span th:id="errorModalUpdateId" class="errorSpan"></span>
                         </div>
-                        <div class="form-group">
-                            <label>Habit ID</label>
-                            <input type="text" class="form-control" id="habit_id" name="habit_id" required>
-                            <span class="errorSpan" th:id="errorModalUpdatehabit.id"></span>
-                        </div>
                         <th:block th:each="language, iterInfo : ${languages}">
                             <div class="row">
                                 <div class="col">
@@ -233,7 +213,7 @@
                                         <label>Language code</label>
                                         <input type="text" class="form-control" th:id="${language.getCode()}" th:name="${language.getCode()}" th:value="${language.getCode()}" readonly required>
                                     </div>
-                                    <input type="hidden" class="form-control" th:id="id+${language.getCode()}" th:name="id+${language.getCode()}">
+                                    <input type="hidden" class="form-control" th:id="id+${language.getCode()}" th:name="id+${language.getCode()}" th:value="${language.getId()}">
                                 </div>
                                 <div class="col-9">
                                     <div class="form-group">
@@ -243,10 +223,6 @@
                                               th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].content'"></span>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Fact of day status</label>
-                                <input type="text" class="form-control" th:id="status+${language.getCode()}" th:name="status+${language.getCode()}" required>
                             </div>
                         </th:block>
                     </div>
@@ -259,12 +235,12 @@
         </div>
     </div>
     <!-- Delete Modal HTML -->
-    <div id="deleteHabitFactsModal" class="modal fade">
+    <div id="deleteGoalModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="deleteHabitFactsForm" >
+                <form id="deleteGoalForm" >
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete Habit Facts</h4>
+                        <h4 class="modal-title">Delete Goal</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
