@@ -2,6 +2,8 @@ package greencity.dto.user;
 
 import greencity.dto.socialnetwork.SocialNetworkResponseDTO;
 import java.util.List;
+
+import greencity.enums.Role;
 import lombok.*;
 
 @AllArgsConstructor
@@ -20,4 +22,5 @@ public class UserProfileDtoResponse {
     private Boolean showEcoPlace;
     private Boolean showShoppingList;
     private Float rating;
+    private Role role;
 }

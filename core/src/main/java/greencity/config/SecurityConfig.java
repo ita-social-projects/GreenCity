@@ -172,6 +172,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/newsSubscriber/unsubscribe",
                 "/place/{status}",
                 "/user",
+                "/user/role",
                 "/user/{userId}/goals",
                 USER_CUSTOM_GOALS,
                 "/user/{userId}/goals/available",
