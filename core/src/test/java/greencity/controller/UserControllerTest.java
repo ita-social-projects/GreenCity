@@ -10,8 +10,7 @@ import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.User;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.service.*;
 import java.security.Principal;
 import java.util.Locale;
@@ -115,7 +114,7 @@ class UserControllerTest {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        verify(userService).updateRole(eq(1L), eq(ROLE.ROLE_USER), eq("testmail@gmail.com"));
+        verify(userService).updateRole(eq(1L), eq(Role.ROLE_USER), eq("testmail@gmail.com"));
     }
 
     @Test

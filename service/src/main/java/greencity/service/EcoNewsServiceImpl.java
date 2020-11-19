@@ -19,7 +19,7 @@ import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -224,7 +224,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void delete(Long id, UserVO user) {
         EcoNewsVO ecoNewsVO = findById(id);
-        if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
+        if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         ecoNewsRepo.deleteById(ecoNewsVO.getId());
@@ -359,7 +359,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserVO user) {
         EcoNews toUpdate = modelMapper.map(findById(updateEcoNewsDto.getId()), EcoNews.class);
-        if (user.getRole() != ROLE.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
+        if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         toUpdate.setTitle(updateEcoNewsDto.getTitle());

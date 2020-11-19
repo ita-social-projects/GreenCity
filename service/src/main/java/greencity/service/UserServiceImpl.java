@@ -12,7 +12,7 @@ import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserRoleDto updateRole(Long id, ROLE role, String email) {
+    public UserRoleDto updateRole(Long id, Role role, String email) {
         checkUpdatableUser(id, email);
         UserVO userVO = findById(id);
         userVO.setRole(role);
@@ -224,7 +224,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public RoleDto getRoles() {
-        return new RoleDto(ROLE.class.getEnumConstants());
+        return new RoleDto(Role.class.getEnumConstants());
     }
 
     /**
@@ -464,9 +464,9 @@ public class UserServiceImpl implements UserService {
      */
     private void accessForUpdateUserStatus(Long id, String email) {
         UserVO user = findByEmail(email);
-        if (user.getRole() == ROLE.ROLE_MODERATOR) {
-            ROLE role = findById(id).getRole();
-            if ((role == ROLE.ROLE_MODERATOR) || (role == ROLE.ROLE_ADMIN)) {
+        if (user.getRole() == Role.ROLE_MODERATOR) {
+            Role role = findById(id).getRole();
+            if ((role == Role.ROLE_MODERATOR) || (role == Role.ROLE_ADMIN)) {
                 throw new LowRoleLevelException(ErrorMessage.IMPOSSIBLE_UPDATE_USER_STATUS);
             }
         }

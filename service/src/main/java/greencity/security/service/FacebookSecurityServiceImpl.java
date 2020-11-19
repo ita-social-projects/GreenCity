@@ -5,7 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.jwt.JwtTool;
@@ -118,7 +118,7 @@ public class FacebookSecurityServiceImpl implements FacebookSecurityService {
         return User.builder()
             .email(email)
             .name(userName)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .dateOfRegistration(LocalDateTime.now())
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)

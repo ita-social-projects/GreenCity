@@ -1,6 +1,6 @@
 package greencity.security.providers;
 
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.security.jwt.JwtTool;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -23,7 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
  * @author Yurii Koval
  */
 class JwtAuthenticationProviderTest {
-    private final ROLE expectedRole = ROLE.ROLE_USER;
+    private final Role expectedRole = Role.ROLE_USER;
 
     @Mock
     JwtTool jwtTool;
@@ -58,7 +58,7 @@ class JwtAuthenticationProviderTest {
         assertEquals(expectedEmail, actual.getPrincipal());
         assertEquals(
             Stream.of(expectedRole)
-                .map(ROLE::toString)
+                .map(Role::toString)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList()),
             actual.getAuthorities());

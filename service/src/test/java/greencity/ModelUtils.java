@@ -69,7 +69,7 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(LocalDateTime.now())
@@ -81,7 +81,7 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(LocalDateTime.now())
@@ -188,7 +188,7 @@ public class ModelUtils {
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
             .id(1L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
             .status(GoalStatus.DONE)
             .build();
     }
@@ -204,7 +204,7 @@ public class ModelUtils {
     public static UserGoal getPredefinedUserGoal() {
         return UserGoal.builder()
             .id(2L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
             .build();
@@ -217,7 +217,7 @@ public class ModelUtils {
                 .id(1L)
                 .email(TestConst.EMAIL)
                 .name(TestConst.NAME)
-                .role(ROLE.ROLE_USER)
+                .role(Role.ROLE_USER)
                 .build())
             .status(GoalStatus.DONE)
             .build();

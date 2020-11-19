@@ -1,22 +1,18 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.goal.CustomGoalRequestDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
-import greencity.enums.ROLE;
-import greencity.enums.UserStatus;
+import greencity.enums.Role;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import org.junit.jupiter.api.Test;
@@ -91,7 +87,7 @@ class UserServiceImplTest {
         .id(1L)
         .name("Test Testing")
         .email("test@gmail.com")
-        .role(ROLE.ROLE_USER)
+        .role(Role.ROLE_USER)
         .userStatus(ACTIVATED)
         .emailNotification(EmailNotification.DISABLED)
         .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
@@ -103,7 +99,7 @@ class UserServiceImplTest {
         .id(1L)
         .name("Test Testing")
         .email("test@gmail.com")
-        .role(ROLE.ROLE_USER)
+        .role(Role.ROLE_USER)
         .userStatus(ACTIVATED)
         .emailNotification(EmailNotification.DISABLED)
         .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
@@ -114,7 +110,7 @@ class UserServiceImplTest {
         .id(2L)
         .name("Test Testing")
         .email("test@gmail.com")
-        .role(ROLE.ROLE_MODERATOR)
+        .role(Role.ROLE_MODERATOR)
         .userStatus(ACTIVATED)
         .emailNotification(EmailNotification.DISABLED)
         .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
@@ -125,7 +121,7 @@ class UserServiceImplTest {
             .id(2L)
             .name("Test Testing")
             .email("test@gmail.com")
-            .role(ROLE.ROLE_MODERATOR)
+            .role(Role.ROLE_MODERATOR)
             .userStatus(ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
             .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
@@ -190,8 +186,8 @@ class UserServiceImplTest {
 
     @Test
     void updateUserStatusLowRoleLevelException() {
-        user.setRole(ROLE.ROLE_MODERATOR);
-        userVO.setRole(ROLE.ROLE_MODERATOR);
+        user.setRole(Role.ROLE_MODERATOR);
+        userVO.setRole(Role.ROLE_MODERATOR);
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
         when(modelMapper.map(user2, UserVO.class)).thenReturn(userVO2);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
@@ -203,17 +199,17 @@ class UserServiceImplTest {
     void updateRoleTest() {
         ReflectionTestUtils.setField(userService, "modelMapper", new ModelMapper());
         UserRoleDto userRoleDto = new UserRoleDto();
-        userRoleDto.setRole(ROLE.ROLE_MODERATOR);
+        userRoleDto.setRole(Role.ROLE_MODERATOR);
         when(userRepo.findById(any())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userRepo.findByEmail(any())).thenReturn(Optional.of(user2));
         when(modelMapper.map(Optional.of(user2), UserVO.class)).thenReturn(userVO2);
-        user.setRole(ROLE.ROLE_MODERATOR);
+        user.setRole(Role.ROLE_MODERATOR);
         when(userRepo.save(any())).thenReturn(user);
         when(modelMapper.map(user, UserRoleDto.class)).thenReturn(userRoleDto);
         assertEquals(
-            ROLE.ROLE_MODERATOR,
-            userService.updateRole(userId, ROLE.ROLE_MODERATOR, any()).getRole());
+            Role.ROLE_MODERATOR,
+            userService.updateRole(userId, Role.ROLE_MODERATOR, any()).getRole());
         verify(userRepo, times(1)).save(any());
     }
 
@@ -307,7 +303,7 @@ class UserServiceImplTest {
 
     @Test
     void getRoles() {
-        RoleDto roleDto = new RoleDto(ROLE.class.getEnumConstants());
+        RoleDto roleDto = new RoleDto(Role.class.getEnumConstants());
         assertEquals(roleDto, userService.getRoles());
     }
 

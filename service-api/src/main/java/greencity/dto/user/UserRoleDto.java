@@ -1,6 +1,6 @@
 package greencity.dto.user;
 
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -18,5 +18,5 @@ public class UserRoleDto {
     private Long id;
 
     @NotNull
-    private ROLE role;
+    private Role role;
 }

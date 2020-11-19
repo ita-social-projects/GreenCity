@@ -7,7 +7,7 @@ import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,11 +75,11 @@ public interface UserService {
      * Update {@code ROLE} of user.
      *
      * @param id   {@link UserVO} id.
-     * @param role {@link ROLE} for user.
+     * @param role {@link Role} for user.
      * @return {@link UserRoleDto}
      * @author Rostyslav Khasanov
      */
-    UserRoleDto updateRole(Long id, ROLE role, String email);
+    UserRoleDto updateRole(Long id, Role role, String email);
 
     /**
      * Update status of user.

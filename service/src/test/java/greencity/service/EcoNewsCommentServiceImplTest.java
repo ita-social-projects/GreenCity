@@ -11,7 +11,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EcoNewsCommentRepo;
@@ -218,7 +218,7 @@ class EcoNewsCommentServiceImplTest {
     void moderatorDeletesComment() {
         User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
-        user.setRole(ROLE.ROLE_MODERATOR);
+        user.setRole(Role.ROLE_MODERATOR);
         Long commentId = 1L;
 
         when(ecoNewsCommentRepo.findById(commentId))
@@ -232,7 +232,7 @@ class EcoNewsCommentServiceImplTest {
     void adminDeletesComment() {
         User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
-        user.setRole(ROLE.ROLE_ADMIN);
+        user.setRole(Role.ROLE_ADMIN);
         Long commentId = 1L;
 
         when(ecoNewsCommentRepo.findById(commentId))
