@@ -98,7 +98,7 @@ class ManagementGoalsControllerTest {
     @Test
     void getGoalByIdTest() throws Exception {
         Long goalId = 1L;
-        mockMvc.perform(get(managementGoalLink + "/find/" + goalId))
+        mockMvc.perform(get(managementGoalLink + "/" + goalId))
             .andExpect(status().isOk());
 
         verify(goalService).findGoalById(goalId);
