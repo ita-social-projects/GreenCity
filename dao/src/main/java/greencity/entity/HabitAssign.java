@@ -30,15 +30,24 @@ public class HabitAssign {
     @Column(name = "duration", nullable = false)
     private Integer duration;
 
-    @ManyToOne
+    @Column(name = "working_days", nullable = false)
+    private Integer workingDays;
+
+    @Column(name = "habit_streak", nullable = false)
+    private Integer habitStreak;
+
+    @Column(name = "last_enrollment", nullable = false)
+    private ZonedDateTime lastEnrollmentDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
-
-    @OneToOne(mappedBy = "habitAssign", cascade = CascadeType.ALL)
-    private HabitStatus habitStatus;
 
     @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
     private List<HabitStatistic> habitStatistic;
+
+    @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
+    private List<HabitStatusCalendar> habitStatusCalendars;
 }

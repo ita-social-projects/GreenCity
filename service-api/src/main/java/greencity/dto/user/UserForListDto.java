@@ -1,7 +1,7 @@
 package greencity.dto.user;
 
 import greencity.constant.ServiceValidationConstants;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import lombok.*;
 
@@ -36,7 +36,7 @@ public class UserForListDto {
     private UserStatus userStatus;
 
     @NotNull
-    private ROLE role;
+    private Role role;
 
     private String userCredo;
 }

@@ -27,6 +27,6 @@ public class HabitStatistic {
     @Column(name = "amount_of_items")
     private Integer amountOfItems;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private HabitAssign habitAssign;
 }

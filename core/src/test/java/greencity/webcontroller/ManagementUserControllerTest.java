@@ -6,7 +6,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
@@ -91,7 +91,7 @@ class ManagementUserControllerTest {
         userManagementDto.setName("TestTest");
         userManagementDto.setUserStatus(UserStatus.ACTIVATED);
         userManagementDto.setEmail("test@gmail.com");
-        userManagementDto.setRole(ROLE.ROLE_USER);
+        userManagementDto.setRole(Role.ROLE_USER);
         Gson gson = new Gson();
         String json = gson.toJson(userManagementDto);
         this.mockMvc.perform(put(managementUserControllerLink)
@@ -154,7 +154,7 @@ class ManagementUserControllerTest {
         userManagementDto.setName("TestTest");
         userManagementDto.setUserStatus(UserStatus.ACTIVATED);
         userManagementDto.setEmail("test@gmail.com");
-        userManagementDto.setRole(ROLE.ROLE_USER);
+        userManagementDto.setRole(Role.ROLE_USER);
         Gson gson = new Gson();
         String json = gson.toJson(userManagementDto);
         this.mockMvc.perform(post(managementUserControllerLink + "/register")

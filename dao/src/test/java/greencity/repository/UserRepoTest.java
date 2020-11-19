@@ -2,13 +2,14 @@ package greencity.repository;
 
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -39,7 +39,7 @@ class UserRepoTest {
             .emailNotification(EmailNotification.DISABLED)
             .name("SuperTest")
             .lastVisit(LocalDateTime.parse("2020-09-30T00:00"))
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .userStatus(ACTIVATED)
             .refreshTokenKey("secret")
             .city("New York")
@@ -53,7 +53,7 @@ class UserRepoTest {
             .emailNotification(EmailNotification.DISABLED)
             .name("SuperTest2")
             .lastVisit(LocalDateTime.parse("2020-09-29T00:00"))
-            .role(ROLE.ROLE_ADMIN)
+            .role(Role.ROLE_ADMIN)
             .userStatus(ACTIVATED)
             .refreshTokenKey("secret2")
             .city("Kyiv")

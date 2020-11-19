@@ -17,7 +17,7 @@ import greencity.dto.place.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.PlaceStatus;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
@@ -150,7 +150,7 @@ public class PlaceServiceImpl implements PlaceService {
     private UserVO setUserToPlaceByEmail(String email, PlaceVO placeVO) {
         UserVO userVO = userService.findByEmail(email);
         placeVO.setAuthor(userVO);
-        if (userVO.getRole() == ROLE.ROLE_ADMIN || userVO.getRole() == ROLE.ROLE_MODERATOR) {
+        if (userVO.getRole() == Role.ROLE_ADMIN || userVO.getRole() == Role.ROLE_MODERATOR) {
             placeVO.setStatus(PlaceStatus.APPROVED);
             notificationService.sendImmediatelyReport(placeVO);
         }

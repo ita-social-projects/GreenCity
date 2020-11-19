@@ -20,5 +20,5 @@ public class HabitStatusCalendar {
     private LocalDate enrollDate;
 
     @ManyToOne
-    private HabitStatus habitStatus;
+    private HabitAssign habitAssign;
 }

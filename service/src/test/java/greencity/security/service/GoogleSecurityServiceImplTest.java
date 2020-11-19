@@ -6,7 +6,7 @@ import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
@@ -86,7 +86,7 @@ class GoogleSecurityServiceImplTest {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .userStatus(UserStatus.DEACTIVATED)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
@@ -95,7 +95,7 @@ class GoogleSecurityServiceImplTest {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .userStatus(UserStatus.DEACTIVATED)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())

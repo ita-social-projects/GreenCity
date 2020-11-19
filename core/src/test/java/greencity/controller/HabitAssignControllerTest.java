@@ -75,4 +75,11 @@ class HabitAssignControllerTest {
             .andExpect(status().isOk());
         verify(habitAssignService).updateStatusByHabitIdAndUserId(1L, null, habitAssignStatDto);
     }
+
+    @Test
+    void enrollHabit() throws Exception {
+        mockMvc.perform(post(habitLink + "/{habitId}/enroll", 1))
+            .andExpect(status().isOk());
+        verify(habitAssignService).enrollHabit(1L, null);
+    }
 }
