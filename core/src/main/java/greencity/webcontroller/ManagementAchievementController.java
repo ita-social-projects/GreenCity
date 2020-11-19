@@ -7,6 +7,7 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
+import greencity.service.LanguageService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ public class ManagementAchievementController {
 
     private final AchievementService achievementService;
     private final AchievementCategoryService achievementCategoryService;
+    private final LanguageService languageService;
 
     /**
      * Method that returns management page with all {@link AchievementVO}.
@@ -48,6 +50,7 @@ public class ManagementAchievementController {
                 : achievementService.searchAchievementBy(paging, query);
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAll());
+        model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_achievement";
     }
 
@@ -111,7 +114,8 @@ public class ManagementAchievementController {
      * @param achievementManagementDto of {@link AchievementManagementDto}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @PutMapping
+    @PutMapping("/")
+    @ResponseBody
     public GenericResponseDto update(@Valid @RequestBody AchievementManagementDto achievementManagementDto,
                                      BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {

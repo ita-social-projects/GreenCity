@@ -139,10 +139,11 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setTitle(achievementManagementDto.getTitle());
         achievement.setDescription(achievementManagementDto.getDescription());
         achievement.setMessage(achievementManagementDto.getMessage());
-        achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
+//        achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         achievement.setCondition(achievementManagementDto.getCondition());
         Achievement updated = achievementRepo.save(achievement);
-        return modelMapper.map(updated, AchievementPostDto.class);
+        AchievementPostDto map = modelMapper.map(updated, AchievementPostDto.class);
+        return map;
     }
 
 }

@@ -150,15 +150,16 @@ $(document).ready(function () {
             $('#id').val(achievement.id);
             $('#title').val(achievement.title);
             $('#description').val(achievement.description);
-            $('#achievementCategory').val(achievement.achievementCategory);
-            $('#condition').val(econews.condition);
+            $('#message').val(achievement.message);
+            $('#achievementCategory').val(achievement.achievementCategory.name);
+            $('#condition').val(achievement.condition);
         });
     });
     //submit button in editEcoNewsModal
     $('#submitEditBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
-        var formData = $('#editEcoNewsForm').serializeArray().reduce(function (obj, item) {
+        var formData = $('#editAchievementForm').serializeArray().reduce(function (obj, item) {
             obj[item.name] = item.value;
             return obj;
         }, {});
@@ -170,9 +171,9 @@ $(document).ready(function () {
             "achievementCategory": formData.achievementCategory,
             "condition": formData.condition
         };
-        //save request in editEcoNewsModal
+        //save request in editAchievementModal
         $.ajax({
-            url: `/management/achievement`,
+            url: '/management/achievement/',
             type: 'put',
             dataType: 'json',
             contentType: 'application/json',
@@ -187,5 +188,5 @@ $(document).ready(function () {
             },
             data: JSON.stringify(payload)
         });
-    });
+    })
 });

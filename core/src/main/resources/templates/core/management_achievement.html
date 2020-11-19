@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Achievement management</title>
     <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
@@ -168,7 +168,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Achievement category</label>
-                                <select class="form-control" name="achievementCategory" id="category">
+                                <select class="form-control" name="achievementCategory">
                                     <option selected="selected" id="empty-category"></option>
                                     <th:block th:each="category : ${categoryList}">
                                         <tr>
@@ -206,7 +206,7 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="id">Id</label>
-                                <input type="text" class="form-control" id="id" name="id" required>
+                                <input type="text" class="form-control" id="id" name="id" readonly required>
                                 <span th:id="errorModalUpdateid" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
@@ -216,18 +216,18 @@
                             </div>
                             <div class="form-group">
                                 <label>Description</label>
-                                <input type="text" class="form-control" name="description" required>
+                                <input type="text" class="form-control" id="description" name="description" required>
                                 <span th:id="errorModalUpdatedescription" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
                                 <label>Message</label>
-                                <input type="text" class="form-control" name="message" required>
+                                <input type="text" class="form-control" id="message" name="message" required>
                                 <span th:id="errorModalUpdatemessage" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
                                 <label>Achievement category</label>
-                                <select class="form-control" name="achievementCategory" id="achievement-category">
-                                    <option selected="selected" id="empty-achievement-category"></option>
+                                <select class="form-control" name="achievementCategory" id="achievementCategory" readonly required>
+                                    <option selected="selected" id="achievement-category"></option>
                                     <th:block th:each="category : ${categoryList}">
                                         <tr>
                                             <option>
@@ -240,7 +240,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Condition</label>
-                                <input class="form-control" name="condition" required type="number">
+                                <input class="form-control" id="condition" name="condition" required type="number">
                                 <span th:id="errorModalUpdatecondition" class="errorSpan"></span>
                             </div>
                         </div>

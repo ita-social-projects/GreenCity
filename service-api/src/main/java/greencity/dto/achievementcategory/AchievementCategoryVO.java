@@ -1,10 +1,7 @@
 package greencity.dto.achievementcategory;
 
 import greencity.dto.achievement.AchievementVO;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -12,13 +9,11 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class AchievementCategoryVO {
     @NotEmpty
     private Long id;
 
     @NotEmpty
     private String name;
-
-    @NotEmpty
-    private AchievementVO category;
 }
