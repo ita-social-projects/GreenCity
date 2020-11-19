@@ -269,10 +269,25 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param todayDate   {@link LocalDate} date.
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign, LocalDate todayDate) {
-        int workingDays = habitAssign.getWorkingDays();
-        habitAssign.setWorkingDays(++workingDays);
+        habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
+        updateHabitStreakAfterEnroll(habitAssign, todayDate);
+
+        if (isHabitAcquired(habitAssign)) {
+            habitAssign.setAcquired(true);
+        }
+        habitAssignRepo.save(habitAssign);
+    }
+
+    /**
+     * Method updates habit streak of {@link HabitAssign} and checks if it has been
+     * already enrolled.
+     *
+     * @param habitAssign {@link HabitAssign} instance.
+     * @param todayDate   {@link LocalDate} date.
+     */
+    private void updateHabitStreakAfterEnroll(HabitAssign habitAssign, LocalDate todayDate) {
         LocalDate lastEnrollmentDate = habitStatusCalendarService.findTopByEnrollDateAndHabitAssign(
             modelMapper.map(habitAssign, HabitAssignVO.class));
 
@@ -289,16 +304,25 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
+    }
 
+    /**
+     * Method checks if {@link HabitAssign} is completed.
+     *
+     * @param habitAssign {@link HabitAssign} instance.
+     * @return boolean.
+     */
+    private boolean isHabitAcquired(HabitAssign habitAssign) {
+        int workingDays = habitAssign.getWorkingDays();
         int habitDuration = habitAssign.getDuration();
         if (workingDays == habitDuration) {
             if (Boolean.TRUE.equals(habitAssign.getAcquired())) {
                 throw new BadRequestException(
                     ErrorMessage.HABIT_ALREADY_ACQUIRED + habitAssign.getHabit().getId());
             }
-            habitAssign.setAcquired(true);
-            habitAssignRepo.save(habitAssign);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -310,17 +334,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .orElseThrow(
                 () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
                     + userId + ", " + habitId));
-        int daysStreak = checkHabitStreakAfterDate(date, habitAssign);
-        habitAssign.setHabitStreak(daysStreak + 1);
 
-        int workingDays = habitAssign.getWorkingDays();
-        if (workingDays == 0) {
-            habitAssign.setWorkingDays(0);
-        } else {
-            habitAssign.setWorkingDays(--workingDays);
-        }
-        habitAssignRepo.save(habitAssign);
+        deleteHabitStatusCalendarIfExists(date, habitAssign);
+        updateHabitAssignAfterUnenroll(date, habitAssign);
+    }
 
+    /**
+     * Method deletes enroll of {@link HabitAssign} if it exists.
+     *
+     * @param date        {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     */
+    private void deleteHabitStatusCalendarIfExists(LocalDate date, HabitAssign habitAssign) {
         HabitStatusCalendarVO habitStatusCalendarVO =
             habitStatusCalendarService
                 .findHabitStatusCalendarByEnrollDateAndHabitAssign(
@@ -332,7 +357,31 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
     }
 
-    private int checkHabitStreakAfterDate(LocalDate dateTime, HabitAssign habitAssign) {
+    /**
+     * Method updates {@link HabitAssign} after unenroll.
+     *
+     * @param date        {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     */
+    private void updateHabitAssignAfterUnenroll(LocalDate date, HabitAssign habitAssign) {
+        int daysStreak = countHabitStreakAfterDate(date, habitAssign);
+        habitAssign.setHabitStreak(daysStreak + 1);
+
+        int workingDays = habitAssign.getWorkingDays();
+        if (workingDays != 0) {
+            habitAssign.setWorkingDays(--workingDays);
+        }
+        habitAssignRepo.save(habitAssign);
+    }
+
+    /**
+     * Method returns number of habit streak after {@link LocalDate} parameter.
+     *
+     * @param dateTime    {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     * @return int of habit days streak.
+     */
+    private int countHabitStreakAfterDate(LocalDate dateTime, HabitAssign habitAssign) {
         int daysStreak = 0;
 
         List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesAfter(dateTime,
@@ -349,13 +398,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return daysStreak;
     }
 
-    private int checkHabitStreakBeforeDate(LocalDate dateTime, HabitAssign habitAssign) {
+    /**
+     * Method returns number of habit streak before {@link LocalDate} parameter.
+     *
+     * @param dateTime    {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     * @return int of habit days streak.
+     */
+    private int countHabitStreakBeforeDate(LocalDate dateTime, HabitAssign habitAssign) {
         int daysStreak = 0;
 
         List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesBefore(dateTime,
             modelMapper.map(habitAssign, HabitAssignVO.class));
-        Collections.sort(enrollDates);
-        Collections.reverse(enrollDates);
+        enrollDates.sort(Collections.reverseOrder());
 
         for (int i = 0; i < enrollDates.size() - 1; i++) {
             if (Period.between(enrollDates.get(i + 1), enrollDates.get(i)).getDays() == 1) {
