@@ -201,7 +201,6 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        when(habitAssignRepo.save(habitAssign)).thenReturn(habitAssign);
         when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(enrollDate, habitAssignVO))
             .thenReturn(null);
 
