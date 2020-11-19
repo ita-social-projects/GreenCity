@@ -54,6 +54,7 @@ $(document).ready(function () {
             }
         });
     });
+
     //Кнопка edit справа в таблиці
     $('td .edit.eBtn').on('click', function (event) {
         event.preventDefault();

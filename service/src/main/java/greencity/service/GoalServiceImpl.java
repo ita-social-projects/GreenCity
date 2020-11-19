@@ -7,15 +7,23 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Goal;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.GoalNotFoundException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.filters.GoalSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
+
+import java.util.ArrayList;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,17 +67,7 @@ public class GoalServiceImpl implements GoalService {
         Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getGoal().getId());
         if (optionalGoal.isPresent()) {
             Goal updatedGoal = optionalGoal.get();
-            List<GoalTranslation> translations = modelMapper.map(goalPostDto.getTranslations(),
-                new TypeToken<List<GoalTranslation>>() {
-                }.getType());
-            updatedGoal.getTranslations()
-                .forEach(goalTranslation -> {
-                    goalTranslation.setContent(goalPostDto.getTranslations().stream()
-                        .filter(newTranslation -> newTranslation.getLanguage().getCode()
-                            .equals(goalTranslation.getLanguage().getCode()))
-                        .findFirst().get()
-                        .getContent());
-                });
+            updateTranslations(updatedGoal.getTranslations(), goalPostDto.getTranslations());
             goalRepo.save(updatedGoal);
             return modelMapper.map(updatedGoal.getTranslations(),
                 new TypeToken<List<LanguageTranslationDTO>>() {
@@ -79,6 +77,17 @@ public class GoalServiceImpl implements GoalService {
         }
     }
 
+    private void updateTranslations(List<GoalTranslation> oldTranslations,
+        List<LanguageTranslationDTO> newTranslations) {
+        oldTranslations.forEach(goalTranslation -> {
+            goalTranslation.setContent(newTranslations.stream()
+                .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                    .equals(goalTranslation.getLanguage().getCode()))
+                .findFirst().get()
+                .getContent());
+        });
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -86,11 +95,7 @@ public class GoalServiceImpl implements GoalService {
     public GoalResponseDto findGoalById(Long id) {
         Optional<Goal> goal = goalRepo.findById(id);
         if (goal.isPresent()) {
-            GoalResponseDto responseDto = GoalResponseDto.builder().id(goal.get().getId()).build();
-            responseDto.setTranslations(modelMapper.map(goal.get().getTranslations(),
-                new TypeToken<List<GoalTranslationDTO>>() {
-                }.getType()));
-            return responseDto;
+            return modelMapper.map(goal.get(), GoalResponseDto.class);
         } else {
             throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
         }
@@ -101,10 +106,10 @@ public class GoalServiceImpl implements GoalService {
      */
     @Override
     public Long delete(Long goalId) {
-        if (goalRepo.findById(goalId).isPresent()) {
+        try {
             goalRepo.deleteById(goalId);
-        } else {
-            throw new GoalNotFoundException(ErrorMessage.GOAL_NOT_FOUND_BY_ID);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotDeletedException(ErrorMessage.GOAL_NOT_DELETED);
         }
         return goalId;
     }
@@ -119,6 +124,12 @@ public class GoalServiceImpl implements GoalService {
             goals.getContent().stream()
                 .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
                 .collect(Collectors.toList());
+        return getPagebleAdvancedDto(goalManagementDtos, goals);
+    }
+
+
+    private PageableAdvancedDto<GoalManagementDto> getPagebleAdvancedDto(
+        List<GoalManagementDto> goalManagementDtos, Page<Goal> goals) {
         return new PageableAdvancedDto<>(
             goalManagementDtos,
             goals.getTotalElements(),
@@ -136,9 +147,7 @@ public class GoalServiceImpl implements GoalService {
      */
     @Override
     public List<Long> deleteAllGoalByListOfId(List<Long> listId) {
-        listId.forEach(id -> {
-            delete(id);
-        });
+        listId.forEach(this::delete);
         return listId;
     }
 
@@ -147,19 +156,69 @@ public class GoalServiceImpl implements GoalService {
      */
     @Override
     public PageableAdvancedDto<GoalManagementDto> searchBy(Pageable paging, String query) {
-        Page<Goal> page = goalRepo.searchBy(paging, query);
-        List<GoalManagementDto> goals = page.stream()
+        Page<Goal> goals = goalRepo.searchBy(paging, query);
+        List<GoalManagementDto> goalManagementDtos = goals.stream()
             .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
             .collect(Collectors.toList());
-        return new PageableAdvancedDto<>(
-            goals,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages(),
-            page.getNumber(),
-            page.hasPrevious(),
-            page.hasNext(),
-            page.isFirst(),
-            page.isLast());
+        return getPagebleAdvancedDto(goalManagementDtos, goals);
+    }
+
+    /**
+     * * This method used for build {@link SearchCriteria} depends on
+     * {@link GoalDto}.
+     *
+     * @param goalDto used for receive parameters for filters from UI.
+     * @return {@link SearchCriteria}.
+     */
+    private List<SearchCriteria> buildSearchCriteria(GoalViewDto goalDto) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        setValueIfNotEmpty(criteriaList, "id", goalDto.getId());
+        setValueIfNotEmpty(criteriaList, "content", goalDto.getContent());
+        return criteriaList;
+    }
+
+    /**
+     * Returns {@link GoalSpecification} for entered filter parameters.
+     *
+     * @param goalViewDto contains data from filters
+     */
+    private GoalSpecification getSpecification(GoalViewDto goalViewDto) {
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(goalViewDto);
+        return new GoalSpecification(searchCriteria);
+    }
+
+    /**
+     * Method that adds new {@link SearchCriteria}.
+     *
+     * @param searchCriteria - list of existing {@link SearchCriteria}
+     * @param key            - key of field
+     * @param value          - value of field
+     */
+    private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
+        if (!StringUtils.isEmpty(value)) {
+            searchCriteria.add(SearchCriteria.builder()
+                .key(key)
+                .type(key)
+                .value(value)
+                .build());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableAdvancedDto<GoalManagementDto> getFilteredDataForManagementByPage(Pageable pageable,
+        GoalViewDto goal) {
+        Page<Goal> pages = goalRepo.findAll(getSpecification(goal), pageable);
+        return getPagesFilteredPages(pages);
+    }
+
+    private PageableAdvancedDto<GoalManagementDto> getPagesFilteredPages(Page<Goal> pages) {
+        List<GoalManagementDto> goalManagementDtos = pages.getContent()
+            .stream()
+            .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
+            .collect(Collectors.toList());
+        return getPagebleAdvancedDto(goalManagementDtos, pages);
     }
 }

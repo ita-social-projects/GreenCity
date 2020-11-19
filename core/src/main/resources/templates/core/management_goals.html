@@ -68,6 +68,27 @@
                     </tr>
                     </thead>
 
+                    <form method="POST" action="/management/goals/filter" id="searchForm">
+
+                        <tr>
+                            <td>
+
+                            </td>
+                            <td>
+                                <input type="search" th:name="id" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.id }"/>
+                            </td>
+                            <td>
+                                <input type="search" th:name="content" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.content }"/>
+                            </td>
+                            <td colspan="2">
+                                <button type="submit" id="searchBy"><img alt="search" src="/img/search.png" ></button>
+                            </td>
+                        </tr>
+
+                    </form>
+
                     <th:block th:each="goal, iterStatus :${goals.getPage()}">
                         <tbody>
                         <tr>
@@ -102,7 +123,7 @@
                                 </table>
                             </td>
                             <td>
-                                <a th:href="@{/management/goals/find/{id}(id=${goal.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                <a th:href="@{/management/goals/{id}(id=${goal.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
                                 <a th:href="@{/management/goals/{id}(id=${goal.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>

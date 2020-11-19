@@ -3,26 +3,27 @@ package greencity.webcontroller;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.goal.*;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactVO;
 import greencity.service.GoalService;
 import greencity.service.LanguageService;
 import java.util.List;
 import javax.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/management/goals")
 public class ManagementGoalsController {
     private final GoalService goalService;
@@ -37,7 +38,7 @@ public class ManagementGoalsController {
      * @return View template path {@link String}.
      */
     @GetMapping
-    public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
+    public String getAllGoals(@RequestParam(required = false, name = "query") String query, Pageable pageable,
         Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").ascending());
         PageableAdvancedDto<GoalManagementDto> pageableDto = query == null || query.isEmpty()
@@ -49,7 +50,7 @@ public class ManagementGoalsController {
     }
 
     /**
-     * The controller which saveGoal {@link GoalVO}.
+     * The method which saveGoal {@link GoalVO}.
      *
      * @param goalPostDto {@link GoalPostDto}
      * @return {@link ResponseEntity}
@@ -66,7 +67,7 @@ public class ManagementGoalsController {
     }
 
     /**
-     * The controller which update {@link GoalTranslationVO}.
+     * The method which update {@link GoalTranslationVO}.
      *
      * @param goalPostDto {@link GoalPostDto}
      * @return {@link ResponseEntity}
@@ -83,19 +84,19 @@ public class ManagementGoalsController {
     }
 
     /**
-     * Method for goals by id.
+     * Method to find goal by id.
      *
      * @return {@link GoalVO} instance.
      * @author Dmytro Khonko
      */
-    @GetMapping("/find/{id}")
-    public ResponseEntity<GoalResponseDto> getHabitFactsById(
+    @GetMapping("/{id}")
+    public ResponseEntity<GoalResponseDto> getGoalById(
         @PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(goalService.findGoalById(id));
     }
 
     /**
-     * The controller which delete {@link GoalVO}.
+     * The method which delete {@link GoalVO}.
      *
      * @param id of {@link GoalVO}
      * @return {@link ResponseEntity}
@@ -107,8 +108,8 @@ public class ManagementGoalsController {
     }
 
     /**
-     * Method which deletes {@link HabitFactVO} and {@link HabitFactTranslationVO}
-     * by given id.
+     * Method which deletes {@link GoalVO} and {@link GoalTranslationVO} by given
+     * id.
      *
      * @param listId list of IDs
      * @return {@link ResponseEntity}
@@ -119,5 +120,25 @@ public class ManagementGoalsController {
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(goalService.deleteAllGoalByListOfId(listId));
+    }
+
+    /**
+     * Method that returns management page with filtered {@link GoalVO}.
+     *
+     * @param model    Model that will be configured and returned to user.
+     * @param pageable {@link Pageable}.
+     * @return View template path {@link String}.
+     */
+    @PostMapping(value = "/filter")
+    public String filterData(Model model, @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+        GoalViewDto goal) {
+        PageableAdvancedDto<GoalManagementDto> pageableDto =
+            goalService.getFilteredDataForManagementByPage(
+                pageable,
+                goal);
+        model.addAttribute("goals", pageableDto);
+        model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("fields", goal);
+        return "core/management_goals";
     }
 }

@@ -69,7 +69,7 @@
                     </tr>
                     </thead>
 
-                        <form method="POST" action="/management/facts/filter" id="searchForm" onsubmit="applyFilters()">
+                        <form method="POST" action="/management/facts/filter" id="searchForm">
 
                             <tr>
                                 <td>
@@ -304,11 +304,5 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
-<script>
-    function applyFilters() {
-        document.getElementById("searchForm").action = "/management/facts/filter";
-        document.getElementById("searchForm").submit();
-    }
-</script>
 </body>
 </html>

@@ -170,6 +170,7 @@ public class ManagementHabitFactsController {
                 pageable,
                 habitFactViewDto);
         model.addAttribute("pageable", pageableDto);
+        model.addAttribute("languages", languageService.getAllLanguages());
         model.addAttribute("fields", habitFactViewDto);
         return "core/management_habit_facts";
     }

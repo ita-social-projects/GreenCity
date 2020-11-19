@@ -16,6 +16,8 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.goal.GoalPostDto;
+import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.*;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
@@ -568,5 +570,9 @@ public class ModelUtils {
 
     public static AdvicePostDto getAdvicePostDto() {
         return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
+    }
+
+    public static GoalPostDto getGoalPostDto() {
+        return new GoalPostDto(getLanguageTranslationsDTOs(), new GoalRequestDto(1L));
     }
 }

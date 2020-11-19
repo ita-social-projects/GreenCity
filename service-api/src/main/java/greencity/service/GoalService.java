@@ -71,4 +71,12 @@ public interface GoalService {
      * @author Dmytro Khonko
      */
     GoalResponseDto findGoalById(Long id);
+
+    /**
+     * Method to filter goals.
+     *
+     * @param goal data of goal you need to find
+     * @author Dmytro Khonko
+     */
+    PageableAdvancedDto<GoalManagementDto> getFilteredDataForManagementByPage(Pageable pageable, GoalViewDto goal);
 }
