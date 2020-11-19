@@ -3,16 +3,20 @@ package greencity.service;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.User;
+import greencity.entity.*;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
+import java.time.LocalDate;
+import java.time.Period;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -28,9 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitRepo habitRepo;
-    private final HabitService habitService;
     private final HabitStatisticService habitStatisticService;
-    private final HabitStatusService habitStatusService;
+    private final HabitStatusCalendarService habitStatusCalendarService;
     private final ModelMapper modelMapper;
 
     /**
@@ -40,11 +43,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public HabitAssignDto getById(Long habitAssignId, String language) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
-        HabitDto habitDto = habitService.getByIdAndLanguageCode(habitAssign.getHabit().getId(), language);
-        HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
-        habitAssignDto.setHabit(habitDto);
-        return habitAssignDto;
+        return buildHabitAssignDto(habitAssign, language);
     }
 
     /**
@@ -62,7 +61,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign habitAssign = buildHabitAssign(habit, user);
         enhanceAssignWithDefaultProperties(habitAssign);
 
-        habitStatusService.saveStatusByHabitAssign(modelMapper.map(habitAssign, HabitAssignVO.class));
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
 
@@ -91,7 +89,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign habitAssign = buildHabitAssign(habit, user);
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
 
-        habitStatusService.saveStatusByHabitAssign(modelMapper.map(habitAssign, HabitAssignVO.class));
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
 
@@ -123,7 +120,28 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .suspended(false)
                 .user(user)
                 .duration(0)
+                .habitStreak(0)
+                .workingDays(0)
+                .lastEnrollmentDate(ZonedDateTime.now())
                 .build());
+    }
+
+    /**
+     * Method builds {@link HabitAssignDto} with one habit translation.
+     *
+     * @param habitAssign {@link HabitAssign} instance.
+     * @param language    code of {@link Language}.
+     * @return {@link HabitAssign} instance.
+     */
+    private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language) {
+        HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream()
+            .filter(ht -> ht.getLanguage().getCode().equals(language)).findFirst()
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + habitAssign.getHabit().getId()));
+
+        HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
+        habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
+        return habitAssignDto;
     }
 
     /**
@@ -155,15 +173,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language) {
-        HabitDto habitDto = habitService.getByIdAndLanguageCode(habitId, language);
-        HabitAssignDto habitAssignDto =
-            modelMapper.map(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
-                .orElseThrow(() -> new NotFoundException(
-                    ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID + userId
-                        + ", " + habitId)),
-                HabitAssignDto.class);
-        habitAssignDto.setHabit(habitDto);
-        return habitAssignDto;
+        HabitAssign habitAssign =
+            habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+                .orElseThrow(
+                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
+                        + habitId));
+        return buildHabitAssignDto(habitAssign, language);
     }
 
     /**
@@ -173,12 +188,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired,
         String language) {
         return habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired)
-            .stream().map(habitAssign -> {
-                HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
-                HabitDto habitDto = habitService.getByIdAndLanguageCode(habitAssign.getHabit().getId(), language);
-                habitAssignDto.setHabit(habitDto);
-                return habitAssignDto;
-            }).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
     /**
@@ -187,13 +197,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired,
         String language) {
-        HabitDto habitDto = habitService.getByIdAndLanguageCode(habitId, language);
         return habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habitId, acquired)
-            .stream().map(habitAssign -> {
-                HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
-                habitAssignDto.setHabit(habitDto);
-                return habitAssignDto;
-            }).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
     /**
@@ -205,7 +210,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssignStatDto dto) {
         HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID + habitId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
 
         enhanceStatusesWithDto(dto, updatable);
 
@@ -232,9 +237,198 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignRepo.findAllByHabitId(habit.getId())
             .forEach(habitAssign -> {
                 HabitAssignVO habitAssignVO = modelMapper.map(habitAssign, HabitAssignVO.class);
-                habitStatusService.deleteStatusByHabitAssign(habitAssignVO);
                 habitStatisticService.deleteAllStatsByHabitAssign(habitAssignVO);
                 habitAssignRepo.delete(habitAssign);
             });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public HabitStatusCalendarDto enrollHabit(Long habitId, Long userId) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+
+        LocalDate todayDate = LocalDate.now();
+        updateHabitAssignAfterEnroll(habitAssign, todayDate);
+
+        HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
+            .enrollDate(todayDate).habitAssign(habitAssign).build();
+
+        HabitStatusCalendarVO habitCalendarVO =
+            habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
+        return modelMapper.map(habitCalendarVO, HabitStatusCalendarDto.class);
+    }
+
+    /**
+     * Method updates {@link HabitAssign} if it's completed.
+     *
+     * @param habitAssign {@link HabitAssign} instance.
+     * @param todayDate   {@link LocalDate} date.
+     */
+    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign, LocalDate todayDate) {
+        habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
+        habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
+
+        updateHabitStreakAfterEnroll(habitAssign, todayDate);
+
+        if (isHabitAcquired(habitAssign)) {
+            habitAssign.setAcquired(true);
+        }
+        habitAssignRepo.save(habitAssign);
+    }
+
+    /**
+     * Method updates habit streak of {@link HabitAssign} and checks if it has been
+     * already enrolled.
+     *
+     * @param habitAssign {@link HabitAssign} instance.
+     * @param todayDate   {@link LocalDate} date.
+     */
+    private void updateHabitStreakAfterEnroll(HabitAssign habitAssign, LocalDate todayDate) {
+        LocalDate lastEnrollmentDate = habitStatusCalendarService.findTopByEnrollDateAndHabitAssign(
+            modelMapper.map(habitAssign, HabitAssignVO.class));
+
+        int habitStreak = habitAssign.getHabitStreak();
+        long intervalBetweenDates = 0;
+        if (lastEnrollmentDate != null) {
+            intervalBetweenDates = Period.between(lastEnrollmentDate, todayDate).getDays();
+        }
+        if ((intervalBetweenDates == 1) || lastEnrollmentDate == null) {
+            habitAssign.setHabitStreak(++habitStreak);
+        } else if (intervalBetweenDates > 1) {
+            habitStreak = 1;
+            habitAssign.setHabitStreak(habitStreak);
+        } else {
+            throw new BadRequestException(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
+        }
+    }
+
+    /**
+     * Method checks if {@link HabitAssign} is completed.
+     *
+     * @param habitAssign {@link HabitAssign} instance.
+     * @return boolean.
+     */
+    private boolean isHabitAcquired(HabitAssign habitAssign) {
+        int workingDays = habitAssign.getWorkingDays();
+        int habitDuration = habitAssign.getDuration();
+        if (workingDays == habitDuration) {
+            if (Boolean.TRUE.equals(habitAssign.getAcquired())) {
+                throw new BadRequestException(
+                    ErrorMessage.HABIT_ALREADY_ACQUIRED + habitAssign.getHabit().getId());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unenrollHabit(Long habitId, Long userId, LocalDate date) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
+                    + userId + ", " + habitId));
+
+        deleteHabitStatusCalendarIfExists(date, habitAssign);
+        updateHabitAssignAfterUnenroll(date, habitAssign);
+    }
+
+    /**
+     * Method deletes enroll of {@link HabitAssign} if it exists.
+     *
+     * @param date        {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     */
+    private void deleteHabitStatusCalendarIfExists(LocalDate date, HabitAssign habitAssign) {
+        HabitStatusCalendarVO habitStatusCalendarVO =
+            habitStatusCalendarService
+                .findHabitStatusCalendarByEnrollDateAndHabitAssign(
+                    date, modelMapper.map(habitAssign, HabitAssignVO.class));
+        if (habitStatusCalendarVO != null) {
+            habitStatusCalendarService.delete(habitStatusCalendarVO);
+        } else {
+            throw new BadRequestException(ErrorMessage.HABIT_IS_NOT_ENROLLED);
+        }
+    }
+
+    /**
+     * Method updates {@link HabitAssign} after unenroll.
+     *
+     * @param date        {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     */
+    private void updateHabitAssignAfterUnenroll(LocalDate date, HabitAssign habitAssign) {
+        int daysStreak = countHabitStreakAfterDate(date, habitAssign);
+        habitAssign.setHabitStreak(daysStreak + 1);
+
+        int workingDays = habitAssign.getWorkingDays();
+        if (workingDays != 0) {
+            habitAssign.setWorkingDays(--workingDays);
+        }
+        habitAssignRepo.save(habitAssign);
+    }
+
+    /**
+     * Method returns number of habit streak after {@link LocalDate} parameter.
+     *
+     * @param dateTime    {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     * @return int of habit days streak.
+     */
+    private int countHabitStreakAfterDate(LocalDate dateTime, HabitAssign habitAssign) {
+        int daysStreak = 0;
+
+        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesAfter(dateTime,
+            modelMapper.map(habitAssign, HabitAssignVO.class));
+        Collections.sort(enrollDates);
+
+        for (int i = 0; i < enrollDates.size() - 1; i++) {
+            if (Period.between(enrollDates.get(i), enrollDates.get(i + 1)).getDays() == 1) {
+                daysStreak++;
+            } else {
+                daysStreak = 0;
+            }
+        }
+        return daysStreak;
+    }
+
+    /**
+     * Method returns number of habit streak before {@link LocalDate} parameter.
+     *
+     * @param dateTime    {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     * @return int of habit days streak.
+     */
+    private int countHabitStreakBeforeDate(LocalDate dateTime, HabitAssign habitAssign) {
+        int daysStreak = 0;
+
+        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesBefore(dateTime,
+            modelMapper.map(habitAssign, HabitAssignVO.class));
+        enrollDates.sort(Collections.reverseOrder());
+
+        for (int i = 0; i < enrollDates.size() - 1; i++) {
+            if (Period.between(enrollDates.get(i + 1), enrollDates.get(i)).getDays() == 1) {
+                daysStreak++;
+            } else {
+                return daysStreak;
+            }
+        }
+        return daysStreak;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitAssignDto> findActiveHabitAssignsOnDate(Long id, LocalDate date, String language) {
+        List<HabitAssign> list = habitAssignRepo.findAllActiveHabitAssignsOnDate(date);
+        return list.stream().map(
+            habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 }

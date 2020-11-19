@@ -1,6 +1,6 @@
 package greencity.repository;
 
-import greencity.entity.HabitStatus;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatusCalendar;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,50 +14,50 @@ import org.springframework.lang.NonNull;
 public interface HabitStatusCalendarRepo extends JpaRepository<HabitStatusCalendar, Long> {
     /**
      * Method to find {@link HabitStatusCalendar} by {@link LocalDate} and
-     * {@link HabitStatus}.
+     * {@link HabitAssign}.
      *
      * @param date        after this date the search is performed.
-     * @param habitStatus target {@link HabitStatus}.
+     * @param habitAssign target {@link HabitAssign}.
      * @return {@link HabitStatusCalendar}.
      */
-    HabitStatusCalendar findHabitStatusCalendarByEnrollDateAndHabitStatus(LocalDate date, HabitStatus habitStatus);
+    HabitStatusCalendar findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate date, HabitAssign habitAssign);
 
     /**
-     * Method to return the latest EnrollDate of {@link HabitStatus}.
+     * Method to return the latest EnrollDate of {@link HabitAssign}.
      *
-     * @param habitStatus {@link HabitStatus} instance.
+     * @param habitAssign {@link HabitAssign} instance.
      * @return {@link LocalDateTime}.
      */
-    @Query("SELECT max(hsc.enrollDate) FROM HabitStatusCalendar hsc WHERE hsc.habitStatus = ?1")
-    LocalDate findTopByEnrollDateAndHabitStatus(HabitStatus habitStatus);
+    @Query("SELECT max(hsc.enrollDate) FROM HabitStatusCalendar hsc WHERE hsc.habitAssign = ?1")
+    LocalDate findTopByEnrollDateAndHabitAssign(HabitAssign habitAssign);
 
     /**
-     * Method return all enrolled {@link HabitStatus} after dateTime.
+     * Method return all enrolled {@link HabitAssign} after dateTime.
      *
      * @param dateTime    after this date the search is performed.
-     * @param habitStatus target {@link HabitStatus}.
+     * @param habitAssign target {@link HabitAssign}.
      * @return {@link List} of {@link HabitStatusCalendar}.
      */
-    List<HabitStatusCalendar> findAllByEnrollDateAfterAndHabitStatus(LocalDate dateTime, HabitStatus habitStatus);
+    List<HabitStatusCalendar> findAllByEnrollDateAfterAndHabitAssign(LocalDate dateTime, HabitAssign habitAssign);
 
     /**
-     * Method return all enrolled {@link HabitStatus} before dateTime.
+     * Method return all enrolled {@link HabitAssign} before dateTime.
      *
      * @param dateTime    after this date the search is performed.
-     * @param habitStatus target {@link HabitStatus}.
+     * @param habitAssign target {@link HabitAssign}.
      * @return {@link List} of {@link HabitStatusCalendar}.
      */
-    List<HabitStatusCalendar> findAllByEnrollDateBeforeAndHabitStatus(LocalDate dateTime, HabitStatus habitStatus);
+    List<HabitStatusCalendar> findAllByEnrollDateBeforeAndHabitAssign(LocalDate dateTime, HabitAssign habitAssign);
 
     /**
-     * Method deletes all {@link HabitStatusCalendar} by {@link HabitStatus}
+     * Method deletes all {@link HabitStatusCalendar} by {@link HabitAssign}
      * instance.
      *
-     * @param habitStatus {@link HabitStatus} instance.
+     * @param habitAssign {@link HabitAssign} instance.
      */
     @Modifying
-    @Query("DELETE FROM HabitStatusCalendar hsc WHERE hsc.habitStatus = :hs")
-    void deleteAllByHabitStatus(@Param("hs") HabitStatus habitStatus);
+    @Query("DELETE FROM HabitStatusCalendar hsc WHERE hsc.habitAssign = :hs")
+    void deleteAllByHabitAssign(@Param("hs") HabitAssign habitAssign);
 
     /**
      * Method deletes {@link HabitStatusCalendar} by it's instance.

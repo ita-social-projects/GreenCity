@@ -51,7 +51,7 @@ public final class ErrorMessage {
     public static final String HABIT_ALREADY_ACQUIRED = "You have already acquired habit with id: ";
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
     public static final String HABIT_HAS_BEEN_ALREADY_ON_THAT_DAY = "Habit has been enrolled";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
+    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID =
         "There is no habit assign for current user and such habit with id: ";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
         "Current user does not have habit statistic with id: ";

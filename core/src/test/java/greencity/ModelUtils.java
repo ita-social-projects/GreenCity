@@ -166,20 +166,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static HabitStatus getHabitStatus() {
-        HabitAssign habitAssign = getHabitAssign();
-
-        return HabitStatus.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssign(habitAssign)
-            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
-            .build();
-
-    }
-
     public static Category getCategory() {
         return Category.builder()
             .id(12L)
@@ -473,13 +459,13 @@ public class ModelUtils {
                     .description("")
                     .habitItem("")
                     .language(getLanguage())
-                    .habit(new Habit())
                     .build()))
-                .habitAssigns(null)
                 .build())
             .user(getUser())
-            .habitStatus(new HabitStatus())
-            .habitStatistic(null)
+            .workingDays(0)
+            .duration(0)
+            .habitStreak(0)
+            .lastEnrollmentDate(ZonedDateTime.now())
             .build();
     }
 

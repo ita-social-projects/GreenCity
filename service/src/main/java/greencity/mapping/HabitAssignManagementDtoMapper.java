@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * {@link HabitAssignManagementDto}.
  */
 @Component
-public class HabitAssignOperateDtoMapper extends
+public class HabitAssignManagementDtoMapper extends
     AbstractConverter<HabitAssign, HabitAssignManagementDto> {
     /**
      * Method convert {@link HabitAssign} to {@link HabitAssignManagementDto}.
@@ -28,6 +28,9 @@ public class HabitAssignOperateDtoMapper extends
             .userId(habitAssign.getUser().getId())
             .habitId(habitAssign.getHabit().getId())
             .duration(habitAssign.getDuration())
+            .habitStreak(habitAssign.getHabitStreak())
+            .workingDays(habitAssign.getWorkingDays())
+            .lastEnrollment(habitAssign.getLastEnrollmentDate())
             .build();
     }
 }

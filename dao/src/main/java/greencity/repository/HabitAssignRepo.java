@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,13 +17,29 @@ import org.springframework.stereotype.Repository;
 public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     JpaSpecificationExecutor<HabitAssign> {
     /**
+     * Method to find {@link HabitAssign} by id.
+     *
+     * @param id {@link HabitAssign} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE ha.id = :id")
+    Optional<HabitAssign> findById(@Param("id") Long id);
+
+    /**
      * Method to find all {@link HabitAssign} by {@link User} id (including
      * suspended).
      *
      * @param userId {@link User} id.
      * @return list of {@link HabitAssign} instances.
      */
-    List<HabitAssign> findAllByUserId(Long userId);
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE ha.user.id = :userId")
+    List<HabitAssign> findAllByUserId(@Param("userId") Long userId);
 
     /**
      * Method to find all {@link HabitAssign} by {@link Habit} id (including
@@ -31,7 +48,11 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param habitId {@link Habit} id.
      * @return list of {@link HabitAssign} instances.
      */
-    List<HabitAssign> findAllByHabitId(Long habitId);
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE h.id = :habitId")
+    List<HabitAssign> findAllByHabitId(@Param("habitId") Long habitId);
 
     /**
      * Method to find {@link HabitAssign} by {@link User} and {@link Habit} id's and
@@ -57,7 +78,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssign} instances.
      */
-    List<HabitAssign> findAllByUserIdAndAcquiredAndSuspendedFalse(Long userId, Boolean acquired);
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE ha.user.id = :userId AND ha.acquired = :acquired")
+    List<HabitAssign> findAllByUserIdAndAcquiredAndSuspendedFalse(@Param("userId") Long userId,
+        @Param("acquired") Boolean acquired);
 
     /**
      * Method to find all {@link HabitAssign}'s by {@link Habit} id and acquired
@@ -67,7 +93,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param acquired {@link Boolean} status.
      * @return list of {@link HabitAssign} instances.
      */
-    List<HabitAssign> findAllByHabitIdAndAcquiredAndSuspendedFalse(Long habitId, Boolean acquired);
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE h.id = :habitId AND ha.acquired = :acquired")
+    List<HabitAssign> findAllByHabitIdAndAcquiredAndSuspendedFalse(@Param("habitId") Long habitId,
+        @Param("acquired") Boolean acquired);
 
     /**
      * Method to find {@link HabitAssign} by {@link User} id and {@link Habit} id
@@ -77,15 +108,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param habitId {@link Habit} id.
      * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
      */
-    Optional<HabitAssign> findByHabitIdAndUserIdAndSuspendedFalse(Long habitId, Long userId);
-
-    /**
-     * Method to find {@link HabitAssign} by it's id (with not suspended status).
-     *
-     * @param id {@link HabitAssign} id.
-     * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
-     */
-    Optional<HabitAssign> findByIdAndSuspendedFalse(Long id);
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE h.id = :habitId AND ha.user.id = :userId")
+    Optional<HabitAssign> findByHabitIdAndUserIdAndSuspendedFalse(@Param("habitId") Long habitId,
+        @Param("userId") Long userId);
 
     /**
      * Method for counting all {@link HabitAssign}'s by {@link User} id (with not
@@ -122,4 +150,18 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     int countMarkedHabitAssignsByUserIdAndPeriod(@Param("userId") Long userId,
         @Param("start") ZonedDateTime start,
         @Param("end") ZonedDateTime end);
+
+    /**
+     * Method to find all active habit assigns on certain {@link LocalDate}.
+     *
+     * @param date {@link LocalDate} instance.
+     * @return list of {@link HabitAssign} instances.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
+        + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
+        + "JOIN FETCH ht.language l "
+        + "WHERE ha.suspended = false AND ha.acquired = false "
+        + "AND cast(ha.createDate as date) <= cast(:date as date) "
+        + "AND cast(ha.createDate as date) + ha.duration >= cast(:date as date)")
+    List<HabitAssign> findAllActiveHabitAssignsOnDate(@Param("date") LocalDate date);
 }

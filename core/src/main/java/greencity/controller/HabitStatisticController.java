@@ -28,45 +28,45 @@ import springfox.documentation.annotations.ApiIgnore;
 @Validated
 @AllArgsConstructor
 @RestController
-@RequestMapping("/habit")
+@RequestMapping("/habit/statistic")
 public class HabitStatisticController {
     private final HabitStatisticService habitStatisticService;
 
     /**
      * Method for finding all {@link HabitStatisticDto} by {@link HabitVO id}.
      *
-     * @param id {@link HabitVO} id.
+     * @param habitId {@link HabitVO} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
     @ApiOperation(value = "Find all statistics by habit id.")
-    @GetMapping("{id}/statistic")
+    @GetMapping("/{habitId}")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
-        @PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(id));
+        @PathVariable Long habitId) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(habitId));
     }
 
     /**
      * Method for finding {@link HabitStatisticDto} by {@link HabitAssignVO id}.
      *
-     * @param id {@link HabitAssignVO} id.
+     * @param habitAssignId {@link HabitAssignVO} id.
      * @return list of {@link HabitStatisticDto} instances.
      */
     @ApiOperation(value = "Find all statistics by habit assign id.")
-    @GetMapping("/assign/{id}/statistic")
+    @GetMapping("/assign/{habitAssignId}")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     public ResponseEntity<List<HabitStatisticDto>> findAllStatsByHabitAssignId(
-        @PathVariable Long id) {
+        @PathVariable Long habitAssignId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitStatisticService.findAllStatsByHabitAssignId(id));
+            habitStatisticService.findAllStatsByHabitAssignId(habitAssignId));
     }
 
     /**
@@ -75,7 +75,7 @@ public class HabitStatisticController {
      *
      * @param addHabitStatisticDto dto for {@link HabitStatisticDto} entity.
      * @param userVO               {@link UserVO} instance.
-     * @param id                   {@link HabitVO} id.
+     * @param habitId              {@link HabitVO} id.
      * @return dto {@link AddHabitStatisticDto} instance.
      * @author Yuriy Olkhovskyi.
      */
@@ -86,13 +86,13 @@ public class HabitStatisticController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/{id}/statistic")
+    @PostMapping("/{habitId}")
     public ResponseEntity<HabitStatisticDto> saveHabitStatistic(
         @Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto,
         @ApiIgnore @CurrentUser UserVO userVO,
-        @PathVariable Long id) {
+        @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticService.saveByHabitIdAndUserId(id, userVO.getId(), addHabitStatisticDto));
+            .body(habitStatisticService.saveByHabitIdAndUserId(habitId, userVO.getId(), addHabitStatisticDto));
     }
 
     /**
@@ -111,7 +111,7 @@ public class HabitStatisticController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PutMapping("/statistic/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UpdateHabitStatisticDto> updateStatistic(
         @PathVariable Long id,
         @ApiIgnore @CurrentUser UserVO userVO,
@@ -136,7 +136,7 @@ public class HabitStatisticController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
-    @GetMapping("/statistic/todayStatisticsForAllHabitItems")
+    @GetMapping("/todayStatisticsForAllHabitItems")
     @ApiLocale
     public ResponseEntity<List<HabitItemsAmountStatisticDto>> getTodayStatisticsForAllHabitItems(
         @ApiIgnore @ValidLanguage Locale locale) {
