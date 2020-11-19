@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
  */
 @Component
 public class GoalResponseDtoMapper extends AbstractConverter<Goal, GoalResponseDto> {
-
     @Override
     protected GoalResponseDto convert(Goal goal) {
         return GoalResponseDto.builder()

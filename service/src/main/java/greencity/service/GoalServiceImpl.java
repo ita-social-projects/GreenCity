@@ -127,7 +127,6 @@ public class GoalServiceImpl implements GoalService {
         return getPagebleAdvancedDto(goalManagementDtos, goals);
     }
 
-
     private PageableAdvancedDto<GoalManagementDto> getPagebleAdvancedDto(
         List<GoalManagementDto> goalManagementDtos, Page<Goal> goals) {
         return new PageableAdvancedDto<>(
