@@ -178,6 +178,17 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public List<UserManagementDto> findUserFriendsByUserId(Long id) {
+        List<User> friends = userRepo.findUsersFriendsById(id);
+        return friends.stream()
+            .map(u -> modelMapper.map(u, UserManagementDto.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
         return Optional.of(modelMapper.map(userRepo.findNotDeactivatedByEmail(email), UserVO.class));
     }

@@ -417,4 +417,11 @@ public interface UserService {
      * @return {@link List} of {@link UserVO} instances.
      */
     List<UserVO> findAll();
+
+    /**
+     * Method for getting user's friends by id.
+     *
+     * @return {@link List} of {@link UserManagementDto} instances.
+     */
+    List<UserManagementDto> findUserFriendsByUserId(Long id);
 }
