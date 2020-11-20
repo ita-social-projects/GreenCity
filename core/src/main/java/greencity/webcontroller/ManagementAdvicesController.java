@@ -180,6 +180,7 @@ public class ManagementAdvicesController {
         PageableDto<AdviceVO> filteredAdvices =
             adviceService.getFilteredAdvices(pageable, adviceViewDto);
         model.addAttribute("pageable", filteredAdvices);
+        model.addAttribute("languages", languageService.getAllLanguages());
         model.addAttribute("fields", adviceViewDto);
 
         return "core/management_advices";

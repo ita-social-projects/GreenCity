@@ -1,9 +1,10 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.goal.*;
 import greencity.dto.language.LanguageTranslationDTO;
-
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface GoalService {
     /**
@@ -33,8 +34,49 @@ public interface GoalService {
     /**
      * Method delete goal.
      *
-     * @param goalId id of goal you need to delete
+     * @param id id of goal you need to delete
      * @author Dmytro Khonko
      */
-    void delete(Long goalId);
+    Long delete(Long id);
+
+    /**
+     * Method to find goals.
+     *
+     * @param pageable our page
+     * @author Dmytro Khonko
+     */
+    PageableAdvancedDto<GoalManagementDto> findGoalForManagementByPage(Pageable pageable);
+
+    /**
+     * Method search goals.
+     *
+     * @param paging our page.
+     * @param query  search request
+     * @author Dmytro Khonko
+     */
+    PageableAdvancedDto<GoalManagementDto> searchBy(Pageable paging, String query);
+
+    /**
+     * Method delete few goals.
+     *
+     * @param listId ids of goals you need to delete
+     * @author Dmytro Khonko
+     */
+    List<Long> deleteAllGoalByListOfId(List<Long> listId);
+
+    /**
+     * Method to find goal.
+     *
+     * @param id id of goal you need to find
+     * @author Dmytro Khonko
+     */
+    GoalResponseDto findGoalById(Long id);
+
+    /**
+     * Method to filter goals.
+     *
+     * @param goal data of goal you need to find
+     * @author Dmytro Khonko
+     */
+    PageableAdvancedDto<GoalManagementDto> getFilteredDataForManagementByPage(Pageable pageable, GoalViewDto goal);
 }

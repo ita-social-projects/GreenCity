@@ -9,7 +9,7 @@ import greencity.entity.RestorePasswordEmail;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.enums.EmailNotification;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.UserApprovalMessage;
@@ -123,7 +123,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .firstName(dto.getName())
             .email(dto.getEmail())
             .dateOfRegistration(LocalDateTime.now())
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .refreshTokenKey(refreshTokenKey)
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)

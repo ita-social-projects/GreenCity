@@ -16,6 +16,8 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.goal.GoalPostDto;
+import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.*;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
@@ -60,7 +62,7 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
@@ -71,7 +73,7 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .build();
     }
 
@@ -166,20 +168,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static HabitStatus getHabitStatus() {
-        HabitAssign habitAssign = getHabitAssign();
-
-        return HabitStatus.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssign(habitAssign)
-            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
-            .build();
-
-    }
-
     public static Category getCategory() {
         return Category.builder()
             .id(12L)
@@ -201,7 +189,7 @@ public class ModelUtils {
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
             .id(1L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
             .status(GoalStatus.DONE)
             .build();
     }
@@ -217,7 +205,7 @@ public class ModelUtils {
     public static UserGoal getPredefinedUserGoal() {
         return UserGoal.builder()
             .id(2L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
             .build();
@@ -473,13 +461,13 @@ public class ModelUtils {
                     .description("")
                     .habitItem("")
                     .language(getLanguage())
-                    .habit(new Habit())
                     .build()))
-                .habitAssigns(null)
                 .build())
             .user(getUser())
-            .habitStatus(new HabitStatus())
-            .habitStatistic(null)
+            .workingDays(0)
+            .duration(0)
+            .habitStreak(0)
+            .lastEnrollmentDate(ZonedDateTime.now())
             .build();
     }
 
@@ -568,5 +556,9 @@ public class ModelUtils {
 
     public static AdvicePostDto getAdvicePostDto() {
         return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
+    }
+
+    public static GoalPostDto getGoalPostDto() {
+        return new GoalPostDto(getLanguageTranslationsDTOs(), new GoalRequestDto(1L));
     }
 }

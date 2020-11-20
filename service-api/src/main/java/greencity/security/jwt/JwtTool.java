@@ -3,7 +3,7 @@ package greencity.security.jwt;
 import static greencity.constant.AppConstant.AUTHORITIES;
 
 import greencity.dto.user.UserVO;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
@@ -47,7 +47,7 @@ public class JwtTool {
      * @param email this is email of user.
      * @param role  this is role of user.
      */
-    public String createAccessToken(String email, ROLE role) {
+    public String createAccessToken(String email, Role role) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put(AUTHORITIES, Collections.singleton(role.name()));
         Date now = new Date();

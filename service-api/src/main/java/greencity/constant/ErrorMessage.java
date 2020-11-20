@@ -2,6 +2,7 @@ package greencity.constant;
 
 public final class ErrorMessage {
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
+    public static final String GOAL_NOT_DELETED = "Advice not deleted ";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
     public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
@@ -51,7 +52,7 @@ public final class ErrorMessage {
     public static final String HABIT_ALREADY_ACQUIRED = "You have already acquired habit with id: ";
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
     public static final String HABIT_HAS_BEEN_ALREADY_ON_THAT_DAY = "Habit has been enrolled";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_SUCH_USER_ID_AND_HABIT_ID =
+    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID =
         "There is no habit assign for current user and such habit with id: ";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
         "Current user does not have habit statistic with id: ";
@@ -114,7 +115,7 @@ public final class ErrorMessage {
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
-    public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "The statis of this goal is already done";
+    public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "The status of this goal is already done ";
     public static final String USER_DEACTIVATED = "User is deactivated";
     public static final String BAD_GOOGLE_TOKEN = "Bad google token";
     public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";

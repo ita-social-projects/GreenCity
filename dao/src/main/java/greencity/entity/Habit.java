@@ -27,7 +27,7 @@ public class Habit {
     @Column(name = "default_duration", nullable = false)
     private Integer defaultDuration;
 
-    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HabitTranslation> habitTranslations;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)

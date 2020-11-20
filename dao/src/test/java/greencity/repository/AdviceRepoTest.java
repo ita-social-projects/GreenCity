@@ -39,7 +39,7 @@ class AdviceRepoTest {
         List<Long> expectedIds = expected.getContent().stream().map(Advice::getId)
             .collect(Collectors.toList());
 
-        assertEquals(expected.getContent().size(), 3);
+        assertEquals(3, expected.getContent().size());
         assertEquals(expectedIds, actualIds);
     }
 

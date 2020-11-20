@@ -72,9 +72,6 @@ class GoalServiceImplTest {
     @Test
     void updateTest() {
         when(goalRepo.findById(goalPostDto.getGoal().getId())).thenReturn(Optional.of(goal));
-        when(modelMapper.map(goalPostDto.getTranslations(),
-            new TypeToken<List<GoalTranslation>>() {
-            }.getType())).thenReturn(ModelUtils.getGoalTranslations());
         when(modelMapper.map(goal.getTranslations(),
             new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType())).thenReturn(languageTranslationDTOS);
@@ -89,13 +86,8 @@ class GoalServiceImplTest {
 
     @Test
     void deleteTest() {
-        when(goalRepo.findById(1L)).thenReturn(Optional.of(goal));
         goalService.delete(1L);
         verify(goalRepo).deleteById(1L);
     }
 
-    @Test
-    void deleteThrowTest() {
-        assertThrows(GoalNotFoundException.class, () -> goalService.delete(1L));
-    }
 }

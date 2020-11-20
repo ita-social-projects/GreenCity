@@ -9,7 +9,7 @@ import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.message.UserApprovalMessage;
@@ -93,7 +93,7 @@ class OwnSecurityServiceImplTest {
             .id(1L)
             .userStatus(UserStatus.ACTIVATED)
             .ownSecurity(OwnSecurityVO.builder().password("password").build())
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .build();
         ownSignInDto = OwnSignInDto.builder()
             .email("test@gmail.com")
@@ -105,7 +105,7 @@ class OwnSecurityServiceImplTest {
             .userStatus(UserStatus.ACTIVATED)
             .verifyEmail(new VerifyEmailVO())
             .ownSecurity(OwnSecurityVO.builder().password("password").build())
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .build();
         updatePasswordDto = UpdatePasswordDto.builder()
             .currentPassword("password")
@@ -115,7 +115,7 @@ class OwnSecurityServiceImplTest {
         userManagementDto = UserManagementDto.builder()
             .name("Tester")
             .email("test@gmail.com")
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
             .build();
     }
@@ -155,14 +155,14 @@ class OwnSecurityServiceImplTest {
     void signIn() {
         when(userService.findByEmail(anyString())).thenReturn(verifiedUser);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        when(jwtTool.createAccessToken(anyString(), any(ROLE.class))).thenReturn("new-access-token");
+        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn("new-access-token");
         when(jwtTool.createRefreshToken(any(UserVO.class))).thenReturn("new-refresh-token");
 
         ownSecurityService.signIn(ownSignInDto);
 
         verify(userService, times(1)).findByEmail(anyString());
         verify(passwordEncoder, times(1)).matches(anyString(), anyString());
-        verify(jwtTool, times(1)).createAccessToken(anyString(), any(ROLE.class));
+        verify(jwtTool, times(1)).createAccessToken(anyString(), any(Role.class));
         verify(jwtTool, times(1)).createRefreshToken(any(UserVO.class));
     }
 
@@ -170,7 +170,7 @@ class OwnSecurityServiceImplTest {
     void signInNotVerifiedUser() {
         when(userService.findByEmail(anyString())).thenReturn(notVerifiedUser);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        when(jwtTool.createAccessToken(anyString(), any(ROLE.class))).thenReturn("new-access-token");
+        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn("new-access-token");
         when(jwtTool.createRefreshToken(any(UserVO.class))).thenReturn("new-refresh-token");
         assertThrows(EmailNotVerified.class,
             () -> ownSecurityService.signIn(ownSignInDto));
@@ -189,7 +189,7 @@ class OwnSecurityServiceImplTest {
             .id(1L)
             .userStatus(UserStatus.ACTIVATED)
             .ownSecurity(null)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .build();
         when(userService.findByEmail("test@gmail.com")).thenReturn(user);
         assertThrows(WrongPasswordException.class, () -> ownSecurityService.signIn(ownSignInDto));
@@ -202,7 +202,7 @@ class OwnSecurityServiceImplTest {
             .id(1L)
             .userStatus(UserStatus.DEACTIVATED)
             .ownSecurity(OwnSecurityVO.builder().password("password").build())
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .build();
         when(userService.findByEmail("test@gmail.com")).thenReturn(user);
         when(passwordEncoder.matches("password", "password")).thenReturn(true);

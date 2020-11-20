@@ -1,11 +1,10 @@
 package greencity.repository;
 
-import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.entity.Goal;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import static greencity.enums.UserStatus.ACTIVATED;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +32,7 @@ class GoalRepoTest {
             .emailNotification(EmailNotification.DISABLED)
             .name("SuperTest")
             .lastVisit(LocalDateTime.parse("2020-09-30T00:00"))
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .userStatus(ACTIVATED)
             .refreshTokenKey("secret")
             .city("New York")

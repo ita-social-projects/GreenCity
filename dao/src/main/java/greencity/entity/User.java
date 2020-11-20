@@ -2,7 +2,7 @@ package greencity.entity;
 
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.enums.EmailNotification;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class User {
 
     @Enumerated(value = EnumType.ORDINAL)
     @Column(nullable = false)
-    private ROLE role;
+    private Role role;
 
     @Enumerated(value = EnumType.ORDINAL)
     private UserStatus userStatus;

@@ -18,7 +18,7 @@ import greencity.dto.place.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.PlaceStatus;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.repository.CategoryRepo;
@@ -63,7 +63,7 @@ class PlaceServiceImplTest {
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
@@ -72,7 +72,7 @@ class PlaceServiceImplTest {
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();

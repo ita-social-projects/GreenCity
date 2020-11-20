@@ -17,4 +17,7 @@ public class HabitAssignDto {
     private HabitDto habit;
     private Long userId;
     private Integer duration;
+    private Integer workingDays;
+    private Integer habitStreak;
+    private ZonedDateTime lastEnrollmentDate;
 }

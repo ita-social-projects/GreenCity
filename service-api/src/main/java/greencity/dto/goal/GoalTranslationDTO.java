@@ -8,5 +8,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class GoalTranslationDTO {
+    private Long id;
+
     private LanguageVO language;
+
+    private String content;
 }

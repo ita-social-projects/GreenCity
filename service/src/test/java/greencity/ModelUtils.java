@@ -26,8 +26,6 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.*;
-import greencity.dto.habitstatus.HabitStatusDto;
-import greencity.dto.habitstatus.HabitStatusVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.language.LanguageDTO;
@@ -50,8 +48,6 @@ import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -60,6 +56,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -71,7 +69,7 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(LocalDateTime.now())
@@ -83,7 +81,7 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(ROLE.ROLE_USER)
+            .role(Role.ROLE_USER)
             .lastVisit(LocalDateTime.now())
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(LocalDateTime.now())
@@ -145,12 +143,26 @@ public class ModelUtils {
         return HabitAssign.builder()
             .id(1L)
             .acquired(true)
-            .suspended(false)
             .createDate(ZonedDateTime.now())
-            .habitStatus(getHabitStatus())
-            .habit(Habit.builder().id(1L).build())
+            .suspended(false)
+            .habit(Habit.builder()
+                .id(1L)
+                .image("")
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .build()))
+                .build())
+            .user(getUser())
+            .workingDays(0)
+            .duration(0)
+            .habitStreak(0)
             .habitStatistic(Collections.singletonList(getHabitStatistic()))
-            .user(User.builder().id(1L).build()).build();
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
     }
 
     public static HabitAssignVO getHabitAssignVO() {
@@ -169,51 +181,14 @@ public class ModelUtils {
             .amountOfItems(10).build();
     }
 
-    public static HabitStatusDto getHabitStatusDto() {
-        HabitAssignDto habitAssignDto = getHabitAssignDto();
-
-        return HabitStatusDto.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssignId(habitAssignDto.getId())
-            .habitStatusCalendarDtos(Collections.singletonList(getHabitStatusCalendarDto()))
-            .build();
-    }
-
     public static HabitVO getHabitVO() {
         return HabitVO.builder().id(1L).image("img.png").build();
-    }
-
-    public static HabitStatus getHabitStatus() {
-        return HabitStatus.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssign(HabitAssign.builder()
-                .id(1L)
-                .duration(14)
-                .build())
-            .habitStatusCalendars(
-                Collections.singletonList(getHabitStatusCalendar()))
-            .build();
-    }
-
-    public static HabitStatusVO getHabitStatusVO() {
-        return HabitStatusVO.builder()
-            .id(1L)
-            .workingDays(10)
-            .habitStreak(5)
-            .lastEnrollmentDate(LocalDateTime.now())
-            .habitAssignVO(getHabitAssignVO()).build();
     }
 
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
             .id(1L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
             .status(GoalStatus.DONE)
             .build();
     }
@@ -229,7 +204,7 @@ public class ModelUtils {
     public static UserGoal getPredefinedUserGoal() {
         return UserGoal.builder()
             .id(2L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(ROLE.ROLE_USER).build())
+            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
             .build();
@@ -242,7 +217,7 @@ public class ModelUtils {
                 .id(1L)
                 .email(TestConst.EMAIL)
                 .name(TestConst.NAME)
-                .role(ROLE.ROLE_USER)
+                .role(Role.ROLE_USER)
                 .build())
             .status(GoalStatus.DONE)
             .build();

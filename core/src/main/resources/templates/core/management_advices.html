@@ -72,7 +72,7 @@
                     <tbody>
 
                     </tbody>
-                    <form action="/management/advices/filter" id="searchForm" method="POST" onsubmit="applyFilters()">
+                    <form action="/management/advices/filter" id="searchForm" method="POST">
 
                         <tr>
                             <td>
@@ -315,11 +315,5 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
-<script>
-    function applyFilters() {
-        document.getElementById("searchForm").action = "/management/advices/filter";
-        document.getElementById("searchForm").submit();
-    }
-</script>
 </body>
 </html>

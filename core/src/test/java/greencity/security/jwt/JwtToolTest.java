@@ -2,7 +2,7 @@ package greencity.security.jwt;
 
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static greencity.ModelUtils.getUserVO;
 import static org.mockito.Mockito.when;
 import static greencity.constant.AppConstant.AUTHORITIES;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 class JwtToolTest {
     private final String expectedEmail = "test@gmail.com";
-    private final ROLE expectedRole = ROLE.ROLE_USER;
+    private final Role expectedRole = Role.ROLE_USER;
 
     @Mock
     HttpServletRequest request;
@@ -58,7 +57,7 @@ class JwtToolTest {
             .parseClaimsJws(accessToken)
             .getBody()
             .get(AUTHORITIES);
-        assertEquals(expectedRole, ROLE.valueOf(authorities.get(0)));
+        assertEquals(expectedRole, Role.valueOf(authorities.get(0)));
     }
 
     @Test
@@ -82,7 +81,7 @@ class JwtToolTest {
             .parseClaimsJws(refreshToken)
             .getBody()
             .get(AUTHORITIES);
-        assertEquals(expectedRole, ROLE.valueOf(authorities.get(0)));
+        assertEquals(expectedRole, Role.valueOf(authorities.get(0)));
     }
 
     @Test

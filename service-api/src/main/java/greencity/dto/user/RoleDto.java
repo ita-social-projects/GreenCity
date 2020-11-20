@@ -1,6 +1,6 @@
 package greencity.dto.user;
 
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,5 +13,5 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 public class RoleDto {
-    private ROLE[] roles;
+    private Role[] roles;
 }

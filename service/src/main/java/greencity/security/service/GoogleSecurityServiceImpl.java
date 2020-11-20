@@ -7,7 +7,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
-import greencity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.security.dto.SuccessSignInDto;
@@ -96,7 +96,8 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
         return User.builder()
             .email(email)
             .name(userName)
-            .role(ROLE.ROLE_USER)
+            .firstName(userName)
+            .role(Role.ROLE_USER)
             .dateOfRegistration(LocalDateTime.now())
             .lastVisit(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
