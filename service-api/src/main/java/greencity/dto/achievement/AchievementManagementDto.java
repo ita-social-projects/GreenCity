@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AchievementManagementDto {
-
     @NotNull
     @Min(1)
     private Long id;

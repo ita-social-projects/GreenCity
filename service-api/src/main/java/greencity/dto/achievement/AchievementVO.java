@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class AchievementVO {
-
     private Long id;
 
     private List<AchievementTranslationVO> translations;

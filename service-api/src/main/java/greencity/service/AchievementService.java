@@ -5,8 +5,6 @@ import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
-import greencity.dto.advice.AdviceDto;
-import greencity.dto.advice.AdvicePostDto;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -20,14 +18,6 @@ public interface AchievementService {
     List<AchievementDTO> findAll();
 
     /**
-     * Method that allow you to save new {@link AchievementVO}.
-     *
-     * @param achievementPostDto a value of {@link AchievementVO}
-     * @author Orest Mamchuk
-     */
-    AchievementVO save(AchievementPostDto achievementPostDto);
-
-    /**
      * Find {@link AchievementVO} for management by page .
      *
      * @param page a value with pageable configuration.
@@ -35,6 +25,15 @@ public interface AchievementService {
      * @author Orest Mamchuk
      */
     PageableAdvancedDto<AchievementVO> findAll(Pageable page);
+
+    /**
+     * {@inheritDoc} Method that allow you to save new achievement
+     *
+     * @param achievementPostDto a value of {@link AchievementVO}
+     * @return a dto of {@link AchievementVO}
+     * @author Orest Mamchuk
+     */
+    AchievementVO save(AchievementPostDto achievementPostDto);
 
     /**
      * Method for getting {@link AchievementVO} by search query.
@@ -63,7 +62,21 @@ public interface AchievementService {
      */
     void deleteAll(List<Long> ids);
 
+    /**
+     * Method find {@link AchievementVO} by id.
+     *
+     * @param id of {@link AchievementVO}
+     * @return {@link AchievementVO}
+     * @author Orest Mamchuck
+     */
     AchievementVO findById(Long id);
 
+    /**
+     * Method updates {@link AchievementVO}.
+     *
+     * @param achievementManagementDto {@link AchievementManagementDto}
+     * @return instance of {@link AchievementPostDto}
+     * @author Orest Mamchuck
+     */
     AchievementPostDto update(AchievementManagementDto achievementManagementDto);
 }

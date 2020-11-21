@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class AchievementCategoryServiceImpl implements AchievementCategoryService {
     private final AchievementCategoryRepo achievementCategoryRepo;
-    private  final ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     /**
      * Method for saving {@link AchievementCategoryVO} to database.
@@ -33,9 +33,10 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
         AchievementCategory achievementCategory = achievementCategoryRepo.findByName(achievementCategoryDto.getName());
         if (achievementCategory != null) {
             throw new BadCategoryRequestException(
-                    ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
+                ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
         }
-        AchievementCategory achievementCategoryToSave = modelMapper.map(achievementCategoryDto, AchievementCategory.class);
+        AchievementCategory achievementCategoryToSave =
+            modelMapper.map(achievementCategoryDto, AchievementCategory.class);
 
         return modelMapper.map(achievementCategoryRepo.save(achievementCategoryToSave), AchievementCategoryVO.class);
     }
@@ -51,10 +52,14 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
         }.getType());
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public AchievementCategoryVO findByName(String name) {
         AchievementCategory achievementCategory = achievementCategoryRepo.findByName(name);
         return modelMapper.map(achievementCategory, AchievementCategoryVO.class);
     }
-
 }

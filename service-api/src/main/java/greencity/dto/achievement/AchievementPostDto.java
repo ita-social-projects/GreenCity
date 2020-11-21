@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AchievementPostDto {
-
     private List<AchievementTranslationVO> translations;
 
     private AchievementCategoryDto achievementCategory;

@@ -42,17 +42,17 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
         List<UserAchievementVO> userAchievements = new ArrayList<>();
         if (user.getUserAchievements() != null) {
             userAchievements = user.getUserAchievements()
-                    .stream().map(userAchievement -> UserAchievementVO.builder()
-                            .id(userAchievement.getId())
-                            .achievementStatus(userAchievement.getAchievementStatus())
-                            .user(UserVO.builder()
-                                    .id(userAchievement.getUser().getId())
-                                    .build())
-                            .achievement(AchievementVO.builder()
-                                    .id(userAchievement.getAchievement().getId())
-                                    .build())
-                            .build())
-                    .collect(Collectors.toList());
+                .stream().map(userAchievement -> UserAchievementVO.builder()
+                    .id(userAchievement.getId())
+                    .achievementStatus(userAchievement.getAchievementStatus())
+                    .user(UserVO.builder()
+                        .id(userAchievement.getUser().getId())
+                        .build())
+                    .achievement(AchievementVO.builder()
+                        .id(userAchievement.getAchievement().getId())
+                        .build())
+                    .build())
+                .collect(Collectors.toList());
         }
 
         OwnSecurityVO ownSecurityVO = null;

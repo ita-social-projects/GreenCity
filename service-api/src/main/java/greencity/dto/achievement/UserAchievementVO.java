@@ -14,7 +14,6 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @Builder
 public class UserAchievementVO {
-
     @NotEmpty
     private Long id;
 

@@ -36,22 +36,13 @@ public class AchievementServiceImpl implements AchievementService {
     /**
      * {@inheritDoc}
      *
-     * @author Yuriy Olkhovskyi
+     * @author Orest Mamchuk
      */
-    @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
-    @Override
-    public List<AchievementDTO> findAll() {
-        return achievementRepo.findAll()
-            .stream()
-            .map(achieve -> modelMapper.map(achieve, AchievementDTO.class))
-            .collect(Collectors.toList());
-    }
-
     @Override
     public AchievementVO save(AchievementPostDto achievementPostDto) {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
-                achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
+            achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
         achievement.getTranslations().forEach(adviceTranslation -> adviceTranslation.setAchievement(achievement));
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         AchievementVO map = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
@@ -66,44 +57,73 @@ public class AchievementServiceImpl implements AchievementService {
         return map;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Yuriy Olkhovskyi
+     */
+    @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
+    @Override
+    public List<AchievementDTO> findAll() {
+        return achievementRepo.findAll()
+            .stream()
+            .map(achieve -> modelMapper.map(achieve, AchievementDTO.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
         Page<Achievement> pages = achievementRepo.findAll(page);
         List<AchievementVO> achievementVOS = pages
-                .stream()
-                .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
+            .collect(Collectors.toList());
         return new PageableAdvancedDto<>(
-                achievementVOS,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber(),
-                pages.getTotalPages(),
-                pages.getNumber(),
-                pages.hasPrevious(),
-                pages.hasNext(),
-                pages.isFirst(),
-                pages.isLast());
+            achievementVOS,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages(),
+            pages.getNumber(),
+            pages.hasPrevious(),
+            pages.hasNext(),
+            pages.isFirst(),
+            pages.isLast());
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public PageableAdvancedDto<AchievementVO> searchAchievementBy(Pageable paging, String query) {
         Page<Achievement> page = achievementRepo.searchAchievementsBy(paging, query);
 
         List<AchievementVO> achievementVOS = page.stream()
-                .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
-                .collect(Collectors.toList());
+            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
+            .collect(Collectors.toList());
         return new PageableAdvancedDto<>(
-                achievementVOS,
-                page.getTotalElements(),
-                page.getPageable().getPageNumber(),
-                page.getTotalPages(),
-                page.getNumber(),
-                page.hasPrevious(),
-                page.hasNext(),
-                page.isFirst(),
-                page.isLast());
+            achievementVOS,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages(),
+            page.getNumber(),
+            page.hasPrevious(),
+            page.hasNext(),
+            page.isFirst(),
+            page.isLast());
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public Long delete(Long id) {
         try {
@@ -114,38 +134,52 @@ public class AchievementServiceImpl implements AchievementService {
         return id;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public void deleteAll(List<Long> listId) {
         listId.forEach(achievementRepo::deleteById);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public AchievementVO findById(Long id) {
-        return modelMapper.map(achievementRepo.findById(id).orElseThrow(() ->
-                        new NotFoundException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID + id)),
-                AchievementVO.class);
+        return modelMapper.map(
+            achievementRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID + id)),
+            AchievementVO.class);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public AchievementPostDto update(AchievementManagementDto achievementManagementDto) {
         Achievement achievement = achievementRepo.findById(achievementManagementDto.getId())
-                .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID +
-                        achievementManagementDto.getId()));
+            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID
+                + achievementManagementDto.getId()));
         achievement.getTranslations()
-                .forEach(achievementTranslation -> {
-                    AchievementTranslationVO achievementTranslationVO = achievementManagementDto
-                            .getTranslations().stream()
-                            .filter(newTranslation -> newTranslation.getLanguage().getCode()
-                                    .equals(achievementTranslation.getLanguage().getCode()))
-                            .findFirst().get();
-                    achievementTranslation.setTitle(achievementTranslationVO.getTitle());
-                    achievementTranslation.setDescription(achievementTranslationVO.getDescription());
-                    achievementTranslation.setMessage(achievementTranslationVO.getMessage());
-                });
+            .forEach(achievementTranslation -> {
+                AchievementTranslationVO achievementTranslationVO = achievementManagementDto
+                    .getTranslations().stream()
+                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                        .equals(achievementTranslation.getLanguage().getCode()))
+                    .findFirst().get();
+                achievementTranslation.setTitle(achievementTranslationVO.getTitle());
+                achievementTranslation.setDescription(achievementTranslationVO.getDescription());
+                achievementTranslation.setMessage(achievementTranslationVO.getMessage());
+            });
         achievement.setCondition(achievementManagementDto.getCondition());
         Achievement updated = achievementRepo.save(achievement);
-        AchievementPostDto map = modelMapper.map(updated, AchievementPostDto.class);
-        return map;
+        return modelMapper.map(updated, AchievementPostDto.class);
     }
-
 }
