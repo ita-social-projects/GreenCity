@@ -111,9 +111,7 @@ $(document).ready(function () {
         }, {});
         var payload = {
             "id": formData.id,
-            "title": formData.title,
-            "description": formData.description,
-            "message": formData.message,
+            "translations": getTranslationsFormFormData(formData),
             "achievementCategory": formData.achievementCategory,
             "condition": formData.condition
         };
@@ -148,9 +146,14 @@ $(document).ready(function () {
         var href = $(this).attr('href');
         $.get(href, function (achievement, status) {
             $('#id').val(achievement.id);
-            $('#title').val(achievement.title);
-            $('#description').val(achievement.description);
-            $('#message').val(achievement.message);
+            achievement.translations.forEach(function (translation, index) {
+                $(`#title_${translation.language.id}_${translation.language.code}`)
+                    .val(translation.title);
+                $(`#description_${translation.language.id}_${translation.language.code}`)
+                    .val(translation.description);
+                $(`#message_${translation.language.id}_${translation.language.code}`)
+                    .val(translation.message);
+            });
             $('#achievementCategory').val(achievement.achievementCategory.name);
             $('#condition').val(achievement.condition);
         });
@@ -165,9 +168,7 @@ $(document).ready(function () {
         }, {});
         var payload = {
             "id": formData.id,
-            "title": formData.title,
-            "description": formData.description,
-            "message": formData.message,
+            "translations": getTranslationsFormFormData(formData),
             "achievementCategory": formData.achievementCategory,
             "condition": formData.condition
         };
@@ -190,3 +191,28 @@ $(document).ready(function () {
         });
     })
 });
+
+function getTranslationsFormFormData(formData) {
+    var translations = [];
+    for (var key in formData) {
+        if (key.startsWith("title")) {
+            var contentAndLanguage = key.split("_");
+            var langId = contentAndLanguage[1];
+            var langCode = contentAndLanguage[2];
+            var title = formData["title_" + langId + "_" + langCode];
+            var description = formData["description_" + langId + "_" + langCode];
+            var message = formData["message_" + langId + "_" + langCode];
+            translations.push({
+                "title": title,
+                "description": description,
+                "message": message,
+                "language": {
+                    "code": langCode,
+                    "id": langId
+                }
+            });
+        }
+    }
+
+    return translations;
+}

@@ -34,14 +34,12 @@ class AchievementServiceImplTest {
 
     @Test
     void findAllWithOneValueInRepoTest() {
-        Achievement achievement = new Achievement(1L, "foo", null, null,
-                null, null, 1);
+        Achievement achievement = new Achievement(1L, null, null, null, 1);
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
         when(modelMapper.map(achievement, AchievementDTO.class))
-            .thenReturn(new AchievementDTO(achievement.getId(), achievement.getTitle(), null, null));
+            .thenReturn(new AchievementDTO(achievement.getId(), null, null, null));
         List<AchievementDTO> findAllResult = achievementService.findAll();
-        assertEquals("foo", findAllResult.get(0).getTitle());
         assertEquals(1L, (long) findAllResult.get(0).getId());
     }
 }

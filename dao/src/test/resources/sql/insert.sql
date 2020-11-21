@@ -97,23 +97,22 @@ VALUES ('Econews'),
        ('Rating'),
        ('Likes');
 
-INSERT INTO achievements (title, description, message, achievement_category_id, condition)
-VALUES ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!', '1', '10'),
-       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.', '1', '20'),
-       ('Сonscious', 'Made first habit', 'Congratulation! You made your first eco habit and you deserve achievement "Сonscious".', '2', '10'),
-       ('Wow', 'Add second habit', 'It looks you want to track one more habit. It is brilliant idea!', '2', '10'),
-       ('Well done', 'Well done. Keep doing your goals with the same enthusiasm', 'Complete 3 goals!', '2', '10'),
-       ('ach6', 'get ach 6', 'info', '2', '10'),
-       ('ach7', 'get ach 7', 'info', '3', '10'),
-       ('ach8', 'get ach 8', 'info', '2', '10'),
-       ('ach9', 'get ach 9', 'info', '2', '10'),
-       ('ach10', 'get ach 10', 'info', '1', '10');
-
+INSERT INTO achievements (achievement_category_id, condition)
+VALUES ('1', '10'),
+       ('1', '20');
 
 INSERT INTO languages (code)
 VALUES ('ua'),
        ('en'),
        ('ru');
+
+INSERT INTO achievement_translations (title, description, message, language_id, achievement_id)
+VALUES ('Вітаємо', 'Реєстраці', 'Вітаємо на Green City', '1', '1'),
+       ('Acquaintance', 'Register and pass onboarding', 'Welcome you in Green City application!', '2', '1'),
+       ('Поздоравление', 'Реистрация', 'Добро пожаловать в приложение Green City!', '3', '1'),
+       ('Еко друг', 'Почніть відстежувати звичку', 'Гарного початку для вас і не здавайтесь! Досягнення "Еко друг" за вами.', '1', '2'),
+       ('Eco friend', 'Start to track a habit', 'Good start for you and do not give up! Achievement "Eco friend" is yours.', '2', '2'),
+       ('Эко друг', 'Начать отслеживать привычку', 'Хорошее начало для вас и не сдавайтесь! Достижение «Эко друг» принадлежит вам.', '3', '2');
 
 INSERT INTO habits (image, default_duration)
 VALUES ('image1', 14),
@@ -438,7 +437,7 @@ VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);
 INSERT INTO habit_status (working_days, habit_streak, habit_assign_id, last_enrollment)
 VALUES (5, 4, 1, '2020-09-10 20:00:00.823000');
 
-INSERT INTO habit_status_calendar (enroll_date, habit_status_id)
+INSERT INTO habit_status_calendar (enroll_date, habit_assign_id)
 VALUES ('2020-09-10', 1);
 -- HABITS END --
 

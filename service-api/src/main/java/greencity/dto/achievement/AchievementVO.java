@@ -17,14 +17,7 @@ public class AchievementVO {
 
     private Long id;
 
-    @NotEmpty
-    private String title;
-
-    @NotEmpty
-    private String description;
-
-    @NotEmpty
-    private String message;
+    private List<AchievementTranslationVO> translations;
 
     private List<UserAchievementVO> userAchievements;
 

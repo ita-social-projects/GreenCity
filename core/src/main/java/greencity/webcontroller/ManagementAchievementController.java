@@ -78,7 +78,7 @@ public class ManagementAchievementController {
      * @return {@link ResponseEntity}
      * @author Orest Mamchuk
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<Long> deleteAdviceById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(achievementService.delete(id));

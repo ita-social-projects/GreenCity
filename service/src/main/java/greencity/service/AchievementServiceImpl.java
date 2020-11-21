@@ -5,17 +5,12 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.advice.AdvicePostDto;
-import greencity.dto.advice.AdviceVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.entity.Advice;
-import greencity.entity.Habit;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
-import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.AchievementRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -57,6 +52,7 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
                 achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
+        achievement.getTranslations().forEach(adviceTranslation -> adviceTranslation.setAchievement(achievement));
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         AchievementVO map = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
         UserAchievementVO userAchievementVO = new UserAchievementVO();
@@ -92,6 +88,7 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public PageableAdvancedDto<AchievementVO> searchAchievementBy(Pageable paging, String query) {
         Page<Achievement> page = achievementRepo.searchAchievementsBy(paging, query);
+
         List<AchievementVO> achievementVOS = page.stream()
                 .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
                 .collect(Collectors.toList());
@@ -134,12 +131,17 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = achievementRepo.findById(achievementManagementDto.getId())
                 .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID +
                         achievementManagementDto.getId()));
-        AchievementCategoryVO achievementCategoryVO = achievementCategoryService.
-                findByName(achievementManagementDto.getAchievementCategory().getName());
-        achievement.setTitle(achievementManagementDto.getTitle());
-        achievement.setDescription(achievementManagementDto.getDescription());
-        achievement.setMessage(achievementManagementDto.getMessage());
-//        achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
+        achievement.getTranslations()
+                .forEach(achievementTranslation -> {
+                    AchievementTranslationVO achievementTranslationVO = achievementManagementDto
+                            .getTranslations().stream()
+                            .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                                    .equals(achievementTranslation.getLanguage().getCode()))
+                            .findFirst().get();
+                    achievementTranslation.setTitle(achievementTranslationVO.getTitle());
+                    achievementTranslation.setDescription(achievementTranslationVO.getDescription());
+                    achievementTranslation.setMessage(achievementTranslationVO.getMessage());
+                });
         achievement.setCondition(achievementManagementDto.getCondition());
         Achievement updated = achievementRepo.save(achievement);
         AchievementPostDto map = modelMapper.map(updated, AchievementPostDto.class);

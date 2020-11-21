@@ -1,12 +1,13 @@
 package greencity.entity;
 
-import java.util.List;
-import java.util.Objects;
-import javax.persistence.*;
+import greencity.entity.localization.AchievementTranslation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -20,16 +21,10 @@ public class Achievement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement", fetch = FetchType.LAZY)
+    private List<AchievementTranslation> translations;
 
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private String message;
-
-    @OneToMany(mappedBy = "achievement", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement", fetch = FetchType.LAZY)
     private List<UserAchievement> userAchievements;
 
     @ManyToOne
@@ -37,23 +32,4 @@ public class Achievement {
 
     @Column(nullable = false)
     private Integer condition;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Achievement that = (Achievement) o;
-        return id.equals(that.id)
-            && title.equals(that.title)
-            && description.equals(that.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, description, userAchievements);
-    }
 }
