@@ -96,7 +96,11 @@ public class ManagementUserController {
     }
 
     /**
-     * Find.
+     * Method that finds user's friends {@link UserManagementDto} by given id.
+     *
+     * @param id {@link Long} - user's id.
+     * @return {@link List} of {@link UserManagementDto} instances.
+     * @author Markiyan Derevetskyi
      */
     @GetMapping("/{id}/friends")
     @ResponseBody

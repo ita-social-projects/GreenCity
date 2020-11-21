@@ -179,10 +179,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserManagementDto> findUserFriendsByUserId(Long id) {
-        List<User> friends = userRepo.findUsersFriendsById(id);
-        return friends.stream()
-            .map(u -> modelMapper.map(u, UserManagementDto.class))
-            .collect(Collectors.toList());
+        return modelMapper.map(userRepo.findUsersFriendsById(id),
+            new TypeToken<List<UserManagementDto>>() {
+            }.getType());
     }
 
     /**

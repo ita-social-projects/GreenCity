@@ -232,7 +232,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<RegistrationStatisticsDtoResponse> findAllRegistrationMonths();
 
     /**
-     * Find.
+     * Method that finds user's friends by given id.
+     *
+     * @param id {@link Long} - user's id.
+     * @return {@link List} of {@link User} instances.
      */
     @Query("select u.userFriends from User u where u.id = :id")
     List<User> findUsersFriendsById(Long id);
