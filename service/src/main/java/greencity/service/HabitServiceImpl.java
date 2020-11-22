@@ -43,14 +43,29 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     public PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
-        Page<HabitTranslation> pages =
+        Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCode(pageable, language);
+        return buildPageableDto(habitTranslationPage);
+    }
+
+    @Override
+    public PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags,
+        String languageCode) {
+        Page<HabitTranslation> habitTranslationsPage =
+            habitTranslationRepo.findAByTagsAndLanguageCode(pageable, tags, languageCode);
+        return buildPageableDto(habitTranslationsPage);
+    }
+
+    /**
+     * Build PageableDto.
+     */
+    private PageableDto<HabitDto> buildPageableDto(Page<HabitTranslation> habitTranslationsPage) {
         List<HabitDto> habitTranslationDtos =
-            pages.stream()
+            habitTranslationsPage.stream()
                 .map(habitTranslation -> modelMapper.map(habitTranslation, HabitDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<>(habitTranslationDtos, pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages());
+        return new PageableDto<>(habitTranslationDtos, habitTranslationsPage.getTotalElements(),
+            habitTranslationsPage.getPageable().getPageNumber(),
+            habitTranslationsPage.getTotalPages());
     }
 }

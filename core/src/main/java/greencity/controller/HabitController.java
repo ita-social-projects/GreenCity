@@ -12,16 +12,15 @@ import greencity.service.HabitService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import java.util.List;
 import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Validated
@@ -71,5 +70,28 @@ public class HabitController {
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
+    }
+
+    /**
+     * Method finds all habits by tags and language code.
+     *
+     * @param locale   {@link Locale} with needed language code.
+     * @param pageable {@link Pageable} instance.
+     * @param tags     {@link List} of {@link String}
+     * @return Pageable of {@link HabitTranslationDto}.
+     */
+    @ApiOperation(value = "Find all habits by tags and language code.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("/tags")
+    @ApiPageableWithLocale
+    public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
+        @ApiIgnore @ValidLanguage Locale locale,
+        @RequestParam List<String> tags,
+        @ApiIgnore Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage()));
     }
 }
