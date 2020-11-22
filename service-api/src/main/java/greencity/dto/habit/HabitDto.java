@@ -4,7 +4,6 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import java.io.Serializable;
 import java.util.List;
 
-import greencity.dto.tag.TagVO;
 import lombok.*;
 
 @NoArgsConstructor
