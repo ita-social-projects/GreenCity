@@ -75,5 +75,5 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "inner join tags as t on t.id = htg.tag_id "
         + "inner join languages as l on l.id = ht.language_id "
         + "where t.name in (:tags) and l.code = :languageCode")
-    Page<HabitTranslation> findAByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
+    Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 }

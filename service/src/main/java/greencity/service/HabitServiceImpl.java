@@ -52,7 +52,7 @@ public class HabitServiceImpl implements HabitService {
     public PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags,
         String languageCode) {
         Page<HabitTranslation> habitTranslationsPage =
-            habitTranslationRepo.findAByTagsAndLanguageCode(pageable, tags, languageCode);
+            habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, tags, languageCode);
         return buildPageableDto(habitTranslationsPage);
     }
 
