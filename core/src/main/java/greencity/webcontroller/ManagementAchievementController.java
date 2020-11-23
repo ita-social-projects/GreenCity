@@ -8,7 +8,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,7 +25,7 @@ import java.util.List;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/management/achievement")
 public class ManagementAchievementController {
     private final AchievementService achievementService;
@@ -77,7 +77,7 @@ public class ManagementAchievementController {
      * @return {@link ResponseEntity}
      * @author Orest Mamchuk
      */
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Long> deleteAdviceById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(achievementService.delete(id));
@@ -102,8 +102,8 @@ public class ManagementAchievementController {
      * @param id of Eco New
      * @return {@link AchievementVO} instance.
      */
-    @GetMapping("/find")
-    public ResponseEntity<AchievementVO> getEcoNewsById(@RequestParam("id") Long id) {
+    @GetMapping("{id}")
+    public ResponseEntity<AchievementVO> getEcoNewsById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(achievementService.findById(id));
     }
 
@@ -113,7 +113,7 @@ public class ManagementAchievementController {
      * @param achievementManagementDto of {@link AchievementManagementDto}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @PutMapping("/")
+    @PutMapping
     @ResponseBody
     public GenericResponseDto update(@Valid @RequestBody AchievementManagementDto achievementManagementDto,
         BindingResult bindingResult) {

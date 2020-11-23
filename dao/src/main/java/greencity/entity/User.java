@@ -106,7 +106,7 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
     private List<User> userFriends = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserAchievement> userAchievements;
 
     @Column(name = "rating")

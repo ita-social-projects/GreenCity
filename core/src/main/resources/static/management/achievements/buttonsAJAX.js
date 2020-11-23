@@ -174,7 +174,7 @@ $(document).ready(function () {
         };
         //save request in editAchievementModal
         $.ajax({
-            url: '/management/achievement/',
+            url: '/management/achievement',
             type: 'put',
             dataType: 'json',
             contentType: 'application/json',

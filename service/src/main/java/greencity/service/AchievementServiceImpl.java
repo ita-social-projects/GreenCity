@@ -45,16 +45,16 @@ public class AchievementServiceImpl implements AchievementService {
             achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
         achievement.getTranslations().forEach(adviceTranslation -> adviceTranslation.setAchievement(achievement));
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
-        AchievementVO map = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
+        AchievementVO achievementVO = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
         UserAchievementVO userAchievementVO = new UserAchievementVO();
-        userAchievementVO.setAchievement(map);
+        userAchievementVO.setAchievement(achievementVO);
         List<UserVO> all = userService.findAll();
         all.forEach(userVO -> {
             userVO.getUserAchievements().add(userAchievementVO);
             userAchievementVO.setUser(userVO);
             userService.save(userVO);
         });
-        return map;
+        return achievementVO;
     }
 
     /**
@@ -83,6 +83,11 @@ public class AchievementServiceImpl implements AchievementService {
             .stream()
             .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
             .collect(Collectors.toList());
+        return createPageable(achievementVOS, pages);
+    }
+
+    private PageableAdvancedDto<AchievementVO> createPageable(List<AchievementVO> achievementVOS,
+        Page<Achievement> pages) {
         return new PageableAdvancedDto<>(
             achievementVOS,
             pages.getTotalElements(),
@@ -107,16 +112,7 @@ public class AchievementServiceImpl implements AchievementService {
         List<AchievementVO> achievementVOS = page.stream()
             .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
             .collect(Collectors.toList());
-        return new PageableAdvancedDto<>(
-            achievementVOS,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages(),
-            page.getNumber(),
-            page.hasPrevious(),
-            page.hasNext(),
-            page.isFirst(),
-            page.isLast());
+        return createPageable(achievementVOS, page);
     }
 
     /**
@@ -167,6 +163,13 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = achievementRepo.findById(achievementManagementDto.getId())
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID
                 + achievementManagementDto.getId()));
+        setTranslations(achievement, achievementManagementDto);
+        achievement.setCondition(achievementManagementDto.getCondition());
+        Achievement updated = achievementRepo.save(achievement);
+        return modelMapper.map(updated, AchievementPostDto.class);
+    }
+
+    private void setTranslations(Achievement achievement, AchievementManagementDto achievementManagementDto) {
         achievement.getTranslations()
             .forEach(achievementTranslation -> {
                 AchievementTranslationVO achievementTranslationVO = achievementManagementDto
@@ -178,8 +181,5 @@ public class AchievementServiceImpl implements AchievementService {
                 achievementTranslation.setDescription(achievementTranslationVO.getDescription());
                 achievementTranslation.setMessage(achievementTranslationVO.getMessage());
             });
-        achievement.setCondition(achievementManagementDto.getCondition());
-        Achievement updated = achievementRepo.save(achievement);
-        return modelMapper.map(updated, AchievementPostDto.class);
     }
 }

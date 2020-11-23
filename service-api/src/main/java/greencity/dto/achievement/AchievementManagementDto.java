@@ -1,25 +1,18 @@
 package greencity.dto.achievement;
 
-import greencity.dto.achievementcategory.AchievementCategoryDto;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AchievementManagementDto {
+@Getter
+public class AchievementManagementDto extends AchievementPostDto {
     @NotNull
     @Min(1)
     private Long id;
-
-    private List<AchievementTranslationVO> translations;
-
-    private AchievementCategoryDto achievementCategory;
-
-    private Integer condition;
 }

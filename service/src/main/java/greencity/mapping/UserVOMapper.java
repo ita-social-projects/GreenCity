@@ -9,63 +9,12 @@ import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class UserVOMapper extends AbstractConverter<User, UserVO> {
     @Override
     protected UserVO convert(User user) {
-        VerifyEmailVO verifyEmailVO = null;
-        if (user.getVerifyEmail() != null) {
-            verifyEmailVO = VerifyEmailVO.builder()
-                .id(user.getVerifyEmail().getId())
-                .user(UserVO.builder()
-                    .id(user.getVerifyEmail().getUser().getId())
-                    .name(user.getVerifyEmail().getUser().getName())
-                    .build())
-                .expiryDate(user.getVerifyEmail().getExpiryDate())
-                .token(user.getVerifyEmail().getToken())
-                .build();
-        }
-        List<UserVO> userFriends = new ArrayList<>();
-        if (user.getUserGoals() != null) {
-            userFriends = user.getUserFriends()
-                .stream().map(user1 -> UserVO.builder()
-                    .id(user1.getId())
-                    .name(user1.getName())
-                    .build())
-                .collect(Collectors.toList());
-        }
-
-        List<UserAchievementVO> userAchievements = new ArrayList<>();
-        if (user.getUserAchievements() != null) {
-            userAchievements = user.getUserAchievements()
-                .stream().map(userAchievement -> UserAchievementVO.builder()
-                    .id(userAchievement.getId())
-                    .achievementStatus(userAchievement.getAchievementStatus())
-                    .user(UserVO.builder()
-                        .id(userAchievement.getUser().getId())
-                        .build())
-                    .achievement(AchievementVO.builder()
-                        .id(userAchievement.getAchievement().getId())
-                        .build())
-                    .build())
-                .collect(Collectors.toList());
-        }
-
-        OwnSecurityVO ownSecurityVO = null;
-        if (user.getOwnSecurity() != null) {
-            ownSecurityVO = OwnSecurityVO.builder()
-                .id(user.getOwnSecurity().getId())
-                .password(user.getOwnSecurity().getPassword())
-                .user(UserVO.builder()
-                    .id(user.getOwnSecurity().getUser().getId())
-                    .email(user.getOwnSecurity().getUser().getEmail())
-                    .build())
-                .build();
-        }
         return UserVO.builder()
             .id(user.getId())
             .name(user.getName())
@@ -77,10 +26,30 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             .userStatus(user.getUserStatus())
             .lastVisit(user.getLastVisit())
             .rating(user.getRating())
-            .verifyEmail(verifyEmailVO)
-            .userFriends(userFriends)
+            .verifyEmail(user.getVerifyEmail() != null ? VerifyEmailVO.builder()
+                .id(user.getVerifyEmail().getId())
+                .user(UserVO.builder()
+                    .id(user.getVerifyEmail().getUser().getId())
+                    .name(user.getVerifyEmail().getUser().getName())
+                    .build())
+                .expiryDate(user.getVerifyEmail().getExpiryDate())
+                .token(user.getVerifyEmail().getToken())
+                .build() : null)
+            .userFriends(user.getUserFriends() != null ? user.getUserFriends()
+                .stream().map(user1 -> UserVO.builder()
+                    .id(user1.getId())
+                    .name(user1.getName())
+                    .build())
+                .collect(Collectors.toList()) : null)
             .refreshTokenKey(user.getRefreshTokenKey())
-            .ownSecurity(ownSecurityVO)
+            .ownSecurity(user.getOwnSecurity() != null ? OwnSecurityVO.builder()
+                .id(user.getOwnSecurity().getId())
+                .password(user.getOwnSecurity().getPassword())
+                .user(UserVO.builder()
+                    .id(user.getOwnSecurity().getUser().getId())
+                    .email(user.getOwnSecurity().getUser().getEmail())
+                    .build())
+                .build() : null)
             .dateOfRegistration(user.getDateOfRegistration())
             .profilePicturePath(user.getProfilePicturePath())
             .city(user.getCity())
@@ -88,7 +57,18 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             .showEcoPlace(user.getShowEcoPlace())
             .showLocation(user.getShowLocation())
             .lastActivityTime(user.getLastActivityTime())
-            .userAchievements(userAchievements)
+            .userAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
+                .stream().map(userAchievement -> UserAchievementVO.builder()
+                    .id(userAchievement.getId())
+                    .achievementStatus(userAchievement.getAchievementStatus())
+                    .user(UserVO.builder()
+                        .id(userAchievement.getUser().getId())
+                        .build())
+                    .achievement(AchievementVO.builder()
+                        .id(userAchievement.getAchievement().getId())
+                        .build())
+                    .build())
+                .collect(Collectors.toList()) : null)
             .build();
     }
 }

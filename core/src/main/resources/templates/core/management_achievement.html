@@ -107,10 +107,10 @@
                                 <td th:text="${allAchievements.getAchievementCategory().getName()}"></td>
                                 <td th:text="${allAchievements.getCondition()}"></td>
                                 <td>
-                                    <a th:href="@{/management/achievement/find/(id=${allAchievements.getId()})}" class="edit eBtn">
+                                    <a th:href="@{/management/achievement/{id}(id=${allAchievements.getId()})}" class="edit eBtn">
                                         <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
                                     </a>
-                                    <a th:href="@{/management/achievement/delete/(id=${allAchievements.getId()})}" class="delete eDelBtn" data-toggle="modal">
+                                    <a th:href="@{/management/achievement/{id}(id=${allAchievements.getId()})}" class="delete eDelBtn" data-toggle="modal">
                                         <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
                                     </a>
                                 </td>
