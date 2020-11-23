@@ -432,8 +432,8 @@ VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);
 INSERT INTO habit_status (working_days, habit_streak, habit_assign_id, last_enrollment)
 VALUES (5, 4, 1, '2020-09-10 20:00:00.823000');
 
-INSERT INTO habit_status_calendar (enroll_date, habit_status_id)
-VALUES ('2020-09-10', 1);
+INSERT INTO habit_status_calendar (enroll_date, habit_assign_id)
+VALUES ('2020-09-10',1);
 -- HABITS END --
 
 INSERT INTO news_subscribers (email_address, unsubscribe_token)

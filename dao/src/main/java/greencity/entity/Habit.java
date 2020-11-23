@@ -32,4 +32,7 @@ public class Habit {
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
     private List<HabitAssign> habitAssigns;
+
+    @OneToMany(mappedBy = "habit", fetch = FetchType.LAZY)
+    private List<HabitGoal> habitGoals;
 }

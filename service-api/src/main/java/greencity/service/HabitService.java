@@ -1,8 +1,12 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitDto;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface HabitService {
     /**
@@ -22,4 +26,6 @@ public interface HabitService {
      * @return Pageable of {@link HabitDto}.
      */
     PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language);
+
+    List<GoalDto> getShoppingListForHabit(Long habit_id, String lang);
 }

@@ -2,7 +2,11 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.language.LanguageTranslationDTO;
+import greencity.entity.Goal;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.exception.exceptions.NotFoundException;
@@ -12,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,5 +57,12 @@ public class HabitServiceImpl implements HabitService {
         return new PageableDto<>(habitTranslationDtos, pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages());
+    }
+
+    @Override
+    public List<GoalDto> getShoppingListForHabit(Long habit_id, String lang) {
+        List<Goal> goalList = habitRepo.getShoppingList(habit_id);
+        return modelMapper.map(goalList,  new TypeToken<List<GoalDto>>() {
+        }.getType());
     }
 }

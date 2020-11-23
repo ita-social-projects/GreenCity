@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.entity.Goal;
 import greencity.entity.HabitFact;
 import greencity.entity.User;
@@ -51,4 +52,25 @@ public interface GoalRepo extends JpaRepository<Goal, Long>, JpaSpecificationExe
         + "OR LOWER(gt.language.code) LIKE LOWER(CONCAT('%', :query, '%'))"
         + "OR LOWER(gt.content) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Goal> searchBy(Pageable paging, String query);
+
+    /**
+     * Method returns shopping list by user id.
+     *
+     * @return shopping list {@link ShoppingListDtoResponse}.
+     * @author Marian Datsko
+     */
+//    @Query("nativeQuery = true, SELECT ug.status, gt.content as text, ug.goal.id FROM UserGoal AS ug "
+//            + " JOIN GoalTranslation AS gt ON gt.goal.id = ug.goal.id "
+//            + " JOIN Language  AS l ON l.id = gt.language.id "
+//            + " WHERE ug.goal.id IS NOT NULL AND "
+//            + " ug.user.id = :userId AND l.code = :languageCode ")
+//     value = "SELECT ug.status, gt.content as text, ug.goal_id FROM user_goals AS ug "
+//            + " JOIN goal_translations AS gt ON gt.goal_id = ug.goal_id "
+//            + " JOIN languages AS l ON l.id = gt.language_id "
+//            + " WHERE ug.goal_id IS NOT NULL AND "
+//            + " ug.user_id = :userId AND l.code = :languageCode ")
+    @Query(nativeQuery = true)
+    List<ShoppingListDtoResponse> getShoppingList(@Param(value = "userId") Long userId,
+                                                  @Param(value = "languageCode") String languageCode);
+
 }

@@ -5,13 +5,18 @@ import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.service.HabitService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import java.util.List;
 import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -71,5 +76,25 @@ public class HabitController {
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
+    }
+
+    /**
+     * Method finds shoppingList for habit in specific language.
+     *
+     * @param lang   {@link String} with needed language code.
+     * @param id  {@link Long} with needed habit id.
+     * @return List of {@link ShoppingListDtoResponse}.
+     */
+    @ApiOperation(value = "Get shopping list.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("/{id}/shoppingList")
+    public ResponseEntity<List<GoalDto>> getAll(
+             @ApiParam String lang,
+            @ApiParam Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                habitService.getShoppingListForHabit(id, lang));
     }
 }

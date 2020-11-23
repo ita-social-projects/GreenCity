@@ -46,6 +46,11 @@ public class GoalServiceImpl implements GoalService {
             .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode) {
+        return goalRepo.getShoppingList(userId, languageCode);
+    }
+
     /**
      * {@inheritDoc}
      */

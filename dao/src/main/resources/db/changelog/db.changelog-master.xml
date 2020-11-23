@@ -58,4 +58,5 @@
     <include file="db/changelog/logs/ch-change-custom-goals-Khonko.xml"/>
     <include file="db/changelog/logs/ch-change-goals-Khonko.xml"/>
     <include file="db/changelog/logs/ch-habits-new-fields-Kravchenko.xml"/>
+    <include file="db/changelog/logs/ch-habit-goals-Khonko-1.xml"/>
 </databaseChangeLog>

@@ -79,4 +79,13 @@ public interface GoalService {
      * @author Dmytro Khonko
      */
     PageableAdvancedDto<GoalManagementDto> getFilteredDataForManagementByPage(Pageable pageable, GoalViewDto goal);
+
+    /**
+     * Method returns shopping list by user id.
+     *
+     * @return shopping list {@link ShoppingListDtoResponse}.
+     * @author Marian Datsko
+     */
+    List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode);
+
 }

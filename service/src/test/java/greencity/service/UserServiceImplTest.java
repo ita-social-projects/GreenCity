@@ -139,7 +139,7 @@ class UserServiceImplTest {
             .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
             .content("TEST")
-            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
             .build(),
         GoalTranslation.builder()
             .id(2L)
@@ -147,7 +147,7 @@ class UserServiceImplTest {
                 Collections.emptyList(), Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList()))
             .content("TEST")
-            .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList()))
+            .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
             .build());
     private Long userId = user.getId();
     private Long userId2 = user2.getId();

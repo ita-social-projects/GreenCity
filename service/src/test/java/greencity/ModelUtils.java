@@ -109,7 +109,7 @@ public class ModelUtils {
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
             .build();
     }
@@ -239,7 +239,7 @@ public class ModelUtils {
                     Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
-                .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+                .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .build(),
             GoalTranslation.builder()
                 .id(11L)
@@ -247,7 +247,7 @@ public class ModelUtils {
                     Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
-                .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList()))
+                .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .build());
     }
 
@@ -452,7 +452,6 @@ public class ModelUtils {
 
     public static ShoppingListDtoResponse getShoppingListDtoResponse() {
         return ShoppingListDtoResponse.builder()
-            .customGoalId(1L)
             .goalId(1L)
             .status("ACTIVE")
             .text("text")
