@@ -9,6 +9,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.service.HabitService;
+import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -29,6 +30,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/habit")
 public class HabitController {
     private final HabitService habitService;
+    private final TagsService tagsService;
 
     /**
      * Method finds {@link HabitVO} by given id with locale translation.
@@ -93,5 +95,17 @@ public class HabitController {
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage()));
+    }
+
+    /**
+     * The method which returns all habit's tags.
+     *
+     * @return list of {@link String} (tag's names).
+     * @author Markiyan Derevetskyi
+     */
+    @ApiOperation(value = "Find all eco news tags")
+    @GetMapping("/tags/all")
+    public ResponseEntity<List<String>> findAllEcoNewsTags() {
+        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags());
     }
 }
