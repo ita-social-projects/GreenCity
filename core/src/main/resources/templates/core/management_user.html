@@ -22,6 +22,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/user/buttonsAJAX.js}"></script>
+    <style>
+        .modal-title {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
@@ -74,7 +80,7 @@
                     </thead>
                     <th:block th:each="user, iterStatus :${users.getPage()}">
                         <tbody>
-                        <tr>
+                        <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
                             <td>
                                     <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
@@ -148,7 +154,7 @@
         </div>
     </div>
     <!-- Add Modal HTML -->
-    <div id="   addUserModal" class="modal fade">
+    <div id="addUserModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form th:action="@{#}" method="post" id="addUserForm">
@@ -306,6 +312,29 @@
                         </a>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <!-- User's friends Modal HTML -->
+    <div id="userFriendsModal" class="modal fade">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <h4 class="modal-title">User's Friends</h4>
+                <div class="modal-body">
+                    <table class="table table-hover" id="friendsTable">
+                        <thead>
+                        <tr class="table-primary">
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Credo</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
