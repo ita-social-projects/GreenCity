@@ -50,7 +50,7 @@ public class HabitServiceImpl implements HabitService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags,
         String languageCode) {
@@ -60,7 +60,8 @@ public class HabitServiceImpl implements HabitService {
     }
 
     /**
-     * Method that build {@link PageableDto} of {@link HabitDto} from {@link Page} of {@link HabitTranslation}.
+     * Method that build {@link PageableDto} of {@link HabitDto} from {@link Page}
+     * of {@link HabitTranslation}.
      *
      * @param habitTranslationsPage {@link Page} of {@link HabitTranslation}
      * @return {@link PageableDto} of {@link HabitDto}

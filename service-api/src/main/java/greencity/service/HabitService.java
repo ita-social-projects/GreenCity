@@ -31,8 +31,8 @@ public interface HabitService {
     /**
      * Method that find all habit's translations by language code and tags.
      *
-     * @param pageable {@link Pageable}
-     * @param tags {@link List} of {@link String} tags
+     * @param pageable     {@link Pageable}
+     * @param tags         {@link List} of {@link String} tags
      * @param languageCode language code {@link String}
      *
      * @return {@link PageableDto} of {@link HabitDto}.

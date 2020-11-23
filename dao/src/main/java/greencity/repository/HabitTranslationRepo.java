@@ -70,8 +70,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     /**
      * Method that find all habit's translations by language code and tags.
      *
-     * @param pageable {@link Pageable}
-     * @param tags {@link List} of {@link String} tags
+     * @param pageable     {@link Pageable}
+     * @param tags         {@link List} of {@link String} tags
      * @param languageCode language code {@link String}
      *
      * @return {@link List} of {@link HabitTranslation}.
