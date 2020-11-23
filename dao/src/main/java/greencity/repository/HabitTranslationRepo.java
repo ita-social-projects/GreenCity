@@ -68,7 +68,14 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     void deleteAllByHabit(Habit habit);
 
     /**
-     * Find.
+     * Method that find all habit's translations by language code and tags.
+     *
+     * @param pageable {@link Pageable}
+     * @param tags {@link List} of {@link String} tags
+     * @param languageCode language code {@link String}
+     *
+     * @return {@link List} of {@link HabitTranslation}.
+     * @author Markiyan Derevetskyi
      */
     @Query(nativeQuery = true, value = "select distinct ht.* from habit_translation as ht "
         + "inner join habits_tags as htg on ht.habit_id = htg.habit_id "
