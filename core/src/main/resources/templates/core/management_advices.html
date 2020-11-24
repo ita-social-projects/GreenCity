@@ -193,11 +193,11 @@
                                                th:name="${language.getCode()}" th:value="${language.getCode()}" type="text"/>
                                     </div>
                                 </div>
-                                <div class="col-9">
+                                <div class="col-12">
                                     <div class="form-group">
                                         <label>Content</label>
-                                        <input class="form-control" th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                               type="text"/>
+                                        <textarea class="form-control" th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}"
+                                                  type="text"></textarea>
                                         <span class="errorSpan"
                                               th:id="'errorModalSavetranslations['+${iterInfo.index}+'].content'"></span>
                                     </div>
@@ -248,12 +248,12 @@
                                                th:name="${language.getCode()}" th:value="${language.getCode()}" type="text"/>
                                     </div>
                                 </div>
-                                <div class="col-9">
+                                <div class="col-12">
                                     <div class="form-group">
                                         <label>Content</label>
-                                        <input class="form-control" th:id="content+${'_' + language.getId()+'_'}+${language.getCode()}"
+                                        <textarea class="form-control" th:id="content+${'_' + language.getId()+'_'}+${language.getCode()}"
                                                th:name="content+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                               type="text"/>
+                                               type="text"></textarea>
                                         <span class="errorSpan"
                                               th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].content'"></span>
                                     </div>
