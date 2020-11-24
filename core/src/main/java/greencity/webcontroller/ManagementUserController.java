@@ -96,6 +96,19 @@ public class ManagementUserController {
     }
 
     /**
+     * Method that finds user's friends {@link UserManagementDto} by given id.
+     *
+     * @param id {@link Long} - user's id.
+     * @return {@link List} of {@link UserManagementDto} instances.
+     * @author Markiyan Derevetskyi
+     */
+    @GetMapping("/{id}/friends")
+    @ResponseBody
+    public List<UserManagementDto> findFriendsById(@PathVariable Long id) {
+        return userService.findUserFriendsByUserId(id);
+    }
+
+    /**
      * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
      * not be able to log in into the system.
      *

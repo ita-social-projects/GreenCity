@@ -214,4 +214,23 @@ $(document).ready(function(){
             data: JSON.stringify(payload)
         });
     });
+
+    $(".clickable-row").click(function() {
+        $('#userFriendsModal').modal();
+        $('.modal-content').scrollTop(0);
+        const href = $(this).attr("href");
+        const body = $('#friendsTable').find('tbody');
+        body.html("");
+        $.get(href, function (users) {
+            for(const user of users) {
+                body.append($('<tr>')
+                    .append($('<td>').text(user.id))
+                    .append($('<td>').text(user.name))
+                    .append($('<td>').text(user.email))
+                    .append($('<td>').text(user.userCredo))
+                    .append($('<td>').text(user.role))
+                    .append($('<td>').text(user.userStatus)));
+            }
+        })
+    });
 });

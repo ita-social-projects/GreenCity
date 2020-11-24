@@ -44,8 +44,9 @@ $(document).ready(function () {
     });
 
     $('#btnSearchImage').click(function (){
-        let url = "/management/advices?query=";
+        let url = "/management/advices?filter=";
         let query = $('#inputSearch').val();
+        console.log(query);
         $.ajax({
             url: url + query,
             type: 'GET',
