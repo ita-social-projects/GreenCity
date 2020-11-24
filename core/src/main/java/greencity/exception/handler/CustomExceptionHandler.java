@@ -410,6 +410,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
+    /**
+     * Method intercept exception {@link UserActivationEmailTokenExpiredException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain detail about occur exception
+     * @return ResponseEntity witch contain http status and body with message of
+     *         exception.
+     */
     @ExceptionHandler(UserActivationEmailTokenExpiredException.class)
     public final ResponseEntity<Object> handleTagNotFoundException(UserActivationEmailTokenExpiredException ex,
         WebRequest request) {

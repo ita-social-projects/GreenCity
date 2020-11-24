@@ -27,9 +27,15 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
     private final VerifyEmailRepo verifyEmailRepo;
     private final String clientLink;
 
+    /**
+     * Constructor.
+     *
+     * @param verifyEmailRepo {@link VerifyEmailRepo}
+     * @param clientLink      address fot site
+     */
     @Autowired
     public VerifyEmailServiceImpl(VerifyEmailRepo verifyEmailRepo,
-                                  @Value("${client.address}") String clientLink) {
+        @Value("${client.address}") String clientLink) {
         this.verifyEmailRepo = verifyEmailRepo;
         this.clientLink = clientLink;
     }
