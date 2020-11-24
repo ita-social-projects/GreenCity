@@ -87,7 +87,7 @@ public class HabitController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
     })
-    @GetMapping("/tags")
+    @GetMapping("/tags/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
         @ApiIgnore @ValidLanguage Locale locale,
@@ -104,7 +104,7 @@ public class HabitController {
      * @author Markiyan Derevetskyi
      */
     @ApiOperation(value = "Find all habits tags")
-    @GetMapping("/tags/all")
+    @GetMapping("/tags")
     public ResponseEntity<List<String>> findAllHabitsTags() {
         return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags());
     }
