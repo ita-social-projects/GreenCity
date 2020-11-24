@@ -77,7 +77,7 @@ public class ManagementAchievementController {
      * @return {@link ResponseEntity}
      * @author Orest Mamchuk
      */
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteAdviceById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(achievementService.delete(id));
@@ -102,7 +102,7 @@ public class ManagementAchievementController {
      * @param id of Eco New
      * @return {@link AchievementVO} instance.
      */
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<AchievementVO> getEcoNewsById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(achievementService.findById(id));
     }
