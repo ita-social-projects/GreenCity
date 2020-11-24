@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final EcoNewsRepo ecoNewsRepo;
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
+    private final SocialNetworkRepo socialNetworkRepo;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
     /**
@@ -664,6 +665,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userProfileDtoRequest.getFirstName());
         user.setCity(userProfileDtoRequest.getCity());
         user.setUserCredo(userProfileDtoRequest.getUserCredo());
+        user.getSocialNetworks().forEach(socialNetwork -> socialNetworkRepo.deleteById(socialNetwork.getId()));
         user.getSocialNetworks().clear();
         user.getSocialNetworks().addAll(userProfileDtoRequest.getSocialNetworks()
             .stream()
