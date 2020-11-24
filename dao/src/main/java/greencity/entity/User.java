@@ -121,7 +121,7 @@ public class User {
     @Column(name = "user_credo")
     private String userCredo;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @Column(name = "social_networks")
     private List<SocialNetwork> socialNetworks;
 
