@@ -103,9 +103,9 @@ public class HabitController {
      * @return list of {@link String} (tag's names).
      * @author Markiyan Derevetskyi
      */
-    @ApiOperation(value = "Find all eco news tags")
+    @ApiOperation(value = "Find all habits tags")
     @GetMapping("/tags/all")
-    public ResponseEntity<List<String>> findAllEcoNewsTags() {
+    public ResponseEntity<List<String>> findAllHabitsTags() {
         return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags());
     }
 }
