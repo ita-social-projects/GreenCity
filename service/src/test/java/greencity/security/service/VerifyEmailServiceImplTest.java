@@ -3,16 +3,21 @@ package greencity.security.service;
 import greencity.entity.VerifyEmail;
 import greencity.exception.exceptions.UserActivationEmailTokenExpiredException;
 import greencity.security.repository.VerifyEmailRepo;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(MockitoExtension.class)
 class VerifyEmailServiceImplTest {
@@ -22,8 +27,15 @@ class VerifyEmailServiceImplTest {
     @InjectMocks
     private VerifyEmailServiceImpl verifyEmailService;
 
+    @BeforeEach
+    public void init() {
+        initMocks(this);
+        String address = "http://localhost:4200";
+        verifyEmailService = new VerifyEmailServiceImpl(verifyEmailRepo, address);
+    }
+
     @Test
-    void verifyByTokenNotExpiredTokenTest() {
+    void verifyByTokenNotExpiredTokenTest() throws URISyntaxException {
         VerifyEmail verifyEmail = new VerifyEmail();
         verifyEmail.setExpiryDate(LocalDateTime.MAX);
         when(verifyEmailRepo.findByTokenAndUserId(1L, "token")).thenReturn(Optional.of(verifyEmail));

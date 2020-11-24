@@ -1,5 +1,8 @@
 package greencity.security.service;
 
+import org.springframework.http.HttpHeaders;
+
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 
 /**
@@ -14,9 +17,9 @@ public interface VerifyEmailService {
      *
      * @param userId {@link Long} - user's id.
      * @param token  {@link String} - token that confirms the user is the owner of
-     *               his/her email.
+     * @return {@link HttpHeaders}
      */
-    void verifyByToken(Long userId, String token);
+    HttpHeaders verifyByToken(Long userId, String token) throws URISyntaxException;
 
     /**
      * Checks whether a user is not late with email verification.

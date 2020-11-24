@@ -13,6 +13,8 @@ import greencity.security.service.VerifyEmailService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import java.net.URISyntaxException;
 import java.security.Principal;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -102,13 +104,13 @@ public class OwnSecurityController {
     @ApiOperation("Verify email by email token (hash that contains link for verification)")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN)
     })
     @GetMapping("/verifyEmail")
     public ResponseEntity<Object> verify(@RequestParam @NotBlank String token,
-        @RequestParam("user_id") Long userId) {
-        verifyEmailService.verifyByToken(userId, token);
-        return ResponseEntity.ok().build();
+        @RequestParam("user_id") Long userId) throws URISyntaxException {
+        return new ResponseEntity<>(verifyEmailService.verifyByToken(userId, token), HttpStatus.SEE_OTHER);
     }
 
     /**
