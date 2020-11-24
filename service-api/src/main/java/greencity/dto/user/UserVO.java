@@ -1,5 +1,6 @@
 package greencity.dto.user;
 
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
@@ -53,6 +54,8 @@ public class UserVO {
     private List<SocialNetworkVO> socialNetworks;
 
     private List<UserVO> userFriends = new ArrayList<>();
+
+    private List<UserAchievementVO> userAchievements;
 
     private String refreshTokenKey;
 
