@@ -62,6 +62,8 @@ public class DatasourceMetadata {
             new ResourceDatabasePopulator(true, true, "UTF-8");
         databasePopulator.addScript(
             new ClassPathResource("db/functions/fn_recommended_econews_by_opened_eco_news.sql"));
+        databasePopulator.addScript(new ClassPathResource("db/functions/fn_texttipsandtricks.sql"));
+        databasePopulator.addScript(new ClassPathResource("db/functions/textsearchtipsandtricksforadmin.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/fn_textsearcheconews.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_buffercache_pages.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements.sql"));
