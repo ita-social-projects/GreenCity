@@ -1,7 +1,3 @@
--- FUNCTION: public.fn_textsearchtipsandtricksforadmin(text, text)
-
--- DROP FUNCTION public.fn_textsearchtipsandtricksforadmin(text, text);
-
 CREATE OR REPLACE FUNCTION public.fn_textsearchtipsandtricksforadmin(
     search_query text,
     language_code text)
@@ -13,30 +9,28 @@ CREATE OR REPLACE FUNCTION public.fn_textsearchtipsandtricksforadmin(
 AS $BODY$
 BEGIN
     RETURN QUERY
-        select distinct tt.id,
+        SELECT DISTINCT tt.id,
                         tt.creation_date,
                         tt.image_path,
                         tt.author_id,
                         title.content,
                         textTrans.content,
                         tt.source
-        from public.tips_and_tricks tt
-                 left JOIN public.title_translations  title
-                           on tt.id=title.tips_and_tricks_id
-                 left JOIN public.text_translations textTrans
-                           on textTrans.tips_and_tricks_id=tt.id
-                 inner JOIN languages l
-                            ON l.id = title.language_id
-                 inner JOIN languages
-                            ON l.id = textTrans.language_id
+        FROM public.tips_and_tricks tt
+                 LEFT JOIN public.title_translations  title
+                           ON tt.id=title.tips_and_tricks_id
+                 LEFT JOIN public.text_translations textTrans
+                           ON textTrans.tips_and_tricks_id=tt.id
+                 JOIN languages l
+                      ON l.id = title.language_id AND l.id = textTrans.language_id
 
-        where (CONCAT(tt.id,'') like lower(CONCAT('%', search_query, '%'))
-            or lower(title.content) like lower(CONCAT('%', search_query, '%'))
-            or lower(textTrans.content) like lower(CONCAT('%', search_query, '%'))
-            or tt.id in (select tt.id from public.tips_and_tricks tt inner join public.users us
-                                                                                on us.id=tt.author_id
-                         where lower(us.name) like lower(CONCAT('%', search_query, '%')))
-                   and l.code = language_code);
+        WHERE (CONCAT(tt.id,'') LIKE LOWER(CONCAT('%', search_query, '%'))
+            OR LOWER(title.content) LIKE LOWER(CONCAT('%', search_query, '%'))
+            OR LOWER(textTrans.content) LIKE LOWER(CONCAT('%', search_query, '%'))
+            OR tt.id IN (SELECT tt.id FROM public.tips_and_tricks tt JOIN public.users us
+                                                                          ON us.id=tt.author_id
+                         WHERE LOWER(us.name) LIKE LOWER(CONCAT('%', search_query, '%'))))
+          AND l.code = language_code;
 
 END
 $BODY$;
