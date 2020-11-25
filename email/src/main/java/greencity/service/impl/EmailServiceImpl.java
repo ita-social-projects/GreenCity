@@ -137,7 +137,7 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
-        model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token="
+        model.put(EmailConstants.VERIFY_ADDRESS, clientLink + "/ownSecurity/verifyEmail?token="
             + token + PARAM_USER_ID + id);
         String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
         sendEmail(email, EmailConstants.VERIFY_EMAIL, template);
