@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
-import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
@@ -16,6 +15,7 @@ import greencity.repository.HabitRepo;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -246,20 +246,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitStatusCalendarDto enrollHabit(Long habitId, Long userId) {
+    public HabitAssignDto enrollHabit(Long habitId, Long userId) {
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
 
         LocalDate todayDate = LocalDate.now();
-        updateHabitAssignAfterEnroll(habitAssign, todayDate);
 
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
             .enrollDate(todayDate).habitAssign(habitAssign).build();
 
-        HabitStatusCalendarVO habitCalendarVO =
-            habitStatusCalendarService.save(modelMapper.map(habitCalendar, HabitStatusCalendarVO.class));
-        return modelMapper.map(habitCalendarVO, HabitStatusCalendarDto.class);
+        updateHabitAssignAfterEnroll(habitAssign, todayDate, habitCalendar);
+
+        return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
     /**
@@ -268,9 +267,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      * @param todayDate   {@link LocalDate} date.
      */
-    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign, LocalDate todayDate) {
+    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign, LocalDate todayDate,
+        HabitStatusCalendar habitCalendar) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
+
+        List<HabitStatusCalendar> habitStatusCalendars =
+            new ArrayList<>(habitAssign.getHabitStatusCalendars());
+        habitStatusCalendars.add(habitCalendar);
+        habitAssign.setHabitStatusCalendars(habitStatusCalendars);
 
         updateHabitStreakAfterEnroll(habitAssign, todayDate);
 

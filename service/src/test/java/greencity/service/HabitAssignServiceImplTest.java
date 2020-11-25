@@ -142,15 +142,13 @@ class HabitAssignServiceImplTest {
     @Test
     void enrollHabit() {
         HabitAssign habitAssign = getHabitAssign();
-        HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(habitStatusCalendarService.findTopByEnrollDateAndHabitAssign(habitAssignVO))
             .thenReturn(LocalDate.of(2020, 10, 15));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        when(modelMapper.map(any(), eq(HabitStatusCalendarVO.class))).thenReturn(habitStatusCalendarVO);
         habitAssignService.enrollHabit(1L, 1L);
-        verify(habitStatusCalendarService).save(habitStatusCalendarVO);
+        verify(habitAssignRepo).save(habitAssign);
     }
 
     @Test

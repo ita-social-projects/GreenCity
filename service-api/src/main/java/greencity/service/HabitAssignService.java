@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.habit.*;
-import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
 import java.time.LocalDate;
 import java.util.List;
@@ -92,9 +91,9 @@ public interface HabitAssignService {
      *
      * @param habitId {@code Habit} id to enroll.
      * @param userId  {@code User} id.
-     * @return {@link HabitStatusCalendarDto}.
+     * @return {@link HabitAssignDto}.
      */
-    HabitStatusCalendarDto enrollHabit(Long habitId, Long userId);
+    HabitAssignDto enrollHabit(Long habitId, Long userId);
 
     /**
      * Method to unenroll Habit in defined date.
