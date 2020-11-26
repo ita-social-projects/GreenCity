@@ -349,18 +349,18 @@ class UserControllerTest {
     @Test
     void saveUserGoalsWithoutLanguageParamTest() throws Exception {
         String content = "[\n"
-                + " {\n"
-                + "    \"id\": 1\n"
-                + " }\n"
-                + "]\n";
+            + " {\n"
+            + "    \"id\": 1\n"
+            + " }\n"
+            + "]\n";
 
         mockMvc.perform(post(userLink + "/{userId}/saveGoals?habitId=1&lang=en", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isCreated());
 
-        GoalRequestDto dto = new GoalRequestDto (1L);
-        verify(userService).saveUserGoals(1L,1L, Collections.singletonList(dto), "en");
+        GoalRequestDto dto = new GoalRequestDto(1L);
+        verify(userService).saveUserGoals(1L, 1L, Collections.singletonList(dto), "en");
     }
 
     /*

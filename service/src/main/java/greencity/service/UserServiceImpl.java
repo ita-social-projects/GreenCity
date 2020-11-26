@@ -309,14 +309,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language) {
         Optional<HabitAssign> habitAssignOptional =
-                habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId);
+            habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId);
         if (habitAssignOptional.isPresent()) {
             HabitAssign habitAssign = habitAssignOptional.get();
             List<UserGoalResponseDto> goalDtos = userGoalRepo
-                    .findAllByHabitAssingId(habitAssign.getId())
-                    .stream()
-                    .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
-                    .collect(Collectors.toList());
+                .findAllByHabitAssingId(habitAssign.getId())
+                .stream()
+                .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
+                .collect(Collectors.toList());
             if (goalDtos.isEmpty()) {
                 throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
             }

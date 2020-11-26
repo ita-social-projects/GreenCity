@@ -186,39 +186,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static UserGoal getCustomUserGoal() {
-        return UserGoal.builder()
-            .id(1L)
-//            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
-            .status(GoalStatus.DONE)
-            .build();
-    }
-
-    public static UserGoalResponseDto getCustomUserGoalDto() {
-        return UserGoalResponseDto.builder()
-            .id(1L)
-            .text("Buy electric car")
-            .status(GoalStatus.ACTIVE)
-            .build();
-    }
-
-    public static UserGoal getPredefinedUserGoal() {
-        return UserGoal.builder()
-            .id(2L)
-//            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
-            .status(GoalStatus.ACTIVE)
-            .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
-            .build();
-    }
-
-    public static UserGoalResponseDto getPredefinedUserGoalDto() {
-        return UserGoalResponseDto.builder()
-            .id(2L)
-            .text("Buy a bamboo toothbrush")
-            .status(GoalStatus.ACTIVE)
-            .build();
-    }
-
     public static List<GoalTranslation> getGoalTranslations() {
         return Arrays.asList(
             GoalTranslation.builder()

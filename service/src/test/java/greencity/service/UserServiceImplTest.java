@@ -378,15 +378,14 @@ class UserServiceImplTest {
     void getUserGoalsTest() {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         UserGoal userGoal = UserGoal.builder().id(1L).status(GoalStatus.ACTIVE).build();
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId,1L))
-                .thenReturn(Optional.of(habitAssign));
-        when(userGoalRepo.findAllByHabitAssingId(habitAssign.getId())).
-                thenReturn(Collections.singletonList(userGoal));
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(userGoal));
         when(modelMapper.map(userGoal, UserGoalResponseDto.class))
-                .thenReturn(UserGoalResponseDto.builder().id(1L).build());
-        when(goalTranslationRepo.findByLangAndUserGoalId("en",1L))
-                .thenReturn(GoalTranslation.builder().id(1L).build());
-        assertEquals(userService.getUserGoals(userId, 1L,"en").get(0).getId(), 1L);
+            .thenReturn(UserGoalResponseDto.builder().id(1L).build());
+        when(goalTranslationRepo.findByLangAndUserGoalId("en", 1L))
+            .thenReturn(GoalTranslation.builder().id(1L).build());
+        assertEquals(userService.getUserGoals(userId, 1L, "en").get(0).getId(), 1L);
     }
 
     @Test
@@ -399,8 +398,7 @@ class UserServiceImplTest {
     @Test
     void updateUserGoalStatusWithNonExistentGoalIdTest() {
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        assertThrows(NullPointerException.class, () ->
-                userService.updateUserGoalStatus(userId, 2L, "en"));
+        assertThrows(NullPointerException.class, () -> userService.updateUserGoalStatus(userId, 2L, "en"));
     }
 
     @Test
@@ -411,8 +409,8 @@ class UserServiceImplTest {
         when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
             .thenReturn(new UserGoalResponseDto(2L, null, GoalStatus.DONE));
         when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.of(userGoal.getGoal()));
-        when(goalTranslationRepo.findByLangAndUserGoalId("en",userGoal.getId()))
-                .thenReturn(GoalTranslation.builder().build());
+        when(goalTranslationRepo.findByLangAndUserGoalId("en", userGoal.getId()))
+            .thenReturn(GoalTranslation.builder().build());
         UserGoalResponseDto userGoalResponseDto =
             userService.updateUserGoalStatus(userId, userGoal.getId(), "en");
 

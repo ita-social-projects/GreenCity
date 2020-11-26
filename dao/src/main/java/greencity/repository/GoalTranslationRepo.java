@@ -70,5 +70,4 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
         + "WHERE hg.goal.id = g.goal.id AND g.language.code = :languageCode")
     List<GoalTranslation> findAllGoalByHabitIdAndByLanguageCode(String languageCode,
         @Param(value = "habitId") Long habitId);
-
 }
