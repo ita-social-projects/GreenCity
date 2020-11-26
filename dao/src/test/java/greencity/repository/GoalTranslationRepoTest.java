@@ -44,40 +44,20 @@ class GoalTranslationRepoTest {
 
     @Test
     void findByUserIdLangAndUserGoalIdTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId("ru", 2L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByLangAndUserGoalId("ru", 2L);
         assertEquals("ru", goalTranslation.getLanguage().getCode());
         assertEquals(2L, goalTranslation.getGoal().getId());
     }
 
     @Test
     void findByUserIdLangAndUserGoalIdNotFoundTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId("ru", 2L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByLangAndUserGoalId("ru", 10L);
         assertNull(goalTranslation);
     }
 
     @Test
     void findByUserIdLangAndUserGoalIdWithEmptyResultTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId("ru", 3L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByLangAndUserGoalId("ru", 3L);
         assertNull(goalTranslation);
     }
-
-    @Test
-    void findByGoalAndLanguageCodeTest() {
-        Goal goal = new Goal();
-        goal.setId(1L);
-        Optional<GoalTranslation> goalTranslation = goalTranslationRepo
-            .findByGoalAndLanguageCode(goal, "en");
-        assertTrue(goalTranslation.isPresent());
-        assertEquals(goal, goalTranslation.get().getGoal());
-    }
-
-    @Test
-    void findByGoalAndLanguageCodeNotFoundTest() {
-        Goal goal = new Goal();
-        goal.setId(10L);
-        Optional<GoalTranslation> goalTranslation = goalTranslationRepo
-            .findByGoalAndLanguageCode(goal, "en");
-        assertTrue(goalTranslation.isEmpty());
-    }
-
 }

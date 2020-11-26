@@ -308,17 +308,23 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId).get();
-        List<UserGoalResponseDto> goalDtos = userGoalRepo
-            .findAllByHabitAssingId(habitAssign.getId())
-            .stream()
-            .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
-            .collect(Collectors.toList());
-        if (goalDtos.isEmpty()) {
+        Optional<HabitAssign> habitAssignOptional =
+                habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId);
+        if (habitAssignOptional.isPresent()) {
+            HabitAssign habitAssign = habitAssignOptional.get();
+            List<UserGoalResponseDto> goalDtos = userGoalRepo
+                    .findAllByHabitAssingId(habitAssign.getId())
+                    .stream()
+                    .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
+                    .collect(Collectors.toList());
+            if (goalDtos.isEmpty()) {
+                throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
+            }
+            goalDtos.forEach(el -> setTextForUserGoal(el, language));
+            return goalDtos;
+        } else {
             throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
         }
-        goalDtos.forEach(el -> setTextForUserGoal(el, language));
-        return goalDtos;
     }
 
     /**
@@ -328,7 +334,7 @@ public class UserServiceImpl implements UserService {
      * @param dto {@link GoalDto}
      */
     private void setTextForUserGoal(UserGoalResponseDto dto, String language) {
-        String text = goalTranslationRepo.findByUserIdLangAndUserGoalId(language, dto.getId()).getContent();
+        String text = goalTranslationRepo.findByLangAndUserGoalId(language, dto.getId()).getContent();
         dto.setText(text);
     }
 
@@ -340,7 +346,7 @@ public class UserServiceImpl implements UserService {
      */
     private UserGoalResponseDto setTextForAnyUserGoal(UserGoalResponseDto dto, Long userId, String language) {
         String text = userGoalRepo.findGoalByUserGoalId(dto.getId()).isPresent()
-            ? goalTranslationRepo.findByUserIdLangAndUserGoalId(language, dto.getId()).getContent()
+            ? goalTranslationRepo.findByLangAndUserGoalId(language, dto.getId()).getContent()
             : customGoalRepo.findByUserId(userId).getText();
         dto.setText(text);
         return dto;

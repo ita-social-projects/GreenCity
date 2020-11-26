@@ -14,19 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GoalRepo extends JpaRepository<Goal, Long>, JpaSpecificationExecutor<Goal> {
     /**
-     * Method change goal status.
-     *
-     * @author Marian Datsko
-     */
-    @Modifying
-    @Query(nativeQuery = true, value = " UPDATE user_goals "
-        + " SET status = :status, date_completed = :date WHERE goal_id = :id AND user_id = :userId ")
-    void changeGoalStatus(@Param(value = "userId") Long userId,
-        @Param(value = "id") Long id,
-        @Param(value = "status") String status,
-        @Param(value = "date") LocalDateTime date);
-
-    /**
      * Method returns {@link Goal} by search query and page.
      *
      * @param paging {@link Pageable}.

@@ -26,6 +26,14 @@ INSERT INTO users (id,
 VALUES (1, current_date, 'mail@.com', 1, 'Tom', current_date, 1, 1, 'quux'),
        (2, current_date, 'test@.com', 0, 'John', current_date, 1, 1, 'quux');
 
-INSERT INTO user_goals(id, user_id, goal_id, status)
+INSERT INTO habits (id, image, default_duration)
+VALUES (1,'image1', 14),
+       (2,'image2', 14);
+
+INSERT INTO habit_assign (id, habit_id, user_id, acquired, create_date, suspended, duration)
+VALUES (1, 1, 1, false, '2020-09-10 20:00:00', false, 14),
+       (2, 2, 2, false, '2020-09-10 20:00:00', false, 14);
+
+INSERT INTO user_goals(id, habit_assign_id, goal_id, status)
 VALUES (1, 1, 1, 'ACTIVE'),
        (2, 2, 2, 'DONE');

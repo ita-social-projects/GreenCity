@@ -42,7 +42,7 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
     @Query(nativeQuery = true, value = "SELECT * FROM goal_translations as g "
         + "where g.goal_id = (SELECT ug.goal_id FROM user_goals as ug WHERE ug.id=:goalId)"
         + "AND g.language_id = (SELECT id FROM languages l where l.code =:languageCode)")
-    GoalTranslation findByUserIdLangAndUserGoalId(String languageCode, Long goalId);
+    GoalTranslation findByLangAndUserGoalId(String languageCode, Long goalId);
 
     /**
      * Method updates goal translation for particular selected goal for specific
@@ -71,12 +71,4 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
     List<GoalTranslation> findAllGoalByHabitIdAndByLanguageCode(String languageCode,
         @Param(value = "habitId") Long habitId);
 
-    /**
-     * Method returns goal translations for specific goal and language code.
-     *
-     * @param goal         goal to get translation
-     * @param languageCode code of needed language
-     * @return Optional of {@link GoalTranslation}
-     */
-    Optional<GoalTranslation> findByGoalAndLanguageCode(Goal goal, String languageCode);
 }

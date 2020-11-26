@@ -45,7 +45,6 @@ public class UserController {
     private final UserService userService;
     private final CustomGoalService customGoalService;
     private final HabitAssignService habitAssignService;
-    private final HabitStatisticService habitStatisticService;
 
     /**
      * The method which update user status. Parameter principal are ignored because
@@ -250,7 +249,7 @@ public class UserController {
     @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
         @Valid @RequestBody List<GoalRequestDto> dto,
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUser Long userId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
         Long habitId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
@@ -264,18 +263,17 @@ public class UserController {
      * @param locale  {@link Locale} with needed language code.
      * @param userId  {@link Long} with needed user id.
      * @param habitId {@link Long} with needed habit id.
-     * @return List of {@link ShoppingListDtoResponse}.
+     * @return List of {@link UserGoalResponseDto}.
      */
-
     @ApiOperation(value = "Get user`s shopping list.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
     })
-    @GetMapping("/{userId}/get-all-assigned")
+    @GetMapping("/{userId}/getAllAssigned")
     @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> getGoalsAssignedToUser(
-        @ApiParam("User id") @PathVariable @CurrentUser Long userId,
+        @PathVariable @CurrentUserId Long userId,
         Long habitId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)

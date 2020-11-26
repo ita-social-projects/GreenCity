@@ -157,6 +157,9 @@ public class ModelUtils {
                     .build()))
                 .build())
             .user(getUser())
+                .userGoals(Collections.singletonList(UserGoal.builder()
+                        .id(1L)
+                        .build()))
             .workingDays(0)
             .duration(0)
             .habitStreak(0)
@@ -188,7 +191,7 @@ public class ModelUtils {
     public static UserGoal getCustomUserGoal() {
         return UserGoal.builder()
             .id(1L)
-//            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
+            .habitAssign(HabitAssign.builder().id(1L).build())
             .status(GoalStatus.DONE)
             .build();
     }
@@ -204,7 +207,7 @@ public class ModelUtils {
     public static UserGoal getPredefinedUserGoal() {
         return UserGoal.builder()
             .id(2L)
-//            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
+            .habitAssign(HabitAssign.builder().id(1L).build())
             .status(GoalStatus.ACTIVE)
             .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
             .build();
@@ -213,11 +216,8 @@ public class ModelUtils {
     public static UserGoalVO getUserGoalVO() {
         return UserGoalVO.builder()
             .id(1L)
-            .user(UserVO.builder()
+            .habitAssign(HabitAssignVO.builder()
                 .id(1L)
-                .email(TestConst.EMAIL)
-                .name(TestConst.NAME)
-                .role(Role.ROLE_USER)
                 .build())
             .status(GoalStatus.DONE)
             .build();
