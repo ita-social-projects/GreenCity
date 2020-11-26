@@ -3,20 +3,14 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitDto;
-import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.Goal;
-import greencity.entity.Habit;
-import greencity.entity.HabitTranslation;
+import greencity.entity.*;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitTranslationRepo;
+import greencity.repository.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,7 +24,7 @@ public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
-
+    private final GoalTranslationRepo goalTranslationRepo;
     /**
      * {@inheritDoc}
      */
@@ -59,10 +53,14 @@ public class HabitServiceImpl implements HabitService {
             pages.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<GoalDto> getShoppingListForHabit(Long habit_id, String lang) {
-        List<Goal> goalList = habitRepo.getShoppingList(habit_id);
-        return modelMapper.map(goalList,  new TypeToken<List<GoalDto>>() {
-        }.getType());
+        return goalTranslationRepo.findAllGoalByHabitIdAndByLanguageCode(lang ,habit_id)
+                .stream()
+                .map(g -> modelMapper.map(g, GoalDto.class))
+                .collect(Collectors.toList());
     }
 }

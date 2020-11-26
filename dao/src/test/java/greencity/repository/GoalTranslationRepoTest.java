@@ -44,20 +44,20 @@ class GoalTranslationRepoTest {
 
     @Test
     void findByUserIdLangAndUserGoalIdTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId(2L, "ru", 2L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId("ru", 2L);
         assertEquals("ru", goalTranslation.getLanguage().getCode());
         assertEquals(2L, goalTranslation.getGoal().getId());
     }
 
     @Test
     void findByUserIdLangAndUserGoalIdNotFoundTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId(3L, "ru", 2L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId( "ru", 2L);
         assertNull(goalTranslation);
     }
 
     @Test
     void findByUserIdLangAndUserGoalIdWithEmptyResultTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId(2L, "ru", 3L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId("ru", 3L);
         assertNull(goalTranslation);
     }
 

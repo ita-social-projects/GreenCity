@@ -18,7 +18,7 @@ public class UserGoalVOMapper extends AbstractConverter<UserGoal, UserGoalVO> {
                 .build())
             .status(userGoal.getStatus())
             .user(UserVO.builder()
-                .id(userGoal.getUser().getId()).build())
+                .id(userGoal.getHabitAssign().getUser().getId()).build())
             .dateCompleted(userGoal.getDateCompleted())
             .build();
     }

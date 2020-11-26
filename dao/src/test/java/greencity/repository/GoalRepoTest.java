@@ -38,17 +38,10 @@ class GoalRepoTest {
             .city("New York")
             .build();
 
-    @Test
-    void findAvailableGoalsByUserTest() {
-        List<Goal> goals = goalRepo.findAvailableGoalsByUser(testUser);
-        assertEquals(2, goals.size());
-        assertEquals(1, goals.get(0).getId());
-    }
-
-    @Test
-    void changeGoalStatusTest() {
-        List<Goal> goals = goalRepo.findAvailableGoalsByUser(testUser);
-        goalRepo.changeGoalStatus(1L, 1L, "DISABLED", LocalDateTime.now());
-        assertEquals(GoalStatus.DISABLED, goals.get(0).getUserGoals().get(0).getStatus());
-    }
+//    @Test
+//    void changeGoalStatusTest() {
+//        List<Goal> goals = goalRepo.findAvailableGoalsByUser(testUser);
+//        goalRepo.changeGoalStatus(1L, 1L, "DISABLED", LocalDateTime.now());
+//        assertEquals(GoalStatus.DISABLED, goals.get(0).getUserGoals().get(0).getStatus());
+//    }
 }

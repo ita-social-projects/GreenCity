@@ -1,18 +1,14 @@
 package greencity.controller;
 
-import greencity.annotations.ApiLocale;
-import greencity.annotations.ApiPageableWithLocale;
-import greencity.annotations.ValidLanguage;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.service.HabitService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
@@ -23,11 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
 
 @Validated
 @AllArgsConstructor
@@ -81,20 +75,23 @@ public class HabitController {
     /**
      * Method finds shoppingList for habit in specific language.
      *
-     * @param lang   {@link String} with needed language code.
+     * @param locale   {@link Locale} with needed language code.
      * @param id  {@link Long} with needed habit id.
-     * @return List of {@link ShoppingListDtoResponse}.
+     * @return List of {@link GoalDto}.
      */
     @ApiOperation(value = "Get shopping list.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
             @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
     })
-    @GetMapping("/{id}/shoppingList")
-    public ResponseEntity<List<GoalDto>> getAll(
-             @ApiParam String lang,
-            @ApiParam Long id) {
+    @GetMapping("/shopping-list")
+    @ApiLocale
+    public ResponseEntity<List<GoalDto>> getGoals(
+             Long id,
+            @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-                habitService.getShoppingListForHabit(id, lang));
+                habitService.getShoppingListForHabit(id, locale.getLanguage()));
     }
+
+
 }

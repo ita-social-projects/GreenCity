@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long> {
     /**
@@ -26,7 +27,7 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
      * @return List of available {@link GoalTranslation}'s.
      */
     @Query("SELECT g FROM GoalTranslation g WHERE g.goal.id NOT IN "
-        + "(SELECT ug.goal FROM UserGoal ug WHERE ug.user.id = ?1 AND ug.status = 'ACTIVE') "
+        + "(SELECT ug.goal FROM UserGoal ug WHERE ug.habitAssign.id = ?1 AND ug.status = 'ACTIVE') "
         + "AND g.language.code = ?2")
     List<GoalTranslation> findAvailableByUserId(Long userId, String languageCode);
 
@@ -34,13 +35,14 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
      * Method returns goal translation for particular selected goal for specific
      * user and language code.
      *
-     * @param userId       target user id
+     * @param goalId       target user id
      * @param languageCode code of needed language
      * @return {@link GoalTranslation}
      */
-    @Query("SELECT g FROM GoalTranslation g WHERE g.goal.id IN "
-        + "(SELECT ug.goal FROM UserGoal ug WHERE ug.user.id = ?1 AND ug.id = ?3) AND g.language.code = ?2")
-    GoalTranslation findByUserIdLangAndUserGoalId(Long userId, String languageCode, Long userGoalId);
+    @Query(nativeQuery = true,value = "SELECT * FROM goal_translations as g "
+            + "where g.goal_id = (SELECT ug.goal_id FROM user_goals as ug WHERE ug.id=:goalId)"
+            + "AND g.language_id = (SELECT id FROM languages l where l.code =:languageCode)")
+    GoalTranslation findByUserIdLangAndUserGoalId(String languageCode, Long goalId);
 
     /**
      * Method updates goal translation for particular selected goal for specific
@@ -54,6 +56,19 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
     @Query("UPDATE GoalTranslation SET content=?3"
         + "WHERE id = ?1 AND language.code = ?2")
     GoalTranslation updateTranslationContent(Long goalId, String languageCode, String content);
+
+    /**
+     * Method for getting all goal translations for given habit in specific language.
+     *
+     * @param languageCode code of needed language
+     * @param habitId code of needed language
+     * @return List of {@link GoalTranslation}, that contains all goal translations
+     *         for needed habit.
+     */
+    @Query ("SELECT g FROM GoalTranslation g JOIN HabitGoal hg ON hg.habit.id = :habitId "
+            + "WHERE hg.goal.id = g.goal.id AND g.language.code = :languageCode")
+    List<GoalTranslation> findAllGoalByHabitIdAndByLanguageCode(String languageCode,
+                                                                @Param(value = "habitId") Long habitId);
 
     /**
      * Method returns goal translations for specific goal and language code.

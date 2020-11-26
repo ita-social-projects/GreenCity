@@ -82,14 +82,14 @@ VALUES (1), (2), (3),
        (7), (8), (9), (10);
 
 
-INSERT INTO user_goals (user_id, goal_id, status, date_completed)
-VALUES (1, 2, 'DONE', '2020-09-10 20:00:001'),
-       (1, 5, 'DONE', '2020-09-11 18:00:001'),
-       (2, 5, 'DONE', '2020-09-11 18:00:001'),
-       (2, 3, 'ACTIVE', null),
-       (2, 1, 'ACTIVE', null),
-       (3, 3, 'ACTIVE', null),
-       (3, 1, 'DONE', '2020-10-05 20:00:001');
+-- INSERT INTO user_goals (user_id, goal_id, status, date_completed)
+-- VALUES (1, 2, 'DONE', '2020-09-10 20:00:001'),
+--        (1, 5, 'DONE', '2020-09-11 18:00:001'),
+--        (2, 5, 'DONE', '2020-09-11 18:00:001'),
+--        (2, 3, 'ACTIVE', null),
+--        (2, 1, 'ACTIVE', null),
+--        (3, 3, 'ACTIVE', null),
+--        (3, 1, 'DONE', '2020-10-05 20:00:001');
 
 
 INSERT INTO achievements (title, description, message)

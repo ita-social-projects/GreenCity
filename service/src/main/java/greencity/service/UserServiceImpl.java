@@ -7,6 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
@@ -56,6 +57,7 @@ public class UserServiceImpl implements UserService {
     private final EcoNewsRepo ecoNewsRepo;
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
+    private final HabitRepo habitRepo;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
     /**
@@ -295,29 +297,40 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<UserGoalResponseDto> getUserGoals(Long userId, String language) {
-        List<UserGoalResponseDto> userGoalResponseDtos = userGoalRepo
-            .findAllByUserId(userId)
-            .stream()
-            .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
-            .collect(Collectors.toList());
-        if (userGoalResponseDtos.isEmpty()) {
+    public List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId,userId).get();
+        List<UserGoalResponseDto> goalDtos = userGoalRepo
+                .findAllByHabitAssingId(habitAssign.getId())
+                .stream()
+                .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
+                .collect(Collectors.toList());
+        if (goalDtos.isEmpty()) {
             throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
         }
-        userGoalResponseDtos.forEach(el -> setTextForAnyUserGoal(el, userId, language));
-        return userGoalResponseDtos;
+        goalDtos.forEach(el -> setTextForUserGoal(el, language));
+        return goalDtos;
     }
 
     /**
      * Method for setting text either for UserGoal with localization or for
      * CustomGoal.
      *
+     * @param dto    {@link GoalDto}
+     */
+    private void setTextForUserGoal(UserGoalResponseDto dto, String language) {
+        String text =  goalTranslationRepo.findByUserIdLangAndUserGoalId(language, dto.getId()).getContent();
+        dto.setText(text);
+    }
+
+    /**
+     * Method for setting text either for UserGoal with localization or custom goal
+     *
      * @param userId id of the current user.
      * @param dto    {@link UserGoalResponseDto}
      */
     private UserGoalResponseDto setTextForAnyUserGoal(UserGoalResponseDto dto, Long userId, String language) {
         String text = userGoalRepo.findGoalByUserGoalId(dto.getId()).isPresent()
-            ? goalTranslationRepo.findByUserIdLangAndUserGoalId(userId, language, dto.getId()).getContent()
+            ? goalTranslationRepo.findByUserIdLangAndUserGoalId(language, dto.getId()).getContent()
             : customGoalRepo.findByUserId(userId).getText();
         dto.setText(text);
         return dto;
@@ -345,30 +358,37 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto bulkDto, String language) {
-        List<UserGoalDto> goalDtos = bulkDto.getUserGoals();
-        UserVO user = modelMapper.map(userRepo.findById(userId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)), UserVO.class);
+    public List<UserGoalResponseDto> saveUserGoals(Long userId, Long habitId, List<GoalRequestDto> goalDtos, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId).get();
         if (goalDtos != null) {
-            saveGoalForUserGoal(user, goalDtos);
+            saveGoalForUserGoal(habitAssign, goalDtos);
         }
-        return getUserGoals(userId, language);
+        return getUserGoals(userId, habitId, language);
     }
 
     /**
      * Method save user goals with goal dictionary.
      *
-     * @param userVO {@link UserVO} current user
+     //     * @param userVO {@link UserVO} current user
      * @param goals  list {@link UserGoalDto} for saving
      * @author Bogdan Kuzenko
      */
-    private void saveGoalForUserGoal(UserVO userVO, List<UserGoalDto> goals) {
-        User user = modelMapper.map(userVO, User.class);
-        for (UserGoalDto el : goals) {
-            UserGoal userGoal = modelMapper.map(el, UserGoal.class);
-            userGoal.setUser(user);
-            user.getUserGoals().add(userGoal);
-            userGoalRepo.saveAll(user.getUserGoals());
+    private void saveGoalForUserGoal(HabitAssign habitAssign, List<GoalRequestDto> goals) {
+        List<Long> ids = userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId());
+        List<Long> assignedIds = userGoalRepo.getAllAssignedGoals(habitAssign.getId());
+        for (GoalRequestDto el : goals) {
+            if(ids.contains(el.getId())) {
+                if (!assignedIds.contains(el.getId())) {
+                    UserGoal userGoal = modelMapper.map(el, UserGoal.class);
+                    userGoal.setHabitAssign(habitAssign);
+                    habitAssign.getUserGoals().add(userGoal);
+                    userGoalRepo.saveAll(habitAssign.getUserGoals());
+                } else {
+                    throw new WrongIdException (ErrorMessage.GOAL_ALREADY_SELECTED + el.getId());
+                }
+            } else {
+                throw new NotFoundException(ErrorMessage.GOAL_NOT_ASSIGNED_FOR_THIS_HABIT + el.getId());
+            }
         }
     }
 
@@ -414,21 +434,27 @@ public class UserServiceImpl implements UserService {
         UserGoal userGoal;
         User user = userRepo.findById(userId)
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-        if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
-            userGoal = userGoalRepo.getOne(goalId);
-            if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
-                userGoal.setStatus(GoalStatus.DONE);
-                userGoal.setDateCompleted(LocalDateTime.now());
-                userGoalRepo.save(userGoal);
-            } else {
-                throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
-            }
-        } else {
-            throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_HAS_NO_SUCH_GOAL + goalId);
-        }
+//            if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
+                userGoal = userGoalRepo.getOne(goalId);
+                if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
+                    userGoal.setStatus(GoalStatus.DONE);
+                    userGoal.setDateCompleted(LocalDateTime.now());
+                    userGoalRepo.save(userGoal);
+                } else {
+                    throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
+                }
+//            } else {
+//                throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_HAS_NO_SUCH_GOAL + goalId);
+//            }
         UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
         setTextForAnyUserGoal(updatedUserGoal, userId, language);
         return updatedUserGoal;
+    }
+
+    @Override
+    public  void deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId,userId).get();
+        userGoalRepo.deleteByGoalIdAndHabitAssignId(goalId,habitAssign.getId());
     }
 
     /**

@@ -21,12 +21,12 @@ class UserGoalRepoTest {
     @Autowired
     UserGoalRepo userGoalRepo;
 
-    @Test
-    void findAllByUserIdTest() {
-        List<UserGoal> userGoals = userGoalRepo.findAllByUserId(1L);
-        assertEquals(2, userGoals.size());
-        assertEquals(1, userGoals.get(0).getId());
-    }
+//    @Test
+//    void findAllByUserIdTest() {
+//        List<UserGoal> userGoals = userGoalRepo.findAllByUserId(1L);
+//        assertEquals(2, userGoals.size());
+//        assertEquals(1, userGoals.get(0).getId());
+//    }
 
     @Test
     void findGoalByUserGoalIdTest() {

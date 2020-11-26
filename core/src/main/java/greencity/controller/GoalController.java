@@ -4,10 +4,8 @@ import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.service.GoalService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
@@ -49,26 +47,5 @@ public class GoalController {
     public ResponseEntity<List<GoalDto>> getAll(
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(goalService.findAll(locale.getLanguage()));
-    }
-
-    /**
-     * Method returns shopping list by user id.
-     *
-     * @return shopping list {@link ShoppingListDtoResponse}.
-     * @author Marian Datsko
-     */
-    @ApiOperation(value = "Get shopping list")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @GetMapping("/shoppingList/{userId}")
-    @ApiLocale
-    public ResponseEntity<List<ShoppingListDtoResponse>> getShoppingList(
-            @ApiParam("User id") @PathVariable Long userId,
-            @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(goalService.getShoppingList(userId, locale.getLanguage()));
     }
 }

@@ -28,14 +28,14 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                 .build();
         }
         List<UserVO> userFriends = new ArrayList<>();
-        if (user.getUserGoals() != null) {
-            userFriends = user.getUserFriends()
-                .stream().map(user1 -> UserVO.builder()
-                    .id(user1.getId())
-                    .name(user1.getName())
-                    .build())
-                .collect(Collectors.toList());
-        }
+//        if (user.getUserGoals() != null) {
+//            userFriends = user.getUserFriends()
+//                .stream().map(user1 -> UserVO.builder()
+//                    .id(user1.getId())
+//                    .name(user1.getName())
+//                    .build())
+//                .collect(Collectors.toList());
+//        }
         OwnSecurityVO ownSecurityVO = null;
         if (user.getOwnSecurity() != null) {
             ownSecurityVO = OwnSecurityVO.builder()

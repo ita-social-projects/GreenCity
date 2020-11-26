@@ -12,7 +12,6 @@ import greencity.filters.GoalSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
-
 import java.util.ArrayList;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -44,11 +43,6 @@ public class GoalServiceImpl implements GoalService {
             .stream()
             .map(g -> modelMapper.map(g, GoalDto.class))
             .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ShoppingListDtoResponse> getShoppingList(Long userId, String languageCode) {
-        return goalRepo.getShoppingList(userId, languageCode);
     }
 
     /**

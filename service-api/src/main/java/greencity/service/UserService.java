@@ -5,6 +5,9 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.GoalRequestDto;
+import greencity.dto.goal.GoalVO;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
@@ -186,7 +189,7 @@ public interface UserService {
      * @param language needed language code.
      * @return List of {@link UserGoalDto}.
      */
-    List<UserGoalResponseDto> getUserGoals(Long userId, String language);
+    List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language);
 
     /**
      * Method returns list of available (not ACTIVE) goals for user for specific
@@ -199,13 +202,14 @@ public interface UserService {
     List<GoalDto> getAvailableGoals(Long userId, String language);
 
     /**
-     * Method saves list of user goals.
+     * Method assign to user list of user goals available for habit.
      *
      * @param userId   id of the {@link UserVO} current user.
      * @param language needed language code.
+     * @param habitId id of the {@link HabitVO}.
      * @return List of saved {@link UserGoalDto} with specific language.
      */
-    List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto dto, String language);
+    List<UserGoalResponseDto> saveUserGoals(Long userId, Long habitId, List<GoalRequestDto> dto, String language);
 
     /**
      * Method for deleted list of user goals.
@@ -417,4 +421,13 @@ public interface UserService {
      * @return {@link List} of {@link UserVO} instances.
      */
     List<UserVO> findAll();
+
+    /**
+     * Method for deleting goal from user`s shopping list.
+     *
+     * @param userId   id of the {@link UserVO} current user.
+     * @param habitId id of the {@link HabitVO}.
+     * @param goalId id of the {@link GoalVO}.
+     */
+    void  deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId);
 }

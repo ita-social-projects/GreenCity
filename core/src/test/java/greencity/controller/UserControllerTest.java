@@ -228,21 +228,21 @@ class UserControllerTest {
             eq(1L), eq(true), eq("en"));
     }
 
-    @Test
-    void getUserGoalsWithLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/goals?language=en", 1))
-            .andExpect(status().isOk());
+//    @Test
+//    void getUserGoalsWithLanguageParamTest() throws Exception {
+//        mockMvc.perform(get(userLink + "/{userId}/goals?language=en", 1))
+//            .andExpect(status().isOk());
+//
+//        verify(userService).getUserGoals(eq(1L), eq("en"));
+//    }
 
-        verify(userService).getUserGoals(eq(1L), eq("en"));
-    }
-
-    @Test
-    void getUserGoalsWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/goals", 1))
-            .andExpect(status().isOk());
-
-        verify(userService).getUserGoals(eq(1L), eq("en"));
-    }
+//    @Test
+//    void getUserGoalsWithoutLanguageParamTest() throws Exception {
+//        mockMvc.perform(get(userLink + "/{userId}/goals", 1))
+//            .andExpect(status().isOk());
+//
+//        verify(userService).getUserGoals(eq(1L), eq("en"));
+//    }
 
     @Test
     void findAllByUserTest() throws Exception {
@@ -349,29 +349,29 @@ class UserControllerTest {
         verify(userService).updateUserGoalStatus(eq(1L), eq(1L), eq("en"));
     }
 
-    @Test
-    void saveUserGoalsWithoutLanguageParamTest() throws Exception {
-        String content = "{\n"
-            + "  \"userGoals\": [\n"
-            + "    {\n"
-            + "      \"goal\": {\n"
-            + "        \"id\": 1\n"
-            + "      }\n"
-            + "    }\n"
-            + "  ]\n"
-            + "}\n";
-
-        mockMvc.perform(post(userLink + "/{userId}/goals", 1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
-            .andExpect(status().isCreated());
-
-        ObjectMapper mapper = new ObjectMapper();
-        BulkSaveUserGoalDto dto =
-            mapper.readValue(content, BulkSaveUserGoalDto.class);
-
-        verify(userService).saveUserGoals(eq(1L), eq(dto), eq("en"));
-    }
+//    @Test
+//    void saveUserGoalsWithoutLanguageParamTest() throws Exception {
+//        String content = "{\n"
+//            + "  \"userGoals\": [\n"
+//            + "    {\n"
+//            + "      \"goal\": {\n"
+//            + "        \"id\": 1\n"
+//            + "      }\n"
+//            + "    }\n"
+//            + "  ]\n"
+//            + "}\n";
+//
+//        mockMvc.perform(post(userLink + "/{userId}/goals", 1)
+//            .contentType(MediaType.APPLICATION_JSON)
+//            .content(content))
+//            .andExpect(status().isCreated());
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//        BulkSaveUserGoalDto dto =
+//            mapper.readValue(content, BulkSaveUserGoalDto.class);
+//
+//        verify(userService).saveUserGoals(eq(1L), eq(dto), eq("en"));
+//    }
 
     /*
      * @Test void getAvailableHabitDictionaryTest() throws Exception {
