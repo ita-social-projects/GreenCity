@@ -46,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
     private static final String USER_CUSTOM_GOALS = "/user/{userId}/customGoals";
+    private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
 
     /**
      * Constructor.
@@ -114,8 +115,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit",
                 "/habit/{id}",
                 "/habit/assign/{id}",
-                "/habit/assign/{habitId}",
-                "/habit/assign/{habitId}/all",
+                HABIT_ASSIGN_ID,
+                HABIT_ASSIGN_ID + "/all",
                 "/habit/assign/active/{date}",
                 "/habit/statistic/{habitId}",
                 "/habit/statistic/assign/{habitAssignId}",
@@ -165,8 +166,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/goals",
                 "/goals/shoppingList/{userId}",
                 "/habit/assign",
-                "/habit/assign/{habitId}/active",
-                "/habit/assign/{habitId}",
+                HABIT_ASSIGN_ID + "/active",
+                HABIT_ASSIGN_ID,
                 "/facts",
                 "/facts/random/{habitId}",
                 "/facts/dayFact/{languageId}",
@@ -190,10 +191,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
                 "/files/image",
-                "/habit/assign/{habitId}",
-                "/habit/assign/{habitId}/custom",
-                "/habit/assign/{habitId}/enroll",
-                "/habit/assign/{habitId}/unenroll/{date}",
+                HABIT_ASSIGN_ID,
+                HABIT_ASSIGN_ID + "/custom",
+                HABIT_ASSIGN_ID + "/enroll",
+                HABIT_ASSIGN_ID + "/unenroll/{date}",
                 "/habit/statistic/{habitId}",
                 "/newsSubscriber",
                 "/place/{placeId}/comments",
@@ -217,7 +218,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
                 "/goals/shoppingList/{userId}",
-                "/habit/assign/{habitId}",
+                HABIT_ASSIGN_ID,
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
                 "/user/{userId}/goals/{goalId}",
