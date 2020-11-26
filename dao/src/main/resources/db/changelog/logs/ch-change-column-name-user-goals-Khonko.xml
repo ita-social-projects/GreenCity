@@ -7,6 +7,8 @@
 
     <changeSet id="dmytrokhonko7" author="Dmytro Khonko">
         <dropForeignKeyConstraint baseTableName="user_goals" constraintName="FK_user_user_goals"/>
+
+        <delete tableName="user_goals"/>
     </changeSet>
 
     <changeSet author="Dmytro Khonko" id="dmytrokhonko8">
