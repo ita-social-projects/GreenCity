@@ -37,8 +37,8 @@ public class HabitGoal {
         }
         HabitGoal habitGoal = (HabitGoal) o;
         return id.equals(habitGoal.id)
-                && habit.equals(habitGoal.habit)
-                && Objects.equals(goal, habitGoal.goal);
+            && habit.equals(habitGoal.habit)
+            && Objects.equals(goal, habitGoal.goal);
     }
 
     @Override

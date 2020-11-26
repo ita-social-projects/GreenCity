@@ -3,16 +3,16 @@ package greencity.entity;
 import greencity.enums.AchievementStatus;
 import java.util.Objects;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+
+import greencity.enums.UserStatus;
+import lombok.*;
 
 @Entity
 @Data
 @Table(name = "user_achievements")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString(
     exclude = {"achievement", "user"})
 public class UserAchievement {
@@ -28,7 +28,7 @@ public class UserAchievement {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private AchievementStatus achievementStatus;
+    private AchievementStatus achievementStatus = AchievementStatus.INACTIVE;
 
     @Override
     public boolean equals(Object o) {

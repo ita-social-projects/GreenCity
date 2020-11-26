@@ -242,65 +242,66 @@ public class UserController {
      */
     @ApiOperation(value = "Save one or multiple goals for current user.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/{userId}/saveGoals")
     @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
-            @Valid @RequestBody List<GoalRequestDto> dto,
-            @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUser Long userId,
-            Long habitId,
-            @ApiIgnore @ValidLanguage Locale locale) {
+        @Valid @RequestBody List<GoalRequestDto> dto,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUser Long userId,
+        Long habitId,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.saveUserGoals(userId, habitId, dto, locale.getLanguage()));
+            .status(HttpStatus.CREATED)
+            .body(userService.saveUserGoals(userId, habitId, dto, locale.getLanguage()));
     }
 
     /**
      * Method finds shoppingList saved by user in specific language.
      *
-     * @param locale   {@link Locale} with needed language code.
+     * @param locale  {@link Locale} with needed language code.
      * @param userId  {@link Long} with needed user id.
-     * @param habitId  {@link Long} with needed habit id.
+     * @param habitId {@link Long} with needed habit id.
      * @return List of {@link ShoppingListDtoResponse}.
      */
 
     @ApiOperation(value = "Get user`s shopping list.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/{userId}/get-all-assigned")
     @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> getGoalsAssignedToUser(
-            @ApiParam("User id") @PathVariable @CurrentUser Long userId,
-            Long habitId,
-            @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserGoals(userId, habitId, locale.getLanguage()));
+        @ApiParam("User id") @PathVariable @CurrentUser Long userId,
+        Long habitId,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.getUserGoals(userId, habitId, locale.getLanguage()));
     }
 
     /**
      * Method deletes from shoppingList goal saved by user.
      *
-     * @param userId   {@link Long} with needed user id
-     * @param goalId   {@link Long} with needed goal id.
-     * @param habitId  {@link Long} with needed habit id.
+     * @param userId  {@link Long} with needed user id
+     * @param goalId  {@link Long} with needed goal id.
+     * @param habitId {@link Long} with needed habit id.
      */
 
     @ApiOperation(value = "Delete from shopping list")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
     })
-    @DeleteMapping ("/{userId}/deletegoal")
+    @DeleteMapping("/{userId}/deletegoal")
     public void delete(
-            @ApiParam("Goal id") @PathVariable Long userId,
-            Long habitId, Long goalId
-    ) {
-                userService.deleteUserGoalByGoalIdAndUserIdAndHabitId(goalId,userId,habitId);
+        @ApiParam("Goal id") @PathVariable Long userId,
+        Long habitId, Long goalId) {
+        userService.deleteUserGoalByGoalIdAndUserIdAndHabitId(goalId, userId, habitId);
     }
+
     /**
      * Method saves custom goals for user.
      *

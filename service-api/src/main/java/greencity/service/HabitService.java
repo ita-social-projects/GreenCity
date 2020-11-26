@@ -31,5 +31,5 @@ public interface HabitService {
      * @return list {@link GoalDto}.
      * @author Dmytro Khonko
      */
-    List<GoalDto> getShoppingListForHabit(Long habit_id, String lang);
+    List<GoalDto> getShoppingListForHabit(Long habitId, String lang);
 }

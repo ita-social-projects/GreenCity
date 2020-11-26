@@ -22,7 +22,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-
 @Validated
 @AllArgsConstructor
 @RestController
@@ -75,23 +74,21 @@ public class HabitController {
     /**
      * Method finds shoppingList for habit in specific language.
      *
-     * @param locale   {@link Locale} with needed language code.
-     * @param id  {@link Long} with needed habit id.
+     * @param locale {@link Locale} with needed language code.
+     * @param id     {@link Long} with needed habit id.
      * @return List of {@link GoalDto}.
      */
     @ApiOperation(value = "Get shopping list.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/shopping-list")
     @ApiLocale
     public ResponseEntity<List<GoalDto>> getGoals(
-             Long id,
-            @ApiIgnore @ValidLanguage Locale locale) {
+        Long id,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-                habitService.getShoppingListForHabit(id, locale.getLanguage()));
+            habitService.getShoppingListForHabit(id, locale.getLanguage()));
     }
-
-
 }

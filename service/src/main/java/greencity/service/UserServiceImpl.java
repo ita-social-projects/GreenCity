@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     private final EcoNewsRepo ecoNewsRepo;
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
-    private final HabitRepo habitRepo;
+    private final SocialNetworkRepo socialNetworkRepo;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
     /**
@@ -174,6 +174,16 @@ public class UserServiceImpl implements UserService {
     public List<UserVO> findAll() {
         return modelMapper.map(userRepo.findAll(), new TypeToken<List<UserVO>>() {
         }.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserManagementDto> findUserFriendsByUserId(Long id) {
+        return modelMapper.map(userRepo.findUsersFriendsById(id),
+            new TypeToken<List<UserManagementDto>>() {
+            }.getType());
     }
 
     /**
@@ -298,12 +308,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId,userId).get();
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId).get();
         List<UserGoalResponseDto> goalDtos = userGoalRepo
-                .findAllByHabitAssingId(habitAssign.getId())
-                .stream()
-                .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
-                .collect(Collectors.toList());
+            .findAllByHabitAssingId(habitAssign.getId())
+            .stream()
+            .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
+            .collect(Collectors.toList());
         if (goalDtos.isEmpty()) {
             throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
         }
@@ -315,15 +325,15 @@ public class UserServiceImpl implements UserService {
      * Method for setting text either for UserGoal with localization or for
      * CustomGoal.
      *
-     * @param dto    {@link GoalDto}
+     * @param dto {@link GoalDto}
      */
     private void setTextForUserGoal(UserGoalResponseDto dto, String language) {
-        String text =  goalTranslationRepo.findByUserIdLangAndUserGoalId(language, dto.getId()).getContent();
+        String text = goalTranslationRepo.findByUserIdLangAndUserGoalId(language, dto.getId()).getContent();
         dto.setText(text);
     }
 
     /**
-     * Method for setting text either for UserGoal with localization or custom goal
+     * Method for setting text either for UserGoal with localization or custom goal.
      *
      * @param userId id of the current user.
      * @param dto    {@link UserGoalResponseDto}
@@ -358,7 +368,8 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public List<UserGoalResponseDto> saveUserGoals(Long userId, Long habitId, List<GoalRequestDto> goalDtos, String language) {
+    public List<UserGoalResponseDto> saveUserGoals(Long userId, Long habitId, List<GoalRequestDto> goalDtos,
+        String language) {
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId).get();
         if (goalDtos != null) {
             saveGoalForUserGoal(habitAssign, goalDtos);
@@ -368,23 +379,22 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Method save user goals with goal dictionary.
-     *
-     //     * @param userVO {@link UserVO} current user
-     * @param goals  list {@link UserGoalDto} for saving
+     * 
+     * @param goals list {@link UserGoalDto} for saving
      * @author Bogdan Kuzenko
      */
     private void saveGoalForUserGoal(HabitAssign habitAssign, List<GoalRequestDto> goals) {
         List<Long> ids = userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId());
         List<Long> assignedIds = userGoalRepo.getAllAssignedGoals(habitAssign.getId());
         for (GoalRequestDto el : goals) {
-            if(ids.contains(el.getId())) {
+            if (ids.contains(el.getId())) {
                 if (!assignedIds.contains(el.getId())) {
                     UserGoal userGoal = modelMapper.map(el, UserGoal.class);
                     userGoal.setHabitAssign(habitAssign);
                     habitAssign.getUserGoals().add(userGoal);
                     userGoalRepo.saveAll(habitAssign.getUserGoals());
                 } else {
-                    throw new WrongIdException (ErrorMessage.GOAL_ALREADY_SELECTED + el.getId());
+                    throw new WrongIdException(ErrorMessage.GOAL_ALREADY_SELECTED + el.getId());
                 }
             } else {
                 throw new NotFoundException(ErrorMessage.GOAL_NOT_ASSIGNED_FOR_THIS_HABIT + el.getId());
@@ -432,29 +442,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {
         UserGoal userGoal;
-        User user = userRepo.findById(userId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-//            if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
-                userGoal = userGoalRepo.getOne(goalId);
-                if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
-                    userGoal.setStatus(GoalStatus.DONE);
-                    userGoal.setDateCompleted(LocalDateTime.now());
-                    userGoalRepo.save(userGoal);
-                } else {
-                    throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
-                }
-//            } else {
-//                throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_HAS_NO_SUCH_GOAL + goalId);
-//            }
+        userGoal = userGoalRepo.getOne(goalId);
+        if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
+            userGoal.setStatus(GoalStatus.DONE);
+            userGoal.setDateCompleted(LocalDateTime.now());
+            userGoalRepo.save(userGoal);
+        } else {
+            throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
+        }
         UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
         setTextForAnyUserGoal(updatedUserGoal, userId, language);
         return updatedUserGoal;
     }
 
     @Override
-    public  void deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId,userId).get();
-        userGoalRepo.deleteByGoalIdAndHabitAssignId(goalId,habitAssign.getId());
+    public void deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId).get();
+        userGoalRepo.deleteByGoalIdAndHabitAssignId(goalId, habitAssign.getId());
     }
 
     /**
@@ -680,6 +684,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(userProfileDtoRequest.getFirstName());
         user.setCity(userProfileDtoRequest.getCity());
         user.setUserCredo(userProfileDtoRequest.getUserCredo());
+        user.getSocialNetworks().forEach(socialNetwork -> socialNetworkRepo.deleteById(socialNetwork.getId()));
         user.getSocialNetworks().clear();
         user.getSocialNetworks().addAll(userProfileDtoRequest.getSocialNetworks()
             .stream()

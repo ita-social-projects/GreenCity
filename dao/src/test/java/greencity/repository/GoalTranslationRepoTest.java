@@ -51,7 +51,7 @@ class GoalTranslationRepoTest {
 
     @Test
     void findByUserIdLangAndUserGoalIdNotFoundTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId( "ru", 2L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId("ru", 2L);
         assertNull(goalTranslation);
     }
 

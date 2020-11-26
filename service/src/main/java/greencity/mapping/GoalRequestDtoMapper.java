@@ -1,6 +1,5 @@
 package greencity.mapping;
 
-
 import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalRequestDto;
 import greencity.entity.Goal;
@@ -21,9 +20,8 @@ public class GoalRequestDtoMapper extends AbstractConverter<GoalRequestDto, User
     @Override
     protected UserGoal convert(GoalRequestDto goalRequestDto) {
         return UserGoal.builder()
-                .goal(Goal.builder().id(goalRequestDto.getId()).build())
-                .status(GoalStatus.ACTIVE)
-                .build();
+            .goal(Goal.builder().id(goalRequestDto.getId()).build())
+            .status(GoalStatus.ACTIVE)
+            .build();
     }
 }
-

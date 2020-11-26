@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-
 public interface UserGoalRepo extends JpaRepository<UserGoal, Long> {
     /**
      * Method returns list of {@link UserGoal} for specific user.
@@ -19,7 +18,7 @@ public interface UserGoalRepo extends JpaRepository<UserGoal, Long> {
      * @param habitAssignId - id of habit assign.
      * @return list of {@link UserGoal}
      */
-    @Query ("SELECT ug FROM UserGoal ug where ug.habitAssign.id =?1")
+    @Query("SELECT ug FROM UserGoal ug where ug.habitAssign.id =?1")
     List<UserGoal> findAllByHabitAssingId(Long habitAssignId);
 
     /**
@@ -34,31 +33,30 @@ public interface UserGoalRepo extends JpaRepository<UserGoal, Long> {
     /**
      * Method delete selected goal from users shopping list.
      *
-     * @param goalId     id of needed goal
+     * @param goalId        id of needed goal
      * @param habitAssignId id of needed habit assign
-     * @return Optional of {@link GoalTranslation}
      */
     @Modifying
     @Transactional
-    @Query(nativeQuery = true,value = "DELETE FROM user_goals ug "
-            + "WHERE ug.goal_id =:goalId AND ug.habit_assign_id =:habitAssignId ")
+    @Query(nativeQuery = true, value = "DELETE FROM user_goals ug "
+        + "WHERE ug.goal_id =:goalId AND ug.habit_assign_id =:habitAssignId ")
     void deleteByGoalIdAndHabitAssignId(Long goalId, Long habitAssignId);
 
     /**
      * Method returns shopping list ids for habit.
      *
-     * @param id     id of needed habit
+     * @param id id of needed habit
      * @return List of {@link Long}
      */
-    @Query (nativeQuery = true, value = "SELECT goal_id FROM habit_goals WHERE habit_id = :id")
+    @Query(nativeQuery = true, value = "SELECT goal_id FROM habit_goals WHERE habit_id = :id")
     List<Long> getAllGoalsIdForHabit(Long id);
 
     /**
      * Method returns shopping list ids selected by user.
      *
-     * @param id     id of needed habit assign
+     * @param id id of needed habit assign
      * @return List of {@link Long}
      */
-    @Query (nativeQuery = true, value = "SELECT goal_id FROM user_goals WHERE habit_assign_id = :id")
+    @Query(nativeQuery = true, value = "SELECT goal_id FROM user_goals WHERE habit_assign_id = :id")
     List<Long> getAllAssignedGoals(Long id);
 }

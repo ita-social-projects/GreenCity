@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GoalRepo extends JpaRepository<Goal, Long>, JpaSpecificationExecutor<Goal> {
-
     /**
      * Method change goal status.
      *
@@ -39,5 +38,4 @@ public interface GoalRepo extends JpaRepository<Goal, Long>, JpaSpecificationExe
         + "OR LOWER(gt.language.code) LIKE LOWER(CONCAT('%', :query, '%'))"
         + "OR LOWER(gt.content) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Goal> searchBy(Pageable paging, String query);
-
 }

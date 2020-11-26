@@ -39,9 +39,9 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
      * @param languageCode code of needed language
      * @return {@link GoalTranslation}
      */
-    @Query(nativeQuery = true,value = "SELECT * FROM goal_translations as g "
-            + "where g.goal_id = (SELECT ug.goal_id FROM user_goals as ug WHERE ug.id=:goalId)"
-            + "AND g.language_id = (SELECT id FROM languages l where l.code =:languageCode)")
+    @Query(nativeQuery = true, value = "SELECT * FROM goal_translations as g "
+        + "where g.goal_id = (SELECT ug.goal_id FROM user_goals as ug WHERE ug.id=:goalId)"
+        + "AND g.language_id = (SELECT id FROM languages l where l.code =:languageCode)")
     GoalTranslation findByUserIdLangAndUserGoalId(String languageCode, Long goalId);
 
     /**
@@ -58,17 +58,18 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
     GoalTranslation updateTranslationContent(Long goalId, String languageCode, String content);
 
     /**
-     * Method for getting all goal translations for given habit in specific language.
+     * Method for getting all goal translations for given habit in specific
+     * language.
      *
      * @param languageCode code of needed language
-     * @param habitId code of needed language
+     * @param habitId      code of needed language
      * @return List of {@link GoalTranslation}, that contains all goal translations
      *         for needed habit.
      */
-    @Query ("SELECT g FROM GoalTranslation g JOIN HabitGoal hg ON hg.habit.id = :habitId "
-            + "WHERE hg.goal.id = g.goal.id AND g.language.code = :languageCode")
+    @Query("SELECT g FROM GoalTranslation g JOIN HabitGoal hg ON hg.habit.id = :habitId "
+        + "WHERE hg.goal.id = g.goal.id AND g.language.code = :languageCode")
     List<GoalTranslation> findAllGoalByHabitIdAndByLanguageCode(String languageCode,
-                                                                @Param(value = "habitId") Long habitId);
+        @Param(value = "habitId") Long habitId);
 
     /**
      * Method returns goal translations for specific goal and language code.

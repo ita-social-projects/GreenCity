@@ -206,7 +206,7 @@ public interface UserService {
      *
      * @param userId   id of the {@link UserVO} current user.
      * @param language needed language code.
-     * @param habitId id of the {@link HabitVO}.
+     * @param habitId  id of the {@link HabitVO}.
      * @return List of saved {@link UserGoalDto} with specific language.
      */
     List<UserGoalResponseDto> saveUserGoals(Long userId, Long habitId, List<GoalRequestDto> dto, String language);
@@ -425,9 +425,16 @@ public interface UserService {
     /**
      * Method for deleting goal from user`s shopping list.
      *
-     * @param userId   id of the {@link UserVO} current user.
+     * @param userId  id of the {@link UserVO} current user.
      * @param habitId id of the {@link HabitVO}.
-     * @param goalId id of the {@link GoalVO}.
+     * @param goalId  id of the {@link GoalVO}.
      */
-    void  deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId);
+    void deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId);
+
+    /**
+     * Method that finds user's friends by id.
+     *
+     * @return {@link List} of {@link UserManagementDto} instances.
+     */
+    List<UserManagementDto> findUserFriendsByUserId(Long id);
 }
