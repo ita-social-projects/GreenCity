@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 @Validated
 @AllArgsConstructor
@@ -158,7 +159,7 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PatchMapping("")
-    public void update(Long id, @NotBlank String text, @ApiIgnore @CurrentUser UserVO user) {
+    public void update(Long id, @RequestParam @NotBlank String text, @ApiIgnore @CurrentUser UserVO user) {
         ecoNewsCommentService.update(text, id, user);
     }
 
