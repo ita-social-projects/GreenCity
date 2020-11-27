@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 
 @Validated
 @AllArgsConstructor
