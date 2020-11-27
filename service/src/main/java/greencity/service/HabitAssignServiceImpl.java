@@ -7,6 +7,7 @@ import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
@@ -115,9 +116,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignRepo.save(
             HabitAssign.builder()
                 .habit(habit)
-                .acquired(false)
+                .status(HabitAssignStatus.ACTIVE)
                 .createDate(ZonedDateTime.now())
-                .suspended(false)
                 .user(user)
                 .duration(0)
                 .habitStreak(0)
@@ -224,8 +224,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param updatable {@link HabitAssign} instance.
      */
     private void enhanceStatusesWithDto(HabitAssignStatDto dto, HabitAssign updatable) {
-        updatable.setAcquired(dto.getAcquired());
-        updatable.setSuspended(dto.getSuspended());
+        updatable.setStatus(dto.getStatus());
+        //remove method later
     }
 
     /**
@@ -275,7 +275,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         updateHabitStreakAfterEnroll(habitAssign, todayDate);
 
         if (isHabitAcquired(habitAssign)) {
-            habitAssign.setAcquired(true);
+            habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
         }
         habitAssignRepo.save(habitAssign);
     }
@@ -316,7 +316,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         int workingDays = habitAssign.getWorkingDays();
         int habitDuration = habitAssign.getDuration();
         if (workingDays == habitDuration) {
-            if (Boolean.TRUE.equals(habitAssign.getAcquired())) {
+            if (HabitAssignStatus.ACQUIRED.equals(habitAssign.getStatus())) {
                 throw new BadRequestException(
                     ErrorMessage.HABIT_ALREADY_ACQUIRED + habitAssign.getHabit().getId());
             }

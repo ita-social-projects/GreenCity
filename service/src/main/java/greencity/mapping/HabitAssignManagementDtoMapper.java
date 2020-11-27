@@ -22,8 +22,7 @@ public class HabitAssignManagementDtoMapper extends
     protected HabitAssignManagementDto convert(HabitAssign habitAssign) {
         return HabitAssignManagementDto.builder()
             .id(habitAssign.getId())
-            .acquired(habitAssign.getAcquired())
-            .suspended(habitAssign.getSuspended())
+            .status(habitAssign.getStatus())
             .createDateTime(habitAssign.getCreateDate())
             .userId(habitAssign.getUser().getId())
             .habitId(habitAssign.getHabit().getId())

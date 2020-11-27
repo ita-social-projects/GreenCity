@@ -8,6 +8,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
+import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
@@ -45,13 +46,13 @@ class HabitAssignServiceImplTest {
     private HabitDto habitDto = HabitDto.builder().id(1L).build();
 
     private HabitAssignDto habitAssignDto = HabitAssignDto.builder().id(1L)
-        .createDateTime(zonedDateTime).habit(habitDto).suspended(false).build();
+        .createDateTime(zonedDateTime).habit(habitDto).build();
 
     private Habit habit = ModelUtils.getHabit();
 
     private HabitAssignManagementDto habitAssignManagementDto = HabitAssignManagementDto.builder()
         .id(1L)
-        .createDateTime(zonedDateTime).habitId(habit.getId()).suspended(false).build();
+        .createDateTime(zonedDateTime).habitId(habit.getId()).build();
 
     private HabitVO habitVO =
         HabitVO.builder().id(1L).image("src/main/resources/static/css/background-image-footer.svg").build();
@@ -63,10 +64,10 @@ class HabitAssignServiceImplTest {
     private HabitAssign habitAssign = getHabitAssign();
 
     private HabitAssign habitAssignNew = HabitAssign.builder()
-        .suspended(false).user(user).habit(habit).build();
+        .user(user).habit(habit).build();
 
     private HabitAssignStatDto habitAssignStatDto = HabitAssignStatDto.builder()
-        .acquired(true).suspended(false).build();
+        .status(HabitAssignStatus.ACQUIRED).build();
 
     private List<HabitAssignDto> habitAssignDtos = Collections.singletonList(habitAssignDto);
 

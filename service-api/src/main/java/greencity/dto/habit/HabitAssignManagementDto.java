@@ -1,6 +1,7 @@
 package greencity.dto.habit;
 
 import greencity.constant.AppConstant;
+import greencity.enums.HabitAssignStatus;
 import java.time.ZonedDateTime;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -17,10 +18,8 @@ import lombok.*;
 public class HabitAssignManagementDto {
     @NotNull
     private Long id;
-    @NotEmpty
-    private Boolean acquired;
-    @NotEmpty
-    private Boolean suspended;
+    @NotNull
+    private HabitAssignStatus status;
     @NotEmpty
     private ZonedDateTime createDateTime;
     @NotNull
