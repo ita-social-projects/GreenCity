@@ -72,6 +72,11 @@ public class TagsServiceImpl implements TagsService {
         return tagRepo.findAllTipsAndTricksTags();
     }
 
+    @Override
+    public List<String> findAllHabitsTags() {
+        return tagRepo.findAllHabitsTags();
+    }
+
     /**
      * {@inheritDoc}
      */

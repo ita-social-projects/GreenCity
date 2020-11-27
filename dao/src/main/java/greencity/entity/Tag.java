@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import lombok.*;
 
@@ -10,8 +11,8 @@ import lombok.*;
 @Getter
 @Setter
 @Table(name = "tags")
-@ToString(exclude = "ecoNews")
-@EqualsAndHashCode(exclude = "ecoNews")
+@ToString(exclude = {"ecoNews", "tipsAndTricks", "habits"})
+@EqualsAndHashCode(exclude = {"ecoNews", "tipsAndTricks", "habits"})
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +26,7 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     private List<TipsAndTricks> tipsAndTricks;
+
+    @ManyToMany(mappedBy = "tags")
+    private Set<Habit> habits;
 }

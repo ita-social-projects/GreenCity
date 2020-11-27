@@ -113,6 +113,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses",
                 "/habit",
                 "/habit/{id}",
+                "/habit/tags",
+                "/habit/tags/all",
                 "/habit/assign/{id}",
                 "/habit/assign/{habitId}",
                 "/habit/assign/{habitId}/all",
