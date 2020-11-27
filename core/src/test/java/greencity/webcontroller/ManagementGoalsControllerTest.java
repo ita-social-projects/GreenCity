@@ -63,7 +63,7 @@ class ManagementGoalsControllerTest {
     }
 
     @Test
-    public void getAllGoalsTest() throws Exception {
+    void getAllGoalsTest() throws Exception {
         int page = 0;
         int size = 10;
         Pageable paging = PageRequest.of(page, size, Sort.by("id").ascending());
@@ -82,7 +82,7 @@ class ManagementGoalsControllerTest {
     }
 
     @Test
-    public void saveTest() throws Exception {
+    void saveTest() throws Exception {
         GoalPostDto goalPostDto = ModelUtils.getGoalPostDto();
         String goalGtoJson = objectMapper.writeValueAsString(goalPostDto);
 
