@@ -55,27 +55,6 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to get all comments to {@link EcoNewsVO} specified by ecoNewsId.
-     *
-     * @param ecoNewsId id of {@link EcoNewsVO}
-     * @return Pageable of {@link EcoNewsCommentDto}
-     */
-    @ApiOperation(value = "Get all comments.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
-    })
-    @GetMapping("")
-    @ApiPageable
-    public ResponseEntity<PageableDto<EcoNewsCommentDto>> findAll(@ApiIgnore Pageable pageable,
-        Long ecoNewsId,
-        @ApiIgnore @CurrentUser UserVO user) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(ecoNewsCommentService.findAllComments(pageable, user, ecoNewsId));
-    }
-
-    /**
      * Method to count not deleted comments to certain {@link EcoNewsVO}.
      *
      * @param ecoNewsId to specify {@link EcoNewsVO}
