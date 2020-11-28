@@ -50,7 +50,7 @@ public interface EmailService {
      * @param userEmail email current user.
      * @param token     verify token current user.
      */
-    void sendVerificationEmail(Long userId, String userName, String userEmail, String token);
+    void sendVerificationEmail(Long userId, String userName, String userEmail, String token, String language);
 
     /**
      * Method for sending user approval email to User, when Admin adds the User from
@@ -72,7 +72,7 @@ public interface EmailService {
      *                     letter.
      * @param token        password recovery token.
      */
-    void sendRestoreEmail(Long userId, String userFistName, String userEmail, String token);
+    void sendRestoreEmail(Long userId, String userFistName, String userEmail, String token, String language);
 
     /**
      * Sends email notification about not marked habits during 3 last days.

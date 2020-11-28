@@ -56,13 +56,13 @@ class OwnSecurityControllerTest {
             "  \"password\": \"Qwerty123=\"\n" +
             "}";
 
-        mockMvc.perform(post(LINK + "/signUp")
+        mockMvc.perform(post(LINK + "/signUp?lang=en")
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isCreated());
 
         OwnSignUpDto dto = ModelUtils.getObjectMapper().readValue(content, OwnSignUpDto.class);
-        verify(ownSecurityService).signUp(dto);
+        verify(ownSecurityService).signUp(dto, "en");
     }
 
     @Test
@@ -103,10 +103,11 @@ class OwnSecurityControllerTest {
     @Test
     void restoreTest() throws Exception {
         mockMvc.perform(get(LINK + "/restorePassword")
-            .param("email", "test@mail.com"))
+            .param("email", "test@mail.com")
+            .param("lang", "en"))
             .andExpect(status().isOk());
 
-        verify(passwordRecoveryService).sendPasswordRecoveryEmailTo("test@mail.com");
+        verify(passwordRecoveryService).sendPasswordRecoveryEmailTo("test@mail.com", "en");
     }
 
     @Test
