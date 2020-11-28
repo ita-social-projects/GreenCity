@@ -1,7 +1,6 @@
 package greencity.repository;
 
 import greencity.entity.Goal;
-import greencity.entity.HabitFact;
 import greencity.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;

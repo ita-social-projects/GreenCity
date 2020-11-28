@@ -16,18 +16,16 @@ public class AchievementVOMapper extends AbstractConverter<Achievement, Achievem
     @Override
     protected AchievementVO convert(Achievement achievement) {
         List<AchievementTranslationVO> list = new ArrayList<>();
-        achievement.getTranslations().forEach(achievementTranslation -> {
-            list.add(AchievementTranslationVO.builder()
-                .id(achievementTranslation.getId())
-                .title(achievementTranslation.getTitle())
-                .description(achievementTranslation.getDescription())
-                .message(achievementTranslation.getMessage())
-                .language(LanguageVO.builder()
-                    .id(achievementTranslation.getLanguage().getId())
-                    .code(achievementTranslation.getLanguage().getCode())
-                    .build())
-                .build());
-        });
+        achievement.getTranslations().forEach(achievementTranslation -> list.add(AchievementTranslationVO.builder()
+            .id(achievementTranslation.getId())
+            .title(achievementTranslation.getTitle())
+            .description(achievementTranslation.getDescription())
+            .message(achievementTranslation.getMessage())
+            .language(LanguageVO.builder()
+                .id(achievementTranslation.getLanguage().getId())
+                .code(achievementTranslation.getLanguage().getCode())
+                .build())
+            .build()));
         return AchievementVO.builder()
             .id(achievement.getId())
             .translations(list)
