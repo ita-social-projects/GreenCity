@@ -45,10 +45,11 @@ public interface TagsService {
     /**
      * Method that finds all Habits {@link Tag}'s.
      *
+     * @param languageCode {@link String}
      * @return list of {@link Tag}'s names
      * @author Markiyan Derevetskyi
      */
-    List<String> findAllHabitsTags();
+    List<String> findAllHabitsTags(String languageCode);
 
     /**
      * Method that checks if all Tags are unique.

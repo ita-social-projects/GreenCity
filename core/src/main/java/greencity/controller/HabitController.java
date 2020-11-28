@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -105,7 +106,8 @@ public class HabitController {
      */
     @ApiOperation(value = "Find all habits tags")
     @GetMapping("/tags")
-    public ResponseEntity<List<String>> findAllHabitsTags() {
-        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags());
+    @ApiPageableWithLocale
+    public ResponseEntity<List<String>> findAllHabitsTags(@ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags(locale.getLanguage()));
     }
 }

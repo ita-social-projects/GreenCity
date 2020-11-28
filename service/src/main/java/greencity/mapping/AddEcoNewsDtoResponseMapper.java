@@ -5,6 +5,8 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import java.util.stream.Collectors;
+
+import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -34,10 +36,8 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
                 .id(ecoNews.getAuthor().getId())
                 .name(ecoNews.getAuthor().getName())
                 .build())
-            .tags(ecoNews.getTags()
-                .stream()
-                .map(Tag::getName)
-                .collect(Collectors.toList()))
+            .tags(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
     }
 }

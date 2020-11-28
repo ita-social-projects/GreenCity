@@ -6,6 +6,8 @@ import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import java.util.stream.Collectors;
+
+import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -31,9 +33,7 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
         return new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
             ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getSource(),
             ecoNewsAuthorDto,
-            ecoNews.getTags()
-                .stream()
-                .map(Tag::getName)
-                .collect(Collectors.toList()));
+            ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName).collect(Collectors.toList()));
     }
 }

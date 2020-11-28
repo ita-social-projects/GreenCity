@@ -5,6 +5,7 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.user.AuthorDto;
 import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
+import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -50,10 +51,8 @@ public class TipsAndTricksDtoResponseMapper extends AbstractConverter<TipsAndTri
                 .id(tipsAndTricks.getAuthor().getId())
                 .name(tipsAndTricks.getAuthor().getName())
                 .build())
-            .tags(tipsAndTricks.getTags()
-                .stream()
-                .map(Tag::getName)
-                .collect(Collectors.toList()))
+            .tags(tipsAndTricks.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
     }
 }

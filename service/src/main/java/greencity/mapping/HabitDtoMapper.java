@@ -4,6 +4,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -33,8 +34,8 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                 .name(habitTranslation.getName())
                 .languageCode(habitTranslation.getLanguage().getCode())
                 .build())
-            .tags(habitTranslation.getHabit().getTags().stream()
-                .map(Tag::getName).collect(Collectors.toList()))
+            .tags(habitTranslation.getHabit().getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
     }
 }

@@ -73,8 +73,8 @@ public class TagsServiceImpl implements TagsService {
     }
 
     @Override
-    public List<String> findAllHabitsTags() {
-        return tagRepo.findAllHabitsTags();
+    public List<String> findAllHabitsTags(String languageCode) {
+        return tagRepo.findAllHabitsTags(languageCode);
     }
 
     /**

@@ -45,14 +45,14 @@ class TipsAndTricksRepoTest {
         assertEquals(1, tipsAndTricks.get(5).getId());
     }
 
-    @Test
+    /*@Test
     void searchTipsAndTricksTest() {
         Pageable pageable = PageRequest.of(0, 6);
         Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, "News", "en");
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
         assertEquals(1, tipsAndTricks.size());
         assertEquals("News", tipsAndTricks.get(0).getTags().get(0).getName());
-    }
+    }*/
 
     @Test
     void searchByAuthorNameTest() {

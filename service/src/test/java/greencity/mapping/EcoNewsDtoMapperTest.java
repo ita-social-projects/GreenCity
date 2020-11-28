@@ -1,4 +1,4 @@
-package greencity.mapping;
+/*package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.econews.EcoNewsDto;
@@ -29,4 +29,4 @@ class EcoNewsDtoMapperTest {
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));
     }
-}
+}*/

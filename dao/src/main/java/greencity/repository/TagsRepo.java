@@ -47,6 +47,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      * @return list of {@link Tag}'s names
      * @author Markiyan Derevetskyi
      */
-    @Query(nativeQuery = true, value = "SELECT name FROM tags WHERE id IN(SELECT tag_id FROM habits_tags)")
-    List<String> findAllHabitsTags();
+    @Query(nativeQuery = true, value = "SELECT name FROM tag_translations WHERE tag_id IN(SELECT tag_id FROM habits_tags) " +
+        "and language_id = (select id from languages where code = :languageCode)")
+    List<String> findAllHabitsTags(String languageCode);
 }

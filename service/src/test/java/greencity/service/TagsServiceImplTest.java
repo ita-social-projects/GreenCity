@@ -1,4 +1,4 @@
-package greencity.service;
+/*package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.tag.TagVO;
@@ -121,4 +121,4 @@ class TagsServiceImplTest {
         List<String> tipsAndTricksTagsNames = Arrays.asList("name1", "name2", "name3", "name4");
         assertThrows(InvalidNumOfTagsException.class, () -> tagService.isValidNumOfUniqueTags(tipsAndTricksTagsNames));
     }
-}
+}*/
