@@ -14,6 +14,7 @@ import greencity.service.FactOfTheDayTranslationService;
 import greencity.service.LanguageService;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @EnableCaching
+@AllArgsConstructor
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private FactOfTheDayRepo factOfTheDayRepo;
     @Autowired

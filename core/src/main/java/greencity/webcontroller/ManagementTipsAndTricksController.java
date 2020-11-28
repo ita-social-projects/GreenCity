@@ -18,9 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -41,6 +44,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @AllArgsConstructor
 @RequestMapping("/management/tipsandtricks")
 public class ManagementTipsAndTricksController {
+    @Autowired
     private TipsAndTricksService tipsAndTricksService;
 
     /**
