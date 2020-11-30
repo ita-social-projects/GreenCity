@@ -14,14 +14,15 @@ public class EmailMessageReceiver {
     private static final String PASSWORD_RECOVERY_QUEUE = "password-recovery-queue";
     public static final String CHANGE_PLACE_STATUS_QUEUE = "change-place-status";
     public static final String VERIFY_EMAIL_ROUTING_QUEUE = "verify-email-queue";
+    public static final String FINISH_USER_APPROVAL_QUEUE = "finish-user-approval";
     private static final String ADD_ECO_NEWS_QUEUE_NAME = "eco_news_queue";
     public static final String SEND_REPORT_QUEUE = "send-report";
     public static final String SEND_HABIT_NOTIFICATION = "send-habit-notification-queue";
     private final EmailService emailService;
 
     /**
-     * Constructor with {@link EmailService} dependency declaration,
-     * which is used for email sending logic.
+     * Constructor with {@link EmailService} dependency declaration, which is used
+     * for email sending logic.
      *
      * @param emailService service that is used for email sending logic.
      */
@@ -30,8 +31,8 @@ public class EmailMessageReceiver {
     }
 
     /**
-     * Method that is invoked on {@link PasswordRecoveryMessage} receiving.
-     * It is responsible for sending password recovery emails.
+     * Method that is invoked on {@link PasswordRecoveryMessage} receiving. It is
+     * responsible for sending password recovery emails.
      */
     @RabbitListener(queues = PASSWORD_RECOVERY_QUEUE)
     public void sendPasswordRecoveryEmail(PasswordRecoveryMessage message) {
@@ -39,13 +40,13 @@ public class EmailMessageReceiver {
             message.getUserId(),
             message.getUserFirstName(),
             message.getUserEmail(),
-            message.getRecoveryToken()
-        );
+            message.getRecoveryToken(),
+            message.getLanguage());
     }
 
     /**
-     * Method that is invoked on {@link SendChangePlaceStatusEmailMessage} receiving.
-     * It is responsible for sending change place status emails.
+     * Method that is invoked on {@link SendChangePlaceStatusEmailMessage}
+     * receiving. It is responsible for sending change place status emails.
      */
     @RabbitListener(queues = CHANGE_PLACE_STATUS_QUEUE)
     public void sendChangePlaceStatusEmail(SendChangePlaceStatusEmailMessage message) {
@@ -54,8 +55,8 @@ public class EmailMessageReceiver {
     }
 
     /**
-     * Method, that listen to adding eco news and after triggering sends news for users who
-     * subscribed for updates.
+     * Method, that listen to adding eco news and after triggering sends news for
+     * users who subscribed for updates.
      */
     @RabbitListener(queues = ADD_ECO_NEWS_QUEUE_NAME)
     public void sendNewsForSubscriber(AddEcoNewsMessage addEcoNewsMessage) {
@@ -64,17 +65,31 @@ public class EmailMessageReceiver {
     }
 
     /**
-     * Method that is invoked on {@link VerifyEmailMessage} receiving.
-     * It is responsible for sending verify email.
+     * Method that is invoked on {@link VerifyEmailMessage} receiving. It is
+     * responsible for sending verify email.
      */
     @RabbitListener(queues = VERIFY_EMAIL_ROUTING_QUEUE)
     public void sendVerifyEmail(VerifyEmailMessage message) {
-        emailService.sendVerificationEmail(message.getId(), message.getName(), message.getEmail(), message.getToken());
+        emailService.sendVerificationEmail(
+            message.getId(),
+            message.getName(),
+            message.getEmail(),
+            message.getToken(),
+            message.getLanguage());
     }
 
     /**
-     * Method that is invoked on {@link SendReportEmailMessage} receiving.
-     * It is responsible for sending report emails.
+     * Method that is invoked on receiving. It is responsible for sending user
+     * approval emails.
+     */
+    @RabbitListener(queues = FINISH_USER_APPROVAL_QUEUE)
+    public void sendRegistrationApprovalEmail(UserApprovalMessage message) {
+        emailService.sendApprovalEmail(message.getId(), message.getName(), message.getEmail(), message.getToken());
+    }
+
+    /**
+     * Method that is invoked on {@link SendReportEmailMessage} receiving. It is
+     * responsible for sending report emails.
      */
     @RabbitListener(queues = SEND_REPORT_QUEUE)
     public void sendReportEmail(SendReportEmailMessage message) {
@@ -83,8 +98,8 @@ public class EmailMessageReceiver {
     }
 
     /**
-     * Method that is invoked on {@link SendHabitNotification} receiving.
-     * It is responsible for sending notification letters about not marking habits.
+     * Method that is invoked on {@link SendHabitNotification} receiving. It is
+     * responsible for sending notification letters about not marking habits.
      */
     @RabbitListener(queues = SEND_HABIT_NOTIFICATION)
     public void sendHabitNotification(SendHabitNotification sendHabitNotification) {

@@ -1,18 +1,19 @@
 package greencity.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
-import greencity.dto.habitstatistic.HabitIdDto;
-import greencity.dto.user.*;
-import greencity.entity.User;
-import greencity.entity.enums.ROLE;
-import greencity.service.CustomGoalService;
-import greencity.service.HabitStatisticService;
-import greencity.service.UserService;
+import greencity.dto.user.BulkSaveUserGoalDto;
+import greencity.dto.user.UserProfileDtoRequest;
+import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserUpdateDto;
+import greencity.dto.user.UserVO;
+import greencity.enums.Role;
+import greencity.service.*;
+import java.security.Principal;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,10 +29,9 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.security.Principal;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -50,6 +50,10 @@ class UserControllerTest {
     @Mock
     private HabitStatisticService habitStatisticService;
     @Mock
+    private HabitAssignService habitAssignService;
+    @Mock
+    private HabitService habitService;
+    @Mock
     private CustomGoalService customGoalService;
 
     @BeforeEach
@@ -60,17 +64,15 @@ class UserControllerTest {
             .build();
     }
 
-
     @Test
     void updateStatusTest() throws Exception {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
-
-        String content = "{\n" +
-            "  \"id\": 0,\n" +
-            "  \"userStatus\": \"BLOCKED\"\n" +
-            "}";
+        String content = "{\n"
+            + "  \"id\": 0,\n"
+            + "  \"userStatus\": \"BLOCKED\"\n"
+            + "}";
 
         mockMvc.perform(patch(userLink + "/status")
             .principal(principal)
@@ -99,10 +101,10 @@ class UserControllerTest {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
-        String content = "{\n" +
-            "  \"id\": 1,\n" +
-            "  \"role\": \"ROLE_USER\"\n" +
-            "}";
+        String content = "{\n"
+            + "  \"id\": 1,\n"
+            + "  \"role\": \"ROLE_USER\"\n"
+            + "}";
 
         mockMvc.perform(patch(userLink + "/role")
             .principal(principal)
@@ -111,10 +113,8 @@ class UserControllerTest {
             .andExpect(status().isOk());
 
         ObjectMapper mapper = new ObjectMapper();
-        UserRoleDto userRoleDto =
-            mapper.readValue(content, UserRoleDto.class);
 
-        verify(userService).updateRole(eq(1L), eq(ROLE.ROLE_USER), eq("testmail@gmail.com"));
+        verify(userService).updateRole(eq(1L), eq(Role.ROLE_USER), eq("testmail@gmail.com"));
     }
 
     @Test
@@ -159,9 +159,9 @@ class UserControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        String content = "{\n" +
-            "  \"searchReg\": \"string\"\n" +
-            "}";
+        String content = "{\n"
+            + "  \"searchReg\": \"string\"\n"
+            + "}";
 
         mockMvc.perform(post(userLink + "/filter?page=1")
             .contentType(MediaType.APPLICATION_JSON)
@@ -192,10 +192,10 @@ class UserControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
-        String content = "{\n" +
-            "  \"emailNotification\": \"DISABLED\",\n" +
-            "  \"name\": \"string\"\n" +
-            "}";
+        String content = "{\n"
+            + "  \"emailNotification\": \"DISABLED\",\n"
+            + "  \"name\": \"string\"\n"
+            + "}";
 
         ObjectMapper mapper = new ObjectMapper();
         UserUpdateDto userUpdateDto =
@@ -211,26 +211,21 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserHabitsTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habits?language=en", 1))
-            .andExpect(status().isCreated());
-
-        verify(habitStatisticService).findAllHabitsAndTheirStatistics(
-            eq(1L), eq(true), eq("en"));
-    }
-
-    @Test
-    void getUserHabitsWithoutLanguageParamBadRequestTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habits", 1))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void findInfoAboutUserHabitsTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habits/statistic", 1))
+    void getActiveUserHabitAssigns() throws Exception {
+        mockMvc.perform(get(userLink + "/{id}/habit/assign?acquired=false&lang=en", 1))
             .andExpect(status().isOk());
 
-        verify(habitStatisticService).getInfoAboutUserHabits(eq(1L));
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
+            eq(1L), eq(false), eq("en"));
+    }
+
+    @Test
+    void getAcquiredUserHabitAssigns() throws Exception {
+        mockMvc.perform(get(userLink + "/{id}/habit/assign?acquired=true&lang=en", 1))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
+            eq(1L), eq(true), eq("en"));
     }
 
     @Test
@@ -259,16 +254,16 @@ class UserControllerTest {
 
     @Test
     void saveUserCustomGoalsTest() throws Exception {
-        User user = ModelUtils.getUser();
+        UserVO user = ModelUtils.getUserVO();
         when(userService.findById(1L)).thenReturn(user);
 
-        String content = "{\n" +
-            "  \"customGoalSaveRequestDtoList\": [\n" +
-            "    {\n" +
-            "      \"text\": \"string\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
+        String content = "{\n"
+            + "  \"customGoalSaveRequestDtoList\": [\n"
+            + "    {\n"
+            + "      \"text\": \"string\"\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}";
 
         ObjectMapper mapper = new ObjectMapper();
         BulkSaveCustomGoalDto dto = mapper.readValue(content, BulkSaveCustomGoalDto.class);
@@ -278,20 +273,19 @@ class UserControllerTest {
             .content(content))
             .andExpect(status().isCreated());
 
-        verify(customGoalService).save(eq(dto), eq(user));
+        verify(customGoalService).save(eq(dto), eq(user.getId()));
     }
 
     @Test
     void updateBulkTest() throws Exception {
-
-        String content = "{\n" +
-            "  \"customGoals\": [\n" +
-            "    {\n" +
-            "      \"id\": 1,\n" +
-            "      \"text\": \"string\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
+        String content = "{\n"
+            + "  \"customGoals\": [\n"
+            + "    {\n"
+            + "      \"id\": 1,\n"
+            + "      \"text\": \"string\"\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}";
 
         mockMvc.perform(patch(userLink + "/{userId}/customGoals", 1)
             .contentType(MediaType.APPLICATION_JSON)
@@ -323,7 +317,8 @@ class UserControllerTest {
 
     @Test
     void getAvailableGoalsWithLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/goals/available?language=ru", 1))
+        mockMvc.perform(get(userLink + "/{userId}/goals/available", 1)
+            .locale(new Locale("ru")))
             .andExpect(status().isOk());
 
         verify(userService).getAvailableGoals(eq(1L), eq("ru"));
@@ -339,7 +334,8 @@ class UserControllerTest {
 
     @Test
     void updateUserGoalStatusWithLanguageParamTest() throws Exception {
-        mockMvc.perform(patch(userLink + "/{userId}/goals/{goalId}?language=ru", 1, 1))
+        mockMvc.perform(patch(userLink + "/{userId}/goals/{goalId}", 1, 1)
+            .locale(new Locale("ru")))
             .andExpect(status().isCreated());
 
         verify(userService).updateUserGoalStatus(eq(1L), eq(1L), eq("ru"));
@@ -355,23 +351,15 @@ class UserControllerTest {
 
     @Test
     void saveUserGoalsWithoutLanguageParamTest() throws Exception {
-
-        String content = "{\n" +
-            "  \"userCustomGoal\": [\n" +
-            "    {\n" +
-            "      \"customGoal\": {\n" +
-            "        \"id\": 1\n" +
-            "      }\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"userGoals\": [\n" +
-            "    {\n" +
-            "      \"goal\": {\n" +
-            "        \"id\": 1\n" +
-            "      }\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}\n";
+        String content = "{\n"
+            + "  \"userGoals\": [\n"
+            + "    {\n"
+            + "      \"goal\": {\n"
+            + "        \"id\": 1\n"
+            + "      }\n"
+            + "    }\n"
+            + "  ]\n"
+            + "}\n";
 
         mockMvc.perform(post(userLink + "/{userId}/goals", 1)
             .contentType(MediaType.APPLICATION_JSON)
@@ -385,43 +373,36 @@ class UserControllerTest {
         verify(userService).saveUserGoals(eq(1L), eq(dto), eq("en"));
     }
 
-    @Test
-    void getAvailableHabitDictionaryTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/habit-dictionary/available?language=en", 1))
-            .andExpect(status().isOk());
+    /*
+     * @Test void getAvailableHabitDictionaryTest() throws Exception {
+     * mockMvc.perform(get(userLink +
+     * "/{userId}/habit-dictionary/available?language=en", 1))
+     * .andExpect(status().isOk());
+     * 
+     * verify(userService).getAvailableHabitDictionary(eq(1L), eq("en")); }
+     */
 
-        verify(userService).getAvailableHabitDictionary(eq(1L), eq("en"));
-    }
+    /*
+     * @Test void saveUserHabitsTest() throws Exception { String content = "[\n" +
+     * "  {\n" + "    \"habitDictionaryId\": 0\n" + "  }\n" + "]";
+     * 
+     * mockMvc.perform(post(userLink + "/{userId}/habit?language=en", 1)
+     * .contentType(MediaType.APPLICATION_JSON) .content(content))
+     * .andExpect(status().isCreated());
+     * 
+     * ObjectMapper mapper = new ObjectMapper(); List<HabitIdDto> dto =
+     * mapper.readValue(content, new TypeReference<List<HabitIdDto>>() { });
+     * 
+     * verify(userService).createUserHabit(eq(1L), eq(dto), eq("en")); }
+     */
 
-    @Test
-    void saveUserHabitsTest() throws Exception {
-
-        String content = "[\n" +
-            "  {\n" +
-            "    \"habitDictionaryId\": 0\n" +
-            "  }\n" +
-            "]";
-
-        mockMvc.perform(post(userLink + "/{userId}/habit?language=en", 1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
-            .andExpect(status().isCreated());
-
-        ObjectMapper mapper = new ObjectMapper();
-        List<HabitIdDto> dto = mapper.readValue(content, new TypeReference<List<HabitIdDto>>() {
-        });
-
-        verify(userService).createUserHabit(eq(1L), eq(dto), eq("en"));
-    }
-
-    @Test
-    void deleteHabitTest() throws Exception {
-        mockMvc.perform(delete(userLink + "/{userId}/habit/{habitId}", 1, 1))
-            .andExpect(status().isOk());
-
-        verify(userService).deleteHabitByUserIdAndHabitDictionary(eq(1L), eq(1L));
-    }
-
+    /*
+     * @Test void deleteHabitTest() throws Exception {
+     * mockMvc.perform(delete(userLink + "/{userId}/habit/{habitId}", 1, 1))
+     * .andExpect(status().isOk());
+     * 
+     * verify(userService).deleteHabitByUserIdAndHabitDictionary(eq(1L), eq(1L)); }
+     */
     @Test
     void bulkDeleteUserGoalsTest() throws Exception {
         mockMvc.perform(delete(userLink + "/{userId}/userGoals?ids=1,2", 1))
@@ -438,16 +419,32 @@ class UserControllerTest {
         verify(userService).getActivatedUsersAmount();
     }
 
-    // todo
     @Test
     void updateUserProfilePictureTest() throws Exception {
-        User user = ModelUtils.getUser();
+        UserVO user = ModelUtils.getUserVO();
         Principal principal = mock(Principal.class);
 
-        when(principal.getName()).thenReturn(eq("testmail@gmail.com"));
-        when(userService.updateUserProfilePicture(null, eq("testmail@gmail.com"))).thenReturn(user);
+        String json = "{\n"
+            + "\t\"id\": 1,\n"
+            + "\t\"profilePicturePath\": \"ima\""
+            + "}";
 
-        mockMvc.perform(patch(userLink + "/profilePicture")
+        MockMultipartFile jsonFile = new MockMultipartFile("userProfilePictureDto", "",
+            "application/json", json.getBytes());
+
+        when(principal.getName()).thenReturn("testmail@gmail.com");
+        when(userService.updateUserProfilePicture(null, "testmail@gmail.com",
+            ModelUtils.getUserProfilePictureDto())).thenReturn(user);
+
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart(userLink + "/profilePicture");
+        builder.with(request -> {
+            request.setMethod("PATCH");
+            return request;
+        });
+
+        this.mockMvc.perform(builder
+            .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
@@ -479,39 +476,50 @@ class UserControllerTest {
     }
 
     @Test
+    void getUserProfileInformationTest() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/profile/", 1))
+            .andExpect(status().isOk());
+        verify(userService).getUserProfileInformation(eq(1L));
+    }
+
+    @Test
+    void checkIfTheUserIsOnlineTest() throws Exception {
+        mockMvc.perform(get(userLink + "/isOnline/{userId}/", 1))
+            .andExpect(status().isOk());
+        verify(userService).checkIfTheUserIsOnline(eq(1L));
+    }
+
+    @Test
+    void getUserProfileStatistics() throws Exception {
+        mockMvc.perform(get(userLink + "/{userId}/profileStatistics/", 1))
+            .andExpect(status().isOk());
+        verify(userService).getUserProfileStatistics(eq(1L));
+    }
+
+    @Test
     void saveTest() throws Exception {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
-        String json = "{\n" +
-            "\t\"firstName\": \"name\",\n" +
-            "\t\"city\": \"city\",\n" +
-            "\t\"userCredo\": \"credo\",\n" +
-            "\t\"socialNetworks\": [],\n" +
-            "\t\"showLocation\": true,\n" +
-            "\t\"showEcoPlace\": true,\n" +
-            "\t\"showShoppingList\": false\n" +
-            "}";
-        MockMultipartFile jsonFile = new MockMultipartFile("userProfileDtoRequest", "", "application/json", json.getBytes());
+        String json = "{\n"
+            + "\t\"firstName\": \"name\",\n"
+            + "\t\"city\": \"city\",\n"
+            + "\t\"userCredo\": \"credo\",\n"
+            + "\t\"socialNetworks\": [],\n"
+            + "\t\"showLocation\": true,\n"
+            + "\t\"showEcoPlace\": true,\n"
+            + "\t\"showShoppingList\": false\n"
+            + "}";
 
-        this.mockMvc.perform(multipart(userLink + "/profile")
-            .file(jsonFile)
-            .principal(principal)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(put(userLink + "/profile")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json)
+            .principal(principal))
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         UserProfileDtoRequest dto = mapper.readValue(json, UserProfileDtoRequest.class);
 
-        verify(userService).saveUserProfile(eq(dto), eq(null), eq("testmail@gmail.com"));
-    }
-
-    @Test
-    void getUserProfileInformationTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/profile/", 1))
-            .andExpect(status().isOk());
-
-        verify(userService).getUserProfileInformation(eq(1L));
+        verify(userService).saveUserProfile(eq(dto), eq("testmail@gmail.com"));
     }
 }

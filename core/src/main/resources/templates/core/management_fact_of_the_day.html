@@ -32,9 +32,15 @@
                     <div class="table-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h2>Manage <b>Fact of the day</b></h2>
+                                <h2>Manage <strong>Fact of the day</strong></h2>
                             </div>
                             <div class="col-sm-6">
+                                <span class="search-box-right">
+                                    <form class="form-inline searching" action="/management/factoftheday/findAll" method="get">
+                                        <i class="material-icons"></i>
+                                        <input type="text" name="query" class="form-control" placeholder="Search…">
+                                    </form>
+                                </span>
                                 <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Fact of the day</span></a>
                                 <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>
                             </div>
@@ -90,7 +96,7 @@
                                 <td th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
                                     <a th:href="@{/factoftheday/find/(id=${factOfTheDay.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                    <a th:href="@{/factoftheday/(id=${factOfTheDay.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                    <a th:href="@{/management/factoftheday/(id=${factOfTheDay.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                                 </td>
                             </tr>
                         </tbody>

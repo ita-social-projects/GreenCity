@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml"
+      th:with="lang=${language}" th:lang="${lang}">
 <head>
 
     <meta charset="utf-8">
@@ -146,8 +147,8 @@
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
-                        <h2 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">
-                            Verify your email address to complete registration</h2>
+                        <h2 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -1px; line-height: 48px;"
+                           th:text="#{verify}"></h2>
                     </td>
                 </tr>
             </table>
@@ -174,7 +175,9 @@
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                        <div style="margin: 0;" th:text="${'Hi ' + userFirstName + ', Thanks for your interest in joining Green City! To complete your registration, we need you to verify your email address.'}"></div>
+                        <p th:text="#{hello} + ${name + ','}"></p>
+                        <div style="margin: 0;" th:text="#{thanks}"></div>
+                        <div style="margin: 0;" th:text="#{text.verify}"></div>
                     </td>
                 </tr>
                 <!-- end copy -->
@@ -189,8 +192,8 @@
                                         <tr>
                                             <td align="center" bgcolor="#13aa57" style="border-radius: 6px;">
                                                 <a th:href="${verifyAddress}" target="_blank"
-                                                   style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">
-                                                    Verify Email</a>
+                                                   style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;"
+                                                th:text="#{email}"></a>
                                             </td>
                                         </tr>
                                     </table>
@@ -205,8 +208,7 @@
                 <tr>
                     <td align="left" bgcolor="#ffffff"
                         style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                        <p style="margin: 0;">If that doesn't work, copy and paste the following link in your
-                            browser:</p>
+                        <p style="margin: 0;" th:text="#{condition}"></p>
                         <p style="margin: 0;" th:text="${verifyAddress}"><a th:href="${verifyAddress}"
                                                                             target="_blank"></a>
                         </p>
@@ -237,9 +239,7 @@
                 <tr>
                     <td align="center" bgcolor="#e9ecef"
                         style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-                        <p style="margin: 0;">You received this email because we received a request for registering your
-                            account. If you didn't request this action you can safely delete this
-                            email.</p>
+                        <p style="margin: 0;" th:text="#{advice}"> "> </p>
                     </td>
                 </tr>
                 <!-- end permission -->

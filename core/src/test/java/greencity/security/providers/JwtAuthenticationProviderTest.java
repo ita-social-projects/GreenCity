@@ -1,15 +1,17 @@
 package greencity.security.providers;
 
-import greencity.entity.enums.ROLE;
+import greencity.enums.Role;
 import greencity.security.jwt.JwtTool;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -20,22 +22,22 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 /**
  * @author Yurii Koval
  */
-public class JwtAuthenticationProviderTest {
-    private final ROLE expectedRole = ROLE.ROLE_USER;
+class JwtAuthenticationProviderTest {
+    private final Role expectedRole = Role.ROLE_USER;
 
     @Mock
     JwtTool jwtTool;
 
     private JwtAuthenticationProvider jwtAuthenticationProvider;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtTool);
     }
 
     @Test
-    public void authenticateWithValidAccessToken() {
+    void authenticateWithValidAccessToken() {
         final String accessToken = "eyJhbGciOiJIUzI1NiJ9"
             + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVN"
             + "FUiJdLCJpYXQiOjE1NzU4NDUzNTAsImV4cCI6NjE1NzU4NDUyOTB9"
@@ -50,44 +52,49 @@ public class JwtAuthenticationProviderTest {
         assertEquals(expectedExpiration, actualExpiration);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             accessToken,
-            null
-        );
+            null);
         Authentication actual = jwtAuthenticationProvider.authenticate(authentication);
         final String expectedEmail = "test@gmail.com";
         assertEquals(expectedEmail, actual.getPrincipal());
         assertEquals(
             Stream.of(expectedRole)
-                .map(ROLE::toString)
+                .map(Role::toString)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList()),
-            actual.getAuthorities()
-        );
+            actual.getAuthorities());
         assertEquals("", actual.getCredentials());
     }
 
-    @Test(expected = ExpiredJwtException.class)
-    public void authenticateWithExpiredAccessToken() {
+    @Test
+    void authenticateWithExpiredAccessToken() {
         when(jwtTool.getAccessTokenKey()).thenReturn("123123123");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             "eyJhbGciOiJIUzI1NiJ9"
                 + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1Nz"
                 + "U4Mzk3OTMsImV4cCI6MTU3NTg0MDY5M30"
                 + ".DYna1ycZd7eaUBrXKGzYvEMwcybe7l5YiliOR-LfyRw",
-            null
-        );
-        jwtAuthenticationProvider.authenticate(authentication);
+            null);
+        Assertions
+            .assertThrows(ExpiredJwtException.class,
+                () -> jwtAuthenticationProvider.authenticate(authentication));
     }
 
-    @Test(expected = Exception.class)
-    public void authenticateWithMalformedAccessToken() {
+    @Test
+    void authenticateWithMalformedAccessToken() {
         when(jwtTool.getAccessTokenKey()).thenReturn("123123123");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             "Malformed"
                 + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1Nz"
                 + "U4Mzk3OTMsImV4cCI6MTU3NTg0MDY5M30"
                 + ".DYna1ycZd7eaUBrXKGzYvEMwcybe7l5YiliOR-LfyRw",
-            null
-        );
-        jwtAuthenticationProvider.authenticate(authentication);
+            null);
+        Assertions
+            .assertThrows(Exception.class,
+                () -> jwtAuthenticationProvider.authenticate(authentication));
+    }
+
+    @Test
+    void supportsTest() {
+        assertTrue(jwtAuthenticationProvider.supports(UsernamePasswordAuthenticationToken.class));
     }
 }

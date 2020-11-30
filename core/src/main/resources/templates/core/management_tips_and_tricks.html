@@ -55,13 +55,55 @@
                                 </span>
                         </th>
                         <th>id</th>
-                        <th>title</th>
+                        <th>title translations</th>
                         <th>author</th>
                         <th>imagePath</th>
                         <th>creationDate</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
+                    <form method="POST" action="/management/tipsandtricks" id="searchForm" onsubmit="applyFilters()">
+
+                        <tr>
+                            <td>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="id" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.id }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="titleTranslations" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.titleTranslations }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="author" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.author }"/>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="input-group input-daterange">
+                                    <input type="search" name="startDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.startDate }"/>
+                                    <div class="input-group-addon">to</div>
+                                    <input type="search" name="endDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.endDate }"/>
+                                    <button type="submit" id="searchByDates"><i class="fa fa-search"></i></button>
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </form>
                     <th:block th:each="tipsAndTricks, iterStatus :${pageable.getPage()}">
                         <tbody>
                         <tr>
@@ -73,9 +115,28 @@
                                     </span>
                             </td>
                             <td th:text="${tipsAndTricks.getId()}"></td>
-                            <td th:text="${tipsAndTricks.getTitle()}"></td>
-                            <td th:text="${tipsAndTricks.getAuthor().getName()}"></td>
-                            <td th:text="${tipsAndTricks.getImagePath()}"></td>
+                            <td>
+                                <table class="table table-borderless m-0">
+                                    <thead>
+                                    <tr class="table-secondary">
+                                        <th class="py-1">Content</th>
+                                        <th class="py-1">LanguageCode</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <th:block
+                                            th:each="translation : ${tipsAndTricks.getTitleTranslations()}">
+                                        <tr>
+                                            <td class="py-1" th:text="${translation.getContent()}"></td>
+                                            <td class="py-1" th:text="${translation.getLanguageCode()}"></td>
+                                        </tr>
+                                    </th:block>
+                                    </tbody>
+                                </table>
+                            </td>
+
+                            <td th:text="${tipsAndTricks.getAuthorName()}"></td>
+                            <td><img th:src="${tipsAndTricks.getImagePath()}" th:width="150" th:height="100"></td>
                             <td th:text="${#temporals.format(tipsAndTricks.getCreationDate(), 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
                                 <a th:href="@{/management/tipsandtricks/find/(id=${tipsAndTricks.getId()})}"
@@ -83,7 +144,8 @@
                                         class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
                                 <a th:href="@{/management/tipsandtricks/(id=${tipsAndTricks.getId()})}"
                                    class="delete eDelBtn"
-                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip"
+                                                          title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>
                         </tbody>
@@ -122,23 +184,39 @@
                     <div class="modal-body">
                         <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
-                            <label>Title</label>
-                            <input type="text" class="form-control" name="title" required>
-                            <span th:id="errorModalSavetitle" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Text</label>
-                            <input type="text" class="form-control" name="text" required>
-                            <span th:id="errorModalSavetext" class="errorSpan"></span>
+                            <th:block th:each="language, iterInfo : ${languages}">
+                                <th:block th:switch="${language.getCode()}">
+                                    <label th:case="'ua'">Заголовок</label>
+                                    <label th:case="'en'">Title</label>
+                                    <label th:case="'ru'">Заглавие</label>
+                                </th:block>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" th:text="${language.getCode()}" th:name="${language.getCode()}"></span>
+                                    </div>
+                                    <input type="text" class="form-control"
+                                           id="titleContent+${language.getCode()}"
+                                           th:name="titleContent+${language.getCode()}">
+                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
+                                          class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <th:block th:switch="${language.getCode()}">
+                                        <label th:case="'ua'">Teкст</label>
+                                        <label th:case="'en'">Text</label>
+                                        <label th:case="'ru'">Teкст</label>
+                                    </th:block>
+                                    <textarea type="text" class="form-control"
+                                              th:name="textContent+${language.getCode()}"></textarea>
+                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
+                                          class="errorSpan"></span>
+                                </div>
+                            </th:block>
                         </div>
                         <div class="form-group">
                             <label>Tags</label>
                             <input type="text" class="form-control" name="tags" required>
                             <span th:id="errorModalSavetags" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Image</label>
-                            <input type="text" class="form-control" name="image">
                         </div>
                         <div class="form-group">
                             <label>Source</label>
@@ -174,15 +252,35 @@
                             <input type="text" class="form-control" id="id" name="id" readonly required>
                             <span th:id="errorModalUpdateid" class="errorSpan"></span>
                         </div>
+
                         <div class="form-group">
-                            <label for="title">Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required>
-                            <span th:id="errorModalUpdatetitle" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="text">Text</label>
-                            <input type="text" class="form-control" id="text" name="text" required>
-                            <span th:id="errorModalUpdatetext" class="errorSpan"></span>
+                            <th:block th:each="language, iterInfo : ${languages}">
+                                <th:block th:switch="${language.getCode()}">
+                                    <label th:case="'ua'">Заголовок</label>
+                                    <label th:case="'en'">Title</label>
+                                    <label th:case="'ru'">Заглавие</label>
+                                </th:block>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" th:text="${language.getCode()}" th:name="${language.getCode()}"></span>
+                                    </div>
+                                    <input type="text" class="form-control"
+                                           th:name="titleContent+${language.getCode()}">
+                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
+                                          class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <th:block th:switch="${language.getCode()}">
+                                        <label th:case="'ua'">Teкст</label>
+                                        <label th:case="'en'">Text</label>
+                                        <label th:case="'ru'">Teкст</label>
+                                    </th:block>
+                                    <textarea type="text" class="form-control"
+                                              th:name="textContent+${language.getCode()}"></textarea>
+                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
+                                          class="errorSpan"></span>
+                                </div>
+                            </th:block>
                         </div>
                         <div class="form-group">
                             <label for="tags">Tags</label>
@@ -190,10 +288,10 @@
                             <span th:id="errorModalUpdatetags" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label for="emailAuthor">Author</label>
-                            <input type="email" class="form-control" id="emailAuthor" name="emailAuthor" readonly
+                            <label for="authorName">Author</label>
+                            <input type="email" class="form-control" id="authorName" name="authorName" readonly
                                    required>
-                            <span th:id="errorModalUpdateemailAuthor" class="errorSpan"></span>
+                            <span th:id="errorModalUpdateauthorName" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
                             <label for="imagePath">Image</label>
@@ -262,5 +360,27 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
+<!-- Include Date Range Picker -->
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+<script>
+    $('.input-daterange input').each(function () {
+        $(this).datepicker({
+            format: 'yyyy-mm-dd',
+            todayHighlight: true,
+            autoclose: true,
+            orientation: 'top'
+        });
+    });
+
+    function applyFilters() {
+        document.getElementById("searchForm").action = "/management/tipsandtricks";
+        document.getElementById("searchForm").submit();
+    }
+
+</script>
 </body>
 </html>

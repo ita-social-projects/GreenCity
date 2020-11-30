@@ -7,7 +7,7 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.user.PlaceAuthorDto;
-import greencity.entity.enums.PlaceStatus;
+import greencity.enums.PlaceStatus;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -27,7 +27,7 @@ import org.hibernate.validator.constraints.Length;
 public class PlaceWithUserDto {
     private Long id;
 
-    @NotBlank(message = ValidationConstants.EMPTY_PLACE_NAME)
+    @NotBlank
     @Length(max = ValidationConstants.PLACE_NAME_MAX_LENGTH)
     private String name;
 

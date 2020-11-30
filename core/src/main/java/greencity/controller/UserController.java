@@ -1,8 +1,8 @@
 package greencity.controller;
 
 import greencity.annotations.*;
-import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
+import greencity.constant.SwaggerExampleModel;
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
@@ -10,26 +10,18 @@ import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
-import greencity.dto.habitstatistic.CalendarUsefulHabitsDto;
-import greencity.dto.habitstatistic.HabitCreateDto;
-import greencity.dto.habitstatistic.HabitDto;
-import greencity.dto.habitstatistic.HabitIdDto;
+import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.*;
-import greencity.entity.EcoNews;
-import greencity.entity.User;
-import greencity.entity.enums.EmailNotification;
-import greencity.entity.enums.UserStatus;
+import greencity.enums.EmailNotification;
+import greencity.enums.UserStatus;
 import greencity.service.CustomGoalService;
+import greencity.service.HabitAssignService;
 import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,19 +34,25 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
 @Validated
 public class UserController {
-    private UserService userService;
-    private HabitStatisticService habitStatisticService;
-    private CustomGoalService customGoalService;
+    private final UserService userService;
+    private final CustomGoalService customGoalService;
+    private final HabitAssignService habitAssignService;
+    private final HabitStatisticService habitStatisticService;
 
     /**
-     * The method which update user status.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * The method which update user status. Parameter principal are ignored because
+     * Spring automatically provide the Principal object.
      *
      * @param userStatusDto - dto with updated filed.
      * @return {@link UserStatusDto}
@@ -62,23 +60,23 @@ public class UserController {
      */
     @ApiOperation(value = "Update status of user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserStatus.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserStatus.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("status")
     public ResponseEntity<UserStatusDto> updateStatus(
-            @Valid @RequestBody UserStatusDto userStatusDto, @ApiIgnore Principal principal) {
+        @Valid @RequestBody UserStatusDto userStatusDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        userService.updateStatus(
-                                userStatusDto.getId(), userStatusDto.getUserStatus(), principal.getName()));
+            .body(
+                userService.updateStatus(
+                    userStatusDto.getId(), userStatusDto.getUserStatus(), principal.getName()));
     }
 
     /**
-     * The method which update user role.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * The method which update user role. Parameter principal are ignored because
+     * Spring automatically provide the Principal object.
      *
      * @param userRoleDto - dto with updated field.
      * @return {@link UserRoleDto}
@@ -86,24 +84,24 @@ public class UserController {
      */
     @ApiOperation(value = "Update role of user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("role")
     public ResponseEntity<UserRoleDto> updateRole(
-            @Valid @RequestBody UserRoleDto userRoleDto, @ApiIgnore Principal principal) {
+        @Valid @RequestBody UserRoleDto userRoleDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        userService.updateRole(
-                                userRoleDto.getId(), userRoleDto.getRole(), principal.getName()));
+            .body(
+                userService.updateRole(
+                    userRoleDto.getId(), userRoleDto.getRole(), principal.getName()));
     }
 
     /**
-     * The method which return list of users by page.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * The method which return list of users by page. Parameter pageable ignored
+     * because swagger ui shows the wrong params, instead they are explained in the
+     * {@link ApiPageable}.
      *
      * @param pageable - pageable configuration.
      * @return list of {@link PageableDto}
@@ -111,14 +109,14 @@ public class UserController {
      */
     @ApiOperation(value = "Get users by page")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ApiPageable
     @GetMapping("all")
-    public ResponseEntity<PageableDto> getAllUsers(@ApiIgnore Pageable pageable) {
+    public ResponseEntity<PageableDto<UserForListDto>> getAllUsers(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findByPage(pageable));
     }
 
@@ -130,9 +128,9 @@ public class UserController {
      */
     @ApiOperation(value = "Get all available roles")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = RoleDto.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = RoleDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("roles")
     public ResponseEntity<RoleDto> getRoles() {
@@ -147,9 +145,9 @@ public class UserController {
      */
     @ApiOperation(value = "Get all available email notifications statuses")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = EmailNotification[].class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = EmailNotification[].class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("emailNotifications")
     public ResponseEntity<List<EmailNotification>> getEmailNotifications() {
@@ -157,9 +155,9 @@ public class UserController {
     }
 
     /**
-     * The method which return list of users by filter.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * The method which return list of users by filter. Parameter pageable ignored
+     * because swagger ui shows the wrong params, instead they are explained in the
+     * {@link ApiPageable}.
      *
      * @param filterUserDto dto which contains fields with filter criteria.
      * @param pageable      - pageable configuration.
@@ -168,30 +166,30 @@ public class UserController {
      */
     @ApiOperation(value = "Filter all user by search criteria")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ApiPageable
     @PostMapping("filter")
-    public ResponseEntity<PageableDto> getUsersByFilter(
-            @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
+    public ResponseEntity<PageableDto<UserForListDto>> getUsersByFilter(
+        @ApiIgnore Pageable pageable, @RequestBody FilterUserDto filterUserDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUsersByFilter(filterUserDto, pageable));
     }
 
     /**
-     * Get {@link User} dto by principal (email) from access token.
+     * Get {@link UserVO} dto by principal (email) from access token.
      *
      * @return {@link UserUpdateDto}.
      * @author Nazar Stasyuk
      */
     @ApiOperation(value = "Get User dto by principal (email) from access token")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserUpdateDto.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserUpdateDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping
     public ResponseEntity<UserUpdateDto> getUserByPrincipal(@ApiIgnore @AuthenticationPrincipal Principal principal) {
@@ -200,91 +198,60 @@ public class UserController {
     }
 
     /**
-     * Update {@link User}.
+     * Update {@link UserVO}.
      *
      * @return {@link ResponseEntity}.
      * @author Nazar Stasyuk
      */
     @ApiOperation(value = "Update User")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping
-    public ResponseEntity updateUser(@Valid @RequestBody UserUpdateDto dto,
-                                     @ApiIgnore @AuthenticationPrincipal Principal principal) {
+    public ResponseEntity<UserUpdateDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
-        userService.update(dto, email);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-
-    /**
-     * Method for finding all {@link User} habits.
-     *
-     * @param userId {@link User} id.
-     * @return list of {@link HabitDto}
-     */
-    @GetMapping("/{userId}/habits")
-    public ResponseEntity<List<HabitDto>> getUserHabits(@PathVariable @CurrentUserId Long userId,
-                                                        @ApiParam(value = "Code of the needed language.")
-                                                        @RequestParam String language) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(habitStatisticService.findAllHabitsAndTheirStatistics(userId, true, language));
-    }
-
-    /**
-     * Method for finding {@link CalendarUsefulHabitsDto} by {@link User} email.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
-     *
-     * @param userId {@link User} id.
-     * @return {@link CalendarUsefulHabitsDto} instance.
-     */
-    @ApiOperation(value = "Find statistic about user habits.")
-    @GetMapping("/{userId}/habits/statistic")
-    public ResponseEntity<CalendarUsefulHabitsDto> findInfoAboutUserHabits(@PathVariable @CurrentUserId Long userId) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(habitStatisticService.getInfoAboutUserHabits(userId));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
     }
 
     /**
      * Method returns list of user goals for specific language.
      *
-     * @param language - needed language code
+     * @param locale - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
     @ApiOperation(value = "Get goals of current user.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/goals")
+    @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId,
-            @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getUserGoals(userId, language));
+            .status(HttpStatus.OK)
+            .body(userService.getUserGoals(userId, locale.getLanguage()));
     }
 
     /**
      * Method returns list user custom goals.
      *
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @return list of {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
     @ApiOperation(value = "Get all user custom goals.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> findAllByUser(@PathVariable @CurrentUserId Long userId) {
@@ -295,92 +262,90 @@ public class UserController {
      * Method saves custom goals for user.
      *
      * @param dto    {@link BulkSaveUserGoalDto} with list objects to save
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
     @ApiOperation(value = "Save one or multiple custom goals for current user.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> saveUserCustomGoals(
-            @Valid @RequestBody BulkSaveCustomGoalDto dto,
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId) {
+        @Valid @RequestBody BulkSaveCustomGoalDto dto,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(customGoalService.save(dto, userService.findById(userId)));
+            .status(HttpStatus.CREATED)
+            .body(customGoalService.save(dto, userId));
     }
 
     /**
      * Method updated user custom goals.
      *
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @param dto    {@link BulkCustomGoalDto} with list objects for update
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
     @ApiOperation(value = "Update user custom goals")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> updateBulk(@PathVariable @CurrentUserId Long userId,
-                                                                  @Valid @RequestBody BulkCustomGoalDto dto) {
+        @Valid @RequestBody BulkCustomGoalDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(customGoalService.updateBulk(dto));
+            .body(customGoalService.updateBulk(dto));
     }
 
     /**
      * Method for delete user custom goals.
      *
      * @param ids    string with objects id for deleting.
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      */
     @ApiOperation(value = "Delete user custom goals")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{userId}/customGoals")
     public ResponseEntity<List<Long>> bulkDeleteCustomGoals(
-            @ApiParam(value = "Ids of custom goals separated by a comma \n e.g. 1,2", required = true)
-            @RequestParam String ids,
-            @PathVariable @CurrentUserId Long userId) {
+        @ApiParam(value = "Ids of custom goals separated by a comma \n e.g. 1,2",
+            required = true) @RequestParam String ids,
+        @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(customGoalService.bulkDelete(ids));
     }
 
     /**
      * Method returns list of available (not ACTIVE) goals for user.
      *
-     * @param language - needed language code
+     * @param locale - needed language code
      * @return {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
     @ApiOperation(value = "Get available goals for current user.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/goals/available")
+    @ApiLocale
     public ResponseEntity<List<GoalDto>> getAvailableGoals(
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId,
-            @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getAvailableGoals(userId, language));
+            .status(HttpStatus.OK)
+            .body(userService.getAvailableGoals(userId, locale.getLanguage()));
     }
 
     /**
@@ -391,166 +356,113 @@ public class UserController {
      */
     @ApiOperation(value = "Get available custom goals for current user.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/customGoals/available")
     public ResponseEntity<List<CustomGoalResponseDto>> getAvailableCustomGoals(
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getAvailableCustomGoals(userId));
+            .status(HttpStatus.OK)
+            .body(userService.getAvailableCustomGoals(userId));
     }
-
 
     /**
      * Method updates goal status.
      *
-     * @param language - needed language code
+     * @param locale - needed language code
      * @return new {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
     @ApiOperation(value = "Change status of one of the goals for current user to DONE.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PatchMapping("/{userId}/goals/{goalId}")
+    @ApiLocale
     public ResponseEntity<UserGoalResponseDto> updateUserGoalStatus(
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId,
-            @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.")
-            @PathVariable Long goalId,
-            @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.") @PathVariable Long goalId,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.updateUserGoalStatus(userId, goalId, language));
+            .status(HttpStatus.CREATED)
+            .body(userService.updateUserGoalStatus(userId, goalId, locale.getLanguage()));
     }
 
     /**
      * Method saves goals, chosen by user.
      *
-     * @param dto      - dto with goals, chosen by user.
-     * @param language - needed language code
+     * @param dto    - dto with goals, chosen by user.
+     * @param locale - needed language code
      * @return new {@link ResponseEntity}.
      * @author Vitalii Skolozdra
      */
     @ApiOperation(value = "Save one or multiple goals for current user.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/{userId}/goals")
+    @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
-            @Valid @RequestBody BulkSaveUserGoalDto dto,
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId,
-            @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
+        @Valid @RequestBody BulkSaveUserGoalDto dto,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.saveUserGoals(userId, dto, language));
+            .status(HttpStatus.CREATED)
+            .body(userService.saveUserGoals(userId, dto, locale.getLanguage()));
     }
 
     /**
-     * Method returns list of available (not ACTIVE) habit dictionary for user.
+     * Method for finding all active habit assigns by {@link UserVO} id.
      *
-     * @return {@link ResponseEntity}.
-     * @author Kuzenko Bogdan
+     * @param userId   {@link UserVO} id.
+     * @param acquired {@link Boolean} status.
+     * @return list of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get available habit dictionary for current user.")
+    @ApiOperation(value = "Get active habit assigns for certain user by acquired status.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/{userId}/habit-dictionary/available")
-    public ResponseEntity<List<HabitDictionaryDto>> getAvailableHabitDictionary(
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId,
-            @ApiParam(value = "Code of the needed language.")
-            @RequestParam @ValidLanguage String language) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getAvailableHabitDictionary(userId, language));
-    }
-
-    /**
-     * Method saves habit, chosen by user.
-     *
-     * @param dto    - dto with habits, chosen by user.
-     * @param userId id current user.
-     * @return {@link ResponseEntity}
-     */
-    @ApiOperation(value = "Save one or multiple habits for current user.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @PostMapping("/{userId}/habit")
-    public ResponseEntity<List<HabitCreateDto>> saveUserHabits(
-            @Valid @RequestBody List<HabitIdDto> dto,
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId,
-            @ApiParam(value = "Code of the needed language.")
-            @RequestParam @ValidLanguage String language) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.createUserHabit(userId, dto, language));
-    }
-
-    /**
-     * Method deletes habit, chosen by user.
-     *
-     * @param habitId id with habits, chosen by user.
-     * @param userId  id current user.
-     */
-    @ApiOperation(value = "Delete habit")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @DeleteMapping("/{userId}/habit/{habitId}")
-    public void deleteHabit(
-            @ApiParam("Id habit of current user. Cannot be empty.")
-            @PathVariable Long habitId,
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId) {
-        userService.deleteHabitByUserIdAndHabitDictionary(userId, habitId);
-        ResponseEntity.status(HttpStatus.OK);
+    @GetMapping("/{userId}/habit/assign")
+    @ApiLocale
+    public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
+        @PathVariable Long userId, @RequestParam Boolean acquired, @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(
+                habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, acquired, locale.getLanguage()));
     }
 
     /**
      * Method for deleting user goals.
      *
      * @param ids    string with objects id for deleting.
-     * @param userId {@link User} id
+     * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
     @ApiOperation(value = "Delete user goal")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{userId}/userGoals")
     public ResponseEntity<List<Long>> bulkDeleteUserGoals(
-            @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true)
-            @Pattern(regexp = "^\\d+(,\\d+)*$", message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS)
-            @RequestParam String ids,
-            @PathVariable @CurrentUserId Long userId) {
+        @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true) @Pattern(
+            regexp = "^\\d+(,\\d+)*$",
+            message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS) @RequestParam String ids,
+        @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService
-                .deleteUserGoals(ids));
+            .deleteUserGoals(ids));
     }
 
     /**
@@ -561,39 +473,59 @@ public class UserController {
      */
     @ApiOperation(value = "Get all activated users amount")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/activatedUsersAmount")
     public ResponseEntity<Long> getActivatedUsersAmount() {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userService.getActivatedUsersAmount());
+            .body(userService.getActivatedUsersAmount());
     }
 
     /**
-     * Update user profile picture  {@link User}.
+     * Update user profile picture {@link UserVO}.
      *
      * @return {@link ResponseEntity}.
      * @author Datsko Marian
      */
     @ApiOperation(value = "Update user profile picture")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping(path = "/profilePicture",
-            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpStatus> updateUserProfilePicture(@ApiParam(value = "Profile picture")
-                                                               @ImageValidation
-                                                               @RequestPart(required = false) MultipartFile image,
-                                                               @ApiIgnore
-                                                               @AuthenticationPrincipal Principal principal) {
+        consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<HttpStatus> updateUserProfilePicture(
+        @ApiParam(value = SwaggerExampleModel.USER_PROFILE_PICTURE_DTO,
+            required = true) @RequestPart UserProfilePictureDto userProfilePictureDto,
+        @ApiParam(value = "Profile picture") @ImageValidation @RequestPart(required = false) MultipartFile image,
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
-        userService.updateUserProfilePicture(image, email);
+        userService.updateUserProfilePicture(image, email, userProfilePictureDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Delete user profile picture {@link UserVO}.
+     *
+     * @return {@link ResponseEntity}.
+     */
+    @ApiOperation(value = "Delete user profile picture")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PatchMapping(path = "/deleteProfilePicture")
+    public ResponseEntity<HttpStatus> deleteUserProfilePicture(
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        String email = principal.getName();
+        userService.deleteUserProfilePicture(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -606,17 +538,15 @@ public class UserController {
      */
     @ApiOperation(value = "Delete user friend")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("/{userId}/userFriend/{friendId}")
     public ResponseEntity<Object> deleteUserFriend(
-            @ApiParam("Id friend of current user. Cannot be empty.")
-            @PathVariable Long friendId,
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         userService.deleteUserFriendById(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -630,16 +560,14 @@ public class UserController {
      */
     @ApiOperation(value = "Add new user friend")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping("/{userId}/userFriend/{friendId}")
     public ResponseEntity<Object> addNewFriend(
-            @ApiParam("Id friend of current user. Cannot be empty.")
-            @PathVariable Long friendId,
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         userService.addNewFriend(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -652,44 +580,38 @@ public class UserController {
      */
     @ApiOperation(value = "Get six friends profile picture with the highest rating")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/sixUserFriends/")
     public ResponseEntity<List<UserProfilePictureDto>> getSixFriendsWithTheHighestRating(
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getSixFriendsWithTheHighestRating(userId));
+            .status(HttpStatus.OK)
+            .body(userService.getSixFriendsWithTheHighestRating(userId));
     }
 
     /**
-     * Method for save user profile information {@link EcoNews}.
+     * Method for save user profile information {@link UserProfileDtoResponse}.
      *
-     * @param userProfileDtoRequest - dto for {@link User} entity.
+     * @param userProfileDtoRequest - dto for {@link UserVO} entity.
      * @return dto {@link UserProfileDtoResponse} instance.
      * @author Marian Datsko.
      */
     @ApiOperation(value = "Save user profile information")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = HttpStatuses.CREATED,
-                    response = UserProfileDtoResponse.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED,
+            response = UserProfileDtoResponse.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PutMapping(path = "/profile", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
-        MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(path = "/profile")
     public ResponseEntity<UserProfileDtoResponse> save(
-            @ApiParam(value = "User Profile Request", required = true)
-            @RequestPart UserProfileDtoRequest userProfileDtoRequest,
-            @ApiParam(value = "User Profile Image")
-            @ImageValidation
-            @RequestPart(required = false) MultipartFile image,
-            @ApiIgnore Principal principal) {
+        @ApiParam(required = true) @RequestBody @Valid UserProfileDtoRequest userProfileDtoRequest,
+        @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                userService.saveUserProfile(userProfileDtoRequest, image, principal.getName()));
+            userService.saveUserProfile(userProfileDtoRequest, principal.getName()));
     }
 
     /**
@@ -700,38 +622,36 @@ public class UserController {
      */
     @ApiOperation(value = "Get user profile information by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/profile/")
     public ResponseEntity<UserProfileDtoResponse> getUserProfileInformation(
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getUserProfileInformation(userId));
+            .status(HttpStatus.OK)
+            .body(userService.getUserProfileInformation(userId));
     }
 
     /**
-     * The method checks by id if a {@link User} is online.
+     * The method checks by id if a {@link UserVO} is online.
      *
      * @return {@link ResponseEntity}.
      * @author Zhurakovskyi Yurii
      */
     @ApiOperation(value = "Check by id if the user is online")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("isOnline/{userId}/")
     public ResponseEntity<Boolean> checkIfTheUserIsOnline(
-            @ApiParam("Id of the user. Cannot be empty.")
-            @PathVariable Long userId) {
+        @ApiParam("Id of the user. Cannot be empty.") @PathVariable Long userId) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.checkIfTheUserIsOnline(userId));
+            .status(HttpStatus.OK)
+            .body(userService.checkIfTheUserIsOnline(userId));
     }
 
     /**
@@ -742,21 +662,20 @@ public class UserController {
      */
     @ApiOperation(value = "Get user profile statistics by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/profileStatistics/")
     public ResponseEntity<UserProfileStatisticsDto> getUserProfileStatistics(
-            @ApiParam("Id of current user. Cannot be empty.")
-            @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getUserProfileStatistics(userId));
+            .status(HttpStatus.OK)
+            .body(userService.getUserProfileStatistics(userId));
     }
 
     /**
-     * The method get {@link User}s with online status for the current user-id.
+     * The method get {@link UserVO}s with online status for the current user-id.
      *
      * @return {@link UserAndFriendsWithOnlineStatusDto}.
      * @author Zhurakovskyi Yurii
@@ -764,12 +683,13 @@ public class UserController {
     @MessageMapping("/userAndSixFriendsWithOnlineStatus")
     @SendTo("/topic/sixUsersOnlineStatus")
     public UserAndFriendsWithOnlineStatusDto getUserAndSixFriendsWithOnlineStatus(
-            Long userId) {
+        Long userId) {
         return userService.getUserAndSixFriendsWithOnlineStatus(userId);
     }
 
     /**
-     * The method get all {@link User}s with online status for the current user-id.
+     * The method get all {@link UserVO}s with online status for the current
+     * user-id.
      *
      * @return {@link UserAndAllFriendsWithOnlineStatusDto}.
      * @author Zhurakovskyi Yurii
@@ -777,7 +697,7 @@ public class UserController {
     @MessageMapping("/userAndAllFriendsWithOnlineStatus")
     @SendTo("/topic/userAndAllFriendsOnlineStatus")
     public UserAndAllFriendsWithOnlineStatusDto getUserAndAllFriendsWithOnlineStatus(
-            Long userId, Pageable pageable) {
+        Long userId, Pageable pageable) {
         return userService.getAllFriendsWithTheOnlineStatus(userId, pageable);
     }
 }

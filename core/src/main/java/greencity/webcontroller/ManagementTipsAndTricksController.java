@@ -1,44 +1,37 @@
 package greencity.webcontroller;
 
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
+
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.genericresponse.FieldErrorDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.entity.TipsAndTricks;
+import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.service.LanguageService;
 import greencity.service.TipsAndTricksService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -46,6 +39,8 @@ import springfox.documentation.annotations.ApiIgnore;
 public class ManagementTipsAndTricksController {
     @Autowired
     private TipsAndTricksService tipsAndTricksService;
+
+    private LanguageService languageService;
 
     /**
      * Method for getting tips & tricks by page.
@@ -56,9 +51,9 @@ public class ManagementTipsAndTricksController {
      */
     @GetMapping
     public String findAll(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<TipsAndTricksDtoResponse> pageableDto =
-            tipsAndTricksService.findAll(pageable);
+        PageableDto<TipsAndTricksDtoManagement> pageableDto = tipsAndTricksService.findAllManagementDtos(pageable);
         model.addAttribute("pageable", pageableDto);
+        model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_tips_and_tricks";
     }
 
@@ -96,7 +91,7 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Method for deleting {@link TipsAndTricks} by given id.
+     * Method for deleting {@link TipsAndTricksVO} by given id.
      *
      * @param listId list of IDs.
      * @return {@link ResponseEntity}.
@@ -113,7 +108,7 @@ public class ManagementTipsAndTricksController {
     }
 
     /**
-     * Method which updates {@link TipsAndTricks}.
+     * Method which updates {@link TipsAndTricksVO}.
      *
      * @param tipsAndTricksDtoManagement of {@link TipsAndTricksDtoManagement}.
      * @param file                       of {@link MultipartFile}.
@@ -126,28 +121,20 @@ public class ManagementTipsAndTricksController {
     })
     @ResponseBody
     @PutMapping("/")
-    public GenericResponseDto update(@Valid
-                                     @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-                                     BindingResult bindingResult,
-                                     @ImageValidation
-                                     @RequestPart(required = false, name = "file") MultipartFile file) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+    public GenericResponseDto update(@Valid @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+        BindingResult bindingResult,
+        @ImageValidation @RequestPart(required = false, name = "file") MultipartFile file) {
+        if (!bindingResult.hasErrors()) {
+            tipsAndTricksService.update(tipsAndTricksDtoManagement, file);
         }
-        tipsAndTricksService.update(tipsAndTricksDtoManagement, file);
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
-     * Method for creating {@link TipsAndTricks}.
+     * Method for creating {@link TipsAndTricksVO}.
      *
-     * @param tipsAndTricksDtoRequest dto for {@link TipsAndTricks} entity.
-     * @param file                    of {@link MultipartFile}
+     * @param tipsAndTricksDtoManagement dto for {@link TipsAndTricksVO} entity.
+     * @param file                       of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
     @ApiOperation(value = "Save tips & tricks.")
@@ -157,21 +144,34 @@ public class ManagementTipsAndTricksController {
     })
     @ResponseBody
     @PostMapping("/")
-    public GenericResponseDto save(@Valid
-                                   @RequestPart TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
-                                   BindingResult bindingResult,
-                                   @ImageValidation
-                                   @RequestParam(required = false, name = "file") MultipartFile file,
-                                   @ApiIgnore Principal principal) {
-        if (bindingResult.hasErrors()) {
-            GenericResponseDto genericResponseDto = new GenericResponseDto();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                genericResponseDto.getErrors().add(
-                    new FieldErrorDto(fieldError.getField(), fieldError.getDefaultMessage()));
-            }
-            return genericResponseDto;
+    public GenericResponseDto save(@Valid @RequestPart TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file,
+        @ApiIgnore Principal principal) {
+        if (!bindingResult.hasErrors()) {
+            tipsAndTricksService
+                .saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, file, principal.getName());
         }
-        tipsAndTricksService.save(tipsAndTricksDtoRequest, file, principal.getName());
-        return GenericResponseDto.builder().errors(new ArrayList<>()).build();
+        return buildGenericResponseDto(bindingResult);
+    }
+
+    /**
+     * Returns management page with User rating statistics with filtered data.
+     *
+     * @param model                ModelAndView that will be configured and returned
+     *                             to user.
+     * @param tipsAndTricksViewDto used for receive parameters for filters from UI.
+     */
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String filterData(Model model,
+        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+        TipsAndTricksViewDto tipsAndTricksViewDto) {
+        PageableDto<TipsAndTricksDtoManagement> pageableDto =
+            tipsAndTricksService.getFilteredDataForManagementByPage(
+                pageable,
+                tipsAndTricksViewDto);
+        model.addAttribute("pageable", pageableDto);
+        model.addAttribute("fields", tipsAndTricksViewDto);
+        return "core/management_tips_and_tricks";
     }
 }
