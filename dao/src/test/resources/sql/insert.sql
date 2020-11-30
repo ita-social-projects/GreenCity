@@ -428,8 +428,8 @@ VALUES ('Економити пакети', 'Опис пакетів', 'Паке�
        ('Discard disposable cups', 'cap description', 'caps',2, 2),
        ('Отказаться от одноразовых стаканчиков', 'описание стаканчиков', 'Стаканчики',3, 2);
 
-INSERT INTO habit_assign (habit_id, user_id, acquired, create_date, suspended, duration)
-VALUES (1, 1, false, '2020-09-10 20:00:00', false, 14);
+INSERT INTO habit_assign (habit_id, user_id, status, create_date, duration)
+VALUES (1, 1, 'active', '2020-09-10 20:00:00', 14);
 
 INSERT INTO habit_statistics (rate, create_date, amount_of_items, habit_assign_id)
 VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);

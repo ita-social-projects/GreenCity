@@ -144,7 +144,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     @Query(value = "SELECT ht.habitItem, SUM(hs.amountOfItems) "
         + "FROM HabitStatistic hs "
         + "     INNER JOIN HabitTranslation ht ON ht.habit.id = hs.habitAssign.habit.id "
-        + "     WHERE hs.habitAssign.suspended = false "
+        + "     WHERE hs.habitAssign.status = 'suspended' "
         + "     AND cast(hs.createDate as date) = cast(:statisticCreationDate as date)"
         + "     AND ht.language.code = :languageCode "
         + "GROUP BY ht.habitItem "
@@ -161,9 +161,9 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of habits in progress by {@link User} id.
      * @author Marian Datsko
      */
-    @Query(value = "SELECT COUNT(ha.acquired) FROM HabitAssign ha "
+    @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
         + " WHERE ha.user.id = :userId"
-        + " AND ha.acquired = false AND ha.suspended = false")
+        + " AND ha.status = 'acquired' ")
     Long getAmountOfHabitsInProgressByUserId(@Param("userId") Long id);
 
     /**
@@ -173,8 +173,8 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * @return amount of acquired habits by {@link User} id.
      * @author Marian Datsko
      */
-    @Query(value = "SELECT COUNT(ha.acquired) FROM HabitAssign ha "
+    @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
         + " WHERE ha.user.id = :userId"
-        + " AND ha.acquired = false AND ha.suspended = true")
+        + " AND ha.status = 'suspended'")
     Long getAmountOfAcquiredHabitsByUserId(@Param("userId") Long id);
 }

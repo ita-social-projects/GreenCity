@@ -59,5 +59,6 @@
     <include file="db/changelog/logs/ch-change-goals-Khonko.xml"/>
     <include file="db/changelog/logs/ch-habits-new-fields-Kravchenko.xml"/>
     <include file="db/changelog/logs/ch-change-table-achievement-Mamchuk.xml"/>
+    <include file="db/changelog/logs/ch-achievement_translations-Mamchuk.xml"/>
     <include file="db/changelog/logs/ch-change-habitAssign-Khonko.xml"/>
 </databaseChangeLog>

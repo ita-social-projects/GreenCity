@@ -64,7 +64,7 @@ class HabitTranslationRepoTest {
     @Test
     void findHabitTranslationsByUserAndAcquiredStatusTest_shouldReturnCorrectTranslationsList() {
         List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findHabitTranslationsByUserAndAcquiredStatus(1L, "en", false);
+            .findHabitTranslationsByUserAndAcquiredStatus(1L, "en");
 
         assertEquals(1, habitTranslations.size());
         assertEquals("bags", habitTranslations.get(0).getHabitItem());
@@ -73,7 +73,7 @@ class HabitTranslationRepoTest {
     @Test
     void findHabitTranslationsByUserAndAcquiredStatusTest_shouldReturnEmptyTranslationsListWhenWrongId() {
         List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findHabitTranslationsByUserAndAcquiredStatus(8L, "ua", false);
+            .findHabitTranslationsByUserAndAcquiredStatus(8L, "ua");
 
         assertTrue(habitTranslations.isEmpty());
     }
@@ -81,7 +81,7 @@ class HabitTranslationRepoTest {
     @Test
     void findHabitTranslationsByUserAndAcquiredStatusTest_shouldReturnEmptyTranslationsListWhenAcquiredTrue() {
         List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findHabitTranslationsByUserAndAcquiredStatus(7L, "ua", true);
+            .findHabitTranslationsByUserAndAcquiredStatus(7L, "ua");
 
         assertTrue(habitTranslations.isEmpty());
     }

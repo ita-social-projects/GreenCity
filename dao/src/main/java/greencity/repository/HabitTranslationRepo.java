@@ -40,16 +40,14 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @param userId   {@link User} id which we use to filter.
      * @param language code language.
-     * @param acquired habit acquired status.
      * @return List of available {@link HabitTranslation}`s.
      */
     @Query(value = "SELECT ht FROM HabitTranslation ht "
         + "WHERE ht.language.code = :language AND ht.habit.id IN "
         + "(SELECT ha.habit.id FROM HabitAssign ha "
-        + "WHERE ha.user.id = :userId AND ha.acquired = :acquired)")
+        + "WHERE ha.user.id = :userId AND ha.status <> 'acquired')")
     List<HabitTranslation> findHabitTranslationsByUserAndAcquiredStatus(@Param("userId") Long userId,
-        @Param("language") String language,
-        @Param("acquired") boolean acquired);
+        @Param("language") String language);
 
     /**
      * Method returns all {@link Habit}'s by language.

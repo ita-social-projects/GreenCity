@@ -187,7 +187,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired,
         String language) {
-        return habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired)
+        return habitAssignRepo.findAllByUserIdAndAcquired(userId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
@@ -197,7 +197,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired,
         String language) {
-        return habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habitId, acquired)
+        return habitAssignRepo.findAllByHabitIdAndAcquired(habitId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
