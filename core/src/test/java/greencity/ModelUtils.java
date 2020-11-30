@@ -54,7 +54,7 @@ import java.util.List;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, "tag", Collections.emptyList(), Collections.emptyList());
+        return new Tag(1L, "tag", Collections.emptyList(), Collections.emptyList(), Collections.emptySet());
     }
 
     public static User getUser() {

@@ -8,6 +8,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.service.HabitService;
+import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -28,6 +29,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/habit")
 public class HabitController {
     private final HabitService habitService;
+    private final TagsService tagsService;
 
     /**
      * Method finds {@link HabitVO} by given id with locale translation.
@@ -90,5 +92,35 @@ public class HabitController {
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getShoppingListForHabit(id, locale.getLanguage()));
+    }
+
+    /** Method finds all habits by tags and language code.
+     *
+     * @param locale   {@link Locale} with needed language code.
+     * @param pageable {@link Pageable} instance.
+     * @param tags     {@link List} of {@link String}
+     * @return Pageable of {@link HabitTranslationDto}.
+     */
+        @ApiOperation(value = "Find all habits by tags and language code.")
+    @GetMapping("/tags/search")
+    @ApiPageableWithLocale
+    public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
+        @ApiIgnore @ValidLanguage Locale locale,
+        @RequestParam List<String> tags,
+        @ApiIgnore Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage()));
+    }
+
+    /**
+     * The method which returns all habit's tags.
+     *
+     * @return list of {@link String} (tag's names).
+     * @author Markiyan Derevetskyi
+     */
+    @ApiOperation(value = "Find all habits tags")
+    @GetMapping("/tags")
+    public ResponseEntity<List<String>> findAllHabitsTags() {
+        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags());
     }
 }

@@ -40,7 +40,8 @@ public class EmailMessageReceiver {
             message.getUserId(),
             message.getUserFirstName(),
             message.getUserEmail(),
-            message.getRecoveryToken());
+            message.getRecoveryToken(),
+            message.getLanguage());
     }
 
     /**
@@ -69,7 +70,12 @@ public class EmailMessageReceiver {
      */
     @RabbitListener(queues = VERIFY_EMAIL_ROUTING_QUEUE)
     public void sendVerifyEmail(VerifyEmailMessage message) {
-        emailService.sendVerificationEmail(message.getId(), message.getName(), message.getEmail(), message.getToken());
+        emailService.sendVerificationEmail(
+            message.getId(),
+            message.getName(),
+            message.getEmail(),
+            message.getToken(),
+            message.getLanguage());
     }
 
     /**

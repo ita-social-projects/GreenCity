@@ -1,6 +1,5 @@
 package greencity.dto.goal;
 
-import greencity.enums.UserStatus;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.*;

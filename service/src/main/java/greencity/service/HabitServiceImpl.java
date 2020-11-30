@@ -43,15 +43,38 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     public PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
-        Page<HabitTranslation> pages =
+        Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCode(pageable, language);
-        List<HabitDto> habitTranslationDtos =
-            pages.stream()
+        return buildPageableDto(habitTranslationPage);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags,
+        String languageCode) {
+        Page<HabitTranslation> habitTranslationsPage =
+            habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, tags, languageCode);
+        return buildPageableDto(habitTranslationsPage);
+    }
+
+    /**
+     * Method that build {@link PageableDto} of {@link HabitDto} from {@link Page}
+     * of {@link HabitTranslation}.
+     *
+     * @param habitTranslationsPage {@link Page} of {@link HabitTranslation}
+     * @return {@link PageableDto} of {@link HabitDto}
+     * @author Markiyan Derevetskyi
+     */
+    private PageableDto<HabitDto> buildPageableDto(Page<HabitTranslation> habitTranslationsPage) {
+        List<HabitDto> habits =
+            habitTranslationsPage.stream()
                 .map(habitTranslation -> modelMapper.map(habitTranslation, HabitDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<>(habitTranslationDtos, pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages());
+        return new PageableDto<>(habits, habitTranslationsPage.getTotalElements(),
+            habitTranslationsPage.getPageable().getPageNumber(),
+            habitTranslationsPage.getTotalPages());
     }
 
     /**
@@ -65,3 +88,4 @@ public class HabitServiceImpl implements HabitService {
             .collect(Collectors.toList());
     }
 }
+

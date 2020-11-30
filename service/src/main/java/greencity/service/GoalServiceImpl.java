@@ -89,13 +89,11 @@ public class GoalServiceImpl implements GoalService {
 
     private void updateTranslations(List<GoalTranslation> oldTranslations,
         List<LanguageTranslationDTO> newTranslations) {
-        oldTranslations.forEach(goalTranslation -> {
-            goalTranslation.setContent(newTranslations.stream()
-                .filter(newTranslation -> newTranslation.getLanguage().getCode()
-                    .equals(goalTranslation.getLanguage().getCode()))
-                .findFirst().get()
-                .getContent());
-        });
+        oldTranslations.forEach(goalTranslation -> goalTranslation.setContent(newTranslations.stream()
+            .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                .equals(goalTranslation.getLanguage().getCode()))
+            .findFirst().get()
+            .getContent()));
     }
 
     /**

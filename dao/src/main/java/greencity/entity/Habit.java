@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import lombok.*;
 
@@ -12,9 +13,9 @@ import lombok.*;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"habitAssigns", "habitTranslations"})
+    exclude = {"habitAssigns", "habitTranslations", "tags"})
 @ToString(
-    exclude = {"habitAssigns", "habitTranslations"})
+    exclude = {"habitAssigns", "habitTranslations", "tags"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +36,11 @@ public class Habit {
 
     @OneToMany(mappedBy = "habit", fetch = FetchType.LAZY)
     private List<HabitGoal> habitGoals;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "habits_tags",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags;
+
 }
