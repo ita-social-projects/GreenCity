@@ -183,54 +183,6 @@ public interface UserService {
     int updateUserRefreshToken(String refreshTokenKey, Long id);
 
     /**
-     * Method returns list of user goals for specific language.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param language needed language code.
-     * @return List of {@link UserGoalDto}.
-     */
-    List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language);
-
-    /**
-     * Method returns list of available (not ACTIVE) goals for user for specific
-     * language.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param language needed language code.
-     * @return List of {@link GoalDto}.
-     */
-    List<GoalDto> getAvailableGoals(Long userId, String language);
-
-    /**
-     * Method assign to user list of user goals available for habit.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param language needed language code.
-     * @param habitId  id of the {@link HabitVO}.
-     * @return List of saved {@link UserGoalDto} with specific language.
-     */
-    List<UserGoalResponseDto> saveUserGoals(Long userId, Long habitId, List<GoalRequestDto> dto, String language);
-
-    /**
-     * Method for deleted list of user goals.
-     *
-     * @param ids string with ids object for deleting.
-     * @return list ids of deleted {@link UserGoalVO}
-     * @author Bogdan Kuzenko
-     */
-    List<Long> deleteUserGoals(String ids);
-
-    /**
-     * Method update status of user goal.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param goalId   - {@link UserGoalVO}'s id that should be updated.
-     * @param language needed language code.
-     * @return {@link UserGoalDto} with specific language.
-     */
-    UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language);
-
-    /**
      * Method add default habit.
      *
      * @param user {@link UserVO} instance.
@@ -421,15 +373,6 @@ public interface UserService {
      * @return {@link List} of {@link UserVO} instances.
      */
     List<UserVO> findAll();
-
-    /**
-     * Method for deleting goal from user`s shopping list.
-     *
-     * @param userId  id of the {@link UserVO} current user.
-     * @param habitId id of the {@link HabitVO}.
-     * @param goalId  id of the {@link GoalVO}.
-     */
-    void deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId);
 
     /**
      * Method that finds user's friends by id.

@@ -4,15 +4,23 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.goal.*;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.user.UserGoalDto;
+import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.Goal;
+import greencity.entity.HabitAssign;
+import greencity.entity.UserGoal;
 import greencity.entity.localization.GoalTranslation;
-import greencity.exception.exceptions.GoalNotFoundException;
-import greencity.exception.exceptions.NotDeletedException;
+import greencity.enums.GoalStatus;
+import greencity.exception.exceptions.*;
 import greencity.filters.GoalSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.UserGoalRepo;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -21,6 +29,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -32,6 +41,8 @@ public class GoalServiceImpl implements GoalService {
     private final GoalTranslationRepo goalTranslationRepo;
     private final GoalRepo goalRepo;
     private final ModelMapper modelMapper;
+    private final UserGoalRepo userGoalRepo;
+    private final HabitAssignRepo habitAssignRepo;
 
     /**
      * {@inheritDoc}
@@ -218,5 +229,147 @@ public class GoalServiceImpl implements GoalService {
             .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
             .collect(Collectors.toList());
         return getPagebleAdvancedDto(goalManagementDtos, pages);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public List<UserGoalResponseDto> saveUserGoals(Long userId, Long habitId, List<GoalRequestDto> goalDtos,
+        String language) {
+        Optional<HabitAssign> habitAssignOptional =
+            habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId);
+        if (habitAssignOptional.isPresent()) {
+            HabitAssign habitAssign = habitAssignOptional.get();
+            if (goalDtos != null) {
+                saveGoalForUserGoal(habitAssign, goalDtos);
+            }
+        } else {
+            throw new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID);
+        }
+        return getUserGoals(userId, habitId, language);
+    }
+
+    /**
+     * Method save user goals with goal dictionary.
+     *
+     * @param goals list {@link UserGoalDto} for saving
+     * @author Bogdan Kuzenko
+     */
+    private void saveGoalForUserGoal(HabitAssign habitAssign, List<GoalRequestDto> goals) {
+        List<Long> ids = userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId());
+        List<Long> assignedIds = userGoalRepo.getAllAssignedGoals(habitAssign.getId());
+        for (GoalRequestDto el : goals) {
+            if (ids.contains(el.getId())) {
+                if (!assignedIds.contains(el.getId())) {
+                    UserGoal userGoal = modelMapper.map(el, UserGoal.class);
+                    userGoal.setHabitAssign(habitAssign);
+                    habitAssign.getUserGoals().add(userGoal);
+                    userGoalRepo.saveAll(habitAssign.getUserGoals());
+                } else {
+                    throw new WrongIdException(ErrorMessage.GOAL_ALREADY_SELECTED + el.getId());
+                }
+            } else {
+                throw new NotFoundException(ErrorMessage.GOAL_NOT_ASSIGNED_FOR_THIS_HABIT + el.getId());
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language) {
+        Optional<HabitAssign> habitAssignOptional =
+            habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId);
+        if (habitAssignOptional.isPresent()) {
+            HabitAssign habitAssign = habitAssignOptional.get();
+            List<UserGoalResponseDto> goalDtos = userGoalRepo
+                .findAllByHabitAssingId(habitAssign.getId())
+                .stream()
+                .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
+                .collect(Collectors.toList());
+            if (goalDtos.isEmpty()) {
+                throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
+            }
+            goalDtos.forEach(el -> setTextForUserGoal(el, language));
+            return goalDtos;
+        } else {
+            throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
+        }
+    }
+
+    /**
+     * Method for setting text either for UserGoal with localization.
+     *
+     * @param dto {@link GoalDto}
+     */
+    private void setTextForUserGoal(UserGoalResponseDto dto, String language) {
+        String text = goalTranslationRepo.findByLangAndUserGoalId(language, dto.getId()).getContent();
+        dto.setText(text);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId).get();
+        userGoalRepo.deleteByGoalIdAndHabitAssignId(goalId, habitAssign.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {
+        UserGoal userGoal;
+        userGoal = userGoalRepo.getOne(goalId);
+        if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
+            userGoal.setStatus(GoalStatus.DONE);
+            userGoal.setDateCompleted(LocalDateTime.now());
+            userGoalRepo.save(userGoal);
+        } else {
+            throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
+        }
+        UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
+        setTextForUserGoal(updatedUserGoal, language);
+        return updatedUserGoal;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Bogdan Kuzenko
+     */
+    @Transactional
+    @Override
+    public List<Long> deleteUserGoals(String ids) {
+        List<Long> arrayId = Arrays.stream(ids.split(","))
+            .map(Long::valueOf)
+            .collect(Collectors.toList());
+
+        List<Long> deleted = new ArrayList<>();
+        for (Long id : arrayId) {
+            deleted.add(deleteUserGoal(id));
+        }
+        return deleted;
+    }
+
+    /**
+     * Method for deleting user goal by id.
+     *
+     * @param id {@link UserGoal} id.
+     * @return id of deleted {@link UserGoal}
+     * @author Bogdan Kuzenko
+     */
+    private Long deleteUserGoal(Long id) {
+        UserGoal userGoal = userGoalRepo
+            .findById(id).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_GOAL_NOT_FOUND + id));
+        userGoalRepo.delete(userGoal);
+        return id;
     }
 }

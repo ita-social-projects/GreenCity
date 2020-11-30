@@ -83,10 +83,10 @@ public class HabitController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
     })
-    @GetMapping("/shopping-list")
+    @GetMapping("{id}/shopping-list")
     @ApiLocale
     public ResponseEntity<List<GoalDto>> getGoals(
-        Long id,
+        @PathVariable Long id,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getShoppingListForHabit(id, locale.getLanguage()));

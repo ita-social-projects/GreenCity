@@ -226,22 +226,6 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserGoalsWithLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/get-all-assigned?habitId=1&lang=en", 1))
-            .andExpect(status().isOk());
-
-        verify(userService).getUserGoals(eq(1L), eq(1L), eq("en"));
-    }
-
-    @Test
-    void getUserGoalsWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/get-all-assigned?habitId=1", 1))
-            .andExpect(status().isOk());
-
-        verify(userService).getUserGoals(eq(1L), eq(1L), eq("en"));
-    }
-
-    @Test
     void findAllByUserTest() throws Exception {
         mockMvc.perform(get(userLink + "/{userId}/customGoals", 1))
             .andExpect(status().isOk());
@@ -305,62 +289,11 @@ class UserControllerTest {
     }
 
     @Test
-    void getAvailableGoalsWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/goals/available", 1))
-            .andExpect(status().isOk());
-
-        verify(userService).getAvailableGoals(eq(1L), eq("en"));
-    }
-
-    @Test
-    void getAvailableGoalsWithLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}/goals/available", 1)
-            .locale(new Locale("ru")))
-            .andExpect(status().isOk());
-
-        verify(userService).getAvailableGoals(eq(1L), eq("ru"));
-    }
-
-    @Test
     void getAvailableCustomGoalsTest() throws Exception {
         mockMvc.perform(get(userLink + "/{userId}/customGoals/available", 1))
             .andExpect(status().isOk());
 
         verify(userService).getAvailableCustomGoals(eq(1L));
-    }
-
-    @Test
-    void updateUserGoalStatusWithLanguageParamTest() throws Exception {
-        mockMvc.perform(patch(userLink + "/{userId}/goals/{goalId}", 1, 1)
-            .locale(new Locale("ru")))
-            .andExpect(status().isCreated());
-
-        verify(userService).updateUserGoalStatus(eq(1L), eq(1L), eq("ru"));
-    }
-
-    @Test
-    void updateUserGoalStatusWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(patch(userLink + "/{userId}/goals/{goalId}", 1, 1))
-            .andExpect(status().isCreated());
-
-        verify(userService).updateUserGoalStatus(eq(1L), eq(1L), eq("en"));
-    }
-
-    @Test
-    void saveUserGoalsWithoutLanguageParamTest() throws Exception {
-        String content = "[\n"
-            + " {\n"
-            + "    \"id\": 1\n"
-            + " }\n"
-            + "]\n";
-
-        mockMvc.perform(post(userLink + "/{userId}/saveGoals?habitId=1&lang=en", 1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
-            .andExpect(status().isCreated());
-
-        GoalRequestDto dto = new GoalRequestDto(1L);
-        verify(userService).saveUserGoals(1L, 1L, Collections.singletonList(dto), "en");
     }
 
     /*
@@ -393,13 +326,6 @@ class UserControllerTest {
      * 
      * verify(userService).deleteHabitByUserIdAndHabitDictionary(eq(1L), eq(1L)); }
      */
-    @Test
-    void bulkDeleteUserGoalsTest() throws Exception {
-        mockMvc.perform(delete(userLink + "/{userId}/userGoals?ids=1,2", 1))
-            .andExpect(status().isOk());
-
-        verify(userService).deleteUserGoals(eq("1,2"));
-    }
 
     @Test
     void getActivatedUsersAmountTest() throws Exception {

@@ -113,6 +113,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses",
                 "/habit",
                 "/habit/{id}",
+                "/habit/{id}/shopping-list",
                 "/habit/assign/{id}",
                 "/habit/assign/{habitId}",
                 "/habit/assign/{habitId}/all",
@@ -163,7 +164,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/advices",
                 "/favorite_place/",
                 "/goals",
-                "/goals/shoppingList/{userId}",
                 "/habit/assign",
                 "/habit/assign/{habitId}/active",
                 "/habit/assign/{habitId}",
@@ -173,9 +173,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/newsSubscriber/unsubscribe",
                 "/place/{status}",
                 "/user",
+                "/user/{userId}/habits/{habitId}/shopping-list",
+                "/user/{userId}/goals/{userGoalId}",
                 "/user/{userId}/goals",
                 USER_CUSTOM_GOALS,
-                "/user/{userId}/goals/available",
                 "/user/{userId}/customGoals/available",
                 "/user/{userId}/sixUserFriends/",
                 "/user/{userId}/profile/",
@@ -204,6 +205,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks",
                 USER_CUSTOM_GOALS,
                 "/user/{userId}/goals",
+                "/user/{userId}/save-goals",
                 "/user/{userId}/habit",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
@@ -216,7 +218,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
-                "/goals/shoppingList/{userId}",
                 "/habit/assign/{habitId}",
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
@@ -230,6 +231,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/{placeId}",
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
+                "/user/{userId}/delete-goal/{habitId}",
                 "/user/{userId}/userGoals",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
