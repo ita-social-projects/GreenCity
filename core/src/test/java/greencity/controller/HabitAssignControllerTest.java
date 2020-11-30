@@ -79,7 +79,7 @@ class HabitAssignControllerTest {
 
     @Test
     void enrollHabit() throws Exception {
-        mockMvc.perform(post(habitLink + "/{habitId}/enroll", 1))
+        mockMvc.perform(post(habitLink + "/{habitId}/enroll/{date}", 1, LocalDate.now()))
             .andExpect(status().isOk());
         verify(habitAssignService).enrollHabit(1L, null, LocalDate.now());
     }
