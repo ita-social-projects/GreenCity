@@ -10,7 +10,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.Language;
-import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
