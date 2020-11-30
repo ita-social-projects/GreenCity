@@ -15,6 +15,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString(exclude = {"user"})
+@EqualsAndHashCode
 @Builder
 public class HabitGoal {
     @Id
@@ -27,22 +28,4 @@ public class HabitGoal {
     @ManyToOne(fetch = FetchType.LAZY)
     private Goal goal;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof HabitGoal)) {
-            return false;
-        }
-        HabitGoal habitGoal = (HabitGoal) o;
-        return id.equals(habitGoal.id)
-            && habit.equals(habitGoal.habit)
-            && Objects.equals(goal, habitGoal.goal);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, habit, goal);
-    }
 }

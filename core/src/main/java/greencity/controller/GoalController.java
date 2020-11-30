@@ -5,12 +5,10 @@ import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.ValidationConstants;
-import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.service.GoalService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -19,7 +17,6 @@ import java.util.List;
 import java.util.Locale;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +30,6 @@ import javax.validation.constraints.Pattern;
 @RequestMapping("/user")
 public class GoalController {
     private final GoalService goalService;
-    private final UserService userService;
 
     /**
      * Method saves goals, chosen by user.
