@@ -7,6 +7,7 @@ import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitAssignService;
 import java.security.Principal;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,6 +81,6 @@ class HabitAssignControllerTest {
     void enrollHabit() throws Exception {
         mockMvc.perform(post(habitLink + "/{habitId}/enroll", 1))
             .andExpect(status().isOk());
-        verify(habitAssignService).enrollHabit(1L, null);
+        verify(habitAssignService).enrollHabit(1L, null, LocalDate.now());
     }
 }

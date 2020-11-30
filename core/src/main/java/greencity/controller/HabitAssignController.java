@@ -209,10 +209,11 @@ public class HabitAssignController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/{habitId}/enroll")
+    @PostMapping("/{habitId}/enroll/{date}")
     public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.enrollHabit(habitId, userVO.getId()));
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.enrollHabit(habitId, userVO.getId(), date));
     }
 
     /**

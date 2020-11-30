@@ -246,17 +246,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto enrollHabit(Long habitId, Long userId) {
+    public HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime) {
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
 
-        LocalDate todayDate = LocalDate.now();
-
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
-            .enrollDate(todayDate).habitAssign(habitAssign).build();
+            .enrollDate(dateTime).habitAssign(habitAssign).build();
 
-        updateHabitAssignAfterEnroll(habitAssign, todayDate, habitCalendar);
+        updateHabitAssignAfterEnroll(habitAssign, dateTime, habitCalendar);
 
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
@@ -265,9 +263,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method updates {@link HabitAssign} if it's completed.
      *
      * @param habitAssign {@link HabitAssign} instance.
-     * @param todayDate   {@link LocalDate} date.
+     * @param dateTime    {@link LocalDate} date.
      */
-    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign, LocalDate todayDate,
+    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign, LocalDate dateTime,
         HabitStatusCalendar habitCalendar) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
@@ -277,7 +275,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitStatusCalendars.add(habitCalendar);
         habitAssign.setHabitStatusCalendars(habitStatusCalendars);
 
-        updateHabitStreakAfterEnroll(habitAssign, todayDate);
+        updateHabitStreakAfterEnroll(habitAssign, dateTime);
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setAcquired(true);
@@ -290,16 +288,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * already enrolled.
      *
      * @param habitAssign {@link HabitAssign} instance.
-     * @param todayDate   {@link LocalDate} date.
+     * @param dateTime    {@link LocalDate} date.
      */
-    private void updateHabitStreakAfterEnroll(HabitAssign habitAssign, LocalDate todayDate) {
+    private void updateHabitStreakAfterEnroll(HabitAssign habitAssign, LocalDate dateTime) {
         LocalDate lastEnrollmentDate = habitStatusCalendarService.findTopByEnrollDateAndHabitAssign(
             modelMapper.map(habitAssign, HabitAssignVO.class));
+
+        int daysStreakAfterDate = countHabitStreakAfterDate(dateTime, habitAssign);
+        int daysStreakBeforeDate = countHabitStreakBeforeDate(dateTime, habitAssign);
 
         int habitStreak = habitAssign.getHabitStreak();
         long intervalBetweenDates = 0;
         if (lastEnrollmentDate != null) {
-            intervalBetweenDates = Period.between(lastEnrollmentDate, todayDate).getDays();
+            intervalBetweenDates = Period.between(lastEnrollmentDate, dateTime).getDays();
         }
         if ((intervalBetweenDates == 1) || lastEnrollmentDate == null) {
             habitAssign.setHabitStreak(++habitStreak);

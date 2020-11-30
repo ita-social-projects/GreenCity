@@ -89,11 +89,12 @@ public interface HabitAssignService {
     /**
      * Method to enroll {@code Habit}.
      *
-     * @param habitId {@code Habit} id to enroll.
-     * @param userId  {@code User} id.
+     * @param habitId  {@code Habit} id to enroll.
+     * @param userId   {@code User} id.
+     * @param dateTime {@link LocalDate} dateTime we want enroll.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto enrollHabit(Long habitId, Long userId);
+    HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime);
 
     /**
      * Method to unenroll Habit in defined date.

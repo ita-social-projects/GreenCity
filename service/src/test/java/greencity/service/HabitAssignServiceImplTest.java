@@ -17,6 +17,8 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.apache.tomcat.jni.Local;
+import org.assertj.core.api.LocalDateAssert;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -147,7 +149,7 @@ class HabitAssignServiceImplTest {
         when(habitStatusCalendarService.findTopByEnrollDateAndHabitAssign(habitAssignVO))
             .thenReturn(LocalDate.of(2020, 10, 15));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        habitAssignService.enrollHabit(1L, 1L);
+        habitAssignService.enrollHabit(1L, 1L, LocalDate.now());
         verify(habitAssignRepo).save(habitAssign);
     }
 
@@ -155,7 +157,7 @@ class HabitAssignServiceImplTest {
     void enrollHabitThrowWrongIdException() {
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L));
+        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L, LocalDate.now()));
     }
 
     @Test
@@ -169,7 +171,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(LocalDate.now());
 
         assertThrows(BadRequestException.class, () -> {
-            habitAssignService.enrollHabit(1L, 1L);
+            habitAssignService.enrollHabit(1L, 1L, LocalDate.now());
         });
     }
 
