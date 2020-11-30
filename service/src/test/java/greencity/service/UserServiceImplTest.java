@@ -132,7 +132,7 @@ class UserServiceImplTest {
      * HabitDictionary()) .statusHabit(true) .createDate(ZonedDateTime.now())
      * .build();
      */
-    private String language = "uk";
+    private String language = "ua";
     private List<GoalTranslation> goalTranslations = Arrays.asList(
         GoalTranslation.builder()
             .id(1L)
