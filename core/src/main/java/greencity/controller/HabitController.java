@@ -94,14 +94,15 @@ public class HabitController {
             habitService.getShoppingListForHabit(id, locale.getLanguage()));
     }
 
-    /** Method finds all habits by tags and language code.
+    /**
+     * Method finds all habits by tags and language code.
      *
      * @param locale   {@link Locale} with needed language code.
      * @param pageable {@link Pageable} instance.
      * @param tags     {@link List} of {@link String}
      * @return Pageable of {@link HabitTranslationDto}.
      */
-        @ApiOperation(value = "Find all habits by tags and language code.")
+    @ApiOperation(value = "Find all habits by tags and language code.")
     @GetMapping("/tags/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(

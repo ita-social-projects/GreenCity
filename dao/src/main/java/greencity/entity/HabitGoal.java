@@ -27,5 +27,4 @@ public class HabitGoal {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Goal goal;
-
 }

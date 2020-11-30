@@ -42,5 +42,4 @@ public class Habit {
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
-
 }
