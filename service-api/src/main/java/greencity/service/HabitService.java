@@ -2,7 +2,12 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
+import greencity.entity.Habit;
+import greencity.entity.HabitTranslation;
+import greencity.entity.User;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface HabitService {
     /**
@@ -22,4 +27,16 @@ public interface HabitService {
      * @return Pageable of {@link HabitDto}.
      */
     PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language);
+
+    /**
+     * Method that find all habit's translations by language code and tags.
+     *
+     * @param pageable     {@link Pageable}
+     * @param tags         {@link List} of {@link String} tags
+     * @param languageCode language code {@link String}
+     *
+     * @return {@link PageableDto} of {@link HabitDto}.
+     * @author Markiyan Derevetskyi
+     */
+    PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 }

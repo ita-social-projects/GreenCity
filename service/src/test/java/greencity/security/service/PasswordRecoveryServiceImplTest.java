@@ -49,29 +49,34 @@ class PasswordRecoveryServiceImplTest {
     @Test
     void sendPasswordRecoveryEmailToNonExistentUserTest() {
         String email = "foo";
+        String language = "en";
         when(userRepo.findByEmail(email)).thenReturn(Optional.empty());
         Assertions
-            .assertThrows(NotFoundException.class, () -> passwordRecoveryService.sendPasswordRecoveryEmailTo(email));
+            .assertThrows(NotFoundException.class,
+                () -> passwordRecoveryService.sendPasswordRecoveryEmailTo(email, language));
     }
 
     @Test
     void sendPasswordRecoveryEmailToUserWithExistentRestorePasswordEmailTest() {
         String email = "foo";
+        String language = "en";
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(
             User.builder().restorePasswordEmail(new RestorePasswordEmail()).build()));
         Assertions
-            .assertThrows(WrongEmailException.class, () -> passwordRecoveryService.sendPasswordRecoveryEmailTo(email));
+            .assertThrows(WrongEmailException.class,
+                () -> passwordRecoveryService.sendPasswordRecoveryEmailTo(email, language));
     }
 
     @Test
     void sendPasswordRecoveryEmailToSimpleTest() {
         String email = "foo";
+        String language = "en";
         User user = new User();
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
         String token = "bar";
         when(jwtTool.generateTokenKey()).thenReturn(token);
         ReflectionTestUtils.setField(passwordRecoveryService, "tokenExpirationTimeInHours", 24);
-        passwordRecoveryService.sendPasswordRecoveryEmailTo(email);
+        passwordRecoveryService.sendPasswordRecoveryEmailTo(email, language);
         verify(restorePasswordEmailRepo).save(refEq(
             RestorePasswordEmail.builder()
                 .user(user)
@@ -85,7 +90,7 @@ class PasswordRecoveryServiceImplTest {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                token)));
+                token, language)));
     }
 
     @Test

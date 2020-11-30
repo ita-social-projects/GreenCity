@@ -61,4 +61,5 @@
     <include file="db/changelog/logs/ch-change-table-achievement-Mamchuk.xml"/>
     <include file="db/changelog/logs/ch-achievement_translations-Mamchuk.xml"/>
     <include file="db/changelog/logs/ch-change-habitAssign-Khonko.xml"/>
+    <include file="db/changelog/logs/ch-table-habits-tags-Derevetskyi.xml"/>
 </databaseChangeLog>

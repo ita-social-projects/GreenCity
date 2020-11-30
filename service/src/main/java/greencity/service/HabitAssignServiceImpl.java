@@ -387,30 +387,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method returns number of habit streak before {@link LocalDate} parameter.
-     *
-     * @param dateTime    {@link LocalDate} date.
-     * @param habitAssign {@link HabitAssign} instance.
-     * @return int of habit days streak.
-     */
-    private int countHabitStreakBeforeDate(LocalDate dateTime, HabitAssign habitAssign) {
-        int daysStreak = 0;
-
-        List<LocalDate> enrollDates = habitStatusCalendarService.findEnrolledDatesBefore(dateTime,
-            modelMapper.map(habitAssign, HabitAssignVO.class));
-        enrollDates.sort(Collections.reverseOrder());
-
-        for (int i = 0; i < enrollDates.size() - 1; i++) {
-            if (Period.between(enrollDates.get(i + 1), enrollDates.get(i)).getDays() == 1) {
-                daysStreak++;
-            } else {
-                return daysStreak;
-            }
-        }
-        return daysStreak;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

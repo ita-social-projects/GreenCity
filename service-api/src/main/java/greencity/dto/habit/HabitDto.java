@@ -2,6 +2,8 @@ package greencity.dto.habit;
 
 import greencity.dto.habittranslation.HabitTranslationDto;
 import java.io.Serializable;
+import java.util.List;
+
 import lombok.*;
 
 @NoArgsConstructor
@@ -13,4 +15,5 @@ public class HabitDto implements Serializable {
     private String image;
     private Integer defaultDuration;
     private HabitTranslationDto habitTranslation;
+    private List<String> tags;
 }
