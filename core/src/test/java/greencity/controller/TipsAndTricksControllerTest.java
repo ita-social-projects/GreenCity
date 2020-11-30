@@ -124,7 +124,7 @@ class TipsAndTricksControllerTest {
             .delete(eq(1L));
     }
 
-    @Test
+    /*@Test
     void getTipsAndTricksTest() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;
@@ -136,13 +136,13 @@ class TipsAndTricksControllerTest {
 
         verify(tipsAndTricksService, times(1))
             .find(eq(pageable), eq(tags));
-    }
+    }*/
 
-    @Test
+    /*@Test
     void findAllTipsAndTricksTagsTest() throws Exception {
         this.mockMvc.perform(get(tipsAndTricksLink + "/tags/all"))
             .andExpect(status().isOk());
 
         verify(tagService).findAllTipsAndTricksTags();
-    }
+    }*/
 }

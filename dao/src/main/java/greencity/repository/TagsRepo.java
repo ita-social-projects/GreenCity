@@ -12,7 +12,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      * @param ecoNewsTagNames list of {@link String} values
      * @return list of {@link Tag}
      */
-    @Query("SELECT t FROM Tag t WHERE LOWER(t.name) IN :ecoNewsTagNames")
+    @Query("SELECT t FROM Tag t join fetch t.tagTranslations tt WHERE LOWER(tt.name) IN :ecoNewsTagNames")
     List<Tag> findEcoNewsTagsByNames(List<String> ecoNewsTagNames);
 
     /**
@@ -21,7 +21,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      * @param tipsAndTricksTagNames list of {@link String} values
      * @return list of {@link Tag}
      */
-    @Query("SELECT t FROM Tag t WHERE LOWER(t.name) IN :tipsAndTricksTagNames")
+    @Query("SELECT t FROM Tag t join fetch t.tagTranslations tt WHERE LOWER(tt.name) IN :tipsAndTricksTagNames")
     List<Tag> findTipsAndTricksTagsByNames(List<String> tipsAndTricksTagNames);
 
     /**
@@ -29,17 +29,18 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      *
      * @return list of {@link Tag}'s names
      */
-    @Query(nativeQuery = true, value = "SELECT t.name FROM tags t WHERE t.id IN(SELECT tags_id FROM eco_news_tags)")
-    List<String> findAllEcoNewsTags();
+    @Query(nativeQuery = true, value = "SELECT name FROM tag_translations WHERE tag_id IN(SELECT tags_id FROM eco_news_tags) " +
+        "and language_id = (select id from languages where code = :languageCode)")
+    List<String> findAllEcoNewsTags(String languageCode);
 
     /**
      * Method that allow you to find all Tips & Tricks {@link Tag}s.
      *
      * @return list of {@link Tag}'s names
      */
-    @Query(nativeQuery = true,
-        value = "SELECT t.name FROM tags t WHERE t.id IN(SELECT tags_id FROM tips_and_tricks_tags)")
-    List<String> findAllTipsAndTricksTags();
+    @Query(nativeQuery = true, value = "SELECT name FROM tag_translations WHERE tag_id IN(SELECT tags_id FROM tips_and_tricks_tags) " +
+        "and language_id = (select id from languages where code = :languageCode)")
+    List<String> findAllTipsAndTricksTags(String languageCode);
 
     /**
      * Method that finds all Habits {@link Tag}'s.

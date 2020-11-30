@@ -1,4 +1,4 @@
-package greencity.repository;
+/*package greencity.repository;
 
 import greencity.entity.Tag;
 import org.junit.jupiter.api.Test;
@@ -62,4 +62,4 @@ class TagsRepoTest {
         assertEquals(1, tipsAndTricksTags.size());
     }
 
-}
+}*/

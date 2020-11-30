@@ -33,14 +33,14 @@ public interface TagsService {
      *
      * @return list of Tag's names
      */
-    List<String> findAllEcoNewsTags();
+    List<String> findAllEcoNewsTags(String languageCode);
 
     /**
      * Method that allow you to find all Tips & Tricks Tags.
      *
      * @return list of Tag's names
      */
-    List<String> findAllTipsAndTricksTags();
+    List<String> findAllTipsAndTricksTags(String languageCode);
 
     /**
      * Method that finds all Habits {@link Tag}'s.

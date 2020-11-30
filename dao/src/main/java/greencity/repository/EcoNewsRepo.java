@@ -38,13 +38,13 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * @param tags list of tags to search.
      * @return {@link EcoNews} for specific tags.
      */
-    @Query(nativeQuery = true, value = "SELECT en.* FROM eco_news AS en "
+    @Query(nativeQuery = true, value = "SELECT distinct en.* FROM eco_news AS en "
         + "INNER JOIN eco_news_tags AS entag "
         + "ON en.id = entag.eco_news_id "
-        + "INNER JOIN tags AS t ON entag.tags_id = t.id "
-        + "WHERE lower(t.name) IN (:tags) "
-        + "ORDER BY  en.creation_date DESC")
-    Page<EcoNews> find(Pageable pageable, List<String> tags);
+        + "INNER JOIN tag_translations AS t ON entag.tags_id = t.tag_id "
+        + "WHERE t.name IN (:tags) "
+        + "ORDER BY en.creation_date DESC")
+    Page<EcoNews> findByTags(Pageable pageable, List<String> tags);
 
     /**
      * Method returns all {@link EcoNews} by page.

@@ -168,10 +168,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableAdvancedDto<EcoNewsDto> find(Pageable page, List<String> tags) {
-        List<String> lowerCaseTags = tags.stream()
-            .map(String::toLowerCase)
-            .collect(Collectors.toList());
-        Page<EcoNews> pages = ecoNewsRepo.find(page, lowerCaseTags);
+        Page<EcoNews> pages = ecoNewsRepo.findByTags(page, tags);
 
         List<EcoNewsDto> ecoNewsDtos = pages.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))

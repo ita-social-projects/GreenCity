@@ -215,19 +215,15 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags) {
+    public PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags, String languageCode) {
         Page<TipsAndTricks> pages;
-        String languageCode = languageService.extractLanguageCodeFromRequest();
         if (tags == null || tags.isEmpty()) {
             pages = tipsAndTricksRepo
                 .findByTitleTranslationsLanguageCodeOrderByCreationDateDesc(
                     languageCode,
                     page);
         } else {
-            List<String> lowerCaseTags = tags.stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
-            pages = tipsAndTricksRepo.find(languageCode, page, lowerCaseTags);
+            pages = tipsAndTricksRepo.find(page, tags);
         }
         return getPagesWithTipsAndTricksDtoResponse(pages);
     }

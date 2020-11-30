@@ -26,7 +26,7 @@ class TipsAndTricksRepoTest {
     @Autowired
     TipsAndTricksRepo tipsAndTricksRepo;
 
-    @Test
+    /*@Test
     void findTest() {
         Pageable pageable = PageRequest.of(0, 6);
         List<String> tags = Arrays.asList("news", "events");
@@ -34,7 +34,7 @@ class TipsAndTricksRepoTest {
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
         assertEquals(2, tipsAndTricks.size());
         assertEquals(1, tipsAndTricks.get(1).getId());
-    }
+    }*/
 
     @Test
     void findAllByOrderByCreationDateDescTest() {

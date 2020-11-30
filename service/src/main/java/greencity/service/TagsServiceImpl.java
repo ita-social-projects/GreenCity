@@ -60,16 +60,16 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public List<String> findAllEcoNewsTags() {
-        return tagRepo.findAllEcoNewsTags();
+    public List<String> findAllEcoNewsTags(String languageCode) {
+        return tagRepo.findAllEcoNewsTags(languageCode);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<String> findAllTipsAndTricksTags() {
-        return tagRepo.findAllTipsAndTricksTags();
+    public List<String> findAllTipsAndTricksTags(String languageCode) {
+        return tagRepo.findAllTipsAndTricksTags(languageCode);
     }
 
     @Override

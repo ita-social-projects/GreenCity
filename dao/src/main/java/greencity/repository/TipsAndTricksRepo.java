@@ -22,13 +22,11 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @param tags list of tags to search by.
      * @return {@link TipsAndTricks} by specific tags.
      */
-    @Query("SELECT DISTINCT tt FROM TipsAndTricks tt "
-        + "left JOIN tt.titleTranslations title "
-        + "left JOIN tt.tags ttt "
-        + "WHERE lower(ttt.name) in :tags "
-        + "and title.language.code = :languageCode "
-        + "ORDER BY tt.creationDate DESC")
-    Page<TipsAndTricks> find(String languageCode, Pageable pageable, List<String> tags);
+    @Query(nativeQuery = true, value = "select distinct t.* from tips_and_tricks as t " +
+        "inner join tips_and_tricks_tags as ttt on t.id = ttt.tips_and_tricks_id " +
+        "inner join tag_translations as tt on tt.tag_id = ttt.tags_id " +
+        "where tt.name in (:tags)")
+    Page<TipsAndTricks> find(Pageable pageable, List<String> tags);
 
     /**
      * Method returns all {@link TipsAndTricks} by id and languageCode.
@@ -68,8 +66,8 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
         + "where ("
         + "lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
         + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
-        + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))"
+      //  + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.tags ttt "
+      //  + "where lower(ttt.name) like lower(CONCAT('%', :searchQuery, '%')))"
         + ")"
         + "and title.language.code = :languageCode")
     Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery, String languageCode);
