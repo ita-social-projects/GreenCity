@@ -185,9 +185,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired,
-        String language) {
-        return habitAssignRepo.findAllByUserIdAndAcquired(userId)
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language) {
+        return habitAssignRepo.findAllByUserIdAndActive(userId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
@@ -195,9 +194,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired,
+    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId,
         String language) {
-        return habitAssignRepo.findAllByHabitIdAndAcquired(habitId)
+        return habitAssignRepo.findAllByHabitIdAndActive(habitId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
@@ -212,20 +211,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
 
-        enhanceStatusesWithDto(dto, updatable);
+        updatable.setStatus(dto.getStatus());
 
         return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignManagementDto.class);
-    }
-
-    /**
-     * Method updates {@link HabitAssign} with {@link HabitAssignStatDto} fields.
-     *
-     * @param dto       {@link HabitAssignStatDto} instance.
-     * @param updatable {@link HabitAssign} instance.
-     */
-    private void enhanceStatusesWithDto(HabitAssignStatDto dto, HabitAssign updatable) {
-        updatable.setStatus(dto.getStatus());
-        //remove method later
     }
 
     /**

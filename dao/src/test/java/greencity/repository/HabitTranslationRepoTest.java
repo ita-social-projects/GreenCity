@@ -79,14 +79,6 @@ class HabitTranslationRepoTest {
     }
 
     @Test
-    void findHabitTranslationsByUserAndAcquiredStatusTest_shouldReturnEmptyTranslationsListWhenAcquiredTrue() {
-        List<HabitTranslation> habitTranslations = habitTranslationRepo
-            .findHabitTranslationsByUserAndAcquiredStatus(7L, "ua");
-
-        assertTrue(habitTranslations.isEmpty());
-    }
-
-    @Test
     void findAllByLanguageCodeTest_shouldReturnCorrectTranslationsList() {
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<HabitTranslation> habitTranslations = habitTranslationRepo

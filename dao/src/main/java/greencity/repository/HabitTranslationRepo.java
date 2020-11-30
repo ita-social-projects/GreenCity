@@ -45,7 +45,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     @Query(value = "SELECT ht FROM HabitTranslation ht "
         + "WHERE ht.language.code = :language AND ht.habit.id IN "
         + "(SELECT ha.habit.id FROM HabitAssign ha "
-        + "WHERE ha.user.id = :userId AND ha.status <> 'acquired')")
+        + "WHERE ha.user.id = :userId AND upper(ha.status) <> 'AQCUIRED')")
     List<HabitTranslation> findHabitTranslationsByUserAndAcquiredStatus(@Param("userId") Long userId,
         @Param("language") String language);
 

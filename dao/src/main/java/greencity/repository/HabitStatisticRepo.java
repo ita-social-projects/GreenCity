@@ -144,7 +144,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     @Query(value = "SELECT ht.habitItem, SUM(hs.amountOfItems) "
         + "FROM HabitStatistic hs "
         + "     INNER JOIN HabitTranslation ht ON ht.habit.id = hs.habitAssign.habit.id "
-        + "     WHERE hs.habitAssign.status = 'suspended' "
+        + "     WHERE upper(hs.habitAssign.status) <> 'SUSPENDED' "
         + "     AND cast(hs.createDate as date) = cast(:statisticCreationDate as date)"
         + "     AND ht.language.code = :languageCode "
         + "GROUP BY ht.habitItem "
@@ -163,7 +163,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      */
     @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
         + " WHERE ha.user.id = :userId"
-        + " AND ha.status = 'acquired' ")
+        + " AND upper(ha.status) = 'ACQURIED' ")
     Long getAmountOfHabitsInProgressByUserId(@Param("userId") Long id);
 
     /**
@@ -175,6 +175,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      */
     @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
         + " WHERE ha.user.id = :userId"
-        + " AND ha.status = 'suspended'")
+        + " AND upper(ha.status) = 'SUSPENDED'")
     Long getAmountOfAcquiredHabitsByUserId(@Param("userId") Long id);
 }

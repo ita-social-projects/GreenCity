@@ -125,9 +125,9 @@ class HabitAssignServiceImplTest {
 
     @Test
     void getAllHabitAssignsByUserIdAndAcquiredStatusTest() {
-        when(habitAssignRepo.findAllByUserIdAndAcquired(1L)).thenReturn(habitAssigns);
+        when(habitAssignRepo.findAllByUserIdAndActive(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(1L, true, "en");
+        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(1L, "en");
         assertEquals(habitAssignDtos, actual);
     }
 
