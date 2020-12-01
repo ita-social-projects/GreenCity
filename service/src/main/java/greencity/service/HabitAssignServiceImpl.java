@@ -75,7 +75,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO userVO,
-                                                             HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        HabitAssignPropertiesDto habitAssignPropertiesDto) {
         User user = modelMapper.map(userVO, User.class);
 
         Habit habit = habitRepo.findById(habitId)
@@ -96,7 +96,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param props       {@link HabitAssignPropertiesDto} instance.
      */
     private void enhanceAssignWithCustomProperties(HabitAssign habitAssign,
-                                                   HabitAssignPropertiesDto props) {
+        HabitAssignPropertiesDto props) {
         habitAssign.setDuration(props.getDuration());
     }
 
@@ -182,7 +182,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired,
-                                                                            String language) {
+        String language) {
         return habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -192,7 +192,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired,
-                                                                             String language) {
+        String language) {
         return habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habitId, acquired)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -203,7 +203,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId,
-                                                                   HabitAssignStatDto dto) {
+        HabitAssignStatDto dto) {
         HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
@@ -280,14 +280,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
     }
 
-
     /**
      * Method updates {@link HabitAssign} after enroll.
      *
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
-                                              HabitStatusCalendar habitCalendar) {
+        HabitStatusCalendar habitCalendar) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
@@ -349,8 +348,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .findHabitStatusCalendarByEnrollDateAndHabitAssign(
                     date, modelMapper.map(habitAssign, HabitAssignVO.class));
         if (habitCalendarVO != null) {
-            habitAssign.getHabitStatusCalendars().removeIf(hc ->
-                hc.getEnrollDate().isEqual(habitCalendarVO.getEnrollDate()));
+            List<HabitStatusCalendar> habitCalendars =
+                new ArrayList<>(habitAssign.getHabitStatusCalendars());
+            habitCalendars.removeIf(hc -> hc.getEnrollDate().isEqual(habitCalendarVO.getEnrollDate()));
+            habitAssign.setHabitStatusCalendars(habitCalendars);
             habitStatusCalendarService.delete(habitCalendarVO);
         } else {
             throw new BadRequestException(ErrorMessage.HABIT_IS_NOT_ENROLLED);
