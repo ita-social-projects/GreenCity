@@ -26,7 +26,7 @@ import org.springframework.validation.Validator;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class GoalControllerTest {
-    private static final String userLink = "/user";
+    private static final String goalLink = "/user/goals";
     private MockMvc mockMvc;
     @InjectMocks
     private GoalController goalController;
@@ -46,7 +46,7 @@ class GoalControllerTest {
 
     @Test
     void bulkDeleteUserGoalsTest() throws Exception {
-        mockMvc.perform(delete(userLink + "/{userId}/userGoals?ids=1,2", 1))
+        mockMvc.perform(delete(goalLink + "/delete-user-goals?ids=1,2", 1))
             .andExpect(status().isOk());
 
         verify(goalService).deleteUserGoals(eq("1,2"));
@@ -54,19 +54,19 @@ class GoalControllerTest {
 
     @Test
     void updateUserGoalStatusWithLanguageParamTest() throws Exception {
-        mockMvc.perform(patch(userLink + "/{userId}/goals/{goalId}", 1, 1)
+        mockMvc.perform(patch(goalLink + "/{userGoalId}", 1, 1)
             .locale(new Locale("ru")))
             .andExpect(status().isCreated());
 
-        verify(goalService).updateUserGoalStatus(eq(1L), eq(1L), eq("ru"));
+        verify(goalService).updateUserGoalStatus(eq(null), eq(1L), eq("ru"));
     }
 
     @Test
     void updateUserGoalStatusWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(patch(userLink + "/{userId}/goals/{goalId}", 1, 1))
+        mockMvc.perform(patch(goalLink + "/{userGoalId}", 1, 1))
             .andExpect(status().isCreated());
 
-        verify(goalService).updateUserGoalStatus(eq(1L), eq(1L), eq("en"));
+        verify(goalService).updateUserGoalStatus(eq(null), eq(1L), eq("en"));
     }
 
     @Test
@@ -77,28 +77,28 @@ class GoalControllerTest {
             + " }\n"
             + "]\n";
 
-        mockMvc.perform(post(userLink + "/{userId}/save-goals?habitId=1&lang=en", 1)
+        mockMvc.perform(post(goalLink + "/save?habitId=1&lang=en", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isCreated());
 
         GoalRequestDto dto = new GoalRequestDto(1L);
-        verify(goalService).saveUserGoals(1L, 1L, Collections.singletonList(dto), "en");
+        verify(goalService).saveUserGoals(null, 1L, Collections.singletonList(dto), "en");
     }
 
     @Test
     void getUserGoalsWithLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}//habits/1/shopping-list?lang=en", 1))
+        mockMvc.perform(get(goalLink + "/habits/1/shopping-list?lang=en", 1))
             .andExpect(status().isOk());
 
-        verify(goalService).getUserGoals(eq(1L), eq(1L), eq("en"));
+        verify(goalService).getUserGoals(eq(null), eq(1L), eq("en"));
     }
 
     @Test
     void getUserGoalsWithoutLanguageParamTest() throws Exception {
-        mockMvc.perform(get(userLink + "/{userId}//habits/1/shopping-list", 1))
+        mockMvc.perform(get(goalLink + "/habits/1/shopping-list", 1))
             .andExpect(status().isOk());
 
-        verify(goalService).getUserGoals(eq(1L), eq(1L), eq("en"));
+        verify(goalService).getUserGoals(eq(null), eq(1L), eq("en"));
     }
 }
