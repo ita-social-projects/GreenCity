@@ -52,6 +52,7 @@ public class TipsAndTricksDtoResponseMapper extends AbstractConverter<TipsAndTri
                 .name(tipsAndTricks.getAuthor().getName())
                 .build())
             .tags(tipsAndTricks.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .filter(t -> t.getLanguage().getCode().equals(language))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
     }
