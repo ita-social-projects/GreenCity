@@ -124,25 +124,27 @@ class TipsAndTricksControllerTest {
             .delete(eq(1L));
     }
 
-    /*@Test
+    @Test
     void getTipsAndTricksTest() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         List<String> tags = Collections.singletonList("education");
 
-        this.mockMvc.perform(get(tipsAndTricksLink + "/tags?page=1&tags=education"))
+        this.mockMvc.perform(get(tipsAndTricksLink + "/tags?lang=en&page=1&tags=education"))
             .andExpect(status().isOk());
+        String language = "en";
 
         verify(tipsAndTricksService, times(1))
-            .find(eq(pageable), eq(tags));
-    }*/
+            .find(eq(pageable), eq(tags), eq(language));
+    }
 
-    /*@Test
+    @Test
     void findAllTipsAndTricksTagsTest() throws Exception {
-        this.mockMvc.perform(get(tipsAndTricksLink + "/tags/all"))
+        String language = "en";
+        this.mockMvc.perform(get(tipsAndTricksLink + "/tags/all?lang=" + language))
             .andExpect(status().isOk());
 
-        verify(tagService).findAllTipsAndTricksTags();
-    }*/
+        verify(tagService).findAllTipsAndTricksTags(language);
+    }
 }

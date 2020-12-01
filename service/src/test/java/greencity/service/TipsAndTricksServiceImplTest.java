@@ -74,7 +74,7 @@ class TipsAndTricksServiceImplTest {
         .build(), TagTranslationVO.builder().id(3L).name("Новины")
         .languageVO(LanguageVO.builder().id(1L).code("ru").build())
         .build());
-    private TagVO tagVO = new TagVO(1L, tagTranslationVOList, null, null);
+    private TagVO tagVO = new TagVO(1L, tagTranslationVOList, null, null, null);
 
     @Test
     void saveTest() {
