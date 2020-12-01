@@ -54,6 +54,10 @@ public final class ErrorMessage {
     public static final String HABIT_HAS_BEEN_ALREADY_ON_THAT_DAY = "Habit has been enrolled";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID =
         "There is no habit assign for current user and such habit with id: ";
+    public static final String HABIT_STATUS_CALENDAR_NOT_FOUND = "Habit status calendar hasn't been found for this"
+        + " assign with date: ";
+    public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
+        "Can't enroll habit because date input is not in a range from today to it's 7 passed days";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
         "Current user does not have habit statistic with id: ";
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";

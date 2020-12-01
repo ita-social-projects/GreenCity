@@ -1,6 +1,8 @@
 package greencity.dto.habit;
 
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import java.time.ZonedDateTime;
+import java.util.List;
 import lombok.*;
 
 @NoArgsConstructor
@@ -20,4 +22,5 @@ public class HabitAssignDto {
     private Integer workingDays;
     private Integer habitStreak;
     private ZonedDateTime lastEnrollmentDate;
+    private List<HabitStatusCalendarDto> habitStatusCalendarDtoList;
 }

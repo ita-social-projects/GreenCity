@@ -142,37 +142,18 @@ class HabitAssignServiceImplTest {
     @Test
     void enrollHabit() {
         HabitAssign habitAssign = getHabitAssign();
-        HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
-        when(habitStatusCalendarService.findTopByEnrollDateAndHabitAssign(habitAssignVO))
-            .thenReturn(LocalDate.of(2020, 10, 15));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        when(modelMapper.map(any(), eq(HabitStatusCalendarVO.class))).thenReturn(habitStatusCalendarVO);
-        habitAssignService.enrollHabit(1L, 1L);
-        verify(habitStatusCalendarService).save(habitStatusCalendarVO);
+        habitAssignService.enrollHabit(1L, 1L, LocalDate.now());
+        verify(habitAssignRepo).save(habitAssign);
     }
 
     @Test
     void enrollHabitThrowWrongIdException() {
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L));
-    }
-
-    @Test
-    void enrollHabitThrowBadRequestException() {
-        HabitAssign habitAssign = getHabitAssign();
-        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
-
-        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        when(habitStatusCalendarService.findTopByEnrollDateAndHabitAssign(habitAssignVO))
-            .thenReturn(LocalDate.now());
-
-        assertThrows(BadRequestException.class, () -> {
-            habitAssignService.enrollHabit(1L, 1L);
-        });
+        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L, LocalDate.now()));
     }
 
     @Test
@@ -186,8 +167,11 @@ class HabitAssignServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitAssignRepo.save(habitAssign)).thenReturn(habitAssign);
-        when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(enrollDate, habitAssignVO))
-            .thenReturn(habitStatusCalendarVO);
+
+        when(habitStatusCalendarService
+            .findHabitStatusCalendarByEnrollDateAndHabitAssign(
+                enrollDate, modelMapper.map(habitAssign, HabitAssignVO.class)))
+                    .thenReturn(habitStatusCalendarVO);
 
         habitAssignService.unenrollHabit(1L, 1L, enrollDate);
         verify(habitStatusCalendarService).delete(habitStatusCalendarVO);

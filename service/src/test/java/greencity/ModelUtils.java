@@ -161,6 +161,7 @@ public class ModelUtils {
             .duration(0)
             .habitStreak(0)
             .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
             .lastEnrollmentDate(ZonedDateTime.now())
             .build();
     }
