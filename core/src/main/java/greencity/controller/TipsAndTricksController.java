@@ -123,7 +123,6 @@ public class TipsAndTricksController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/tags")
-    @ApiPageable
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<TipsAndTricksDtoResponse>> getTipsAndTricks(
         @ApiIgnore @ValidLanguage Locale locale,

@@ -3,6 +3,8 @@ package greencity.filters;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNews_;
 import greencity.entity.Tag_;
+import greencity.entity.localization.TagTranslation;
+import greencity.entity.localization.TagTranslation_;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
@@ -66,7 +68,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
         if (searchCriteria.getValue().toString().trim().equals("")) {
             return criteriaBuilder.conjunction();
         }
-        return criteriaBuilder.like(root.join(EcoNews_.tags).get(Tag_.name).as(String.class),
+        return criteriaBuilder.like(root.join(EcoNews_.tags).join(Tag_.tagTranslations).get(TagTranslation_.name).as(String.class),
             "%" + searchCriteria.getValue() + "%");
     }
 }

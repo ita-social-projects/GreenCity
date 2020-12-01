@@ -81,7 +81,7 @@ public class HabitController {
      * @param locale   {@link Locale} with needed language code.
      * @param pageable {@link Pageable} instance.
      * @param tags     {@link List} of {@link String}
-     * @return Pageable of {@link HabitTranslationDto}.
+     * @return Pageable of {@link HabitDto}.
      */
     @ApiOperation(value = "Find all habits by tags and language code.")
     @ApiResponses(value = {
