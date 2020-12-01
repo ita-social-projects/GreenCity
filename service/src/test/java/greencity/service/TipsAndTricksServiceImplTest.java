@@ -1,10 +1,12 @@
-/*package greencity.service;
+package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.dto.PageableDto;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.search.SearchTipsAndTricksDto;
+import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
@@ -13,6 +15,7 @@ import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
+import greencity.entity.localization.TagTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
@@ -64,7 +67,14 @@ class TipsAndTricksServiceImplTest {
     private TipsAndTricksCommentVO tipsAndTricksCommentVO = ModelUtils.getTipsAndTricksCommentVO();
     private User user = ModelUtils.getUser();
     private UserVO userVO = ModelUtils.getUserVO();
-    private TagVO tagVO = new TagVO(1L, "News", null, null);
+    private List<TagTranslationVO> tagTranslationVOList = Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
+        .languageVO(LanguageVO.builder().id(1L).code("ua").build())
+        .build(), TagTranslationVO.builder().id(2L).name("News")
+        .languageVO(LanguageVO.builder().id(2L).code("en").build())
+        .build(), TagTranslationVO.builder().id(3L).name("Новины")
+        .languageVO(LanguageVO.builder().id(1L).code("ru").build())
+        .build());
+    private TagVO tagVO = new TagVO(1L, tagTranslationVOList, null, null);
 
     @Test
     void saveTest() {
@@ -153,19 +163,21 @@ class TipsAndTricksServiceImplTest {
         Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
         List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
         PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
+        String tagName = ModelUtils.getTagTranslations().get(0).getName();
+        List<String> tags = Collections.singletonList(tagName);
 
         when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
-        when(tipsAndTricksRepo.find("en", pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
+        when(tipsAndTricksRepo.find(pageRequest, tags))
             .thenReturn(page);
         when((tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc("en", pageRequest)))
             .thenReturn(page);
 
         PageableDto<TipsAndTricksDtoResponse> actual =
-            tipsAndTricksService.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName()));
+            tipsAndTricksService.find(pageRequest, Collections.singletonList(tagName), "en");
 
         assertEquals(pageableDto, actual);
-        assertEquals(pageableDto, tipsAndTricksService.find(pageRequest, null));
+        assertEquals(pageableDto, tipsAndTricksService.find(pageRequest, null, "en"));
     }
 
     @Test
@@ -232,7 +244,8 @@ class TipsAndTricksServiceImplTest {
             .authorName("orest@gmail.com")
             .tags(tipsAndTricks.getTags()
                 .stream()
-                .map(Tag::getName)
+                .flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName)
                 .collect(Collectors.toList()))
             .build();
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
@@ -341,4 +354,3 @@ class TipsAndTricksServiceImplTest {
 
     }
 }
-*/

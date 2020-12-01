@@ -47,6 +47,7 @@ import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -61,7 +62,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptySet());
+        return new Tag(1L, getTagTranslations(), Collections.emptyList(), Collections.emptyList(), Collections.emptySet());
+    }
+
+    public static List<TagTranslation> getTagTranslations() {
+        return Arrays.asList(TagTranslation.builder().id(1L).name("Новини").build(), TagTranslation.builder().id(2L).name("News").build(),
+            TagTranslation.builder().id(3L).name("Новины").build());
     }
 
     public static User getUser() {
@@ -522,7 +528,7 @@ public class ModelUtils {
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, null, null);
+        return new TagVO(1L, null, null, null);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {

@@ -2,9 +2,7 @@ package greencity.entity.localization;
 
 import greencity.entity.Language;
 import greencity.entity.Tag;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,7 +10,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "tag_translations")
 @EqualsAndHashCode
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class TagTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
