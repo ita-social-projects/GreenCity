@@ -33,7 +33,7 @@ class TipsAndTricksRepoTest {
         Page<TipsAndTricks> page = tipsAndTricksRepo.find(pageable, tags);
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
         assertEquals(4, tipsAndTricks.size());
-        assertEquals(1, tipsAndTricks.get(1).getId());
+        assertEquals(2, tipsAndTricks.get(1).getId());
     }
 
     @Test

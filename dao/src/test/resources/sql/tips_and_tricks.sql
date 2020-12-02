@@ -1,10 +1,12 @@
 INSERT INTO tags(id)
 VALUES (1),(2),(3);
 
-INSERT INTO tag_translations(id, name, tag_id, language_id)
-VALUES(1, 'Новини', 1, 1),VALUES(2, 'News', 1, 2),VALUES(3, 'Новины', 1, 3),
-VALUES(4, 'Освіта', 2, 1),VALUES(5, 'Education', 2, 2),VALUES(6, 'Образование', 2, 3),
-VALUES(7, 'Реклами', 3, 1),VALUES(8, 'Ads', 3, 2),VALUES(9, 'Рекламы', 3, 3),
+INSERT INTO languages(id, code)
+VALUES(1, 'ua'),(2, 'en'), (3, 'ru');
+
+INSERT INTO tag_translations(id, name, tag_id, language_id) VALUES(1, 'Новини', 1, 1),
+(2, 'News', 1, 2),(3, 'Новины', 1, 3),(4, 'Освіта', 2, 1),(5, 'Education', 2, 2),
+(6, 'Образование', 2, 3),(7, 'Реклами', 3, 1),(8, 'Ads', 3, 2),(9, 'Рекламы', 3, 3);
 
 INSERT INTO users (id,
                    date_of_registration,
@@ -17,9 +19,6 @@ INSERT INTO users (id,
                    refresh_token_key)
 VALUES (1, current_date, 'mail@.com', 1, 'Tom', current_date, 1, 1, 'quux'),
        (2, current_date, 'test@.com', 2, 'John', current_date, 1, 1, 'quux');
-
-INSERT INTO languages(id, code)
-VALUES(1, 'ua'),(2, 'en'), (3, 'ru');
 
 INSERT INTO tips_and_tricks (id, creation_date, author_id, image_path, source)
 VALUES (1, '2020-10-03T00:00', 2, 'image path', 'source'),
