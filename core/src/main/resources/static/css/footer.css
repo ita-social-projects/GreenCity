@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Open+Sans|Roboto&display=swap');
+ footer {
+	flex: 0 0 auto;
+}
+ .main-background-image {
+	 background: url("background-image-footer.svg");
+	 background-repeat: no-repeat;
+	 background-position: center;
+	 height: 286px;
+	 width: 100%;
+}
+ .main-background-image .main {
+	 margin: 0 auto;
+	 max-width: 1440px;
+}
+ .main-background-image .main .logo {
+	 margin: 119px 0 24px 10.4%;
+}
+ .main-background-image .main .links {
+	 display: flex;
+	 justify-content: space-between;
+	 margin-left: 10.4%;
+	 margin-right: 10.4%;
+}
+ .main-background-image .main .links .left-side .list-of-site-links {
+	 display: flex;
+	 justify-content: space-around;
+	 list-style-type: none;
+	 padding: 0;
+	 margin-bottom: 24px;
+}
+ .main-background-image .main .links .left-side .list-of-site-links .router-links {
+	 text-decoration: none;
+	 font-family: OpenSans, sans-serif;
+	 font-size: 14.07px;
+	 line-height: 16px;
+	 color: #494a49;
+	 margin-right: 32px;
+	 padding-top: 3px;
+}
+ .main-background-image .main .links .right-side {
+	 display: flex;
+}
+ .main-background-image .main .links .right-side .follow-us-text {
+	 margin-right: 16px;
+}
+ .main-background-image .main .links .right-side .follow-us-text p {
+	 font-family: OpenSans, sans-serif;
+	 font-size: 14px;
+	 line-height: 16px;
+	 margin: 0;
+	 padding-top: 6.9px;
+	 color: #494a49;
+}
+ .main-background-image .main .links .right-side .social-network-links {
+	 display: flex;
+	 justify-content: space-around;
+	 list-style-type: none;
+	 margin: 0;
+	 padding: 0;
+}
+ .main-background-image .main .links .right-side .social-network-links .social-links-btn {
+	 margin-right: 16px;
+}
+ .main-background-image .main .links .right-side .social-network-links .social-links-btn .twitter-link-btn {
+	 width: 15px;
+	 height: 12.19px;
+}
+ .main-background-image .main .bottom-part {
+	 margin-top: 39px;
+	 margin-bottom: 12px;
+	 display: flex;
+	 justify-content: center;
+	 align-items: flex-end;
+	 font-family: OpenSans, sans-serif;
+	 font-size: 14px;
+	 line-height: 16px;
+	 color: #878787;
+}
+ @media screen and (max-width: 1024px) {
+	 .main-background-image .main .logo {
+		 margin: 137px 0 24px 4.4%;
+	}
+	 .main-background-image .main .links {
+		 margin-left: 4.4%;
+		 margin-right: 4.4%;
+	}
+}
+ @media screen and (max-width: 768px) {
+	 .main-background-image .main .logo {
+		 margin: 137px 0 24px 1.82%;
+	}
+	 .main-background-image .main .links {
+		 margin-left: 1.82%;
+		 margin-right: 0%;
+	}
+}
+ @media screen and (max-width: 668px) {
+	 .main-background-image .main .links {
+		 display: block;
+		 margin-left: 1.82%;
+		 margin-right: 1.82%;
+	}
+	 .main-background-image .main .links .left-side .list-of-site-links {
+		 justify-content: flex-start;
+	}
+	 .main-background-image .main .links .right-side .social-network-links {
+		 display: flex;
+		 justify-content: flex-start;
+		 padding: 0;
+	}
+}
+ @media screen and (max-width: 468px) {
+	 .main-background-image .main .small-screen-size {
+		 display: flex;
+		 justify-content: center;
+	}
+	 .main-background-image .main .logo {
+		 margin: 137px 0 40px 0;
+	}
+	 .main-background-image .main .links {
+		 margin: 0;
+	}
+	 .main-background-image .main .links .left-side .list-of-site-links {
+		 display: flex;
+		 flex-direction: column;
+		 align-items: center;
+	}
+	 .main-background-image .main .links .left-side .list-of-site-links .router-links {
+		 padding: 0;
+		 margin: 0 0 24px 0;
+	}
+	 .main-background-image .main .links .right-side {
+		 display: flex;
+		 flex-direction: column;
+		 align-items: center;
+	}
+	 .main-background-image .main .links .right-side .follow-us-text {
+		 margin: 0 0 21px 0;
+	}
+	 .main-background-image .main .links .right-side .social-network-links {
+		 margin-left: 20px;
+		 justify-content: center;
+	}
+}
+ @media screen and (max-width: 320px) {
+	 .main-background-image .main .list-of-site-links:nth-last-child(-n+4) li .router-links {
+		 display: block;
+		 margin-top: 24px;
+	}
+	 .main-background-image .main .bottom-part {
+		 margin-top: 24px;
+	}
+}
+ 

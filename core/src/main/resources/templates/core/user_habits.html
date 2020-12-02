@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>User Habits</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+</head>
+
+<body>
+<div id="header" th:insert="core/header"></div>
+<div class="main-content">
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Creation date</th>
+        </tr>
+        <tr th:each="habit: ${habits}">
+            <td th:utext="${habit.id}">...</td>
+
+            <!--            <td th:utext="${habit.habitDictionary.habitDictionaryTranslations}">-->
+            <td>
+                <table class="table">
+                    <tr>
+                        <th>Habit name</th>
+                        <th>Habit description</th>
+                        <th>Habit item</th>
+                    </tr>
+                    <tr th:each="habitTranslations: ${habit.habitDictionary.habitDictionaryTranslations}">
+                        <th th:utext="${habitTranslations.name}">...</th>
+                        <th th:utext="${habitTranslations.description}">...</th>
+                        <th th:utext="${habitTranslations.habitItem}">...</th>
+                    </tr>
+                </table>
+
+            </td>
+
+            <td th:utext="${habit.createDate}">...</td>
+        </tr>
+    </table>
+    <br><br>
+</div>
+<div id="footer" th:insert="core/footer"></div>
+</body>
+</html>

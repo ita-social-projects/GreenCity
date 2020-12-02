@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="taraskovaliv4" author="Kovaliv Taras">
+        <createTable tableName="tags">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="taraskovaliv5" author="Kovaliv Taras">
+        <createTable tableName="eco_news_tags">
+            <column name="eco_news_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tags_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="taraskovaliv6" author="Kovaliv Taras">
+        <addForeignKeyConstraint baseColumnNames="eco_news_id" baseTableName="eco_news_tags"
+                                 constraintName="FK_eco_news_tags_eco_news"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="eco_news"/>
+        <addForeignKeyConstraint baseColumnNames="tags_id" baseTableName="eco_news_tags"
+                                 constraintName="FK_eco_news_tags_tags"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="tags"/>
+    </changeSet>
+
+</databaseChangeLog>

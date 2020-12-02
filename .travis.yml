@@ -1,0 +1,14 @@
+{
+  "os": "linux",
+  "jdk": [
+    "oraclejdk8"
+  ],
+  "dist": "trusty",
+  "group": "stable",
+  "script": [
+    "git fetch --unshallow",
+    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install"
+  ],
+  ".result": "configured",
+  "language": "java"
+}

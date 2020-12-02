@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Lehkyi-5" author="Mykola Lehkyi">
+        <createTable tableName="fact_of_the_day">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="name" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="create_date" type="timestamp with time zone"/>
+        </createTable>
+    </changeSet>
+
+   <changeSet id="Lehkyi-6" author="Mykola Lehkyi">
+       <createTable tableName="fact_of_the_day_translations">
+           <column name="id" autoIncrement="true" type="BIGINT">
+               <constraints primaryKey="true"/>
+           </column>
+
+           <column name="content" type="varchar(300)"/>
+
+           <column name="fact_of_the_day_id" type="BIGINT">
+               <constraints nullable="false"/>
+           </column>
+
+           <column name="language_id" type="BIGINT">
+               <constraints nullable="false"/>
+           </column>
+       </createTable>
+   </changeSet>
+
+    <changeSet id="Lehkyi-7" author="Mykola Lehkyi">
+        <addForeignKeyConstraint baseColumnNames="fact_of_the_day_id"
+                                 baseTableName="fact_of_the_day_translations"
+                                 constraintName="FK_fact_of_the_day_fact_of_the_day_translations"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="fact_of_the_day"
+        />
+
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="fact_of_the_day_translations"
+                                 constraintName="FK_language_fact_of_the_day_translations"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="languages"
+        />
+    </changeSet>
+</databaseChangeLog>
