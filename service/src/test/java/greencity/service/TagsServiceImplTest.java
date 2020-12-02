@@ -38,61 +38,32 @@ class TagsServiceImplTest {
     private static final String ENGLISH_LANGUAGE = "en";
 
     @Test
-    void findEcoNewsTagsByNames() {
-        List<String> ecoNewsTagsNames = Collections.singletonList("News");
-        List<String> lowerEcoNewsTagsNames = ecoNewsTagsNames.stream()
+    void findTagsByNames() {
+        List<String> tagsNames = Collections.singletonList("News");
+        List<String> lowerTagsNames = tagsNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
         List<Tag> ecoNewsTags = ModelUtils.getTags();
         List<TagVO> actual = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagRepo.findEcoNewsTagsByNames(lowerEcoNewsTagsNames)).thenReturn(ecoNewsTags);
+        when(tagRepo.findTagsByNames(lowerTagsNames)).thenReturn(ecoNewsTags);
         when(modelMapper.map(ecoNewsTags, new TypeToken<List<TagVO>>() {
         }.getType())).thenReturn(actual);
-        List<TagVO> expected = tagsService.findEcoNewsTagsByNames(ecoNewsTagsNames);
+        List<TagVO> expected = tagsService.findTagsByNames(tagsNames);
 
         assertEquals(expected, actual);
     }
 
     @Test
-    void findEcoNewsTagsByNamesThrowTagNotFoundException() {
-        List<String> ecoNewsTagsNames = Collections.singletonList("News");
-        List<String> lowerEcoNewsTagsNames = ecoNewsTagsNames.stream()
+    void findTagsByNamesThrowTagNotFoundException() {
+        List<String> tagsNames = Collections.singletonList("News");
+        List<String> lowerTagsNames = tagsNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
-        List<Tag> ecoNewsTags = Collections.emptyList();
-        when(tagRepo.findEcoNewsTagsByNames(lowerEcoNewsTagsNames)).thenReturn(ecoNewsTags);
+        List<Tag> tags = Collections.emptyList();
+        when(tagRepo.findTagsByNames(lowerTagsNames)).thenReturn(tags);
 
         assertThrows(TagNotFoundException.class,
-            () -> tagsService.findEcoNewsTagsByNames(ecoNewsTagsNames));
-    }
-
-    @Test
-    void findTipsAndTricksTagsByNames() {
-        List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
-        List<String> lowerTipsAndTricksTagsNames = tipsAndTricksTagsNames.stream()
-            .map(String::toLowerCase)
-            .collect(Collectors.toList());
-        List<Tag> tipsAndTricksTags = ModelUtils.getTags();
-        List<TagVO> actual = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagRepo.findTipsAndTricksTagsByNames(lowerTipsAndTricksTagsNames)).thenReturn(tipsAndTricksTags);
-        when(modelMapper.map(tipsAndTricksTags, new TypeToken<List<TagVO>>() {
-        }.getType())).thenReturn(actual);
-        List<TagVO> expected = tagsService.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findTipsAndTricksTagsByNamesThrowTagNotFoundException() {
-        List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
-        List<String> lowerTipsAndTricksTagsNames = tipsAndTricksTagsNames.stream()
-            .map(String::toLowerCase)
-            .collect(Collectors.toList());
-        List<Tag> tipsAndTricksTags = Collections.emptyList();
-        when(tagRepo.findTipsAndTricksTagsByNames(lowerTipsAndTricksTagsNames)).thenReturn(tipsAndTricksTags);
-
-        assertThrows(TagNotFoundException.class,
-            () -> tagsService.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames));
+            () -> tagsService.findTagsByNames(tagsNames));
     }
 
     @Test
@@ -135,7 +106,7 @@ class TagsServiceImplTest {
     @Test
     void isAllTipsAndTricksValidReturnFalse() {
         List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
-        when(tagRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames)).thenThrow(TagNotFoundException.class);
+        when(tagRepo.findTagsByNames(tipsAndTricksTagsNames)).thenThrow(TagNotFoundException.class);
         boolean expected = tagsService.isAllTipsAndTricksValid(tipsAndTricksTagsNames);
 
         assertFalse(expected);

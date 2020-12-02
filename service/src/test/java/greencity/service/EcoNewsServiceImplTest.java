@@ -89,7 +89,7 @@ class EcoNewsServiceImplTest {
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(tagVOList);
+        when(tagService.findTagsByNames(anyList())).thenReturn(tagVOList);
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(dto);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
@@ -115,7 +115,7 @@ class EcoNewsServiceImplTest {
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(tagVOList);
+        when(tagService.findTagsByNames(anyList())).thenReturn(tagVOList);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
 
