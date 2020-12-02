@@ -1,7 +1,10 @@
-INSERT INTO tags(id, name)
-VALUES (1, 'News'),
-       (2, 'Events'),
-       (3, 'Education');
+INSERT INTO tags(id)
+VALUES (1),(2),(3);
+
+INSERT INTO tag_translations(id, name, tag_id, language_id)
+VALUES(1, 'Новини', 1, 1),VALUES(2, 'News', 1, 2),VALUES(3, 'Новины', 1, 3),
+VALUES(4, 'Освіта', 2, 1),VALUES(5, 'Education', 2, 2),VALUES(6, 'Образование', 2, 3),
+VALUES(7, 'Реклами', 3, 1),VALUES(8, 'Ads', 3, 2),VALUES(9, 'Рекламы', 3, 3),
 
 INSERT INTO users (id,
                    date_of_registration,

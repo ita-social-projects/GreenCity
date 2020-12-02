@@ -26,15 +26,15 @@ class TipsAndTricksRepoTest {
     @Autowired
     TipsAndTricksRepo tipsAndTricksRepo;
 
-    /*@Test
+    @Test
     void findTest() {
         Pageable pageable = PageRequest.of(0, 6);
-        List<String> tags = Arrays.asList("news", "events");
-        Page<TipsAndTricks> page = tipsAndTricksRepo.find("en", pageable, tags);
+        List<String> tags = Arrays.asList("News", "Education");
+        Page<TipsAndTricks> page = tipsAndTricksRepo.find(pageable, tags);
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
-        assertEquals(2, tipsAndTricks.size());
+        assertEquals(4, tipsAndTricks.size());
         assertEquals(1, tipsAndTricks.get(1).getId());
-    }*/
+    }
 
     @Test
     void findAllByOrderByCreationDateDescTest() {
@@ -45,14 +45,13 @@ class TipsAndTricksRepoTest {
         assertEquals(1, tipsAndTricks.get(5).getId());
     }
 
-    /*@Test
+    @Test
     void searchTipsAndTricksTest() {
         Pageable pageable = PageRequest.of(0, 6);
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, "News", "en");
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, "Text", "en");
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
-        assertEquals(1, tipsAndTricks.size());
-        assertEquals("News", tipsAndTricks.get(0).getTags().get(0).getName());
-    }*/
+        assertEquals(2, tipsAndTricks.size());
+    }
 
     @Test
     void searchByAuthorNameTest() {
@@ -80,5 +79,4 @@ class TipsAndTricksRepoTest {
         Long amount = tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(1L);
         assertEquals(4, amount);
     }
-
 }
