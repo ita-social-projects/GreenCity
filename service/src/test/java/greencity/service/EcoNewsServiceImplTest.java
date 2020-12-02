@@ -1,4 +1,4 @@
-/*package greencity.service;
+package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
@@ -37,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,7 +88,7 @@ class EcoNewsServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
-        List<TagVO> tagVOList = Collections.singletonList(new TagVO(1L, "News", null, null));
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(tagVOList);
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(dto);
@@ -113,7 +114,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
-        List<TagVO> tagVOList = Collections.singletonList(new TagVO(1L, "News", null, null));
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findEcoNewsTagsByNames(anyList())).thenReturn(tagVOList);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
@@ -206,13 +207,14 @@ class EcoNewsServiceImplTest {
         List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
+        List<String> tags = Collections.singletonList(ModelUtils.getTagTranslations().get(0).getName());
 
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
-        when(ecoNewsRepo.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
+        when(ecoNewsRepo.findByTags(pageRequest, tags))
             .thenReturn(page);
 
         PageableAdvancedDto<EcoNewsDto> actual =
-            ecoNewsService.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName()));
+            ecoNewsService.find(pageRequest, tags);
 
         assertEquals(pageableDto, actual);
     }
@@ -267,4 +269,4 @@ class EcoNewsServiceImplTest {
 
         assertEquals(dtoList, actual);
     }
-}*/
+}

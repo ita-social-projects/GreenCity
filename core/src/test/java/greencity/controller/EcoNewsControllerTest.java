@@ -171,11 +171,12 @@ class EcoNewsControllerTest {
         verify(ecoNewsService).getThreeRecommendedEcoNews(eq(1L));
     }
 
-    /*@Test
+    @Test
     void findAllEcoNewsTagsTest() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/tags/all"))
+        String language = "en";
+        mockMvc.perform(get(ecoNewsLink + "/tags/all?lang=" + language))
             .andExpect(status().isOk());
 
-        verify(tagsService).findAllEcoNewsTags();
-    }*/
+        verify(tagsService).findAllEcoNewsTags(language);
+    }
 }
