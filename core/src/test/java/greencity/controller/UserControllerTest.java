@@ -209,20 +209,20 @@ class UserControllerTest {
 
     @Test
     void getActiveUserHabitAssigns() throws Exception {
-        mockMvc.perform(get(userLink + "/{id}/habit/assign?acquired=false&lang=en", 1))
+        mockMvc.perform(get(userLink + "/{id}/habit/assign?lang=en", 1))
             .andExpect(status().isOk());
 
         verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
-            eq(1L), eq(false), eq("en"));
+            eq(1L), eq("en"));
     }
 
     @Test
     void getAcquiredUserHabitAssigns() throws Exception {
-        mockMvc.perform(get(userLink + "/{id}/habit/assign?acquired=true&lang=en", 1))
+        mockMvc.perform(get(userLink + "/{id}/habit/assign?lang=en", 1))
             .andExpect(status().isOk());
 
         verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
-            eq(1L), eq(true), eq("en"));
+            eq(1L), eq("en"));
     }
 
     @Test

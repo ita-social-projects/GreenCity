@@ -416,9 +416,8 @@ public class ModelUtils {
     public static HabitAssign getHabitAssign() {
         return HabitAssign.builder()
             .id(1L)
-            .acquired(true)
+            .status(HabitAssignStatus.ACQUIRED)
             .createDate(ZonedDateTime.now())
-            .suspended(false)
             .habit(Habit.builder()
                 .id(1L)
                 .image("")

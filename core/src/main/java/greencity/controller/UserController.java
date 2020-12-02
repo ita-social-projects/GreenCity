@@ -321,8 +321,7 @@ public class UserController {
     /**
      * Method for finding all active habit assigns by {@link UserVO} id.
      *
-     * @param userId   {@link UserVO} id.
-     * @param acquired {@link Boolean} status.
+     * @param userId {@link UserVO} id.
      * @return list of {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get active habit assigns for certain user by acquired status.")
@@ -335,10 +334,10 @@ public class UserController {
     @GetMapping("/{userId}/habit/assign")
     @ApiLocale
     public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
-        @PathVariable Long userId, @RequestParam Boolean acquired, @ApiIgnore @ValidLanguage Locale locale) {
+        @PathVariable Long userId, @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
-                habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, acquired, locale.getLanguage()));
+                habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, locale.getLanguage()));
     }
 
     /**

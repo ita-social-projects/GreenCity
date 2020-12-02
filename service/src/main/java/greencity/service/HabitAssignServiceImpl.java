@@ -7,6 +7,7 @@ import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
@@ -115,9 +116,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignRepo.save(
             HabitAssign.builder()
                 .habit(habit)
-                .acquired(false)
+                .status(HabitAssignStatus.ACTIVE)
                 .createDate(ZonedDateTime.now())
-                .suspended(false)
                 .user(user)
                 .duration(0)
                 .habitStreak(0)
@@ -185,9 +185,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired,
-        String language) {
-        return habitAssignRepo.findAllByUserIdAndAcquiredAndSuspendedFalse(userId, acquired)
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language) {
+        return habitAssignRepo.findAllByUserIdAndActive(userId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
@@ -195,9 +194,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired,
+    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId,
         String language) {
-        return habitAssignRepo.findAllByHabitIdAndAcquiredAndSuspendedFalse(habitId, acquired)
+        return habitAssignRepo.findAllByHabitIdAndActive(habitId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
@@ -212,20 +211,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
 
-        enhanceStatusesWithDto(dto, updatable);
+        updatable.setStatus(dto.getStatus());
 
         return modelMapper.map(habitAssignRepo.save(updatable), HabitAssignManagementDto.class);
-    }
-
-    /**
-     * Method updates {@link HabitAssign} with {@link HabitAssignStatDto} fields.
-     *
-     * @param dto       {@link HabitAssignStatDto} instance.
-     * @param updatable {@link HabitAssign} instance.
-     */
-    private void enhanceStatusesWithDto(HabitAssignStatDto dto, HabitAssign updatable) {
-        updatable.setAcquired(dto.getAcquired());
-        updatable.setSuspended(dto.getSuspended());
     }
 
     /**
@@ -275,7 +263,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         updateHabitStreakAfterEnroll(habitAssign, todayDate);
 
         if (isHabitAcquired(habitAssign)) {
-            habitAssign.setAcquired(true);
+            habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
         }
         habitAssignRepo.save(habitAssign);
     }
@@ -316,7 +304,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         int workingDays = habitAssign.getWorkingDays();
         int habitDuration = habitAssign.getDuration();
         if (workingDays == habitDuration) {
-            if (Boolean.TRUE.equals(habitAssign.getAcquired())) {
+            if (HabitAssignStatus.ACQUIRED.equals(habitAssign.getStatus())) {
                 throw new BadRequestException(
                     ErrorMessage.HABIT_ALREADY_ACQUIRED + habitAssign.getHabit().getId());
             }

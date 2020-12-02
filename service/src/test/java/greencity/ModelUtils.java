@@ -132,8 +132,7 @@ public class ModelUtils {
     public static HabitAssignDto getHabitAssignDto() {
         return HabitAssignDto.builder()
             .id(1L)
-            .acquired(true)
-            .suspended(false)
+            .status(HabitAssignStatus.ACQUIRED)
             .createDateTime(ZonedDateTime.now())
             .habit(HabitDto.builder().id(1L).build())
             .userId(1L).build();
@@ -142,9 +141,8 @@ public class ModelUtils {
     public static HabitAssign getHabitAssign() {
         return HabitAssign.builder()
             .id(1L)
-            .acquired(true)
+            .status(HabitAssignStatus.ACQUIRED)
             .createDate(ZonedDateTime.now())
-            .suspended(false)
             .habit(Habit.builder()
                 .id(1L)
                 .image("")
