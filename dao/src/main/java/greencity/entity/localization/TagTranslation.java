@@ -29,4 +29,3 @@ public class TagTranslation {
     @JoinColumn(name = "language_id", nullable = false)
     private Language language;
 }
-

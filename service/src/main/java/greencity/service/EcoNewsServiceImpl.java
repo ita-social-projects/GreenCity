@@ -88,7 +88,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
 
-        toSave.setTags(modelMapper.map(tagService.findEcoNewsTagsByNames(addEcoNewsDtoRequest.getTags()),
+        toSave.setTags(modelMapper.map(tagService.findTagsByNames(addEcoNewsDtoRequest.getTags()),
             new TypeToken<List<Tag>>() {
             }.getType()));
         try {
@@ -341,7 +341,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
         toUpdate.setText(ecoNewsDtoManagement.getText());
         toUpdate.setTags(modelMapper
-            .map(tagService.findTipsAndTricksTagsByNames(ecoNewsDtoManagement.getTags()), new TypeToken<List<Tag>>() {
+            .map(tagService.findTagsByNames(ecoNewsDtoManagement.getTags()), new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
             toUpdate.setImagePath(fileService.upload(image).toString());
@@ -362,7 +362,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toUpdate.setTitle(updateEcoNewsDto.getTitle());
         toUpdate.setText(updateEcoNewsDto.getText());
         toUpdate.setSource(updateEcoNewsDto.getSource());
-        toUpdate.setTags(modelMapper.map(tagService.findEcoNewsTagsByNames(updateEcoNewsDto.getTags()),
+        toUpdate.setTags(modelMapper.map(tagService.findTagsByNames(updateEcoNewsDto.getTags()),
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (updateEcoNewsDto.getImage() != null) {

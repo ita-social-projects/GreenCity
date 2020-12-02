@@ -13,20 +13,12 @@ import java.util.List;
  */
 public interface TagsService {
     /**
-     * Method that allow you to find list of EcoNews Tags by names.
+     * Method that allow you to find list of Tags by names.
      *
-     * @param ecoNewsTagNames list of {@link String} values
+     * @param tags list of {@link String} values
      * @return list of Tags
      */
-    List<TagVO> findEcoNewsTagsByNames(List<String> ecoNewsTagNames);
-
-    /**
-     * Method that allow you to find list of Tips & Tricks Tags by names.
-     *
-     * @param tipsAndTricksTagNames list of {@link String} values
-     * @return list of Tags
-     */
-    List<TagVO> findTipsAndTricksTagsByNames(List<String> tipsAndTricksTagNames);
+    List<TagVO> findTagsByNames(List<String> tags);
 
     /**
      * Method that allow you to find all EcoNews Tags.

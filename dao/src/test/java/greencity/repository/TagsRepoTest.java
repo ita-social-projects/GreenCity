@@ -26,30 +26,16 @@ class TagsRepoTest {
     private static final String ENGLISH_LANGUAGE = "en";
 
     @Test
-    void findEcoNewsTagsByNamesTest() {
-        List<String> ecoNewsTagNames = Arrays.asList("news", "education");
-        List<Tag> tags = tagsRepo.findEcoNewsTagsByNames(ecoNewsTagNames);
+    void findTagsByNamesTest() {
+        List<String> tagNames = Arrays.asList("news", "education");
+        List<Tag> tags = tagsRepo.findTagsByNames(tagNames);
         assertEquals(2, tags.size());
     }
 
     @Test
-    void findEcoNewsTagsByNamesNotFoundTest() {
-        List<String> ecoNewsTagNames = Collections.singletonList("xxx");
-        List<Tag> tags = tagsRepo.findEcoNewsTagsByNames(ecoNewsTagNames);
-        assertTrue(tags.isEmpty());
-    }
-
-    @Test
-    void findTipsAndTricksTagsByNamesTest() {
-        List<String> tipsAndTricksTagNames = Arrays.asList("news", "education");
-        List<Tag> tags = tagsRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagNames);
-        assertEquals(2, tags.size());
-    }
-
-    @Test
-    void findTipsAndTricksTagsByNamesNotFoundTest() {
-        List<String> tipsAndTricksTagNames = Collections.singletonList("xxx");
-        List<Tag> tags = tagsRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagNames);
+    void findTagsByNamesNotFoundTest() {
+        List<String> tagNames = Collections.singletonList("xxx");
+        List<Tag> tags = tagsRepo.findTagsByNames(tagNames);
         assertTrue(tags.isEmpty());
     }
 

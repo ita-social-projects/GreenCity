@@ -27,33 +27,16 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public List<TagVO> findEcoNewsTagsByNames(List<String> ecoNewsTagNames) {
-        List<String> lowerCaseTagNames = ecoNewsTagNames.stream()
+    public List<TagVO> findTagsByNames(List<String> tagNames) {
+        List<String> lowerCaseTagNames = tagNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
-        List<Tag> tags = tagRepo.findEcoNewsTagsByNames(lowerCaseTagNames);
-        if (tags.isEmpty()) {
-            throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
-        }
-        return modelMapper.map(tagRepo.findEcoNewsTagsByNames(lowerCaseTagNames),
-            new TypeToken<List<TagVO>>() {
-            }.getType());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<TagVO> findTipsAndTricksTagsByNames(List<String> tipsAndTricksTagNames) {
-        List<String> lowerCaseTagNames = tipsAndTricksTagNames.stream()
-            .map(String::toLowerCase)
-            .collect(Collectors.toList());
-        List<Tag> tags = tagRepo.findTipsAndTricksTagsByNames(lowerCaseTagNames);
+        List<Tag> tags = tagRepo.findTagsByNames(lowerCaseTagNames);
         if (tags.isEmpty()) {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
         }
         return modelMapper.map(tags, new TypeToken<List<TagVO>>() {
-        }.getType());
+            }.getType());
     }
 
     /**
@@ -83,7 +66,7 @@ public class TagsServiceImpl implements TagsService {
     @Override
     public boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames) {
         try {
-            findTipsAndTricksTagsByNames(tipsAndTricksTagNames);
+            findTagsByNames(tipsAndTricksTagNames);
         } catch (TagNotFoundException e) {
             return false;
         }

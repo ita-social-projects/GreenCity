@@ -71,7 +71,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
-        toSave.setTags(modelMapper.map(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoRequest.getTags()),
+        toSave.setTags(modelMapper.map(tagService.findTagsByNames(tipsAndTricksDtoRequest.getTags()),
             new TypeToken<List<Tag>>() {
             }.getType()));
         toSave.getTitleTranslations().forEach(el -> el.setTipsAndTricks(toSave));
@@ -130,7 +130,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             tipsAndTricks.setImagePath(fileService.upload(image).toString());
         }
         tipsAndTricks
-            .setTags(modelMapper.map(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()),
+            .setTags(modelMapper.map(tagService.findTagsByNames(tipsAndTricksDtoManagement.getTags()),
                 new TypeToken<List<Tag>>() {
                 }.getType()));
 
@@ -154,7 +154,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         MultipartFile image) {
         TipsAndTricks toUpdate = findTipsAndTricksById(tipsAndTricksDtoManagement.getId());
         toUpdate.setSource(tipsAndTricksDtoManagement.getSource());
-        toUpdate.setTags(modelMapper.map(tagService.findTipsAndTricksTagsByNames(tipsAndTricksDtoManagement.getTags()),
+        toUpdate.setTags(modelMapper.map(tagService.findTagsByNames(tipsAndTricksDtoManagement.getTags()),
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
