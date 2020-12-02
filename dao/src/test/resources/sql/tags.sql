@@ -1,7 +1,12 @@
-INSERT INTO tags(id, name)
-VALUES (1, 'News'),
-       (2, 'Events'),
-       (3, 'Education');
+INSERT INTO tags(id)
+VALUES (1),(2),(3);
+
+INSERT INTO languages(id, code)
+VALUES(1, 'ua'),(2, 'en'), (3, 'ru');
+
+INSERT INTO tag_translations(id, name, tag_id, language_id) VALUES(1, 'Новини', 1, 1),
+(2, 'News', 1, 2),(3, 'Новины', 1, 3),(4, 'Освіта', 2, 1),(5, 'Education', 2, 2),
+(6, 'Образование', 2, 3),(7, 'Реклами', 3, 1),(8, 'Ads', 3, 2),(9, 'Рекламы', 3, 3);
 
 INSERT INTO users (id,
                    date_of_registration,
@@ -29,6 +34,8 @@ VALUES (1,'2020-10-05 18:33:51', 'image path', 1,
         'Instead of trying to get rid of those lawn and garden weeds, harvest them for free homegrown meals.',
         'Please eat the dandelions: 9 edible garden weeds');
 
+INSERT INTO habits(id, image, default_duration) VALUES(1, 'image1', 14), (2, 'image2', 14), (3, 'image3', 14);
+
 INSERT INTO eco_news_tags(eco_news_id, tags_id)
 VALUES(1,1),(2,1),(3,3),(4,2);
 
@@ -42,5 +49,7 @@ VALUES (1, '2020-10-03T00:00', 2, 'image path', 'source'),
 
 INSERT INTO tips_and_tricks_tags (tips_and_tricks_id, tags_id)
 VALUES (1,3),(2,3),(3,3),(4,3),(5,3),(6,3);
+
+INSERT INTO habits_tags(habit_id, tag_id) values(1, 1), (1, 2), (1, 3), (2, 2), (3, 3);
 
 

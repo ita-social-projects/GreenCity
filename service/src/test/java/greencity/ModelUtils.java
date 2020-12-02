@@ -36,6 +36,7 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
@@ -68,6 +69,10 @@ public class ModelUtils {
     public static List<TagTranslation> getTagTranslations() {
         return Arrays.asList(TagTranslation.builder().id(1L).name("Новини").build(), TagTranslation.builder().id(2L).name("News").build(),
             TagTranslation.builder().id(3L).name("Новины").build());
+    }
+
+    public static List<Tag> getTags() {
+        return Collections.singletonList(getTag());
     }
 
     public static User getUser() {
@@ -523,12 +528,18 @@ public class ModelUtils {
             .build();
     }
 
+    public static List<TagTranslationVO> getTagTranslationsVO() {
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
+            TagTranslationVO.builder().id(2L).name("News").build(),
+            TagTranslationVO.builder().id(3L).name("Новины").build());
+    }
+
     public static LanguageVO getLanguageVO() {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, null, null, null, null);
+        return new TagVO(1L, getTagTranslationsVO(), null, null, null);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {
