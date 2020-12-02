@@ -46,7 +46,7 @@ public class GoalController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @PostMapping("/save")
+    @PostMapping
     @ApiLocale
     public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
         @Valid @RequestBody List<GoalRequestDto> dto,
@@ -96,7 +96,7 @@ public class GoalController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public void delete(
         @ApiIgnore @CurrentUser UserVO user, Long habitId, Long goalId) {
         goalService.deleteUserGoalByGoalIdAndUserIdAndHabitId(goalId, user.getId(), habitId);
@@ -140,7 +140,7 @@ public class GoalController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @DeleteMapping("/delete-user-goals")
+    @DeleteMapping("/user-goals")
     public ResponseEntity<List<Long>> bulkDeleteUserGoals(
         @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true) @Pattern(
             regexp = "^\\d+(,\\d+)*$",

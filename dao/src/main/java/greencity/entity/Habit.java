@@ -34,8 +34,12 @@ public class Habit {
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
     private List<HabitAssign> habitAssigns;
 
-    @OneToMany(mappedBy = "habit", fetch = FetchType.LAZY)
-    private List<HabitGoal> habitGoals;
+    @ManyToMany
+    @JoinTable(
+        name = "habit_goals",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "goal_id"))
+    private Set<Goal> goals;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "habits_tags",

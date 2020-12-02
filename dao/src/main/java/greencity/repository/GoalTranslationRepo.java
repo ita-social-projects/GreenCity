@@ -66,8 +66,9 @@ public interface GoalTranslationRepo extends JpaRepository<GoalTranslation, Long
      * @return List of {@link GoalTranslation}, that contains all goal translations
      *         for needed habit.
      */
-    @Query("SELECT g FROM GoalTranslation g JOIN HabitGoal hg ON hg.habit.id = :habitId "
-        + "WHERE hg.goal.id = g.goal.id AND g.language.code = :languageCode")
+    @Query("SELECT gt FROM GoalTranslation gt JOIN Goal g ON g.id = gt.goal.id "
+        + "JOIN g.habits h ON h.id = :habitId"
+        + " WHERE gt.language.code = :languageCode")
     List<GoalTranslation> findAllGoalByHabitIdAndByLanguageCode(String languageCode,
         @Param(value = "habitId") Long habitId);
 }

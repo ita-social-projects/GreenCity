@@ -2,7 +2,6 @@ package greencity.dto.user;
 
 import greencity.dto.goal.GoalVO;
 import greencity.dto.habit.HabitAssignVO;
-import greencity.entity.HabitAssign;
 import greencity.enums.GoalStatus;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

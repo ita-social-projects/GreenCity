@@ -46,7 +46,7 @@ class GoalControllerTest {
 
     @Test
     void bulkDeleteUserGoalsTest() throws Exception {
-        mockMvc.perform(delete(goalLink + "/delete-user-goals?ids=1,2", 1))
+        mockMvc.perform(delete(goalLink + "/user-goals?ids=1,2", 1))
             .andExpect(status().isOk());
 
         verify(goalService).deleteUserGoals(eq("1,2"));
@@ -77,7 +77,7 @@ class GoalControllerTest {
             + " }\n"
             + "]\n";
 
-        mockMvc.perform(post(goalLink + "/save?habitId=1&lang=en", 1)
+        mockMvc.perform(post(goalLink + "?habitId=1&lang=en", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isCreated());

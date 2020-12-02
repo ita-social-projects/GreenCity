@@ -72,7 +72,7 @@ class GoalServiceImplTest {
             .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
             .content("TEST")
-            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+            .goal(new Goal(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .build(),
         GoalTranslation.builder()
             .id(2L)
@@ -80,7 +80,7 @@ class GoalServiceImplTest {
                 Collections.emptyList(), Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList()))
             .content("TEST")
-            .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+            .goal(new Goal(2L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .build());
 
     private Long userId = user.getId();

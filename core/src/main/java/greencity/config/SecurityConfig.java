@@ -205,7 +205,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/like",
                 "/tipsandtricks",
                 USER_CUSTOM_GOALS,
-                "/user/goals/save",
+                "/user/goals",
                 "/user/{userId}/habit",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
@@ -233,8 +233,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/{placeId}",
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
-                "/user/goals/delete-user-goals",
-                "/user/goals/delete",
+                "/user/goals/user-goals",
+                "/user/goals",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,
