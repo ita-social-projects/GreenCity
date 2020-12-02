@@ -22,13 +22,6 @@ class UserGoalRepoTest {
     UserGoalRepo userGoalRepo;
 
     @Test
-    void findAllByUserIdTest() {
-        List<UserGoal> userGoals = userGoalRepo.findAllByUserId(1L);
-        assertEquals(2, userGoals.size());
-        assertEquals(1, userGoals.get(0).getId());
-    }
-
-    @Test
     void findGoalByUserGoalIdTest() {
         Goal goal = userGoalRepo.findGoalByUserGoalId(1L).get();
         assertEquals(1, goal.getId());

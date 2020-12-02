@@ -81,17 +81,6 @@ VALUES (1), (2), (3),
        (4), (5), (6),
        (7), (8), (9), (10);
 
-
-INSERT INTO user_goals (user_id, goal_id, status, date_completed)
-VALUES (1, 2, 'DONE', '2020-09-10 20:00:001'),
-       (1, 5, 'DONE', '2020-09-11 18:00:001'),
-       (2, 5, 'DONE', '2020-09-11 18:00:001'),
-       (2, 3, 'ACTIVE', null),
-       (2, 1, 'ACTIVE', null),
-       (3, 3, 'ACTIVE', null),
-       (3, 1, 'DONE', '2020-10-05 20:00:001');
-
-
 INSERT INTO achievement_categories(name)
 VALUES ('Econews'),
        ('Rating'),
@@ -439,7 +428,17 @@ VALUES (5, 4, 1, '2020-09-10 20:00:00.823000');
 
 INSERT INTO habit_status_calendar (enroll_date, habit_assign_id)
 VALUES ('2020-09-10', 1);
+
+INSERT INTO habit_goals (id, habit_id, goal_id)
+VALUES (1,1,1),
+       (2,1,2),
+       (3,1,3),
+       (4,1,4);
 -- HABITS END --
+
+INSERT INTO user_goals (habit_assign_id, goal_id, status, date_completed)
+VALUES (1, 2, 'DONE', '2020-09-10 20:00:001'),
+       (1, 3, 'DONE', '2020-09-11 18:00:001');
 
 INSERT INTO news_subscribers (email_address, unsubscribe_token)
 VALUES ('majboroda.artur@mail.com', 'a06b0b4e-8696-419c-a776-611c36f79d39'),

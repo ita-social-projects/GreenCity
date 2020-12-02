@@ -4,6 +4,8 @@ public final class ErrorMessage {
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
     public static final String GOAL_NOT_DELETED = "Advice not deleted ";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
+    public static final String GOAL_NOT_ASSIGNED_FOR_THIS_HABIT = "Goal with such id does not assigned fot this habit ";
+    public static final String GOAL_ALREADY_SELECTED = "Goal with such id already selected by user ";
     public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";

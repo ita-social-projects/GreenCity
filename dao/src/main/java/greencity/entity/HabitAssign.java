@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
@@ -38,6 +39,9 @@ public class HabitAssign {
 
     @Column(name = "last_enrollment", nullable = false)
     private ZonedDateTime lastEnrollmentDate;
+
+    @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY)
+    private List<UserGoal> userGoals = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;
