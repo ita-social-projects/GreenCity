@@ -6,9 +6,9 @@ name: CI/CD GreenCity
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, dev, git-action-1 ]
+    branches: [ master, dev, git-action ]
   pull_request:
-    branches: [ master, dev, git-action-1 ]
+    branches: [ master, dev, git-action ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
