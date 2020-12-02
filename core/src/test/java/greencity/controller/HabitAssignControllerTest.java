@@ -5,6 +5,7 @@ import greencity.ModelUtils;
 import static greencity.ModelUtils.getPrincipal;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -66,8 +67,7 @@ class HabitAssignControllerTest {
     @Test
     void updateAssignByHabitId() throws Exception {
         HabitAssignStatDto habitAssignStatDto = new HabitAssignStatDto();
-        habitAssignStatDto.setAcquired(true);
-        habitAssignStatDto.setSuspended(true);
+        habitAssignStatDto.setStatus(HabitAssignStatus.ACTIVE);
         Gson gson = new Gson();
         String json = gson.toJson(habitAssignStatDto);
         mockMvc.perform(patch(habitLink + "/{habitId}", 1)
