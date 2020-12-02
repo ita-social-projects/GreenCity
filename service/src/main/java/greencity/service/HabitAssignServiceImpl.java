@@ -325,7 +325,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method deletes enroll of {@link HabitAssign} if it exists.
+     * Method checks and calls method for delete if enroll of {@link HabitAssign} exists.
      *
      * @param date        {@link LocalDate} date.
      * @param habitAssign {@link HabitAssign} instance.
@@ -335,6 +335,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitStatusCalendarService
                 .findHabitStatusCalendarByEnrollDateAndHabitAssign(
                     date, modelMapper.map(habitAssign, HabitAssignVO.class));
+        deleteHabitStatusCalendar(habitAssign, habitCalendarVO);
+    }
+
+
+    /**
+     * Method deletes enroll of {@link HabitAssign}.
+     *
+     * @param habitCalendarVO {@link HabitStatusCalendarVO} date.
+     * @param habitAssign     {@link HabitAssign} instance.
+     */
+    private void deleteHabitStatusCalendar(HabitAssign habitAssign, HabitStatusCalendarVO habitCalendarVO) {
         if (habitCalendarVO != null) {
             List<HabitStatusCalendar> habitCalendars =
                 new ArrayList<>(habitAssign.getHabitStatusCalendars());
