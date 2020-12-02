@@ -5,6 +5,7 @@ import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -79,4 +80,10 @@ public interface AchievementService {
      * @author Orest Mamchuck
      */
     AchievementPostDto update(AchievementManagementDto achievementManagementDto);
+
+    AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
+
+    UserActionVO updateUserActions(UserActionVO userActionVO);
+
+    UserActionVO findUserActionByUserId(Long id);
 }

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
     /**
@@ -27,4 +29,6 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
         + "OR LOWER(a.achievementCategory.name) LIKE LOWER(CONCAT('%', :query, '%'))"
         + "OR CONCAT(a.condition, ' ') LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Achievement> searchAchievementsBy(Pageable paging, String query);
+
+    Optional<Achievement> findByAchievementCategoryIdAndCondition(Long achievementCategoryId, Integer condition);
 }

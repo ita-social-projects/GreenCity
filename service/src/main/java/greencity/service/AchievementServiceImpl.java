@@ -6,12 +6,15 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
+import greencity.entity.UserAction;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
+import greencity.repository.UserActionRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 @EnableCaching
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
+    private UserActionRepo userActionRepo;
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final AchievementCategoryService achievementCategoryService;
@@ -167,6 +172,38 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setCondition(achievementManagementDto.getCondition());
         Achievement updated = achievementRepo.save(achievement);
         return modelMapper.map(updated, AchievementPostDto.class);
+    }
+
+    @Override
+    public AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition) {
+        Achievement achievement = achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);
+        return achievement!=null ? modelMapper.map(achievement, AchievementVO.class) : null;
+    }
+
+    @Override
+    public UserActionVO updateUserActions(UserActionVO userActionVO) {
+        Optional<UserAction> byId = userActionRepo.findById(userActionVO.getId());
+        if (byId.isPresent()) {
+            UserAction toUpdate = byId.get();
+            toUpdate.setAchievements(userActionVO.getAchievements());
+            toUpdate.setAcquiredHabit(userActionVO.getAcquiredHabit());
+            toUpdate.setEcoNews(userActionVO.getEcoNews());
+            toUpdate.setEcoNewsComments(userActionVO.getEcoNewsComments());
+            toUpdate.setEcoNewsLikes(userActionVO.getEcoNewsLikes());
+            toUpdate.setHabitStreak(userActionVO.getHabitStreak());
+            toUpdate.setRating(userActionVO.getRating());
+            toUpdate.setSocialNetworks(userActionVO.getSocialNetworks());
+            toUpdate.setTipsAndTricksComments(userActionVO.getTipsAndTricksComments());
+            toUpdate.setTipsAndTricksLikes(userActionVO.getTipsAndTricksLikes());
+            return modelMapper.map(userActionRepo.save(toUpdate), UserActionVO.class);
+        }
+        return null;
+    }
+
+    @Override
+    public UserActionVO findUserActionByUserId(Long id) {
+        UserAction userAction = userActionRepo.findByUserId(id);
+        return modelMapper.map(userAction, UserActionVO.class);
     }
 
     private void setTranslations(Achievement achievement, AchievementManagementDto achievementManagementDto) {

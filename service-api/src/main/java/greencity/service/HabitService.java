@@ -2,9 +2,6 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitTranslation;
-import greencity.entity.User;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

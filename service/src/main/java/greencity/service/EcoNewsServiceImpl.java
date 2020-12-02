@@ -1,5 +1,7 @@
 package greencity.service;
 
+import greencity.annotations.AchievementCalculation;
+import greencity.annotations.AchievementCalculationEnum;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
@@ -300,6 +302,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
+    @AchievementCalculation(category = AchievementCalculationEnum.ECO_NEWS_LIKES)
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
     }
