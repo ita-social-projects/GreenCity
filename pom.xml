@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -16,7 +16,22 @@
     <description>Project named Green City by SoftServe ITA team Lv-427.Java</description>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>core</module>
+        <module>service-api</module>
+        <module>dao</module>
+        <module>email</module>
+        <module>service</module>
+    </modules>
+
     <properties>
+        <junit-jupiter.version>5.4.2</junit-jupiter.version>
+        <mockito-junit-jupiter.version>3.3.3</mockito-junit-jupiter.version>
+        <mockito-core.version>3.3.3</mockito-core.version>
+        <modelmapper.version>2.3.5</modelmapper.version>
+        <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <checkstyle-maven-plugin.version>3.1.0</checkstyle-maven-plugin.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
@@ -47,8 +62,25 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>2.13.0</version>
+                <executions>
+                    <execution>
+                        <id>formatter</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>format</goal>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configFile>${project.basedir}/../formatter.xml</configFile>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -69,10 +101,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <modules>
-        <module>core</module>
-        <module>email</module>
-    </modules>
-
 </project>

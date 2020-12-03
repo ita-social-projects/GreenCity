@@ -81,14 +81,12 @@ $(document).ready(function () {
         }, {});
         var payload = {
             "id": formData.id,
-            "title": formData.title,
-            "text": formData.text,
-            "image": formData.image,
             "source": formData.source,
-            "tags": []
+            "tags": [],
+            "titleTranslations":[],
+            "textTranslations":[]
         };
         for (var key in formData) {
-
             if (key.startsWith("tags") && formData["tags"].trim().length !== 0) {
                 var tag = formData["tags"].toString().split(/[\s,]+/);
 
@@ -96,9 +94,31 @@ $(document).ready(function () {
                     payload.tags.push(tag[i]);
                 }
             }
-        }
+        };
+        for (var key in formData) {
+            if (key.startsWith("titleContent")) {
+                var lang = key.split("titleContent").pop();
+                payload.titleTranslations.push(
+                    {
+                        "content" : formData["titleContent"+lang],
+                        "languageCode": lang
+                    }
+                );
+            };
+        };
+        for (var key in formData) {
+                    if (key.startsWith("textContent")) {
+                        var lang = key.split("textContent").pop();
+                        payload.textTranslations.push(
+                            {
+                                "content" : formData["textContent"+lang],
+                                "languageCode": lang
+                            }
+                        );
+                    };
+                };
         var result = new FormData();
-        result.append("tipsAndTricksDtoRequest", new Blob([JSON.stringify(payload)], {type: "application/json"}));
+        result.append("tipsAndTricksDtoManagement", new Blob([JSON.stringify(payload)], {type: "application/json"}));
         var file = document.getElementById("creationFile").files[0];
         result.append("file", file);
         //save request in addTipsAndTricksModal
@@ -132,13 +152,19 @@ $(document).ready(function () {
         var href = $(this).attr('href');
         $.get(href, function (tipsandtricks, status) {
             $('#id').val(tipsandtricks.id);
-            $('#title').val(tipsandtricks.title);
-            $('#text').val(tipsandtricks.text);
-            $('#emailAuthor').val(tipsandtricks.emailAuthor);
+            $('#authorName').val(tipsandtricks.authorName);
             $('#imagePath').val(tipsandtricks.imagePath);
             $('#source').val(tipsandtricks.source);
             $('#tags').val(tipsandtricks.tags);
             $('#file').val(tipsandtricks.file);
+            tipsandtricks.titleTranslations.forEach(function(translation){
+                let lang = translation.languageCode;
+                $(`input[name=titleContent${lang}]`).val(translation.content);
+            });
+            tipsandtricks.textTranslations.forEach(function(translation){
+                let lang = translation.languageCode;
+                $(`textarea[name=textContent${lang}]`).val(translation.content);
+            });
         });
     });
     //submit button in editTipsAndTricksModal
@@ -151,12 +177,12 @@ $(document).ready(function () {
         }, {});
         var returnData = {
             "id": formData.id,
-            "title": formData.title,
-            "text": formData.text,
-            "emailAuthor": formData.emailAuthor,
+            "authorname": formData.authorName,
             "imagePath": formData.imagePath,
             "source": formData.source,
-            "tags": []
+            "tags": [],
+            "titleTranslations":[],
+            "textTranslations":[]
         };
         for (var key in formData) {
             if (key.startsWith("tags") && $("#" + key).val().trim().length !== 0) {
@@ -167,7 +193,29 @@ $(document).ready(function () {
                     returnData.tags.push(tag[i]);
                 }
             }
-        }
+        };
+           for (var key in formData) {
+                    if (key.startsWith("titleContent")) {
+                        var lang = key.split("titleContent").pop();
+                        returnData.titleTranslations.push(
+                            {
+                                "content" : formData["titleContent"+lang],
+                                "languageCode": lang
+                            }
+                        );
+                    };
+                };
+                for (var key in formData) {
+                            if (key.startsWith("textContent")) {
+                                var lang = key.split("textContent").pop();
+                                returnData.textTranslations.push(
+                                    {
+                                        "content" : formData["textContent"+lang],
+                                        "languageCode": lang
+                                    }
+                                );
+                            };
+                        };
         var result = new FormData();
         result.append("tipsAndTricksDtoManagement", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
         var file = document.getElementById("file").files[0];
