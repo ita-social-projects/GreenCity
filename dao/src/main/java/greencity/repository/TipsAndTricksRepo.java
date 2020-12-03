@@ -25,7 +25,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
     @Query(nativeQuery = true, value = "select distinct t.* from tips_and_tricks as t "
         + "inner join tips_and_tricks_tags as ttt on t.id = ttt.tips_and_tricks_id "
         + "inner join tag_translations as tt on tt.tag_id = ttt.tags_id "
-        + "where tt.name in (:tags)")
+        + "where lower(tt.name) in (:tags)")
     Page<TipsAndTricks> find(Pageable pageable, List<String> tags);
 
     /**

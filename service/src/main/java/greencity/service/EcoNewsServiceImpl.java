@@ -19,6 +19,7 @@ import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -32,6 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import greencity.repository.TagsRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -145,20 +148,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public PageableAdvancedDto<EcoNewsDto> findAll(Pageable page) {
         Page<EcoNews> pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
-        List<EcoNewsDto> ecoNewsDtos = pages
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
-        return new PageableAdvancedDto<>(
-            ecoNewsDtos,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages(),
-            pages.getNumber(),
-            pages.hasPrevious(),
-            pages.hasNext(),
-            pages.isFirst(),
-            pages.isLast());
+        return buildPageableAdvancedDto(pages);
     }
 
     /**
@@ -168,22 +158,27 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableAdvancedDto<EcoNewsDto> find(Pageable page, List<String> tags) {
-        Page<EcoNews> pages = ecoNewsRepo.findByTags(page, tags);
+        List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
+        Page<EcoNews> pages = ecoNewsRepo.findByTags(page, lowerCaseTags);
 
-        List<EcoNewsDto> ecoNewsDtos = pages.stream()
+        return buildPageableAdvancedDto(pages);
+    }
+
+    private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
+        List<EcoNewsDto> ecoNewsDtos = ecoNewsPage.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
             ecoNewsDtos,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages(),
-            pages.getNumber(),
-            pages.hasPrevious(),
-            pages.hasNext(),
-            pages.isFirst(),
-            pages.isLast());
+            ecoNewsPage.getTotalElements(),
+            ecoNewsPage.getPageable().getPageNumber(),
+            ecoNewsPage.getTotalPages(),
+            ecoNewsPage.getNumber(),
+            ecoNewsPage.hasPrevious(),
+            ecoNewsPage.hasNext(),
+            ecoNewsPage.isFirst(),
+            ecoNewsPage.isLast());
     }
 
     /**
@@ -206,7 +201,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewsDto findDtoById(Long id) {
-        EcoNews ecoNews = modelMapper.map(findById(id), EcoNews.class);
+        EcoNews ecoNews = ecoNewsRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
 
         return modelMapper.map(ecoNews, EcoNewsDto.class);
     }
@@ -316,19 +312,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query) {
         Page<EcoNews> page = ecoNewsRepo.searchEcoNewsBy(paging, query);
-        List<EcoNewsDto> ecoNews = page.stream()
-            .map(ecoNew -> modelMapper.map(ecoNew, EcoNewsDto.class))
-            .collect(Collectors.toList());
-        return new PageableAdvancedDto<>(
-            ecoNews,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages(),
-            page.getNumber(),
-            page.hasPrevious(),
-            page.hasNext(),
-            page.isFirst(),
-            page.isLast());
+        return buildPageableAdvancedDto(page);
     }
 
     /**
@@ -378,19 +362,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(
         Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
         Page<EcoNews> page = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
-        List<EcoNewsDto> ecoNews = page.stream()
-            .map(ecoNew -> modelMapper.map(ecoNew, EcoNewsDto.class))
-            .collect(Collectors.toList());
-        return new PageableAdvancedDto<>(
-            ecoNews,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages(),
-            page.getNumber(),
-            page.hasPrevious(),
-            page.hasNext(),
-            page.isFirst(),
-            page.isLast());
+        return buildPageableAdvancedDto(page);
     }
 
     /**
