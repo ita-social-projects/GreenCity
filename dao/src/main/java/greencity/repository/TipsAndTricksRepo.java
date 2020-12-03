@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
     JpaSpecificationExecutor<TipsAndTricks> {
-        
     /**
      * Method returns {@link TipsAndTricks} by specific tags.
      *
