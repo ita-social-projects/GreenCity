@@ -6,7 +6,6 @@ import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import java.util.List;
 import java.util.Set;
 
-import greencity.entity.localization.TagTranslation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

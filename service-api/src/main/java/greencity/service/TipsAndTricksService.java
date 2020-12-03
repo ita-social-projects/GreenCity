@@ -56,8 +56,8 @@ public interface TipsAndTricksService {
     /**
      * Method for getting tips & tricks by params.
      *
-     * @param page to search for.
-     * @param tags used to search for.
+     * @param page         to search for.
+     * @param tags         used to search for.
      * @param languageCode language code.
      * @return PageableDto with {@link TipsAndTricksDtoResponse} instance.
      */
