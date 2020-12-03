@@ -12,7 +12,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      * @param names list of {@link String} values
      * @return list of {@link Tag}
      */
-    @Query("SELECT t FROM Tag t join fetch t.tagTranslations tt WHERE LOWER(tt.name) IN :names")
+    @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names")
     List<Tag> findTagsByNames(List<String> names);
 
     /**
@@ -21,8 +21,10 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      * @return list of {@link Tag}'s names
      */
     @Query(nativeQuery = true,
-        value = "SELECT name FROM tag_translations WHERE tag_id IN(SELECT tags_id FROM eco_news_tags) "
-            + "and language_id = (select id from languages where code = :languageCode)")
+        value = "SELECT DISTINCT tt.name FROM tag_translations tt "
+            + "INNER JOIN eco_news_tags ent ON tt.tag_id = ent.tags_id "
+            + "INNER JOIN languages l ON l.id = tt.language_id "
+            + "WHERE l.code = :languageCode")
     List<String> findAllEcoNewsTags(String languageCode);
 
     /**
@@ -31,8 +33,10 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      * @return list of {@link Tag}'s names
      */
     @Query(nativeQuery = true,
-        value = "SELECT name FROM tag_translations WHERE tag_id IN(SELECT tags_id FROM tips_and_tricks_tags) "
-            + "and language_id = (select id from languages where code = :languageCode)")
+        value = "SELECT DISTINCT tt.name FROM tag_translations tt "
+            + "INNER JOIN tips_and_tricks_tags ttt ON tt.tag_id = ttt.tags_id "
+            + "INNER JOIN languages l ON l.id = tt.language_id "
+            + "WHERE l.code = :languageCode")
     List<String> findAllTipsAndTricksTags(String languageCode);
 
     /**
@@ -42,7 +46,9 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      * @author Markiyan Derevetskyi
      */
     @Query(nativeQuery = true,
-        value = "SELECT name FROM tag_translations WHERE tag_id IN(SELECT tag_id FROM habits_tags) "
-            + "and language_id = (select id from languages where code = :languageCode)")
+        value = "SELECT DISTINCT tt.name FROM tag_translations tt "
+            + "INNER JOIN habits_tags ent ON tt.tag_id = ent.tag_id "
+            + "INNER JOIN languages l ON l.id = tt.language_id "
+            + "WHERE l.code = :languageCode")
     List<String> findAllHabitsTags(String languageCode);
 }

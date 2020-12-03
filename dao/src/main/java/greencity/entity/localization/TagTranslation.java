@@ -6,12 +6,13 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Data
 @Entity
 @Table(name = "tag_translations")
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class TagTranslation {
     @Id

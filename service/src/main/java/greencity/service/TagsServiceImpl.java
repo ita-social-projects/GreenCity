@@ -36,7 +36,7 @@ public class TagsServiceImpl implements TagsService {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
         }
         return modelMapper.map(tags, new TypeToken<List<TagVO>>() {
-            }.getType());
+        }.getType());
     }
 
     /**

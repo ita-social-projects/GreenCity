@@ -69,11 +69,13 @@ class TipsAndTricksServiceImplTest {
     private UserVO userVO = ModelUtils.getUserVO();
     private List<TagTranslationVO> tagTranslationVOList = Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
         .languageVO(LanguageVO.builder().id(1L).code("ua").build())
-        .build(), TagTranslationVO.builder().id(2L).name("News")
-        .languageVO(LanguageVO.builder().id(2L).code("en").build())
-        .build(), TagTranslationVO.builder().id(3L).name("Новины")
-        .languageVO(LanguageVO.builder().id(1L).code("ru").build())
-        .build());
+        .build(),
+        TagTranslationVO.builder().id(2L).name("News")
+            .languageVO(LanguageVO.builder().id(2L).code("en").build())
+            .build(),
+        TagTranslationVO.builder().id(3L).name("Новины")
+            .languageVO(LanguageVO.builder().id(1L).code("ru").build())
+            .build());
     private TagVO tagVO = new TagVO(1L, tagTranslationVOList, null, null, null);
 
     @Test

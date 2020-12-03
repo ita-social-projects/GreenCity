@@ -67,7 +67,8 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
         if (searchCriteria.getValue().toString().trim().equals("")) {
             return criteriaBuilder.conjunction();
         }
-        return criteriaBuilder.like(root.join(EcoNews_.tags).join(Tag_.tagTranslations).get(TagTranslation_.name).as(String.class),
+        return criteriaBuilder.like(
+            root.join(EcoNews_.tags).join(Tag_.tagTranslations).get(TagTranslation_.name).as(String.class),
             "%" + searchCriteria.getValue() + "%");
     }
 }

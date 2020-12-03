@@ -128,7 +128,8 @@ public class TipsAndTricksController {
         @ApiIgnore @ValidLanguage Locale locale,
         @RequestParam(required = false) List<String> tags,
         @ApiIgnore Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.find(pageable, tags, locale.getLanguage()));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(tipsAndTricksService.find(pageable, tags, locale.getLanguage()));
     }
 
     /**

@@ -4,7 +4,6 @@ import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Tag;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

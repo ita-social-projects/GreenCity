@@ -20,10 +20,10 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @param tags list of tags to search by.
      * @return {@link TipsAndTricks} by specific tags.
      */
-    @Query(nativeQuery = true, value = "select distinct t.* from tips_and_tricks as t "
-        + "inner join tips_and_tricks_tags as ttt on t.id = ttt.tips_and_tricks_id "
-        + "inner join tag_translations as tt on tt.tag_id = ttt.tags_id "
-        + "where lower(tt.name) in (:tags)")
+    @Query(nativeQuery = true, value = "SELECT DISTINCT t.* FROM tips_and_tricks AS t "
+        + "INNER JOIN tips_and_tricks_tags AS ttt ON t.id = ttt.tips_and_tricks_id "
+        + "INNER JOIN tag_translations AS tt ON tt.tag_id = ttt.tags_id "
+        + "WHERE lower(tt.name) IN (:tags)")
     Page<TipsAndTricks> find(Pageable pageable, List<String> tags);
 
     /**
