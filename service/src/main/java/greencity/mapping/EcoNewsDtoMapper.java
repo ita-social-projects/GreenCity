@@ -1,5 +1,6 @@
 package greencity.mapping;
 
+import greencity.constant.AppConstant;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
@@ -34,7 +35,7 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
             ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getSource(),
             ecoNewsAuthorDto,
             ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguage().getCode().equals("en"))
+                .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
                 .map(TagTranslation::getName).collect(Collectors.toList()));
     }
 }
