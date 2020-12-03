@@ -27,18 +27,9 @@ jobs:
       - name: Run a multi-line script
         run: |
           git fetch --unshallow
-          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
-          -Dsonar.projectKey=ita-social-projects-green-city
-          -Dsonar.organization=ita-social-projects
-          -Dsonar.host.url=https://sonarcloud.io
-          -Dtest='greencity.service.impl.*Test'
-          -Dsonar.sources='src/main/java/greencity/service'
-          -Dsonar.tests='src/test/java/greencity/service/impl'
-          -Dsonar.binaries=target/classes
-          -Dsonar.dynamicAnalysis=reuseReports
-                    
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports
 
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Deploy 🚀
         if: ${{ github.event_name == 'push' }}
         uses: JamesIves/github-pages-deploy-action@3.7.1
